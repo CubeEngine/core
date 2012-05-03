@@ -37,7 +37,7 @@ public class Hero {
         return -1;
     }
     
-    public int death()
+    public int die()
     {
         if (mode.equals(Mode.NORMAL))
         {
@@ -74,5 +74,10 @@ public class Hero {
             return this.player.getPlayer();
         else
             return null;
+    }
+    
+    public String getName()
+    {
+        return this.player.getName();
     }
 }

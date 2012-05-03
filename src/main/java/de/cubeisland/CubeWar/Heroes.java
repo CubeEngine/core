@@ -2,6 +2,7 @@ package de.cubeisland.CubeWar;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,10 +18,25 @@ public class Heroes {
     
     }
     
-    public static void kill(Player killer,Player killed)
+    public static void kill(Player killerPlayer,Player killedPlayer)
     {
-        getHero(killer).kill(getHero(killed));
-        getHero(killed).death();
+        Hero killer = getHero(killerPlayer);
+        Hero killed = getHero(killedPlayer);
+        if (killer.equals(killed))
+        {
+            //Suicide ?
+            killerPlayer.sendMessage("SELFOWNED!");
+        }
+        killerPlayer.sendMessage("You killed "+getHeroKD(killed));
+        killedPlayer.sendMessage("You got killed by "+getHeroKD(killer));
+        killer.kill(killed);
+        killed.die();
+    }
+    
+    public static String getHeroKD(Hero hero)
+    {
+        String out = hero.getName()+"("+hero.getKills()+":"+hero.getDeath()+")";
+        return out;
     }
     
     private static Hero getHero(Player hero)

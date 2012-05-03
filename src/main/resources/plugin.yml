@@ -1,8 +1,8 @@
 name: CubeWar
 version: "${project.version}"
-main: de.cubeisland.AuctionHouse.AuctionHouse
+main: de.cubeisland.CubeWar.CubeWar
 commands:
-  auctionhouse:
+  cubewar:
     description: "This is the base command of CubeWar"
     usage: "/<command> <action>"
     aliases:
