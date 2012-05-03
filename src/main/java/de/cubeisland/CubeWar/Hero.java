@@ -9,17 +9,28 @@ import org.bukkit.entity.Player;
  */
 public class Hero {
 
+    private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+    
     private OfflinePlayer player;
     private int death = 0;
     private int kills = 0;
+    private int killpoints = 0;
     private Mode mode = Mode.NORMAL;
+    private Rank rank = config.cubewar_ranks.get(0);
     
     public Hero(Player player) 
     {
         this.player = player;
+        rank = rank.newRank(this);
     }
     
     public int kill(Hero hero)
+    {
+        this.killpoints += hero.getRank().getKmod();
+        return this.kill_kd(hero);
+    }
+    
+    private int kill_kd(Hero hero)
     {
         if (mode.equals(Mode.NORMAL))
         {
@@ -38,6 +49,12 @@ public class Hero {
     }
     
     public int die()
+    {
+        this.killpoints -= this.rank.getDmod();
+        return this.die_kd();
+    }
+    
+    private int die_kd()
     {
         if (mode.equals(Mode.NORMAL))
         {
@@ -84,5 +101,15 @@ public class Hero {
     public Mode getMode()
     {
         return this.mode;
+    }
+    
+    public int getKp()
+    {
+        return this.killpoints;
+    }
+    
+    public Rank getRank()
+    {
+        return this.rank;
     }
 }

@@ -2,15 +2,43 @@ debug: true
 cubewar:
   language: de
   ranks:
+    Wegelagerer:
+      deathmodifier: 1
+      killmodifier: 1
+      killpointlimit: -10
     Vagabund:
       deathmodifier: 1
       killmodifier: 1
-    Bandit:
+      killpointlimit: 0
+    Schläger:
       deathmodifier: 2
       killmodifier: 2
+      killpointlimit: 10
+    Bandit:
+      deathmodifier: 5
+      killmodifier: 5
+      killpointlimit: 50
+    Plünderer:
+      deathmodifier: 10
+      killmodifier: 10
+      killpointlimit: 100
     Söldner:
-      deathmodifier: 4
-      killmodifier: 4
+      deathmodifier: 20
+      killmodifier: 20
+      killpointlimit: 200
+    Berserker:
+      deathmodifier: 50
+      killmodifier: 50
+      killpointlimit: 500
     Gladiator:
-      deathmodifier: 8
-      killmodifier: 8
+      deathmodifier: 100
+      killmodifier: 100
+      killpointlimit: 1000
+    Held:
+      deathmodifier: 500
+      killmodifier: 500
+      killpointlimit: 5000
+  killpoint:
+     min: -10
+     max: 5555
+   

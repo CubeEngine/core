@@ -12,18 +12,21 @@ public class CubeWarConfiguration
 {
     public String cubewar_language;
     public Map<Integer,Rank> cubewar_ranks;
+    public int killpoint_min;
+    public int killpoint_max;
     
     public CubeWarConfiguration(Configuration config)
     {
         this.cubewar_language = config.getString("cubewar.language");
         this.cubewar_ranks = new HashMap<Integer,Rank>();
         ConfigurationSection ranksection = config.getConfigurationSection("cubewar.ranks");
-        int i=0;
         for (String rankname : ranksection.getKeys(false))
         {
             ConfigurationSection cursection = ranksection.getConfigurationSection(rankname);
-            Rank rank = new Rank(rankname,cursection.getInt("deathmodifier"),cursection.getInt("killmodifier"));
-            this.cubewar_ranks.put(++i, rank);
+            Rank rank = new Rank(rankname,cursection.getInt("deathmodifier"),cursection.getInt("killmodifier"),cursection.getInt("killpointlimit"));
+            this.cubewar_ranks.put(cursection.getInt("killpointlimit"), rank);
         }
+        this.killpoint_min = config.getInt("cubewar.killpoint.min");
+        this.killpoint_max = config.getInt("cubewar.killpoint.max");
     }
 }
