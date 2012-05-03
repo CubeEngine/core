@@ -32,7 +32,10 @@ public class Heroes {
         }
         else
         {
-            killerPlayer.sendMessage(t("killer",getHeroKD(killed, 1)));
+            if (killer.getMode().equals(Mode.HIGHLANDER))
+                killerPlayer.sendMessage(t("killer",getHeroKD(killed, killed.getKills()+1)));
+            else
+                killerPlayer.sendMessage(t("killer",getHeroKD(killed, 1)));
             killedPlayer.sendMessage(t("killed",getHeroKD(killer,-1)));
             killer.kill(killed);
             killed.die();
@@ -62,7 +65,7 @@ public class Heroes {
             }
             case HIGHLANDER:  
             {
-                if (kill > 0) return t("kd_h-",name,k,d);
+                if (kill > 0) return t("kd_h+",name,k,kill,d);
                 else return t("kd_h-",name,k,d);
             }
                 

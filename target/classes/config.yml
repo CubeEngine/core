@@ -1,3 +1,16 @@
 debug: true
 cubewar:
   language: de
+  ranks:
+    Vagabund:
+      deathmodifier: 1
+      killmodifier: 1
+    Bandit:
+      deathmodifier: 2
+      killmodifier: 2
+    Söldner:
+      deathmodifier: 4
+      killmodifier: 4
+    Gladiator:
+      deathmodifier: 8
+      killmodifier: 8
