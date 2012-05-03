@@ -1,0 +1,19 @@
+name: CubeWar
+version: "${project.version}"
+main: de.cubeisland.AuctionHouse.AuctionHouse
+commands:
+  auctionhouse:
+    description: "This is the base command of CubeWar"
+    usage: "/<command> <action>"
+    aliases:
+      - cw
+depend:
+database: false
+website: "http://cubeisland.de/"
+description: ""
+authors:
+  - "Faithcaio"
+
+permissions:
+  cubewar.*:
+    description: ""
