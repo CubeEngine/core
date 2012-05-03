@@ -1,8 +1,9 @@
 package de.cubeisland.CubeWar;
 
+import static de.cubeisland.CubeWar.CubeWar.t;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.Material;
+import org.bukkit.Effect;
 import org.bukkit.entity.Player;
 
 /**
@@ -25,18 +26,48 @@ public class Heroes {
         if (killer.equals(killed))
         {
             //Suicide ?
-            killerPlayer.sendMessage("SELFOWNED!");
+            killerPlayer.sendMessage(t("selfown"));
+            killed.die();
+            killerPlayer.playEffect(killerPlayer.getLocation(), Effect.POTION_BREAK, 0);
         }
-        killerPlayer.sendMessage("You killed "+getHeroKD(killed));
-        killedPlayer.sendMessage("You got killed by "+getHeroKD(killer));
-        killer.kill(killed);
-        killed.die();
+        else
+        {
+            killerPlayer.sendMessage(t("killer",getHeroKD(killed, 1)));
+            killedPlayer.sendMessage(t("killed",getHeroKD(killer,-1)));
+            killer.kill(killed);
+            killed.die();
+        }
     }
     
-    public static String getHeroKD(Hero hero)
+    public static String getHeroKD(Hero hero, int kill)
     {
-        String out = hero.getName()+"("+hero.getKills()+":"+hero.getDeath()+")";
-        return out;
+        String name = hero.getName();
+        int k = hero.getKills();
+        int d = hero.getDeath();  
+        if (kill==0)
+        {
+            return t("kd",name,k,d);
+        }
+        switch (hero.getMode())
+        {
+            case NORMAL:
+            {
+                if (kill > 0) return t("kd_n+",name,k,d);
+                else return t("kd_n-",name,k,d);
+            }
+            case KILLRESET:
+            {
+                if (kill > 0) return t("kd_kr+",name,k,d);
+                else return t("kd_kr-",name,k,d);
+            }
+            case HIGHLANDER:  
+            {
+                if (kill > 0) return t("kd_h-",name,k,d);
+                else return t("kd_h-",name,k,d);
+            }
+                
+        }
+        return "#ERROR while getting KD";
     }
     
     private static Hero getHero(Player hero)

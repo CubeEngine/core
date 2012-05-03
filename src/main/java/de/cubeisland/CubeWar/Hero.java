@@ -80,4 +80,9 @@ public class Hero {
     {
         return this.player.getName();
     }
+    
+    public Mode getMode()
+    {
+        return this.mode;
+    }
 }
