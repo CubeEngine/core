@@ -1,6 +1,7 @@
 package de.cubeisland.CubeWar;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
 /**
@@ -15,32 +16,40 @@ public class Hero {
     private int death = 0;
     private int kills = 0;
     private int killpoints = 0;
-    private Mode mode = Mode.NORMAL;
-    private Rank rank = config.cubewar_ranks.get(0);
+    private PlayerMode mode = PlayerMode.NORMAL;
+    private Rank rank;
     
     public Hero(Player player) 
     {
         this.player = player;
-        rank = rank.newRank(this);
+        rank = config.cubewar_ranks.get(0);
     }
     
     public int kill(Hero hero)
     {
         this.killpoints += hero.getRank().getKmod();
+        this.rank = this.rank.newRank(this);
         return this.kill_kd(hero);
+    }
+    
+    public void kill(Monster monster)
+    {
+        //TODO unterscheidung KP in config wenn nicht def +1 kill -0 death
+        this.killpoints += 1;
+        this.rank = this.rank.newRank(this);
     }
     
     private int kill_kd(Hero hero)
     {
-        if (mode.equals(Mode.NORMAL))
+        if (mode.equals(PlayerMode.NORMAL))
         {
             return ++this.kills;
         }
-        else if (mode.equals(Mode.KILLRESET))
+        else if (mode.equals(PlayerMode.KILLRESET))
         {
             return ++this.kills;
         }
-        else if (mode.equals(Mode.HIGHLANDER))
+        else if (mode.equals(PlayerMode.HIGHLANDER))
         {
             this.kills += hero.getKills();
             return this.kills;
@@ -51,21 +60,24 @@ public class Hero {
     public int die()
     {
         this.killpoints -= this.rank.getDmod();
+        if (this.killpoints < config.killpoint_min) this.killpoints = config.killpoint_min;
+        this.rank = this.rank.newRank(this);
         return this.die_kd();
+                    
     }
     
     private int die_kd()
     {
-        if (mode.equals(Mode.NORMAL))
+        if (mode.equals(PlayerMode.NORMAL))
         {
             return ++this.death;
         }
-        else if (mode.equals(Mode.KILLRESET))
+        else if (mode.equals(PlayerMode.KILLRESET))
         {
             this.kills = 0;
             return ++this.death;
         }
-        else if (mode.equals(Mode.HIGHLANDER))
+        else if (mode.equals(PlayerMode.HIGHLANDER))
         {
             this.kills = 0;
             return ++this.death;
@@ -98,7 +110,7 @@ public class Hero {
         return this.player.getName();
     }
     
-    public Mode getMode()
+    public PlayerMode getMode()
     {
         return this.mode;
     }

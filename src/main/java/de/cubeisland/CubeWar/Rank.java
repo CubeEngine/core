@@ -6,8 +6,6 @@ package de.cubeisland.CubeWar;
  */
 public class Rank {
 
-    private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
-    
     private String name;
     private int killmodifier;
     private int deathmodifier;
@@ -23,6 +21,7 @@ public class Rank {
     
     public Rank newRank(Hero hero)
     {
+        final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
         Integer kp = null;
         for (int i = hero.getKp();kp==null;--i)
         {

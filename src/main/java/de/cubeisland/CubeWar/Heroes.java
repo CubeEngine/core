@@ -4,6 +4,8 @@ import static de.cubeisland.CubeWar.CubeWar.t;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Effect;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
 /**
@@ -13,6 +15,8 @@ import org.bukkit.entity.Player;
 public class Heroes {
 
     private static Map<Player,Hero> heroes= new HashMap<Player,Hero>();
+
+
     
     public Heroes() 
     {
@@ -32,48 +36,53 @@ public class Heroes {
         }
         else
         {
-            if (killer.getMode().equals(Mode.HIGHLANDER))
-                killerPlayer.sendMessage(t("killer",getHeroKD(killed, killed.getKills()+1)));
+            if (killer.getMode().equals(PlayerMode.HIGHLANDER))
+                killerPlayer.sendMessage(t("killer",getHeroKD(killed, killed, killed.getKills()+1)));
             else
-                killerPlayer.sendMessage(t("killer",getHeroKD(killed, 1)));
-            killedPlayer.sendMessage(t("killed",getHeroKD(killer,-1)));
+                killerPlayer.sendMessage(t("killer",getHeroKD(killed, killed, 1)));
+            killedPlayer.sendMessage(t("killed",getHeroKD(killer, killed, -1)));
             killer.kill(killed);
             killed.die();
         }
     }
     
-    public static String getHeroKD(Hero hero, int kill)
+    public static void kill(Player killerPlayer, Monster monster)
+    {
+        Hero killer = getHero(killerPlayer);
+        killer.kill(monster);           
+    }
+    
+    public static String getHeroKD(Hero hero, Hero killed, int kill)
     {
         String name = hero.getName();
         int k = hero.getKills();
         int d = hero.getDeath();  
         if (kill==0)
         {
-            return t("kd",name,k,d);
+            return t("kd",hero.getRank().getName(),name,k,d,hero.getKp());
         }
         switch (hero.getMode())
         {
             case NORMAL:
             {
-                if (kill > 0) return t("kd_n+",name,k,d);
-                else return t("kd_n-",name,k,d);
+                if (kill > 0) return t("kds-",hero.getRank().getName(),name,t("kd_n-",k,d),hero.getKp(),hero.getRank().getDmod());
+                else return t("kds+",hero.getRank().getName(),name,t("kd_n+",k,d),hero.getKp(),killed.getRank().getKmod());
             }
             case KILLRESET:
             {
-                if (kill > 0) return t("kd_kr+",name,k,d);
-                else return t("kd_kr-",name,k,d);
+                if (kill > 0) return t("kds-",hero.getRank().getName(),name,t("kd_kr-",k,d),hero.getKp(),hero.getRank().getDmod());
+                else return t("kds+",hero.getRank().getName(),name,t("kd_kr+",k,d),hero.getKp(),killed.getRank().getKmod());
             }
             case HIGHLANDER:  
             {
-                if (kill > 0) return t("kd_h+",name,k,kill,d);
-                else return t("kd_h-",name,k,d);
+                if (kill > 0) return t("kds-",hero.getRank().getName(),name,t("kd_h-",k,d),hero.getKp(),hero.getRank().getKmod());
+                else return t("kds+",hero.getRank().getName(),name,t("kd_h+",k,d),hero.getKp(),killed.getRank().getKmod());
             }
-                
         }
         return "#ERROR while getting KD";
     }
     
-    private static Hero getHero(Player hero)
+    public static Hero getHero(Player hero)
     {
         if (heroes.containsKey(hero))
             return heroes.get(hero);

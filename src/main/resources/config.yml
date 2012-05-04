@@ -3,42 +3,199 @@ cubewar:
   language: de
   ranks:
     Wegelagerer:
-      deathmodifier: 1
-      killmodifier: 1
-      killpointlimit: -10
+      deathmodifier: 45
+      killmodifier: 50
+      killpointlimit: -100
     Vagabund:
-      deathmodifier: 1
-      killmodifier: 1
+      deathmodifier: 45
+      killmodifier: 50
       killpointlimit: 0
     Schläger:
-      deathmodifier: 2
-      killmodifier: 2
-      killpointlimit: 10
-    Bandit:
-      deathmodifier: 5
-      killmodifier: 5
-      killpointlimit: 50
-    Plünderer:
-      deathmodifier: 10
-      killmodifier: 10
-      killpointlimit: 100
-    Söldner:
-      deathmodifier: 20
-      killmodifier: 20
-      killpointlimit: 200
-    Berserker:
-      deathmodifier: 50
-      killmodifier: 50
-      killpointlimit: 500
-    Gladiator:
-      deathmodifier: 100
+      deathmodifier: 90
       killmodifier: 100
-      killpointlimit: 1000
+      killpointlimit: 250
+    Bandit:
+      deathmodifier: 225
+      killmodifier: 250
+      killpointlimit: 600
+    Plünderer:
+      deathmodifier: 540
+      killmodifier: 600
+      killpointlimit: 1500
+    Söldner:
+      deathmodifier: 1350
+      killmodifier: 1500
+      killpointlimit: 3500
+    Berserker:
+      deathmodifier: 3150
+      killmodifier: 3500
+      killpointlimit: 8000
+    Gladiator:
+      deathmodifier: 7200
+      killmodifier: 8000
+      killpointlimit: 20000
     Held:
-      deathmodifier: 500
-      killmodifier: 500
-      killpointlimit: 5000
+      deathmodifier: 18000
+      killmodifier: 20000
+      killpointlimit: 100000
   killpoint:
-     min: -10
-     max: 5555
+     min: -100
+     max: 200000
+  chat:
+    useCWChat: false
+    tagreplace: [CWTEAM]
+  area:
+    safezone:
+      pvp:
+        PvP: false
+        damage: false 
+        friendlyfire: false
+        spawnprotectseconds: 0
+      monster: 
+        spawn: false
+        damage: false
+      build:
+        place: false
+        destroy: false
+      use:
+        fire: false
+        lava: false
+        water: false
+      power:
+        powerloss: false
+        powergain: true
+      denycommands:
+        - killallandeverything
+    warland:
+      pvp:
+        PvP: true
+        damage: true
+        friendlyfire: true
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: true
+      use:
+        fire: true
+        lava: false
+        water: false
+      power:
+        powerloss: true
+        powergain: true
+      denycommands:
+        - home
+        - sethome
+        - spawn
+        - tphere
+        - tp
+        - warp
+    wildland:
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: false
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: false
+      use:
+        fire: false
+        lava: false
+        water: false
+      power:
+        powerloss: true
+        powergain: true
+      denycommands:
+        - killallandeverything
+    team_default:
+      name:
+        tag: '&6TAG'
+        description: 'Default Team &6change me!&f'
+      economy:
+        bank: false
+        startmoney: 0
+      power:
+        permanentpower: NULL
+        powerboost: 0
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: false
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: true
+        destroy: false
+      protect:
+        - DISPENSER
+        - CHEST
+        - FURNACE
+        - BURNING_FURNACE
+        - WOODEN_DOOR
+        - JUKEBOX
+        - DIODE_BLOCK_OFF
+        - DIODE_BLOCK_ON
+        - TRAP_DOOR
+        - FENCE_GATE
+        - ENCHANTMENT_TABLE
+        - BREWING_STAND
+        - CAULDRON
+      use:
+        fire: true
+        lava: false
+        water: false
+      power:
+        powerloss: true
+        powergain: true
+    arena_default:
+      name:
+        tag: '&6TAG'
+        description: 'Default Team &6change me!&f'
+      economy:
+        bank: false
+        startmoney: 0
+      power:
+        permanentpower: false
+        permpower: 0
+        powerboost: 0
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: false
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: true
+        destroy: false
+      protect:
+        - DISPENSER
+        - CHEST
+        - FURNACE
+        - BURNING_FURNACE
+        - WOODEN_DOOR
+        - JUKEBOX
+        - DIODE_BLOCK_OFF
+        - DIODE_BLOCK_ON
+        - TRAP_DOOR
+        - FENCE_GATE
+        - ENCHANTMENT_TABLE
+        - BREWING_STAND
+        - CAULDRON
+      use:
+        fire: true
+        lava: false
+        water: false
+      power:
+        powerloss: true
+        powergain: true  
    
