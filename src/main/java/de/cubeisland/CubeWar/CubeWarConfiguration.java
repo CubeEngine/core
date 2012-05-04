@@ -29,9 +29,7 @@ public class CubeWarConfiguration
         }
         this.killpoint_min = config.getInt("cubewar.killpoint.min");
         this.killpoint_max = config.getInt("cubewar.killpoint.max");
-        AreaControl.createIntstance(config);
-
         
-        
+        AreaControl.createInstance(config.getConfigurationSection("cubewar.area"));
     }
 }

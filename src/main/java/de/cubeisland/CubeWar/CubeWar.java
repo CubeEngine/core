@@ -1,8 +1,6 @@
 package de.cubeisland.CubeWar;
 
-import de.cubeisland.CubeWar.Commands.BaseCommand;
-import de.cubeisland.CubeWar.Commands.HelpCommand;
-import de.cubeisland.libMinecraft.Translation;
+import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,12 +56,13 @@ public class CubeWar extends JavaPlugin
 
 
         this.pm.registerEvents(new CubeWarListener(), this);
-        
+        /*
         BaseCommand baseCommand = new BaseCommand(this);
         baseCommand
             .registerSubCommand(new         HelpCommand(baseCommand))
         .setDefaultCommand("help");
         this.getCommand("cubewar").setExecutor(baseCommand);
+        */
     }
     
     @Override
