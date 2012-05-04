@@ -35,4 +35,11 @@ public class Area_Team extends Area{
                 config.getInt    ("cubewar.area.team_default.power.powerboost")
             );
     }
+    
+    public int registerDB()
+    {
+        //TODO DB...
+        //TODO get ID-Key in DB
+        return 1;
+    }
 }

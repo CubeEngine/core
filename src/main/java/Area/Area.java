@@ -78,4 +78,19 @@ public class Area {
         
         this.id = id;
     }
+    
+    @Override
+    public Area clone()
+    {
+        return new Area(this.id, this.type, this.name,
+                        this.pvp_on, this.pvp_damage,this.pvp_friendlyfire, this.pvp_spawnprotect,
+                        this.monster_spawn, this.monster_damage,
+                        this.build_place, this.build_destroy,
+                        this.use_fire, this.use_lava, this.use_water,
+                        this.power_loss, this.power_gain,
+                        this.denycommands, this.protect,
+                        this.tag, this.description,
+                        this.economy_bank,
+                        this.power_perm, this.power_boost);
+    }
 }
