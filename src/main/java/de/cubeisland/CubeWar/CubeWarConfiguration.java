@@ -1,5 +1,6 @@
 package de.cubeisland.CubeWar;
 
+import Hero.Rank;
 import Groups.GroupControl;
 import java.util.HashMap;
 import java.util.Map;

@@ -2,10 +2,9 @@ package de.cubeisland.CubeWar.Commands;
 
 import Groups.Group;
 import Groups.GroupControl;
-import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
-import de.cubeisland.CubeWar.Hero;
-import de.cubeisland.CubeWar.Heroes;
+import Hero.Hero;
+import Hero.Heroes;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import de.cubeisland.libMinecraft.command.CommandPermission;
@@ -24,16 +23,27 @@ public class GroupCommands {
     
     }
     
-    @Command(desc = "Creates a new Team", usage = "<TeamTag> <TeamName>", aliases = {"ct"})
+    @Command(desc = "Creates a new Team", usage = "<TeamTag> <TeamName>", aliases = {"ct","c"})
     @CommandPermission
     public boolean createTeam(CommandSender sender, CommandArgs args)
     {
         args.size();
         if (args.size() > 1)
         {
-            Group team = groupcontrol.newTeam(args.getString(0), args.getString(1));
+            String tag = args.getString(0);
+            String name = args.getString(1);
+            if (!groupcontrol.freeTag(tag))
+            {
+                //TODO msg Tag already used
+                return true;
+            }
+            for (int i = 2; i < args.size();++i)
+            {
+                name += " "+args.getString(i); 
+            }
+            Group team = groupcontrol.newTeam(tag, name);
             team.addAdmin(Heroes.getHero(sender));
-            sender.sendMessage(t("i")+t("ct",team.getName(),team.getTag()));
+            sender.sendMessage(t("i")+t("ct", tag, name));
 
             return true;
         }
@@ -47,15 +57,26 @@ public class GroupCommands {
     {
         if (args.size() > 1)
         {
-            Group arena = groupcontrol.newArena(args.getString(0), args.getString(1));
-            sender.sendMessage(t("i")+t("ca",arena.getName(),arena.getTag()));
+            String tag = args.getString(0);
+            String name = args.getString(1);
+            if (!groupcontrol.freeTag(tag))
+            {
+                //TODO msg Tag already used
+                return true;
+            }
+            for (int i = 2; i < args.size();++i)
+            {
+                name += " "+args.getString(i); 
+            }
+            groupcontrol.newArena(tag, name);
+            sender.sendMessage(t("i")+t("ca", tag, name));
             return true;
         }
         else
             return false;
     }
     
-    @Command(desc = "Modifies a Team", usage = "[#TeamTag] <Key> <Value>", aliases = {"mt"})
+    @Command(desc = "Modifies a Team", usage = "[#TeamTag] <Key> <Value>", aliases = {"mt","m"})
     @CommandPermission
     public boolean modifyTeam(CommandSender sender, CommandArgs args)
     {
@@ -111,7 +132,7 @@ public class GroupCommands {
                         }
                         if (groupcontrol.setGroupValue(area.getId(), args.getString(0), val))
                         {
-                            sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
+                            sender.sendMessage(t("i")+t("m_keyset",args.getString(0),val));
                             return true;
                         }
                         else
@@ -160,24 +181,10 @@ public class GroupCommands {
         }
     }
     
-    @Command(desc = "Toggles Admin State of a Player", usage = "[TeamTag] <PlayerName>", aliases = {"admin","ta"})
+    @Command(desc = "Toggles Admin State of a Player", usage = "<PlayerName>", aliases = {"admin","ta"})
     @CommandPermission
     public boolean teamAdmin(CommandSender sender, CommandArgs args)
     {
-        if (args.size() > 1)
-        {
-            Integer areaId = groupcontrol.getTeamGroup(args.getString(0));
-            if (areaId == null)
-            {
-                sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
-                return true;
-            }
-            Hero hero = Heroes.getHero(args.getString(1));
-            Group area = groupcontrol.getGroup(areaId);
-            return this.toggleTeamPos(sender, hero, area, "admin");
-
-        }
-        else
         if (args.size() > 0)    
         {
             Hero hero = Heroes.getHero(args.getString(0));
@@ -187,24 +194,10 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Toggles Mod State of a Player", usage = "[TeamTag] <PlayerName>", aliases = {"mod","tm"})
+    @Command(desc = "Toggles Mod State of a Player", usage = "<PlayerName>", aliases = {"mod","tm"})
     @CommandPermission
     public boolean teamMod(CommandSender sender, CommandArgs args)
     {
-        if (args.size() > 1)
-        {
-            Integer areaId = groupcontrol.getTeamGroup(args.getString(0));
-            if (areaId == null)
-            {
-                sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
-                return true;
-            }
-            Hero hero = Heroes.getHero(args.getString(1));
-            Group area = groupcontrol.getGroup(areaId);
-            return this.toggleTeamPos(sender, hero, area, "mod");
-
-        }
-        else
         if (args.size() > 0)    
         {
             Hero hero = Heroes.getHero(args.getString(0));
@@ -233,7 +226,7 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Leaves a team", usage = "[TeamTag]")
+    @Command(desc = "Leaves a team", usage = "")
     @CommandPermission
     public boolean leave(CommandSender sender, CommandArgs args)
     {
@@ -341,7 +334,7 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Propose Alliance to this faction", usage = "<TEAMTAG> [TEAMTAG]")
+    @Command(desc = "Propose Alliance to this faction", usage = "<TeamTag> [TeamTag]")
     @CommandPermission
     public boolean ally(CommandSender sender, CommandArgs args)
     {
@@ -377,7 +370,7 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Make an other Team to your enemy", usage = "<TEAMTAG> [TEAMTAG]")
+    @Command(desc = "Make an other Team to your enemy", usage = "<TeamTag> [TeamTag]")
     @CommandPermission
     public boolean enemy(CommandSender sender, CommandArgs args)
     {
@@ -415,7 +408,7 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Set TeamRelation to Neutral", usage = "<TEAMTAG> [TEAMTAG]")
+    @Command(desc = "Set TeamRelation to Neutral", usage = "<TeamTag> [TeamTag]")
     @CommandPermission
     public boolean neutral(CommandSender sender, CommandArgs args)
     {

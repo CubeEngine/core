@@ -1,14 +1,16 @@
 package Groups;
 
+import Hero.Hero;
+import Hero.Heroes;
 import de.cubeisland.CubeWar.CubeWar;
-import de.cubeisland.CubeWar.Hero;
-import de.cubeisland.CubeWar.Heroes;
+import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -423,7 +425,7 @@ public class Group implements Cloneable{
     
     public boolean isneutral(Group g)
     {
-        return ((!enemy.contains(g))&&(!ally.contains(g)));
+        return (!(enemy.contains(g)||ally.contains(g)));
     }
     
     public void sendToTeam(String msg)
@@ -444,5 +446,80 @@ public class Group implements Cloneable{
             if (theally.isAlly(this))
                 theally.sendToTeam(msg);
         }
+    }
+    
+    public void sendInfo(CommandSender sender)
+    {
+        sender.sendMessage(t("g_01",this.getTag()));
+        sender.sendMessage(t("g_02",this.getName()));
+        sender.sendMessage(t("g_03",this.getDescription()));
+        sender.sendMessage(t("g_04",GroupControl.get().getRank(this),
+                           t("g_05",this.power_used,this.power_max_used,this.power_max)));
+        Group team = Heroes.getHero(sender).getTeam();
+        if ((team.equals(this))||(team.isAlly(this) && this.isAlly(team)))
+            sender.sendMessage(t("g_06"));
+        else
+            sender.sendMessage(t("g_07"));
+        String pvp;
+        if (this.bits.isset(PVP_ON))
+        {
+            if (this.bits.isset(PVP_FRIENDLYFIRE))
+                pvp = t("g_081");
+            else
+                pvp = t("g_083");
+        }
+        else
+        {
+            pvp = t("g_082");
+        }
+        sender.sendMessage(pvp);
+        String allies = "";
+        for (Group group : this.ally)
+        {
+            allies += ", "+group.getTag();
+        }
+        if (!allies.isEmpty())
+            sender.sendMessage(t("g_09",allies.substring(2)));
+        String enemies = "";
+        for (Group group : this.enemy)
+        {
+            enemies += ", "+group.getTag();
+        }
+        if (!enemies.isEmpty())
+            sender.sendMessage(t("g_10",enemies.substring(2)));
+        if (this.bits.isset(ECONOMY_BANK))
+            sender.sendMessage(t("g_11","NO MONEY HAHA"));//TODO Vault dependency blah blubb
+        List<Hero> list = new ArrayList<Hero>();
+        list.addAll(0,this.admin);
+        list.addAll(0,this.mod);
+        list.addAll(0,this.user);
+        String onplayer = "";
+        List<Hero> onlist = new ArrayList<Hero>();
+        for (Hero player : list)
+        {
+            if (player.getPlayer()!=null)
+            {
+                onplayer += ", "+player.getName();
+                onlist.add(player);
+            }
+        }
+        if (!onplayer.isEmpty())
+            sender.sendMessage(t("g_12",onplayer.substring(2)));
+        list.removeAll(onlist);
+        String offplayer = "";
+        for (Hero player : list)
+        {
+            if (player.getPlayer()!=null)
+            {
+                offplayer += ", "+player.getName();
+            }
+        }
+        if (!offplayer.isEmpty())
+            sender.sendMessage(t("g_13",offplayer.substring(2)));
+        //TODO
+        sender.sendMessage(t("g_-14"));
+            
+        
+        
     }
 }

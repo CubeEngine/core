@@ -3,6 +3,7 @@ package de.cubeisland.CubeWar;
 import Groups.Group;
 import de.cubeisland.CubeWar.Commands.ClaimCommands;
 import de.cubeisland.CubeWar.Commands.GroupCommands;
+import de.cubeisland.CubeWar.Commands.HeroCommands;
 import de.cubeisland.libMinecraft.translation.Translation;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
@@ -65,7 +66,8 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
 
         this.baseCommand = new BaseCommand(this, new Permission(PERMISSION_BASE + "+",PermissionDefault.OP), PERMISSION_BASE);
         this.baseCommand.registerCommands(new ClaimCommands())
-                        .registerCommands(new GroupCommands());
+                        .registerCommands(new GroupCommands())
+                        .registerCommands(new HeroCommands());
         
         this.getCommand("cubewar").setExecutor(baseCommand);
         

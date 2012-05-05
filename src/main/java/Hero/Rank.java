@@ -1,4 +1,8 @@
-package de.cubeisland.CubeWar;
+package Hero;
+
+import Hero.Hero;
+import de.cubeisland.CubeWar.CubeWar;
+import de.cubeisland.CubeWar.CubeWarConfiguration;
 
 /**
  *

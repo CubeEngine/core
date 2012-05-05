@@ -1,5 +1,6 @@
 package de.cubeisland.CubeWar;
 
+import Hero.Heroes;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;

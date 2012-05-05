@@ -1,7 +1,11 @@
-package de.cubeisland.CubeWar;
+package Hero;
 
 import Groups.Group;
+import de.cubeisland.CubeWar.CubeWar;
+import static de.cubeisland.CubeWar.CubeWar.t;
+import de.cubeisland.CubeWar.CubeWarConfiguration;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
@@ -135,5 +139,27 @@ public class Hero {
     public Group getTeam()
     {
         return this.team;
+    }
+    
+    public String getTeamTag()
+    {
+        if (this.team != null)
+            return this.team.getTag();
+        else
+            return "none";
+    }
+    
+    public void showInfo(CommandSender sender)
+    {
+        sender.sendMessage(t("hero_01"));
+        sender.sendMessage(t("hero_02",this.getName()));
+        sender.sendMessage(t("hero_03",this.rank.getName(),this.killpoints));
+        int kd;
+        if (this.death == 0)
+            kd = 0;
+        else
+            kd = (int)(this.kills/this.death *100);
+        sender.sendMessage(t("hero_04",this.kills,this.death,String.valueOf(kd/100)));
+        sender.sendMessage(t("hero_05",this.getTeamTag()));
     }
 }

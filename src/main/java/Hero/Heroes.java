@@ -1,5 +1,6 @@
-package de.cubeisland.CubeWar;
+package Hero;
 
+import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import java.util.ArrayList;
 import java.util.HashMap;

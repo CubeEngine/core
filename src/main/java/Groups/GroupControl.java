@@ -164,4 +164,16 @@ public class GroupControl {
         }
         return null;
     }
+
+    public boolean freeTag(String tag)
+    {
+        if (this.getGroup(tag)==null) return true;
+        else return false;
+    }
+    
+    public int getRank(Group gruop)
+    {
+        return 1;
+        //TODO ausrechnen
+    }
 }
