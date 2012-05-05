@@ -1,5 +1,6 @@
 package Area;
 
+import de.cubeisland.CubeWar.Hero;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
 import java.util.HashMap;
 import java.util.List;
@@ -28,15 +29,22 @@ public class Area implements Cloneable{
     
     private BitMask bits;
     private AreaType type;
+    private Map<String,Integer> intval = new HashMap<String,Integer>();
+    private Map<String,String> stringval = new HashMap<String,String>();
+    private Map<String,List> listval = new HashMap<String,List>();
+    //private Map<String,Object> areavalues = new HashMap<String,Object>();
     
-    private int pvp_spawnprotect;//in seconds
+    private int power_used;
+    private int power_max;
+    private int power_max_used;
     
-    private Map<String,Object> areavalues = new HashMap<String,Object>();
+    private List<Hero> admin;
+    private List<Hero> mod;
+    private List<Hero> user;
 
     public Area() 
     {
         this.bits = new BitMask();
-        areavalues.put("bits", this.bits);
     }
     
     public void setBit(int Bit)
@@ -56,7 +64,7 @@ public class Area implements Cloneable{
     
     public boolean setValue(String key, String value)
     {
-        if (areavalues.get(key) instanceof Integer)
+        if (intval.containsKey(key.toLowerCase()))
         {
             try
             {
@@ -64,11 +72,10 @@ public class Area implements Cloneable{
                 return this.setIntegerValue(key, intval);
             }
             catch (NumberFormatException ex) {return false;}
-        }
-            
-        if (areavalues.get(key) instanceof String)
+        }    
+        if (stringval.containsKey(key.toLowerCase()))
             return this.setStringValue(key, value);
-        if (areavalues.get(key) instanceof List)
+        if (listval.containsKey(key.toLowerCase()))
             return this.setListValue(key, value);
     
        return this.setOtherValue(key, value);
@@ -77,33 +84,44 @@ public class Area implements Cloneable{
     
     public boolean setStringValue(String key, String value)
     {
-        areavalues.put(key, value);
+        stringval.put(key, value);
         return true;
     }
     
     public boolean setIntegerValue(String key, Integer value)
     {
-        areavalues.put(key, value);
+        intval.put(key, value);
         return true;
     }
     
     public boolean setListValue(String key, String value)
-    {//TODO geht nicht :(
+    {
         if (key.equalsIgnoreCase("denycommands"))
-            areavalues.put(key, value);
+        {
+            List<String> list = listval.get(key);
+            if (value.charAt(0)=='-')
+                list.remove(value.substring(1));
+            else
+                list.add(value);
+            listval.put(key, list);
+            return true;
+        }
         if (key.equalsIgnoreCase("protect"))
         {
-            if (Material.matchMaterial(value)!=null)
-                areavalues.put(key, Material.matchMaterial(value));
+            List<Material> list = listval.get(key);
+            if (value.charAt(0)=='-')
+                list.remove(Material.matchMaterial(value.substring(1)));
             else
-                return false;
+                list.add(Material.matchMaterial(value));
+            listval.put(key, list);
+            return true;
         }
-        return true;
+        return false;
     }
     
     public boolean setListValue(String key, List value)
     {
-        areavalues.put(key, value);
+        listval.put(key, value);
         return true;
     }
     
@@ -148,7 +166,14 @@ public class Area implements Cloneable{
     
     public Object getValue(String key)
     {
-        return areavalues.get(key);
+        
+        if (intval.containsKey(key))
+            return intval.get(key);
+        if (stringval.containsKey(key))
+            return stringval.get(key);
+        if (listval.containsKey(key))
+            return listval.get(key);
+        return null;
     }
     
     @Override
@@ -162,6 +187,72 @@ public class Area implements Cloneable{
         {
             return null;
         }
+    }
+    
+    public void addAdmin(Hero hero)
+    {
+        if (hero == null) return;
+        this.admin.add(hero);
+        this.mod.remove(hero);
+        this.user.remove(hero);
+        hero.setTeam(this);
+    }
+    
+    public void delAdmin(Hero hero)
+    {
+        this.admin.remove(hero);
+        hero.setTeam(null);
+    }
+        
+    public boolean isAdmin(Hero hero)
+    {
+        return this.admin.contains(hero);
+    }
+    
+    public void addMod(Hero hero)
+    {
+        if (hero == null) return;
+        this.mod.add(hero);
+        this.admin.remove(hero);
+        this.user.remove(hero);
+        hero.setTeam(this);
+    }
+    
+    public void delMod(Hero hero)
+    {
+        this.mod.remove(hero);
+        this.admin.remove(hero);
+        hero.setTeam(null);
+    }
+        
+    public boolean isMod(Hero hero)
+    {
+        if (this.admin.contains(hero)) return true;
+        return this.mod.contains(hero);
+    }
+    
+    public void addUser(Hero hero)
+    {
+        if (hero == null) return;
+        this.user.add(hero);
+        this.mod.remove(hero);
+        this.admin.remove(hero);
+        hero.setTeam(this);
+    }
+    
+    public void delUser(Hero hero)
+    {
+        this.user.remove(hero);
+        this.mod.remove(hero);
+        this.admin.remove(hero);
+        hero.setTeam(null);
+    }
+        
+    public boolean isUser(Hero hero)
+    {
+        if (this.admin.contains(hero)) return true;
+        if (this.mod.contains(hero)) return true;
+        return this.user.contains(hero);
     }
 
     /**
@@ -193,7 +284,7 @@ public class Area implements Cloneable{
      */
     public int getPvp_spawnprotect()
     {
-        return pvp_spawnprotect;
+        return (Integer)this.getValue("pvp_spawnprotect");
     }
 
     /**
@@ -249,7 +340,7 @@ public class Area implements Cloneable{
      */
     public Integer getPower_max()
     {
-        return (Integer)this.getValue("power_max");
+        return this.power_max;
     }
 
     /**
@@ -257,7 +348,7 @@ public class Area implements Cloneable{
      */
     public Integer getPower_max_used()
     {
-        return (Integer)this.getValue("power_max_used");
+        return this.power_max_used;
     }
 
     /**
@@ -265,7 +356,7 @@ public class Area implements Cloneable{
      */
     public Integer getPower_used()
     {
-        return (Integer)this.getValue("power_used");
+        return this.power_used;
     }
 
     /**

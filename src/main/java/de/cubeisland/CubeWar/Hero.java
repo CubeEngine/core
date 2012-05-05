@@ -1,5 +1,6 @@
 package de.cubeisland.CubeWar;
 
+import Area.Area;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -18,8 +19,9 @@ public class Hero {
     private int killpoints = 0;
     private PlayerMode mode = PlayerMode.NORMAL;
     private Rank rank;
+    private Area team;
     
-    public Hero(Player player) 
+    public Hero(OfflinePlayer player) 
     {
         this.player = player;
         rank = config.cubewar_ranks.get(0);
@@ -123,5 +125,15 @@ public class Hero {
     public Rank getRank()
     {
         return this.rank;
+    }
+    
+    public void setTeam(Area team)
+    {
+        this.team = team;
+    }
+    
+    public Area getTeam()
+    {
+        return this.team;
     }
 }

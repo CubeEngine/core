@@ -71,7 +71,7 @@ public class AreaControl {
             if (section.getBoolean("pvp.PvP")) newArea.setBit(Area.PVP_ON);
             if (section.getBoolean("pvp.damage")) newArea.setBit(Area.PVP_DAMAGE);
             if (section.getBoolean("pvp.friendlyfire")) newArea.setBit(Area.PVP_FRIENDLYFIRE);
-            newArea.setIntegerValue("Pvp_spawnprotect", section.getInt("pvp.spawnprotectseconds"));
+            newArea.setIntegerValue("pvp_spawnprotect", section.getInt("pvp.spawnprotectseconds"));
             if (section.getBoolean("monster.spawn")) newArea.setBit(Area.MONSTER_SPAWN);
             if (section.getBoolean("monster.damage")) newArea.setBit(Area.MONSTER_DAMAGE);
             if (section.getBoolean("build.destroy")) newArea.setBit(Area.BUILD_DESTROY);
@@ -148,6 +148,11 @@ public class AreaControl {
     {
         Area area = areas.get(id);
         return area.setValue(key, value);
+    }
+    
+    public Area getArea(int id)
+    {
+        return areas.get(id);
     }
     
 }
