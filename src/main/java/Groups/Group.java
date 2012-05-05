@@ -1,7 +1,8 @@
-package Area;
+package Groups;
 
 import de.cubeisland.CubeWar.Hero;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import org.bukkit.Material;
  *
  * @author Faithcaio
  */
-public class Area implements Cloneable{
+public class Group implements Cloneable{
 
     public static final int PVP_ON = 1;
     public static final int PVP_DAMAGE = 2;
@@ -38,11 +39,14 @@ public class Area implements Cloneable{
     private int power_max;
     private int power_max_used;
     
-    private List<Hero> admin;
-    private List<Hero> mod;
-    private List<Hero> user;
+    private List<Hero> admin = new ArrayList<Hero>();
+    private List<Hero> mod = new ArrayList<Hero>();
+    private List<Hero> user = new ArrayList<Hero>();
+    
+    private List<Group> enemy = new ArrayList<Group>();
+    private List<Group> ally = new ArrayList<Group>();
 
-    public Area() 
+    public Group() 
     {
         this.bits = new BitMask();
     }
@@ -128,19 +132,19 @@ public class Area implements Cloneable{
     public boolean setOtherValue(String key, String value)
     {
         int bitkey = -1;
-        if (key.equalsIgnoreCase("PVP_ON")) bitkey = Area.PVP_ON ;
-        if (key.equalsIgnoreCase("PVP_DAMAGE")) bitkey = Area.PVP_DAMAGE ;
-        if (key.equalsIgnoreCase("PVP_FRIENDLYFIRE")) bitkey = Area.PVP_FRIENDLYFIRE ;
-        if (key.equalsIgnoreCase("MONSTER_SPAWN")) bitkey = Area.MONSTER_SPAWN ;
-        if (key.equalsIgnoreCase("MONSTER_DAMAGE")) bitkey = Area.MONSTER_DAMAGE ;
-        if (key.equalsIgnoreCase("BUILD_PLACE")) bitkey = Area.BUILD_PLACE ;
-        if (key.equalsIgnoreCase("BUILD_DESTROY")) bitkey = Area.BUILD_DESTROY ;
-        if (key.equalsIgnoreCase("USE_FIRE")) bitkey = Area.USE_FIRE ;
-        if (key.equalsIgnoreCase("USE_LAVA")) bitkey = Area.USE_LAVA ;
-        if (key.equalsIgnoreCase("USE_WATER")) bitkey = Area.USE_WATER ;
-        if (key.equalsIgnoreCase("POWER_LOSS")) bitkey = Area.POWER_LOSS ;
-        if (key.equalsIgnoreCase("POWER_GAIN")) bitkey = Area.POWER_GAIN ;
-        if (key.equalsIgnoreCase("ECONOMY_BANK")) bitkey = Area.ECONOMY_BANK ;
+        if (key.equalsIgnoreCase("PVP_ON")) bitkey = Group.PVP_ON ;
+        if (key.equalsIgnoreCase("PVP_DAMAGE")) bitkey = Group.PVP_DAMAGE ;
+        if (key.equalsIgnoreCase("PVP_FRIENDLYFIRE")) bitkey = Group.PVP_FRIENDLYFIRE ;
+        if (key.equalsIgnoreCase("MONSTER_SPAWN")) bitkey = Group.MONSTER_SPAWN ;
+        if (key.equalsIgnoreCase("MONSTER_DAMAGE")) bitkey = Group.MONSTER_DAMAGE ;
+        if (key.equalsIgnoreCase("BUILD_PLACE")) bitkey = Group.BUILD_PLACE ;
+        if (key.equalsIgnoreCase("BUILD_DESTROY")) bitkey = Group.BUILD_DESTROY ;
+        if (key.equalsIgnoreCase("USE_FIRE")) bitkey = Group.USE_FIRE ;
+        if (key.equalsIgnoreCase("USE_LAVA")) bitkey = Group.USE_LAVA ;
+        if (key.equalsIgnoreCase("USE_WATER")) bitkey = Group.USE_WATER ;
+        if (key.equalsIgnoreCase("POWER_LOSS")) bitkey = Group.POWER_LOSS ;
+        if (key.equalsIgnoreCase("POWER_GAIN")) bitkey = Group.POWER_GAIN ;
+        if (key.equalsIgnoreCase("ECONOMY_BANK")) bitkey = Group.ECONOMY_BANK ;
         if (bitkey < 0)            
             return false;
         else
@@ -177,11 +181,11 @@ public class Area implements Cloneable{
     }
     
     @Override
-    public Area clone()
+    public Group clone()
     {
         try
         {
-            return (Area)super.clone();
+            return (Group)super.clone();
         }
         catch (CloneNotSupportedException ex)
         {
@@ -365,5 +369,23 @@ public class Area implements Cloneable{
     public void setType(AreaType type)
     {
         this.type = type;
+    }
+    
+    public void setneutral(Group g)
+    {
+        this.ally.remove(g);
+        this.enemy.remove(g);
+    }
+    
+    public void setally(Group g)
+    {
+        this.ally.add(g);
+        this.enemy.remove(g);
+    }
+    
+    public void setenemy(Group g)
+    {
+        this.ally.remove(g);
+        this.enemy.add(g);
     }
 }

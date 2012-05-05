@@ -1,4 +1,4 @@
-package Area;
+package Groups;
 
 import de.cubeisland.CubeWar.Util;
 import java.util.HashMap;
@@ -9,16 +9,16 @@ import org.bukkit.configuration.ConfigurationSection;
  *
  * @author Faithcaio
  */
-public class AreaControl {
+public class GroupControl {
 
-    Map<Integer,Area> areas = new HashMap<Integer,Area>();
-    private static AreaControl instance = null;
+    Map<Integer,Group> areas = new HashMap<Integer,Group>();
+    private static GroupControl instance = null;
     
-    public AreaControl(ConfigurationSection config) 
+    public GroupControl(ConfigurationSection config) 
     {
         for (String name : config.getKeys(false))
         {
-            Area newArea = new Area();
+            Group newArea = new Group();
             ConfigurationSection section = config.getConfigurationSection(name);
             if (name.equalsIgnoreCase("safezone"))
             {
@@ -60,35 +60,35 @@ public class AreaControl {
                 newArea.setStringValue("tag", "Def_Arena");
                 newArea.setStringValue("description", "An Arena");
             }
-            if (section.getBoolean("economy.bank", false)) newArea.setBit(Area.ECONOMY_BANK);
+            if (section.getBoolean("economy.bank", false)) newArea.setBit(Group.ECONOMY_BANK);
             if (section.getBoolean("power.haspermpower"))
                 newArea.setIntegerValue("power_perm", section.getInt("power.permpower"));
             else
                 newArea.setIntegerValue("power_perm", null);
             newArea.setIntegerValue("power_boost", section.getInt("power.powerboost"));
-            if (section.getBoolean("power.powerloss")) newArea.setBit(Area.POWER_LOSS);
-            if (section.getBoolean("power.powergain")) newArea.setBit(Area.POWER_GAIN);
-            if (section.getBoolean("pvp.PvP")) newArea.setBit(Area.PVP_ON);
-            if (section.getBoolean("pvp.damage")) newArea.setBit(Area.PVP_DAMAGE);
-            if (section.getBoolean("pvp.friendlyfire")) newArea.setBit(Area.PVP_FRIENDLYFIRE);
+            if (section.getBoolean("power.powerloss")) newArea.setBit(Group.POWER_LOSS);
+            if (section.getBoolean("power.powergain")) newArea.setBit(Group.POWER_GAIN);
+            if (section.getBoolean("pvp.PvP")) newArea.setBit(Group.PVP_ON);
+            if (section.getBoolean("pvp.damage")) newArea.setBit(Group.PVP_DAMAGE);
+            if (section.getBoolean("pvp.friendlyfire")) newArea.setBit(Group.PVP_FRIENDLYFIRE);
             newArea.setIntegerValue("pvp_spawnprotect", section.getInt("pvp.spawnprotectseconds"));
-            if (section.getBoolean("monster.spawn")) newArea.setBit(Area.MONSTER_SPAWN);
-            if (section.getBoolean("monster.damage")) newArea.setBit(Area.MONSTER_DAMAGE);
-            if (section.getBoolean("build.destroy")) newArea.setBit(Area.BUILD_DESTROY);
-            if (section.getBoolean("build.place")) newArea.setBit(Area.BUILD_PLACE);
+            if (section.getBoolean("monster.spawn")) newArea.setBit(Group.MONSTER_SPAWN);
+            if (section.getBoolean("monster.damage")) newArea.setBit(Group.MONSTER_DAMAGE);
+            if (section.getBoolean("build.destroy")) newArea.setBit(Group.BUILD_DESTROY);
+            if (section.getBoolean("build.place")) newArea.setBit(Group.BUILD_PLACE);
             newArea.setListValue("protect", Util.convertListStringToMaterial(section.getStringList("protect")));
-            if (section.getBoolean("use.fire")) newArea.setBit(Area.USE_FIRE);
-            if (section.getBoolean("use.lava")) newArea.setBit(Area.USE_LAVA);
-            if (section.getBoolean("use.water")) newArea.setBit(Area.USE_WATER);
+            if (section.getBoolean("use.fire")) newArea.setBit(Group.USE_FIRE);
+            if (section.getBoolean("use.lava")) newArea.setBit(Group.USE_LAVA);
+            if (section.getBoolean("use.water")) newArea.setBit(Group.USE_WATER);
             newArea.setListValue("denycommands", section.getStringList("denycommands"));
             
             areas.put(newArea.getId(), newArea);
         }
     }
     
-    public Area newTeam(String tag, String name)
+    public Group newTeam(String tag, String name)
     {
-        Area newArea = areas.get(-1).clone();
+        Group newArea = areas.get(-1).clone();
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
         //TODO DATABASE Get ID!!!!!!!
@@ -99,9 +99,9 @@ public class AreaControl {
         return newArea;
     }
     
-    public Area newArena(String tag, String name)
+    public Group newArena(String tag, String name)
     {
-        Area newArea = areas.get(-2).clone();
+        Group newArea = areas.get(-2).clone();
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
         //TODO DATABASE Get ID!!!!!!!
@@ -114,17 +114,17 @@ public class AreaControl {
     
     public static void createInstance(ConfigurationSection config)
     {
-       instance = new AreaControl(config);
+       instance = new GroupControl(config);
     }
     
-    public static AreaControl get()
+    public static GroupControl get()
     {
         return instance;
     }
     
-    public Integer getTeamArea(String tag)
+    public Integer getTeamGroup(String tag)
     {
-        for (Area area : areas.values())
+        for (Group area : areas.values())
         {
             if (area.getTag().equalsIgnoreCase(tag))
                 if (area.getType().equals(AreaType.TEAMZONE))
@@ -133,9 +133,9 @@ public class AreaControl {
         return null;
     }
     
-    public Integer getArenaArea(String tag)
+    public Integer getArenaGroup(String tag)
     {
-        for (Area area : areas.values())
+        for (Group area : areas.values())
         {
             if (area.getTag().equalsIgnoreCase(tag))
                 if (area.getType().equals(AreaType.ARENA))
@@ -144,15 +144,24 @@ public class AreaControl {
         return null;
     }
     
-    public boolean setAreaValue(int id, String key, String value)
+    public boolean setGroupValue(int id, String key, String value)
     {
-        Area area = areas.get(id);
+        Group area = areas.get(id);
         return area.setValue(key, value);
     }
     
-    public Area getArea(int id)
+    public Group getGroup(int id)
     {
         return areas.get(id);
     }
     
+    public Group getGroup(String tag)
+    {
+        for (Group area : areas.values())
+        {
+            if (area.getTag().equalsIgnoreCase(tag))
+                return area;
+        }
+        return null;
+    }
 }

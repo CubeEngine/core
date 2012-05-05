@@ -1,6 +1,6 @@
 package de.cubeisland.CubeWar;
 
-import Area.Area;
+import Groups.Group;
 import de.cubeisland.CubeWar.Commands.ClaimCommands;
 import de.cubeisland.CubeWar.Commands.GroupCommands;
 import de.cubeisland.libMinecraft.translation.Translation;

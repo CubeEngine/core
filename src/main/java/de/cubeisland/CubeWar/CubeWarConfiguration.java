@@ -1,6 +1,6 @@
 package de.cubeisland.CubeWar;
 
-import Area.AreaControl;
+import Groups.GroupControl;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.configuration.Configuration;
@@ -30,6 +30,6 @@ public class CubeWarConfiguration
         this.killpoint_min = config.getInt("cubewar.killpoint.min");
         this.killpoint_max = config.getInt("cubewar.killpoint.max");
         
-        AreaControl.createInstance(config.getConfigurationSection("cubewar.area"));
+        GroupControl.createInstance(config.getConfigurationSection("cubewar.area"));
     }
 }
