@@ -1,12 +1,15 @@
 package Groups;
 
+import de.cubeisland.CubeWar.CubeWar;
 import de.cubeisland.CubeWar.Hero;
+import de.cubeisland.CubeWar.Heroes;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -72,8 +75,8 @@ public class Group implements Cloneable{
         {
             try
             {
-                Integer intval = Integer.valueOf(value);
-                return this.setIntegerValue(key, intval);
+                Integer intvalue = Integer.valueOf(value);
+                return this.setIntegerValue(key, intvalue);
             }
             catch (NumberFormatException ex) {return false;}
         }    
@@ -183,14 +186,33 @@ public class Group implements Cloneable{
     @Override
     public Group clone()
     {
-        try
-        {
-            return (Group)super.clone();
-        }
-        catch (CloneNotSupportedException ex)
-        {
-            return null;
-        }
+        Group group = new Group();
+        group.bits.reset();
+        group.setType(AreaType.TEAMZONE);
+        group.setIntegerValue("id", this.getId());
+        group.setStringValue("name", this.getName());
+        group.setStringValue("tag", this.getTag());
+        group.setStringValue("description", this.getDescription());
+        if (this.bits.isset(Group.ECONOMY_BANK)) group.setBit(Group.ECONOMY_BANK);
+        group.setIntegerValue("power_perm", this.getPower_perm());
+        group.setIntegerValue("power_boost", this.getPower_boost());
+        if (this.bits.isset(Group.POWER_LOSS)) group.setBit(Group.POWER_LOSS);
+        if (this.bits.isset(Group.POWER_GAIN)) group.setBit(Group.POWER_GAIN);
+        if (this.bits.isset(Group.PVP_ON)) group.setBit(Group.PVP_ON);
+        if (this.bits.isset(Group.PVP_DAMAGE)) group.setBit(Group.PVP_DAMAGE);
+        if (this.bits.isset(Group.PVP_FRIENDLYFIRE)) group.setBit(Group.PVP_FRIENDLYFIRE);
+        group.setIntegerValue("pvp_spawnprotect", this.getPvp_spawnprotect());
+        if (this.bits.isset(Group.MONSTER_SPAWN)) group.setBit(Group.MONSTER_SPAWN);
+        if (this.bits.isset(Group.MONSTER_DAMAGE)) group.setBit(Group.MONSTER_DAMAGE);
+        if (this.bits.isset(Group.BUILD_DESTROY)) group.setBit(Group.BUILD_DESTROY);
+        if (this.bits.isset(Group.BUILD_PLACE)) group.setBit(Group.BUILD_PLACE);
+        group.setListValue("protect", this.getProtect());
+        if (this.bits.isset(Group.USE_FIRE)) group.setBit(Group.USE_FIRE);
+        if (this.bits.isset(Group.USE_LAVA)) group.setBit(Group.USE_LAVA);
+        if (this.bits.isset(Group.USE_WATER)) group.setBit(Group.USE_WATER);
+        group.setListValue("denycommands", this.getDenycommands());
+        
+        return group;
     }
     
     public void addAdmin(Hero hero)
@@ -387,5 +409,40 @@ public class Group implements Cloneable{
     {
         this.ally.remove(g);
         this.enemy.add(g);
+    }
+    
+    public boolean isAlly(Group g)
+    {
+        return ally.contains(g);
+    }
+    
+    public boolean isenemy(Group g)
+    {
+        return enemy.contains(g);
+    }
+    
+    public boolean isneutral(Group g)
+    {
+        return ((!enemy.contains(g))&&(!ally.contains(g)));
+    }
+    
+    public void sendToTeam(String msg)
+    {
+        Player[] players = CubeWar.getInstance().getServer().getOnlinePlayers();
+        for (Player player : players)
+        {
+            if (this.isUser(Heroes.getOfflineHero(player)))
+                player.sendMessage(msg);
+        }
+    }
+    
+    public void sendToAlly(String msg)
+    {
+        this.sendToTeam(msg);
+        for (Group theally : this.ally)
+        {
+            if (theally.isAlly(this))
+                theally.sendToTeam(msg);
+        }
     }
 }

@@ -2,6 +2,7 @@ package de.cubeisland.CubeWar.Commands;
 
 import Groups.Group;
 import Groups.GroupControl;
+import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Hero;
 import de.cubeisland.CubeWar.Heroes;
@@ -30,9 +31,10 @@ public class GroupCommands {
         args.size();
         if (args.size() > 1)
         {
-            Group newarea = groupcontrol.newTeam(args.getString(0), args.getString(1));
-            newarea.addAdmin(Heroes.getHero(sender));
-            sender.sendMessage(t("i")+"Team TAG created!");
+            Group team = groupcontrol.newTeam(args.getString(0), args.getString(1));
+            team.addAdmin(Heroes.getHero(sender));
+            sender.sendMessage(t("i")+t("ct",team.getName(),team.getTag()));
+
             return true;
         }
         else
@@ -45,15 +47,15 @@ public class GroupCommands {
     {
         if (args.size() > 1)
         {
-            groupcontrol.newArena(args.getString(0), args.getString(1));
-            sender.sendMessage(t("i")+"Arena TAG created!");
+            Group arena = groupcontrol.newArena(args.getString(0), args.getString(1));
+            sender.sendMessage(t("i")+t("ca",arena.getName(),arena.getTag()));
             return true;
         }
         else
             return false;
     }
     
-    @Command(desc = "modifies a Team", usage = "[#TeamTag] <Key> <Value>", aliases = {"mt"})
+    @Command(desc = "Modifies a Team", usage = "[#TeamTag] <Key> <Value>", aliases = {"mt"})
     @CommandPermission
     public boolean modifyTeam(CommandSender sender, CommandArgs args)
     {
@@ -73,14 +75,14 @@ public class GroupCommands {
                         }
                         if (groupcontrol.setGroupValue(area, args.getString(1), val))
                         {
-                            sender.sendMessage(t("i")+"Key was Set!");
+                            sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
                             return true;
                         }
                         else
-                            sender.sendMessage(t("e")+"Invalid Key or Value");
+                            sender.sendMessage(t("e")+t("m_invalid"));
                     }
                     else
-                        sender.sendMessage(t("e")+"Team does not exist");
+                        sender.sendMessage(t("e")+t("m_noTeamExist"));
                 }
                 else
                     return false;
@@ -91,13 +93,13 @@ public class GroupCommands {
                 Hero hero = Heroes.getHero(sender);
                 if (hero == null)
                 {
-                    sender.sendMessage(t("e")+"Player not found!");
+                    sender.sendMessage(t("e")+t("g_noPlayer"));
                     return true;
                 }
                 Group area = hero.getTeam();
                 if (area == null)
                 {
-                    sender.sendMessage(t("e")+"You are not in a Team");
+                    sender.sendMessage(t("e")+t("m_noTeam"));
                     return true;
                 }
                 else
@@ -109,11 +111,11 @@ public class GroupCommands {
                         }
                         if (groupcontrol.setGroupValue(area.getId(), args.getString(0), val))
                         {
-                            sender.sendMessage(t("i")+"Key was Set!");
+                            sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
                             return true;
                         }
                         else
-                            sender.sendMessage(t("e")+"Invalid Key or Value");
+                            sender.sendMessage(t("e")+t("m_invalid"));
                 }
             }
             return true;
@@ -125,7 +127,7 @@ public class GroupCommands {
     }
     
     
-    @Command(desc = "modifies a Team", usage = "<ArenaTag> <Key> <Value>", aliases = {"ma"})
+    @Command(desc = "modifies an Arena", usage = "<ArenaTag> <Key> <Value>", aliases = {"ma"})
     @CommandPermission
     public boolean modifyArena(CommandSender sender, CommandArgs args)
     {
@@ -141,14 +143,14 @@ public class GroupCommands {
                 }
                 if (groupcontrol.setGroupValue(area, args.getString(1), val))
                 {
-                    sender.sendMessage(t("i")+"Key was Set!");
+                    sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
                     return true;
                 }
                 else
-                    sender.sendMessage(t("e")+"Invalid Key or Value");
+                    sender.sendMessage(t("e")+t("m_invalid"));
             }
             else
-                sender.sendMessage(t("e")+"Team does not exist");
+                sender.sendMessage(t("e")+t("m_noArenaExist"));
             
             return true;
         }
@@ -167,7 +169,7 @@ public class GroupCommands {
             Integer areaId = groupcontrol.getTeamGroup(args.getString(0));
             if (areaId == null)
             {
-                sender.sendMessage(t("e")+"TeamTag not found!");
+                sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
             Hero hero = Heroes.getHero(args.getString(1));
@@ -194,7 +196,7 @@ public class GroupCommands {
             Integer areaId = groupcontrol.getTeamGroup(args.getString(0));
             if (areaId == null)
             {
-                sender.sendMessage(t("e")+"TeamTag not found!");
+                sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
             Hero hero = Heroes.getHero(args.getString(1));
@@ -221,7 +223,7 @@ public class GroupCommands {
             Integer areaId = groupcontrol.getTeamGroup(args.getString(0));
             if (areaId == null)
             {
-                sender.sendMessage(t("e")+"TeamTag not found!");
+                sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
             Hero hero = Heroes.getHero(sender);
@@ -231,22 +233,10 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Leaves a team", usage = "<TeamTag>")
+    @Command(desc = "Leaves a team", usage = "[TeamTag]")
     @CommandPermission
     public boolean leave(CommandSender sender, CommandArgs args)
     {
-        if (args.size() > 0)
-        {
-            Integer areaId = groupcontrol.getTeamGroup(args.getString(0));
-            if (areaId == null)
-            {
-                sender.sendMessage(t("e")+"TeamTag not found!");
-                return true;
-            }
-            Hero hero = Heroes.getHero(sender);
-            Group area = groupcontrol.getGroup(areaId);
-            return this.toggleTeamPos(sender, hero, area, "userleave");
-        }
         if (args.isEmpty())
         {
             Hero hero = Heroes.getHero(sender);
@@ -272,7 +262,7 @@ public class GroupCommands {
     {
         if (hero == null)
         {
-            sender.sendMessage(t("e")+"Player not found!");
+            sender.sendMessage(t("e")+t("g_noPlayer"));
             return true;
         }
         
@@ -281,7 +271,7 @@ public class GroupCommands {
             if (area.isAdmin(hero))
             {
                 area.delAdmin(hero);
-                sender.sendMessage(t("i")+"PLAYER is no longer admin of TAG");
+                sender.sendMessage(t("i")+t("team_nolonger",hero.getName(),"admin",area.getTag()));
                 return true;
             }
             else
@@ -289,10 +279,10 @@ public class GroupCommands {
                 if (area.isUser(hero))
                 {
                     area.addAdmin(hero);
-                    sender.sendMessage(t("i")+"PLAYER is now admin of TAG");
+                    sender.sendMessage(t("i")+t("team_isnow",hero.getName(),"admin",area.getTag()));
                 }
                 else
-                    sender.sendMessage(t("e")+"PLAYER has to join TAG first");
+                    sender.sendMessage(t("e")+t("team_joinfirst",hero.getName(),area.getTag()));
              }
             return true;
         }
@@ -302,7 +292,7 @@ public class GroupCommands {
             if (area.isMod(hero))
             {
                 area.delMod(hero);
-                sender.sendMessage(t("i")+"PLAYER is no longer mod of TAG");
+                sender.sendMessage(t("i")+t("team_nolonger",hero.getName(),"mod",area.getTag()));
                 return true;
             }
             else
@@ -310,10 +300,10 @@ public class GroupCommands {
                 if (area.isUser(hero))
                 {
                     area.addMod(hero);
-                    sender.sendMessage(t("i")+"PLAYER is now mod of TAG");
+                    sender.sendMessage(t("i")+t("team_isnow",hero.getName(),"mod",area.getTag()));
                 }
                 else
-                    sender.sendMessage(t("e")+"PLAYER has to join TAG first");
+                    sender.sendMessage(t("e")+t("team_joinfirst",hero.getName(),area.getTag()));
             }
             return true;
         }
@@ -323,15 +313,15 @@ public class GroupCommands {
             if (hero.getTeam()!=null)
             {
                 if (area.isUser(hero))
-                    sender.sendMessage(t("e")+"PLAYER is already user of TAG");
+                    sender.sendMessage(t("e")+t("team_joined",hero.getName(),area.getTag()));
                 else
-                    sender.sendMessage(t("e")+"You must leave TAG first to join an other Team");
+                    sender.sendMessage(t("e")+t("team_leavefirst",area.getTag()));
                 return true;
             }
             else
             {
                 area.addUser(hero);
-                sender.sendMessage(t("i")+"PLAYER is now user of TAG");
+                sender.sendMessage(t("i")+t("team_isnow",hero.getName(),"user",area.getTag()));
             }
             return true;
         }
@@ -340,12 +330,12 @@ public class GroupCommands {
         {
             if (hero.getTeam()==null)
             {
-                sender.sendMessage(t("e")+"PLAYER has no Team to leave");
+                sender.sendMessage(t("e")+t("team_noleave",hero.getName()));
                 return true;
             }
             if (area == null) area = hero.getTeam();
             area.delUser(hero);
-            sender.sendMessage(t("i")+"PLAYER is no longer user of TAG");
+            sender.sendMessage(t("i")+t("team_nolonger",hero.getName(),"user",area.getTag()));
             return true;
         }
         return false;
@@ -362,13 +352,27 @@ public class GroupCommands {
             Group team2 = groupcontrol.getGroup(args.getString(1));
             team.setally(team2);
             team2.setally(team);
+            team.sendToAlly(t("rel_ally_both",team.getTag(),team2.getTag()));
+            return true;
         }
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
             Group team = Heroes.getHero(sender).getTeam();
             if (team != null)
+            {
                 team.setally(team2);
+                if (team2.isAlly(team))
+                {
+                    team.sendToAlly(t("rel_ally_both",team.getTag(),team2.getTag()));
+                }
+                else
+                {
+                    team.sendToTeam(t("rel_ally_propose",team2.getTag()));
+                    team2.sendToTeam(t("rel_ally_proposal",team.getTag()));
+                }
+                return true;
+            }
         }
         return false;
     }
@@ -384,18 +388,34 @@ public class GroupCommands {
             Group team2 = groupcontrol.getGroup(args.getString(1));
             team.setenemy(team2);
             team2.setenemy(team);
+            team.sendToTeam(t("rel_enemy_mortal",team2.getTag()));
+            team2.sendToTeam(t("rel_enemy_mortal",team.getTag()));
+            return true;
         }
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
             Group team = Heroes.getHero(sender).getTeam();
             if (team != null)
+            {
                 team.setenemy(team2);
+                if (team2.isenemy(team))
+                {
+                    team.sendToTeam(t("rel_enemy_mortal",team2.getTag()));
+                    team2.sendToTeam(t("rel_enemy_mortal",team.getTag()));
+                }
+                else
+                {
+                    team.sendToTeam(t("rel_enemy_declare",team2.getTag()));
+                    team2.sendToTeam(t("rel_enemy_declared",team.getTag()));
+                }
+                return true;
+            }
         }
         return false;
     }
     
-    @Command(desc = "Set Team to Neutral ", usage = "<TEAMTAG> [TEAMTAG]")
+    @Command(desc = "Set TeamRelation to Neutral", usage = "<TEAMTAG> [TEAMTAG]")
     @CommandPermission
     public boolean neutral(CommandSender sender, CommandArgs args)
     {
@@ -406,13 +426,34 @@ public class GroupCommands {
             Group team2 = groupcontrol.getGroup(args.getString(1));
             team.setneutral(team2);
             team2.setneutral(team);
+            team.sendToTeam(t("rel_neutral_both",team2.getTag()));
+            team2.sendToTeam(t("rel_neutral_both",team.getTag()));
+            return true;
         }
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
             Group team = Heroes.getHero(sender).getTeam();
             if (team != null)
+            {
                 team.setneutral(team2);
+                if (team2.isneutral(team))
+                {
+                    team.sendToTeam(t("rel_neutral_both",team2.getTag()));
+                    team2.sendToTeam(t("rel_neutral_both",team.getTag()));
+                }
+                else if (team2.isenemy(team))
+                {
+                    team.sendToTeam(t("rel_neutral_stopwar",team2.getTag()));
+                    team2.sendToTeam(t("rel_neutral_stopwar2",team.getTag()));
+                }
+                else if (team2.isenemy(team))
+                {
+                    team.sendToTeam(t("rel_neutral_noally",team2.getTag()));
+                    team2.sendToTeam(t("rel_neutral_noally2",team.getTag()));
+                }
+                return true;
+            }
         }
         return false;
     }

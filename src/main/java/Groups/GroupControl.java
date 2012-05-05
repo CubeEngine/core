@@ -92,7 +92,7 @@ public class GroupControl {
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
         //TODO DATABASE Get ID!!!!!!!
-        int id = 1;
+        int id = areas.size()-4;
         newArea.setIntegerValue("id", id);
         areas.put(id, newArea);
         //#############################
@@ -105,7 +105,7 @@ public class GroupControl {
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
         //TODO DATABASE Get ID!!!!!!!
-        int id = 1;
+        int id = areas.size()-4;
         newArea.setIntegerValue("id", id);
         areas.put(id, newArea);
         //#############################
