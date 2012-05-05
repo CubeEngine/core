@@ -1,21 +1,17 @@
 package Area;
 
 import de.cubeisland.libMinecraft.bitmask.BitMask;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.bukkit.Material;
 
 /**
  *
  * @author Faithcaio
  */
-public class Area {
+public class Area implements Cloneable{
 
-    private int id; //FOR DATABASE
-    //For all Areas
-    private AreaType type;
-    private String name;
-
-    private BitMask bits;
     public static final int PVP_ON = 1;
     public static final int PVP_DAMAGE = 2;
     public static final int PVP_FRIENDLYFIRE = 4;
@@ -30,39 +26,142 @@ public class Area {
     public static final int POWER_GAIN = 2048;
     public static final int ECONOMY_BANK = 4096;
     
-    private int pvp_spawnprotect;//in seconds
-    private List<String> denycommands;
-    private List<Material> protect;
-    //only Team / Arena
-    private String tag;
-    private String description;
-    private Integer power_perm = null;
-    private int power_boost;
+    private BitMask bits;
+    private AreaType type;
     
-    //Variablen
-    private Integer power_max;
-    private Integer power_max_used;
-    private Integer power_used;
+    private int pvp_spawnprotect;//in seconds
+    
+    private Map<String,Object> areavalues = new HashMap<String,Object>();
 
     public Area() 
     {
         this.bits = new BitMask();
-        
+        areavalues.put("bits", this.bits);
     }
     
     public void setBit(int Bit)
     {
-        this.getBits().set(Bit);
+        this.bits.set(Bit);
     }
     
     public void unsetBit(int Bit)
     {
-        this.getBits().unset(Bit);
+        this.bits.unset(Bit);
     }
 
     public void toggleBit(int Bit)
     {
-        this.getBits().toggle(Bit);
+        this.bits.toggle(Bit);
+    }
+    
+    public boolean setValue(String key, String value)
+    {
+        if (areavalues.get(key) instanceof Integer)
+        {
+            try
+            {
+                Integer intval = Integer.valueOf(value);
+                return this.setIntegerValue(key, intval);
+            }
+            catch (NumberFormatException ex) {return false;}
+        }
+            
+        if (areavalues.get(key) instanceof String)
+            return this.setStringValue(key, value);
+        if (areavalues.get(key) instanceof List)
+            return this.setListValue(key, value);
+    
+       return this.setOtherValue(key, value);
+          
+    }
+    
+    public boolean setStringValue(String key, String value)
+    {
+        areavalues.put(key, value);
+        return true;
+    }
+    
+    public boolean setIntegerValue(String key, Integer value)
+    {
+        areavalues.put(key, value);
+        return true;
+    }
+    
+    public boolean setListValue(String key, String value)
+    {//TODO geht nicht :(
+        if (key.equalsIgnoreCase("denycommands"))
+            areavalues.put(key, value);
+        if (key.equalsIgnoreCase("protect"))
+        {
+            if (Material.matchMaterial(value)!=null)
+                areavalues.put(key, Material.matchMaterial(value));
+            else
+                return false;
+        }
+        return true;
+    }
+    
+    public boolean setListValue(String key, List value)
+    {
+        areavalues.put(key, value);
+        return true;
+    }
+    
+    public boolean setOtherValue(String key, String value)
+    {
+        int bitkey = -1;
+        if (key.equalsIgnoreCase("PVP_ON")) bitkey = Area.PVP_ON ;
+        if (key.equalsIgnoreCase("PVP_DAMAGE")) bitkey = Area.PVP_DAMAGE ;
+        if (key.equalsIgnoreCase("PVP_FRIENDLYFIRE")) bitkey = Area.PVP_FRIENDLYFIRE ;
+        if (key.equalsIgnoreCase("MONSTER_SPAWN")) bitkey = Area.MONSTER_SPAWN ;
+        if (key.equalsIgnoreCase("MONSTER_DAMAGE")) bitkey = Area.MONSTER_DAMAGE ;
+        if (key.equalsIgnoreCase("BUILD_PLACE")) bitkey = Area.BUILD_PLACE ;
+        if (key.equalsIgnoreCase("BUILD_DESTROY")) bitkey = Area.BUILD_DESTROY ;
+        if (key.equalsIgnoreCase("USE_FIRE")) bitkey = Area.USE_FIRE ;
+        if (key.equalsIgnoreCase("USE_LAVA")) bitkey = Area.USE_LAVA ;
+        if (key.equalsIgnoreCase("USE_WATER")) bitkey = Area.USE_WATER ;
+        if (key.equalsIgnoreCase("POWER_LOSS")) bitkey = Area.POWER_LOSS ;
+        if (key.equalsIgnoreCase("POWER_GAIN")) bitkey = Area.POWER_GAIN ;
+        if (key.equalsIgnoreCase("ECONOMY_BANK")) bitkey = Area.ECONOMY_BANK ;
+        if (bitkey < 0)            
+            return false;
+        else
+            return this.setBoolValue(bitkey, value);
+    }
+     
+    public boolean setBoolValue(int bit, String value)
+    {
+        if (value.equalsIgnoreCase("toggle")||value.equalsIgnoreCase("t"))
+            this.bits.toggle(bit);
+        else
+            if (value.equalsIgnoreCase("true")||value.equalsIgnoreCase("on"))
+                this.bits.set(bit);
+            else
+                if (value.equalsIgnoreCase("false")||value.equalsIgnoreCase("off"))
+                    this.bits.unset(bit);
+                else
+                    return false;
+        return true;
+        
+    }
+        
+    
+    public Object getValue(String key)
+    {
+        return areavalues.get(key);
+    }
+    
+    @Override
+    public Area clone()
+    {
+        try
+        {
+            return (Area)super.clone();
+        }
+        catch (CloneNotSupportedException ex)
+        {
+            return null;
+        }
     }
 
     /**
@@ -70,15 +169,7 @@ public class Area {
      */
     public int getId()
     {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(int id)
-    {
-        this.id = id;
+        return (Integer)this.getValue("id");
     }
 
     /**
@@ -90,43 +181,11 @@ public class Area {
     }
 
     /**
-     * @param type the type to set
-     */
-    public void setType(AreaType type)
-    {
-        this.type = type;
-    }
-
-    /**
      * @return the name
      */
     public String getName()
     {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * @return the bits
-     */
-    public BitMask getBits()
-    {
-        return bits;
-    }
-
-    /**
-     * @param bits the bits to set
-     */
-    public void setBits(BitMask bits)
-    {
-        this.bits = bits;
+        return (String)this.getValue("name");
     }
 
     /**
@@ -138,27 +197,11 @@ public class Area {
     }
 
     /**
-     * @param pvp_spawnprotect the pvp_spawnprotect to set
-     */
-    public void setPvp_spawnprotect(int pvp_spawnprotect)
-    {
-        this.pvp_spawnprotect = pvp_spawnprotect;
-    }
-
-    /**
      * @return the denycommands
      */
     public List<String> getDenycommands()
     {
-        return denycommands;
-    }
-
-    /**
-     * @param denycommands the denycommands to set
-     */
-    public void setDenycommands(List<String> denycommands)
-    {
-        this.denycommands = denycommands;
+        return (List<String>)this.getValue("denycommands");
     }
 
     /**
@@ -166,15 +209,7 @@ public class Area {
      */
     public List<Material> getProtect()
     {
-        return protect;
-    }
-
-    /**
-     * @param protect the protect to set
-     */
-    public void setProtect(List<Material> protect)
-    {
-        this.protect = protect;
+        return (List<Material>)this.getValue("protect");
     }
 
     /**
@@ -182,15 +217,7 @@ public class Area {
      */
     public String getTag()
     {
-        return tag;
-    }
-
-    /**
-     * @param tag the tag to set
-     */
-    public void setTag(String tag)
-    {
-        this.tag = tag;
+        return (String)this.getValue("tag");
     }
 
     /**
@@ -198,15 +225,7 @@ public class Area {
      */
     public String getDescription()
     {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description)
-    {
-        this.description = description;
+        return (String)this.getValue("description");
     }
 
     /**
@@ -214,15 +233,7 @@ public class Area {
      */
     public Integer getPower_perm()
     {
-        return power_perm;
-    }
-
-    /**
-     * @param power_perm the power_perm to set
-     */
-    public void setPower_perm(Integer power_perm)
-    {
-        this.power_perm = power_perm;
+        return (Integer)this.getValue("power_perm");
     }
 
     /**
@@ -230,15 +241,7 @@ public class Area {
      */
     public int getPower_boost()
     {
-        return power_boost;
-    }
-
-    /**
-     * @param power_boost the power_boost to set
-     */
-    public void setPower_boost(int power_boost)
-    {
-        this.power_boost = power_boost;
+        return (Integer)this.getValue("power_boost");
     }
 
     /**
@@ -246,15 +249,7 @@ public class Area {
      */
     public Integer getPower_max()
     {
-        return power_max;
-    }
-
-    /**
-     * @param power_max the power_max to set
-     */
-    public void setPower_max(Integer power_max)
-    {
-        this.power_max = power_max;
+        return (Integer)this.getValue("power_max");
     }
 
     /**
@@ -262,15 +257,7 @@ public class Area {
      */
     public Integer getPower_max_used()
     {
-        return power_max_used;
-    }
-
-    /**
-     * @param power_max_used the power_max_used to set
-     */
-    public void setPower_max_used(Integer power_max_used)
-    {
-        this.power_max_used = power_max_used;
+        return (Integer)this.getValue("power_max_used");
     }
 
     /**
@@ -278,16 +265,14 @@ public class Area {
      */
     public Integer getPower_used()
     {
-        return power_used;
+        return (Integer)this.getValue("power_used");
     }
 
     /**
-     * @param power_used the power_used to set
+     * @param type the type to set
      */
-    public void setPower_used(Integer power_used)
+    public void setType(AreaType type)
     {
-        this.power_used = power_used;
+        this.type = type;
     }
-    
-    
 }

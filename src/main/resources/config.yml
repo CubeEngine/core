@@ -41,23 +41,69 @@ cubewar:
   killpoint:
      min: -100
      max: 200000
+     
   chat:
     useCWChat: false
     tagreplace: [CWTEAM]
 
   area:
     safezone:
-
-    warland:
-
-    wildland:
-
-    team_default:
-      economy:
-        bank: false
       power:
         haspermpower: false
-        permpower:
+        permpower: 0
+        powerboost: 0
+        powerloss: false
+        powergain: false
+      pvp:
+        PvP: false
+        damage: false 
+        friendlyfire: false
+        spawnprotectseconds: 3
+      monster: 
+        spawn: false
+        damage: false
+      build:
+        place: true
+        destroy: true
+      protect: []
+      use:
+        fire: false
+        lava: false
+        water: false
+      denycommands: []
+      
+    warland:
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: true
+        powergain: true
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: true
+        spawnprotectseconds: 2
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: false
+      protect: []
+      use:
+        fire: true
+        lava: false
+        water: false
+      denycommands:
+        - spawn
+        - warp
+        - home
+
+    wildland:
+      power:
+        haspermpower: false
+        permpower: 0
         powerboost: 0
         powerloss: true
         powergain: true
@@ -70,7 +116,35 @@ cubewar:
         spawn: true
         damage: true
       build:
-        place: true
+        place: false
+        destroy: false
+      protect: []
+      use:
+        fire: false
+        lava: false
+        water: false
+      denycommands: []
+
+    team_default:
+      economy:
+        bank: false
+        ##### economy einbindung
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: true
+        powergain: true
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: false
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
         destroy: false
       protect:
         - DISPENSER
@@ -90,9 +164,34 @@ cubewar:
         fire: true
         lava: false
         water: false
-      denycommands:
-        - killallandeverything
+      denycommands: []
         
     arena_default:
-      
-   
+      economy:
+        bank: false
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: true
+        powergain: true
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: true
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: false
+      protect: []
+      use:
+        fire: true
+        lava: false
+        water: false
+      denycommands:
+        - spawn
+        - warp
+        - home

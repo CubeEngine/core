@@ -1,23 +1,32 @@
 package de.cubeisland.CubeWar;
 
+import Area.Area;
+import de.cubeisland.CubeWar.Commands.ClaimCommands;
+import de.cubeisland.CubeWar.Commands.GroupCommands;
 import de.cubeisland.libMinecraft.translation.Translation;
+import de.cubeisland.libMinecraft.command.BaseCommand;
+import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Main Class
  */
-public class CubeWar extends JavaPlugin
+public class CubeWar extends JavaPlugin implements TranslatablePlugin
 {
     private static CubeWar instance = null;
     private static Logger logger = null;
     public static boolean debugMode = false;
     private static Translation translation;
+    private static final String PERMISSION_BASE = "cubewar.commands.";
+    private BaseCommand baseCommand;
     
     private Server server;
     private PluginManager pm;
@@ -54,15 +63,15 @@ public class CubeWar extends JavaPlugin
         translation = Translation.get(this.getClass(), config.cubewar_language);
         if (translation == null) translation = Translation.get(this.getClass(), "en");
 
+        this.baseCommand = new BaseCommand(this, new Permission(PERMISSION_BASE + "+",PermissionDefault.OP), PERMISSION_BASE);
+        this.baseCommand.registerCommands(new ClaimCommands())
+                        .registerCommands(new GroupCommands());
+        
+        this.getCommand("cubewar").setExecutor(baseCommand);
+        
 
         this.pm.registerEvents(new CubeWarListener(), this);
-        /*
-        BaseCommand baseCommand = new BaseCommand(this);
-        baseCommand
-            .registerSubCommand(new         HelpCommand(baseCommand))
-        .setDefaultCommand("help");
-        this.getCommand("cubewar").setExecutor(baseCommand);
-        */
+
     }
     
     @Override
@@ -126,6 +135,16 @@ public class CubeWar extends JavaPlugin
     public static String t(String key, Object... params)
     {
         return translation.translate(key, params);
+    }
+
+    public Translation getTranslation()
+    {
+        return translation;
+    }
+
+    public void setTranslation(Translation newtranslation)
+    {
+        translation = newtranslation;
     }
    
 }
