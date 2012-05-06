@@ -18,6 +18,10 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>milkbowl-repo</id>
+            <url>http://ci.milkbowl.net/plugin/repository/everything/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -30,6 +34,16 @@
             <groupId>de.cubeisland</groupId>
             <artifactId>libminecraft</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.16-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

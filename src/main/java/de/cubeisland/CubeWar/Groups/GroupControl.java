@@ -1,6 +1,8 @@
 package de.cubeisland.CubeWar.Groups;
 
+import de.cubeisland.CubeWar.Area.Area;
 import de.cubeisland.CubeWar.Util;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Location;
@@ -13,7 +15,7 @@ import org.bukkit.entity.Player;
  */
 public class GroupControl {
 
-    Map<Integer,Group> areas = new HashMap<Integer,Group>();
+    private static Map<Integer,Group> areas = new HashMap<Integer,Group>();
     private static GroupControl instance = null;
     
     public GroupControl(ConfigurationSection config) 
@@ -166,15 +168,22 @@ public class GroupControl {
         return getArea(player.getLocation());
     }
     
+    public static Collection<Group> getAreas()
+    {
+        return areas.values();
+    }
+    
     public static Group getArea(Location loc)
     {
-        if (loc ==null)
-        {
-            //TODO getArea
-            return null;
-        }
-        else
-        return GroupControl.get().areas.get(0);//return WildLand
+        Group group = Area.getGroup(loc);
+        if (group == null)
+            return areas.get(0);//return WildLand
+        return group;//return group at Loc
+    }
+    
+    public static Group getWildLand()
+    {
+        return areas.get(0);
     }
     
     public boolean setGroupValue(int id, String key, String value)

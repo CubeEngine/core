@@ -1,5 +1,6 @@
 package de.cubeisland.CubeWar.Commands;
 
+import de.cubeisland.CubeWar.Area.Area;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
@@ -8,7 +9,14 @@ import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import de.cubeisland.libMinecraft.command.CommandPermission;
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -510,5 +518,83 @@ public class GroupCommands {
             return true;
         }
         return false;
+    }
+    
+    @Command(desc = "Claims Land", usage = "<[Tag] [Radius]")
+    @CommandPermission
+    public boolean claim(CommandSender sender, CommandArgs args)
+    {
+        if (sender instanceof Player)
+        {
+            Player player = (Player)sender;
+            User user = Users.getUser(player);
+            Location loc = player.getLocation();
+            if (args.size() > 1) 
+            {
+                Group team = GroupControl.get().getGroup(args.getString(0));
+                int rad;
+                try { rad = args.getInt(1); }
+                catch (NumberFormatException ex)
+                {
+                    sender.sendMessage(t("Invalid Radius"));//TODO msg translat
+                    return true;
+                }
+                this.claim(player.getLocation(), rad, team, player, user);
+                return true;
+            }
+            if (args.size() > 0) 
+            {
+                Group team = GroupControl.get().getGroup(args.getString(0));
+                if (team == null)
+                {
+                    sender.sendMessage(t("Invalid eam"));//TODO msg translat
+                    return true;
+                }
+                this.claim(player.getLocation(), 0, team, player, user);
+                return true;
+            }
+            if (args.isEmpty()) 
+            {
+                this.claim(player.getLocation(), 0, user.getTeam(), player, user);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private void claim(Location loc, int radius, Group g, Player player, User user)
+    {
+        if (Area.getGroup(loc).equals(user.getTeam()))
+        {
+            player.sendMessage(t("claim_own"));//TODO msg translat
+            return;
+        }
+        if (Area.getGroup(loc)!=null)
+        {
+            //TODO Permission etc.
+        }
+        List<Chunk> chunks = new ArrayList<Chunk>();
+        if (radius != 0)
+        {
+            World world = loc.getWorld();
+            int x = (int)loc.getX();
+            int z = (int)loc.getZ();
+            for (int i = -radius; i <= radius; ++i)
+            {
+                for (int j = -radius; j <= radius; ++j)
+                {
+                    chunks.add(world.getChunkAt(x+i*16,z+j*16));
+                }
+            }
+        }
+        else
+        {
+            chunks.add(loc.getChunk());
+        }
+        for (Chunk chunk : chunks)
+        {
+            Area.addChunk(chunk, user.getTeam());
+            player.sendMessage(t("claim"));//TODO msg translat
+        }
     }
 }

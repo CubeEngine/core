@@ -1,26 +1,27 @@
 package de.cubeisland.CubeWar;
 
-import de.cubeisland.CubeWar.Groups.Group;
-import de.cubeisland.CubeWar.User.PvP;
 import de.cubeisland.CubeWar.Commands.ClaimCommands;
 import de.cubeisland.CubeWar.Commands.GroupCommands;
 import de.cubeisland.CubeWar.Commands.HeroCommands;
-import de.cubeisland.libMinecraft.translation.Translation;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
+import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 //TODO LootChest
 //Channel-Chats with pw
 //Blocks with "Life"
 //lift Schilder blocken wenn feindlich
+//TODO HashMaps mit THashMaps ersetzen
 
 /**
  * Main Class
@@ -38,6 +39,8 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
     private PluginManager pm;
     private CubeWarConfiguration config;
     private File dataFolder;
+    
+    private Economy economy = null;
 
     public CubeWar()
     {
@@ -84,7 +87,7 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
     {
         this.config = null;
     }
-    /*
+
     private Economy setupEconomy()
     {
         if (this.pm.getPlugin("Vault") != null)
@@ -106,8 +109,6 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
     {
         return this.economy;
     }
-    * 
-    */
        
     public CubeWarConfiguration getConfiguration()
     {

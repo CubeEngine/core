@@ -556,7 +556,7 @@ public class Group implements Cloneable{
         sender.sendMessage(pvp);
         String allies = "";
         String enemies = "";
-        for (Group group : GroupControl.get().areas.values())
+        for (Group group : GroupControl.getAreas())
         {
             if (this.isTrueAlly(group))
                 allies += ", "+group.getTag();
