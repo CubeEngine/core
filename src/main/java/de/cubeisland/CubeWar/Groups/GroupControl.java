@@ -1,9 +1,12 @@
-package Groups;
+package de.cubeisland.CubeWar.Groups;
 
+import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.CubeWar.Util;
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -72,6 +75,25 @@ public class GroupControl {
             if (section.getBoolean("pvp.damage")) newArea.setBit(Group.PVP_DAMAGE);
             if (section.getBoolean("pvp.friendlyfire")) newArea.setBit(Group.PVP_FRIENDLYFIRE);
             newArea.setIntegerValue("pvp_spawnprotect", section.getInt("pvp.spawnprotectseconds"));
+            String dmgmod = section.getString("pvp.damagemodifier");
+            newArea.setIntegerValue("damagemodifier_percent", null);
+            newArea.setIntegerValue("damagemodifier_set", null);
+            newArea.setIntegerValue("damagemodifier_add", null);
+            if (dmgmod != null)
+            {
+                if (dmgmod.charAt(0)=='%')
+                {
+                    newArea.setIntegerValue("damagemodifier_percent", Integer.valueOf(dmgmod.substring(1)));
+                }else
+                if (dmgmod.charAt(0)=='#')
+                {
+                    newArea.setIntegerValue("damagemodifier_set", Integer.valueOf(dmgmod.substring(1)));
+                }
+                else
+                {
+                   newArea.setIntegerValue("damagemodifier_add", Integer.valueOf(dmgmod.substring(1))); 
+                }
+            }
             if (section.getBoolean("monster.spawn")) newArea.setBit(Group.MONSTER_SPAWN);
             if (section.getBoolean("monster.damage")) newArea.setBit(Group.MONSTER_DAMAGE);
             if (section.getBoolean("build.destroy")) newArea.setBit(Group.BUILD_DESTROY);
@@ -142,6 +164,22 @@ public class GroupControl {
                     return area.getId();
         }
         return null;
+    }
+    
+    public static Group getArea(Player player)
+    {
+        return getArea(player.getLocation());
+    }
+    
+    public static Group getArea(Location loc)
+    {
+        if (loc !=null)
+        {
+            //TODO getArea
+            return null;
+        }
+        else
+        return GroupControl.get().areas.get(0);//return WildLand
     }
     
     public boolean setGroupValue(int id, String key, String value)

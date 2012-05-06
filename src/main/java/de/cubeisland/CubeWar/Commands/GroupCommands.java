@@ -1,10 +1,10 @@
 package de.cubeisland.CubeWar.Commands;
 
-import Groups.Group;
-import Groups.GroupControl;
+import de.cubeisland.CubeWar.Groups.Group;
+import de.cubeisland.CubeWar.Groups.GroupControl;
 import static de.cubeisland.CubeWar.CubeWar.t;
-import Hero.Hero;
-import Hero.Heroes;
+import de.cubeisland.CubeWar.User.User;
+import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import de.cubeisland.libMinecraft.command.CommandPermission;
@@ -42,7 +42,7 @@ public class GroupCommands {
                 name += " "+args.getString(i); 
             }
             Group team = groupcontrol.newTeam(tag, name);
-            team.addAdmin(Heroes.getHero(sender));
+            team.addAdmin(Users.getHero(sender));
             sender.sendMessage(t("i")+t("ct", tag, name));
 
             return true;
@@ -111,7 +111,7 @@ public class GroupCommands {
             else
             {
                
-                Hero hero = Heroes.getHero(sender);
+                User hero = Users.getHero(sender);
                 if (hero == null)
                 {
                     sender.sendMessage(t("e")+t("g_noPlayer"));
@@ -187,7 +187,7 @@ public class GroupCommands {
     {
         if (args.size() > 0)    
         {
-            Hero hero = Heroes.getHero(args.getString(0));
+            User hero = Users.getHero(args.getString(0));
             Group area = hero.getTeam();
             return this.toggleTeamPos(sender, hero, area, "admin");
         }
@@ -200,7 +200,7 @@ public class GroupCommands {
     {
         if (args.size() > 0)    
         {
-            Hero hero = Heroes.getHero(args.getString(0));
+            User hero = Users.getHero(args.getString(0));
             Group area = hero.getTeam();
             return this.toggleTeamPos(sender, hero, area, "mod");
         }
@@ -219,7 +219,7 @@ public class GroupCommands {
                 sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
-            Hero hero = Heroes.getHero(sender);
+            User hero = Users.getHero(sender);
             Group area = groupcontrol.getGroup(areaId);
             return this.toggleTeamPos(sender, hero, area, "userjoin");
         }
@@ -232,7 +232,7 @@ public class GroupCommands {
     {
         if (args.isEmpty())
         {
-            Hero hero = Heroes.getHero(sender);
+            User hero = Users.getHero(sender);
             return this.toggleTeamPos(sender, hero, null, "userleave");
         }
         return false;
@@ -244,14 +244,16 @@ public class GroupCommands {
     {
         if (args.size() > 0)
         {
-            Hero hero = Heroes.getHero(args.getString(0));
+            User hero = Users.getHero(args.getString(0));
             //TODO Permission if sender can kick PLAYER out of his team
-            return this.toggleTeamPos(sender, hero, null, "userleave");
+            if (hero.getPlayer() != null )
+                hero.getPlayer().sendMessage(t("i")+t("team_kick",hero.getTeamTag()));
+             return this.toggleTeamPos(sender, hero, null, "userleave");
         }
         return false;
     }
     
-    private boolean toggleTeamPos(CommandSender sender, Hero hero, Group area, String position)
+    private boolean toggleTeamPos(CommandSender sender, User hero, Group area, String position)
     {
         if (hero == null)
         {
@@ -351,7 +353,7 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Heroes.getHero(sender).getTeam();
+            Group team = Users.getHero(sender).getTeam();
             if (team != null)
             {
                 team.setally(team2);
@@ -388,7 +390,7 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Heroes.getHero(sender).getTeam();
+            Group team = Users.getHero(sender).getTeam();
             if (team != null)
             {
                 team.setenemy(team2);
@@ -426,7 +428,7 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Heroes.getHero(sender).getTeam();
+            Group team = Users.getHero(sender).getTeam();
             if (team != null)
             {
                 team.setneutral(team2);
@@ -447,6 +449,35 @@ public class GroupCommands {
                 }
                 return true;
             }
+        }
+        return false;
+    }
+    
+    @Command(desc = "Shows Info about Groups", usage = "<Tag>")
+    @CommandPermission
+    public boolean info(CommandSender sender, CommandArgs args)
+    {
+        if (args.size() > 0)    
+        {
+            Group group = GroupControl.get().getGroup(args.getString(0));
+            if (group == null)
+            {
+                sender.sendMessage(t("e")+t("m_noGroupExist",args.getString(0)));
+                return true;
+            }
+            group.sendInfo(sender);
+            return true;
+        }
+        if (args.isEmpty())
+        {
+            Group group = Users.getHero(sender).getTeam();
+            if (group == null)
+            {
+                sender.sendMessage(t("e")+t("m_noTeam"));
+                return true;
+            }
+            group.sendInfo(sender);;
+            return true;
         }
         return false;
     }

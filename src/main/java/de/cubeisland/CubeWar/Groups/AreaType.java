@@ -1,4 +1,4 @@
-package Groups;
+package de.cubeisland.CubeWar.Groups;
 
 /**
  *

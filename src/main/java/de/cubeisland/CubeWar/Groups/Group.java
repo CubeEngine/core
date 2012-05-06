@@ -1,11 +1,12 @@
-package Groups;
+package de.cubeisland.CubeWar.Groups;
 
-import Hero.Hero;
-import Hero.Heroes;
+import de.cubeisland.CubeWar.User.User;
+import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +45,9 @@ public class Group implements Cloneable{
     private int power_max;
     private int power_max_used;
     
-    private List<Hero> admin = new ArrayList<Hero>();
-    private List<Hero> mod = new ArrayList<Hero>();
-    private List<Hero> user = new ArrayList<Hero>();
+    private List<User> admin = new ArrayList<User>();
+    private List<User> mod = new ArrayList<User>();
+    private List<User> user = new ArrayList<User>();
     
     private List<Group> enemy = new ArrayList<Group>();
     private List<Group> ally = new ArrayList<Group>();
@@ -58,21 +59,30 @@ public class Group implements Cloneable{
     
     public void setBit(int Bit)
     {
-        this.bits.set(Bit);
+        this.getBits().set(Bit);
     }
     
     public void unsetBit(int Bit)
     {
-        this.bits.unset(Bit);
+        this.getBits().unset(Bit);
     }
 
     public void toggleBit(int Bit)
     {
-        this.bits.toggle(Bit);
+        this.getBits().toggle(Bit);
     }
+    
+    private String convertKey(String key)
+    {
+        if (key.equalsIgnoreCase("dmgmod")) return "damagemodifier";
+        else return key;
+    }
+    
     
     public boolean setValue(String key, String value)
     {
+        
+        key = this.convertKey(key);
         if (intval.containsKey(key.toLowerCase()))
         {
             try
@@ -150,22 +160,43 @@ public class Group implements Cloneable{
         if (key.equalsIgnoreCase("POWER_LOSS")) bitkey = Group.POWER_LOSS ;
         if (key.equalsIgnoreCase("POWER_GAIN")) bitkey = Group.POWER_GAIN ;
         if (key.equalsIgnoreCase("ECONOMY_BANK")) bitkey = Group.ECONOMY_BANK ;
-        if (bitkey < 0)            
-            return false;
-        else
+        if (bitkey > 0)            
             return this.setBoolValue(bitkey, value);
+        else
+        {
+            if ((key.equalsIgnoreCase("damagemodifier")))
+            {
+                this.setIntegerValue("damagemodifier_percent", null);
+                this.setIntegerValue("damagemodifier_set", null);
+                this.setIntegerValue("damagemodifier_add", null);
+                if (value.charAt(0)=='%')
+                {
+                    this.setIntegerValue("damagemodifier_percent", Integer.valueOf(value.substring(1)));
+                }else
+                if (value.charAt(0)=='#')
+                {
+                    this.setIntegerValue("damagemodifier_set", Integer.valueOf(value.substring(1)));
+                }
+                else
+                {
+                   this.setIntegerValue("damagemodifier_add", Integer.valueOf(value.substring(1))); 
+                }
+                return true;
+            }
+            return false;
+        }
     }
      
     public boolean setBoolValue(int bit, String value)
     {
         if (value.equalsIgnoreCase("toggle")||value.equalsIgnoreCase("t"))
-            this.bits.toggle(bit);
+            this.getBits().toggle(bit);
         else
             if (value.equalsIgnoreCase("true")||value.equalsIgnoreCase("on"))
-                this.bits.set(bit);
+                this.getBits().set(bit);
             else
                 if (value.equalsIgnoreCase("false")||value.equalsIgnoreCase("off"))
-                    this.bits.unset(bit);
+                    this.getBits().unset(bit);
                 else
                     return false;
         return true;
@@ -189,35 +220,38 @@ public class Group implements Cloneable{
     public Group clone()
     {
         Group group = new Group();
-        group.bits.reset();
+        group.getBits().reset();
         group.setType(AreaType.TEAMZONE);
         group.setIntegerValue("id", this.getId());
         group.setStringValue("name", this.getName());
         group.setStringValue("tag", this.getTag());
         group.setStringValue("description", this.getDescription());
-        if (this.bits.isset(Group.ECONOMY_BANK)) group.setBit(Group.ECONOMY_BANK);
+        if (this.getBits().isset(Group.ECONOMY_BANK)) group.setBit(Group.ECONOMY_BANK);
         group.setIntegerValue("power_perm", this.getPower_perm());
         group.setIntegerValue("power_boost", this.getPower_boost());
-        if (this.bits.isset(Group.POWER_LOSS)) group.setBit(Group.POWER_LOSS);
-        if (this.bits.isset(Group.POWER_GAIN)) group.setBit(Group.POWER_GAIN);
-        if (this.bits.isset(Group.PVP_ON)) group.setBit(Group.PVP_ON);
-        if (this.bits.isset(Group.PVP_DAMAGE)) group.setBit(Group.PVP_DAMAGE);
-        if (this.bits.isset(Group.PVP_FRIENDLYFIRE)) group.setBit(Group.PVP_FRIENDLYFIRE);
+        if (this.getBits().isset(Group.POWER_LOSS)) group.setBit(Group.POWER_LOSS);
+        if (this.getBits().isset(Group.POWER_GAIN)) group.setBit(Group.POWER_GAIN);
+        if (this.getBits().isset(Group.PVP_ON)) group.setBit(Group.PVP_ON);
+        if (this.getBits().isset(Group.PVP_DAMAGE)) group.setBit(Group.PVP_DAMAGE);
+        if (this.getBits().isset(Group.PVP_FRIENDLYFIRE)) group.setBit(Group.PVP_FRIENDLYFIRE);
         group.setIntegerValue("pvp_spawnprotect", this.getPvp_spawnprotect());
-        if (this.bits.isset(Group.MONSTER_SPAWN)) group.setBit(Group.MONSTER_SPAWN);
-        if (this.bits.isset(Group.MONSTER_DAMAGE)) group.setBit(Group.MONSTER_DAMAGE);
-        if (this.bits.isset(Group.BUILD_DESTROY)) group.setBit(Group.BUILD_DESTROY);
-        if (this.bits.isset(Group.BUILD_PLACE)) group.setBit(Group.BUILD_PLACE);
+        group.setIntegerValue("damagemodifier_percent", this.getDamagemodifier_percent());
+        group.setIntegerValue("damagemodifier_set", this.getDamagemodifier_set());
+        group.setIntegerValue("damagemodifier_add", this.getDamagemodifier_add());
+        if (this.getBits().isset(Group.MONSTER_SPAWN)) group.setBit(Group.MONSTER_SPAWN);
+        if (this.getBits().isset(Group.MONSTER_DAMAGE)) group.setBit(Group.MONSTER_DAMAGE);
+        if (this.getBits().isset(Group.BUILD_DESTROY)) group.setBit(Group.BUILD_DESTROY);
+        if (this.getBits().isset(Group.BUILD_PLACE)) group.setBit(Group.BUILD_PLACE);
         group.setListValue("protect", this.getProtect());
-        if (this.bits.isset(Group.USE_FIRE)) group.setBit(Group.USE_FIRE);
-        if (this.bits.isset(Group.USE_LAVA)) group.setBit(Group.USE_LAVA);
-        if (this.bits.isset(Group.USE_WATER)) group.setBit(Group.USE_WATER);
+        if (this.getBits().isset(Group.USE_FIRE)) group.setBit(Group.USE_FIRE);
+        if (this.getBits().isset(Group.USE_LAVA)) group.setBit(Group.USE_LAVA);
+        if (this.getBits().isset(Group.USE_WATER)) group.setBit(Group.USE_WATER);
         group.setListValue("denycommands", this.getDenycommands());
         
         return group;
     }
     
-    public void addAdmin(Hero hero)
+    public void addAdmin(User hero)
     {
         if (hero == null) return;
         this.admin.add(hero);
@@ -226,18 +260,18 @@ public class Group implements Cloneable{
         hero.setTeam(this);
     }
     
-    public void delAdmin(Hero hero)
+    public void delAdmin(User hero)
     {
         this.admin.remove(hero);
         hero.setTeam(null);
     }
         
-    public boolean isAdmin(Hero hero)
+    public boolean isAdmin(User hero)
     {
         return this.admin.contains(hero);
     }
     
-    public void addMod(Hero hero)
+    public void addMod(User hero)
     {
         if (hero == null) return;
         this.mod.add(hero);
@@ -246,20 +280,20 @@ public class Group implements Cloneable{
         hero.setTeam(this);
     }
     
-    public void delMod(Hero hero)
+    public void delMod(User hero)
     {
         this.mod.remove(hero);
         this.admin.remove(hero);
         hero.setTeam(null);
     }
         
-    public boolean isMod(Hero hero)
+    public boolean isMod(User hero)
     {
         if (this.admin.contains(hero)) return true;
         return this.mod.contains(hero);
     }
     
-    public void addUser(Hero hero)
+    public void addUser(User hero)
     {
         if (hero == null) return;
         this.user.add(hero);
@@ -268,7 +302,7 @@ public class Group implements Cloneable{
         hero.setTeam(this);
     }
     
-    public void delUser(Hero hero)
+    public void delUser(User hero)
     {
         this.user.remove(hero);
         this.mod.remove(hero);
@@ -276,7 +310,7 @@ public class Group implements Cloneable{
         hero.setTeam(null);
     }
         
-    public boolean isUser(Hero hero)
+    public boolean isUser(User hero)
     {
         if (this.admin.contains(hero)) return true;
         if (this.mod.contains(hero)) return true;
@@ -362,7 +396,46 @@ public class Group implements Cloneable{
     {
         return (Integer)this.getValue("power_boost");
     }
+    
+    public static enum DmgModType 
+    {
+        PERCENT(null),
+        SET(null),
+        ADD(null);
 
+      
+        public Integer val;
+        
+        private DmgModType(Integer val)
+        {
+            this.val = val;
+        }
+    }
+        
+    private Integer getDamagemodifier_percent()
+    {
+        return (Integer)this.getValue("damagemodifier_percent");
+    }
+
+    private Integer getDamagemodifier_set()
+    {
+        return (Integer)this.getValue("damagemodifier_set");
+    }
+
+    private Integer getDamagemodifier_add()
+    {
+       return (Integer)this.getValue("damagemodifier_add");
+    }
+
+    public Map<DmgModType,Integer> getDamagemodifier()
+    {
+        Map<DmgModType,Integer> tmp = new EnumMap<DmgModType,Integer>(DmgModType.class);
+        tmp.put(DmgModType.SET, (Integer)this.getValue("damagemodifier_set"));
+        tmp.put(DmgModType.PERCENT, (Integer)this.getValue("damagemodifier_percent"));
+        tmp.put(DmgModType.ADD, (Integer)this.getValue("damagemodifier_add"));
+        return tmp;
+    }
+    
     /**
      * @return the power_max
      */
@@ -418,6 +491,14 @@ public class Group implements Cloneable{
         return ally.contains(g);
     }
     
+    public boolean isTrueAlly(Group g)
+    {
+        if (this.ally.contains(g))
+            return g.isAlly(this);
+        else 
+            return false;
+    }
+    
     public boolean isenemy(Group g)
     {
         return enemy.contains(g);
@@ -433,7 +514,7 @@ public class Group implements Cloneable{
         Player[] players = CubeWar.getInstance().getServer().getOnlinePlayers();
         for (Player player : players)
         {
-            if (this.isUser(Heroes.getOfflineHero(player)))
+            if (this.isUser(Users.getOfflineHero(player)))
                 player.sendMessage(msg);
         }
     }
@@ -455,15 +536,15 @@ public class Group implements Cloneable{
         sender.sendMessage(t("g_03",this.getDescription()));
         sender.sendMessage(t("g_04",GroupControl.get().getRank(this),
                            t("g_05",this.power_used,this.power_max_used,this.power_max)));
-        Group team = Heroes.getHero(sender).getTeam();
+        Group team = Users.getHero(sender).getTeam();
         if ((team.equals(this))||(team.isAlly(this) && this.isAlly(team)))
             sender.sendMessage(t("g_06"));
         else
             sender.sendMessage(t("g_07"));
         String pvp;
-        if (this.bits.isset(PVP_ON))
+        if (this.getBits().isset(PVP_ON))
         {
-            if (this.bits.isset(PVP_FRIENDLYFIRE))
+            if (this.getBits().isset(PVP_FRIENDLYFIRE))
                 pvp = t("g_081");
             else
                 pvp = t("g_083");
@@ -487,15 +568,15 @@ public class Group implements Cloneable{
         }
         if (!enemies.isEmpty())
             sender.sendMessage(t("g_10",enemies.substring(2)));
-        if (this.bits.isset(ECONOMY_BANK))
+        if (this.getBits().isset(ECONOMY_BANK))
             sender.sendMessage(t("g_11","NO MONEY HAHA"));//TODO Vault dependency blah blubb
-        List<Hero> list = new ArrayList<Hero>();
+        List<User> list = new ArrayList<User>();
         list.addAll(0,this.admin);
         list.addAll(0,this.mod);
         list.addAll(0,this.user);
         String onplayer = "";
-        List<Hero> onlist = new ArrayList<Hero>();
-        for (Hero player : list)
+        List<User> onlist = new ArrayList<User>();
+        for (User player : list)
         {
             if (player.getPlayer()!=null)
             {
@@ -507,7 +588,7 @@ public class Group implements Cloneable{
             sender.sendMessage(t("g_12",onplayer.substring(2)));
         list.removeAll(onlist);
         String offplayer = "";
-        for (Hero player : list)
+        for (User player : list)
         {
             if (player.getPlayer()!=null)
             {
@@ -521,5 +602,13 @@ public class Group implements Cloneable{
             
         
         
+    }
+
+    /**
+     * @return the bits
+     */
+    public BitMask getBits()
+    {
+        return bits;
     }
 }

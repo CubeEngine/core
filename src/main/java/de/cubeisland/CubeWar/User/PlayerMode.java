@@ -1,4 +1,4 @@
-package Hero;
+package de.cubeisland.CubeWar.User;
 
 /**
  *

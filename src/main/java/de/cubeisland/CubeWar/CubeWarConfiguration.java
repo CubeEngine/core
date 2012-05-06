@@ -1,7 +1,7 @@
 package de.cubeisland.CubeWar;
 
-import Hero.Rank;
-import Groups.GroupControl;
+import de.cubeisland.CubeWar.User.Rank;
+import de.cubeisland.CubeWar.Groups.GroupControl;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.configuration.Configuration;

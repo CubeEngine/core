@@ -1,6 +1,7 @@
 package de.cubeisland.CubeWar;
 
-import Groups.Group;
+import de.cubeisland.CubeWar.Groups.Group;
+import de.cubeisland.CubeWar.User.PvP;
 import de.cubeisland.CubeWar.Commands.ClaimCommands;
 import de.cubeisland.CubeWar.Commands.GroupCommands;
 import de.cubeisland.CubeWar.Commands.HeroCommands;
@@ -16,6 +17,10 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+//TODO LootChest
+//Channel-Chats with pw
+//Blocks with "Life"
+//lift Schilder blocken wenn feindlich
 
 /**
  * Main Class
@@ -70,10 +75,8 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
                         .registerCommands(new HeroCommands());
         
         this.getCommand("cubewar").setExecutor(baseCommand);
-        
 
         this.pm.registerEvents(new CubeWarListener(), this);
-
     }
     
     @Override

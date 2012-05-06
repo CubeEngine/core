@@ -6,8 +6,8 @@
 package de.cubeisland.CubeWar.Commands;
 
 import static de.cubeisland.CubeWar.CubeWar.t;
-import Hero.Hero;
-import Hero.Heroes;
+import de.cubeisland.CubeWar.User.User;
+import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import de.cubeisland.libMinecraft.command.CommandPermission;
@@ -31,7 +31,7 @@ public class HeroCommands
     {
         if (args.size() > 0)    
         {
-            Hero hero = Heroes.getHero(args.getString(0));
+            User hero = Users.getHero(args.getString(0));
             if (hero == null)
             {
                 sender.sendMessage(t("e")+t("g_noplayer"));
@@ -42,7 +42,7 @@ public class HeroCommands
         }
         if (args.isEmpty())
         {
-            Hero hero = Heroes.getHero(sender);
+            User hero = Users.getHero(sender);
             hero.showInfo(sender);
             return true;
         }

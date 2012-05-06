@@ -1,6 +1,6 @@
-package Hero;
+package de.cubeisland.CubeWar.User;
 
-import Groups.Group;
+import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.CubeWarConfiguration;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
  *
  * @author Faithcaio
  */
-public class Hero {
+public class User {
 
     private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     
@@ -24,14 +24,15 @@ public class Hero {
     private PlayerMode mode = PlayerMode.NORMAL;
     private Rank rank;
     private Group team;
+    private boolean respawning;
     
-    public Hero(OfflinePlayer player) 
+    public User(OfflinePlayer player) 
     {
         this.player = player;
         rank = config.cubewar_ranks.get(0);
     }
     
-    public int kill(Hero hero)
+    public int kill(User hero)
     {
         this.killpoints += hero.getRank().getKmod();
         this.rank = this.rank.newRank(this);
@@ -45,7 +46,7 @@ public class Hero {
         this.rank = this.rank.newRank(this);
     }
     
-    private int kill_kd(Hero hero)
+    private int kill_kd(User hero)
     {
         if (mode.equals(PlayerMode.NORMAL))
         {
@@ -161,5 +162,21 @@ public class Hero {
             kd = (int)(this.kills/this.death *100);
         sender.sendMessage(t("hero_04",this.kills,this.death,String.valueOf(kd/100)));
         sender.sendMessage(t("hero_05",this.getTeamTag()));
+    }
+
+    /**
+     * @return the respawning
+     */
+    public boolean isRespawning()
+    {
+        return respawning;
+    }
+
+    /**
+     * @param respawning the respawning to set
+     */
+    public void setRespawning(boolean respawning)
+    {
+        this.respawning = respawning;
     }
 }

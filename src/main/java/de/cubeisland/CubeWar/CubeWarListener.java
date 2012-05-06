@@ -1,7 +1,9 @@
 package de.cubeisland.CubeWar;
 
-import Hero.Heroes;
-import static de.cubeisland.CubeWar.CubeWar.t;
+import de.cubeisland.CubeWar.Groups.GroupControl;
+import de.cubeisland.CubeWar.User.PvP;
+import de.cubeisland.CubeWar.User.Users;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -9,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 /**
  *
@@ -16,11 +19,28 @@ import org.bukkit.event.entity.EntityDeathEvent;
  */
 public class CubeWarListener implements Listener
 {
-
     public CubeWarListener() 
     {
-    
+        
     }
+    
+    @EventHandler
+    public void respawn(final PlayerRespawnEvent event)
+    {
+        CubeWar plugin = CubeWar.getInstance();
+        int respawntime = GroupControl.getArea(event.getRespawnLocation()).getPvp_spawnprotect()*20;
+        if (respawntime > 0)
+        {
+            Users.getHero(event.getPlayer()).setRespawning(true);
+            plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
+                new Runnable() {
+                    public void run()
+                    {
+                        Users.getHero(event.getPlayer()).setRespawning(false);
+                    }} , respawntime);
+        }
+    }
+    
     
     @EventHandler
     public void death(final EntityDeathEvent event)
@@ -28,12 +48,12 @@ public class CubeWarListener implements Listener
         if (event.getEntity() instanceof Player)
         {
             if (event.getEntity().getKiller()!=null)
-                Heroes.kill(event.getEntity().getKiller(), (Player)event.getEntity());
+                Users.kill(event.getEntity().getKiller(), (Player)event.getEntity());
         }
         if (event.getEntity() instanceof Monster)
         {
             if (event.getEntity().getKiller()!=null)
-                Heroes.kill(event.getEntity().getKiller(), (Monster)event.getEntity());
+                Users.kill(event.getEntity().getKiller(), (Monster)event.getEntity());
         }
     }
     
@@ -41,29 +61,57 @@ public class CubeWarListener implements Listener
     public void damage(final EntityDamageByEntityEvent event)
     {
         if (!(event.getEntity() instanceof Player)) return;
-        Player player = (Player)event.getEntity();
-        //player.chat(Heroes.getHeroKD(Heroes.getHero(player), null, 0));//TESTCHAT
-        if (player.isFlying()||player.getAllowFlight())
+        
+        Player damagee = (Player)event.getEntity();
+        Entity damagerEntity = event.getDamager();
+        Player damager;
+        Boolean ranged = false;
+        if ((damagerEntity instanceof Player))
         {
-            boolean fall=false;
-            if ((event.getDamager() instanceof Player))//event.getDamager kommt oft vor...
-            {
-                fall = true;
-                ((Player)event.getDamager()).setFlying(false);
-            }
-            if ((event.getDamager() instanceof Projectile)) 
-                if (((Projectile)event.getDamager()).getShooter() instanceof Player)
-                {
-                    fall = true;
-                    ((Player)((Projectile)event.getDamager()).getShooter()).setFlying(false);
-                    player.sendMessage(t("event_arrow"));
-                }
-            if (!fall) return;
-            player.setFlying(false);
-            player.setAllowFlight(false);
-            //TODO prevent player to fly again no event for that :(
+            damager = (Player)damagerEntity; //MELEE
         }
-
-    }
-    
+        else
+        {
+            if ((damagerEntity instanceof Projectile)){
+                if (((Projectile)damagerEntity).getShooter() instanceof Player)
+                {
+                    ranged = true; //RANGED
+                    damager = (Player)((Projectile)damagerEntity).getShooter();
+                }
+                else return;
+            }
+            else return;
+        }
+        if (PvP.isPvPallowed(damager, damagee))
+        {//PVP is ON Kill em all!
+            //FLYMODE Disabler
+            if (damagee.isFlying()||damagee.getAllowFlight())
+            {
+                if (ranged)
+                    PvP.stopFlyArrow(damagee);//Arrow to the knee :)
+                else
+                    PvP.stopFlyAndFall(damagee);//Falling flies
+            } 
+            if (damager.isFlying())
+                PvP.stopFly(damager); //Falling attacker
+            //DAMAGE Disabler
+            if (PvP.isDamageOn(damager, damagee))
+            {
+                //FRIENDLY Beschuss Disabler (Denglisch FTGewinn)
+                if (!PvP.isFriendlyFireOn(damager, damagee))
+                {
+                    //TODO einstellung set dmg = 0 oder canceln
+                    event.setCancelled(true);
+                }
+                
+                //DAMAGE Modifier
+                int modDamage = PvP.modifyDamage(damager, damagee, event.getDamage());
+                event.setDamage(modDamage);
+            }
+            else
+            {
+                event.setCancelled(true);
+            }
+        }
+    }    
 }
