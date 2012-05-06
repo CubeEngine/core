@@ -1,11 +1,11 @@
 package de.cubeisland.CubeWar.User;
 
 import de.cubeisland.CubeWar.CubeWar;
-import org.bukkit.entity.Player;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
 import java.util.Map;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -21,8 +21,8 @@ public class PvP{
     public static boolean isFriendlyFireOn(Player damager, Player damagee)
     {
         CubeWar.debug("FF-ON?");
-        if (!PvP.isDamageOn(damager, damagee)) return false;
-        CubeWar.debug("Damage-ON");
+        //if (!PvP.isDamageOn(damager, damagee)) return false;
+        //CubeWar.debug("Damage-ON");
         if (PvP.isAlly(damager, damagee))
         {
             CubeWar.debug("isAlly");
@@ -41,8 +41,8 @@ public class PvP{
     public static boolean isDamageOn(Player damager, Player damagee)
     {
         CubeWar.debug("Damage-ON?");
-        if (!PvP.isPvPallowed(damager, damagee)) return false;
-        CubeWar.debug("PVP-ON!");
+        //if (!PvP.isPvPallowed(damager, damagee)) return false;
+        //CubeWar.debug("PVP-ON!");
         if (PvP.isAreaDenyingDamage(damager, damagee)) return false;
         CubeWar.debug("Area-ON");
         if (PvP.isPlayerRespawning(damager, damagee)) return false;
@@ -64,7 +64,7 @@ public class PvP{
     
     private static boolean isHeroPeaceFull(Player player)
     {
-        return Users.getHero(player).getMode().equals(PlayerMode.PEACE);
+        return Users.getUser(player).getMode().equals(PlayerMode.PEACE);
     }
     
     private static boolean isAreaPvPOff(Player damager, Player damagee)
@@ -76,8 +76,8 @@ public class PvP{
     
     private static boolean isPlayerRespawning(Player damager, Player damagee)
     {
-        if (Users.getHero(damager).isRespawning()) return true;
-        if (Users.getHero(damagee).isRespawning()) return true;
+        if (Users.getUser(damager).isRespawning()) return true;
+        if (Users.getUser(damagee).isRespawning()) return true;
         return false;
     }
     

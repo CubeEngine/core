@@ -31,12 +31,12 @@ public class CubeWarListener implements Listener
         int respawntime = GroupControl.getArea(event.getRespawnLocation()).getPvp_spawnprotect()*20;
         if (respawntime > 0)
         {
-            Users.getHero(event.getPlayer()).setRespawning(true);
+            Users.getUser(event.getPlayer()).setRespawning(true);
             plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
                 new Runnable() {
                     public void run()
                     {
-                        Users.getHero(event.getPlayer()).setRespawning(false);
+                        Users.getUser(event.getPlayer()).setRespawning(false);
                     }} , respawntime);
         }
     }

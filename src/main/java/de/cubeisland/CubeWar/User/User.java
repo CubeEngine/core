@@ -1,9 +1,10 @@
 package de.cubeisland.CubeWar.User;
 
-import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.CubeWarConfiguration;
+import de.cubeisland.CubeWar.Groups.Group;
+import de.cubeisland.CubeWar.Groups.GroupControl;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Monster;
@@ -147,7 +148,7 @@ public class User {
         if (this.team != null)
             return this.team.getTag();
         else
-            return "none";
+            return t("none");
     }
     
     public void showInfo(CommandSender sender)
@@ -161,7 +162,13 @@ public class User {
         else
             kd = (int)(this.kills/this.death *100);
         sender.sendMessage(t("hero_04",this.kills,this.death,String.valueOf(kd/100)));
-        sender.sendMessage(t("hero_05",this.getTeamTag()));
+        if (Users.getUser(sender).getTeam().isTrueAlly(this.team))
+            sender.sendMessage(t("hero_051",this.getTeamTag()));
+        else
+            sender.sendMessage(t("hero_052",this.getTeamTag()));
+        if (sender instanceof Player)
+            if (this.equals(Users.getUser(sender)))
+                sender.sendMessage(t("her_06",GroupControl.getArea((Player)sender)));
     }
 
     /**

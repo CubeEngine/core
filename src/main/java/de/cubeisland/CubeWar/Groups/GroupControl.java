@@ -1,6 +1,5 @@
 package de.cubeisland.CubeWar.Groups;
 
-import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.CubeWar.Util;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,11 +80,11 @@ public class GroupControl {
             newArea.setIntegerValue("damagemodifier_add", null);
             if (dmgmod != null)
             {
-                if (dmgmod.charAt(0)=='%')
+                if (dmgmod.charAt(0)=='P')
                 {
                     newArea.setIntegerValue("damagemodifier_percent", Integer.valueOf(dmgmod.substring(1)));
                 }else
-                if (dmgmod.charAt(0)=='#')
+                if (dmgmod.charAt(0)=='S')
                 {
                     newArea.setIntegerValue("damagemodifier_set", Integer.valueOf(dmgmod.substring(1)));
                 }
@@ -113,11 +112,9 @@ public class GroupControl {
         Group newArea = areas.get(-1).clone();
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
-        //TODO DATABASE Get ID!!!!!!!
         int id = areas.size()-4;
         newArea.setIntegerValue("id", id);
         areas.put(id, newArea);
-        //#############################
         return newArea;
     }
     
@@ -126,11 +123,9 @@ public class GroupControl {
         Group newArea = areas.get(-2).clone();
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
-        //TODO DATABASE Get ID!!!!!!!
         int id = areas.size()-4;
         newArea.setIntegerValue("id", id);
         areas.put(id, newArea);
-        //#############################
         return newArea;
     }
     
@@ -173,7 +168,7 @@ public class GroupControl {
     
     public static Group getArea(Location loc)
     {
-        if (loc !=null)
+        if (loc ==null)
         {
             //TODO getArea
             return null;
@@ -209,9 +204,17 @@ public class GroupControl {
         else return false;
     }
     
-    public int getRank(Group gruop)
+    public int getRank(Group group)
     {
-        return 1;
-        //TODO ausrechnen
+        int position = 1;
+        int power = group.getPower_used();
+        for (Group g : this.areas.values())
+        {
+            int gpower = g.getPower_used();
+            if (gpower>0)
+                if (power < gpower)
+                    ++position;                    
+        }
+        return position;
     }
 }

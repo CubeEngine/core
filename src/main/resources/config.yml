@@ -140,10 +140,10 @@ cubewar:
         damage: true 
         friendlyfire: false
         spawnprotectseconds: 3
-        #%+1 or %-1  changeDamage with Percentage
-        ##5          setDamage to
+        #P+1 or P-1  changeDamage with Percentage
+        #S5          setDamage to
         #1 or -1     changeDamage
-        damagemodifier: %-30
+        damagemodifier: P-30
       monster: 
         spawn: true
         damage: true

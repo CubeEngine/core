@@ -1,9 +1,9 @@
 package de.cubeisland.CubeWar.Groups;
 
-import de.cubeisland.CubeWar.User.User;
-import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
+import de.cubeisland.CubeWar.User.User;
+import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -499,7 +499,7 @@ public class Group implements Cloneable{
             return false;
     }
     
-    public boolean isenemy(Group g)
+    public boolean isEnemy(Group g)
     {
         return enemy.contains(g);
     }
@@ -514,7 +514,7 @@ public class Group implements Cloneable{
         Player[] players = CubeWar.getInstance().getServer().getOnlinePlayers();
         for (Player player : players)
         {
-            if (this.isUser(Users.getOfflineHero(player)))
+            if (this.isUser(Users.getOfflineUser(player)))
                 player.sendMessage(msg);
         }
     }
@@ -536,7 +536,7 @@ public class Group implements Cloneable{
         sender.sendMessage(t("g_03",this.getDescription()));
         sender.sendMessage(t("g_04",GroupControl.get().getRank(this),
                            t("g_05",this.power_used,this.power_max_used,this.power_max)));
-        Group team = Users.getHero(sender).getTeam();
+        Group team = Users.getUser(sender).getTeam();
         if ((team.equals(this))||(team.isAlly(this) && this.isAlly(team)))
             sender.sendMessage(t("g_06"));
         else
@@ -555,25 +555,23 @@ public class Group implements Cloneable{
         }
         sender.sendMessage(pvp);
         String allies = "";
-        for (Group group : this.ally)
+        String enemies = "";
+        for (Group group : GroupControl.get().areas.values())
         {
-            allies += ", "+group.getTag();
+            if (this.isTrueAlly(group))
+                allies += ", "+group.getTag();
+            else
+            if ((group.isEnemy(this))||this.isEnemy(group))
+                enemies += ", "+group.getTag();
         }
         if (!allies.isEmpty())
             sender.sendMessage(t("g_09",allies.substring(2)));
-        String enemies = "";
-        for (Group group : this.enemy)
-        {
-            enemies += ", "+group.getTag();
-        }
         if (!enemies.isEmpty())
             sender.sendMessage(t("g_10",enemies.substring(2)));
         if (this.getBits().isset(ECONOMY_BANK))
             sender.sendMessage(t("g_11","NO MONEY HAHA"));//TODO Vault dependency blah blubb
-        List<User> list = new ArrayList<User>();
-        list.addAll(0,this.admin);
-        list.addAll(0,this.mod);
-        list.addAll(0,this.user);
+        List<User> list = this.getUserList();
+        sender.sendMessage(t("g_15",list.size(),this.getKPSum()));
         String onplayer = "";
         List<User> onlist = new ArrayList<User>();
         for (User player : list)
@@ -585,7 +583,7 @@ public class Group implements Cloneable{
             }
         }
         if (!onplayer.isEmpty())
-            sender.sendMessage(t("g_12",onplayer.substring(2)));
+            sender.sendMessage(t("g_12",onlist.size(),onplayer.substring(2)));
         list.removeAll(onlist);
         String offplayer = "";
         for (User player : list)
@@ -596,14 +594,31 @@ public class Group implements Cloneable{
             }
         }
         if (!offplayer.isEmpty())
-            sender.sendMessage(t("g_13",offplayer.substring(2)));
-        //TODO
+            sender.sendMessage(t("g_13",list.size(),offplayer.substring(2)));
+        //TODO closed Teams
         sender.sendMessage(t("g_-14"));
-            
-        
-        
     }
-
+    
+    public List<User> getUserList()
+    {
+        List<User> list = new ArrayList<User>();
+        list.addAll(0,this.admin);
+        list.addAll(0,this.mod);
+        list.addAll(0,this.user);
+        return list;
+    }
+    
+    public int getKPSum()
+    {
+        int kp = 0;
+        for (User tmp : this.getUserList())
+        {
+            kp += tmp.getKp();
+        }
+        return kp;
+    }
+    
+    
     /**
      * @return the bits
      */

@@ -1,8 +1,8 @@
 package de.cubeisland.CubeWar.Commands;
 
+import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
-import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
@@ -42,7 +42,7 @@ public class GroupCommands {
                 name += " "+args.getString(i); 
             }
             Group team = groupcontrol.newTeam(tag, name);
-            team.addAdmin(Users.getHero(sender));
+            team.addAdmin(Users.getUser(sender));
             sender.sendMessage(t("i")+t("ct", tag, name));
 
             return true;
@@ -111,7 +111,7 @@ public class GroupCommands {
             else
             {
                
-                User hero = Users.getHero(sender);
+                User hero = Users.getUser(sender);
                 if (hero == null)
                 {
                     sender.sendMessage(t("e")+t("g_noPlayer"));
@@ -187,7 +187,7 @@ public class GroupCommands {
     {
         if (args.size() > 0)    
         {
-            User hero = Users.getHero(args.getString(0));
+            User hero = Users.getUser(args.getString(0));
             Group area = hero.getTeam();
             return this.toggleTeamPos(sender, hero, area, "admin");
         }
@@ -200,7 +200,7 @@ public class GroupCommands {
     {
         if (args.size() > 0)    
         {
-            User hero = Users.getHero(args.getString(0));
+            User hero = Users.getUser(args.getString(0));
             Group area = hero.getTeam();
             return this.toggleTeamPos(sender, hero, area, "mod");
         }
@@ -219,7 +219,7 @@ public class GroupCommands {
                 sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
-            User hero = Users.getHero(sender);
+            User hero = Users.getUser(sender);
             Group area = groupcontrol.getGroup(areaId);
             return this.toggleTeamPos(sender, hero, area, "userjoin");
         }
@@ -232,7 +232,7 @@ public class GroupCommands {
     {
         if (args.isEmpty())
         {
-            User hero = Users.getHero(sender);
+            User hero = Users.getUser(sender);
             return this.toggleTeamPos(sender, hero, null, "userleave");
         }
         return false;
@@ -244,7 +244,7 @@ public class GroupCommands {
     {
         if (args.size() > 0)
         {
-            User hero = Users.getHero(args.getString(0));
+            User hero = Users.getUser(args.getString(0));
             //TODO Permission if sender can kick PLAYER out of his team
             if (hero.getPlayer() != null )
                 hero.getPlayer().sendMessage(t("i")+t("team_kick",hero.getTeamTag()));
@@ -345,6 +345,11 @@ public class GroupCommands {
             //TODO Permission if sender can change AllyMode of other Teams
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
+            if (team.equals(team2))
+            {
+                sender.sendMessage(t("pro")+t("rel_self"));
+                return true;
+            }
             team.setally(team2);
             team2.setally(team);
             team.sendToAlly(t("rel_ally_both",team.getTag(),team2.getTag()));
@@ -353,7 +358,12 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Users.getHero(sender).getTeam();
+            Group team = Users.getUser(sender).getTeam();
+            if (team.equals(team2))
+            {
+                sender.sendMessage(t("pro")+t("rel_self"));
+                return true;
+            }
             if (team != null)
             {
                 team.setally(team2);
@@ -381,6 +391,11 @@ public class GroupCommands {
             //TODO Permission if sender can change EnemyMode of other Teams
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
+            if (team.equals(team2))
+            {
+                sender.sendMessage(t("pro")+t("rel_self"));
+                return true;
+            }
             team.setenemy(team2);
             team2.setenemy(team);
             team.sendToTeam(t("rel_enemy_mortal",team2.getTag()));
@@ -390,11 +405,16 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Users.getHero(sender).getTeam();
+            Group team = Users.getUser(sender).getTeam();
+            if (team.equals(team2))
+            {
+                sender.sendMessage(t("pro")+t("rel_self"));
+                return true;
+            }
             if (team != null)
             {
                 team.setenemy(team2);
-                if (team2.isenemy(team))
+                if (team2.isEnemy(team))
                 {
                     team.sendToTeam(t("rel_enemy_mortal",team2.getTag()));
                     team2.sendToTeam(t("rel_enemy_mortal",team.getTag()));
@@ -419,6 +439,11 @@ public class GroupCommands {
             //TODO Permission if sender can change NeutralMode of other Teams
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
+            if (team.equals(team2))
+            {
+                sender.sendMessage(t("pro")+t("rel_self"));
+                return true;
+            }
             team.setneutral(team2);
             team2.setneutral(team);
             team.sendToTeam(t("rel_neutral_both",team2.getTag()));
@@ -428,7 +453,12 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Users.getHero(sender).getTeam();
+            Group team = Users.getUser(sender).getTeam();
+            if (team.equals(team2))
+            {
+                sender.sendMessage(t("pro")+t("rel_self"));
+                return true;
+            }
             if (team != null)
             {
                 team.setneutral(team2);
@@ -437,12 +467,12 @@ public class GroupCommands {
                     team.sendToTeam(t("rel_neutral_both",team2.getTag()));
                     team2.sendToTeam(t("rel_neutral_both",team.getTag()));
                 }
-                else if (team2.isenemy(team))
+                else if (team2.isEnemy(team))
                 {
                     team.sendToTeam(t("rel_neutral_stopwar",team2.getTag()));
                     team2.sendToTeam(t("rel_neutral_stopwar2",team.getTag()));
                 }
-                else if (team2.isenemy(team))
+                else if (team2.isAlly(team))
                 {
                     team.sendToTeam(t("rel_neutral_noally",team2.getTag()));
                     team2.sendToTeam(t("rel_neutral_noally2",team.getTag()));
@@ -470,13 +500,13 @@ public class GroupCommands {
         }
         if (args.isEmpty())
         {
-            Group group = Users.getHero(sender).getTeam();
+            Group group = Users.getUser(sender).getTeam();
             if (group == null)
             {
                 sender.sendMessage(t("e")+t("m_noTeam"));
                 return true;
             }
-            group.sendInfo(sender);;
+            group.sendInfo(sender);
             return true;
         }
         return false;

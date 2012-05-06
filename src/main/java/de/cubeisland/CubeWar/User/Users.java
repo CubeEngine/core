@@ -2,12 +2,9 @@ package de.cubeisland.CubeWar.User;
 
 import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
-import de.cubeisland.CubeWar.Groups.Group;
-import de.cubeisland.CubeWar.Groups.GroupControl;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -30,11 +27,11 @@ public class Users {
     
     public static void kill(Player killerPlayer,Player killedPlayer)
     {
-        User killer = getHero(killerPlayer);
-        User killed = getHero(killedPlayer);
+        User killer = getUser(killerPlayer);
+        User killed = getUser(killedPlayer);
         if (killer.equals(killed))
         {
-            //Suicide ?
+            //Suicide
             killerPlayer.sendMessage(t("selfown"));
             killed.die();
             killerPlayer.playEffect(killerPlayer.getLocation(), Effect.POTION_BREAK, 0);
@@ -42,10 +39,10 @@ public class Users {
         else
         {
             if (killer.getMode().equals(PlayerMode.HIGHLANDER))
-                killerPlayer.sendMessage(t("killer",getHeroKD(killed, killed, killed.getKills()+1)));
+                killerPlayer.sendMessage(t("killer",getUserKD(killed, killed, killed.getKills()+1)));
             else
-                killerPlayer.sendMessage(t("killer",getHeroKD(killed, killed, 1)));
-            killedPlayer.sendMessage(t("killed",getHeroKD(killer, killed, -1)));
+                killerPlayer.sendMessage(t("killer",getUserKD(killed, killed, 1)));
+            killedPlayer.sendMessage(t("killed",getUserKD(killer, killed, -1)));
             killer.kill(killed);
             killed.die();
         }
@@ -53,11 +50,11 @@ public class Users {
     
     public static void kill(Player killerPlayer, Monster monster)
     {
-        User killer = getOfflineHero(killerPlayer);
+        User killer = getOfflineUser(killerPlayer);
         killer.kill(monster);           
     }
     
-    public static String getHeroKD(User hero, User killed, int kill)
+    public static String getUserKD(User hero, User killed, int kill)
     {
         String name = hero.getName();
         int k = hero.getKills();
@@ -87,7 +84,7 @@ public class Users {
         return "#ERROR while getting KD";
     }
     
-    public static User getOfflineHero(OfflinePlayer hero)
+    public static User getOfflineUser(OfflinePlayer hero)
     {
         if (heroes.containsKey(hero))
             return heroes.get(hero);
@@ -98,25 +95,25 @@ public class Users {
         }
     }
     
-    public static User getHero(CommandSender sender)
+    public static User getUser(CommandSender sender)
     {
         if (sender instanceof Player)
         {
-            return getOfflineHero((OfflinePlayer)sender);
+            return getOfflineUser((OfflinePlayer)sender);
         }
         return null;
     }
     
-    public static User getHero(String name)
+    public static User getUser(String name)
     {
         if (server.getPlayer(name)!=null) 
-            return getOfflineHero(server.getPlayer(name));
+            return getOfflineUser(server.getPlayer(name));
         OfflinePlayer[] list = server.getOfflinePlayers();
         for (OfflinePlayer player : list)
         {
             if (player.getName().equalsIgnoreCase(name))
             {
-                return getOfflineHero(player);
+                return getOfflineUser(player);
             }
         }
         return null;
@@ -124,8 +121,11 @@ public class Users {
     
     public static boolean isAllied(Player player1, Player player2)
     {
-        User user1 = Users.getHero(player1);
-        User user2 = Users.getHero(player2);
+        User user1 = Users.getUser(player1);
+        User user2 = Users.getUser(player2);
+        if (player1.equals(player2)) return true;
+        if (user1.getTeam()==null) return false;
+        if (user2.getTeam()==null) return false;
         if (user1.getTeam().equals(user2.getTeam())) return true;
         if (user1.getTeam().isTrueAlly(user2.getTeam())) return true;    
         return false;

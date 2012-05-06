@@ -31,7 +31,7 @@ public class HeroCommands
     {
         if (args.size() > 0)    
         {
-            User hero = Users.getHero(args.getString(0));
+            User hero = Users.getUser(args.getString(0));
             if (hero == null)
             {
                 sender.sendMessage(t("e")+t("g_noplayer"));
@@ -42,7 +42,7 @@ public class HeroCommands
         }
         if (args.isEmpty())
         {
-            User hero = Users.getHero(sender);
+            User hero = Users.getUser(sender);
             hero.showInfo(sender);
             return true;
         }
