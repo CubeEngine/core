@@ -8,12 +8,11 @@ import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
-import de.cubeisland.libMinecraft.command.CommandPermission;
+import de.cubeisland.libMinecraft.command.RequiresPermission;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,8 +30,8 @@ public class GroupCommands {
     
     }
     
-    @Command(desc = "Creates a new Team", usage = "<TeamTag> <TeamName>", aliases = {"ct","c"})
-    @CommandPermission
+    @Command(usage = "<TeamTag> <TeamName>", aliases = {"ct","c"})
+    @RequiresPermission
     public boolean createTeam(CommandSender sender, CommandArgs args)
     {
         args.size();
@@ -59,8 +58,8 @@ public class GroupCommands {
             return false;
     }
     
-    @Command(desc = "Creates a new Arena", usage = "<ArenaTag> <ArenaName>", aliases = {"ca"})
-    @CommandPermission
+    @Command(usage = "<ArenaTag> <ArenaName>", aliases = {"ca"})
+    @RequiresPermission
     public boolean createArena(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 1)
@@ -84,8 +83,8 @@ public class GroupCommands {
             return false;
     }
     
-    @Command(desc = "Modifies a Team", usage = "[#TeamTag] <Key> <Value>", aliases = {"mt","m"})
-    @CommandPermission
+    @Command(usage = "[#TeamTag] <Key> <Value>", aliases = {"mt","m"})
+    @RequiresPermission
     public boolean modifyTeam(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 1)
@@ -156,8 +155,8 @@ public class GroupCommands {
     }
     
     
-    @Command(desc = "modifies an Arena", usage = "<ArenaTag> <Key> <Value>", aliases = {"ma"})
-    @CommandPermission
+    @Command(usage = "<ArenaTag> <Key> <Value>", aliases = {"ma"})
+    @RequiresPermission
     public boolean modifyArena(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 2)
@@ -189,8 +188,8 @@ public class GroupCommands {
         }
     }
     
-    @Command(desc = "Toggles Admin State of a Player", usage = "<PlayerName>", aliases = {"admin","ta"})
-    @CommandPermission
+    @Command(usage = "<PlayerName>", aliases = {"admin","ta"})
+    @RequiresPermission
     public boolean teamAdmin(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)    
@@ -202,8 +201,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Toggles Mod State of a Player", usage = "<PlayerName>", aliases = {"mod","tm"})
-    @CommandPermission
+    @Command(usage = "<PlayerName>", aliases = {"mod","tm"})
+    @RequiresPermission
     public boolean teamMod(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)    
@@ -215,8 +214,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Joins a team", usage = "<TeamTag>")
-    @CommandPermission
+    @Command(usage = "<TeamTag>")
+    @RequiresPermission
     public boolean join(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)
@@ -234,8 +233,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Leaves a team", usage = "")
-    @CommandPermission
+    @Command(usage = "")
+    @RequiresPermission
     public boolean leave(CommandSender sender, CommandArgs args)
     {
         if (args.isEmpty())
@@ -246,8 +245,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Kicks a Player out of his team", usage = "<Player>")
-    @CommandPermission
+    @Command(usage = "<Player>")
+    @RequiresPermission
     public boolean kick(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)
@@ -344,8 +343,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Propose Alliance to this faction", usage = "<TeamTag> [TeamTag]")
-    @CommandPermission
+    @Command(usage = "<TeamTag> [TeamTag]")
+    @RequiresPermission
     public boolean ally(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 1)
@@ -390,8 +389,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Make an other Team to your enemy", usage = "<TeamTag> [TeamTag]")
-    @CommandPermission
+    @Command(usage = "<TeamTag> [TeamTag]")
+    @RequiresPermission
     public boolean enemy(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 1)
@@ -438,8 +437,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Set TeamRelation to Neutral", usage = "<TeamTag> [TeamTag]")
-    @CommandPermission
+    @Command(usage = "<TeamTag> [TeamTag]")
+    @RequiresPermission
     public boolean neutral(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 1)
@@ -491,8 +490,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Shows Info about Groups", usage = "<Tag>")
-    @CommandPermission
+    @Command(usage = "<Tag>")
+    @RequiresPermission
     public boolean info(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)    
@@ -520,8 +519,8 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(desc = "Claims Land", usage = "<[Tag] [Radius]")
-    @CommandPermission
+    @Command(usage = "<[Tag] [Radius]")
+    @RequiresPermission
     public boolean claim(CommandSender sender, CommandArgs args)
     {
         if (sender instanceof Player)

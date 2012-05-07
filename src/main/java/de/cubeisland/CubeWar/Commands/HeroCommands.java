@@ -10,7 +10,7 @@ import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
-import de.cubeisland.libMinecraft.command.CommandPermission;
+import de.cubeisland.libMinecraft.command.RequiresPermission;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -25,8 +25,8 @@ public class HeroCommands
     
     }
     
-    @Command(desc = "Shows Info about Player", usage = "<PlayerName>", aliases = {"kd"})
-    @CommandPermission
+    @Command(usage = "<PlayerName>", aliases = {"kd"})
+    @RequiresPermission
     public boolean show(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)    

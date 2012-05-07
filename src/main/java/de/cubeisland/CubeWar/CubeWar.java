@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -72,7 +71,7 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
         translation = Translation.get(this.getClass(), config.cubewar_language);
         if (translation == null) translation = Translation.get(this.getClass(), "en");
 
-        this.baseCommand = new BaseCommand(this, new Permission(PERMISSION_BASE + "+",PermissionDefault.OP), PERMISSION_BASE);
+        this.baseCommand = new BaseCommand(this, PERMISSION_BASE, PermissionDefault.OP);
         this.baseCommand.registerCommands(new ClaimCommands())
                         .registerCommands(new GroupCommands())
                         .registerCommands(new HeroCommands());
