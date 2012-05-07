@@ -7,6 +7,7 @@ import de.cubeisland.CubeWar.Groups.GroupControl;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -26,8 +27,6 @@ public class PvP{
     public static boolean isFriendlyFireOn(Player damager, Player damagee)
     {
         CubeWar.debug("FF-ON?");
-        //if (!PvP.isDamageOn(damager, damagee)) return false;
-        //CubeWar.debug("Damage-ON");
         if (PvP.isAlly(damager, damagee))
         {
             CubeWar.debug("isAlly");
@@ -46,8 +45,6 @@ public class PvP{
     public static boolean isDamageOn(Player damager, Player damagee)
     {
         CubeWar.debug("Damage-ON?");
-        //if (!PvP.isPvPallowed(damager, damagee)) return false;
-        //CubeWar.debug("PVP-ON!");
         if (PvP.isAreaDenyingDamage(damager, damagee)) return false;
         CubeWar.debug("Area-ON");
         if (PvP.isPlayerRespawning(damager, damagee)) return false;
@@ -157,9 +154,9 @@ public class PvP{
         player.setFlying(false);        
     }
     
-    public static void loot(final Player killer,final Player killed, List<ItemStack> drops)
+    public static void loot(final Player killer,final Player killed, List<ItemStack> drops, final Location deathloc)
     {
-        final Inventory loot = Bukkit.createInventory(killed, InventoryType.CHEST);
+        final Inventory loot = Bukkit.createInventory(killed, 6*9, killed.getName());
         for (ItemStack item : drops)
             loot.addItem(item);
         killer.openInventory(loot);
@@ -169,12 +166,18 @@ public class PvP{
                     public void run()
                     {
                         killer.closeInventory();
-                        killed.getInventory().addItem(loot.getContents());
-                        killed.sendMessage(t("loot_back"));
-                        //nötig?
-                        loot.clear();
-                        //TODO was wenn killed offline ist?
-                    }} , 6*20);//6 sec loottime
+                        if ((killed.isOnline()) && (!killed.isDead()))
+                        {
+                            killed.getInventory().addItem(loot.getContents());
+                            killed.sendMessage(t("loot_back"));
+                        }
+                        else
+                        {
+                            for (ItemStack item : loot.getContents())
+                                if (item != null)
+                                    killer.getWorld().dropItemNaturally(deathloc, item);
+                        }
+                    }} , 7*20);//7 sec loottime //TODO abhängigkeit von KP lvl
         
     }
 }

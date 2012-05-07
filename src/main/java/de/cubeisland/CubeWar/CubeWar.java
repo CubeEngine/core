@@ -15,11 +15,9 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-//TODO LootChest testen
 //Channel-Chats with pw
 //Blocks with "Life"
 //lift Schilder blocken wenn feindlich
-//TODO HashMaps mit THashMaps ersetzen String auf --> gibts das?
 
 /**
  * Main Class

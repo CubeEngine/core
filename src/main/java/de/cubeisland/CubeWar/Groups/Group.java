@@ -529,6 +529,7 @@ public class Group implements Cloneable{
     
     public boolean isTrueAlly(Group g)
     {
+        if (this.equals(g)) return true;
         if (this.ally.contains(g))
             return g.isAlly(this);
         else 
@@ -631,8 +632,8 @@ public class Group implements Cloneable{
         }
         if (!offplayer.isEmpty())
             sender.sendMessage(t("g_13",list.size(),offplayer.substring(2)));
-        //TODO closed Teams
-        sender.sendMessage(t("g_-14"));
+        if (team.isClosed())
+            sender.sendMessage(t("g_14"));
     }
     
     public List<User> getUserList()

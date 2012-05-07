@@ -168,7 +168,7 @@ public class User {
             sender.sendMessage(t("user_052",this.getTeamTag()));
         if (sender instanceof Player)
             if (this.equals(Users.getUser(sender)))
-                sender.sendMessage(t("her_06",GroupControl.getArea((Player)sender)));
+                sender.sendMessage(t("user_06",GroupControl.getArea((Player)sender).getTag()));
     }
 
     /**
