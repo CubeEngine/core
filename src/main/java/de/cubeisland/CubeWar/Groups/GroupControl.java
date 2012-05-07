@@ -2,9 +2,8 @@ package de.cubeisland.CubeWar.Groups;
 
 import de.cubeisland.CubeWar.Area.Area;
 import de.cubeisland.CubeWar.Util;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -15,7 +14,7 @@ import org.bukkit.entity.Player;
  */
 public class GroupControl {
 
-    private static Map<Integer,Group> areas = new HashMap<Integer,Group>();
+    private static TIntObjectHashMap<Group> areas = new TIntObjectHashMap<Group>();
     private static GroupControl instance = null;
     
     public GroupControl(ConfigurationSection config) 
@@ -105,6 +104,8 @@ public class GroupControl {
             if (section.getBoolean("use.water")) newArea.setBit(Group.USE_WATER);
             newArea.setListValue("denycommands", section.getStringList("denycommands"));
             
+            newArea.setClosed(section.getBoolean("TODO",false));//TODO in Bitmask einfügen und config
+            
             areas.put(newArea.getId(), newArea);
         }
     }
@@ -143,7 +144,7 @@ public class GroupControl {
     
     public Integer getTeamGroup(String tag)
     {
-        for (Group area : areas.values())
+        for (Group area : areas.valueCollection())
         {
             if (area.getTag().equalsIgnoreCase(tag))
                 if (area.getType().equals(AreaType.TEAMZONE))
@@ -170,7 +171,7 @@ public class GroupControl {
     
     public static Collection<Group> getAreas()
     {
-        return areas.values();
+        return areas.valueCollection();
     }
     
     public static Group getArea(Location loc)
@@ -199,7 +200,7 @@ public class GroupControl {
     
     public Group getGroup(String tag)
     {
-        for (Group area : areas.values())
+        for (Group area : areas.valueCollection())
         {
             if (area.getTag().equalsIgnoreCase(tag))
                 return area;
@@ -217,7 +218,7 @@ public class GroupControl {
     {
         int position = 1;
         int power = group.getPower_used();
-        for (Group g : this.areas.values())
+        for (Group g : areas.valueCollection())
         {
             int gpower = g.getPower_used();
             if (gpower>0)

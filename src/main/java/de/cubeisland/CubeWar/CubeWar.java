@@ -16,11 +16,11 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-//TODO LootChest
+//TODO LootChest testen
 //Channel-Chats with pw
 //Blocks with "Life"
 //lift Schilder blocken wenn feindlich
-//TODO HashMaps mit THashMaps ersetzen
+//TODO HashMaps mit THashMaps ersetzen String auf --> gibts das?
 
 /**
  * Main Class
@@ -39,7 +39,7 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
     private CubeWarConfiguration config;
     private File dataFolder;
     
-    private Economy economy = null;
+    private static Economy economy = null;
 
     public CubeWar()
     {
@@ -104,9 +104,9 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
         throw new IllegalStateException("Failed to initialize with Vault!");
     }
     
-    public Economy getEconomy()
+    public static Economy getEconomy()
     {
-        return this.economy;
+        return economy;
     }
        
     public CubeWarConfiguration getConfiguration()

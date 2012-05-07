@@ -1,6 +1,5 @@
 package de.cubeisland.CubeWar.Commands;
 
-import de.cubeisland.CubeWar.Area.Area;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
@@ -9,13 +8,7 @@ import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import de.cubeisland.libMinecraft.command.RequiresPermission;
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  *
@@ -41,7 +34,7 @@ public class GroupCommands {
             String name = args.getString(1);
             if (!groupcontrol.freeTag(tag))
             {
-                //TODO msg Tag already used
+                sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getName()));
                 return true;
             }
             for (int i = 2; i < args.size();++i)
@@ -49,9 +42,16 @@ public class GroupCommands {
                 name += " "+args.getString(i); 
             }
             Group team = groupcontrol.newTeam(tag, name);
-            team.addAdmin(Users.getUser(sender));
-            sender.sendMessage(t("i")+t("ct", tag, name));
-
+            User user = Users.getUser(sender);
+            if (user.getTeam() == null)
+            {
+                team.addAdmin(Users.getUser(sender));
+                sender.sendMessage(t("i")+t("ct1", tag, name));
+            }
+            else
+            {
+                sender.sendMessage(t("i")+t("ct2", tag, name));
+            }    
             return true;
         }
         else
@@ -68,7 +68,7 @@ public class GroupCommands {
             String name = args.getString(1);
             if (!groupcontrol.freeTag(tag))
             {
-                //TODO msg Tag already used
+                sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getTag()));
                 return true;
             }
             for (int i = 2; i < args.size();++i)
@@ -188,7 +188,7 @@ public class GroupCommands {
         }
     }
     
-    @Command(usage = "<PlayerName>", aliases = {"admin","ta"})
+    @Command(usage = "<PlayerName>", aliases = {"admin","ta","leader"})
     @RequiresPermission
     public boolean teamAdmin(CommandSender sender, CommandArgs args)
     {
@@ -239,8 +239,8 @@ public class GroupCommands {
     {
         if (args.isEmpty())
         {
-            User hero = Users.getUser(sender);
-            return this.toggleTeamPos(sender, hero, null, "userleave");
+            User user = Users.getUser(sender);
+            return this.toggleTeamPos(sender, user, user.getTeam(), "userleave");
         }
         return false;
     }
@@ -251,93 +251,126 @@ public class GroupCommands {
     {
         if (args.size() > 0)
         {
-            User hero = Users.getUser(args.getString(0));
+            User user = Users.getUser(args.getString(0));
             //TODO Permission if sender can kick PLAYER out of his team
-            if (hero.getPlayer() != null )
-                hero.getPlayer().sendMessage(t("i")+t("team_kick",hero.getTeamTag()));
-             return this.toggleTeamPos(sender, hero, null, "userleave");
+            if (user != null )
+            {
+                if (user.getTeam() == null)
+                {
+                    sender.sendMessage(t("team_noteam",user.getName()));
+                    return true;
+                }
+                user.getPlayer().sendMessage(t("i")+t("team_kick",user.getTeamTag()));
+                return this.toggleTeamPos(sender, user, user.getTeam(), "userleave");
+            }
+               
         }
         return false;
     }
     
-    private boolean toggleTeamPos(CommandSender sender, User hero, Group area, String position)
+    private boolean toggleTeamPos(CommandSender sender, User user, Group area, String position)
     {
-        if (hero == null)
+        if (user == null)
         {
             sender.sendMessage(t("e")+t("g_noPlayer"));
             return true;
         }
         
+        if (area == null)
+        {
+            sender.sendMessage(t("g_noGroup"));//TODO msg
+            return true;
+        }
+        
         if (position.equalsIgnoreCase("admin"))
         {
-            if (area.isAdmin(hero))
+            if (area.isAdmin(user))
             {
-                area.delAdmin(hero);
-                sender.sendMessage(t("i")+t("team_nolonger",hero.getName(),"admin",area.getTag()));
+                area.delAdmin(user);
+                sender.sendMessage(t("i")+t("team_nolonger_admin",area.getTag()));
                 return true;
             }
             else
             {
-                if (area.isUser(hero))
+                if (area.isUser(user))
                 {
-                    area.addAdmin(hero);
-                    sender.sendMessage(t("i")+t("team_isnow",hero.getName(),"admin",area.getTag()));
+                    area.addAdmin(user);
+                    sender.sendMessage(t("i")+t("team_isnow_admin",area.getTag()));
                 }
                 else
-                    sender.sendMessage(t("e")+t("team_joinfirst",hero.getName(),area.getTag()));
+                {
+                    if (user.getName().equals(sender.getName()))
+                        sender.sendMessage(t("e")+t("team_joinfirst_you",area.getTag()));
+                    else
+                        sender.sendMessage(t("e")+t("team_joinfirst",user.getName(),area.getTag()));
+                }
              }
             return true;
         }
         
         if (position.equalsIgnoreCase("mod"))
         {
-            if (area.isMod(hero))
+            if (area.isMod(user))
             {
-                area.delMod(hero);
-                sender.sendMessage(t("i")+t("team_nolonger",hero.getName(),"mod",area.getTag()));
+                area.delMod(user);
+                sender.sendMessage(t("i")+t("team_nolonger_mod",area.getTag()));
                 return true;
             }
             else
             {
-                if (area.isUser(hero))
+                if (area.isUser(user))
                 {
-                    area.addMod(hero);
-                    sender.sendMessage(t("i")+t("team_isnow",hero.getName(),"mod",area.getTag()));
+                    area.addMod(user);
+                    sender.sendMessage(t("i")+t("team_isnow_mod",area.getTag()));
                 }
                 else
-                    sender.sendMessage(t("e")+t("team_joinfirst",hero.getName(),area.getTag()));
+                {
+                    if (user.getName().equals(sender.getName()))
+                        sender.sendMessage(t("e")+t("team_joinfirst_you",area.getTag()));
+                    else
+                        sender.sendMessage(t("e")+t("team_joinfirst",user.getName(),area.getTag()));
+                }    
+                    
             }
             return true;
         }
         
         if (position.equalsIgnoreCase("userjoin"))
         {
-            if (hero.getTeam()!=null)
+            if (user.getTeam()!=null)
             {
-                if (area.isUser(hero))
-                    sender.sendMessage(t("e")+t("team_joined",hero.getName(),area.getTag()));
+                if (area.isUser(user))
+                    sender.sendMessage(t("e")+t("team_joined",area.getTag()));
                 else
                     sender.sendMessage(t("e")+t("team_leavefirst",area.getTag()));
                 return true;
             }
             else
             {
-                area.addUser(hero);
-                sender.sendMessage(t("i")+t("team_isnow",hero.getName(),"user",area.getTag()));
+                if (area.isInvited(user))
+                {
+                    area.addUser(user);
+                    sender.sendMessage(t("i")+t("team_isnow_mem",area.getTag()));
+                }
+                else
+                    sender.sendMessage(t("g_14"));
             }
             return true;
         }
         
         if (position.equalsIgnoreCase("userleave"))
         {
-            if (hero.getTeam()==null)
+            if (user.getTeam()==null)
             {
-                sender.sendMessage(t("e")+t("team_noleave",hero.getName()));
+                sender.sendMessage(t("e")+t("team_noleave",user.getName()));
                 return true;
             }
-            if (area == null) area = hero.getTeam();
-            area.delUser(hero);
-            sender.sendMessage(t("i")+t("team_nolonger",hero.getName(),"user",area.getTag()));
+            if (area == null) area = user.getTeam();
+            area.delUser(user);
+            if (user.getName().equals(sender.getName()))
+                sender.sendMessage(t("i")+t("team_nolonger_mem",area.getTag()));
+            else
+                sender.sendMessage(t("i")+t("team_nolonger_mem_other",user.getName(),area.getTag()));
             return true;
         }
         return false;
@@ -519,81 +552,39 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(usage = "<[Tag] [Radius]")
+    @Command(usage = "<Player>")
     @RequiresPermission
-    public boolean claim(CommandSender sender, CommandArgs args)
+    public boolean invite(CommandSender sender, CommandArgs args)
     {
-        if (sender instanceof Player)
+        //TODO nachrichten & befehl
+        
+        if (args.size()>0)
         {
-            Player player = (Player)sender;
-            User user = Users.getUser(player);
-            Location loc = player.getLocation();
-            if (args.size() > 1) 
+            User user = Users.getUser(args.getString(0));
+            if (user == null)
             {
-                Group team = GroupControl.get().getGroup(args.getString(0));
-                int rad;
-                try { rad = args.getInt(1); }
-                catch (NumberFormatException ex)
-                {
-                    sender.sendMessage(t("Invalid Radius"));//TODO msg translat
-                    return true;
-                }
-                this.claim(player.getLocation(), rad, team, player, user);
+                //TODO msg
                 return true;
             }
-            if (args.size() > 0) 
+            else
             {
-                Group team = GroupControl.get().getGroup(args.getString(0));
+                //TODO msg
+                Group team = Users.getUser(sender).getTeam();
                 if (team == null)
                 {
-                    sender.sendMessage(t("Invalid eam"));//TODO msg translat
+                    //TODO msg
                     return true;
                 }
-                this.claim(player.getLocation(), 0, team, player, user);
-                return true;
-            }
-            if (args.isEmpty()) 
-            {
-                this.claim(player.getLocation(), 0, user.getTeam(), player, user);
-                return true;
+                else
+                {
+                    team.invite(user);
+                    //TODO msg
+                    return true;
+                }
             }
         }
         return false;
     }
     
-    private void claim(Location loc, int radius, Group g, Player player, User user)
-    {
-        if (Area.getGroup(loc).equals(user.getTeam()))
-        {
-            player.sendMessage(t("claim_own"));//TODO msg translat
-            return;
-        }
-        if (Area.getGroup(loc)!=null)
-        {
-            //TODO Permission etc.
-        }
-        List<Chunk> chunks = new ArrayList<Chunk>();
-        if (radius != 0)
-        {
-            World world = loc.getWorld();
-            int x = (int)loc.getX();
-            int z = (int)loc.getZ();
-            for (int i = -radius; i <= radius; ++i)
-            {
-                for (int j = -radius; j <= radius; ++j)
-                {
-                    chunks.add(world.getChunkAt(x+i*16,z+j*16));
-                }
-            }
-        }
-        else
-        {
-            chunks.add(loc.getChunk());
-        }
-        for (Chunk chunk : chunks)
-        {
-            Area.addChunk(chunk, user.getTeam());
-            player.sendMessage(t("claim"));//TODO msg translat
-        }
-    }
+    
 }

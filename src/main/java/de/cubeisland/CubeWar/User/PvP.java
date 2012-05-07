@@ -4,8 +4,13 @@ import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
+import java.util.List;
 import java.util.Map;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -150,5 +155,26 @@ public class PvP{
     {
         CubeWar.debug("Fall");
         player.setFlying(false);        
+    }
+    
+    public static void loot(final Player killer,final Player killed, List<ItemStack> drops)
+    {
+        final Inventory loot = Bukkit.createInventory(killed, InventoryType.CHEST);
+        for (ItemStack item : drops)
+            loot.addItem(item);
+        killer.openInventory(loot);
+        CubeWar plugin = CubeWar.getInstance();           
+        plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
+                new Runnable() {
+                    public void run()
+                    {
+                        killer.closeInventory();
+                        killed.getInventory().addItem(loot.getContents());
+                        killed.sendMessage(t("loot_back"));
+                        //nötig?
+                        loot.clear();
+                        //TODO was wenn killed offline ist?
+                    }} , 6*20);//6 sec loottime
+        
     }
 }

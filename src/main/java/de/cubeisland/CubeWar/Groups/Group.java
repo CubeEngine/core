@@ -33,13 +33,14 @@ public class Group implements Cloneable{
     public static final int POWER_LOSS = 1024;
     public static final int POWER_GAIN = 2048;
     public static final int ECONOMY_BANK = 4096;
-    
+    //TODO Bank
     private BitMask bits;
     private AreaType type;
     private Map<String,Integer> intval = new HashMap<String,Integer>();
     private Map<String,String> stringval = new HashMap<String,String>();
     private Map<String,List> listval = new HashMap<String,List>();
-    //private Map<String,Object> areavalues = new HashMap<String,Object>();
+    
+    private boolean closed;//TODO in Bitmask einfügen
     
     private int power_used;
     private int power_max;
@@ -48,6 +49,7 @@ public class Group implements Cloneable{
     private List<User> admin = new ArrayList<User>();
     private List<User> mod = new ArrayList<User>();
     private List<User> user = new ArrayList<User>();
+    private List<User> invited = new ArrayList<User>();
     
     private List<Group> enemy = new ArrayList<Group>();
     private List<Group> ally = new ArrayList<Group>();
@@ -248,6 +250,8 @@ public class Group implements Cloneable{
         if (this.getBits().isset(Group.USE_WATER)) group.setBit(Group.USE_WATER);
         group.setListValue("denycommands", this.getDenycommands());
         
+        group.setClosed(this.isClosed()); //TODO in Bitmask einfügen
+        
         return group;
     }
     
@@ -315,6 +319,24 @@ public class Group implements Cloneable{
         if (this.admin.contains(hero)) return true;
         if (this.mod.contains(hero)) return true;
         return this.user.contains(hero);
+    }
+    
+    public boolean invite(User user)
+    {
+        if (this.invited.contains(user))
+            return false;
+        this.invited.add(user);
+        return true;
+    }
+    
+    public boolean isInvited(User user)
+    {
+        if (this.closed)
+            if (this.invited.contains(user))
+                return true;
+            else
+                return false;
+        return true;
     }
 
     /**
@@ -395,6 +417,20 @@ public class Group implements Cloneable{
     public int getPower_boost()
     {
         return (Integer)this.getValue("power_boost");
+    }
+
+    /**
+     * @return the closed
+     */
+    public boolean isClosed() {
+        return closed;
+    }
+
+    /**
+     * @param closed the closed to set
+     */
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
     
     public static enum DmgModType 

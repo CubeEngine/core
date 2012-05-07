@@ -48,7 +48,12 @@ public class CubeWarListener implements Listener
         if (event.getEntity() instanceof Player)
         {
             if (event.getEntity().getKiller()!=null)
+            {
                 Users.kill(event.getEntity().getKiller(), (Player)event.getEntity());
+                PvP.loot(event.getEntity().getKiller().getPlayer(), (Player)event.getEntity(), event.getDrops());
+                event.getDrops().clear();
+            }
+                
         }
         if (event.getEntity() instanceof Monster)
         {

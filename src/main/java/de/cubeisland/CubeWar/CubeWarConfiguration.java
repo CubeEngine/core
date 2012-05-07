@@ -1,9 +1,8 @@
 package de.cubeisland.CubeWar;
 
-import de.cubeisland.CubeWar.User.Rank;
 import de.cubeisland.CubeWar.Groups.GroupControl;
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.CubeWar.User.Rank;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -13,14 +12,14 @@ import org.bukkit.configuration.ConfigurationSection;
 public class CubeWarConfiguration
 {
     public String cubewar_language;
-    public Map<Integer,Rank> cubewar_ranks;
+    public TIntObjectHashMap<Rank> cubewar_ranks;
     public int killpoint_min;
     public int killpoint_max;
     
     public CubeWarConfiguration(Configuration config)
     {
         this.cubewar_language = config.getString("cubewar.language");
-        this.cubewar_ranks = new HashMap<Integer,Rank>();
+        this.cubewar_ranks = new TIntObjectHashMap<Rank>();
         ConfigurationSection ranksection = config.getConfigurationSection("cubewar.ranks");
         for (String rankname : ranksection.getKeys(false))
         {
