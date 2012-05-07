@@ -33,11 +33,11 @@ public class User {
         rank = config.cubewar_ranks.get(0);
     }
     
-    public int kill(User hero)
+    public int kill(User user)
     {
-        this.killpoints += hero.getRank().getKmod();
+        this.killpoints += user.getRank().getKmod();
         this.rank = this.rank.newRank(this);
-        return this.kill_kd(hero);
+        return this.kill_kd(user);
     }
     
     public void kill(Monster monster)
@@ -47,7 +47,7 @@ public class User {
         this.rank = this.rank.newRank(this);
     }
     
-    private int kill_kd(User hero)
+    private int kill_kd(User user)
     {
         if (mode.equals(PlayerMode.NORMAL))
         {
@@ -59,7 +59,7 @@ public class User {
         }
         else if (mode.equals(PlayerMode.HIGHLANDER))
         {
-            this.kills += hero.getKills();
+            this.kills += user.getKills();
             return this.kills;
         }
         return -1;
@@ -153,19 +153,19 @@ public class User {
     
     public void showInfo(CommandSender sender)
     {
-        sender.sendMessage(t("hero_01"));
-        sender.sendMessage(t("hero_02",this.getName()));
-        sender.sendMessage(t("hero_03",this.rank.getName(),this.killpoints));
+        sender.sendMessage(t("user_01"));
+        sender.sendMessage(t("user_02",this.getName()));
+        sender.sendMessage(t("user_03",this.rank.getName(),this.killpoints));
         int kd;
         if (this.death == 0)
             kd = 0;
         else
             kd = (int)(this.kills/this.death *100);
-        sender.sendMessage(t("hero_04",this.kills,this.death,String.valueOf(kd/100)));
+        sender.sendMessage(t("user_04",this.kills,this.death,String.valueOf(kd/100)));
         if (Users.getUser(sender).getTeam().isTrueAlly(this.team))
-            sender.sendMessage(t("hero_051",this.getTeamTag()));
+            sender.sendMessage(t("user_051",this.getTeamTag()));
         else
-            sender.sendMessage(t("hero_052",this.getTeamTag()));
+            sender.sendMessage(t("user_052",this.getTeamTag()));
         if (sender instanceof Player)
             if (this.equals(Users.getUser(sender)))
                 sender.sendMessage(t("her_06",GroupControl.getArea((Player)sender)));

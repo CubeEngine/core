@@ -23,7 +23,7 @@ public class GroupCommands {
     
     }
     
-    @Command(usage = "<TeamTag> <TeamName>", aliases = {"ct","c"})
+    @Command(usage = "<Tag> <Name>", aliases = {"ct","c"})
     @RequiresPermission
     public boolean createTeam(CommandSender sender, CommandArgs args)
     {
@@ -58,7 +58,7 @@ public class GroupCommands {
             return false;
     }
     
-    @Command(usage = "<ArenaTag> <ArenaName>", aliases = {"ca"})
+    @Command(usage = "<Tag> <Name>", aliases = {"ca"})
     @RequiresPermission
     public boolean createArena(CommandSender sender, CommandArgs args)
     {
@@ -83,7 +83,7 @@ public class GroupCommands {
             return false;
     }
     
-    @Command(usage = "[#TeamTag] <Key> <Value>", aliases = {"mt","m"})
+    @Command(usage = "[#Tag] <Key> <Value>", aliases = {"mt","m"})
     @RequiresPermission
     public boolean modifyTeam(CommandSender sender, CommandArgs args)
     {
@@ -118,13 +118,13 @@ public class GroupCommands {
             else
             {
                
-                User hero = Users.getUser(sender);
-                if (hero == null)
+                User user = Users.getUser(sender);
+                if (user == null)
                 {
                     sender.sendMessage(t("e")+t("g_noPlayer"));
                     return true;
                 }
-                Group area = hero.getTeam();
+                Group area = user.getTeam();
                 if (area == null)
                 {
                     sender.sendMessage(t("e")+t("m_noTeam"));
@@ -155,7 +155,7 @@ public class GroupCommands {
     }
     
     
-    @Command(usage = "<ArenaTag> <Key> <Value>", aliases = {"ma"})
+    @Command(usage = "<Tag> <Key> <Value>", aliases = {"ma"})
     @RequiresPermission
     public boolean modifyArena(CommandSender sender, CommandArgs args)
     {
@@ -188,33 +188,33 @@ public class GroupCommands {
         }
     }
     
-    @Command(usage = "<PlayerName>", aliases = {"admin","ta","leader"})
+    @Command(usage = "<Player>", aliases = {"admin","ta","leader"})
     @RequiresPermission
     public boolean teamAdmin(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)    
         {
-            User hero = Users.getUser(args.getString(0));
-            Group area = hero.getTeam();
-            return this.toggleTeamPos(sender, hero, area, "admin");
+            User user = Users.getUser(args.getString(0));
+            Group area = user.getTeam();
+            return this.toggleTeamPos(sender, user, area, "admin");
         }
         return false;
     }
     
-    @Command(usage = "<PlayerName>", aliases = {"mod","tm"})
+    @Command(usage = "<Player>", aliases = {"mod","tm"})
     @RequiresPermission
     public boolean teamMod(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)    
         {
-            User hero = Users.getUser(args.getString(0));
-            Group area = hero.getTeam();
-            return this.toggleTeamPos(sender, hero, area, "mod");
+            User user = Users.getUser(args.getString(0));
+            Group area = user.getTeam();
+            return this.toggleTeamPos(sender, user, area, "mod");
         }
         return false;
     }
     
-    @Command(usage = "<TeamTag>")
+    @Command(usage = "<Tag>")
     @RequiresPermission
     public boolean join(CommandSender sender, CommandArgs args)
     {
@@ -226,9 +226,9 @@ public class GroupCommands {
                 sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
-            User hero = Users.getUser(sender);
+            User user = Users.getUser(sender);
             Group area = groupcontrol.getGroup(areaId);
-            return this.toggleTeamPos(sender, hero, area, "userjoin");
+            return this.toggleTeamPos(sender, user, area, "userjoin");
         }
         return false;
     }
@@ -376,7 +376,7 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(usage = "<TeamTag> [TeamTag]")
+    @Command(usage = "<Tag> [Tag]")
     @RequiresPermission
     public boolean ally(CommandSender sender, CommandArgs args)
     {
@@ -422,7 +422,7 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(usage = "<TeamTag> [TeamTag]")
+    @Command(usage = "<Tag> [Tag]")
     @RequiresPermission
     public boolean enemy(CommandSender sender, CommandArgs args)
     {
@@ -470,7 +470,7 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(usage = "<TeamTag> [TeamTag]")
+    @Command(usage = "<Tag> [Tag]")
     @RequiresPermission
     public boolean neutral(CommandSender sender, CommandArgs args)
     {

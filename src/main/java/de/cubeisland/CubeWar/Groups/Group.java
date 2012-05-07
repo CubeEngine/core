@@ -255,70 +255,70 @@ public class Group implements Cloneable{
         return group;
     }
     
-    public void addAdmin(User hero)
+    public void addAdmin(User user)
     {
-        if (hero == null) return;
-        this.admin.add(hero);
-        this.mod.remove(hero);
-        this.user.remove(hero);
-        hero.setTeam(this);
+        if (user == null) return;
+        this.admin.add(user);
+        this.mod.remove(user);
+        this.user.remove(user);
+        user.setTeam(this);
     }
     
-    public void delAdmin(User hero)
+    public void delAdmin(User user)
     {
-        this.admin.remove(hero);
-        hero.setTeam(null);
+        this.admin.remove(user);
+        user.setTeam(null);
     }
         
-    public boolean isAdmin(User hero)
+    public boolean isAdmin(User user)
     {
-        return this.admin.contains(hero);
+        return this.admin.contains(user);
     }
     
-    public void addMod(User hero)
+    public void addMod(User user)
     {
-        if (hero == null) return;
-        this.mod.add(hero);
-        this.admin.remove(hero);
-        this.user.remove(hero);
-        hero.setTeam(this);
+        if (user == null) return;
+        this.mod.add(user);
+        this.admin.remove(user);
+        this.user.remove(user);
+        user.setTeam(this);
     }
     
-    public void delMod(User hero)
+    public void delMod(User user)
     {
-        this.mod.remove(hero);
-        this.admin.remove(hero);
-        hero.setTeam(null);
+        this.mod.remove(user);
+        this.admin.remove(user);
+        user.setTeam(null);
     }
         
-    public boolean isMod(User hero)
+    public boolean isMod(User user)
     {
-        if (this.admin.contains(hero)) return true;
-        return this.mod.contains(hero);
+        if (this.admin.contains(user)) return true;
+        return this.mod.contains(user);
     }
     
-    public void addUser(User hero)
+    public void addUser(User user)
     {
-        if (hero == null) return;
-        this.user.add(hero);
-        this.mod.remove(hero);
-        this.admin.remove(hero);
-        hero.setTeam(this);
+        if (user == null) return;
+        this.user.add(user);
+        this.mod.remove(user);
+        this.admin.remove(user);
+        user.setTeam(this);
     }
     
-    public void delUser(User hero)
+    public void delUser(User user)
     {
-        this.user.remove(hero);
-        this.mod.remove(hero);
-        this.admin.remove(hero);
-        hero.setTeam(null);
+        this.user.remove(user);
+        this.mod.remove(user);
+        this.admin.remove(user);
+        user.setTeam(null);
     }
         
-    public boolean isUser(User hero)
+    public boolean isUser(User user)
     {
-        if (this.admin.contains(hero)) return true;
-        if (this.mod.contains(hero)) return true;
-        return this.user.contains(hero);
+        if (this.admin.contains(user)) return true;
+        if (this.mod.contains(user)) return true;
+        return this.user.contains(user);
     }
     
     public boolean invite(User user)

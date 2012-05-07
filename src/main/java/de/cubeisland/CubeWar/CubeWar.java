@@ -2,7 +2,7 @@ package de.cubeisland.CubeWar;
 
 import de.cubeisland.CubeWar.Commands.ClaimCommands;
 import de.cubeisland.CubeWar.Commands.GroupCommands;
-import de.cubeisland.CubeWar.Commands.HeroCommands;
+import de.cubeisland.CubeWar.Commands.UserCommands;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -71,10 +70,10 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
         translation = Translation.get(this.getClass(), config.cubewar_language);
         if (translation == null) translation = Translation.get(this.getClass(), "en");
 
-        this.baseCommand = new BaseCommand(this, PERMISSION_BASE, PermissionDefault.OP);
+        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand.registerCommands(new ClaimCommands())
                         .registerCommands(new GroupCommands())
-                        .registerCommands(new HeroCommands());
+                        .registerCommands(new UserCommands());
         
         this.getCommand("cubewar").setExecutor(baseCommand);
 

@@ -61,13 +61,13 @@ public class PvP{
         CubeWar.debug("PVP-ON?");
         if (PvP.isAreaPvPOff(damager, damagee)) return false;
         CubeWar.debug("Area-ON");
-        if (PvP.isHeroPeaceFull(damager)||PvP.isHeroPeaceFull(damagee)) return false;
+        if (PvP.isUserPeaceFull(damager)||PvP.isUserPeaceFull(damagee)) return false;
         CubeWar.debug("User-ON");
         CubeWar.debug("PVP-ON!");
         return true;
     }
     
-    private static boolean isHeroPeaceFull(Player player)
+    private static boolean isUserPeaceFull(Player player)
     {
         return Users.getUser(player).getMode().equals(PlayerMode.PEACE);
     }

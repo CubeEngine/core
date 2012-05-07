@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package de.cubeisland.CubeWar.Commands;
 
 import static de.cubeisland.CubeWar.CubeWar.t;
@@ -17,33 +12,33 @@ import org.bukkit.command.CommandSender;
  *
  * @author Faithcaio
  */
-public class HeroCommands 
+public class UserCommands 
 {
 
-    public HeroCommands() 
+    public UserCommands() 
     {
     
     }
     
-    @Command(usage = "<PlayerName>", aliases = {"kd"})
+    @Command(usage = "<Player>", aliases = {"kd"})
     @RequiresPermission
     public boolean show(CommandSender sender, CommandArgs args)
     {
         if (args.size() > 0)    
         {
-            User hero = Users.getUser(args.getString(0));
-            if (hero == null)
+            User user = Users.getUser(args.getString(0));
+            if (user == null)
             {
                 sender.sendMessage(t("e")+t("g_noplayer"));
                 return true;
             }
-            hero.showInfo(sender);
+            user.showInfo(sender);
             return true;
         }
         if (args.isEmpty())
         {
-            User hero = Users.getUser(sender);
-            hero.showInfo(sender);
+            User user = Users.getUser(sender);
+            user.showInfo(sender);
             return true;
         }
         return false;

@@ -1,6 +1,5 @@
 package de.cubeisland.CubeWar.User;
 
-import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.CubeWar;
 import de.cubeisland.CubeWar.CubeWarConfiguration;
 
@@ -23,11 +22,11 @@ public class Rank {
         this.killpointlimit = kplimit;
     }
     
-    public Rank newRank(User hero)
+    public Rank newRank(User user)
     {
         final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
         Integer kp = null;
-        for (int i = hero.getKp();kp==null;--i)
+        for (int i = user.getKp();kp==null;--i)
         {
             if (config.cubewar_ranks.containsKey(i))
                 kp = i;

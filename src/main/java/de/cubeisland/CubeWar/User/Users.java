@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
  */
 public class Users {
 
-    private static Map<OfflinePlayer,User> heroes= new HashMap<OfflinePlayer,User>();
+    private static Map<OfflinePlayer,User> users= new HashMap<OfflinePlayer,User>();
     private static Server server = CubeWar.getInstance().getServer();
 
     public Users() 
@@ -54,44 +54,44 @@ public class Users {
         killer.kill(monster);           
     }
     
-    public static String getUserKD(User hero, User killed, int kill)
+    public static String getUserKD(User user, User killed, int kill)
     {
-        String name = hero.getName();
-        int k = hero.getKills();
-        int d = hero.getDeath();  
+        String name = user.getName();
+        int k = user.getKills();
+        int d = user.getDeath();  
         if (kill==0)
         {
-            return t("kd",hero.getRank().getName(),name,k,d,hero.getKp());
+            return t("kd",user.getRank().getName(),name,k,d,user.getKp());
         }
-        switch (hero.getMode())
+        switch (user.getMode())
         {
             case NORMAL:
             {
-                if (kill > 0) return t("kds-",hero.getRank().getName(),name,t("kd_n-",k,d),hero.getKp(),hero.getRank().getDmod());
-                else return t("kds+",hero.getRank().getName(),name,t("kd_n+",k,d),hero.getKp(),killed.getRank().getKmod());
+                if (kill > 0) return t("kds-",user.getRank().getName(),name,t("kd_n-",k,d),user.getKp(),user.getRank().getDmod());
+                else return t("kds+",user.getRank().getName(),name,t("kd_n+",k,d),user.getKp(),killed.getRank().getKmod());
             }
             case KILLRESET:
             {
-                if (kill > 0) return t("kds-",hero.getRank().getName(),name,t("kd_kr-",k,d),hero.getKp(),hero.getRank().getDmod());
-                else return t("kds+",hero.getRank().getName(),name,t("kd_kr+",k,d),hero.getKp(),killed.getRank().getKmod());
+                if (kill > 0) return t("kds-",user.getRank().getName(),name,t("kd_kr-",k,d),user.getKp(),user.getRank().getDmod());
+                else return t("kds+",user.getRank().getName(),name,t("kd_kr+",k,d),user.getKp(),killed.getRank().getKmod());
             }
             case HIGHLANDER:  
             {
-                if (kill > 0) return t("kds-",hero.getRank().getName(),name,t("kd_h-",k,d),hero.getKp(),hero.getRank().getKmod());
-                else return t("kds+",hero.getRank().getName(),name,t("kd_h+",k,d),hero.getKp(),killed.getRank().getKmod());
+                if (kill > 0) return t("kds-",user.getRank().getName(),name,t("kd_h-",k,d),user.getKp(),user.getRank().getKmod());
+                else return t("kds+",user.getRank().getName(),name,t("kd_h+",k,d),user.getKp(),killed.getRank().getKmod());
             }
         }
         return "#ERROR while getting KD";
     }
     
-    public static User getOfflineUser(OfflinePlayer hero)
+    public static User getOfflineUser(OfflinePlayer user)
     {
-        if (heroes.containsKey(hero))
-            return heroes.get(hero);
+        if (users.containsKey(user))
+            return users.get(user);
         else
         {
-            heroes.put(hero, new User(hero));
-            return heroes.get(hero);        
+            users.put(user, new User(user));
+            return users.get(user);        
         }
     }
     
