@@ -1,5 +1,6 @@
 package de.cubeisland.CubeWar.Area;
 
+import de.cubeisland.CubeWar.CubeWar;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
 import gnu.trove.map.hash.THashMap;
@@ -25,6 +26,7 @@ public class Area {
     
     public static Group addChunk(Chunk chunk, Group group)
     {
+        CubeWar.debug("ADD X: "+chunk.getX()+" Z:"+chunk.getZ()+" "+chunks.get(chunk)+" -->"+group);
         if (!(group.equals(chunks.get(chunk))))
         {
             if (chunks.get(chunk) == null)
@@ -55,6 +57,7 @@ public class Area {
     
     public static Group remChunk(Chunk chunk)
     {
+        CubeWar.debug("REM X: "+chunk.getX()+" Z:"+chunk.getZ()+" "+chunks.get(chunk));
         Group group = chunks.remove(chunk);
         if (group != null)
             group.remPower_used();

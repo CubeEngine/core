@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 /**
@@ -41,6 +42,14 @@ public class CubeWarListener implements Listener
         }
     }
     
+    @EventHandler
+    public void move(final PlayerMoveEvent event)
+    {
+        if (!event.getFrom().getChunk().equals(event.getTo().getChunk()))
+            event.getPlayer().sendMessage("X: "+event.getPlayer().getLocation().getChunk().getX()+" Z: "+event.getPlayer().getLocation().getChunk().getZ()+
+                " "+GroupControl.getArea(event.getPlayer()).getTag());
+        //TODO nachricht nur bei Gebietwechsel
+    }
     
     @EventHandler
     public void death(final EntityDeathEvent event)

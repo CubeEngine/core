@@ -151,13 +151,13 @@ public class ClaimCommands {
         else
         {
             World world = loc.getWorld();
-            int x = (int)loc.getX();
-            int z = (int)loc.getZ();
+            int x = (int)loc.getChunk().getX();
+            int z = (int)loc.getChunk().getZ();
             for (int i = -rad; i <= rad; ++i)
             {
                 for (int j = -rad; j <= rad; ++j)
                 {
-                    chunks.add(world.getChunkAt(x+i*16,z+j*16));
+                     chunks.add(world.getChunkAt(x+i,z+j));
                 }
             }
         }
@@ -286,27 +286,29 @@ public class ClaimCommands {
         }
         else if (radius < 0)
         {
-            if (radius < -1)
+            if (radius == -1)
+            {
+                if (group == null)
+                    GroupControl.wipeArea();
+                else
+                    Area.remAll(group);
+            }
+            else
             {
                 sender.sendMessage(t("claim_neg_radius"));
-                return;
             }
-            if (group == null)
-                GroupControl.wipeArea();
-            else
-                Area.remAll(group);
         }
         else
         {
             List<Chunk> chunks = new ArrayList<Chunk>(); 
             World world = loc.getWorld();
-            int x = (int)loc.getX();
-            int z = (int)loc.getZ();
+            int x = (int)loc.getChunk().getX();
+            int z = (int)loc.getChunk().getZ();
             for (int i = -radius; i <= radius; ++i)
             {
                 for (int j = -radius; j <= radius; ++j)
                 {
-                    chunks.add(world.getChunkAt(x+i*16,z+j*16));
+                    chunks.add(world.getChunkAt(x+i,z+j));
                 }
             }
             int i=0;
@@ -318,7 +320,5 @@ public class ClaimCommands {
             }
             sender.sendMessage(t("unclaim_more",i));
         }
-                    
-                
     }
 }
