@@ -495,7 +495,21 @@ public class Group implements Cloneable{
     {
         return this.power_used;
     }
+    
+    public void addPower_used()
+    {
+        this.power_used++;
+    }
 
+    public void remPower_used()
+    {
+        this.power_used--;
+    }
+    
+    public void resetPower_used()
+    {
+        this.power_used = 0;
+    }
     /**
      * @param type the type to set
      */

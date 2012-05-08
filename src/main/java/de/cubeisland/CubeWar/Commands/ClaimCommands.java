@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,11 +30,10 @@ public class ClaimCommands {
     }
     
     
-        @Command(usage = "[Radius] [Tag]")
+    @Command(usage = "[Radius] [Tag]")
     @RequiresPermission
     public boolean claim(CommandSender sender, CommandArgs args)
-    {//TODO radiusclaim wird geblockt wenn schon claimed
-        //TODO radius claim msg bündeln
+    {//TODO radiusclaim wird geblockt wenn schon claimed ??
         if (sender instanceof Player)
         {
             Player player = (Player)sender;
@@ -104,6 +102,11 @@ public class ClaimCommands {
                 return true;
             }
         }
+        else
+        {
+            sender.sendMessage(t("claim_never"));
+            return true;
+        }
         return false;
     }
     
@@ -165,13 +168,6 @@ public class ClaimCommands {
             if (group == null) ++wild;
             else if (group.equals(user.getTeam())) ++own;
             else ++enemy;
-            /*
-            if (1==2)
-            {//TODO BYPASS MODE
-                player.sendMessage(t("claim_claimed_bypass",group.getTag(),user.getTeamTag()));
-                return;
-            }
-            */
         }
         player.sendMessage(t("claim_more",sum,g.getTag(),wild,enemy,sum-own,own));
     }
@@ -191,13 +187,13 @@ public class ClaimCommands {
         }
         else
         {
-            //TODO msg not console cannot do this
+            sender.sendMessage(t("unclaim_never"));
             return true;
         }
         if (args.isEmpty())
         {
             if (Perm.command_unclaim_ownTeam.hasPerm(sender));
-                this.unclaim(loc, 0, user.getTeam());
+                this.unclaim(loc, 0, user.getTeam(), sender);
             return true;
         }
         int rad;
@@ -211,7 +207,7 @@ public class ClaimCommands {
                 rad = -1;
             else
             {
-                //TODO msg
+                sender.sendMessage(t("claim_invalid_radius"));
                 return true;
             }
         }
@@ -225,7 +221,7 @@ public class ClaimCommands {
                     if (Perm.command_unclaim_ownTeam_all.hasNotPerm(sender))  
                         return true;
             }
-            this.unclaim(loc, rad, user.getTeam());
+            this.unclaim(loc, rad, user.getTeam(),sender);
         }
         if (args.size()>1)
         {
@@ -233,8 +229,9 @@ public class ClaimCommands {
             if (group == null)
             {
                 if (!args.getString(1).equalsIgnoreCase("all"))//TODO erstllen grp mit tag all verbieten!!!
-                //TODO msg keine Grp
-                return true;
+                {//TODO msg keine Grp
+                    return true;
+                }
             }
             if (Perm.command_unclaim_bypass.hasNotPerm(sender))
             {
@@ -266,26 +263,29 @@ public class ClaimCommands {
                     }
                 }
             }
-            this.unclaim(loc, rad, group);
+            this.unclaim(loc, rad, group, sender);
         }
         return false;    
     }
     
-    private void unclaim(Location loc, int radius, Group group)
+    private void unclaim(Location loc, int radius, Group group, CommandSender sender)
     {
         if (radius == 0)
         {
             Area.remChunk(loc);
+            sender.sendMessage(t("unclaim_single"));
         }
         else if (radius < 0)
         {
-            if (radius < 1)
+            if (radius < -1)
             {
-                //TODO msg
+                sender.sendMessage(t("claim_neg_radius"));
                 return;
             }
             if (group == null)
-            Area.remAll(group);
+                GroupControl.wipeArea();
+            else
+                Area.remAll(group);
         }
         else
         {
@@ -300,11 +300,13 @@ public class ClaimCommands {
                     chunks.add(world.getChunkAt(x+i*16,z+j*16));
                 }
             }
+            int i=0;
             for (Chunk chunk : chunks)
             {
                 Area.remChunk(chunk);
-                //TODO msg chunk deleted
+                ++i;
             }
+            sender.sendMessage(t("unclaim_more",i));
         }
                     
                 

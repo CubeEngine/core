@@ -3,6 +3,7 @@ package de.cubeisland.CubeWar.Commands;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
+import de.cubeisland.CubeWar.Perm;
 import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
@@ -380,9 +381,11 @@ public class GroupCommands {
     @RequiresPermission
     public boolean ally(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_relation_change.hasNotPerm(sender)) return true;
         if (args.size() > 1)
         {
-            //TODO Permission if sender can change AllyMode of other Teams
+            if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
+
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
             if (team.equals(team2))
@@ -426,9 +429,10 @@ public class GroupCommands {
     @RequiresPermission
     public boolean enemy(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_relation_change.hasNotPerm(sender)) return true;
         if (args.size() > 1)
         {
-            //TODO Permission if sender can change EnemyMode of other Teams
+            if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
             if (team.equals(team2))
@@ -474,9 +478,10 @@ public class GroupCommands {
     @RequiresPermission
     public boolean neutral(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_relation_change.hasNotPerm(sender)) return true;
         if (args.size() > 1)
         {
-            //TODO Permission if sender can change NeutralMode of other Teams
+            if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
             if (team.equals(team2))
@@ -556,29 +561,27 @@ public class GroupCommands {
     @RequiresPermission
     public boolean invite(CommandSender sender, CommandArgs args)
     {
-        //TODO nachrichten & befehl
-        
+        if (Perm.command_invite.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
             User user = Users.getUser(args.getString(0));
             if (user == null)
             {
-                //TODO msg
+                sender.sendMessage(t("g_noPlayer"));
                 return true;
             }
             else
             {
-                //TODO msg
                 Group team = Users.getUser(sender).getTeam();
                 if (team == null)
                 {
-                    //TODO msg
+                    sender.sendMessage(t("m_noTeam"));
                     return true;
                 }
                 else
                 {
                     team.invite(user);
-                    //TODO msg
+                    sender.sendMessage(t("invite_user"));
                     return true;
                 }
             }

@@ -21,12 +21,23 @@ public class Area {
     
     public static Group addChunk(Location loc, Group group)
     {
-        //TODO Power change
-        return chunks.put(loc.getChunk(), group);
+        return addChunk(loc.getChunk(), group);
     }
     
     public static Group addChunk(Chunk chunk, Group group)
     {
+        if (!(group.equals(chunks.get(chunk))))
+        {
+            if (chunks.get(chunk) == null)
+            {
+                group.addPower_used();
+            }
+            else
+            {
+                group.addPower_used();
+                chunks.get(chunk).remPower_used();
+            }
+        }
         return chunks.put(chunk, group);
     }
     
@@ -45,7 +56,10 @@ public class Area {
     
     public static Group remChunk(Chunk chunk)
     {
-        return chunks.remove(chunk);
+        Group group = chunks.remove(chunk);
+        if (group != null)
+            group.remPower_used();
+        return group;
     }
     
     public static void remAll(Group group)
@@ -55,6 +69,7 @@ public class Area {
             if (chunks.get(chunk).equals(group))
                 chunks.remove(chunk);
         }
+        group.resetPower_used();
                     
     }
     

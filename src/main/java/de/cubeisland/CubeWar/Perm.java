@@ -24,7 +24,13 @@ public enum Perm
     command_unclaim_otherTeam_all(""),//TODO msg
     command_unclaim_allTeam(""),//TODO msg
     command_unclaim_allTeam_all(""),//TODO msg
-    command_unclaim_bypass(null);
+    command_unclaim_bypass(null),
+    
+    command_relation_change(""),//TODO msg
+    command_relation_change_other(""),//TODO msg
+    
+    command_invite(""),//TODO msg
+    ;
     private final String text;
     private final String permission;
 

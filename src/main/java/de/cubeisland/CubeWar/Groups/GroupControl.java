@@ -14,8 +14,17 @@ import org.bukkit.entity.Player;
  */
 public class GroupControl {
 
-    private static TIntObjectHashMap<Group> areas = new TIntObjectHashMap<Group>();
+    private static TIntObjectHashMap<Group> groups = new TIntObjectHashMap<Group>();
     private static GroupControl instance = null;
+
+    public static void wipeArea()
+    {
+        for (Group g : groups.valueCollection())
+        {
+            g.resetPower_used();
+            Area.remAllAll();
+        }
+    }
     
     public GroupControl(ConfigurationSection config) 
     {
@@ -106,29 +115,29 @@ public class GroupControl {
             
             newArea.setClosed(section.getBoolean("TODO",false));//TODO in Bitmask einfügen und config
             
-            areas.put(newArea.getId(), newArea);
+            groups.put(newArea.getId(), newArea);
         }
     }
     
     public Group newTeam(String tag, String name)
     {
-        Group newArea = areas.get(-1).clone();
+        Group newArea = groups.get(-1).clone();
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
-        int id = areas.size()-4;
+        int id = groups.size()-4;
         newArea.setIntegerValue("id", id);
-        areas.put(id, newArea);
+        groups.put(id, newArea);
         return newArea;
     }
     
     public Group newArena(String tag, String name)
     {
-        Group newArea = areas.get(-2).clone();
+        Group newArea = groups.get(-2).clone();
         newArea.setStringValue("tag", tag);
         newArea.setStringValue("name", name);
-        int id = areas.size()-4;
+        int id = groups.size()-4;
         newArea.setIntegerValue("id", id);
-        areas.put(id, newArea);
+        groups.put(id, newArea);
         return newArea;
     }
     
@@ -144,7 +153,7 @@ public class GroupControl {
     
     public Integer getTeamGroup(String tag)
     {
-        for (Group area : areas.valueCollection())
+        for (Group area : groups.valueCollection())
         {
             if (area.getTag().equalsIgnoreCase(tag))
                 if (area.getType().equals(AreaType.TEAMZONE))
@@ -155,7 +164,7 @@ public class GroupControl {
     
     public Integer getArenaGroup(String tag)
     {
-        for (Group area : areas.values())
+        for (Group area : groups.values())
         {
             if (area.getTag().equalsIgnoreCase(tag))
                 if (area.getType().equals(AreaType.ARENA))
@@ -171,36 +180,36 @@ public class GroupControl {
     
     public static Collection<Group> getAreas()
     {
-        return areas.valueCollection();
+        return groups.valueCollection();
     }
     
     public static Group getArea(Location loc)
     {
         Group group = Area.getGroup(loc);
         if (group == null)
-            return areas.get(0);//return WildLand
+            return groups.get(0);//return WildLand
         return group;//return group at Loc
     }
     
     public static Group getWildLand()
     {
-        return areas.get(0);
+        return groups.get(0);
     }
     
     public boolean setGroupValue(int id, String key, String value)
     {
-        Group area = areas.get(id);
+        Group area = groups.get(id);
         return area.setValue(key, value);
     }
     
     public Group getGroup(int id)
     {
-        return areas.get(id);
+        return groups.get(id);
     }
     
     public Group getGroup(String tag)
     {
-        for (Group area : areas.valueCollection())
+        for (Group area : groups.valueCollection())
         {
             if (area.getTag().equalsIgnoreCase(tag))
                 return area;
@@ -218,7 +227,7 @@ public class GroupControl {
     {
         int position = 1;
         int power = group.getPower_used();
-        for (Group g : areas.valueCollection())
+        for (Group g : groups.valueCollection())
         {
             int gpower = g.getPower_used();
             if (gpower>0)
