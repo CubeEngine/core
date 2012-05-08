@@ -1,5 +1,6 @@
 package de.cubeisland.CubeWar;
 
+import de.cubeisland.CubeWar.Area.Area;
 import de.cubeisland.CubeWar.Groups.GroupControl;
 import de.cubeisland.CubeWar.User.PvP;
 import de.cubeisland.CubeWar.User.Users;
@@ -46,9 +47,11 @@ public class CubeWarListener implements Listener
     public void move(final PlayerMoveEvent event)
     {
         if (!event.getFrom().getChunk().equals(event.getTo().getChunk()))
-            event.getPlayer().sendMessage("X: "+event.getPlayer().getLocation().getChunk().getX()+" Z: "+event.getPlayer().getLocation().getChunk().getZ()+
-                " "+GroupControl.getArea(event.getPlayer()).getTag());
-        //TODO nachricht nur bei Gebietwechsel
+        {
+            if (!Area.getGroup(event.getFrom().getChunk()).equals(Area.getGroup(event.getTo().getChunk())))
+                event.getPlayer().sendMessage("X: "+event.getPlayer().getLocation().getChunk().getX()+" Z: "+event.getPlayer().getLocation().getChunk().getZ()+
+                    " "+GroupControl.getArea(event.getPlayer()).getTag());
+        }
     }
     
     @EventHandler

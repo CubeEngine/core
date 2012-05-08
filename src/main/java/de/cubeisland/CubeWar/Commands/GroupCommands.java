@@ -293,13 +293,11 @@ public class GroupCommands {
             sender.sendMessage(t("e")+t("g_noPlayer"));
             return true;
         }
-        
         if (area == null)
         {
             sender.sendMessage(t("g_noGroup"));
             return true;
         }
-        
         if (position.equalsIgnoreCase("admin"))
         {
             if (area.isAdmin(user))
@@ -367,6 +365,11 @@ public class GroupCommands {
             {
                 if (area.isInvited(user))
                 {
+                    if (!area.isBalanced(user))
+                    {
+                        sender.sendMessage(t("team_isunbalanced"));
+                        return true;
+                    }
                     area.addUser(user);
                     sender.sendMessage(t("i")+t("team_isnow_mem",area.getTag()));
                 }

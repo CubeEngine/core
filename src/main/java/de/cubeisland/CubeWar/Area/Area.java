@@ -44,10 +44,15 @@ public class Area {
     
     public static Group getGroup(Location loc)
     {
-        Group tmp = chunks.get(loc.getChunk());
+        return getGroup(loc.getChunk());
+    }
+    
+    public static Group getGroup(Chunk chunk)
+    {
+        Group tmp = chunks.get(chunk);
         if (tmp == null)
             return GroupControl.getWildLand();
-        return chunks.get(loc.getChunk());
+        return chunks.get(chunk);
     }
     
     public static Group remChunk(Location loc)

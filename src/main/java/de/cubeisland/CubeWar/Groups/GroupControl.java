@@ -232,4 +232,22 @@ public class GroupControl {
         }
         return position;
     }
+    
+    public boolean isBalanced(Group group)
+    {
+        int users = 0;
+        int teams = 0;
+        for (Group g : groups.valueCollection())
+        {
+            if (!g.isBalancing())
+            {
+                continue;
+            }
+            users += g.getUserSum();
+            if (g.getType().equals(AreaType.TEAMZONE))
+                ++teams;
+        }
+        if ((users / teams)*2 >= group.getUserSum()) return true;
+        return false;
+    }
 }

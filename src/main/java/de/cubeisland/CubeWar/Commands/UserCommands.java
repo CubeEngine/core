@@ -64,4 +64,11 @@ public class UserCommands
                 sender.sendMessage(t("fly_off"));
         }
     }
+    
+    @Command(usage = "add <Player> <bounty>" )//aliases = {""}
+    @RequiresPermission
+    public void bounty(CommandSender sender, CommandArgs args)
+    {
+        //TODO bounty adding etc
+    }
 }

@@ -289,9 +289,15 @@ public class ClaimCommands {
             if (radius == -1)
             {
                 if (group == null)
+                {
                     GroupControl.wipeArea();
+                    sender.sendMessage(t("unclaim_all"));
+                }
                 else
+                {
                     Area.remAll(group);
+                    sender.sendMessage(t("unclaim_group_all",group.getTag()));
+                }
             }
             else
             {
@@ -314,7 +320,11 @@ public class ClaimCommands {
             int i=0;
             for (Chunk chunk : chunks)
             {
-                //TODO unterscheidung welches team
+                if (group != null)
+                {
+                    if (!group.equals(Area.getGroup(chunk)))
+                        continue;
+                }
                 Group g = Area.remChunk(chunk);
                 if (g != null) ++i;
             }

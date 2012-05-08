@@ -339,6 +339,12 @@ public class Group implements Cloneable{
                 return false;
         return true;
     }
+    
+    public boolean isBalanced(User user)
+    {
+        if (this.invited.contains(user)) return true; //Invited Player can always join!
+        return GroupControl.get().isBalanced(this);
+    }
 
     /**
      * @return the id
@@ -663,6 +669,11 @@ public class Group implements Cloneable{
         return list;
     }
     
+    public int getUserSum()
+    {
+        return this.getUserList().size();
+    }
+    
     public int getKPSum()
     {
         int kp = 0;
@@ -672,7 +683,6 @@ public class Group implements Cloneable{
         }
         return kp;
     }
-    
     
     /**
      * @return the bits
@@ -700,5 +710,10 @@ public class Group implements Cloneable{
     public void remFromBank(double val)
     {
         econ.bankWithdraw("#"+this.getTag(), val);
+    }
+    
+    public boolean isBalancing()
+    {
+        return true;//TODO beim TeamBalancing ignorieren?
     }
 }
