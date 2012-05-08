@@ -106,7 +106,8 @@ public class CubeWarListener implements Listener
                 if (!PvP.isFriendlyFireOn(damager, damagee))
                 {
                     //TODO Friendly Fire Off Einstellung -> Nur Kein Schaden ODER Event blocken
-                    event.setCancelled(true);
+                    event.setDamage(0);
+                    //event.setCancelled(true);
                 }
                 
                 //DAMAGE Modifier

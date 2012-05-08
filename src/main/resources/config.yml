@@ -41,7 +41,33 @@ cubewar:
   killpoint:
      min: -100
      max: 200000
-     
+     kp:
+        Chicken: 0
+        Cow: 1
+        Mooshroom: 1
+        Ocelot : 0
+        Pig: 1
+        Sheep: 0
+        Squid: 1
+        Villager: -20
+        Enderman: 8
+        Wolf: -15
+        ZombiePigman: 2
+        Blaze: 3
+        CaveSpider: 2
+        Creeper: 3
+        Ghast: 4
+        MagmaCube: 1
+        Silverfish: 1
+        Skeleton: 1
+        Slime: 1
+        Spider: 2
+        Zombie: 1
+        SnowGolem: -5
+        IronGolem: -50
+        EnderDragon: 250
+        Giant: 100
+
   chat:
     useCWChat: false
     tagreplace: [CWTEAM]

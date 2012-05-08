@@ -3,6 +3,8 @@ package de.cubeisland.CubeWar;
 import de.cubeisland.CubeWar.Groups.GroupControl;
 import de.cubeisland.CubeWar.User.Rank;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -16,6 +18,7 @@ public class CubeWarConfiguration
     public int killpoint_min;
     public int killpoint_max;
     public int max_claim;
+    public Map<String,Integer> killKP = new HashMap<String,Integer>();
     
     public CubeWarConfiguration(Configuration config)
     {
@@ -30,6 +33,11 @@ public class CubeWarConfiguration
         }
         this.killpoint_min = config.getInt("cubewar.killpoint.min");
         this.killpoint_max = config.getInt("cubewar.killpoint.max");
+        ConfigurationSection kps = config.getConfigurationSection("cubewar.killpoint.kp");
+        for (String key : kps.getKeys(false))
+        {
+            this.killKP.put(key, config.getInt(key));
+        }
         this.max_claim = config.getInt("cubewar.claim.maxclaim");
         
         GroupControl.createInstance(config.getConfigurationSection("cubewar.area"));

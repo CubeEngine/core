@@ -7,8 +7,7 @@ import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 
 /**
  *
@@ -43,8 +42,33 @@ public class User {
     
     public void kill(Monster monster)
     {
-        //TODO unterscheidung KP in config wenn nicht def +1 kill -0 death
-        this.killpoints += 1;
+        int kp=0;
+        if (monster instanceof Chicken) kp = config.killKP.get("Chicken");
+        if (monster instanceof Cow) kp = config.killKP.get("Cow");
+        if (monster instanceof MushroomCow) kp = config.killKP.get("Mooshroom");
+        if (monster instanceof Ocelot) kp = config.killKP.get("Ocelot");
+        if (monster instanceof Pig) kp = config.killKP.get("Pig");
+        if (monster instanceof Sheep) kp = config.killKP.get("Sheep");
+        if (monster instanceof Squid) kp = config.killKP.get("Squid");
+        if (monster instanceof Villager) kp = config.killKP.get("Villager");
+        if (monster instanceof Enderman) kp = config.killKP.get("Enderman");
+        if (monster instanceof Wolf) kp = config.killKP.get("Wolf");
+        if (monster instanceof PigZombie) kp = config.killKP.get("ZombiePigman");
+        if (monster instanceof Blaze) kp = config.killKP.get("Blaze");
+        if (monster instanceof CaveSpider) kp = config.killKP.get("CaveSpider");
+        if (monster instanceof Creeper) kp = config.killKP.get("Creeper");
+        if (monster instanceof Ghast) kp = config.killKP.get("Ghast");
+        if (monster instanceof MagmaCube) kp = config.killKP.get("MagmaCube");
+        if (monster instanceof Silverfish) kp = config.killKP.get("Silverfish");
+        if (monster instanceof Skeleton) kp = config.killKP.get("Skeleton");
+        if (monster instanceof Slime) kp = config.killKP.get("Slime");
+        if (monster instanceof Spider) kp = config.killKP.get("Spider");
+        if (monster instanceof Zombie) kp = config.killKP.get("Zombie");
+        if (monster instanceof Snowman) kp = config.killKP.get("SnowGolem");
+        if (monster instanceof IronGolem) kp = config.killKP.get("IronGolem");
+        if (monster instanceof EnderDragon) kp = config.killKP.get("EnderDragon");
+        if (monster instanceof Giant) kp = config.killKP.get("Giant");
+        this.killpoints += kp;
         this.rank = this.rank.newRank(this);
     }
     
