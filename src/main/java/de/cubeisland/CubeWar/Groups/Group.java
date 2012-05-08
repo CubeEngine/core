@@ -631,8 +631,8 @@ public class Group implements Cloneable{
         }
         if (!offplayer.isEmpty())
             sender.sendMessage(t("g_13",list.size(),offplayer.substring(2)));
-        //TODO closed Teams
-        sender.sendMessage(t("g_-14"));
+        if (this.isClosed())
+            sender.sendMessage(t("g_14"));
     }
     
     public List<User> getUserList()

@@ -104,9 +104,10 @@ public class PvP{
     {
         int dmg = damage;
         Map<Group.DmgModType,Integer> modifiers = GroupControl.getArea(damagee).getDamagemodifier();
+        
         Integer tmp;
         for (Group.DmgModType type : Group.DmgModType.values())
-        {
+        {//TODO kein dmg mehr ??
             tmp = modifiers.get(type);
             if (tmp != null)
             {
@@ -115,19 +116,23 @@ public class PvP{
                     case ADD:
                     {
                         dmg += tmp;
+                        break;
                     }
                     case PERCENT:
                     {
                         dmg *= 1 + (tmp / 100);
+                        break;
                     } 
                     case SET:
                     {
                         dmg = tmp;
+                        break;
                     }
                 }
                 break;
             }
         }
+        CubeWar.debug("Damage:" + damage + " --> "+ dmg);
         return dmg;
     }
     

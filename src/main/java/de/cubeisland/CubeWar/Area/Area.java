@@ -21,6 +21,7 @@ public class Area {
     
     public static Group addChunk(Location loc, Group group)
     {
+        //TODO Power change
         return chunks.put(loc.getChunk(), group);
     }
     

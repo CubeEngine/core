@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,7 +33,8 @@ public class ClaimCommands {
         @Command(usage = "[Tag] [Radius]")
     @RequiresPermission
     public boolean claim(CommandSender sender, CommandArgs args)
-    {
+    {//TODO radiusclaim wird geblockt wenn schon claimed
+        //TODO radius claim msg bündeln
         if (sender instanceof Player)
         {
             Player player = (Player)sender;
@@ -125,21 +127,30 @@ public class ClaimCommands {
         }
         else
         {
-            chunks.add(loc.getChunk());
+            Group group = Area.addChunk(loc.getChunk(), user.getTeam());
+            if (group == null)
+                player.sendMessage(t("claim_claimed_wild",user.getTeamTag()));
+            else
+                player.sendMessage(t("claim_claimed_enemy",group.getTag(),user.getTeamTag()));
+            return;
         }
+        int sum=0, wild=0, enemy=0, own=0;
         for (Chunk chunk : chunks)
         {
+            ++sum;
             Group group = Area.addChunk(chunk, user.getTeam());
+            if (group == null) ++wild;
+            else if (group.equals(user.getTeam())) ++own;
+            else ++enemy;
+            /*
             if (1==2)
             {//TODO BYPASS MODE
                 player.sendMessage(t("claim_claimed_bypass",group.getTag(),user.getTeamTag()));
                 return;
             }
-            if (group == null)
-                player.sendMessage(t("claim_claimed_wild",user.getTeamTag()));
-            else
-                player.sendMessage(t("claim_claimed_enemy",group.getTag(),user.getTeamTag()));
+            */
         }
+        player.sendMessage(t("claim_more",sum,g.getTag(),wild,enemy,sum-own,own));
     }
     
     @Command(usage = "[radius]|[all] [Tag]|[all]")
