@@ -50,10 +50,10 @@ public class ClaimCommands {
             if (args.size() > 0) 
             {
                 int rad;
-                try { rad = args.getInt(1); }
+                try { rad = args.getInt(0); }
                 catch (NumberFormatException ex)
                 {
-                    sender.sendMessage(t("claim_invalid_radius",args.getString(1)));
+                    sender.sendMessage(t("claim_invalid_radius",args.getString(0)));
                     return true;
                 }
                 if (rad > CubeWar.getInstance().getConfiguration().max_claim)
@@ -65,17 +65,17 @@ public class ClaimCommands {
                     if ((Perm.command_claim_bypass.hasNotPerm(sender))
                      && (Perm.command_claim_radius.hasNotPerm(sender)))
                         return true;
-                this.claim(player.getLocation(), 0, user.getTeam(), player, user);
+                this.claim(player.getLocation(), rad, user.getTeam(), player, user);
                 return true;
             }
             
             if (args.size() > 1) 
             {
                 int rad;
-                try { rad = args.getInt(1); }
+                try { rad = args.getInt(0); }
                 catch (NumberFormatException ex)
                 {
-                    sender.sendMessage(t("claim_invalid_radius",args.getString(1)));
+                    sender.sendMessage(t("claim_invalid_radius",args.getString(0)));
                     return true;
                 }
                 if (rad > CubeWar.getInstance().getConfiguration().max_claim)
@@ -83,10 +83,10 @@ public class ClaimCommands {
                     sender.sendMessage(t("claim_big_radius",rad));
                     return true;
                 }
-                Group team = GroupControl.get().getGroup(args.getString(0));
+                Group team = GroupControl.get().getGroup(args.getString(1));
                 if (team == null)
                 {
-                    sender.sendMessage(t("claim_invalid_team",args.getString(0)));
+                    sender.sendMessage(t("claim_invalid_team",args.getString(1)));
                     return true;
                 }
                 if (Perm.command_claim_bypass.hasNotPerm(sender))
@@ -132,20 +132,7 @@ public class ClaimCommands {
             }
         }
         List<Chunk> chunks = new ArrayList<Chunk>();
-        if (rad != 0)
-        {
-            World world = loc.getWorld();
-            int x = (int)loc.getX();
-            int z = (int)loc.getZ();
-            for (int i = -rad; i <= rad; ++i)
-            {
-                for (int j = -rad; j <= rad; ++j)
-                {
-                    chunks.add(world.getChunkAt(x+i*16,z+j*16));
-                }
-            }
-        }
-        else
+        if (rad == 0)
         {
             Group group = Area.addChunk(loc.getChunk(), user.getTeam());
             if (group == null)
@@ -160,6 +147,19 @@ public class ClaimCommands {
                     player.sendMessage(t("claim_claimed_enemy",group.getTag(),user.getTeamTag()));
             }
             return;
+        }
+        else
+        {
+            World world = loc.getWorld();
+            int x = (int)loc.getX();
+            int z = (int)loc.getZ();
+            for (int i = -rad; i <= rad; ++i)
+            {
+                for (int j = -rad; j <= rad; ++j)
+                {
+                    chunks.add(world.getChunkAt(x+i*16,z+j*16));
+                }
+            }
         }
         int sum=0, wild=0, enemy=0, own=0;
         for (Chunk chunk : chunks)
@@ -193,6 +193,11 @@ public class ClaimCommands {
         }
         if (args.isEmpty())
         {
+            if (GroupControl.getArea(player).equals(GroupControl.getWildLand()))
+            {
+                sender.sendMessage(t("unclaim_wild"));
+                return true;
+            }
             if (Perm.command_unclaim_ownTeam.hasPerm(sender));
                 this.unclaim(loc, 0, user.getTeam(), sender);
             return true;
@@ -223,6 +228,7 @@ public class ClaimCommands {
                         return true;
             }
             this.unclaim(loc, rad, user.getTeam(),sender);
+            return true;
         }
         if (args.size()>1)
         {
@@ -266,6 +272,7 @@ public class ClaimCommands {
                 }
             }
             this.unclaim(loc, rad, group, sender);
+            return true;
         }
         return false;    
     }
@@ -305,8 +312,9 @@ public class ClaimCommands {
             int i=0;
             for (Chunk chunk : chunks)
             {
-                Area.remChunk(chunk);
-                ++i;
+                //TODO unterscheidung welches team
+                Group g = Area.remChunk(chunk);
+                if (g != null) ++i;
             }
             sender.sendMessage(t("unclaim_more",i));
         }

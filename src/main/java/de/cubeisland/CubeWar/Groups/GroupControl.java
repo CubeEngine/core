@@ -184,10 +184,7 @@ public class GroupControl {
     
     public static Group getArea(Location loc)
     {
-        Group group = Area.getGroup(loc);
-        if (group == null)
-            return groups.get(0);//return WildLand
-        return group;//return group at Loc
+        return Area.getGroup(loc);
     }
     
     public static Group getWildLand()

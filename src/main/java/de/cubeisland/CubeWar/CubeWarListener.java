@@ -104,12 +104,7 @@ public class CubeWarListener implements Listener
             {
                 //FRIENDLY Beschuss Disabler (Denglisch FTGewinn)
                 if (!PvP.isFriendlyFireOn(damager, damagee))
-                {
-                    //TODO Friendly Fire Off Einstellung -> Nur Kein Schaden ODER Event blocken
-                    event.setDamage(0);
-                    //event.setCancelled(true);
-                }
-                
+                    event.setCancelled(true);
                 //DAMAGE Modifier
                 int modDamage = PvP.modifyDamage(damager, damagee, event.getDamage());
                 event.setDamage(modDamage);

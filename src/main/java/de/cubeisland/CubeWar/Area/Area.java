@@ -3,6 +3,8 @@ package de.cubeisland.CubeWar.Area;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
 import gnu.trove.map.hash.THashMap;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
@@ -61,13 +63,18 @@ public class Area {
     
     public static void remAll(Group group)
     {
+        List<Chunk> remlist = new ArrayList<Chunk>();
         for (Chunk chunk : chunks.keySet())
         {
             if (chunks.get(chunk).equals(group))
-                chunks.remove(chunk);
+                remlist.add(chunk);
+                
+        }
+        for (Chunk chunk : remlist)
+        {
+            chunks.remove(chunk);
         }
         group.resetPower_used();
-                    
     }
     
     public static void remAllAll()

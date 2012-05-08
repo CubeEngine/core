@@ -612,11 +612,12 @@ public class Group implements Cloneable{
         String enemies = "";
         for (Group group : GroupControl.getAreas())
         {
-            if (this.isTrueAlly(group))
-                allies += ", "+group.getTag();
-            else
-            if ((group.isEnemy(this))||this.isEnemy(group))
-                enemies += ", "+group.getTag();
+            if (!this.equals(group))
+                if (this.isTrueAlly(group))
+                    allies += ", "+group.getTag();
+                else
+                if ((group.isEnemy(this))||this.isEnemy(group))
+                    enemies += ", "+group.getTag();
         }
         if (!allies.isEmpty())
             sender.sendMessage(t("g_09",allies.substring(2)));

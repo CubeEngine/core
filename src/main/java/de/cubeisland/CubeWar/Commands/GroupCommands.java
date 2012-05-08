@@ -99,9 +99,9 @@ public class GroupCommands {
             {
                 if (args.size() > 2)
                 {
-                    Integer area = GroupControl.get().getTeamGroup(args.getString(0).substring(1));
+                    Integer group = GroupControl.get().getTeamGroup(args.getString(0).substring(1));
                     String val = args.getString(2);
-                    if (area != null)
+                    if (group != null)
                     {
                         if (args.getString(1).equalsIgnoreCase("tag"))
                         {
@@ -112,7 +112,7 @@ public class GroupCommands {
                         {
                            val += " "+args.getString(i); 
                         }
-                        if (groupcontrol.setGroupValue(area, args.getString(1), val))
+                        if (groupcontrol.setGroupValue(group, args.getString(1), val))
                         {
                             sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
                             return true;
@@ -121,7 +121,7 @@ public class GroupCommands {
                             sender.sendMessage(t("e")+t("m_invalid"));
                     }
                     else
-                        sender.sendMessage(t("e")+t("m_noTeamExist"));
+                        sender.sendMessage(t("e")+t("m_noTeamExist",args.getString(0).substring(1)));
                 }
                 else
                     return false;
@@ -405,6 +405,11 @@ public class GroupCommands {
 
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
+            if (team == null)
+            {
+                sender.sendMessage(t("m_noTeamExist",args.getString(0)));
+                return true;
+            }
             if (team.equals(team2))
             {
                 sender.sendMessage(t("pro")+t("rel_self"));
@@ -419,6 +424,11 @@ public class GroupCommands {
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
             Group team = Users.getUser(sender).getTeam();
+            if (team == null)
+            {
+                sender.sendMessage(t("m_noTeam"));
+                return true;
+            }
             if (team.equals(team2))
             {
                 sender.sendMessage(t("pro")+t("rel_self"));
@@ -452,6 +462,11 @@ public class GroupCommands {
             if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
+            if (team == null)
+            {
+                sender.sendMessage(t("m_noTeamExist",args.getString(0)));
+                return true;
+            }
             if (team.equals(team2))
             {
                 sender.sendMessage(t("pro")+t("rel_self"));
@@ -467,6 +482,11 @@ public class GroupCommands {
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
             Group team = Users.getUser(sender).getTeam();
+            if (team == null)
+            {
+                sender.sendMessage(t("m_noTeam"));
+                return true;
+            }
             if (team.equals(team2))
             {
                 sender.sendMessage(t("pro")+t("rel_self"));
@@ -501,6 +521,11 @@ public class GroupCommands {
             if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
+            if (team == null)
+            {
+                sender.sendMessage(t("m_noTeamExist",args.getString(0)));
+                return true;
+            }
             if (team.equals(team2))
             {
                 sender.sendMessage(t("pro")+t("rel_self"));
@@ -516,6 +541,11 @@ public class GroupCommands {
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
             Group team = Users.getUser(sender).getTeam();
+            if (team == null)
+            {
+                sender.sendMessage(t("m_noTeam"));
+                return true;
+            }
             if (team.equals(team2))
             {
                 sender.sendMessage(t("pro")+t("rel_self"));
