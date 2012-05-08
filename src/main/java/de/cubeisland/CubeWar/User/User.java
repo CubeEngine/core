@@ -26,6 +26,7 @@ public class User {
     private Group team;
     private boolean respawning;
     private boolean fly_disable;
+    private double bounty; //TODO Kopfgeld
     
     public User(OfflinePlayer player) 
     {
