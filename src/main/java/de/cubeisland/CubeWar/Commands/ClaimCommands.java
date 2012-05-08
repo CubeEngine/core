@@ -4,6 +4,7 @@ import de.cubeisland.CubeWar.Area.Area;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
+import de.cubeisland.CubeWar.Perm;
 import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
@@ -30,7 +31,7 @@ public class ClaimCommands {
     }
     
     
-        @Command(usage = "[Tag] [Radius]")
+        @Command(usage = "[Radius] [Tag]")
     @RequiresPermission
     public boolean claim(CommandSender sender, CommandArgs args)
     {//TODO radiusclaim wird geblockt wenn schon claimed
@@ -40,14 +41,37 @@ public class ClaimCommands {
             Player player = (Player)sender;
             User user = Users.getUser(player);
             Location loc = player.getLocation();
-            if (args.size() > 1) 
+            if (args.isEmpty()) 
             {
-                Group team = GroupControl.get().getGroup(args.getString(0));
-                if (team == null)
+                if ((Perm.command_claim_bypass.hasPerm(sender))
+                  ||(Perm.command_claim_ownTeam.hasPerm(sender)))
+                        this.claim(player.getLocation(), 0, user.getTeam(), player, user);
+                return true;
+            }
+            if (args.size() > 0) 
+            {
+                int rad;
+                try { rad = args.getInt(1); }
+                catch (NumberFormatException ex)
                 {
-                    sender.sendMessage(t("claim_invalid_team",args.getString(0)));
+                    sender.sendMessage(t("claim_invalid_radius",args.getString(1)));
                     return true;
                 }
+                if (rad > 5)//TODO maxRadius in config
+                {
+                    sender.sendMessage(t("claim_big_radius",rad));
+                    return true;
+                }  
+                if (rad > 0) 
+                    if ((Perm.command_claim_bypass.hasNotPerm(sender))
+                     && (Perm.command_claim_radius.hasNotPerm(sender)))
+                        return true;
+                this.claim(player.getLocation(), 0, user.getTeam(), player, user);
+                return true;
+            }
+            
+            if (args.size() > 1) 
+            {
                 int rad;
                 try { rad = args.getInt(1); }
                 catch (NumberFormatException ex)
@@ -61,23 +85,22 @@ public class ClaimCommands {
                     sender.sendMessage(t("claim_big_radius",rad));
                     return true;
                 }
-                this.claim(player.getLocation(), rad, team, player, user);
-                return true;
-            }
-            if (args.size() > 0) 
-            {
                 Group team = GroupControl.get().getGroup(args.getString(0));
                 if (team == null)
                 {
                     sender.sendMessage(t("claim_invalid_team",args.getString(0)));
                     return true;
                 }
-                this.claim(player.getLocation(), 0, team, player, user);
-                return true;
-            }
-            if (args.isEmpty()) 
-            {
-                this.claim(player.getLocation(), 0, user.getTeam(), player, user);
+                if (Perm.command_claim_bypass.hasNotPerm(sender))
+                {
+                    if (!team.equals(user.getTeam()))
+                        if (Perm.command_claim_otherTeam.hasNotPerm(sender))
+                            return true;
+                    if (rad > 0)
+                        if (Perm.command_claim_radius.hasNotPerm(sender))
+                            return true;     
+                }
+                this.claim(player.getLocation(), rad, team, player, user);
                 return true;
             }
         }
@@ -98,18 +121,11 @@ public class ClaimCommands {
         }
         if (Area.getGroup(loc)!=null)
         {
-            //TODO Permission andere claimen und peaceful nie
-            if (1==2)
+            if (Perm.command_claim_bypass.hasNotPerm(player))
             {
-                player.sendMessage(t("claim_deny_other"));
-                return;
+                if (Perm.command_claim_fromother.hasNotPerm(player)) return;
+                if (Perm.command_claim_peaceful.hasNotPerm(player)) return;
             }
-            if (2==3)            //TODO Permission
-            {
-                player.sendMessage(t("claim_deny_other_never"));
-                return;
-            }
-
         }
         List<Chunk> chunks = new ArrayList<Chunk>();
         if (radius != 0)
@@ -129,9 +145,16 @@ public class ClaimCommands {
         {
             Group group = Area.addChunk(loc.getChunk(), user.getTeam());
             if (group == null)
-                player.sendMessage(t("claim_claimed_wild",user.getTeamTag()));
+                group = GroupControl.getWildLand();
+            if (Perm.command_claim_bypass.hasPerm(player))
+                player.sendMessage(t("claim_claimed_bypass",group.getTag(),user.getTeamTag()));
             else
-                player.sendMessage(t("claim_claimed_enemy",group.getTag(),user.getTeamTag()));
+            {
+                if (group.equals(GroupControl.getWildLand()))
+                    player.sendMessage(t("claim_claimed_wild",user.getTeamTag()));
+                else
+                    player.sendMessage(t("claim_claimed_enemy",group.getTag(),user.getTeamTag()));
+            }
             return;
         }
         int sum=0, wild=0, enemy=0, own=0;
@@ -173,8 +196,9 @@ public class ClaimCommands {
         }
         if (args.isEmpty())
         {
-            //TODO Permission check
-            this.unclaim(loc, 0, user.getTeam());
+            if (Perm.command_unclaim_ownTeam.hasPerm(sender));
+                this.unclaim(loc, 0, user.getTeam());
+            return true;
         }
         int rad;
         try
@@ -193,18 +217,54 @@ public class ClaimCommands {
         }
         if (args.size()>0)
         {
-            //TODO Permission checks
+            if (Perm.command_unclaim_bypass.hasNotPerm(sender))
+            {
+                if (Perm.command_unclaim_radius.hasNotPerm(sender))
+                    return true;
+                if (rad == -1)
+                    if (Perm.command_unclaim_ownTeam_all.hasNotPerm(sender))  
+                        return true;
+            }
             this.unclaim(loc, rad, user.getTeam());
         }
         if (args.size()>1)
         {
-            //TODO Permission checks
             Group group = GroupControl.get().getGroup(args.getString(1));
             if (group == null)
             {
                 if (!args.getString(1).equalsIgnoreCase("all"))//TODO erstllen grp mit tag all verbieten!!!
                 //TODO msg keine Grp
                 return true;
+            }
+            if (Perm.command_unclaim_bypass.hasNotPerm(sender))
+            {
+                if (group == null)
+                {
+                    if (Perm.command_unclaim_allTeam.hasNotPerm(sender))
+                        return true;
+                    if (rad == -1)
+                        if (Perm.command_unclaim_allTeam_all.hasNotPerm(sender))  
+                            return true;
+                }
+                else
+                {
+                    if (group.equals(user.getTeam()))
+                    {
+                        if (Perm.command_unclaim_radius.hasNotPerm(sender))
+                            return true;
+                        if (rad == -1)
+                            if (Perm.command_unclaim_ownTeam_all.hasNotPerm(sender))  
+                                return true;
+                    }
+                    else
+                    {
+                        if (Perm.command_unclaim_otherTeam.hasNotPerm(sender))
+                            return true;
+                        if (rad == -1)
+                            if (Perm.command_unclaim_otherTeam_all.hasNotPerm(sender))  
+                                return true;
+                    }
+                }
             }
             this.unclaim(loc, rad, group);
         }

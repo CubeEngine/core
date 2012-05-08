@@ -529,6 +529,7 @@ public class Group implements Cloneable{
     
     public boolean isTrueAlly(Group g)
     {
+        if (this.equals(g)) return true;
         if (this.ally.contains(g))
             return g.isAlly(this);
         else 
