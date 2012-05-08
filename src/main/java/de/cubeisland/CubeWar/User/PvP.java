@@ -149,14 +149,23 @@ public class PvP{
     public static void stopFlyAndFall(Player player)
     {
         CubeWar.debug("Fly Stop + Fall");
-        player.setFlying(false);
+        PvP.stopFly(player);
         player.setAllowFlight(false);
     }
     
-    public static void stopFly(Player player)
+    public static void stopFly(final Player player)
     {
         CubeWar.debug("Fall");
-        player.setFlying(false);        
+        player.setFlying(false);  
+        Users.getUser(player).setFly_disable(true);
+        
+        CubeWar plugin = CubeWar.getInstance();   
+        plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
+                new Runnable() {
+                    public void run()
+                    {
+                        Users.getUser(player).setFly_disable(false);
+                    }} , 10*20);
     }
     
     public static void loot(final Player killer,final Player killed, List<ItemStack> drops, final Location deathloc)
@@ -182,7 +191,7 @@ public class PvP{
                                 if (item != null)
                                     killer.getWorld().dropItemNaturally(deathloc, item);
                         }
-                    }} , 7*20);//7 sec loottime //TODO abhängigkeit von KP lvl
+                    }} , 7*20);//TODO LootTime (7sec) Veränderbar je nach KP
         
     }
 }

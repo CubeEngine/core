@@ -7,6 +7,7 @@ import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import de.cubeisland.libMinecraft.command.RequiresPermission;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -42,5 +43,25 @@ public class UserCommands
             return true;
         }
         return false;
+    }
+    
+    @Command(usage = "")
+    @RequiresPermission
+    public void fly(CommandSender sender, CommandArgs args)
+    {
+        if (sender instanceof Player)
+        {
+            Player player = (Player)sender;
+            if (Users.getUser(sender).isFly_disable())
+            {
+                sender.sendMessage(t("fly_block"));
+                return;
+            }
+            player.setAllowFlight(!player.getAllowFlight());
+            if (player.getAllowFlight())
+                sender.sendMessage(t("fly_on"));
+            else
+                sender.sendMessage(t("fly_off"));
+        }
     }
 }
