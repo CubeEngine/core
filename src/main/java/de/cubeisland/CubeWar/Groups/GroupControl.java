@@ -112,8 +112,7 @@ public class GroupControl {
             if (section.getBoolean("use.lava")) newArea.setBit(Group.USE_LAVA);
             if (section.getBoolean("use.water")) newArea.setBit(Group.USE_WATER);
             newArea.setListValue("denycommands", section.getStringList("denycommands"));
-            
-            newArea.setClosed(section.getBoolean("TODO",false));//TODO in Bitmask einfügen und config
+            newArea.setClosed(section.getBoolean("closed",true));
             
             groups.put(newArea.getId(), newArea);
         }

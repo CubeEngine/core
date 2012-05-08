@@ -46,6 +46,9 @@ cubewar:
     useCWChat: false
     tagreplace: [CWTEAM]
 
+  claim:
+    maxclaim: 5
+  
   area:
     safezone:
       power:
@@ -169,6 +172,7 @@ cubewar:
         lava: false
         water: false
       denycommands: []
+      closed: false
         
     arena_default:
       economy:

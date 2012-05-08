@@ -104,7 +104,7 @@ public class PvP{
         
         Integer tmp;
         for (Group.DmgModType type : Group.DmgModType.values())
-        {//TODO kein dmg mehr ??
+        {
             tmp = modifiers.get(type);
             if (tmp != null)
             {

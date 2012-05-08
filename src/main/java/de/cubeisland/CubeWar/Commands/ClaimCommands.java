@@ -1,6 +1,7 @@
 package de.cubeisland.CubeWar.Commands;
 
 import de.cubeisland.CubeWar.Area.Area;
+import de.cubeisland.CubeWar.CubeWar;
 import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
@@ -33,7 +34,7 @@ public class ClaimCommands {
     @Command(usage = "[Radius] [Tag]")
     @RequiresPermission
     public boolean claim(CommandSender sender, CommandArgs args)
-    {//TODO radiusclaim wird geblockt wenn schon claimed ??
+    {
         if (sender instanceof Player)
         {
             Player player = (Player)sender;
@@ -55,7 +56,7 @@ public class ClaimCommands {
                     sender.sendMessage(t("claim_invalid_radius",args.getString(1)));
                     return true;
                 }
-                if (rad > 5)//TODO maxRadius in config
+                if (rad > CubeWar.getInstance().getConfiguration().max_claim)
                 {
                     sender.sendMessage(t("claim_big_radius",rad));
                     return true;
@@ -77,8 +78,7 @@ public class ClaimCommands {
                     sender.sendMessage(t("claim_invalid_radius",args.getString(1)));
                     return true;
                 }
-                //TODO maxRadius in config
-                if (rad > 5)
+                if (rad > CubeWar.getInstance().getConfiguration().max_claim)
                 {
                     sender.sendMessage(t("claim_big_radius",rad));
                     return true;
@@ -110,18 +110,19 @@ public class ClaimCommands {
         return false;
     }
     
-    private void claim(Location loc, int radius, Group g, Player player, User user)
+    private void claim(Location loc, int rad, Group g, Player player, User user)
     {
         if (g == null)
         {
             player.sendMessage(t("claim_noteam"));
             return;
         }
-        if (Area.getGroup(loc).equals(user.getTeam()))
-        {
-            player.sendMessage(t("claim_deny_own"));
-            return;
-        }
+        if (rad == 0)
+            if (Area.getGroup(loc).equals(user.getTeam()))
+            {
+                player.sendMessage(t("claim_deny_own"));
+                return;
+            }
         if (Area.getGroup(loc)!=null)
         {
             if (Perm.command_claim_bypass.hasNotPerm(player))
@@ -131,14 +132,14 @@ public class ClaimCommands {
             }
         }
         List<Chunk> chunks = new ArrayList<Chunk>();
-        if (radius != 0)
+        if (rad != 0)
         {
             World world = loc.getWorld();
             int x = (int)loc.getX();
             int z = (int)loc.getZ();
-            for (int i = -radius; i <= radius; ++i)
+            for (int i = -rad; i <= rad; ++i)
             {
-                for (int j = -radius; j <= radius; ++j)
+                for (int j = -rad; j <= rad; ++j)
                 {
                     chunks.add(world.getChunkAt(x+i*16,z+j*16));
                 }
@@ -228,8 +229,9 @@ public class ClaimCommands {
             Group group = GroupControl.get().getGroup(args.getString(1));
             if (group == null)
             {
-                if (!args.getString(1).equalsIgnoreCase("all"))//TODO erstllen grp mit tag all verbieten!!!
-                {//TODO msg keine Grp
+                if (!args.getString(1).equalsIgnoreCase("all"))
+                {
+                    sender.sendMessage(t("g_noGroup"));
                     return true;
                 }
             }

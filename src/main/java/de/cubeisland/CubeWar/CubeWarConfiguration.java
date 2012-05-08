@@ -15,6 +15,7 @@ public class CubeWarConfiguration
     public TIntObjectHashMap<Rank> cubewar_ranks;
     public int killpoint_min;
     public int killpoint_max;
+    public int max_claim;
     
     public CubeWarConfiguration(Configuration config)
     {
@@ -29,6 +30,7 @@ public class CubeWarConfiguration
         }
         this.killpoint_min = config.getInt("cubewar.killpoint.min");
         this.killpoint_max = config.getInt("cubewar.killpoint.max");
+        this.max_claim = config.getInt("cubewar.claim.maxclaim");
         
         GroupControl.createInstance(config.getConfigurationSection("cubewar.area"));
     }

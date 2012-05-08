@@ -10,6 +10,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,6 +21,8 @@ import org.bukkit.entity.Player;
  */
 public class Group implements Cloneable{
 
+    private static final Economy econ = CubeWar.getEconomy();
+    
     public static final int PVP_ON = 1;
     public static final int PVP_DAMAGE = 2;
     public static final int PVP_FRIENDLYFIRE = 4;
@@ -33,14 +36,13 @@ public class Group implements Cloneable{
     public static final int POWER_LOSS = 1024;
     public static final int POWER_GAIN = 2048;
     public static final int ECONOMY_BANK = 4096;
-    //TODO Bank
+    public static final int IS_CLOSED = 8192;
+    
     private BitMask bits;
     private AreaType type;
     private Map<String,Integer> intval = new HashMap<String,Integer>();
     private Map<String,String> stringval = new HashMap<String,String>();
     private Map<String,List> listval = new HashMap<String,List>();
-    
-    private boolean closed;//TODO in Bitmask einfügen
     
     private int power_used;
     private int power_max;
@@ -249,9 +251,8 @@ public class Group implements Cloneable{
         if (this.getBits().isset(Group.USE_LAVA)) group.setBit(Group.USE_LAVA);
         if (this.getBits().isset(Group.USE_WATER)) group.setBit(Group.USE_WATER);
         group.setListValue("denycommands", this.getDenycommands());
-        
-        group.setClosed(this.isClosed()); //TODO in Bitmask einfügen
-        
+        group.setClosed(this.isClosed());
+
         return group;
     }
     
@@ -331,7 +332,7 @@ public class Group implements Cloneable{
     
     public boolean isInvited(User user)
     {
-        if (this.closed)
+        if (this.bits.isset(IS_CLOSED))
             if (this.invited.contains(user))
                 return true;
             else
@@ -423,14 +424,16 @@ public class Group implements Cloneable{
      * @return the closed
      */
     public boolean isClosed() {
-        return closed;
+        return this.bits.isset(IS_CLOSED);
     }
 
     /**
      * @param closed the closed to set
      */
-    public void setClosed(boolean closed) {
-        this.closed = closed;
+    public void setClosed(boolean closed) 
+    {
+        if (closed) this.bits.set(IS_CLOSED);
+        else this.bits.unset(IS_CLOSED);
     }
     
     public static enum DmgModType 
@@ -620,7 +623,7 @@ public class Group implements Cloneable{
         if (!enemies.isEmpty())
             sender.sendMessage(t("g_10",enemies.substring(2)));
         if (this.getBits().isset(ECONOMY_BANK))
-            sender.sendMessage(t("g_11","NO MONEY HAHA"));//TODO Vault dependency blah blubb
+            sender.sendMessage(t("g_11",econ.bankBalance("#"+this.getTag())));
         List<User> list = this.getUserList();
         sender.sendMessage(t("g_15",list.size(),this.getKPSum()));
         String onplayer = "";
@@ -676,5 +679,25 @@ public class Group implements Cloneable{
     public BitMask getBits()
     {
         return bits;
+    }
+    
+    public void createBank()
+    {
+        econ.createBank("#"+this.getTag(), "CubeWar#"+this.getId());
+    }
+    
+    public void deleteBank()
+    {
+        econ.deleteBank("#"+this.getTag());
+    }
+    
+    public void addToBank(double val)
+    {
+        econ.bankDeposit("#"+this.getTag(), val);
+    }
+    
+    public void remFromBank(double val)
+    {
+        econ.bankWithdraw("#"+this.getTag(), val);
     }
 }

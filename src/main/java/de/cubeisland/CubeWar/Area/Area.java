@@ -14,10 +14,7 @@ public class Area {
 
     private static THashMap<Chunk,Group> chunks = new THashMap<Chunk,Group>();
     
-    public Area() 
-    {
-    
-    }
+    public Area() {}
     
     public static Group addChunk(Location loc, Group group)
     {

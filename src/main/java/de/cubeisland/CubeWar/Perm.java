@@ -10,26 +10,29 @@ import org.bukkit.permissions.Permissible;
  */
 public enum Perm
 {
-    command_claim_ownTeam(""),//TODO msg
-    command_claim_radius(""),//TODO msg
-    command_claim_otherTeam(""),//TODO msg
+    command_claim_ownTeam("claim_deny_ownTeam"),
+    command_claim_radius("claim_deny_radius"),
+    command_claim_otherTeam("claim_deny_otherTeam"),
     command_claim_fromother("claim_deny_other"),
     command_claim_peaceful("claim_deny_other_never"),
     command_claim_bypass(null),
     
-    command_unclaim_ownTeam(""),//TODO msg
-    command_unclaim_radius(""),//TODO msg
-    command_unclaim_ownTeam_all(""),//TODO msg
-    command_unclaim_otherTeam(""),//TODO msg
-    command_unclaim_otherTeam_all(""),//TODO msg
-    command_unclaim_allTeam(""),//TODO msg
-    command_unclaim_allTeam_all(""),//TODO msg
+    command_unclaim_ownTeam("unclaim_deny_ownTeam"),
+    command_unclaim_radius("unclaim_deny_radius"),
+    command_unclaim_ownTeam_all("unclaim_deny_ownTeam_all"),
+    command_unclaim_otherTeam("unclaim_deny_otherTeam"),
+    command_unclaim_otherTeam_all("unclaim_deny_otherTeam_all"),
+    command_unclaim_allTeam("unclaim_deny_allTeam"),
+    command_unclaim_allTeam_all("unclaim_deny_allTeam_all"),
     command_unclaim_bypass(null),
     
-    command_relation_change(""),//TODO msg
-    command_relation_change_other(""),//TODO msg
+    command_relation_change("relation_change"),
+    command_relation_change_other("relation_change_other"),
     
-    command_invite(""),//TODO msg
+    command_invite("invite_deny"),
+    
+    command_kick("kick_deny"),
+    command_kick_other("kick_deny_other"),
     ;
     private final String text;
     private final String permission;

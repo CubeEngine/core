@@ -33,6 +33,11 @@ public class GroupCommands {
         {
             String tag = args.getString(0);
             String name = args.getString(1);
+            if (tag.equalsIgnoreCase("all"))
+            {
+                sender.sendMessage(t(""));
+                return true;
+            }
             if (!groupcontrol.freeTag(tag))
             {
                 sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getName()));
@@ -98,6 +103,11 @@ public class GroupCommands {
                     String val = args.getString(2);
                     if (area != null)
                     {
+                        if (args.getString(1).equalsIgnoreCase("tag"))
+                        {
+                            sender.sendMessage(t("m_tag"));
+                            return true;
+                        }
                         for (int i = 3; i < args.size();++i)
                         {
                            val += " "+args.getString(i); 
@@ -133,6 +143,11 @@ public class GroupCommands {
                 }
                 else
                 {
+                    if (args.getString(0).equalsIgnoreCase("tag"))
+                    {
+                        sender.sendMessage(t("m_tag"));
+                        return true;
+                    }
                     String val = args.getString(1);
                     for (int i = 2; i < args.size();++i)
                         {
@@ -253,7 +268,7 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             User user = Users.getUser(args.getString(0));
-            //TODO Permission if sender can kick PLAYER out of his team
+            if (Perm.command_kick.hasNotPerm(sender)) return true;
             if (user != null )
             {
                 if (user.getTeam() == null)
@@ -261,6 +276,8 @@ public class GroupCommands {
                     sender.sendMessage(t("team_noteam",user.getName()));
                     return true;
                 }
+                if (! user.getTeam().equals(Users.getUser(sender).getTeam()))
+                    if (Perm.command_kick_other.hasNotPerm(sender)) return true;
                 user.getPlayer().sendMessage(t("i")+t("team_kick",user.getTeamTag()));
                 return this.toggleTeamPos(sender, user, user.getTeam(), "userleave");
             }
@@ -279,7 +296,7 @@ public class GroupCommands {
         
         if (area == null)
         {
-            sender.sendMessage(t("g_noGroup"));//TODO msg
+            sender.sendMessage(t("g_noGroup"));
             return true;
         }
         
