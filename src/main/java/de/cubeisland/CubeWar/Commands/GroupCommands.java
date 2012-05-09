@@ -8,7 +8,6 @@ import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
-import de.cubeisland.libMinecraft.command.RequiresPermission;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -24,168 +23,98 @@ public class GroupCommands {
     
     }
     
-    @Command(usage = "<Tag> <Name>", aliases = {"ct","c"})
-    @RequiresPermission
-    public boolean createTeam(CommandSender sender, CommandArgs args)
+    @Command(usage = "Team|Arena <Tag> <Name>", aliases = {"c"})
+    public boolean create(CommandSender sender, CommandArgs args)
     {
-        args.size();
-        if (args.size() > 1)
+        if (Perm.command_create.hasNotPerm(sender)) return true;
+        if (args.size()>0)
         {
-            String tag = args.getString(0);
-            String name = args.getString(1);
-            if (tag.equalsIgnoreCase("all"))
+            String t = args.getString(0);
+            if ((t.equalsIgnoreCase("Team"))||(t.equalsIgnoreCase("t")))
             {
-                sender.sendMessage(t(""));
-                return true;
-            }
-            if (!groupcontrol.freeTag(tag))
-            {
-                sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getName()));
-                return true;
-            }
-            for (int i = 2; i < args.size();++i)
-            {
-                name += " "+args.getString(i); 
-            }
-            Group team = groupcontrol.newTeam(tag, name);
-            User user = Users.getUser(sender);
-            if (user.getTeam() == null)
-            {
-                team.addAdmin(Users.getUser(sender));
-                sender.sendMessage(t("i")+t("ct1", tag, name));
-            }
-            else
-            {
-                sender.sendMessage(t("i")+t("ct2", tag, name));
-            }    
-            return true;
-        }
-        else
-            return false;
-    }
-    
-    @Command(usage = "<Tag> <Name>", aliases = {"ca"})
-    @RequiresPermission
-    public boolean createArena(CommandSender sender, CommandArgs args)
-    {
-        if (args.size() > 1)
-        {
-            String tag = args.getString(0);
-            String name = args.getString(1);
-            if (!groupcontrol.freeTag(tag))
-            {
-                sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getTag()));
-                return true;
-            }
-            for (int i = 2; i < args.size();++i)
-            {
-                name += " "+args.getString(i); 
-            }
-            groupcontrol.newArena(tag, name);
-            sender.sendMessage(t("i")+t("ca", tag, name));
-            return true;
-        }
-        else
-            return false;
-    }
-    
-    @Command(usage = "[#Tag] <Key> <Value>", aliases = {"mt","m"})
-    @RequiresPermission
-    public boolean modifyTeam(CommandSender sender, CommandArgs args)
-    {
-        if (args.size() > 1)
-        {
-            if (args.getString(0).charAt(0)=='#')
-            {
+                if (Perm.command_create_team.hasNotPerm(sender)) return true;
                 if (args.size() > 2)
                 {
-                    Integer group = GroupControl.get().getTeamGroup(args.getString(0).substring(1));
-                    String val = args.getString(2);
-                    if (group != null)
+                    String tag = args.getString(1);
+                    String name = args.getString(2);
+                    if (tag.equalsIgnoreCase("all"))
                     {
-                        if (args.getString(1).equalsIgnoreCase("tag"))
-                        {
-                            sender.sendMessage(t("m_tag"));
-                            return true;
-                        }
-                        for (int i = 3; i < args.size();++i)
-                        {
-                           val += " "+args.getString(i); 
-                        }
-                        if (groupcontrol.setGroupValue(group, args.getString(1), val))
-                        {
-                            sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
-                            return true;
-                        }
-                        else
-                            sender.sendMessage(t("e")+t("m_invalid"));
+                        sender.sendMessage(t("create_tag_all"));
+                        return true;
+                    }
+                    if (!groupcontrol.freeTag(tag))
+                    {
+                        sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getName()));
+                        return true;
+                    }
+                    for (int i = 3; i < args.size();++i)
+                    {
+                        name += " "+args.getString(i); 
+                    }
+                    Group team = groupcontrol.newTeam(tag, name);
+                    User user = Users.getUser(sender);
+                    if (user.getTeam() == null)
+                    {
+                        team.addAdmin(Users.getUser(sender));
+                        sender.sendMessage(t("i")+t("ct1", tag, name));
                     }
                     else
-                        sender.sendMessage(t("e")+t("m_noTeamExist",args.getString(0).substring(1)));
+                    {
+                        sender.sendMessage(t("i")+t("ct2", tag, name));
+                    }    
+                    return true;
                 }
                 else
                     return false;
             }
-            else
+            else if ((t.equalsIgnoreCase("Arena"))||(t.equalsIgnoreCase("a")))
             {
-               
-                User user = Users.getUser(sender);
-                if (user == null)
+                if (Perm.command_create_arena.hasNotPerm(sender)) return true;
+                if (args.size() > 2)
                 {
-                    sender.sendMessage(t("e")+t("g_noPlayer"));
-                    return true;
-                }
-                Group area = user.getTeam();
-                if (area == null)
-                {
-                    sender.sendMessage(t("e")+t("m_noTeam"));
+                    String tag = args.getString(1);
+                    String name = args.getString(2);
+                    if (!groupcontrol.freeTag(tag))
+                    {
+                        sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getTag()));
+                        return true;
+                    }
+                    for (int i = 3; i < args.size();++i)
+                    {
+                        name += " "+args.getString(i); 
+                    }
+                    groupcontrol.newArena(tag, name);
+                    sender.sendMessage(t("i")+t("ca", tag, name));
                     return true;
                 }
                 else
-                {
-                    if (args.getString(0).equalsIgnoreCase("tag"))
-                    {
-                        sender.sendMessage(t("m_tag"));
-                        return true;
-                    }
-                    String val = args.getString(1);
-                    for (int i = 2; i < args.size();++i)
-                        {
-                           val += " "+args.getString(i); 
-                        }
-                        if (groupcontrol.setGroupValue(area.getId(), args.getString(0), val))
-                        {
-                            sender.sendMessage(t("i")+t("m_keyset",args.getString(0),val));
-                            return true;
-                        }
-                        else
-                            sender.sendMessage(t("e")+t("m_invalid"));
-                }
+                    return false;
             }
-            return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
+
     }
     
-    
-    @Command(usage = "<Tag> <Key> <Value>", aliases = {"ma"})
-    @RequiresPermission
-    public boolean modifyArena(CommandSender sender, CommandArgs args)
+    @Command(usage = "<Tag> <Key> <Value>", aliases = {"m"})
+    public boolean modify(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_modify.hasNotPerm(sender)) return true;
         if (args.size() > 2)
         {
-            Integer area = GroupControl.get().getArenaGroup(args.getString(0));
+            Group group = GroupControl.get().getGroup(args.getString(0).substring(1));
             String val = args.getString(2);
-            if (area != null)
+            if (group != null)
             {
+                if (args.getString(1).equalsIgnoreCase("tag"))
+                {
+                    sender.sendMessage(t("m_tag"));
+                    return true;
+                }
                 for (int i = 3; i < args.size();++i)
                 {
                     val += " "+args.getString(i); 
                 }
-                if (groupcontrol.setGroupValue(area, args.getString(1), val))
+                if (groupcontrol.setGroupValue(group.getId(), args.getString(1), val))
                 {
                     sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
                     return true;
@@ -194,65 +123,58 @@ public class GroupCommands {
                     sender.sendMessage(t("e")+t("m_invalid"));
             }
             else
-                sender.sendMessage(t("e")+t("m_noArenaExist"));
-            
+                sender.sendMessage(t("e")+t("m_noGroupExist",args.getString(0)));
             return true;
         }
         else
-        {
             return false;
-        }
     }
     
-    @Command(usage = "<Player>", aliases = {"admin","ta","leader"})
-    @RequiresPermission
-    public boolean teamAdmin(CommandSender sender, CommandArgs args)
+    @Command(usage = "admin|mod <Player>", aliases = {"pos","lead"})
+    public boolean position(CommandSender sender, CommandArgs args)
     {
-        if (args.size() > 0)    
+        if (Perm.command_position.hasNotPerm(sender)) return true;
+        if (args.size() > 2)    
         {
-            User user = Users.getUser(args.getString(0));
+            String t = args.getString(0);
+            User user = Users.getUser(args.getString(1));
             Group area = user.getTeam();
-            return this.toggleTeamPos(sender, user, area, "admin");
+            if (t.equalsIgnoreCase("admin")||t.equalsIgnoreCase("a"))
+            {
+                if (Perm.command_position_admin.hasNotPerm(sender)) return true;
+                return this.toggleTeamPos(sender, user, area, "admin");
+            }
+            else if (t.equalsIgnoreCase("mod")||t.equalsIgnoreCase("m"))
+            {
+                if (Perm.command_position_mod.hasNotPerm(sender)) return true;
+                return this.toggleTeamPos(sender, user, area, "mod");
+            }
         }
         return false;
     }
-    
-    @Command(usage = "<Player>", aliases = {"mod","tm"})
-    @RequiresPermission
-    public boolean teamMod(CommandSender sender, CommandArgs args)
-    {
-        if (args.size() > 0)    
-        {
-            User user = Users.getUser(args.getString(0));
-            Group area = user.getTeam();
-            return this.toggleTeamPos(sender, user, area, "mod");
-        }
-        return false;
-    }
-    
+
     @Command(usage = "<Tag>")
-    @RequiresPermission
     public boolean join(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_join.hasNotPerm(sender)) return true;
         if (args.size() > 0)
         {
-            Integer areaId = groupcontrol.getTeamGroup(args.getString(0));
-            if (areaId == null)
+            Group group = groupcontrol.getGroup(args.getString(0));
+            if (group == null)
             {
                 sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
             User user = Users.getUser(sender);
-            Group area = groupcontrol.getGroup(areaId);
-            return this.toggleTeamPos(sender, user, area, "userjoin");
+            return this.toggleTeamPos(sender, user, group, "userjoin");
         }
         return false;
     }
     
     @Command(usage = "")
-    @RequiresPermission
     public boolean leave(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_leave.hasNotPerm(sender)) return true;
         if (args.isEmpty())
         {
             User user = Users.getUser(sender);
@@ -262,13 +184,12 @@ public class GroupCommands {
     }
     
     @Command(usage = "<Player>")
-    @RequiresPermission
     public boolean kick(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_kick.hasNotPerm(sender)) return true;
         if (args.size() > 0)
         {
             User user = Users.getUser(args.getString(0));
-            if (Perm.command_kick.hasNotPerm(sender)) return true;
             if (user != null )
             {
                 if (user.getTeam() == null)
@@ -302,7 +223,7 @@ public class GroupCommands {
         {
             if (area.isAdmin(user))
             {
-                area.delAdmin(user);
+                area.addUser(user);
                 sender.sendMessage(t("i")+t("team_nolonger_admin",area.getTag()));
                 return true;
             }
@@ -328,7 +249,7 @@ public class GroupCommands {
         {
             if (area.isMod(user))
             {
-                area.delMod(user);
+                area.addUser(user);
                 sender.sendMessage(t("i")+t("team_nolonger_mod",area.getTag()));
                 return true;
             }
@@ -398,7 +319,6 @@ public class GroupCommands {
     }
     
     @Command(usage = "<Tag> [Tag]")
-    @RequiresPermission
     public boolean ally(CommandSender sender, CommandArgs args)
     {
         if (Perm.command_relation_change.hasNotPerm(sender)) return true;
@@ -456,7 +376,6 @@ public class GroupCommands {
     }
     
     @Command(usage = "<Tag> [Tag]")
-    @RequiresPermission
     public boolean enemy(CommandSender sender, CommandArgs args)
     {
         if (Perm.command_relation_change.hasNotPerm(sender)) return true;
@@ -515,7 +434,6 @@ public class GroupCommands {
     }
     
     @Command(usage = "<Tag> [Tag]")
-    @RequiresPermission
     public boolean neutral(CommandSender sender, CommandArgs args)
     {
         if (Perm.command_relation_change.hasNotPerm(sender)) return true;
@@ -578,10 +496,10 @@ public class GroupCommands {
         return false;
     }
     
-    @Command(usage = "<Tag>")
-    @RequiresPermission
+    @Command(usage = "[Tag]")
     public boolean info(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_info.hasNotPerm(sender)) return true;
         if (args.size() > 0)    
         {
             Group group = GroupControl.get().getGroup(args.getString(0));
@@ -590,6 +508,7 @@ public class GroupCommands {
                 sender.sendMessage(t("e")+t("m_noGroupExist",args.getString(0)));
                 return true;
             }
+            if (Perm.command_info_other.hasNotPerm(sender)) return true;
             group.sendInfo(sender);
             return true;
         }
@@ -608,7 +527,6 @@ public class GroupCommands {
     }
     
     @Command(usage = "<Player>")
-    @RequiresPermission
     public boolean invite(CommandSender sender, CommandArgs args)
     {
         if (Perm.command_invite.hasNotPerm(sender)) return true;
@@ -630,8 +548,43 @@ public class GroupCommands {
                 }
                 else
                 {
-                    team.invite(user);
-                    sender.sendMessage(t("invite_user"));
+                    if (team.invite(user))
+                        sender.sendMessage(t("invite_user"));
+                    else
+                        sender.sendMessage(t("invite_user_already"));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    @Command(usage = "<Player>")
+    public boolean uninvite(CommandSender sender, CommandArgs args)
+    {
+        if (Perm.command_uninvite.hasNotPerm(sender)) return true;
+        if (args.size()>0)
+        {
+            User user = Users.getUser(args.getString(0));
+            if (user == null)
+            {
+                sender.sendMessage(t("g_noPlayer"));
+                return true;
+            }
+            else
+            {
+                Group team = Users.getUser(sender).getTeam();
+                if (team == null)
+                {
+                    sender.sendMessage(t("m_noTeam"));
+                    return true;
+                }
+                else
+                {
+                    if (team.uninvite(user))
+                        sender.sendMessage(t("uninvite_user"));
+                    else
+                        sender.sendMessage(t("uninvite_user_notinvited"));
                     return true;
                 }
             }

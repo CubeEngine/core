@@ -10,29 +10,50 @@ import org.bukkit.permissions.Permissible;
  */
 public enum Perm
 {
-    command_claim_ownTeam("claim_deny_ownTeam"),
-    command_claim_radius("claim_deny_radius"),
-    command_claim_otherTeam("claim_deny_otherTeam"),
-    command_claim_fromother("claim_deny_other"),
-    command_claim_peaceful("claim_deny_other_never"),
+    command_claim("Perm_claim"),
+    command_claim_ownTeam("Perm_claim_ownTeam"),
+    command_claim_radius("Perm_claim_radius"),
+    command_claim_otherTeam("Perm_claim_otherTeam"),
+    command_claim_fromother("Perm_claim_other"),
+    command_claim_peaceful("Perm_claim_other_never"),
     command_claim_bypass(null),
     
-    command_unclaim_ownTeam("unclaim_deny_ownTeam"),
-    command_unclaim_radius("unclaim_deny_radius"),
-    command_unclaim_ownTeam_all("unclaim_deny_ownTeam_all"),
-    command_unclaim_otherTeam("unclaim_deny_otherTeam"),
-    command_unclaim_otherTeam_all("unclaim_deny_otherTeam_all"),
-    command_unclaim_allTeam("unclaim_deny_allTeam"),
-    command_unclaim_allTeam_all("unclaim_deny_allTeam_all"),
+    command_unclaim("Perm_unclaim"),
+    command_unclaim_ownTeam("Perm_unclaim_ownTeam"),
+    command_unclaim_radius("Perm_unclaim_radius"),
+    command_unclaim_ownTeam_all("Perm_unclaim_ownTeam_all"),
+    command_unclaim_otherTeam("Perm_unclaim_otherTeam"),
+    command_unclaim_otherTeam_all("Perm_unclaim_otherTeam_all"),
+    command_unclaim_allTeam("Perm_unclaim_allTeam"),
+    command_unclaim_allTeam_all("Perm_unclaim_allTeam_all"),
     command_unclaim_bypass(null),
     
-    command_relation_change("relation_change"),
+    command_relation_change("relation_change"),//For neutral- ally- enemy- Commands
     command_relation_change_other("relation_change_other"),
     
-    command_invite("invite_deny"),
+    command_invite("Perm_invite"),
+    command_uninvite("Perm_uninvite"),
+    command_kick("Perm_kick"),
+    command_kick_other("Perm_kick_other"),
+    command_leave("Perm_leave"),
+    command_join("Perm_join"),
+    command_position("Perm_teampos"),
+    command_position_admin("Perm_teampos_mod"),
+    command_position_mod("Perm_teampos_admin"),
     
-    command_kick("kick_deny"),
-    command_kick_other("kick_deny_other"),
+    command_info("Perm_info"),
+    command_info_other("Perm_info_other"),
+    command_whois("Perm_whois"),
+    command_whois_other("Perm_whois_other"),
+    
+    command_modify("Perm_modify"),
+    command_create("Perm_create"),
+    command_create_team("Perm_create_team"),
+    command_create_arena("Perm_create_arena"),
+    
+    command_fly("Perm_fly"),
+    command_bounty("Perm_bounty"),
+    
     ;
     private final String text;
     private final String permission;

@@ -199,6 +199,7 @@ cubewar:
         water: false
       denycommands: []
       closed: false
+      autoclose: true
         
     arena_default:
       economy:

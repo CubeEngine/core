@@ -113,6 +113,7 @@ public class GroupControl {
             if (section.getBoolean("use.water")) newArea.setBit(Group.USE_WATER);
             newArea.setListValue("denycommands", section.getStringList("denycommands"));
             newArea.setClosed(section.getBoolean("closed",true));
+            newArea.setAutoClose(section.getBoolean("autoclose",true));
             
             groups.put(newArea.getId(), newArea);
         }
@@ -149,29 +150,7 @@ public class GroupControl {
     {
         return instance;
     }
-    
-    public Integer getTeamGroup(String tag)
-    {
-        for (Group area : groups.valueCollection())
-        {
-            if (area.getTag().equalsIgnoreCase(tag))
-                if (area.getType().equals(AreaType.TEAMZONE))
-                    return area.getId();
-        }    
-        return null;
-    }
-    
-    public Integer getArenaGroup(String tag)
-    {
-        for (Group area : groups.values())
-        {
-            if (area.getTag().equalsIgnoreCase(tag))
-                if (area.getType().equals(AreaType.ARENA))
-                    return area.getId();
-        }
-        return null;
-    }
-    
+
     public static Group getArea(Player player)
     {
         return getArea(player.getLocation());

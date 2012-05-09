@@ -37,6 +37,7 @@ public class Group implements Cloneable{
     public static final int POWER_GAIN = 2048;
     public static final int ECONOMY_BANK = 4096;
     public static final int IS_CLOSED = 8192;
+    public static final int AUTO_CLOSE = 16384;
     
     private BitMask bits;
     private AreaType type;
@@ -164,6 +165,8 @@ public class Group implements Cloneable{
         if (key.equalsIgnoreCase("POWER_LOSS")) bitkey = Group.POWER_LOSS ;
         if (key.equalsIgnoreCase("POWER_GAIN")) bitkey = Group.POWER_GAIN ;
         if (key.equalsIgnoreCase("ECONOMY_BANK")) bitkey = Group.ECONOMY_BANK ;
+        if (key.equalsIgnoreCase("IS_CLOSED")) bitkey = Group.IS_CLOSED ;
+        if (key.equalsIgnoreCase("AUTO_CLOSE")) bitkey = Group.AUTO_CLOSE ;
         if (bitkey > 0)            
             return this.setBoolValue(bitkey, value);
         else
@@ -252,6 +255,7 @@ public class Group implements Cloneable{
         if (this.getBits().isset(Group.USE_WATER)) group.setBit(Group.USE_WATER);
         group.setListValue("denycommands", this.getDenycommands());
         group.setClosed(this.isClosed());
+        group.setAutoClose(this.isAutoClose());
 
         return group;
     }
@@ -327,6 +331,14 @@ public class Group implements Cloneable{
         if (this.invited.contains(user))
             return false;
         this.invited.add(user);
+        return true;
+    }
+    
+    public boolean uninvite(User user)
+    {
+        if (this.invited.contains(user))
+            return false;
+        this.invited.remove(user);
         return true;
     }
     
@@ -440,6 +452,16 @@ public class Group implements Cloneable{
     {
         if (closed) this.bits.set(IS_CLOSED);
         else this.bits.unset(IS_CLOSED);
+    }
+    
+    public boolean isAutoClose() {
+        return this.bits.isset(AUTO_CLOSE);
+    }
+
+    public void setAutoClose(boolean closed) 
+    {
+        if (closed) this.bits.set(AUTO_CLOSE);
+        else this.bits.unset(AUTO_CLOSE);
     }
     
     public static enum DmgModType 
@@ -656,7 +678,8 @@ public class Group implements Cloneable{
         }
         if (!offplayer.isEmpty())
             sender.sendMessage(t("g_13",list.size(),offplayer.substring(2)));
-        if (this.isClosed())
+        if (this.isClosed() ||
+            (this.isBalancing()&&!this.isBalanced(Users.getUser(sender))))
             sender.sendMessage(t("g_14"));
     }
     

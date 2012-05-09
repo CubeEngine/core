@@ -10,7 +10,6 @@ import de.cubeisland.CubeWar.User.User;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
-import de.cubeisland.libMinecraft.command.RequiresPermission;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Chunk;
@@ -32,9 +31,9 @@ public class ClaimCommands {
     
     
     @Command(usage = "[Radius] [Tag]")
-    @RequiresPermission
     public boolean claim(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_claim.hasNotPerm(sender)) return true;
         if (sender instanceof Player)
         {
             Player player = (Player)sender;
@@ -174,9 +173,9 @@ public class ClaimCommands {
     }
     
     @Command(usage = "[radius]|[all] [Tag]|[all]")
-    @RequiresPermission
     public boolean unclaim(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_unclaim.hasNotPerm(sender)) return true;
         Player player;
         Location loc;
         User user;
