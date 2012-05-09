@@ -1,8 +1,8 @@
-package de.cubeisland.CubeWar.Area;
+package de.cubeisland.cubeengine.war.area;
 
-import de.cubeisland.CubeWar.CubeWar;
-import de.cubeisland.CubeWar.Groups.Group;
-import de.cubeisland.CubeWar.Groups.GroupControl;
+import de.cubeisland.cubeengine.war.CubeWar;
+import de.cubeisland.cubeengine.war.groups.Group;
+import de.cubeisland.cubeengine.war.groups.GroupControl;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.List;

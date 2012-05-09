@@ -1,4 +1,4 @@
-package de.cubeisland.CubeEngine;
+package de.cubeisland.cubeengine.auctions;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -8,17 +8,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.Server;
 
-public class CubeEngine extends JavaPlugin
+public class CubeAuctions extends JavaPlugin
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;
     
     protected Server server;
     protected PluginManager pm;
-    protected CubeEngineConfiguration config;
     protected File dataFolder;
 
-    public CubeEngine()
+    public CubeAuctions()
     {
     }
 
@@ -34,7 +33,6 @@ public class CubeEngine extends JavaPlugin
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
-        this.config = new CubeEngineConfiguration(configuration);
         
         this.saveConfig();
 

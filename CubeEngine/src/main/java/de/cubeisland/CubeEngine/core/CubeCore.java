@@ -1,24 +1,23 @@
-package de.cubeisland.CubeEngine;
+package de.cubeisland.cubeengine.core;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.Server;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.Server;
 
-public class CubeEngine extends JavaPlugin
+public class CubeCore extends JavaPlugin
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;
     
     protected Server server;
     protected PluginManager pm;
-    protected CubeEngineConfiguration config;
     protected File dataFolder;
 
-    public CubeEngine()
+    public CubeCore()
     {
     }
 
@@ -34,7 +33,6 @@ public class CubeEngine extends JavaPlugin
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
-        this.config = new CubeEngineConfiguration(configuration);
         
         this.saveConfig();
 
