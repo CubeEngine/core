@@ -619,7 +619,7 @@ public class Group implements Cloneable{
         sender.sendMessage(t("g_04",GroupControl.get().getRank(this),
                            t("g_05",this.power_used,this.power_max_used,this.power_max)));
         Group team = Users.getUser(sender).getTeam();
-        if ((team.equals(this))||(team.isAlly(this) && this.isAlly(team)))
+        if (team!=null &&((team.equals(this))||(team.isAlly(this) && this.isAlly(team))))
             sender.sendMessage(t("g_06"));
         else
             sender.sendMessage(t("g_07"));

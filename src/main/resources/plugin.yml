@@ -29,7 +29,7 @@ permissions:
       cubewar.command.membercontrol: true
       cubewar.command.info.*: true
       cubewar.command.create.*: true
-      cubewar.command.bypass.*:
+      cubewar.command.bypass.*: true
         
   cubewar.admin:
     description: "Gives all permissions"
@@ -78,7 +78,6 @@ permissions:
       cubewar.command.claim.radius: true
       cubewar.command.claim.otherTeam: true
       cubewar.command.claim.fromother: true
-      cubewar.command.claim.peaceful: true
   cubewar.command.claim:
     description: ""
   cubewar.command.claim.ownTeam:
@@ -88,8 +87,6 @@ permissions:
   cubewar.command.claim.otherTeam:
     description: ""
   cubewar.command.claim.fromother:
-    description: ""
-  cubewar.command.claim.peaceful:
     description: ""
   
   cubewar.command.unclaim.*:

@@ -28,7 +28,7 @@ public class User {
     private boolean respawning;
     private boolean fly_disable;
     private double bounty; //TODO Kopfgeld
-    private HashSet<String> bypasses;
+    private HashSet<String> bypasses = new HashSet<String>();
     
     public User(OfflinePlayer player) 
     {

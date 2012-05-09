@@ -1,5 +1,6 @@
 package de.cubeisland.CubeWar.Commands;
 
+import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.Perm;
 import de.cubeisland.CubeWar.User.Users;
 import de.cubeisland.libMinecraft.command.Command;
@@ -27,9 +28,15 @@ public class ByPassCommand {
             sender.sendMessage("/cw bypass off");
             sender.sendMessage("Bypasses:");
             sender.sendMessage("claim, unclaim, relation|rel, membercontrol|mem, position|pos, create, modify, protection|prot, fly");
+            return;
         }
         String bp = args.getString(0);
-        if (equal(bp,"off")) Users.getUser(sender).unsetBypasses();
+        if (equal(bp,"off")) 
+        {
+            Users.getUser(sender).unsetBypasses();
+            sender.sendMessage(t("bypass_off_all"));
+            return;
+        }
         if (equal(bp,"claim")) this.toggleBP(Perm.command_claim_BP.getPermText()                        , Perm.command_bypass_claim, sender);
         if (equal(bp,"unclaim")) this.toggleBP(Perm.command_unclaim_BP.getPermText()                    , Perm.command_bypass_unclaim, sender);
         if (equal(bp,"relation","rel")) this.toggleBP(Perm.command_relation_BP.getPermText()            , Perm.command_bypass_relation, sender);
@@ -46,7 +53,7 @@ public class ByPassCommand {
         boolean tmp = false;
         for (int i=0;i<t.length;++i)
         {
-            if (!s.equalsIgnoreCase(t[i]))
+            if (s.equalsIgnoreCase(t[i]))
                 return true;
         }
         return tmp;
@@ -56,5 +63,9 @@ public class ByPassCommand {
     {
         if (perm.hasNotPerm(sender)) return;
         Users.getUser(sender).toggleBypass(bp);
+        if (Users.getUser(sender).hasBypass(bp))
+            sender.sendMessage(t("bypass_on",bp));
+        else
+            sender.sendMessage(t("bypass_off",bp));
     }
 }

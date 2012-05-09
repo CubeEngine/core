@@ -222,9 +222,11 @@ public class GroupControl {
             {
                 continue;
             }
-            users += g.getUserSum();
-            if (g.getType().equals(AreaType.TEAMZONE))
+            if (g.getId()>0)
+            {
+                users += g.getUserSum();
                 ++teams;
+            }
         }
         if ((users / teams)*2 >= group.getUserSum()) return true;
         return false;

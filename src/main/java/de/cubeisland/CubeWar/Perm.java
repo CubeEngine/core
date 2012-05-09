@@ -18,7 +18,6 @@ public enum Perm
     command_claim_radius("Perm_claim_radius"),
     command_claim_otherTeam("Perm_claim_otherTeam"),
     command_claim_fromother("Perm_claim_other"),
-    command_claim_peaceful("Perm_claim_other_never"),
     command_claim_BP(null),
    
     command_unclaim("Perm_unclaim"),
@@ -88,7 +87,7 @@ public enum Perm
         this.permission = "cubewar." + this.name().toLowerCase().replace("_", ".");
     }
 
-    private boolean checkPerm(Permissible sender)
+    public boolean checkPerm(Permissible sender)
     {
         return sender.hasPermission(permission);
     }

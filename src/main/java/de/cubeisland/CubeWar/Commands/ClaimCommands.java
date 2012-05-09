@@ -124,11 +124,11 @@ public class ClaimCommands {
             }
         if (Area.getGroup(loc)!=null)
         {
-            if (Perm.command_claim_BP.hasNotPerm(player))
-            {
-                if (Perm.command_claim_fromother.hasNotPerm(player)) return;
-                if (Perm.command_claim_peaceful.hasNotPerm(player)) return;
-            }
+            if (g.equals(Area.getGroup(loc)))
+                if (Perm.command_claim_BP.hasNotPerm(player))
+                {
+                    if (Perm.command_claim_fromother.hasNotPerm(player)) return;
+                }
         }
         List<Chunk> chunks = new ArrayList<Chunk>();
         if (rad == 0)
@@ -161,10 +161,17 @@ public class ClaimCommands {
             }
         }
         int sum=0, wild=0, enemy=0, own=0;
+        boolean noEnemyClaim = false;
+        if (Perm.command_claim_BP.hasNotPerm(player))
+            noEnemyClaim = Perm.command_claim_fromother.checkPerm(player);
         for (Chunk chunk : chunks)
-        {
+        {//TODO Check Power / Money
             ++sum;
-            Group group = Area.addChunk(chunk, user.getTeam());
+            Group group = Area.getGroup(chunk);
+            if (group != null)
+                if ((noEnemyClaim && !g.equals(group)))
+                    continue;
+            Area.addChunk(chunk, user.getTeam());
             if (group == null) ++wild;
             else if (group.equals(user.getTeam())) ++own;
             else ++enemy;

@@ -26,11 +26,12 @@ public class FlyCommand {
         if (sender instanceof Player)
         {
             Player player = (Player)sender;
-            if (Users.getUser(sender).isFly_disable())
-            {
-                sender.sendMessage(t("fly_block"));
-                return;
-            }
+            if (Perm.command_fly_BP.hasNotPerm(sender))
+                if (Users.getUser(sender).isFly_disable())
+                {
+                    sender.sendMessage(t("fly_block"));
+                    return;
+                }
             player.setAllowFlight(!player.getAllowFlight());
             if (player.getAllowFlight())
                 sender.sendMessage(t("fly_on"));
