@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.libMinecraft.command.BaseCommand;
+import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
 import java.util.logging.Level;
@@ -8,9 +10,8 @@ import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class CubeFly extends JavaPlugin
+public class CubeFly extends CubeModuleBase implements TranslatablePlugin
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;
@@ -19,6 +20,7 @@ public class CubeFly extends JavaPlugin
     protected Server server;
     protected PluginManager pm;
     protected File dataFolder;
+    private static final String PERMISSION_BASE = "cubewar.fly";
     private BaseCommand baseCommand;
 
     public CubeFly()
@@ -42,6 +44,12 @@ public class CubeFly extends JavaPlugin
         
         translation = Translation.get(this.getClass(), configuration.getString("language"));
         if (translation == null) translation = Translation.get(this.getClass(), "en");
+        
+        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
+        this.baseCommand.registerCommands(new FlyCommand())
+                        .setDefaultCommand("fly")
+                        .unregisterCommand("reload");
+        this.getCommand("fly").setExecutor(baseCommand);
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
@@ -77,5 +85,15 @@ public class CubeFly extends JavaPlugin
     public static String t(String key, Object... params)
     {
         return translation.translate(key, params);
+    }
+
+    public Translation getTranslation()
+    {
+        return translation;
+    }
+
+    public void setTranslation(Translation newtranslation)
+    {
+        translation = newtranslation;
     }
 }

@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.fly;
 import static de.cubeisland.cubeengine.fly.CubeFly.t;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
+import de.cubeisland.libMinecraft.command.RequiresPermission;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,6 +17,7 @@ public class FlyCommand {
     public FlyCommand() {}
     
     @Command
+    @RequiresPermission
     public void fly(CommandSender sender, CommandArgs args)
     {
         //TODO Permission abfragen bei CubeFly

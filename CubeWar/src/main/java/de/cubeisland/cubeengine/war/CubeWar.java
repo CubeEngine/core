@@ -30,7 +30,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     private static Logger logger = null;
     public static boolean debugMode = false;
     private static Translation translation;
-    private static final String PERMISSION_BASE = "cubewar.commands.";
+    private static final String PERMISSION_BASE = "cubeengine.war.commands.";
     private BaseCommand baseCommand;
     private BaseCommand flybaseCommand;
     
