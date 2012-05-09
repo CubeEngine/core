@@ -1,6 +1,6 @@
 name: CubeWar
 version: "${project.version}"
-main: de.cubeisland.CubeWar.CubeWar
+main: de.cubeisland.cubeengine.war.CubeWar
 commands:
   cubewar:
     description: "This is the base command of CubeWar"
