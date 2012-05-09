@@ -1,21 +1,23 @@
 name: CubeWar
-version: "${project.version}"
+version: ${project.version}
 main: de.cubeisland.cubeengine.war.CubeWar
+depend:
+  - CubeCore
+website: "http://cubeisland.de/"
+description: "War module"
+authors:
+  - Faithcaio
+  - Quick_Wango
+
 commands:
   cubewar:
-    description: "This is the base command of CubeWar"
     usage: "/<command> <action>"
+    description: "This is the base command of CubeWar"
     aliases:
       - cw
   fly:
+    usage: "/<command>"
     description: "This is the fly command of CubeWar"
-    usage: "/fly"
-depend:
-database: false
-website: "http://cubeisland.de/"
-description: ""
-authors:
-  - "Faithcaio"
 
 ##############GROUPED PERMISSIONS##############
 permissions:

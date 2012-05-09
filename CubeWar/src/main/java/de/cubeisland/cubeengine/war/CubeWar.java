@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.war;
 
+import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
+import de.cubeisland.cubeengine.war.commands.ClaimCommands;
 import de.cubeisland.cubeengine.war.commands.FlyCommand;
 import de.cubeisland.cubeengine.war.commands.GroupCommands;
 import de.cubeisland.cubeengine.war.commands.UserCommands;
-import de.cubeisland.cubeengine.war.commands.ClaimCommands;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -16,7 +17,6 @@ import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 //Channel-Chats with pw
 //Blocks with "Life"
 //lift Schilder blocken wenn feindlich
@@ -24,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * Main Class
  */
-public class CubeWar extends JavaPlugin implements TranslatablePlugin
+public class CubeWar extends CubeModuleBase implements TranslatablePlugin
 {
     private static CubeWar instance = null;
     private static Logger logger = null;
