@@ -26,13 +26,15 @@ public class GroupCommands {
     @Command(usage = "Team|Arena <Tag> <Name>", aliases = {"c"})
     public boolean create(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_create.hasNotPerm(sender)) return true;
+        if (Perm.command_create_BP.hasNotPerm(sender))
+            if (Perm.command_create.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
             String t = args.getString(0);
             if ((t.equalsIgnoreCase("Team"))||(t.equalsIgnoreCase("t")))
             {
-                if (Perm.command_create_team.hasNotPerm(sender)) return true;
+                if (Perm.command_create_BP.hasNotPerm(sender))
+                    if (Perm.command_create_team.hasNotPerm(sender)) return true;
                 if (args.size() > 2)
                 {
                     String tag = args.getString(1);
@@ -69,7 +71,8 @@ public class GroupCommands {
             }
             else if ((t.equalsIgnoreCase("Arena"))||(t.equalsIgnoreCase("a")))
             {
-                if (Perm.command_create_arena.hasNotPerm(sender)) return true;
+                if (Perm.command_create_BP.hasNotPerm(sender))
+                    if (Perm.command_create_arena.hasNotPerm(sender)) return true;
                 if (args.size() > 2)
                 {
                     String tag = args.getString(1);
@@ -98,7 +101,8 @@ public class GroupCommands {
     @Command(usage = "<Tag> <Key> <Value>", aliases = {"m"})
     public boolean modify(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_modify.hasNotPerm(sender)) return true;
+        if (Perm.command_modify_BP.hasNotPerm(sender))
+            if (Perm.command_modify.hasNotPerm(sender)) return true;
         if (args.size() > 2)
         {
             Group group = GroupControl.get().getGroup(args.getString(0).substring(1));
@@ -133,7 +137,8 @@ public class GroupCommands {
     @Command(usage = "admin|mod <Player>", aliases = {"pos","lead"})
     public boolean position(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_position.hasNotPerm(sender)) return true;
+        if (Perm.command_position_BP.hasNotPerm(sender))
+            if (Perm.command_position.hasNotPerm(sender)) return true;
         if (args.size() > 2)    
         {
             String t = args.getString(0);
@@ -141,12 +146,14 @@ public class GroupCommands {
             Group area = user.getTeam();
             if (t.equalsIgnoreCase("admin")||t.equalsIgnoreCase("a"))
             {
-                if (Perm.command_position_admin.hasNotPerm(sender)) return true;
+                if (Perm.command_position_BP.hasNotPerm(sender))
+                    if (Perm.command_position_admin.hasNotPerm(sender)) return true;
                 return this.toggleTeamPos(sender, user, area, "admin");
             }
             else if (t.equalsIgnoreCase("mod")||t.equalsIgnoreCase("m"))
             {
-                if (Perm.command_position_mod.hasNotPerm(sender)) return true;
+                if (Perm.command_position_BP.hasNotPerm(sender))
+                    if (Perm.command_position_mod.hasNotPerm(sender)) return true;
                 return this.toggleTeamPos(sender, user, area, "mod");
             }
         }
@@ -156,6 +163,7 @@ public class GroupCommands {
     @Command(usage = "<Tag>")
     public boolean join(CommandSender sender, CommandArgs args)
     {
+        if (Perm.command_membercontrol_BP.hasNotPerm(sender))
         if (Perm.command_join.hasNotPerm(sender)) return true;
         if (args.size() > 0)
         {
@@ -174,7 +182,8 @@ public class GroupCommands {
     @Command(usage = "")
     public boolean leave(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_leave.hasNotPerm(sender)) return true;
+        if (Perm.command_membercontrol_BP.hasNotPerm(sender))
+            if (Perm.command_leave.hasNotPerm(sender)) return true;
         if (args.isEmpty())
         {
             User user = Users.getUser(sender);
@@ -186,7 +195,8 @@ public class GroupCommands {
     @Command(usage = "<Player>")
     public boolean kick(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_kick.hasNotPerm(sender)) return true;
+        if (Perm.command_membercontrol_BP.hasNotPerm(sender))
+            if (Perm.command_kick.hasNotPerm(sender)) return true;
         if (args.size() > 0)
         {
             User user = Users.getUser(args.getString(0));
@@ -197,8 +207,9 @@ public class GroupCommands {
                     sender.sendMessage(t("team_noteam",user.getName()));
                     return true;
                 }
-                if (! user.getTeam().equals(Users.getUser(sender).getTeam()))
-                    if (Perm.command_kick_other.hasNotPerm(sender)) return true;
+                if (Perm.command_membercontrol_BP.hasNotPerm(sender))
+                    if (! user.getTeam().equals(Users.getUser(sender).getTeam()))
+                        if (Perm.command_kick_other.hasNotPerm(sender)) return true;
                 user.getPlayer().sendMessage(t("i")+t("team_kick",user.getTeamTag()));
                 return this.toggleTeamPos(sender, user, user.getTeam(), "userleave");
             }
@@ -321,11 +332,12 @@ public class GroupCommands {
     @Command(usage = "<Tag> [Tag]")
     public boolean ally(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_relation_change.hasNotPerm(sender)) return true;
+        if (Perm.command_relation_BP.hasNotPerm(sender))
+            if (Perm.command_relation_change.hasNotPerm(sender)) return true;
         if (args.size() > 1)
         {
-            if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
-
+            if (Perm.command_relation_BP.hasNotPerm(sender))
+                if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
             if (team == null)
@@ -378,10 +390,12 @@ public class GroupCommands {
     @Command(usage = "<Tag> [Tag]")
     public boolean enemy(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_relation_change.hasNotPerm(sender)) return true;
+        if (Perm.command_relation_BP.hasNotPerm(sender))
+            if (Perm.command_relation_change.hasNotPerm(sender)) return true;
         if (args.size() > 1)
         {
-            if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
+            if (Perm.command_relation_BP.hasNotPerm(sender))
+                if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
             if (team == null)
@@ -436,10 +450,12 @@ public class GroupCommands {
     @Command(usage = "<Tag> [Tag]")
     public boolean neutral(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_relation_change.hasNotPerm(sender)) return true;
+        if (Perm.command_relation_BP.hasNotPerm(sender))
+            if (Perm.command_relation_change.hasNotPerm(sender)) return true;
         if (args.size() > 1)
         {
-            if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
+            if (Perm.command_relation_BP.hasNotPerm(sender))
+                if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
             Group team = groupcontrol.getGroup(args.getString(0));
             Group team2 = groupcontrol.getGroup(args.getString(1));
             if (team == null)
@@ -529,7 +545,8 @@ public class GroupCommands {
     @Command(usage = "<Player>")
     public boolean invite(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_invite.hasNotPerm(sender)) return true;
+        if (Perm.command_membercontrol_BP.hasNotPerm(sender))
+            if (Perm.command_invite.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
             User user = Users.getUser(args.getString(0));
@@ -562,7 +579,8 @@ public class GroupCommands {
     @Command(usage = "<Player>")
     public boolean uninvite(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_uninvite.hasNotPerm(sender)) return true;
+        if (Perm.command_membercontrol_BP.hasNotPerm(sender))
+            if (Perm.command_uninvite.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
             User user = Users.getUser(args.getString(0));

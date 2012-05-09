@@ -41,7 +41,7 @@ public class ClaimCommands {
             Location loc = player.getLocation();
             if (args.isEmpty()) 
             {
-                if ((Perm.command_claim_bypass.hasPerm(sender))
+                if ((Perm.command_claim_BP.hasPerm(sender))
                   ||(Perm.command_claim_ownTeam.hasPerm(sender)))
                         this.claim(player.getLocation(), 0, user.getTeam(), player, user);
                 return true;
@@ -61,7 +61,7 @@ public class ClaimCommands {
                     return true;
                 }  
                 if (rad > 0) 
-                    if ((Perm.command_claim_bypass.hasNotPerm(sender))
+                    if ((Perm.command_claim_BP.hasNotPerm(sender))
                      && (Perm.command_claim_radius.hasNotPerm(sender)))
                         return true;
                 this.claim(player.getLocation(), rad, user.getTeam(), player, user);
@@ -88,7 +88,7 @@ public class ClaimCommands {
                     sender.sendMessage(t("claim_invalid_team",args.getString(1)));
                     return true;
                 }
-                if (Perm.command_claim_bypass.hasNotPerm(sender))
+                if (Perm.command_claim_BP.hasNotPerm(sender))
                 {
                     if (!team.equals(user.getTeam()))
                         if (Perm.command_claim_otherTeam.hasNotPerm(sender))
@@ -124,7 +124,7 @@ public class ClaimCommands {
             }
         if (Area.getGroup(loc)!=null)
         {
-            if (Perm.command_claim_bypass.hasNotPerm(player))
+            if (Perm.command_claim_BP.hasNotPerm(player))
             {
                 if (Perm.command_claim_fromother.hasNotPerm(player)) return;
                 if (Perm.command_claim_peaceful.hasNotPerm(player)) return;
@@ -136,7 +136,7 @@ public class ClaimCommands {
             Group group = Area.addChunk(loc.getChunk(), user.getTeam());
             if (group == null)
                 group = GroupControl.getWildLand();
-            if (Perm.command_claim_bypass.hasPerm(player))
+            if (Perm.command_claim_BP.hasPerm(player))
                 player.sendMessage(t("claim_claimed_bypass",group.getTag(),user.getTeamTag()));
             else
             {
@@ -175,7 +175,8 @@ public class ClaimCommands {
     @Command(usage = "[radius]|[all] [Tag]|[all]")
     public boolean unclaim(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_unclaim.hasNotPerm(sender)) return true;
+        if (Perm.command_unclaim_BP.hasNotPerm(sender))
+            if (Perm.command_unclaim.hasNotPerm(sender)) return true;
         Player player;
         Location loc;
         User user;
@@ -197,7 +198,8 @@ public class ClaimCommands {
                 sender.sendMessage(t("unclaim_wild"));
                 return true;
             }
-            if (Perm.command_unclaim_ownTeam.hasPerm(sender));
+            if (Perm.command_unclaim_ownTeam.hasPerm(sender)
+             ||(Perm.command_unclaim_BP.hasPerm(sender)));
                 this.unclaim(loc, 0, user.getTeam(), sender);
             return true;
         }
@@ -218,7 +220,7 @@ public class ClaimCommands {
         }
         if (args.size()>0)
         {
-            if (Perm.command_unclaim_bypass.hasNotPerm(sender))
+            if (Perm.command_unclaim_BP.hasNotPerm(sender))
             {
                 if (Perm.command_unclaim_radius.hasNotPerm(sender))
                     return true;
@@ -240,7 +242,7 @@ public class ClaimCommands {
                     return true;
                 }
             }
-            if (Perm.command_unclaim_bypass.hasNotPerm(sender))
+            if (Perm.command_unclaim_BP.hasNotPerm(sender))
             {
                 if (group == null)
                 {

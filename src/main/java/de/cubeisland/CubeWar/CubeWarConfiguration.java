@@ -4,6 +4,7 @@ import de.cubeisland.CubeWar.Groups.GroupControl;
 import de.cubeisland.CubeWar.User.Rank;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,6 +20,10 @@ public class CubeWarConfiguration
     public int killpoint_max;
     public int max_claim;
     public Map<String,Integer> killKP = new HashMap<String,Integer>();
+    public List<String> IGPerm_leader;
+    public List<String> IGPerm_mod;
+    public List<String> IGPerm_member;
+    public List<String> IGPerm_user;
     
     public CubeWarConfiguration(Configuration config)
     {
@@ -39,6 +44,11 @@ public class CubeWarConfiguration
             this.killKP.put(key, config.getInt(key));
         }
         this.max_claim = config.getInt("cubewar.claim.maxclaim");
+        
+        this.IGPerm_leader = config.getStringList("cubewar.IGperm.leader");
+        this.IGPerm_mod = config.getStringList("cubewar.IGperm.mod");
+        this.IGPerm_member = config.getStringList("cubewar.IGperm.member");
+        this.IGPerm_user = config.getStringList("cubewar.IGperm.user");
         
         GroupControl.createInstance(config.getConfigurationSection("cubewar.area"));
     }

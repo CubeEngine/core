@@ -21,7 +21,8 @@ public class FlyCommand {
     @Command
     public void fly(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_fly.hasNotPerm(sender)) return;
+        if (Perm.command_fly_BP.hasNotPerm(sender))
+            if (Perm.command_fly.hasNotPerm(sender)) return;
         if (sender instanceof Player)
         {
             Player player = (Player)sender;

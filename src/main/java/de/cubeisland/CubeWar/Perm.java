@@ -1,6 +1,9 @@
 package de.cubeisland.CubeWar;
 
 import static de.cubeisland.CubeWar.CubeWar.t;
+import de.cubeisland.CubeWar.Groups.Group;
+import de.cubeisland.CubeWar.User.User;
+import de.cubeisland.CubeWar.User.Users;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
@@ -16,8 +19,8 @@ public enum Perm
     command_claim_otherTeam("Perm_claim_otherTeam"),
     command_claim_fromother("Perm_claim_other"),
     command_claim_peaceful("Perm_claim_other_never"),
-    command_claim_bypass(null),
-    
+    command_claim_BP(null),
+   
     command_unclaim("Perm_unclaim"),
     command_unclaim_ownTeam("Perm_unclaim_ownTeam"),
     command_unclaim_radius("Perm_unclaim_radius"),
@@ -26,10 +29,11 @@ public enum Perm
     command_unclaim_otherTeam_all("Perm_unclaim_otherTeam_all"),
     command_unclaim_allTeam("Perm_unclaim_allTeam"),
     command_unclaim_allTeam_all("Perm_unclaim_allTeam_all"),
-    command_unclaim_bypass(null),
+    command_unclaim_BP(null),
     
     command_relation_change("relation_change"),//For neutral- ally- enemy- Commands
     command_relation_change_other("relation_change_other"),
+    command_relation_BP(null),
     
     command_invite("Perm_invite"),
     command_uninvite("Perm_uninvite"),
@@ -37,9 +41,12 @@ public enum Perm
     command_kick_other("Perm_kick_other"),
     command_leave("Perm_leave"),
     command_join("Perm_join"),
+    command_membercontrol_BP(null),
+    
     command_position("Perm_teampos"),
     command_position_admin("Perm_teampos_mod"),
     command_position_mod("Perm_teampos_admin"),
+    command_position_BP(null),
     
     command_info("Perm_info"),
     command_info_other("Perm_info_other"),
@@ -47,17 +54,34 @@ public enum Perm
     command_whois_other("Perm_whois_other"),
     
     command_modify("Perm_modify"),
+    command_modify_BP(null),
     command_create("Perm_create"),
     command_create_team("Perm_create_team"),
     command_create_arena("Perm_create_arena"),
+    command_create_BP(null),
+    
+    command_protection_BP(null),
     
     command_fly("Perm_fly"),
-    command_bounty("Perm_bounty"),
-    
+    command_fly_BP(null),
+    command_bounty("Perm_bounty"),//TODO rest.... perm in plugin.yml
+
+    command_bypass("Perm_Perm"),
+    command_bypass_claim("Perm_Perm_mode"),
+    command_bypass_unclaim("Perm_Perm_mode"),
+    command_bypass_relation("Perm_Perm_mode"),
+    command_bypass_membercontrol("Perm_Perm_mode"),
+    command_bypass_position("Perm_Perm_mode"),
+    command_bypass_create("Perm_Perm_mode"),
+    command_bypass_modify("Perm_Perm_mode"),
+    command_bypass_protection("Perm_Perm_mode"),
+    command_bypass_fly("Perm_Perm_mode"),
     ;
     private final String text;
     private final String permission;
-
+    
+    private static final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+ 
     private Perm(final String text)
     {
         this.text = text;
@@ -68,18 +92,43 @@ public enum Perm
     {
         return sender.hasPermission(permission);
     }
+    
+    private boolean checkIGPerm(CommandSender sender)
+    {
+        User user = Users.getUser(sender);
+        Group team = user.getTeam();
+        if (team == null)
+            return !config.IGPerm_user.contains(this.permission);
+        if (team.isUser(user))
+            return !config.IGPerm_member.contains(this.permission);
+        if (team.isMod(user))
+            return !config.IGPerm_mod.contains(this.permission);
+        if (team.isAdmin(user))
+            return !config.IGPerm_leader.contains(this.permission);
+        return false;
+    }
+    
+    private boolean checkBypass(CommandSender sender)
+    {
+        if (Users.getUser(sender).hasBypass(permission))
+            return true;
+        return false;
+    }
 
     public boolean hasPerm(CommandSender sender)
     {
+        if (this.name().endsWith("_BP"))
+        {
+            if (this.checkBypass(sender)) return true;
+            else return false;
+        }
         if (this.checkPerm(sender))
         {
-            return true;
+            if (this.checkIGPerm(sender))
+                return true;    
         }
-        else
-        {
-            this.send(sender);
-            return false;
-        }
+        this.send(sender);
+        return false;
     }
 
     public boolean hasNotPerm(CommandSender sender)
@@ -93,5 +142,13 @@ public enum Perm
         {
             sender.sendMessage(t("perm") + t(this.text));
         }
+    }
+
+    /**
+     * @return the permission
+     */
+    public String getPermText()
+    {
+        return permission;
     }
 }

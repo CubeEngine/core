@@ -737,6 +737,6 @@ public class Group implements Cloneable{
     
     public boolean isBalancing()
     {
-        return true;//TODO beim TeamBalancing ignorieren?
+        return this.bits.isset(AUTO_CLOSE);
     }
 }

@@ -70,7 +70,8 @@ public class CubeWar extends JavaPlugin implements TranslatablePlugin
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand.registerCommands(new ClaimCommands())
                         .registerCommands(new GroupCommands())
-                        .registerCommands(new UserCommands());
+                        .registerCommands(new UserCommands())
+                        .registerCommands(new ByPassCommand());
         
         this.getCommand("cubewar").setExecutor(baseCommand);
         

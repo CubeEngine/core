@@ -5,6 +5,7 @@ import static de.cubeisland.CubeWar.CubeWar.t;
 import de.cubeisland.CubeWar.CubeWarConfiguration;
 import de.cubeisland.CubeWar.Groups.Group;
 import de.cubeisland.CubeWar.Groups.GroupControl;
+import java.util.HashSet;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
@@ -27,6 +28,7 @@ public class User {
     private boolean respawning;
     private boolean fly_disable;
     private double bounty; //TODO Kopfgeld
+    private HashSet<String> bypasses;
     
     public User(OfflinePlayer player) 
     {
@@ -188,15 +190,15 @@ public class User {
         else
             kd = (int)(this.kills/this.death *100);
         sender.sendMessage(t("user_04",this.kills,this.death,String.valueOf(kd/100)));
-        if (Users.getUser(sender).getTeam().isTrueAlly(this.team))
-            sender.sendMessage(t("user_051",this.getTeamTag()));
-        else
-            sender.sendMessage(t("user_052",this.getTeamTag()));
+        if (this.team != null)
+            if (this.team.isTrueAlly(Users.getUser(sender).getTeam()))
+                sender.sendMessage(t("user_051",this.getTeamTag()));
+            else
+                sender.sendMessage(t("user_052",this.getTeamTag()));
         if (sender instanceof Player)
             if (this.equals(Users.getUser(sender)))
                 sender.sendMessage(t("user_06",GroupControl.getArea((Player)sender).getTag()));
     }
-
     /**
      * @return the respawning
      */
@@ -226,4 +228,24 @@ public class User {
     public void setFly_disable(boolean fly_disable) {
         this.fly_disable = fly_disable;
     }
+    
+    public void unsetBypasses()
+    {
+        this.bypasses.clear();
+    }
+    
+    public void toggleBypass(String bypass)
+    {
+        if (this.hasBypass(bypass))
+            this.bypasses.remove(bypass);
+        else
+            this.bypasses.add(bypass);
+    }
+    
+    public boolean hasBypass(String bypass)
+    {
+        return this.bypasses.contains(bypass);
+    }
+    
+    
 }
