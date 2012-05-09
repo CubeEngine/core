@@ -2,28 +2,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.cubeisland</groupId>
-        <artifactId>cubeaggregator</artifactId>
+        <artifactId>cubeengine</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>de.cubeisland</groupId>
-    <artifactId>cubeengine</artifactId>
+    <artifactId>cubevanish</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>CubeEngine</name>
+    <name>CubeVanish</name>
     <url>http://cubeisland.de</url>
     <packaging>jar</packaging>
-    <description>Core cube plugin</description>
+    <description>vanish plugin</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-  
-    <repositories>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -34,7 +27,7 @@
     </dependencies>
 
     <build>
-        <finalName>CubeEngine</finalName>
+        <finalName>CubeVanish</finalName>
         <resources>
             <resource>
                 <targetPath>.</targetPath>
@@ -63,26 +56,6 @@
                 <configuration>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>de.cubeisland:libminecraft</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

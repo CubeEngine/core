@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.cubeisland</groupId>
-        <artifactId>cubeaggregator</artifactId>
+        <artifactId>cubeengine</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
