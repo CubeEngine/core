@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.libMinecraft.command.BaseCommand;
+import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,10 +14,12 @@ public class CubeFly extends JavaPlugin
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;
+    private static Translation translation;
     
     protected Server server;
     protected PluginManager pm;
     protected File dataFolder;
+    private BaseCommand baseCommand;
 
     public CubeFly()
     {
@@ -35,6 +39,9 @@ public class CubeFly extends JavaPlugin
         debugMode = configuration.getBoolean("debug");
         
         this.saveConfig();
+        
+        translation = Translation.get(this.getClass(), configuration.getString("language"));
+        if (translation == null) translation = Translation.get(this.getClass(), "en");
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
@@ -65,5 +72,10 @@ public class CubeFly extends JavaPlugin
         {
             log("[debug] " + msg);
         }
+    }
+    
+    public static String t(String key, Object... params)
+    {
+        return translation.translate(key, params);
     }
 }

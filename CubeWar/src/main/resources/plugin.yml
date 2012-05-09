@@ -3,6 +3,8 @@ version: ${project.version}
 main: de.cubeisland.cubeengine.war.CubeWar
 depend:
   - CubeCore
+softdepend: 
+  - CubeFly
 website: "http://cubeisland.de/"
 description: "War module"
 authors:

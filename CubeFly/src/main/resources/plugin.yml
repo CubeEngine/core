@@ -1,12 +1,13 @@
-name: CubeEngine
+name: CubeFly
 version: "${project.version}"
 main: de.cubeisland.CubeEngine.CubeEngine
 #commands:
-depend: []
+depend: 
+  - CubeCore
 softdepend: []
 database: false
 website: "http://cubeisland.de"
-description: ""
+description: "Flying without CreativeMode"
 author: "Cube Island"
 authors:
   - "Cube Island"
