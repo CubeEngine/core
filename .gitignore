@@ -1,5 +1,4 @@
-target/
+build/
 dist/
 nbproject/
-build/
-nb*.xml
+target/
