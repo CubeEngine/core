@@ -1,16 +1,15 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.AuctionHouseConfiguration;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
+import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
 import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Sorter;
 import de.cubeisland.cubeengine.auctions.Util;
+import de.cubeisland.libMinecraft.command.Command;
 import java.util.Collections;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
@@ -21,19 +20,19 @@ import org.bukkit.command.CommandSender;
  * 
  * @author Faithcaio
  */
-public class SearchCommand extends AbstractCommand
+public class SearchCommand
 {
     
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final AuctionHouseConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
     Economy econ = CubeAuctions.getInstance().getEconomy();
     
-    public SearchCommand(BaseCommand base)
+    public SearchCommand()
     {
-        super(base, "search");
     }
 
-    public boolean execute(CommandSender sender, CommandArgs args)
+    @Command(usage = "<Item>")
+    public boolean search(CommandSender sender, CommandArgs args)
     {
         if (!Perm.command_search.check(sender)) return true;
         if (args.isEmpty())
@@ -84,17 +83,5 @@ public class SearchCommand extends AbstractCommand
                                t("search_item3",String.valueOf(Manager.getInstance().getPrice(args.getItem(0)))));
         Util.sendInfo(sender, auctionlist);
         return true;
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return t("command_search");
-    }
-
-    @Override
-    public String getUsage()
-    {
-        return super.getUsage() + " <Item>";
     }
 }

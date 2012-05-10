@@ -4,9 +4,6 @@ import de.cubeisland.cubeengine.auctions.AuctionBox;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Util;
-import de.cubeisland.cubeengine.auctions.database.DatabaseEntity;
-import de.cubeisland.cubeengine.auctions.database.EntityIdentifier;
-import de.cubeisland.cubeengine.auctions.database.EntityProperty;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
@@ -27,27 +24,20 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Faithcaio
  */
-public class Bidder extends CubeUser implements DatabaseEntity 
+public class Bidder extends CubeUser
 {
     public static final byte NOTIFY_STATUS = 8;
     public static final byte NOTIFY_ITEMS = 4;
     public static final byte NOTIFY_CANCEL = 2;
     public static final byte NOTIFY_WIN = 1;
     
-    @EntityIdentifier
     private int id;
     
-    @EntityProperty
     private final ArrayList<Auction> activeBids;
-    @EntityProperty
     private final ArrayList<Auction> subscriptions;
-    @EntityProperty
     private final ArrayList<ItemStack> materialSub;
-    @EntityProperty
     private final OfflinePlayer player;
-    @EntityProperty
     private final AuctionBox auctionbox;
-    @EntityProperty
     private byte notifyState = 0;
 
     private static final Map<OfflinePlayer, Bidder> bidderInstances = new HashMap<OfflinePlayer, Bidder>();

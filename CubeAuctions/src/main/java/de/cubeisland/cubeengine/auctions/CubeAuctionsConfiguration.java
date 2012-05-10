@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * load in configuration file
  */
-public class AuctionHouseConfiguration
+public class CubeAuctionsConfiguration
 {
     public final long     auction_undoTime;             //in d h m s | -1 is infinite
     public final int      auction_maxAuctions_overall;  //Overall
@@ -34,7 +34,7 @@ public class AuctionHouseConfiguration
     public final String   auction_database_pass;
     public final String   auction_database_name;
 
-    public AuctionHouseConfiguration(Configuration config)
+    public CubeAuctionsConfiguration(Configuration config)
     {
         this.auction_maxAuctions_player = config.getInt("auction.maxAuctions.player");
         this.auction_maxAuctions_opIgnore = config.getBoolean("auction.maxAuctions.opIgnore");

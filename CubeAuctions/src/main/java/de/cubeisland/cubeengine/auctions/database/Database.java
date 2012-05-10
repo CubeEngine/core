@@ -1,18 +1,13 @@
 package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
+import de.cubeisland.cubeengine.auctions.Manager;
+import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.AuctionItem;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import de.cubeisland.cubeengine.auctions.Manager;
-import de.cubeisland.cubeengine.auctions.Util;
-import java.lang.reflect.Field;
 import java.sql.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -81,20 +76,6 @@ public class Database
         }
         return statement;
     }
-//##########################################################
-    private void createTableIfNoExist(String tablename, EntityIdentifier id, EntityProperty... properties)
-    {
-        String exec = "";
-        exec += "CREATE TABLE IF NOT EXISTS `"+tablename+"` (";//Create table with tablename
-        exec += id.toDBCreateString();//Identifier ; Type ;  Not null?
-        for (int i=0; i<properties.length; ++i)
-            exec += id.toDBCreateString();//Property ; Type ;  Not null?
-        exec += "PRIMARY KEY("+id.toDBString()+")";//Identifier as Primary Key
-        for (int i=0; i<properties.length; ++i)
-            exec += properties[i].toDBCreateForeignKey();//Property Foreign Key ...
-        exec += ") ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-    }
-//##########################################################
     
     private void setupStructure()
     {
@@ -328,141 +309,5 @@ public class Database
         return null;
     }
 
-    public Database updateEntity(DatabaseEntity entity) throws SQLException
-    {
-        String idName = null;
-        Object idValue = null;
-        Map<String, Object> fields = new HashMap<String, Object>();
-
-        String propName;
-        for (Field field : entity.getClass().getDeclaredFields())
-        {
-            try
-            {
-                if (field.isAnnotationPresent(EntityIdentifier.class))
-                {
-                    field.setAccessible(true);
-                    idName = field.getAnnotation(EntityIdentifier.class).name();
-                    if ("".equals(idName))
-                    {
-                        idName = field.getName();
-                    }
-                    idValue = field.get(entity);
-                }
-                else if (field.isAnnotationPresent(EntityProperty.class))
-                {
-                    field.setAccessible(true);
-                    propName = field.getAnnotation(EntityProperty.class).name();
-                    if ("".equals(propName))
-                    {
-                        propName = field.getName();
-                    }
-                    fields.put(propName, field.get(entity));
-                }
-            }
-            catch (IllegalAccessException e)
-            {}
-        }
-
-        if (idName == null)
-        {
-            throw new IllegalArgumentException("The given entity does not contain an identifier!");
-        }
-
-        this.update(new String[] {entity.getTable()}, fields, new Condition(quoteName(idName) + " = ?", idValue), 1, -1);
-
-        return this;
-    }
-
-    public int update(String[] tables, Map<String, Object> fields) throws SQLException
-    {
-        return this.update(tables, fields, null, 0, -1);
-    }
-
-    public int update(String[] tables, Map<String, Object> fields, Condition condition) throws SQLException
-    {
-        return this.update(tables, fields, condition, 0, -1);
-    }
-
-    public int update(String[] tables, Map<String, Object> fields, Condition condition, int limit) throws SQLException
-    {
-        return this.update(tables, fields, condition, limit, -1);
-    }
-
-    public int update(String[] tables, Map<String, Object> fields, Condition condition, int limit, int offset) throws SQLException
-    {
-        if (fields == null || fields.size() < 1)
-        {
-            return 0;
-        }
-        Iterator<String> fieldNames = fields.keySet().iterator();
-        Collection<Object> params = fields.values();
-        
-        StringBuilder query = new StringBuilder("UPDATE ").append(generateTableList(tables)).append(" SET ");
-        query.append(fieldNames.next()).append(" = ?");
-        while (fieldNames.hasNext())
-        {
-            query.append(", ").append(fieldNames.next()).append(" = ?");
-        }
-
-        if (condition != null)
-        {
-            query.append(" WHERE ").append(condition.condition);
-            params.addAll(condition.params);
-        }
-        
-        if (limit > 0)
-        {
-            query.append(" LIMIT ").append(limit);
-        }
-
-        if (offset >= 0)
-        {
-            query.append(" OFFSET ").append(offset);
-        }
-
-        return this.execUpdate(query.toString(), params);
-    }
-
-    private String generateTableList(String... tables)
-    {
-        if (tables.length == 0)
-        {
-            return "";
-        }
-        if (tables.length > 1)
-        {
-            int i = 0;
-            StringBuilder sb = new StringBuilder(quoteName(tables[i++]));
-            for (; i < tables.length; ++i)
-            {
-                sb.append(", ").append(quoteName(tables[i]));
-            }
-            return sb.toString();
-        }
-        return quoteName(tables[0]);
-    }
-
-    public static String quoteName(String name)
-    {
-        int startOffset = 0;
-        int delimOffset = name.indexOf(".");
-        if (delimOffset < 0)
-        {
-            return "`" + name + "`";
-        }
-        else
-        {
-            StringBuilder nameBuilder = new StringBuilder();
-            do
-            {
-                nameBuilder.append("´").append(name.substring(startOffset, delimOffset)).append("´");
-                startOffset = delimOffset + 1;
-            }
-            while ((delimOffset = name.indexOf(".", delimOffset)) >= 0);
-            nameBuilder.append("´").append(name.substring(startOffset)).append("´");
-
-            return nameBuilder.toString();
-        }
-    }
+    
 }

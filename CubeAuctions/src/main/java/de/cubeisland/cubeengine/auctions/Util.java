@@ -156,7 +156,7 @@ public class Util
             }
             output +=" "+t("info_out_with",econ.format(bid.getAmount()));
         }
-        AuctionHouseConfiguration config = plugin.getConfiguration();
+        CubeAuctionsConfiguration config = plugin.getConfiguration();
         if (auction.getAuctionEnd()-System.currentTimeMillis()>1000*60*60*24)
             output += " "+t("info_out_end",DateFormatUtils.format(auction.getAuctionEnd(), 
                             config.auction_timeFormat));

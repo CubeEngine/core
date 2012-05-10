@@ -1,13 +1,12 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
-import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
-import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
+import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.libMinecraft.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -17,14 +16,14 @@ import org.bukkit.entity.Player;
  * 
  * @author Faithcaio
  */
-public class NotifyCommand extends AbstractCommand
+public class NotifyCommand
 {
-    public NotifyCommand(BaseCommand base)
+    public NotifyCommand()
     {
-        super(base, "notify", "n");
     }
-
-    public boolean execute(CommandSender sender, CommandArgs args)
+    
+    @Command(usage = "toggle", aliases = {"n"})
+    public boolean notify(CommandSender sender, CommandArgs args)
     {
         if (args.isEmpty())
         {
@@ -66,11 +65,6 @@ public class NotifyCommand extends AbstractCommand
         return true;
     }
 
-    @Override
-    public String getUsage()
-    {
-        return super.getUsage() + " toggle";
-    }
 
     public String getDescription()
     {

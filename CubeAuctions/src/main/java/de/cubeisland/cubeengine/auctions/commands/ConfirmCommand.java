@@ -1,14 +1,13 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
+import de.cubeisland.cubeengine.auctions.CommandArgs;
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
+import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
-import de.cubeisland.cubeengine.auctions.CommandArgs;
-import de.cubeisland.cubeengine.auctions.Manager;
+import de.cubeisland.libMinecraft.command.Command;
 import java.util.ArrayList;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
@@ -18,14 +17,14 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Faithcaio
  */
-public class ConfirmCommand extends AbstractCommand
+public class ConfirmCommand
 {
-    public ConfirmCommand(BaseCommand base)
+    public ConfirmCommand()
     {
-        super(base, "confirm");
-    }
 
-    public boolean execute(CommandSender sender, CommandArgs args)
+    }
+    @Command(usage = "")
+    public boolean confirm(CommandSender sender, CommandArgs args)
     {
         Manager manager = Manager.getInstance();
         Bidder bidder = Bidder.getInstance(sender);

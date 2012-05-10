@@ -1,22 +1,10 @@
 package de.cubeisland.cubeengine.auctions;
 
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.commands.AddCommand;
-import de.cubeisland.cubeengine.auctions.commands.BidCommand;
-import de.cubeisland.cubeengine.auctions.commands.ConfirmCommand;
-import de.cubeisland.cubeengine.auctions.commands.GetItemsCommand;
-import de.cubeisland.cubeengine.auctions.commands.HelpCommand;
-import de.cubeisland.cubeengine.auctions.commands.InfoCommand;
-import de.cubeisland.cubeengine.auctions.commands.ListCommand;
-import de.cubeisland.cubeengine.auctions.commands.NotifyCommand;
-import de.cubeisland.cubeengine.auctions.commands.ReloadCommand;
-import de.cubeisland.cubeengine.auctions.commands.RemoveCommand;
-import de.cubeisland.cubeengine.auctions.commands.SearchCommand;
-import de.cubeisland.cubeengine.auctions.commands.SubscribeCommand;
-import de.cubeisland.cubeengine.auctions.commands.UnSubscribeCommand;
-import de.cubeisland.cubeengine.auctions.commands.UndoBidCommand;
+import de.cubeisland.cubeengine.auctions.commands.*;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
@@ -40,10 +28,12 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     
     private Server server;
     private PluginManager pm;
-    private AuctionHouseConfiguration config;
+    private CubeAuctionsConfiguration config;
     private File dataFolder;
     private Economy economy = null;
     private Database database;
+    private BaseCommand baseCommand;
+    private static final String PERMISSION_BASE = "cubeengine.auctions.commands.";
 //TODO später eigene AuktionsBox als Kiste mit separatem inventar 
 //TODO flatfile mit angeboten
 //TODO DatenBankNutzung schöner machen
@@ -71,7 +61,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
-        this.config = new AuctionHouseConfiguration(configuration);
+        this.config = new CubeAuctionsConfiguration(configuration);
         this.saveConfig();
         
         this.economy = this.setupEconomy();
@@ -88,24 +78,23 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         //database.loadDatabase();//TODO
         Manager.getInstance().removeOldAuctions();
         
-        this.pm.registerEvents(new AuctionHouseListener(this), this);
+        this.pm.registerEvents(new CubeAuctionsListener(this), this);
         
-        BaseCommand baseCommand = new BaseCommand(this);
-        baseCommand
-            .registerSubCommand(new         HelpCommand(baseCommand))
-            .registerSubCommand(new          AddCommand(baseCommand))
-            .registerSubCommand(new       RemoveCommand(baseCommand))
-            .registerSubCommand(new          BidCommand(baseCommand))
-            .registerSubCommand(new         InfoCommand(baseCommand))
-            .registerSubCommand(new       SearchCommand(baseCommand))
-            .registerSubCommand(new      UndoBidCommand(baseCommand))
-            .registerSubCommand(new       NotifyCommand(baseCommand))
-            .registerSubCommand(new     GetItemsCommand(baseCommand))
-            .registerSubCommand(new    SubscribeCommand(baseCommand))
-            .registerSubCommand(new  UnSubscribeCommand(baseCommand))
-            .registerSubCommand(new         ListCommand(baseCommand))
-            .registerSubCommand(new      ConfirmCommand(baseCommand))    
-            .registerSubCommand(new       ReloadCommand(baseCommand)) 
+        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
+        this.baseCommand
+            .registerCommands(new         HelpCommand())
+            .registerCommands(new          AddCommand())
+            .registerCommands(new       RemoveCommand())
+            .registerCommands(new          BidCommand())
+            .registerCommands(new         InfoCommand())
+            .registerCommands(new       SearchCommand())
+            .registerCommands(new      UndoBidCommand())
+            .registerCommands(new       NotifyCommand())
+            .registerCommands(new     GetItemsCommand())
+            .registerCommands(new    SubscribeCommand())
+            .registerCommands(new  UnSubscribeCommand())
+            .registerCommands(new         ListCommand())
+            .registerCommands(new      ConfirmCommand())    
         .setDefaultCommand("help");
         this.getCommand("auctionhouse").setExecutor(baseCommand);
         
@@ -145,7 +134,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         return this.economy;
     }
        
-    public AuctionHouseConfiguration getConfiguration()
+    public CubeAuctionsConfiguration getConfiguration()
     {
         return this.config;
     }

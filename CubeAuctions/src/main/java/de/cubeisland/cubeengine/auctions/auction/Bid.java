@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import de.cubeisland.cubeengine.auctions.database.DatabaseEntity;
-import de.cubeisland.cubeengine.auctions.database.EntityIdentifier;
-import de.cubeisland.cubeengine.auctions.database.EntityProperty;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,18 +11,12 @@ import java.sql.Timestamp;
  *
  * @author Faithcaio
  */
-public class Bid implements DatabaseEntity
+public class Bid
 {
-    @EntityIdentifier
     private int id;
 
-    @EntityProperty
     private final double amount;
-    
-    @EntityProperty
     private Bidder bidder;
-
-    @EntityProperty
     private final long timestamp;
 
     

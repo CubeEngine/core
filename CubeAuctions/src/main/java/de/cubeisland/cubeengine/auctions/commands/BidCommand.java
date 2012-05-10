@@ -1,16 +1,15 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
-import de.cubeisland.cubeengine.auctions.auction.Auction;
-import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
+import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
-import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Sorter;
+import de.cubeisland.cubeengine.auctions.auction.Auction;
+import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
+import de.cubeisland.libMinecraft.command.Command;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
@@ -22,16 +21,14 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Faithcaio
  */
-public class BidCommand extends AbstractCommand
+public class BidCommand
 {
     Economy econ = CubeAuctions.getInstance().getEconomy();
     
-    public BidCommand(BaseCommand base)
-    {
-        super(base, "bid");
-    }
+    public BidCommand(){}
 
-    public boolean execute(CommandSender sender, CommandArgs args)
+    @Command(usage = "<#ID> <amount>")
+    public boolean bid(CommandSender sender, CommandArgs args)
     {
         Manager manager = Manager.getInstance();
         if (!Perm.command_bid.check(sender)) return true;
@@ -187,12 +184,6 @@ public class BidCommand extends AbstractCommand
                 auction.getOwner().getPlayer().sendMessage(t("bid_owner",auction.getId()));
             }
         }
-    }
-
-    @Override
-    public String getUsage()
-    {
-        return super.getUsage() + " <#ID> <amount>";
     }
 
     public String getDescription()

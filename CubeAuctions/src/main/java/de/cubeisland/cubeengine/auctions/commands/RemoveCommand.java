@@ -1,16 +1,15 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
+import de.cubeisland.cubeengine.auctions.CommandArgs;
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
+import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
+import de.cubeisland.cubeengine.auctions.Manager;
+import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.AuctionHouseConfiguration;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
-import de.cubeisland.cubeengine.auctions.CommandArgs;
-import de.cubeisland.cubeengine.auctions.Manager;
-import de.cubeisland.cubeengine.auctions.Perm;
+import de.cubeisland.libMinecraft.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,17 +20,17 @@ import org.bukkit.scheduler.BukkitScheduler;
  * 
  * @author Faithcaio
  */
-public class RemoveCommand extends AbstractCommand
+public class RemoveCommand
 {
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final AuctionHouseConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
     
-    public RemoveCommand(BaseCommand base)
+    public RemoveCommand()
     {
-        super(base, "remove", "cancel", "delete", "rem");
     }
 
-    public boolean execute(CommandSender sender, CommandArgs args)
+    @Command(usage = "<AuctionId>", aliases = {"cancel", "delete", "rem"})
+    public boolean remove(CommandSender sender, CommandArgs args)
     {
         if (args.isEmpty())
         {
@@ -178,12 +177,6 @@ public class RemoveCommand extends AbstractCommand
                 return true;
             }
         }
-    }
-
-    @Override
-    public String getUsage()
-    {
-        return super.getUsage() + " <AuctionId>";
     }
 
     public String getDescription()

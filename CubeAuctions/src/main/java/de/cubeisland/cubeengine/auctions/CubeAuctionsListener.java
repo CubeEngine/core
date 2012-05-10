@@ -27,13 +27,13 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class AuctionHouseListener implements Listener
+public class CubeAuctionsListener implements Listener
 {
     private final CubeAuctions plugin;
-    private final AuctionHouseConfiguration config;
+    private final CubeAuctionsConfiguration config;
     private final Economy econ;
     
-    public AuctionHouseListener(CubeAuctions plugin)
+    public CubeAuctionsListener(CubeAuctions plugin)
     {
         this.plugin = plugin;
         this.config = plugin.getConfiguration();

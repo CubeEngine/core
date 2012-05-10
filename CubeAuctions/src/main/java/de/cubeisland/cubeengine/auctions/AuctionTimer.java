@@ -25,7 +25,7 @@ public class AuctionTimer
     private Timer notifyTimer;
     private static AuctionTimer instance = null;
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final AuctionHouseConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
 
     public AuctionTimer()
     {

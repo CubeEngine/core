@@ -1,17 +1,16 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
+import de.cubeisland.cubeengine.auctions.CommandArgs;
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
+import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
+import de.cubeisland.cubeengine.auctions.Perm;
+import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.AuctionHouseConfiguration;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
-import de.cubeisland.cubeengine.auctions.CommandArgs;
-import de.cubeisland.cubeengine.auctions.Perm;
-import de.cubeisland.cubeengine.auctions.Util;
+import de.cubeisland.libMinecraft.command.Command;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.bukkit.Material;
@@ -25,18 +24,17 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Faithcaio
  */
-public class AddCommand extends AbstractCommand
+
+public class AddCommand
 {
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final AuctionHouseConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
     Economy econ = CubeAuctions.getInstance().getEconomy();
 
-    public AddCommand(BaseCommand base)
-    {
-        super(base, "add");
-    }
-
-    public boolean execute(CommandSender sender, CommandArgs args)
+    public AddCommand(){}
+    
+    @Command(usage = "<Item> <Amount>")
+    public boolean add(CommandSender sender, CommandArgs args)
     {
         ItemStack newItem = null;
         Material newMaterial;
@@ -279,12 +277,6 @@ public class AddCommand extends AbstractCommand
                                         econ.format(startBid),
                                         DateFormatUtils.format(auctionEnd, config.auction_timeFormat)));                     
         return true;
-    }
-
-    @Override
-    public String getUsage()
-    {
-        return super.getUsage() + " <Item> <Amount>";
     }
 
     public String getDescription()

@@ -23,7 +23,7 @@ public class Manager
     private final List<Auction> auctions;
     private final Stack<Integer> freeIds;
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final AuctionHouseConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
     private HashMap<Bidder, Bidder> remBidderConfirm = new HashMap();
     private HashSet<Bidder> remAllConfirm = new HashSet();
     private HashMap<Bidder, Integer> remSingleConfirm = new HashMap();

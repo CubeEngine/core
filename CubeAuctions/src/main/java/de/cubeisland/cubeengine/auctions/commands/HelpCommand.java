@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
 import de.cubeisland.cubeengine.auctions.CommandArgs;
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.Perm;
+import de.cubeisland.libMinecraft.command.Command;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -13,18 +12,18 @@ import org.bukkit.command.CommandSender;
  * @author Phillip Schichtel
  * @author Faithcaio
  */
-public class HelpCommand extends AbstractCommand
-{
-    public HelpCommand(BaseCommand base)
+public class HelpCommand
+{//TODO...
+    public HelpCommand()
     {
-        super(base, "help");
     }
-
-    public boolean execute(CommandSender sender, CommandArgs args)
+    @Command(usage = "", aliases = {"h"})
+    public boolean help(CommandSender sender, CommandArgs args)
     {
+        /*
         if (!Perm.use.check(sender)) return true;
         sender.sendMessage(t("help_list"));
-        for (AbstractCommand command : getBase().getRegisteredCommands())
+        for (Command command : getBaseCommand().getRegisteredCommands())
         {
             if (this.check(command,"add"))         if (!sender.hasPermission("auctionhouse.command.add")) continue;
             if (this.check(command,"bid"))         if (!sender.hasPermission("auctionhouse.command.bid")) continue;
@@ -43,9 +42,11 @@ public class HelpCommand extends AbstractCommand
             sender.sendMessage("    " + command.getDescription());
         }
         sender.sendMessage("");
+        * 
+        */
         return true;
     }
-    
+    /*
     private boolean check(AbstractCommand command, String... label)
     {
         int max = label.length;
@@ -53,10 +54,6 @@ public class HelpCommand extends AbstractCommand
             if (command.getLabel().equalsIgnoreCase(label[i])) return true;
         return false;
     }
-
-    @Override
-    public String getDescription()
-    {
-        return t("command_help");
-    }
+    * 
+    */
 }

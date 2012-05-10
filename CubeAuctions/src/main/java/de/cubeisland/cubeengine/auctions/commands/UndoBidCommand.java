@@ -1,12 +1,11 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
 import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
+import de.cubeisland.libMinecraft.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,14 +14,14 @@ import org.bukkit.entity.Player;
  * 
  * @author Faithcaio
  */
-public class UndoBidCommand extends AbstractCommand
+public class UndoBidCommand
 {
-    public UndoBidCommand(BaseCommand base)
+    public UndoBidCommand()
     {
-        super(base, "undobid");
     }
 
-    public boolean execute(CommandSender sender, CommandArgs args)
+    @Command(usage = "last")
+    public boolean undobid(CommandSender sender, CommandArgs args)
     {
         if (!Perm.command_undobid.check(sender)) return true;
         if (args.isEmpty())
@@ -70,12 +69,6 @@ public class UndoBidCommand extends AbstractCommand
         }
         sender.sendMessage(t("e")+" "+t("undo_fail"));
         return true;
-    }
-
-    @Override
-    public String getUsage()
-    {
-        return super.getUsage() + " last";
     }
 
     public String getDescription()

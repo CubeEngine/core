@@ -1,14 +1,11 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
-import de.cubeisland.cubeengine.auctions.AuctionHouseConfiguration;
+import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
-import de.cubeisland.cubeengine.auctions.database.DatabaseEntity;
-import de.cubeisland.cubeengine.auctions.database.EntityIdentifier;
-import de.cubeisland.cubeengine.auctions.database.EntityProperty;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.sql.Timestamp;
 import java.util.Stack;
@@ -19,23 +16,19 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class Auction implements DatabaseEntity
+public class Auction
 {
     
-    @EntityIdentifier
     private int id;
-    @EntityProperty
+
     private final ItemStack item;
-    @EntityProperty
     private Bidder owner;
-    @EntityProperty
     private final long auctionEnd;
-    @EntityProperty
     private final Stack<Bid> bids;
     
     
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final AuctionHouseConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
     private final Database db;
     
 /**

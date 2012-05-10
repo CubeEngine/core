@@ -1,12 +1,11 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.AbstractCommand;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.BaseCommand;
 import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.Perm;
+import de.cubeisland.libMinecraft.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -16,14 +15,14 @@ import org.bukkit.entity.Player;
  * 
  * @author Faithcaio
  */
-public class GetItemsCommand extends AbstractCommand
+public class GetItemsCommand
 {
-    public GetItemsCommand(BaseCommand base)
+    public GetItemsCommand()
     {
-        super(base, "getitems", "get");
     }
-
-    public boolean execute(CommandSender sender, CommandArgs args)
+    
+    @Command(usage = "", aliases = {"get"})
+    public boolean getItems(CommandSender sender, CommandArgs args)
     {
         if (!Perm.command_getItems.check(sender)) return true;
         if (sender instanceof ConsoleCommandSender)
