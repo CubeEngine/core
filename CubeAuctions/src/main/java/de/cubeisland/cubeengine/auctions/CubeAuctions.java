@@ -76,13 +76,13 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
                                 config.auction_database_name);
         
         //database.loadDatabase();//TODO
+        
         Manager.getInstance().removeOldAuctions();
         
         this.pm.registerEvents(new CubeAuctionsListener(this), this);
         
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand
-            .registerCommands(new         HelpCommand())
             .registerCommands(new          AddCommand())
             .registerCommands(new       RemoveCommand())
             .registerCommands(new          BidCommand())

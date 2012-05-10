@@ -53,9 +53,6 @@ public class BidStorage implements Storage<Integer, Bid>
                 int auctionId = result.getInt("auctionid");//TODO Der Auktion zuordnen
                 
                 bids.add(new Bid(id, cubeUserId, amount, time));
-                
-                //Constructor:
-                    //public Bid(int id,Bidder bidder, double amount, Timestamp timestamp)
             }
 
             return bids;
@@ -93,20 +90,27 @@ public class BidStorage implements Storage<Integer, Bid>
 
     public boolean store(Bid... object)
     {
-        for (Bid bid : object)
+        try
         {
-            
-            int id = bid.getId();
-            Bidder bidder = bid.getBidder();
-            double amount = bid.getAmount();
-            Timestamp time = bid.getTimestamp();
+            for (Bid bid : object)
+            {
 
-            int auctionId = 0;//TODO Der Auktion zuordnen
+                int id = bid.getId();
+                Bidder bidder = bid.getBidder();
+                double amount = bid.getAmount();
+                Timestamp time = bid.getTimestamp();
 
-            this.database.query("INSERT INTO {{PREFIX}}bids (`id`, `auctionid`,`cubeuserid`, `amount`, `timestamp`)"+
-                                "VALUES (?, ?, ?, ?, ?)", id, auctionId, bidder.getId(), amount, time); 
+                int auctionId = 0;//TODO Der Auktion zuordnen
+
+                this.database.query("INSERT INTO {{PREFIX}}bids (`id`, `auctionid`,`cubeuserid`, `amount`, `timestamp`)"+
+                                    "VALUES (?, ?, ?, ?, ?)", id, auctionId, bidder.getId(), amount, time); 
+            }
+            return true;
         }
-        return true; //TODO
+        catch (Exception e)
+        {
+            throw new StorageException("Failed to store the Bids !", e);
+        }
     }
 
     public int delete(Bid... object)

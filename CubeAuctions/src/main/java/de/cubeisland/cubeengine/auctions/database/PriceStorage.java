@@ -52,9 +52,6 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
                 int timessold = result.getInt("timessold");
 
                 pricedItems.add(new PricedItemStack(mat, amount, data, price, timessold));
-
-                //Constructor:
-                //public PricedItemStack(Material mat, int amount, short data, double price, int timessold) 
             }
 
             return pricedItems;
@@ -93,16 +90,23 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
 
     public boolean store(PricedItemStack... object)
     {
-        for (PricedItemStack item : object)
+        try
         {
-            String sItem = Util.convertItem(item);
-            double price = item.getAvgPrice();
-            int timessold = item.getTimesSold();
+            for (PricedItemStack item : object)
+            {
+                String sItem = Util.convertItem(item);
+                double price = item.getAvgPrice();
+                int timessold = item.getTimesSold();
 
-            this.database.query("INSERT INTO {{PREFIX}}bids (`item`, `price`,`timessold``)"+
-                                "VALUES (?, ?, ?)", sItem, price, timessold); 
+                this.database.query("INSERT INTO {{PREFIX}}bids (`item`, `price`,`timessold``)"+
+                                    "VALUES (?, ?, ?)", sItem, price, timessold); 
+            }
+            return true;
         }
-        return true; //TODO
+        catch (Exception e)
+        {
+            throw new StorageException("Failed to store the Prices !", e);
+        }
     }
 
     public int delete(PricedItemStack... object)

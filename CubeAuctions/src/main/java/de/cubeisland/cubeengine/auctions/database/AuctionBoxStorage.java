@@ -53,8 +53,6 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
                 int ownerId = result.getInt("oldownerid");
                 double price = result.getDouble("price");
                 auctionItems.add(new AuctionItem(id, cubeUserId, item, time, ownerId, price));
-                //Constructor:
-                    //public AuctionItem(int id, Bidder bidder, ItemStack item, Timestamp time,Bidder owner, double price)
             }
 
             return auctionItems;
@@ -91,19 +89,26 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 
     public boolean store(AuctionItem... object)
     {
-        for (AuctionItem auctionItem : object)
+        try
         {
-            int id = auctionItem.getId();
-            int cubeUserId = auctionItem.getBidder().getId();
-            String item = Util.convertItem(auctionItem.getItemStack());
-            int amount = auctionItem.getItemStack().getAmount();
-            double price = auctionItem.getPrice();
-            int oldownerid = auctionItem.getOwner().getId();
-            Timestamp time = auctionItem.getTimestamp();
-            this.database.query("INSERT INTO {{PREFIX}}boxes (`id`, `cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
-                                "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, price, oldownerid, time); 
+            for (AuctionItem auctionItem : object)
+            {
+                int id = auctionItem.getId();
+                int cubeUserId = auctionItem.getBidder().getId();
+                String item = Util.convertItem(auctionItem.getItemStack());
+                int amount = auctionItem.getItemStack().getAmount();
+                double price = auctionItem.getPrice();
+                int oldownerid = auctionItem.getOwner().getId();
+                Timestamp time = auctionItem.getTimestamp();
+                this.database.query("INSERT INTO {{PREFIX}}boxes (`id`, `cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
+                                    "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, price, oldownerid, time); 
+            }
+            return true;
         }
-        return true; //TODO
+        catch (Exception e)
+        {
+            throw new StorageException("Failed to store the AuctionBoxItems !", e);
+        }
     }
 
     public int delete(AuctionItem... object)

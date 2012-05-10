@@ -81,18 +81,24 @@ public class AuctionStorage implements Storage<Integer, Auction>{
 
     public boolean store(Auction... object)
     {
-        for (Auction auction : object)
+        try
         {
-            int id = auction.getId();
-            int cubeUserId = auction.getOwner().getId();//TODO CubeUser ID
-            String item = Util.convertItem(auction.getItemStack());
-            int amount = auction.getItemStack().getAmount();
-            Timestamp time = auction.getTimestamp();
-            this.database.query("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
-                                "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
+            for (Auction auction : object)
+            {
+                int id = auction.getId();
+                int cubeUserId = auction.getOwner().getId();//TODO CubeUser ID
+                String item = Util.convertItem(auction.getItemStack());
+                int amount = auction.getItemStack().getAmount();
+                Timestamp time = auction.getTimestamp();
+                this.database.query("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
+                                    "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
+            }
+            return true;
         }
-        return true; //TODO
-       
+        catch (Exception e)
+        {
+            throw new StorageException("Failed to store the Auctions !", e);
+        }
     }
 
     public int delete(Auction... object)

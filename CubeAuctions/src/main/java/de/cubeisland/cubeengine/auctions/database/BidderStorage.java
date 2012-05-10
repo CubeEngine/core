@@ -77,16 +77,24 @@ public class BidderStorage implements Storage<Integer, Bidder>
 
     public boolean store(Bidder... object)
     {
-        for (Bidder bidder : object)
+        try
         {
-            
-            int cubeuserid = bidder.getId();
-            byte notifyState = bidder.getNotifyState();
+            for (Bidder bidder : object)
+            {
 
-            this.database.query("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
-                                "VALUES (?, ?)", cubeuserid, notifyState); 
+                int cubeuserid = bidder.getId();
+                byte notifyState = bidder.getNotifyState();
+
+                this.database.query("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
+                                    "VALUES (?, ?)", cubeuserid, notifyState); 
+            }
+            return true;
         }
-        return true; //TODO
+        catch (Exception e)
+        {
+            throw new StorageException("Failed to store the Bidder !", e);
+        }
+        
     }
 
     public int delete(Bidder... object)

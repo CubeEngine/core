@@ -52,13 +52,20 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
     }
 
     public boolean store(Integer cuId, String... object)
-    {//id is autoincrement
-        for (String s : object)
+    {
+        try
         {
-            this.database.query("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
-                                "VALUES (?, ?)", cuId, s); 
+            for (String s : object)
+            {
+                this.database.query("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
+                                    "VALUES (?, ?)", cuId, s); 
+            }
+            return true;   
         }
-        return false; //TODO
+        catch (Exception e)
+        {
+            throw new StorageException("Failed to store the Subscriptions !", e);
+        }
     }
 
     public int delete(String... object)

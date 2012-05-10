@@ -12,7 +12,7 @@ public class CubeUser
 {
     private final OfflinePlayer player;
     private LongBitMask flags;
-    private final int id;//TODO
+    private final int id;
     
     public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
     {

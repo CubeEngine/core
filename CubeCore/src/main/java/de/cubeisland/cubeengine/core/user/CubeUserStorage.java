@@ -113,7 +113,7 @@ public class CubeUserStorage implements Storage<String, CubeUser>
             this.database.query("INSERT INTO {{PREFIX}}users (`id`, `name`, `flags`)"+
                                 "VALUES (?, ?, ?)", id, name, bitmask.get()); 
         }
-        return true; //TODO
+        return true; //TODO return false
     }
 
     public int delete(CubeUser... object)
