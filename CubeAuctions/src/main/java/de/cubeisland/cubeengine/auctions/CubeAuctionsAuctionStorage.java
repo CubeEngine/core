@@ -115,7 +115,7 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
         int dels = 0;
         for (int i : keys)
         {
-            this.database.query("DELETE FROM {{PREFIX}}auctions WHERE id=?", keys[i]);
+            this.database.query("DELETE FROM {{PREFIX}}auctions WHERE id=?", i);
             ++dels;
         }
         return dels;

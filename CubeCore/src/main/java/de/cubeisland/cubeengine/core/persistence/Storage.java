@@ -6,7 +6,8 @@ import java.util.Collection;
  *
  * @author Phillip Schichtel
  */
-public interface Storage<K, V>
+public interface Storage<K, V >
+//irgendwie mehr Werte reinmachen wäre gut...
 {
     public Database getDatabase();
     public Collection<V> getAll();
