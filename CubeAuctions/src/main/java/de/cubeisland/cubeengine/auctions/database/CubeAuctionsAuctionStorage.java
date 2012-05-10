@@ -41,7 +41,7 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}auctions");
+            ResultSet result = this.database.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions");
 
             OfflinePlayer player;
             LongBitMask bitmask;
@@ -69,7 +69,7 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}auctions WHERE id=? LIMIT 1", key);
+            ResultSet result = this.database.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions WHERE id=? LIMIT 1", key);
 
             if (!result.next())
             {

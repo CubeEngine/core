@@ -47,7 +47,7 @@ public class CubeAuctionsBidStorage implements Storage<Integer, Bid>
 
             OfflinePlayer player;
             LongBitMask bitmask;
-            Collection<Bid> Bids = new ArrayList<Bid>();
+            Collection<Bid> bids = new ArrayList<Bid>();
             while (result.next())
             {
                 int id = result.getInt("id");
@@ -57,13 +57,13 @@ public class CubeAuctionsBidStorage implements Storage<Integer, Bid>
                 
                 int auctionId = result.getInt("auctionid");//TODO Der Auktion zuordnen
                 
-                Bids.add(new Bid(id, (Bidder)bidder, amount, time));
+                bids.add(new Bid(id, (Bidder)bidder, amount, time));
                 
                 //Constructor:
                     //public Bid(int id,Bidder bidder, double amount, Timestamp timestamp)
             }
 
-            return Bids;
+            return bids;
         }
         catch (SQLException e)
         {
@@ -117,9 +117,9 @@ public class CubeAuctionsBidStorage implements Storage<Integer, Bid>
     public int delete(Bid... object)
     {
         List<Integer> keys = new ArrayList<Integer>();
-        for (Bid Bid : object)
+        for (Bid bid : object)
         {
-            keys.add(Bid.getId());
+            keys.add(bid.getId());
         }
         return deleteByKey((Integer[])keys.toArray());
     }
