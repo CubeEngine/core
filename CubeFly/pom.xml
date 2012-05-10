@@ -46,7 +46,7 @@
     </dependencies>
 
     <build>
-        <finalName>CubeEngine</finalName>
+        <finalName>CubeFly</finalName>
         <resources>
             <resource>
                 <targetPath>.</targetPath>
