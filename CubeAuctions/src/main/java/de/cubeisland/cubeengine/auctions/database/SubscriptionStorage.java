@@ -19,14 +19,14 @@ import org.bukkit.Server;
  *
  * @author Faithcaio
  */
-public class CubeAuctionsSubsStorage implements Storage<Integer, String>//Integer = CubeUserID - String = AuctionsID oder MATERIAL-Name von Bukkit
+public class SubscriptionStorage implements Storage<Integer, String>//Integer = CubeUserID - String = AuctionsID oder MATERIAL-Name von Bukkit
 {
 
     private final Database database;
     private final Server server;
     private CubeUserManager cuManager;
     
-    public CubeAuctionsSubsStorage(Database db, Server server)
+    public SubscriptionStorage(Database db, Server server)
     {
         this.database = db;
         this.server = server;
@@ -44,7 +44,9 @@ public class CubeAuctionsSubsStorage implements Storage<Integer, String>//Intege
             ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}subscription WHERE cubeuserid=?", key);
             List<String> list = new ArrayList<String>();
             while (result.next())
+            {
                 list.add(result.getString("sub"));
+            }
             return list;
         }
         catch (SQLException e)

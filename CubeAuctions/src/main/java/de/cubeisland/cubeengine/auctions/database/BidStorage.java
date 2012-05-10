@@ -21,14 +21,14 @@ import org.bukkit.Server;
  *
  * @author Faithcaio
  */
-public class CubeAuctionsBidStorage implements Storage<Integer, Bid>
+public class BidStorage implements Storage<Integer, Bid>
 {
 
     private final Database database;
     private final Server server;
     private CubeUserManager cuManager;
     
-    public CubeAuctionsBidStorage(Database db, Server server)
+    public BidStorage(Database db, Server server)
     {
         this.database = db;
         this.server = server;

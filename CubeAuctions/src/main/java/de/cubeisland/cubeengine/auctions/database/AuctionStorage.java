@@ -25,13 +25,13 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
+public class AuctionStorage implements Storage<Integer, Auction>{
 
     private final Database database;
     private final Server server;
     private CubeUserManager cuManager;
 
-    public CubeAuctionsAuctionStorage(Database db, Server server)
+    public AuctionStorage(Database db, Server server)
     {
         this.database = db;
         this.server = server;

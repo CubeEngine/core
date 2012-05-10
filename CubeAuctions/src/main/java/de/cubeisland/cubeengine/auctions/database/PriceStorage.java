@@ -28,13 +28,13 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class CubeAuctionsPriceStorage implements Storage<ItemStack, PricedItemStack>//TODO vlt anders machen?
+public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO vlt anders machen?
 {
     private final Database database;
     private final Server server;
     private CubeUserManager cuManager;
 
-    public CubeAuctionsPriceStorage(Database db, Server server)
+    public PriceStorage(Database db, Server server)
     {
         this.database = db;
         this.server = server;
