@@ -4,11 +4,13 @@ import de.cubeisland.cubeengine.auctions.AuctionBox;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Util;
-import de.cubeisland.cubeengine.auctions.database.Database;
 import de.cubeisland.cubeengine.auctions.database.DatabaseEntity;
 import de.cubeisland.cubeengine.auctions.database.EntityIdentifier;
 import de.cubeisland.cubeengine.auctions.database.EntityProperty;
+import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUser;
+import de.cubeisland.cubeengine.core.user.CubeUserManager;
+import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,14 +51,17 @@ public class Bidder extends CubeUser implements DatabaseEntity
     private byte notifyState = 0;
 
     private static final Map<OfflinePlayer, Bidder> bidderInstances = new HashMap<OfflinePlayer, Bidder>();
-    private final Database db;
+    private final Database db = CubeAuctions.getInstance().getDB();
+    
+    private CubeUserManager cuManager = new CubeUserManager(this.db ,CubeAuctions.getInstance().getServer());
 /**
  * Creates a new Bidder + add him to DataBase
  */
     
     public Bidder(OfflinePlayer player)
     {
-        this.db = CubeAuctions.getInstance().getDB();
+        super(0, player, new LongBitMask(0));//TODO
+        
         this.player = player;
         this.activeBids = new ArrayList<Auction>();
         this.auctionbox = new AuctionBox(this);
@@ -105,7 +110,7 @@ public class Bidder extends CubeUser implements DatabaseEntity
  */
     public Bidder(int id, String name)
     {
-        this.db = CubeAuctions.getInstance().getDB();
+        super(0, null, null);//TODO
         if (name.equalsIgnoreCase("*Server"))
         {
             this.player = null;//ServerBidder

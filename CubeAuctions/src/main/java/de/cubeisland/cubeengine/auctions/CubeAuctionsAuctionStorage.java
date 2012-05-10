@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.user.CubeUser;
+import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,6 +28,7 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
 
     private final Database database;
     private final Server server;
+    private CubeUserManager cuManager;
 
     public CubeAuctionsAuctionStorage(Database db, Server server)
     {
@@ -47,7 +49,7 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
             {
                 int id = result.getInt("id");
                 ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
-                CubeUser owner = result.getInt("bidderid");//TODO convert to CubeUser;
+                CubeUser owner = cuManager.getCubeUser(result.getInt("bidderid"));//TODO convert to CubeUser;
                 long auctionEnd = result.getTimestamp("timestamp").getTime();
                 auctions.add(new Auction(id, item, (Bidder)owner, auctionEnd));
                 //Constructor in AuctionHouse:
@@ -74,7 +76,7 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
             }
             int id = result.getInt("id");
             ItemStack item = Util.convertItem(result.getString("item"),result.getShort("amount"));
-            CubeUser owner = result.getInt("cubeuserid");//TODO convert to CubeUser
+            CubeUser owner = cuManager.getCubeUser(result.getInt("cubeuserid"));//TODO convert to CubeUser
             long auctionEnd = result.getTimestamp("timestamp").getTime();
             return new Auction(id, item, (Bidder)owner, auctionEnd);
         }

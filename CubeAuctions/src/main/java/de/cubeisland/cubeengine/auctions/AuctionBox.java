@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.auctions;
 
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.AuctionItem;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.database.Database;
+import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.LinkedList;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.time.DateFormatUtils;

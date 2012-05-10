@@ -79,6 +79,29 @@ public class CubeUserStorage implements Storage<String, CubeUser>
             throw new StorageException("Failed to load the user '" + key + "'!", e);
         }
     }
+    
+    public CubeUser getByKey(int key)
+    {
+        try
+        {
+            ResultSet result = this.database.query("SELECT `id`,`name`,`flags` FROM {{PREFIX}}users WHERE id=? LIMIT 1", key);
+
+            if (!result.next())
+            {
+                return null;
+            }
+            
+            int id = result.getInt("id");
+            OfflinePlayer player = this.server.getOfflinePlayer(result.getString("name"));
+            LongBitMask bitmask = new LongBitMask(result.getLong("flags"));
+            return new CubeUser(id, player, bitmask);
+
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to load the user '" + key + "'!", e);
+        }
+    }
 
     public boolean store(CubeUser... object)
     {

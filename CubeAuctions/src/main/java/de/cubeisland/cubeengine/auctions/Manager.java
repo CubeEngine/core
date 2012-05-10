@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.auctions;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
-import de.cubeisland.cubeengine.auctions.database.Database;
+import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

@@ -15,9 +15,9 @@ import de.cubeisland.cubeengine.auctions.commands.SearchCommand;
 import de.cubeisland.cubeengine.auctions.commands.SubscribeCommand;
 import de.cubeisland.cubeengine.auctions.commands.UnSubscribeCommand;
 import de.cubeisland.cubeengine.auctions.commands.UndoBidCommand;
-import de.cubeisland.cubeengine.auctions.database.Database;
-import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
+import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
 import java.util.logging.Level;
@@ -85,7 +85,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
                                 config.auction_database_pass,
                                 config.auction_database_name);
         
-        database.loadDatabase();
+        //database.loadDatabase();//TODO
         Manager.getInstance().removeOldAuctions();
         
         this.pm.registerEvents(new AuctionHouseListener(this), this);

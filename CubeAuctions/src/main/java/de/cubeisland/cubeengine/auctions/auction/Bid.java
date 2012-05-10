@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import de.cubeisland.cubeengine.auctions.database.Database;
 import de.cubeisland.cubeengine.auctions.database.DatabaseEntity;
 import de.cubeisland.cubeengine.auctions.database.EntityIdentifier;
 import de.cubeisland.cubeengine.auctions.database.EntityProperty;
+import de.cubeisland.cubeengine.core.persistence.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;

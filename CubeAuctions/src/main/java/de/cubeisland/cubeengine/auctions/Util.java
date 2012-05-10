@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.auctions;
 
 
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.database.Database;
+import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
