@@ -39,11 +39,23 @@ public class PricedItemStack extends ItemStack {
         this.timessold = 0;
     }
     
-    public double getAvgPrice(ItemStack item)
+    public double getAvgPrice()
     {
         if (this.timessold==0)
             return -1;
         return this.price;
+    }
+    
+    public double getPrice()
+    {
+        if (this.timessold==0)
+            return -1;
+        return this.price*this.getAmount();
+    }
+    
+    public int getTimesSold()
+    {
+        return this.timessold;
     }
     
     public double adjustPrice(double price)

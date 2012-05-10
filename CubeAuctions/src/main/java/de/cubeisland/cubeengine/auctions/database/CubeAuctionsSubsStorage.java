@@ -97,7 +97,7 @@ public class CubeAuctionsSubsStorage implements Storage<Integer, String>//Intege
         return dels;
     }
     
-    public Collection<String> getAll(){return null;}//macht keinen Sinn
-    public String getByKey(Integer key){return null;}//macht keinen Sinn
-    public boolean store(String... object){return false;}//macht keinen Sinn
+    public Collection<String> getAll(){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
+    public String getByKey(Integer key){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
+    public boolean store(String... object){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
 }

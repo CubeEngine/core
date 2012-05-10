@@ -43,8 +43,6 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
         {
             ResultSet result = this.database.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions");
 
-            OfflinePlayer player;
-            LongBitMask bitmask;
             Collection<Auction> auctions = new ArrayList<Auction>();
             while (result.next())
             {
