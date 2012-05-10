@@ -1,1 +1,25 @@
 debug: true
+auction:
+  maxAuctions:
+    player: 5
+    overall: 150
+    opIgnore: true
+  undoTime: 20s
+  removeTime: 1m
+  maxLength: 7d
+  standardLength: 30m
+  opCanCheat: true
+  timeFormat: 'dd/MM/yy HH:mm'
+  punish: 20
+  itemBoxLength: 2
+  comission: 3
+  language: de
+  confirmID: false
+  notifyTime: [30m,5m,2m,1m]
+  blacklist: [7,8,9,10,11,26,34,36,51,52,55,59,60,63,64,68,71,74,75,83,90,92,93,94,95,104,105,115,117,118,119,120]
+  database:
+    host: localhost
+    port: 3306
+    user: root
+    pass: ''
+    name: auctionhouse
