@@ -115,16 +115,16 @@ public class Auction
         long undoTime = config.auction_undoTime;
         if (undoTime < 0) //Infinite UndoTime
         {
-            undoTime = this.auctionEnd - bid.getTimestamp();
+            undoTime = this.auctionEnd - bid.getTime();
         }
-        if ((System.currentTimeMillis() - bid.getTimestamp()) > undoTime)
+        if ((System.currentTimeMillis() - bid.getTime()) > undoTime)
         {
             bidder.getPlayer().sendMessage(t("e")+" "+t("undo_time"));
             return false;
         }
         //else: Undo Last Bid
         db.execUpdate("DELETE FROM `bids` WHERE `bidderid`=? && `auctionid`=? && `timestamp`=?"
-                      ,bidder.getId(), this.id, bid.getTimestamp());
+                      ,bidder.getId(), this.id, bid.getTime());
         this.bids.pop();
         return true;
     }
@@ -218,7 +218,7 @@ public class Auction
  * 
  * @return DataBase Timestamp of AuctionEnd
  */
-    public Timestamp getEndTimestamp()
+    public Timestamp getTimestamp()
     {
         return new Timestamp(this.auctionEnd);
     }

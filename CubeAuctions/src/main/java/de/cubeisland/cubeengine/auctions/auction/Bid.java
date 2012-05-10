@@ -61,16 +61,13 @@ public class Bid
 /**
  *  load in Bid from Database
  */ 
-    public Bid(int id,int bidderid ,String bidder, double amount, Timestamp timestamp)
+    public Bid(int id,Bidder bidder, double amount, Timestamp timestamp)
     {
         this.db = CubeAuctions.getInstance().getDB();
         this.amount = amount;
-        if (bidder.equalsIgnoreCase("*Server"))
-            this.bidder = ServerBidder.getInstance(bidderid);
-        else
-            this.bidder = Bidder.getInstance(bidderid,bidder);
+        this.bidder = bidder;
         this.timestamp = timestamp.getTime();
-        this.id = id;
+        this.id = bidder.getId();
     }
     
 /**
@@ -91,11 +88,16 @@ public class Bid
 /**
  *  @return timestamp as long
  */ 
-    public long getTimestamp()
+    public long getTime()
     {
         return this.timestamp;
     }
  
+    public Timestamp getTimestamp()
+    {
+        return new Timestamp(this.timestamp);
+    }
+    
     public int getId()
     {
         return this.id;

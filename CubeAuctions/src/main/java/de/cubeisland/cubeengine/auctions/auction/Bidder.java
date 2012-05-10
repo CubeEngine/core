@@ -478,8 +478,8 @@ public class Bidder extends CubeUser
                 {
                     auctionIndex = i;
                 }
-                if (this.activeBids.get(i).getBids().peek().getTimestamp()
-                    > this.activeBids.get(auctionIndex).getBids().peek().getTimestamp())
+                if (this.activeBids.get(i).getBids().peek().getTime()
+                    > this.activeBids.get(auctionIndex).getBids().peek().getTime())
                 {
                     if (this.activeBids.get(i).getOwner() != player)
                     {

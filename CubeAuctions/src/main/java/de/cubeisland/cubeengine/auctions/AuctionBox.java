@@ -54,17 +54,17 @@ public class AuctionBox
         }
 
         AuctionItem auctionItem = this.itemList.getFirst();
-        ItemStack item = auctionItem.getItem();
-        ItemStack tmp = player.getInventory().addItem(auctionItem.cloneItem().getItem()).get(0);
+        ItemStack item = auctionItem.getItemStack();
+        ItemStack tmp = player.getInventory().addItem(auctionItem.cloneItem().getItemStack()).get(0);
 
-        if (auctionItem.getOwner().equals(this.bidder.getName()))
+        if (auctionItem.getOwnerName().equals(this.bidder.getName()))
         {
             player.sendMessage(t("i") + " " + t("cont_rec_ab", item.getType().toString() + "x" + item.getAmount()));
         }
         else
         {
             player.sendMessage(t("i") + " " + t("cont_rec", item.getType().toString() + "x" + item.getAmount(),
-                econ.format(auctionItem.getPrice()), auctionItem.getOwner(),
+                econ.format(auctionItem.getPrice()), auctionItem.getOwnerName(),
                 DateFormatUtils.formatUTC(auctionItem.getDate(), "MMM dd"))
             );
         }

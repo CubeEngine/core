@@ -20,7 +20,7 @@ public class AuctionItem
     private Bidder bidder;
     private ItemStack item;
     private long date;
-    private String owner;
+    private Bidder owner;
     private Double price;
     
     private final Database db;
@@ -43,14 +43,7 @@ public class AuctionItem
         }
         this.item = auction.getItemStack().clone();// = new ItemStack(auction.item.getType(),auction.item.getAmount());
         this.date = System.currentTimeMillis();
-        if (auction.getOwner() instanceof ServerBidder)
-        {
-            this.owner = "Server";
-        }
-        else
-        {
-            this.owner = auction.getOwner().getName();
-        }
+        this.owner = auction.getOwner();
         this.id = -1;
         try
         {
@@ -81,7 +74,7 @@ public class AuctionItem
 /**
  * Loads in an AuctionItem from DataBase
  */
-    public AuctionItem(Bidder bidder, ItemStack item, Timestamp time,String owner, double price, int id)
+    public AuctionItem(int id, Bidder bidder, ItemStack item, Timestamp time,Bidder owner, double price)
     {
         this.db = CubeAuctions.getInstance().getDB();
         this.bidder = bidder;
@@ -101,7 +94,7 @@ public class AuctionItem
         this.bidder = bidder;
         this.item = item;
         this.date = System.currentTimeMillis();
-        this.owner = bidder.getName();
+        this.owner = bidder;
         this.price = 0.0;
         this.id = -1; 
         
@@ -133,7 +126,7 @@ public class AuctionItem
 /**
  * Creates a Fake auctionItem
  */
-    private AuctionItem(Bidder bidder, ItemStack item, long date, String owner, Double price)
+    private AuctionItem(Bidder bidder, ItemStack item, long date, Bidder owner, Double price)
     {
         this.db = CubeAuctions.getInstance().getDB();
         this.bidder = bidder;
@@ -170,7 +163,7 @@ public class AuctionItem
 /**
  * @return item as Itemstack
  */ 
-    public ItemStack getItem()
+    public ItemStack getItemStack()
     {
         return this.item;
     }
@@ -186,7 +179,13 @@ public class AuctionItem
 /**
  * @return original owner
  */ 
-    public String getOwner()
+    public String getOwnerName()
+    {
+        return this.owner.getName();
+    }
+    
+    
+        public Bidder getOwner()
     {
         return this.owner;
     }
@@ -213,5 +212,11 @@ public class AuctionItem
     public String getDBTable()
     {
         return "`"+this.getTable()+"`";
+    }
+    
+    
+    public Timestamp getTimestamp()
+    {
+        return new Timestamp(this.date);
     }
 }

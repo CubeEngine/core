@@ -112,7 +112,7 @@ public class Util
             ")"+
             "VALUES (?, ?, ?, ?, ?)"
             ,auction.getId(), auction.getOwnerId(), auction.getConvertItem(),
-            auction.getItemAmount(), auction.getEndTimestamp());
+            auction.getItemAmount(), auction.getTimestamp());
         return true;
     }
 

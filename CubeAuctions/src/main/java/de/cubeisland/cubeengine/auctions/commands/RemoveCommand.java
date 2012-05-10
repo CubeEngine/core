@@ -105,7 +105,7 @@ public class RemoveCommand
                     Auction auction = manager.getAuction(id);
                     if (auction.getOwner() instanceof ServerBidder)
                         if (!Perm.command_delete_server.check(sender)) return true;                    
-                    if (config.auction_removeTime < System.currentTimeMillis() - auction.getBids().firstElement().getTimestamp())
+                    if (config.auction_removeTime < System.currentTimeMillis() - auction.getBids().firstElement().getTime())
                     {
                         if (!sender.hasPermission("aucionhouse.delete.player.all"))
                         {

@@ -1,5 +1,6 @@
-package de.cubeisland.cubeengine.auctions;
+package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
@@ -49,10 +50,10 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
             {
                 int id = result.getInt("id");
                 ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
-                CubeUser owner = cuManager.getCubeUser(result.getInt("bidderid"));//TODO convert to CubeUser;
+                CubeUser owner = cuManager.getCubeUser(result.getInt("cubeuserid"));//TODO convert to CubeUser;
                 long auctionEnd = result.getTimestamp("timestamp").getTime();
                 auctions.add(new Auction(id, item, (Bidder)owner, auctionEnd));
-                //Constructor in AuctionHouse:
+                //Constructor:
                     //public Auction(int id,ItemStack item, Bidder owner, long auctionEnd)
             }
 
@@ -94,7 +95,7 @@ public class CubeAuctionsAuctionStorage implements Storage<Integer, Auction>{
             int cubeUserId = auction.getOwner().getId();//TODO CubeUser ID
             String item = Util.convertItem(auction.getItemStack());
             int amount = auction.getItemStack().getAmount();
-            Timestamp time = auction.getEndTimestamp();
+            Timestamp time = auction.getTimestamp();
             this.database.query("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
                                 "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
         }

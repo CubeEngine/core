@@ -73,7 +73,7 @@ public class ConfirmCommand
                     if (auction.getOwner() == player)
                     {
                         if (CubeAuctions.getInstance().getConfiguration().auction_removeTime <
-                            System.currentTimeMillis() - auction.getBids().firstElement().getTimestamp())
+                            System.currentTimeMillis() - auction.getBids().firstElement().getTime())
                         {
                             if (!sender.hasPermission("aucionhouse.delete.player.other"))
                                 {

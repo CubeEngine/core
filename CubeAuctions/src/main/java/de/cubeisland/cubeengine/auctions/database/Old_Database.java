@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author CodeInfection
  */
-public class Database
+public class Old_Database
 {
     private final String host;
     private final short port;
@@ -24,12 +24,12 @@ public class Database
 
     private final Connection connection;
 
-    public Database(String user, String pass, String name)
+    public Old_Database(String user, String pass, String name)
     {
         this("localhost", (short)3306, user, pass, name);
     }
 
-    public Database(String host, short port, String user, String pass, String name)
+    public Old_Database(String host, short port, String user, String pass, String name)
     {
         try
         {
@@ -240,6 +240,7 @@ public class Database
                     //sort bids by time & fill auction with bids
                     this.query("SELECT * FROM `bids` ORDER BY `timestamp` ;");
                     //load in Bids
+                    /*
                     Bid bid = new Bid( bidset.getInt("id"),
                                      bidset.getInt("bidderid"),
                                      this.getBidderString(bidset.getInt("bidderid")),
@@ -247,6 +248,8 @@ public class Database
                                      bidset.getTimestamp("timestamp"));
                     Manager.getInstance().getAuction(newauction.getId()).getBids().push(bid);
                    
+                   * 
+                   */
                 }
             }
         }
@@ -274,14 +277,17 @@ public class Database
         while (itemset.next())
         {
             Bidder bidder = Bidder.getInstance(itemset.getInt("bidderid"), this.getBidderString(itemset.getInt("bidderid")));
+           /*
             bidder.getBox().getItemList().add(
-                    new AuctionItem( bidder,
+                    new AuctionItem( itemset.getInt("id"), bidder,
                     Util.convertItem(itemset.getString("item"),itemset.getInt("amount")),
                     itemset.getTimestamp("timestamp"),
                     this.getBidderString(itemset.getInt("ownerid")),
-                    itemset.getDouble("price"),
-                    itemset.getInt("id")
+                    itemset.getDouble("price")
+                    
                     ));
+                    * 
+                    */
         }
         CubeAuctions.debug("All auctionboxes loaded!");
         //load in PriceList
