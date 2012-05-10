@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
-import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
+import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
@@ -20,6 +20,7 @@ public class Auction
 {
     
     private int id;
+    private int cubeUserId;
 
     private final ItemStack item;
     private Bidder owner;
@@ -51,13 +52,14 @@ public class Auction
 /**
  * Load in auction from DataBase
  */
-    public Auction(int id,ItemStack item, Bidder owner, long auctionEnd)
+    public Auction(int id,ItemStack item, int cubeUserId, long auctionEnd)
     {
         Manager.getInstance().getFreeIds().removeElement(id);
         this.db = CubeAuctions.getInstance().getDB();
         this.id = id;
+        this.cubeUserId = cubeUserId;
         this.item = item;
-        this.owner = owner;
+        //this.owner = owner;
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();
     }

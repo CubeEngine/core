@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.auctions.auction;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.user.CubeUser;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -16,7 +17,9 @@ import org.bukkit.inventory.ItemStack;
 public class AuctionItem
 {
     private int id;
-
+    private int cubeUserId;
+    private int ownerId;
+    
     private Bidder bidder;
     private ItemStack item;
     private long date;
@@ -74,13 +77,14 @@ public class AuctionItem
 /**
  * Loads in an AuctionItem from DataBase
  */
-    public AuctionItem(int id, Bidder bidder, ItemStack item, Timestamp time,Bidder owner, double price)
+    public AuctionItem(int id, int cubeUserId, ItemStack item, Timestamp time,int ownerId, double price)
     {
         this.db = CubeAuctions.getInstance().getDB();
-        this.bidder = bidder;
+        this.cubeUserId = cubeUserId;
+        this.ownerId = ownerId;
+        
         this.item = item;
         this.date = time.getTime();
-        this.owner = owner;
         this.price = price;
         this.id = id; 
     }

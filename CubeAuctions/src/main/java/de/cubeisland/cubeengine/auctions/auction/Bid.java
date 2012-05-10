@@ -14,11 +14,12 @@ import java.sql.Timestamp;
 public class Bid
 {
     private int id;
+    private int cubeUserId;
 
     private final double amount;
     private Bidder bidder;
     private final long timestamp;
-
+    
     
     private final Database db;
 
@@ -27,6 +28,7 @@ public class Bid
  */   
     public Bid(Bidder bidder, double amount, Auction auction)
     {
+        
         this.db = CubeAuctions.getInstance().getDB();
         this.amount = amount;
         this.bidder = bidder;
@@ -61,11 +63,12 @@ public class Bid
 /**
  *  load in Bid from Database
  */ 
-    public Bid(int id,Bidder bidder, double amount, Timestamp timestamp)
+    public Bid(int id,int cubeUserId, double amount, Timestamp timestamp)
     {
+        this.cubeUserId = cubeUserId;
+        
         this.db = CubeAuctions.getInstance().getDB();
         this.amount = amount;
-        this.bidder = bidder;
         this.timestamp = timestamp.getTime();
         this.id = bidder.getId();
     }

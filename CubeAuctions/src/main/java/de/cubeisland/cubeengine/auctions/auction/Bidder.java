@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
-import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,18 +23,19 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Faithcaio
  */
-public class Bidder extends CubeUser
+public class Bidder
 {
     public static final byte NOTIFY_STATUS = 8;
     public static final byte NOTIFY_ITEMS = 4;
     public static final byte NOTIFY_CANCEL = 2;
     public static final byte NOTIFY_WIN = 1;
     
-    private int id;
+    //private int cubeUserId;
+    private CubeUser cubeUser;
     
-    private final ArrayList<Auction> activeBids;
-    private final ArrayList<Auction> subscriptions;
-    private final ArrayList<ItemStack> materialSub;
+    private final ArrayList<Auction> activeBids = new ArrayList<Auction>();;
+    private final ArrayList<Auction> subscriptions = new ArrayList<Auction>();;
+    private final ArrayList<ItemStack> materialSub = new ArrayList<ItemStack>();;
     private final OfflinePlayer player;
     private final AuctionBox auctionbox;
     private byte notifyState = 0;
@@ -50,14 +50,9 @@ public class Bidder extends CubeUser
     
     public Bidder(OfflinePlayer player)
     {
-        super(0, player, new LongBitMask(0));//TODO
-        
         this.player = player;
-        this.activeBids = new ArrayList<Auction>();
         this.auctionbox = new AuctionBox(this);
-        this.subscriptions = new ArrayList<Auction>();
-        this.materialSub = new ArrayList<ItemStack>();
-        this.id = -1;
+        this.cubeUser = cuManager.getCubeUser(player);
         String name;
         try
         {
@@ -88,7 +83,7 @@ public class Bidder extends CubeUser
                 db.query("SELECT * FROM `bidder` WHERE `name`=? LIMIT 1", name);
             if (set.next())
             {
-                this.id = set.getInt("id");
+                //this.cubeUserId = set.getInt("id");//TODO DB
             }
         }
         catch (SQLException ex)
@@ -100,20 +95,20 @@ public class Bidder extends CubeUser
  */
     public Bidder(int id, String name)
     {
-        super(0, null, null);//TODO
-        if (name.equalsIgnoreCase("*Server"))
-        {
-            this.player = null;//ServerBidder
-        }
-        else
-        {
-            this.player = CubeAuctions.getInstance().getServer().getOfflinePlayer(name);
-        }
-        this.activeBids = new ArrayList<Auction>();
+        this.cubeUser = cuManager.getCubeUser(id);
         this.auctionbox = new AuctionBox(this);
-        this.subscriptions = new ArrayList<Auction>();
-        this.materialSub = new ArrayList<ItemStack>();
-        this.id = id;
+        player = null; //TODO
+    }
+    
+    
+    public Bidder(int id, byte notifyState)
+    {
+        this.player = null; //TODO player hier rausnehmen
+        
+        this.auctionbox = new AuctionBox(this);
+
+        this.cubeUser = cuManager.getCubeUser(id);
+        this.notifyState = notifyState;
     }
 
 /**
@@ -310,7 +305,7 @@ public class Bidder extends CubeUser
  */ 
     public int getId()
     {
-        return this.id;
+        return this.cubeUser.getId();
     }
     
 /**
@@ -372,7 +367,7 @@ public class Bidder extends CubeUser
  */  
     public boolean removeAuction(Auction auction)
     {
-        db.execUpdate("DELETE FROM `bids` WHERE `bidderid`=? && `auctionid`=?", this.id, auction.getId());
+        db.execUpdate("DELETE FROM `bids` WHERE `bidderid`=? && `auctionid`=?", this.cubeUser.getId(), auction.getId());
         this.removeSubscription(auction);
         return activeBids.remove(auction);
     }
@@ -383,7 +378,7 @@ public class Bidder extends CubeUser
  */  
     public boolean removeSubscription(Auction auction)
     {
-        db.execUpdate("DELETE FROM `subscription` WHERE `bidderid`=? && `auctionid`=?", this.id, auction.getId());
+        db.execUpdate("DELETE FROM `subscription` WHERE `bidderid`=? && `auctionid`=?", this.cubeUser.getId(), auction.getId());
         return subscriptions.remove(auction);
     }
 
@@ -394,7 +389,7 @@ public class Bidder extends CubeUser
     public boolean removeSubscription(ItemStack item)
     {
         //MAtSub delete
-        db.execUpdate("DELETE FROM `subscription` WHERE `bidderid`=? && `item`=?", this.id, Util.convertItem(item));
+        db.execUpdate("DELETE FROM `subscription` WHERE `bidderid`=? && `item`=?", this.cubeUser.getId(), Util.convertItem(item));
         return materialSub.remove(item);
     }
 
@@ -521,7 +516,7 @@ public class Bidder extends CubeUser
             + "`auctionid` ,"
             + "`type` "
             + ")"
-            + "VALUES ( ?, ?, ? );", this.id, auction.getId(), 1);
+            + "VALUES ( ?, ?, ? );", this.cubeUser.getId(), auction.getId(), 1);
 
         this.subscriptions.add(auction);
         return true;
@@ -558,7 +553,7 @@ public class Bidder extends CubeUser
         if (this.materialSub.contains(item)) return false;
         db.exec(
             "INSERT INTO `subscription` (`bidderid` ,`type` ,`item` ) VALUES ( ?, ?, ? );",
-            this.id,
+            this.cubeUser.getId(),
             0,
             Util.convertItem(item)
         );

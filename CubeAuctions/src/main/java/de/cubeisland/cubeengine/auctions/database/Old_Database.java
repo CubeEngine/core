@@ -230,9 +230,9 @@ public class Old_Database
                 ItemStack item = Util.convertItem(set.getString("item"),set.getInt("amount"));
                 Bidder owner = Bidder.getInstance(set.getInt("ownerid"),this.getBidderString(set.getInt("ownerid")));
                 long auctionEnd = set.getTimestamp("timestamp").getTime();
-                Auction newauction = new Auction (id,item,owner,auctionEnd);
+                //Auction newauction = new Auction (id,item,owner,auctionEnd);
                 //load in auction
-                Manager.getInstance().addAuction(newauction);
+                //Manager.getInstance().addAuction(newauction);
                 ResultSet bidset =
                   this.query("SELECT * FROM `bids` WHERE `auctionid`=? ;",i);
                 while (bidset.next())

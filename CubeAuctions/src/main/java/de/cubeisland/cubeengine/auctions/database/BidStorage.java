@@ -5,16 +5,13 @@ import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
-import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
 /**
@@ -49,13 +46,13 @@ public class BidStorage implements Storage<Integer, Bid>
             while (result.next())
             {
                 int id = result.getInt("id");
-                CubeUser bidder = cuManager.getCubeUser(result.getInt("cubeuserid"));
+                int cubeUserId =result.getInt("cubeuserid");
                 double amount = result.getDouble("amount");
                 Timestamp time = result.getTimestamp("timestamp");
                 
                 int auctionId = result.getInt("auctionid");//TODO Der Auktion zuordnen
                 
-                bids.add(new Bid(id, (Bidder)bidder, amount, time));
+                bids.add(new Bid(id, cubeUserId, amount, time));
                 
                 //Constructor:
                     //public Bid(int id,Bidder bidder, double amount, Timestamp timestamp)
@@ -80,13 +77,13 @@ public class BidStorage implements Storage<Integer, Bid>
                 return null;
             }
             int id = result.getInt("id");
-            CubeUser bidder = cuManager.getCubeUser(result.getInt("cubeuserid"));
+            int cubeUserId = result.getInt("cubeuserid");
             double amount = result.getDouble("amount");
             Timestamp time = result.getTimestamp("timestamp");
 
             int auctionId = result.getInt("auctionid");//TODO Der Auktion zuordnen
 
-            return new Bid(id, (Bidder)bidder, amount, time);
+            return new Bid(id, cubeUserId, amount, time);
         }
         catch (SQLException e)
         {
@@ -100,7 +97,7 @@ public class BidStorage implements Storage<Integer, Bid>
         {
             
             int id = bid.getId();
-            CubeUser bidder = bid.getBidder();
+            Bidder bidder = bid.getBidder();
             double amount = bid.getAmount();
             Timestamp time = bid.getTimestamp();
 

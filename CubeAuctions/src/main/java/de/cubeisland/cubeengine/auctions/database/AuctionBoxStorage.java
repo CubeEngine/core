@@ -2,20 +2,16 @@ package de.cubeisland.cubeengine.auctions.database;
 
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.AuctionItem;
-import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
-import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 
@@ -51,12 +47,12 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
             while (result.next())
             {
                 int id = result.getInt("id");
-                CubeUser bidder = cuManager.getCubeUser(result.getInt("cubeuserid"));
+                int cubeUserId = result.getInt("cubeuserid");
                 ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
                 Timestamp time = result.getTimestamp("timestamp");
-                CubeUser owner = cuManager.getCubeUser(result.getInt("oldownerid"));
+                int ownerId = result.getInt("oldownerid");
                 double price = result.getDouble("price");
-                auctionItems.add(new AuctionItem(id, (Bidder)bidder, item, time, (Bidder)owner, price));
+                auctionItems.add(new AuctionItem(id, cubeUserId, item, time, ownerId, price));
                 //Constructor:
                     //public AuctionItem(int id, Bidder bidder, ItemStack item, Timestamp time,Bidder owner, double price)
             }
@@ -80,12 +76,12 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
                 return null;
             }
             int id = result.getInt("id");
-            CubeUser bidder = cuManager.getCubeUser(result.getInt("cubeuserid"));
+            int cubeUserId = result.getInt("cubeuserid");
             ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
             Timestamp time = result.getTimestamp("timestamp");
-            CubeUser owner = cuManager.getCubeUser(result.getInt("oldownerid"));
+            int ownerId = result.getInt("oldownerid");
             double price = result.getDouble("price");
-            return new AuctionItem(id, (Bidder)bidder, item, time, (Bidder)owner, price);
+            return new AuctionItem(id, cubeUserId, item, time, ownerId, price);
         }
         catch (SQLException e)
         {
