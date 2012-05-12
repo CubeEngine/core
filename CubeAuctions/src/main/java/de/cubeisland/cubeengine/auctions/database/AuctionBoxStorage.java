@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 {
 
-    private final Database database = CubeAuctions.getDB();
+    private final Database db = CubeAuctions.getDB();
     private CubeUserManager cuManager;
     
     public AuctionBoxStorage()
@@ -30,14 +30,14 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 
     public Database getDatabase()
     {
-        return this.database;
+        return this.db;
     }
 
     public Collection<AuctionItem> getAll()
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `cubeuserid` FROM {{PREFIX}}boxes");
+            ResultSet result = this.db.query("SELECT `cubeuserid` FROM {{PREFIX}}boxes");
 
             Collection<AuctionItem> auctionItems = new ArrayList<AuctionItem>();
             while (result.next())
@@ -62,7 +62,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `cubeuserid` FROM {{PREFIX}}boxes WHERE cubeuserid=? LIMIT 1", key);
+            ResultSet result = this.db.query("SELECT `cubeuserid` FROM {{PREFIX}}boxes WHERE cubeuserid=? LIMIT 1", key);
 
             Collection<AuctionItem> auctionItems = new ArrayList<AuctionItem>();
             while (result.next())
@@ -85,6 +85,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 
     public boolean store(AuctionItem... object)
     {
+        this.createStructure();
         try
         {
             for (AuctionItem auctionItem : object)
@@ -95,7 +96,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
                 double price = auctionItem.getPrice();
                 int oldownerid = auctionItem.getOwner().getId();
                 Timestamp time = auctionItem.getTimestamp();
-                this.database.exec("INSERT INTO {{PREFIX}}boxes (`cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
+                this.db.exec("INSERT INTO {{PREFIX}}boxes (`cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
                                     "VALUES (?, ?, ?, ?)", cubeUserId, item, amount, price, oldownerid, time); 
             }
             return true;
@@ -111,7 +112,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         String item = Util.convertItem(auctionItem.getItemStack());
         int amount = auctionItem.getItemStack().getAmount();
 
-        this.database.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
+        this.db.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
                 auctionItem.getBidder().getId(),item,amount,auctionItem.getTimestamp());
     }
 
@@ -120,7 +121,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         int dels = 0;
         for (int i : keys)
         {
-            this.database.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=?", i);
+            this.db.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=?", i);
             ++dels;
         }
         return dels;
@@ -131,10 +132,26 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         String item = Util.convertItem(auctionItem.getItemStack());
         int amount = auctionItem.getItemStack().getAmount();
 
-        this.database.execUpdate("UPDATE {{PREFIX}}boxes SET `amount`=? WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
+        this.db.execUpdate("UPDATE {{PREFIX}}boxes SET `amount`=? WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
                 newamount,auctionItem.getBidder().getId(),item,amount,auctionItem.getTimestamp());
     }
 
+    public void createStructure()
+    {
+        this.db.exec(   "CREATE TABLE IF NOT EXISTS `boxes` ("+
+                        "`id` int(11) NOT NULL AUTO_INCREMENT"+    
+                        "`cubeuserid` int(11) NOT NULL,"+
+                        "`item` varchar(42) NOT NULL,"+
+                        "`amount` int(11) NOT NULL,"+
+                        "`price` decimal(11,2) NOT NULL,"+
+                        "`timestamp` timestamp NOT NULL,"+
+                        "`oldownerid` int(11) NOT NULL,"+
+                        "PRIMARY KEY (`id`),"+    
+                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                    );
+    }
+    
     public AuctionItem getByKey(Integer key) {
         throw new UnsupportedOperationException("No Need.");
     }

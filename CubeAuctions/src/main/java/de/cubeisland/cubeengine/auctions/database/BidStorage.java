@@ -137,6 +137,7 @@ public class BidStorage implements Storage<Integer, Bid>
     
     public int getNextBidId()
     {
+        this.createStructure();
         try
         {
             ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}bids ORDER BY id  LIMIT 1");
@@ -155,5 +156,20 @@ public class BidStorage implements Storage<Integer, Bid>
     public void updateBidder(Bid bid, Bidder bidder)
     {
         this.db.execUpdate("UPDATE {{PREFIX}}bids SET `cubeuserid`=? WHERE `id`=?", bidder.getId(), bid.getId());
+    }
+    
+    public void createStructure()
+    {
+        this.db.exec(   "CREATE TABLE IF NOT EXISTS `bids` ("+
+                        "`id` int(11) NOT NULL AUTO_INCREMENT"+    
+                        "`auctionid` int(11) NOT NULL,"+
+                        "`cubeuserid` int(11) NOT NULL,"+
+                        "`amount` int(11) NOT NULL,"+
+                        "`timestamp` timestamp NOT NULL,"+
+                        "PRIMARY KEY (`id`),"+
+                        "FOREIGN KEY (auctionid) REFERENCES auctions(id),"+        
+                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                    );
     }
 }

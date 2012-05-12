@@ -78,6 +78,7 @@ public class AuctionStorage implements Storage<Integer, Auction>{
 
     public boolean store(Auction... object)
     {
+        this.createStructure();
         try
         {
             for (Auction auction : object)

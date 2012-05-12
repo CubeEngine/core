@@ -74,6 +74,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
 
     public boolean store(Bidder... object)
     {
+        this.createStructure();
         try
         {
             for (Bidder bidder : object)
@@ -122,7 +123,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
                         "`notifystate` smallint(2) NOT NULL,"+
                         "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
                         ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
-                          );
+                    );
     }
     
     public void updateNotifyData(Bidder bidder)
