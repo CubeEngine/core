@@ -39,6 +39,7 @@ public final class Bidder
     private byte notifyState = 0;
 
     private static final Map<OfflinePlayer, Bidder> bidderInstances = new HashMap<OfflinePlayer, Bidder>();
+    private static Bidder serverBidder;
     private final Database db = CubeAuctions.getDB();
     
     private static CubeUserManager cuManager = CubeAuctions.getCUManager();
@@ -79,15 +80,17 @@ public final class Bidder
     {
         Bidder instance;
         if (id == 0)
-        {
-            return Bidder.getInstance(0);
-        }
-        instance = bidderInstances.get(cuManager.getCubeUser(id).getOfflinePlayer());
+            instance = serverBidder;
+        else
+            instance = bidderInstances.get(cuManager.getCubeUser(id).getOfflinePlayer());
 
         if (instance == null)
         {
             instance = new Bidder(id);
-            bidderInstances.put(cuManager.getCubeUser(id).getOfflinePlayer(),instance);
+            if (id==0)
+                serverBidder = instance;
+            else
+                bidderInstances.put(cuManager.getCubeUser(id).getOfflinePlayer(),instance);
         }
         return instance;
     }

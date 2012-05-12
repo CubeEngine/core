@@ -36,7 +36,13 @@ public class CubeUserManager {
     
     public CubeUser getCubeUser(Integer id)
     {
-        return this.cubeUserList.get(id);
+        CubeUser user = this.cubeUserList.get(id);
+        if (user==null)
+        {
+            user = new CubeUser(0,null, null);
+            this.cubeUserList.put(id, user);
+        }
+        return user;
     }
     
     public CubeUser getCubeUser(OfflinePlayer player)

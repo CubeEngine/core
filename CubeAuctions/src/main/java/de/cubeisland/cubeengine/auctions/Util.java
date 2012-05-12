@@ -208,7 +208,9 @@ public class Util
     public static ItemStack convertItem(String in)
     {
         //id:data
-        String mat = in.substring(0,in.indexOf(":"));
+        String mat = in;
+        if (in.indexOf(":")!= -1)
+            mat = in.substring(0,in.indexOf(":"));
         Material material = Material.matchMaterial(mat);
         if (material == null) return null;
         short data;
