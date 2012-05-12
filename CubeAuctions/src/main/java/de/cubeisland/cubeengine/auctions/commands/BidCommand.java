@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.Manager;
@@ -10,6 +9,7 @@ import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.libMinecraft.command.Command;
+import de.cubeisland.libMinecraft.command.CommandArgs;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
@@ -56,24 +56,24 @@ public class BidCommand
             ItemStack item = Util.convertItem(args.getString(0));
             if (item == null)
             {
-                sender.sendMessage(t("i")+t("no_valid_item",args.getString("i")));
+                sender.sendMessage(t("i")+t("no_valid_item",args.getString(0)));
                 return true;
             }
             if (args.size()>2)
             {
-                if (args.getInt("q") == null)
+                try
+                {
+                    quantity = args.getInt(1);
+                }
+                catch(NumberFormatException ex)
                 {
                     sender.sendMessage(t("e")+" "+t("bid_quantity_num"));
                     return true;
                 }
-                if (args.getInt("q") < 1)
+                if (quantity < 1)
                 {
                     sender.sendMessage(t("e")+" "+t("bid_quantity"));
                     return true;
-                }
-                else
-                {
-                    quantity = args.getInt("q");
                 }
             }
             else
