@@ -2,10 +2,11 @@ name: CubeAuctions
 version: "${project.version}"
 main: de.cubeisland.cubeengine.auctions.CubeAuctions
 commands:
-  auctionhouse:
+  cubeauctions:
     description: "This is the base command of CubeAuctions"
     usage: "/<command> <action>"
     aliases:
+      - ca
       - ah
 depend:
   - Vault
