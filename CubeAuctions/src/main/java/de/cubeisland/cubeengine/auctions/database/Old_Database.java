@@ -79,24 +79,8 @@ public class Old_Database
     
     private void setupStructure()
     {
-        this.exec(      "CREATE TABLE IF NOT EXISTS `auctions` ("+
-                        "`id` int(10) unsigned NOT NULL,"+
-                        "`ownerid` int(11) NOT NULL,"+
-                        "`item` varchar(42) NOT NULL,"+
-                        "`amount` int(11) NOT NULL,"+
-                        "`timestamp` timestamp NOT NULL,"+
-                        "PRIMARY KEY (`id`),"+
-                        "FOREIGN KEY (ownerid) REFERENCES bidder(id)"+
-                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
-                 );
-        this.exec(      "CREATE TABLE IF NOT EXISTS `bidder` ("+
-                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+
-                        "`name` varchar(16) NOT NULL,"+
-                        "`type` tinyint(1) NOT NULL COMMENT 'is ServerBidder?',"+
-                        "`notify` smallint(2) NOT NULL,"+
-                        "PRIMARY KEY (`id`)"+
-                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-                 );
+      
+        
         this.exec(      "CREATE TABLE IF NOT EXISTS `bids` ("+
                         "`id` int(11) NOT NULL AUTO_INCREMENT,"+
                         "`auctionid` int(11) NOT NULL,"+

@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class AuctionStorage implements Storage<Integer, Auction>{
 
-    private final Database database = CubeAuctions.getDB();
+    private final Database db = CubeAuctions.getDB();
 
     public AuctionStorage()
     {
@@ -34,7 +34,7 @@ public class AuctionStorage implements Storage<Integer, Auction>{
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions");
+            ResultSet result = this.db.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions");
 
             Collection<Auction> auctions = new ArrayList<Auction>();
             while (result.next())
@@ -58,7 +58,7 @@ public class AuctionStorage implements Storage<Integer, Auction>{
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions WHERE id=? LIMIT 1", key);
+            ResultSet result = this.db.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions WHERE id=? LIMIT 1", key);
 
             if (!result.next())
             {
@@ -87,7 +87,7 @@ public class AuctionStorage implements Storage<Integer, Auction>{
                 String item = Util.convertItem(auction.getItemStack());
                 int amount = auction.getItemStack().getAmount();
                 Timestamp time = auction.getTimestamp();
-                this.database.query("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
+                this.db.query("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
                                     "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
             }
             return true;
@@ -113,14 +113,28 @@ public class AuctionStorage implements Storage<Integer, Auction>{
         int dels = 0;
         for (int i : keys)
         {
-            this.database.query("DELETE FROM {{PREFIX}}auctions WHERE id=?", i);
+            this.db.query("DELETE FROM {{PREFIX}}auctions WHERE id=?", i);
             ++dels;
         }
         return dels;
     }
+    
+    public void createStructure()
+    {
+        this.db.exec( "CREATE TABLE IF NOT EXISTS `auctions` ("+
+                            "`id` int(10) unsigned NOT NULL,"+
+                            "`cubeuserid` int(11) NOT NULL,"+
+                            "`item` varchar(42) NOT NULL,"+
+                            "`amount` int(11) NOT NULL,"+
+                            "`timestamp` timestamp NOT NULL,"+
+                            "PRIMARY KEY (`id`),"+
+                            "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                          );
+    }
 
     public Database getDatabase()
     {
-        return this.database;
+        return this.db;
     }
 }

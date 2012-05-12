@@ -115,9 +115,19 @@ public class BidderStorage implements Storage<Integer, Bidder>
         return dels;
     }
     
+    public void createStructure()
+    {
+        this.db.exec(   "CREATE TABLE IF NOT EXISTS `bidder` ("+
+                        "`cubeuserid` int(11) NOT NULL,"+
+                        "`notifystate` smallint(2) NOT NULL,"+
+                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                          );
+    }
+    
     public void updateNotifyData(Bidder bidder)
     {
-        
+        //TODO
     }
 
 

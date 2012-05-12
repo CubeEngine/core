@@ -34,8 +34,7 @@ public class AddCommand
     @Command(usage = "<Item> <Amount>")
     public boolean add(CommandSender sender, CommandArgs args)
     {
-        ItemStack newItem = null;
-        Material newMaterial;
+        ItemStack newItem;
         Integer amount;
         Double startBid;
         long auctionEnd;
@@ -50,7 +49,7 @@ public class AddCommand
             sender.sendMessage("");
             return true;
         }
-        int pos = 0;
+        int pos;
         if (args.getString(0).equalsIgnoreCase("hand"))
         {
             if (!(sender instanceof ConsoleCommandSender))
@@ -84,18 +83,11 @@ public class AddCommand
             }
             if (args.size()<2) 
             {
-                //TODO to few arguments...
                 sender.sendMessage(t("e")+ t("too_few_args"));
                 return true;
             }
             try {amount = args.getInt(1);}
             catch (NumberFormatException ex)
-            {
-                //TODO msg
-                sender.sendMessage(t("e")+ t("#NO ERROR YET"));
-                return true;
-            }
-            if (amount == null)
             {
                 sender.sendMessage(t("i") + " " + t("add_no_amount"));
                 return true;
@@ -144,18 +136,11 @@ public class AddCommand
         if (args.size() > pos)
             if (args.getString(pos).contains("m:"))
             {
-                //TODO try catch wenn keine zahl 
                 try
                 {
                     multiAuction = Integer.valueOf(args.getString(pos).substring(2));
                 }
                 catch (NumberFormatException ex)
-                {
-                    //TODO Fehler
-                    sender.sendMessage(t("e")+t("#ERROR NOT WRITTEN DOWN"));
-                    return true;
-                }
-                if (multiAuction == null)
                 {
                     sender.sendMessage(t("i")+" "+t("add_multi_number"));
                     return true;
