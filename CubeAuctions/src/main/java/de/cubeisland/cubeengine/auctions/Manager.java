@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.auctions;
 
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +22,7 @@ public class Manager
     private final List<Auction> auctions;
     private final Stack<Integer> freeIds;
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
     private HashMap<Bidder, Bidder> remBidderConfirm = new HashMap();
     private HashSet<Bidder> remAllConfirm = new HashSet();
     private HashMap<Bidder, Integer> remSingleConfirm = new HashMap();
@@ -35,7 +34,7 @@ public class Manager
  */    
     private Manager()
     {
-        this.db = CubeAuctions.getInstance().getDB();
+        this.db = CubeAuctions.getDB();
         int maxAuctions = config.auction_maxAuctions_overall;
         if (maxAuctions <= 0)
         {
@@ -173,7 +172,7 @@ public class Manager
         Collections.sort(this.freeIds);
         Collections.reverse(this.freeIds);
 
-        if (!(auction.getOwner() instanceof ServerBidder))
+        if (!(auction.getOwner().isServerBidder()))
         {
             auction.getOwner().removeAuction(auction);
             while (!(auction.getBids().isEmpty()))
@@ -186,8 +185,9 @@ public class Manager
         }
         else
         {
-            ServerBidder.getInstance().removeAuction(auction);
+            Bidder.getInstance(0).removeAuction(auction);
         }
+        
         db.execUpdate("DELETE FROM `auctions` WHERE `id`=?", auction.getId());
         //clean up DataBase just in case
         db.execUpdate("DELETE FROM `subscription` WHERE `auctionid`=?", auction.getId());

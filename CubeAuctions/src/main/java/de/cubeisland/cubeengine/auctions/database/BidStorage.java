@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
@@ -12,7 +13,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.bukkit.Server;
 
 /**
  *
@@ -21,26 +21,23 @@ import org.bukkit.Server;
 public class BidStorage implements Storage<Integer, Bid>
 {
 
-    private final Database database;
-    private final Server server;
+    private final Database db = CubeAuctions.getDB();
     private CubeUserManager cuManager;
     
-    public BidStorage(Database db, Server server)
+    public BidStorage()
     {
-        this.database = db;
-        this.server = server;
     }
 
     public Database getDatabase()
     {
-        return this.database;
+        return this.db;
     }
 
     public Collection<Bid> getAll()
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}bids");
+            ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}bids");
 
             Collection<Bid> bids = new ArrayList<Bid>();
             while (result.next())
@@ -52,7 +49,7 @@ public class BidStorage implements Storage<Integer, Bid>
                 
                 int auctionId = result.getInt("auctionid");//TODO Der Auktion zuordnen
                 
-                bids.add(new Bid(id, cubeUserId, amount, time));
+                bids.add(new Bid(id, cubeUserId, auctionId, amount, time));
             }
 
             return bids;
@@ -67,8 +64,7 @@ public class BidStorage implements Storage<Integer, Bid>
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}bids WHERE id=? LIMIT 1", key);
-
+            ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}bids WHERE id=? LIMIT 1", key);
             if (!result.next())
             {
                 return null;
@@ -80,7 +76,7 @@ public class BidStorage implements Storage<Integer, Bid>
 
             int auctionId = result.getInt("auctionid");//TODO Der Auktion zuordnen
 
-            return new Bid(id, cubeUserId, amount, time);
+            return new Bid(id, cubeUserId, auctionId, amount, time);
         }
         catch (SQLException e)
         {
@@ -102,7 +98,7 @@ public class BidStorage implements Storage<Integer, Bid>
 
                 int auctionId = 0;//TODO Der Auktion zuordnen
 
-                this.database.query("INSERT INTO {{PREFIX}}bids (`id`, `auctionid`,`cubeuserid`, `amount`, `timestamp`)"+
+                this.db.query("INSERT INTO {{PREFIX}}bids (`id`, `auctionid`,`cubeuserid`, `amount`, `timestamp`)"+
                                     "VALUES (?, ?, ?, ?, ?)", id, auctionId, bidder.getId(), amount, time); 
             }
             return true;
@@ -128,9 +124,26 @@ public class BidStorage implements Storage<Integer, Bid>
         int dels = 0;
         for (int i : keys)
         {
-            this.database.query("DELETE FROM {{PREFIX}}bids WHERE id=?", i);
+            this.db.query("DELETE FROM {{PREFIX}}bids WHERE id=?", i);
             ++dels;
         }
         return dels;
+    }
+    
+    public int getNextBidId()
+    {
+        try
+        {
+            ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}bids ORDER BY id  LIMIT 1");
+            if (!result.next())
+            {
+                return 1;
+            }
+            return result.getInt("id");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to get next BidId !", e);
+        }
     }
 }

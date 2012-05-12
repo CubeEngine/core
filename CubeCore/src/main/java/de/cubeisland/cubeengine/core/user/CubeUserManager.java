@@ -48,4 +48,10 @@ public class CubeUserManager {
     {
         return storage.getByKey(name);
     }
+    
+    public int getNextFreeId()
+    {
+        return 0;
+        //TODO
+    }
 }

@@ -214,9 +214,9 @@ public class Old_Database
         while (bidderset.next())
         {
             //load in Bidder
-            Bidder bidderer = Bidder.getInstance(bidderset.getInt("id"), bidderset.getString("name"));
+           // Bidder bidderer = Bidder.getInstance(bidderset.getInt("id"), bidderset.getString("name"));
             //bitmask
-            bidderer.resetNotifyState(bidderset.getByte("notify"));
+          //  bidderer.resetNotifyState(bidderset.getByte("notify"));
         }
         CubeAuctions.debug("All Bidder loaded!");
         int max = CubeAuctions.getInstance().getConfiguration().auction_maxAuctions_overall;
@@ -228,7 +228,7 @@ public class Old_Database
             {
                 int id = set.getInt("id");
                 ItemStack item = Util.convertItem(set.getString("item"),set.getInt("amount"));
-                Bidder owner = Bidder.getInstance(set.getInt("ownerid"),this.getBidderString(set.getInt("ownerid")));
+           //     Bidder owner = Bidder.getInstance(set.getInt("ownerid"),this.getBidderString(set.getInt("ownerid")));
                 long auctionEnd = set.getTimestamp("timestamp").getTime();
                 //Auction newauction = new Auction (id,item,owner,auctionEnd);
                 //load in auction
@@ -259,15 +259,15 @@ public class Old_Database
               this.query("SELECT * FROM `subscription`;");
         while (subset.next())
         {
-            Bidder bidder = Bidder.getInstance(subset.getInt("bidderid"),this.getBidderString(subset.getInt("bidderid")));
+        //    Bidder bidder = Bidder.getInstance(subset.getInt("bidderid"),this.getBidderString(subset.getInt("bidderid")));
             if (subset.getInt("type")==1)
             {//IDSub
                 
-                bidder.addDataBaseSub(subset.getInt("auctionid"));
+        //        bidder.addDataBaseSub(subset.getInt("auctionid"));
             }
             else
             {//MatSub
-                bidder.addDataBaseSub(Util.convertItem(subset.getString("item")));
+       //         bidder.addDataBaseSub(Util.convertItem(subset.getString("item")));
             }
         }
         CubeAuctions.debug("All subscriptions loaded!");
@@ -276,7 +276,7 @@ public class Old_Database
               this.query("SELECT * from `auctionbox` ORDER BY `timestamp`;");
         while (itemset.next())
         {
-            Bidder bidder = Bidder.getInstance(itemset.getInt("bidderid"), this.getBidderString(itemset.getInt("bidderid")));
+       //     Bidder bidder = Bidder.getInstance(itemset.getInt("bidderid"), this.getBidderString(itemset.getInt("bidderid")));
            /*
             bidder.getBox().getItemList().add(
                     new AuctionItem( itemset.getInt("id"), bidder,

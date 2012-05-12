@@ -44,7 +44,7 @@ public class SubscribeCommand
         {
             if (args.getItem("m") != null)
             {
-                if (bidder.addSubscription(args.getItem("m")))
+                if (bidder.addSubscription(args.getItem("m").getType()))
                 {
                     sender.sendMessage(t("i")+" "+t("sub_add_mat",args.getItem("m").getType().toString()));
                     if (!bidder.hasNotifyState(Bidder.NOTIFY_STATUS))

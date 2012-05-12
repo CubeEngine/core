@@ -63,4 +63,9 @@ public class CubeUser
     {
         return this.id;
     }
+    
+    public boolean isOnline()
+    {
+        return player.isOnline();
+    }
 }

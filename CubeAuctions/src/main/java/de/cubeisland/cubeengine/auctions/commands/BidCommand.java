@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Sorter;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
+
 import de.cubeisland.libMinecraft.command.Command;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
@@ -177,7 +177,7 @@ public class BidCommand
     {
         sender.sendMessage(t("bid_out",econ.format(auction.getBids().peek().getAmount()),
             auction.getItemType()+"x"+auction.getItemAmount(),auction.getId()));
-        if (!(auction.getOwner() instanceof ServerBidder) && auction.getOwner().isOnline())
+        if (!(auction.getOwner().isServerBidder()) && auction.getOwner().isOnline())
         {
             if (auction.getOwner().hasNotifyState(Bidder.NOTIFY_STATUS))
             {

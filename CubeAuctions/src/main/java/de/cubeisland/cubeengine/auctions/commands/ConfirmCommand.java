@@ -6,7 +6,6 @@ import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
 import de.cubeisland.libMinecraft.command.Command;
 import java.util.ArrayList;
 import org.bukkit.command.CommandSender;
@@ -46,9 +45,9 @@ public class ConfirmCommand
         }
         if (manager.getBidderConfirm().containsKey(bidder))
         {
-            if (manager.getBidderConfirm().get(bidder) instanceof ServerBidder)
+            if (manager.getBidderConfirm().get(bidder).isServerBidder())
             {
-                int max = ServerBidder.getInstance().getAuctions().size();
+                int max = Bidder.getInstance(0).getAuctions().size();
                 if (max == 0)
                 {
                     sender.sendMessage(t("i")+" "+t("confirm_no_serv"));
@@ -57,7 +56,7 @@ public class ConfirmCommand
                 }
                 for (int i = max - 1; i >= 0; --i)
                 {
-                    manager.cancelAuction(ServerBidder.getInstance().getAuctions().get(i), false);
+                    manager.cancelAuction(Bidder.getInstance(0).getAuctions().get(i), false);
                 }
                 sender.sendMessage(t("i")+" "+t("confirm_del_serv"));
                 manager.getBidderConfirm().remove(bidder);
@@ -72,7 +71,7 @@ public class ConfirmCommand
                 {
                     if (auction.getOwner() == player)
                     {
-                        if (CubeAuctions.getInstance().getConfiguration().auction_removeTime <
+                        if (CubeAuctions.getConfiguration().auction_removeTime <
                             System.currentTimeMillis() - auction.getBids().firstElement().getTime())
                         {
                             if (!sender.hasPermission("aucionhouse.delete.player.other"))

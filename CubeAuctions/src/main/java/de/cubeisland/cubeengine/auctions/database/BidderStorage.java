@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
@@ -9,7 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.bukkit.Server;
 
 /**
  *
@@ -18,25 +18,22 @@ import org.bukkit.Server;
 public class BidderStorage implements Storage<Integer, Bidder>
 {
 
-    private final Database database;
-    private final Server server;
+    private final Database db = CubeAuctions.getDB();;
 
-    public BidderStorage(Database db, Server server)
+    public BidderStorage()
     {
-        this.database = db;
-        this.server = server;
     }
 
     public Database getDatabase()
     {
-        return this.database;
+        return this.db;
     }
 
     public Collection<Bidder> getAll()
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `cubeuserid`,`notifystate` FROM {{PREFIX}}bidder");
+            ResultSet result = this.db.query("SELECT `cubeuserid`,`notifystate` FROM {{PREFIX}}bidder");
 
             Collection<Bidder> bidder = new ArrayList<Bidder>();
             while (result.next())
@@ -58,7 +55,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `cubeuserid`,`notifystate` FROM {{PREFIX}}bidder WHERE cubeuserid=? LIMIT 1", key);
+            ResultSet result = this.db.query("SELECT `cubeuserid`,`notifystate` FROM {{PREFIX}}bidder WHERE cubeuserid=? LIMIT 1", key);
 
             if (!result.next())
             {
@@ -85,7 +82,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
                 int cubeuserid = bidder.getId();
                 byte notifyState = bidder.getNotifyState();
 
-                this.database.query("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
+                this.db.query("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
                                     "VALUES (?, ?)", cubeuserid, notifyState); 
             }
             return true;
@@ -112,7 +109,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
         int dels = 0;
         for (int i : keys)
         {
-            this.database.query("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", i);
+            this.db.query("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", i);
             ++dels;
         }
         return dels;

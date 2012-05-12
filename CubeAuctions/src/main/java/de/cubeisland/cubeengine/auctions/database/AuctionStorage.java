@@ -24,13 +24,11 @@ import org.bukkit.inventory.ItemStack;
 public class AuctionStorage implements Storage<Integer, Auction>{
 
     private final Database database;
-    private final Server server;
     private CubeUserManager cuManager;
 
     public AuctionStorage(Database db, Server server)
     {
         this.database = db;
-        this.server = server;
     }
 
     public Collection<Auction> getAll()
@@ -86,7 +84,7 @@ public class AuctionStorage implements Storage<Integer, Auction>{
             for (Auction auction : object)
             {
                 int id = auction.getId();
-                int cubeUserId = auction.getOwner().getId();//TODO CubeUser ID
+                int cubeUserId = auction.getOwner().getId();
                 String item = Util.convertItem(auction.getItemStack());
                 int amount = auction.getItemStack().getAmount();
                 Timestamp time = auction.getTimestamp();

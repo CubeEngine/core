@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.auctions;
 
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -60,7 +59,7 @@ public class AuctionTimer
                                 {
                                     double topbid = highBid.getAmount();
                                     econ.withdrawPlayer(winner.getName(), topbid);
-                                    if (!(auction.getOwner() instanceof ServerBidder))
+                                    if (!(auction.getOwner().isServerBidder()))
                                     {
 
                                         econ.depositPlayer(auction.getOwner().getName(), topbid);
@@ -107,7 +106,7 @@ public class AuctionTimer
                             {
                                 auction.getOwner().setNotifyState(Bidder.NOTIFY_CANCEL);
                                 Util.updateNotifyData(auction.getOwner());
-                                if (!(auction.getOwner() instanceof ServerBidder))
+                                if (!(auction.getOwner().isServerBidder()))
                                 {
                                     econ.withdrawPlayer(auction.getOwner().getName(), auction.getBids().peek().getAmount() * config.auction_comission / 100);
                                     if (auction.getOwner().isOnline())

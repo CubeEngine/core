@@ -1,9 +1,8 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
+import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 
 /**
@@ -15,42 +14,25 @@ public class Bid
 {
     private int id;
     private int cubeUserId;
+    private int auctionId;
 
     private final double amount;
     private Bidder bidder;
     private final long timestamp;
     
-    
-    private final Database db;
+    private final Database db = CubeAuctions.getDB();
+    private BidStorage bidDB = new BidStorage ();
 
 /**
  * creates a bid and add it to DataBase
  */   
     public Bid(Bidder bidder, double amount, Auction auction)
     {
-        
-        this.db = CubeAuctions.getInstance().getDB();
+        this.auctionId = auction.getId();
         this.amount = amount;
         this.bidder = bidder;
         this.timestamp = System.currentTimeMillis();
-        this.id = -1;
-        try
-        {
-            db.exec(
-                "INSERT INTO `bids` (`auctionid` ,`bidderid` ,`amount` ,`timestamp`) VALUES ( ?, ?, ?, ?);",
-                auction.getId(),
-                bidder.getId(),
-                amount,
-                new Timestamp(System.currentTimeMillis())
-            );
-            ResultSet set = db.query("SELECT * FROM `bids` WHERE `timestamp`=? && `bidderid`=? LIMIT 1",timestamp,bidder.getId());
-            if (set.next())
-                this.id = set.getInt("id");
-                
-        }
-        catch (SQLException ex)
-        {}
-        
+        this.id = bidDB.getNextBidId();
     }
 /**
  *  @return TableName in Database
@@ -63,11 +45,10 @@ public class Bid
 /**
  *  load in Bid from Database
  */ 
-    public Bid(int id,int cubeUserId, double amount, Timestamp timestamp)
+    public Bid(int id,int cubeUserId, int auctionId, double amount, Timestamp timestamp)
     {
         this.cubeUserId = cubeUserId;
-        
-        this.db = CubeAuctions.getInstance().getDB();
+        this.auctionId = auctionId;
         this.amount = amount;
         this.timestamp = timestamp.getTime();
         this.id = bidder.getId();
@@ -110,9 +91,9 @@ public class Bid
  */     
     public void giveServer()
     {
-        this.bidder = ServerBidder.getInstance();
+        this.bidder = Bidder.getInstance(0);
         db.execUpdate("UPDATE `bids` SET `bidderid`=? WHERE `id`=?", 
-                ServerBidder.getInstance().getId(), this.id);
+                this.bidder.getId(), this.id);
     }
     
 /**

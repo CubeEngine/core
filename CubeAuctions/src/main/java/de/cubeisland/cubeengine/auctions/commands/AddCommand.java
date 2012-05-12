@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
 import de.cubeisland.libMinecraft.command.Command;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -28,7 +27,7 @@ import org.bukkit.inventory.ItemStack;
 public class AddCommand
 {
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
     Economy econ = CubeAuctions.getInstance().getEconomy();
 
     public AddCommand(){}
@@ -223,7 +222,7 @@ public class AddCommand
         {
             if (sender instanceof ConsoleCommandSender)
             {
-                newAuction = new Auction(newItem, ServerBidder.getInstance(), auctionEnd, startBid);
+                newAuction = new Auction(newItem, Bidder.getInstance(0), auctionEnd, startBid);
             }
             else
             {
@@ -235,7 +234,7 @@ public class AddCommand
                     if (sender.hasPermission("auctionhouse.command.add.server"))
                     {
                         newAuction.giveServer();
-                        if (!(Util.registerAuction(newAuction, ServerBidder.getInstance())))
+                        if (!(Util.registerAuction(newAuction, Bidder.getInstance(0))))
                         {
                             sender.sendMessage(t("i")+" "+t("add_all_stop"));
                             sender.sendMessage(t("i")+" "+t("add_max_auction",config.auction_maxAuctions_overall));

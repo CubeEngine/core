@@ -44,7 +44,7 @@ public class UnSubscribeCommand
         {
             if (args.getItem("m") != null)
             {
-                if (bidder.removeSubscription(args.getItem("m")))
+                if (bidder.removeSubscription(args.getItem("m").getType()))
                 {
                     sender.sendMessage(t("i")+" "+t("sub_rem_mat",args.getItem("m").getType().toString()));
                     return true;

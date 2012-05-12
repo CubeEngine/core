@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
@@ -18,14 +19,11 @@ import org.bukkit.Server;
 public class SubscriptionStorage implements Storage<Integer, String>//Integer = CubeUserID - String = AuctionsID oder MATERIAL-Name von Bukkit
 {
 
-    private final Database database;
-    private final Server server;
+    private final Database database = CubeAuctions.getDB();
     private CubeUserManager cuManager;
     
-    public SubscriptionStorage(Database db, Server server)
+    public SubscriptionStorage()
     {
-        this.database = db;
-        this.server = server;
     }
 
     public Database getDatabase()

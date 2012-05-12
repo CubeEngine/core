@@ -8,7 +8,6 @@ import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
 import de.cubeisland.libMinecraft.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +22,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class RemoveCommand
 {
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
     
     public RemoveCommand()
     {
@@ -74,7 +73,7 @@ public class RemoveCommand
                 if (args.getString(0).equalsIgnoreCase("Server"))
                 {
                     if (!Perm.command_delete_server.check(sender)) return true;
-                    manager.getBidderConfirm().put(Bidder.getInstance(sender), ServerBidder.getInstance());
+                    manager.getBidderConfirm().put(Bidder.getInstance(sender), Bidder.getInstance(0));
                     sender.sendMessage(t("rem_allserv"));
                     sender.sendMessage(t("rem_confirm"));                    
                     timer.scheduleSyncDelayedTask(CubeAuctions.getInstance(), new Runnable() 
@@ -103,7 +102,7 @@ public class RemoveCommand
                     }
                     
                     Auction auction = manager.getAuction(id);
-                    if (auction.getOwner() instanceof ServerBidder)
+                    if (auction.getOwner().isServerBidder())
                         if (!Perm.command_delete_server.check(sender)) return true;                    
                     if (config.auction_removeTime < System.currentTimeMillis() - auction.getBids().firstElement().getTime())
                     {

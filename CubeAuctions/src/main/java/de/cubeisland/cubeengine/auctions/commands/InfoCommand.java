@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
 import de.cubeisland.libMinecraft.command.Command;
 import java.util.List;
 import org.bukkit.command.CommandSender;
@@ -24,7 +23,7 @@ public class InfoCommand
 {
     
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
     
     
     public InfoCommand()
@@ -59,7 +58,7 @@ public class InfoCommand
             for (int i = 0; i < max; ++i)
             {
                 Auction auction = auctions.get(i);
-                if (auction.getOwner() != (Player) sender)
+                if (!auction.getOwner().getPlayer().equals((Player)sender))
                 {
                     Util.sendInfo(sender, auction);
                 }
@@ -121,7 +120,7 @@ public class InfoCommand
                     {
                         if (args.getString(0).equalsIgnoreCase("*Server"))
                         {
-                            List<Auction> auctions = ServerBidder.getInstance().getAuctions();
+                            List<Auction> auctions = Bidder.getInstance(0).getAuctions();
                             int max = auctions.size();
                             if (max == 0)
                             {

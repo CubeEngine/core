@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.commands.*;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -28,16 +29,20 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     
     private Server server;
     private PluginManager pm;
-    private CubeAuctionsConfiguration config;
+    private static CubeAuctionsConfiguration config;
     private File dataFolder;
     private Economy economy = null;
-    private Database database;
+    private static Database database;
     private BaseCommand baseCommand;
     private static final String PERMISSION_BASE = "cubeengine.auctions.commands.";
+    
+    private static CubeUserManager cuManager;
 //TODO später eigene AuktionsBox als Kiste mit separatem inventar 
 //TODO flatfile mit angeboten
 //TODO DatenBankNutzung schöner machen
 //TODO ah rem last / l
+    
+    //TODO erstellen der Datenbank für alle Storage Klassen fehlt noch!!!
     public CubeAuctions()
     {
         instance = this;
@@ -46,6 +51,21 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     public static CubeAuctions getInstance()
     {
         return instance;
+    }
+    
+    public static CubeAuctionsConfiguration getConfiguration()
+    {
+        return config;
+    }
+    
+    public static CubeUserManager getCUManager()
+    {
+        return cuManager;
+    }
+    
+    public static Database getDB()
+    {
+        return database;
     }
 
     @Override
@@ -61,7 +81,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
-        this.config = new CubeAuctionsConfiguration(configuration);
+        config = new CubeAuctionsConfiguration(configuration);
         this.saveConfig();
         
         this.economy = this.setupEconomy();
@@ -99,15 +119,17 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         this.getCommand("auctionhouse").setExecutor(baseCommand);
         
         AuctionTimer.getInstance().firstschedule();
+        
+        cuManager = new CubeUserManager(database ,this.getServer());
     }
     
     @Override
     public void onDisable()
     {
         //this.database.close(); //TODO gibt nach reload Fehler weil verbindung geschlossen
-        this.database = null;
-        this.economy = null;
-        this.config = null;
+        database = null;
+        economy = null;
+        config = null;
         AuctionTimer.getInstance().stop();
         Bidder.getInstances().clear();
     }
@@ -132,11 +154,6 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     public Economy getEconomy()
     {
         return this.economy;
-    }
-       
-    public CubeAuctionsConfiguration getConfiguration()
-    {
-        return this.config;
     }
 
     public static void log(String msg)
@@ -165,11 +182,6 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     public static String t(String key, Object... params)
     {
         return translation.translate(key, params);
-    }
-    
-    public Database getDB()
-    {
-        return this.database;
     }
 
     public Translation getTranslation()

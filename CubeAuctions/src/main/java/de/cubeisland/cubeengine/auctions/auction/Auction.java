@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
+import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.sql.Timestamp;
 import java.util.Stack;
@@ -20,33 +21,31 @@ public class Auction
 {
     
     private int id;
-    private int cubeUserId;
 
     private final ItemStack item;
     private Bidder owner;
     private final long auctionEnd;
     private final Stack<Bid> bids;
-    
-    
+
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
     private final Database db;
+    private BidStorage bidDB = new BidStorage();
     
 /**
  * Creates an new auction
  */
     public Auction(ItemStack item, Bidder owner, long auctionEnd, double startBid)
     {
-        
-        
-        
-        this.db = CubeAuctions.getInstance().getDB();
+        this.db = CubeAuctions.getDB();
         this.id = Manager.getInstance().getFreeIds().pop();
         this.item = item;
         this.owner = owner;
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();
-        this.bids.push(new Bid(owner, startBid, this));
+        Bid bid = new Bid(owner, startBid, this);
+        bidDB.store(bid);
+        this.bids.push(bid);
     }
 
 /**
@@ -55,11 +54,10 @@ public class Auction
     public Auction(int id,ItemStack item, int cubeUserId, long auctionEnd)
     {
         Manager.getInstance().getFreeIds().removeElement(id);
-        this.db = CubeAuctions.getInstance().getDB();
+        this.db = CubeAuctions.getDB();
         this.id = id;
-        this.cubeUserId = cubeUserId;
+        this.owner = Bidder.getInstance(id);
         this.item = item;
-        //this.owner = owner;
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();
     }
@@ -125,8 +123,7 @@ public class Auction
             return false;
         }
         //else: Undo Last Bid
-        db.execUpdate("DELETE FROM `bids` WHERE `bidderid`=? && `auctionid`=? && `timestamp`=?"
-                      ,bidder.getId(), this.id, bid.getTime());
+        bidDB.delete(bid);
         this.bids.pop();
         return true;
     }
@@ -185,7 +182,7 @@ public class Auction
  */    
     public void giveServer()
     {
-        this.owner = ServerBidder.getInstance();
+        this.owner = Bidder.getInstance(0);
         this.bids.peek().giveServer();
     }
     

@@ -5,7 +5,7 @@ import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import de.cubeisland.cubeengine.auctions.auction.ServerBidder;
+
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -143,7 +143,7 @@ public class Util
         }
         else
         {
-            if (bid.getBidder() instanceof ServerBidder)
+            if (bid.getBidder().isServerBidder())
             {
                 output += " "+t("info_out_leadserv");
             }

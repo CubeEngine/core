@@ -3,140 +3,91 @@ package de.cubeisland.cubeengine.auctions.auction;
 import de.cubeisland.cubeengine.auctions.AuctionBox;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Manager;
-import de.cubeisland.cubeengine.auctions.Util;
+import de.cubeisland.cubeengine.auctions.database.BidderStorage;
+import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Represents a Bidder / Player using AuctionHouse
  * 
  * @author Faithcaio
  */
-public class Bidder
+public final class Bidder
 {
     public static final byte NOTIFY_STATUS = 8;
     public static final byte NOTIFY_ITEMS = 4;
     public static final byte NOTIFY_CANCEL = 2;
     public static final byte NOTIFY_WIN = 1;
     
-    //private int cubeUserId;
     private CubeUser cubeUser;
     
     private final ArrayList<Auction> activeBids = new ArrayList<Auction>();;
     private final ArrayList<Auction> subscriptions = new ArrayList<Auction>();;
-    private final ArrayList<ItemStack> materialSub = new ArrayList<ItemStack>();;
-    private final OfflinePlayer player;
+    private final ArrayList<Material> materialSub = new ArrayList<Material>();;
     private final AuctionBox auctionbox;
     private byte notifyState = 0;
 
     private static final Map<OfflinePlayer, Bidder> bidderInstances = new HashMap<OfflinePlayer, Bidder>();
-    private final Database db = CubeAuctions.getInstance().getDB();
+    private final Database db = CubeAuctions.getDB();
     
-    private CubeUserManager cuManager = new CubeUserManager(this.db ,CubeAuctions.getInstance().getServer());
+    private static CubeUserManager cuManager = CubeAuctions.getCUManager();
+    private static BidderStorage bidderDB = new BidderStorage();
+    SubscriptionStorage subDB = new SubscriptionStorage();
 /**
  * Creates a new Bidder + add him to DataBase
  */
     
     public Bidder(OfflinePlayer player)
     {
-        this.player = player;
-        this.auctionbox = new AuctionBox(this);
         this.cubeUser = cuManager.getCubeUser(player);
-        String name;
-        try
-        {
-
-            if (player == null)
-            {
-                name = "*Server";
-                db.exec(
-                    "INSERT INTO `bidder` ("
-                    + "`name` ,"
-                    + "`type` ,"
-                    + "`notify` "
-                    + ") "
-                    + "VALUES ( ?, ?, ? );", name, 1, 0);
-            }
-            else
-            {
-                name = player.getName();
-                db.exec(
-                    "INSERT INTO `bidder` ("
-                    + "`name` ,"
-                    + "`type` ,"
-                    + "`notify` "
-                    + ") "
-                    + "VALUES ( ?, ?, ? );", name, 0, 0);
-            }
-            ResultSet set =
-                db.query("SELECT * FROM `bidder` WHERE `name`=? LIMIT 1", name);
-            if (set.next())
-            {
-                //this.cubeUserId = set.getInt("id");//TODO DB
-            }
-        }
-        catch (SQLException ex)
-        {
-        }
+        this.auctionbox = new AuctionBox(this);
     }
-/**
- * Creates a new Bidder from DataBase
- */
-    public Bidder(int id, String name)
+
+    public Bidder(int id)
     {
         this.cubeUser = cuManager.getCubeUser(id);
         this.auctionbox = new AuctionBox(this);
-        player = null; //TODO
     }
     
-    
+/**
+ * Creates a new Bidder from DataBase + load in Subs etc...
+ */   
     public Bidder(int id, byte notifyState)
     {
-        this.player = null; //TODO player hier rausnehmen
-        
         this.auctionbox = new AuctionBox(this);
-
         this.cubeUser = cuManager.getCubeUser(id);
         this.notifyState = notifyState;
+        this.addDataBaseSub();
     }
 
 /**
  * @return New Bidder loaded in from DataBase
  */    
-    public static Bidder getInstance(int id, String player)
+    public static Bidder getInstance(int id)
     {
         Bidder instance;
-        if (player.equalsIgnoreCase("*Server"))
+        if (id == 0)
         {
-            return ServerBidder.getInstance(id);
+            return Bidder.getInstance(0);
         }
-        instance = bidderInstances.get(CubeAuctions.getInstance().getServer().getOfflinePlayer(player));
+        instance = bidderInstances.get(cuManager.getCubeUser(id).getOfflinePlayer());
 
         if (instance == null)
         {
-            instance = new Bidder(id, player);
-            bidderInstances.put(CubeAuctions.getInstance().getServer().getOfflinePlayer(player), instance);
+            instance = new Bidder(id);
+            bidderInstances.put(cuManager.getCubeUser(id).getOfflinePlayer(),instance);
         }
         return instance;
-    }
-    
-/**
- *  @return TableName in Database
- */ 
-    public String getTable()
-    {
-        return "bidder";
     }
     
 /**
@@ -166,6 +117,7 @@ public class Bidder
         if (instance == null)
         {
             instance = new Bidder(player);
+            bidderDB.store(instance);
             bidderInstances.put(player, instance);
         }
         return instance;
@@ -190,7 +142,7 @@ public class Bidder
         {
             return getInstance((Player)player);
         }
-        return ServerBidder.getInstance();
+        return Bidder.getInstance(0);
     }
     
 /**
@@ -280,7 +232,7 @@ public class Bidder
 /**
  * @return All material subscriptions
  */ 
-    public ArrayList<ItemStack> getMatSub()
+    public ArrayList<Material> getMatSub()
     {
         return materialSub;
     }
@@ -290,14 +242,7 @@ public class Bidder
  */ 
     public Player getPlayer()
     {
-        if (this.player != null)
-        {
-            if (this.player.isOnline())
-            {
-                return this.player.getPlayer();
-            }
-        }
-        return null;
+        return this.cubeUser.getPlayer();
     }
     
 /**
@@ -313,7 +258,7 @@ public class Bidder
  */ 
     public OfflinePlayer getOffPlayer()
     {
-        return player;
+        return cubeUser.getOfflinePlayer();
     }
 
 /**
@@ -321,13 +266,13 @@ public class Bidder
  */  
     public String getName()
     {
-        if (player == null)
+        if (cubeUser.getId() == 0)//TODO Bidder/CubeUser #0 is ALWAYS the Server
         {
             return "*Server";
         }
         else
         {
-            return player.getName();
+            return cubeUser.getName();
         }
     }
     
@@ -336,11 +281,11 @@ public class Bidder
  */  
     public boolean isOnline()
     {
-        if (player == null)
+        if (cubeUser == null)
         {
             return false;
         }
-        return player.isOnline();
+        return cubeUser.isOnline();
     }
     
 /**
@@ -378,7 +323,7 @@ public class Bidder
  */  
     public boolean removeSubscription(Auction auction)
     {
-        db.execUpdate("DELETE FROM `subscription` WHERE `bidderid`=? && `auctionid`=?", this.cubeUser.getId(), auction.getId());
+        subDB.delete(String.valueOf(auction.getId()));
         return subscriptions.remove(auction);
     }
 
@@ -386,10 +331,10 @@ public class Bidder
  * removes Material Subscription from this Bidder and out of DataBase
  * @return could remove?
  */  
-    public boolean removeSubscription(ItemStack item)
+    public boolean removeSubscription(Material item)
     {
         //MAtSub delete
-        db.execUpdate("DELETE FROM `subscription` WHERE `bidderid`=? && `item`=?", this.cubeUser.getId(), Util.convertItem(item));
+        subDB.delete(item.toString());
         return materialSub.remove(item);
     }
 
@@ -510,62 +455,40 @@ public class Bidder
     public boolean addSubscription(Auction auction)
     {
         if (this.subscriptions.contains(auction)) return false;
-        db.exec(
-            "INSERT INTO `subscription` ("
-            + "`bidderid` ,"
-            + "`auctionid` ,"
-            + "`type` "
-            + ")"
-            + "VALUES ( ?, ?, ? );", this.cubeUser.getId(), auction.getId(), 1);
-
+        subDB.store(auction.getId());
         this.subscriptions.add(auction);
         return true;
     }
-    
-/**
- * Loads auction to Subsriptionlist from DataBase
- * @param auctionID to add to Subscriptions
- * @return Bidder
- */  
-    public Bidder addDataBaseSub(int id)
-    {
-        this.subscriptions.add(Manager.getInstance().getAuction(id));
-        return this;
-    }
 
 /**
- * Loads item to Subsriptionlist from DataBase
- * @param ItemStack to add to Subscriptions
- * @return Bidder
+ * Loads all items/auctions to Subsriptionlists from DataBase
+ * 
  */  
-    public Bidder addDataBaseSub(ItemStack item)
+    public void addDataBaseSub()
     {
-        this.materialSub.add(item);
-        return this;
+        for (String s : subDB.getAll())
+        {
+            if (Material.matchMaterial(s) != null)
+                this.materialSub.add(Material.matchMaterial(s));
+            else
+                this.subscriptions.add(Manager.getInstance().getAuction(Integer.valueOf(s)));
+        }
     }
 /**
  * Adds item to Subsriptionlist
  * @param ItemStack to add to Subscriptions
  * @return could add subscription
  */  
-    public boolean addSubscription(ItemStack item)
+    public boolean addSubscription(Material item)
     {
         if (this.materialSub.contains(item)) return false;
-        db.exec(
-            "INSERT INTO `subscription` (`bidderid` ,`type` ,`item` ) VALUES ( ?, ?, ? );",
-            this.cubeUser.getId(),
-            0,
-            Util.convertItem(item)
-        );
+        subDB.store(item.toString());
         this.materialSub.add(item);
         return true;
     }
     
-/**
- *  @return TableName for Database
- */ 
-    public String getDBTable()
+    public boolean isServerBidder()
     {
-        return "`"+this.getTable()+"`";
+        return (cubeUser.getId()==0);
     }
 }
