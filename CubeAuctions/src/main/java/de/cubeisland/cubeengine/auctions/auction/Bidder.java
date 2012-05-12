@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.auctions.auction;
 import de.cubeisland.cubeengine.auctions.AuctionBox;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Manager;
+import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
@@ -42,7 +43,8 @@ public final class Bidder
     
     private static CubeUserManager cuManager = CubeAuctions.getCUManager();
     private static BidderStorage bidderDB = new BidderStorage();
-    SubscriptionStorage subDB = new SubscriptionStorage();
+    private SubscriptionStorage subDB = new SubscriptionStorage();
+    private BidStorage bidDB = new BidStorage();
 /**
  * Creates a new Bidder + add him to DataBase
  */
@@ -312,7 +314,8 @@ public final class Bidder
  */  
     public boolean removeAuction(Auction auction)
     {
-        db.execUpdate("DELETE FROM `bids` WHERE `bidderid`=? && `auctionid`=?", this.cubeUser.getId(), auction.getId());
+        
+        bidDB.delete(auction.getId() , this.getId());
         this.removeSubscription(auction);
         return activeBids.remove(auction);
     }
@@ -370,7 +373,7 @@ public final class Bidder
 /**
  * @return all auctions of this Bidder
  */  
-    public List<Auction> getAuctions() //Get all Auctions with player involved
+    public List<Auction> getAuctions()
     {
         return activeBids;
     }
@@ -378,7 +381,7 @@ public final class Bidder
 /**
  * @return all auctions started by player
  */  
-    public List<Auction> getAuctions(Bidder player) //Get all Auctions started by player
+    public List<Auction> getAuctions(Bidder player)
     {
         ArrayList<Auction> auctionlist = new ArrayList<Auction>()
         {
@@ -396,7 +399,7 @@ public final class Bidder
 /**
  * @return all auctions started by this Bidder
  */  
-    public List<Auction> getOwnAuctions() //Get all Auctions started yourself
+    public List<Auction> getOwnAuctions()
     {
         return this.getAuctions(this);
     }
@@ -455,7 +458,7 @@ public final class Bidder
     public boolean addSubscription(Auction auction)
     {
         if (this.subscriptions.contains(auction)) return false;
-        subDB.store(auction.getId());
+        subDB.store(this.cubeUser.getId(), String.valueOf(auction.getId()));
         this.subscriptions.add(auction);
         return true;
     }
@@ -482,7 +485,7 @@ public final class Bidder
     public boolean addSubscription(Material item)
     {
         if (this.materialSub.contains(item)) return false;
-        subDB.store(item.toString());
+        subDB.store(this.cubeUser.getId(), item.toString());
         this.materialSub.add(item);
         return true;
     }

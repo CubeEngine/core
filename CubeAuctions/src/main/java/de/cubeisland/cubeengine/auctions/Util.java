@@ -5,8 +5,7 @@ import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-
-import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -92,7 +91,7 @@ public class Util
 
         for (Bidder bidder : Bidder.getInstances().values())
         {
-            if (bidder.getMatSub().contains(new ItemStack(auction.getItemStack().getType(), 1, auction.getItemData())))
+            if (bidder.getMatSub().contains(auction.getItemStack().getType()))
             {
                 if (!bidder.equals(auction.getOwner()))
                 {
@@ -101,18 +100,8 @@ public class Util
                 }
             }
         }
-        
-        CubeAuctions.getInstance().getDB().exec(
-            "INSERT INTO `auctions` ("+
-            "`id` ,"+
-            "`ownerid` ,"+
-            "`item` ,"+
-            "`amount` ,"+
-            "`timestamp`"+
-            ")"+
-            "VALUES (?, ?, ?, ?, ?)"
-            ,auction.getId(), auction.getOwnerId(), auction.getConvertItem(),
-            auction.getItemAmount(), auction.getTimestamp());
+        AuctionStorage auctionDB = new AuctionStorage();
+        auctionDB.store(auction);
         return true;
     }
 
@@ -156,7 +145,7 @@ public class Util
             }
             output +=" "+t("info_out_with",econ.format(bid.getAmount()));
         }
-        CubeAuctionsConfiguration config = plugin.getConfiguration();
+        CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
         if (auction.getAuctionEnd()-System.currentTimeMillis()>1000*60*60*24)
             output += " "+t("info_out_end",DateFormatUtils.format(auction.getAuctionEnd(), 
                             config.auction_timeFormat));
@@ -256,18 +245,4 @@ public class Util
         }  
         return out;
     }
-    
-/**
- * update Notification for bidder in DataBase
- */ 
-    public static void updateNotifyData(Bidder bidder)
-    {
-        Database db = CubeAuctions.getInstance().getDB();
-        db.execUpdate(
-            "UPDATE `bidder` SET `notify`=? WHERE `id`=?",
-            bidder.getNotifyState(),
-            bidder.getId()
-        );
-    }
-    
 }

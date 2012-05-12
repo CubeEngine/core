@@ -91,9 +91,8 @@ public class Bid
  */     
     public void giveServer()
     {
+        bidDB.updateBidder(this, this.bidder);
         this.bidder = Bidder.getInstance(0);
-        db.execUpdate("UPDATE `bids` SET `bidderid`=? WHERE `id`=?", 
-                this.bidder.getId(), this.id);
     }
     
 /**

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.core.persistence.Database;
@@ -23,12 +24,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public class AuctionStorage implements Storage<Integer, Auction>{
 
-    private final Database database;
-    private CubeUserManager cuManager;
+    private final Database database = CubeAuctions.getDB();
 
-    public AuctionStorage(Database db, Server server)
+    public AuctionStorage()
     {
-        this.database = db;
     }
 
     public Collection<Auction> getAll()

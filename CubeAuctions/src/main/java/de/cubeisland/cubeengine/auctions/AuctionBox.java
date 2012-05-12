@@ -4,6 +4,7 @@ import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.AuctionItem;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.cubeengine.auctions.database.AuctionBoxStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.LinkedList;
 import net.milkbowl.vault.economy.Economy;
@@ -22,13 +23,15 @@ public class AuctionBox
     private final Bidder bidder;
     private Economy econ = CubeAuctions.getInstance().getEconomy();
     private final Database db;
+    
+    AuctionBoxStorage boxDB = new AuctionBoxStorage();
 
 /**
  * creates a new AuctionBox for bidder
  */ 
     public AuctionBox(Bidder bidder)
     {
-        this.db = CubeAuctions.getInstance().getDB();
+        this.db = CubeAuctions.getDB();
         this.bidder = bidder;
         this.itemList = new LinkedList<AuctionItem>();
     }
@@ -38,7 +41,9 @@ public class AuctionBox
  */ 
     public void addItem(Auction auction)
     {
-        this.itemList.add(new AuctionItem(auction));
+        AuctionItem item = new AuctionItem(auction);
+        boxDB.store(item);
+        this.itemList.add(item);
     }
     
 /**
@@ -72,15 +77,14 @@ public class AuctionBox
         if (tmp == null)
         {
             player.updateInventory();
-            db.execUpdate("DELETE FROM `auctionbox` WHERE `id`=?", auctionItem.getId());
+            boxDB.delete(auctionItem);
             this.itemList.removeFirst();
             return true;
         }
         else
         {
             player.sendMessage(t("i") + " " + t("cont_rec_remain"));
-
-            db.execUpdate("UPDATE `auctionbox` SET `amount`=? WHERE `id`=?", tmp.getAmount(), auctionItem.getId());
+            boxDB.update(auctionItem, tmp.getAmount());
             item.setAmount(tmp.getAmount());
             player.updateInventory();
             return true;

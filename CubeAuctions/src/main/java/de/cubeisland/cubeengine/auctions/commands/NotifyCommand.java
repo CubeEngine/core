@@ -4,8 +4,8 @@ import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.Perm;
-import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.libMinecraft.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
  */
 public class NotifyCommand
 {
+    private BidderStorage bidderDB = new BidderStorage();
     public NotifyCommand()
     {
     }
@@ -61,7 +62,7 @@ public class NotifyCommand
             sender.sendMessage(t("i")+" "+t("note_on"));
         else
             sender.sendMessage(t("i")+" "+t("note_off"));
-        Util.updateNotifyData(bidder);
+        bidderDB.updateNotifyData(bidder);
         return true;
     }
 

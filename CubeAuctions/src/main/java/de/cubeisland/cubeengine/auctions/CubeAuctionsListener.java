@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.auctions;
 
+import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.AuctionItem;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
+import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import java.util.Collections;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
@@ -32,11 +33,12 @@ public class CubeAuctionsListener implements Listener
     private final CubeAuctions plugin;
     private final CubeAuctionsConfiguration config;
     private final Economy econ;
+    private BidderStorage bidderDB = new BidderStorage();
     
     public CubeAuctionsListener(CubeAuctions plugin)
     {
         this.plugin = plugin;
-        this.config = plugin.getConfiguration();
+        this.config = CubeAuctions.getConfiguration();
         this.econ = plugin.getEconomy();
     }
 
@@ -49,7 +51,7 @@ public class CubeAuctionsListener implements Listener
         if (!event.getPlayer().hasPermission("auctionhouse.use")) return;
         
         Bidder bidder = Bidder.getInstance(event.getPlayer());
-        Util.updateNotifyData(bidder);
+        bidderDB.updateNotifyData(bidder);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         {
             public void run()
@@ -97,7 +99,7 @@ public class CubeAuctionsListener implements Listener
         {
             bidder.setNotifyState(Bidder.NOTIFY_ITEMS);
         }
-        Util.updateNotifyData(bidder);
+        bidderDB.updateNotifyData(bidder);
     }
 
 /**

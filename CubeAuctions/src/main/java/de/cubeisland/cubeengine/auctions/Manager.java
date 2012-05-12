@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.auctions;
 
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +29,7 @@ public class Manager
     private HashMap<Bidder, Integer> remSingleConfirm = new HashMap();
     private final Database db;
     private Price price = new Price();
+    AuctionStorage auctionDB = new AuctionStorage();
 
 /**
  * Init Manager
@@ -187,11 +189,8 @@ public class Manager
         {
             Bidder.getInstance(0).removeAuction(auction);
         }
-        
-        db.execUpdate("DELETE FROM `auctions` WHERE `id`=?", auction.getId());
-        //clean up DataBase just in case
-        db.execUpdate("DELETE FROM `subscription` WHERE `auctionid`=?", auction.getId());
-        db.execUpdate("DELETE FROM `bids` WHERE `auctionid`=?", auction.getId());
+        auctionDB.deleteByKey(auction.getId());
+        //TODO prüfen ob ALLE subs & bids von dieser Auktion gelöscht werden/sind
         this.auctions.remove(auction);
         return true;
     }

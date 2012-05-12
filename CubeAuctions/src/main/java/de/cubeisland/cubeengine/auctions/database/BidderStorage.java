@@ -114,5 +114,11 @@ public class BidderStorage implements Storage<Integer, Bidder>
         }
         return dels;
     }
+    
+    public void updateNotifyData(Bidder bidder)
+    {
+        
+    }
+
 
 }

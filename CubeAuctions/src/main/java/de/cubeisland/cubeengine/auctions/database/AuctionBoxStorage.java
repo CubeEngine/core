@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.AuctionItem;
 import de.cubeisland.cubeengine.core.persistence.Database;
@@ -11,8 +12,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -22,14 +21,11 @@ import org.bukkit.inventory.ItemStack;
 public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 {
 
-    private final Database database;
-    private final Server server;
+    private final Database database = CubeAuctions.getDB();
     private CubeUserManager cuManager;
     
-    public AuctionBoxStorage(Database db, Server server)
+    public AuctionBoxStorage()
     {
-        this.database = db;
-        this.server = server;
     }
 
     public Database getDatabase()
@@ -41,18 +37,17 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}boxes");
+            ResultSet result = this.database.query("SELECT `cubeuserid` FROM {{PREFIX}}boxes");
 
             Collection<AuctionItem> auctionItems = new ArrayList<AuctionItem>();
             while (result.next())
             {
-                int id = result.getInt("id");
                 int cubeUserId = result.getInt("cubeuserid");
                 ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
                 Timestamp time = result.getTimestamp("timestamp");
                 int ownerId = result.getInt("oldownerid");
                 double price = result.getDouble("price");
-                auctionItems.add(new AuctionItem(id, cubeUserId, item, time, ownerId, price));
+                auctionItems.add(new AuctionItem(cubeUserId, item, time, ownerId, price));
             }
 
             return auctionItems;
@@ -63,23 +58,24 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         }
     }
 
-    public AuctionItem getByKey(Integer key)
+    public Collection<AuctionItem> getAllByKey(Integer key)
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}boxes WHERE id=? LIMIT 1", key);
+            ResultSet result = this.database.query("SELECT `cubeuserid` FROM {{PREFIX}}boxes WHERE cubeuserid=? LIMIT 1", key);
 
-            if (!result.next())
+            Collection<AuctionItem> auctionItems = new ArrayList<AuctionItem>();
+            while (result.next())
             {
-                return null;
+                int cubeUserId = result.getInt("cubeuserid");
+                ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
+                Timestamp time = result.getTimestamp("timestamp");
+                int ownerId = result.getInt("oldownerid");
+                double price = result.getDouble("price");
+                auctionItems.add(new AuctionItem(cubeUserId, item, time, ownerId, price));
             }
-            int id = result.getInt("id");
-            int cubeUserId = result.getInt("cubeuserid");
-            ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
-            Timestamp time = result.getTimestamp("timestamp");
-            int ownerId = result.getInt("oldownerid");
-            double price = result.getDouble("price");
-            return new AuctionItem(id, cubeUserId, item, time, ownerId, price);
+
+            return auctionItems;
         }
         catch (SQLException e)
         {
@@ -93,15 +89,14 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         {
             for (AuctionItem auctionItem : object)
             {
-                int id = auctionItem.getId();
                 int cubeUserId = auctionItem.getBidder().getId();
                 String item = Util.convertItem(auctionItem.getItemStack());
                 int amount = auctionItem.getItemStack().getAmount();
                 double price = auctionItem.getPrice();
                 int oldownerid = auctionItem.getOwner().getId();
                 Timestamp time = auctionItem.getTimestamp();
-                this.database.query("INSERT INTO {{PREFIX}}boxes (`id`, `cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
-                                    "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, price, oldownerid, time); 
+                this.database.exec("INSERT INTO {{PREFIX}}boxes (`cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
+                                    "VALUES (?, ?, ?, ?)", cubeUserId, item, amount, price, oldownerid, time); 
             }
             return true;
         }
@@ -111,14 +106,13 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         }
     }
 
-    public int delete(AuctionItem... object)
+    public void delete(AuctionItem auctionItem)
     {
-        List<Integer> keys = new ArrayList<Integer>();
-        for (AuctionItem auctionItem : object)
-        {
-            keys.add(auctionItem.getId());
-        }
-        return deleteByKey((Integer[])keys.toArray());
+        String item = Util.convertItem(auctionItem.getItemStack());
+        int amount = auctionItem.getItemStack().getAmount();
+
+        this.database.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
+                auctionItem.getBidder().getId(),item,amount,auctionItem.getTimestamp());
     }
 
     public int deleteByKey(Integer... keys)
@@ -126,9 +120,26 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         int dels = 0;
         for (int i : keys)
         {
-            this.database.query("DELETE FROM {{PREFIX}}boxes WHERE id=?", i);
+            this.database.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=?", i);
             ++dels;
         }
         return dels;
+    }
+    
+    public void update(AuctionItem auctionItem, int newamount)
+    {
+        String item = Util.convertItem(auctionItem.getItemStack());
+        int amount = auctionItem.getItemStack().getAmount();
+
+        this.database.execUpdate("UPDATE {{PREFIX}}boxes SET `amount`=? WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
+                newamount,auctionItem.getBidder().getId(),item,amount,auctionItem.getTimestamp());
+    }
+
+    public AuctionItem getByKey(Integer key) {
+        throw new UnsupportedOperationException("No Need.");
+    }
+
+    public int delete(AuctionItem... object) {
+        throw new UnsupportedOperationException("No Need.");
     }
 }

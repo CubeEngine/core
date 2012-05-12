@@ -118,6 +118,11 @@ public class BidStorage implements Storage<Integer, Bid>
         }
         return deleteByKey((Integer[])keys.toArray());
     }
+    
+    public void delete(int auctionId, int bidderId)
+    {
+        this.db.query("DELETE FROM {{PREFIX}}bids WHERE auctionid=? && cubeuserid=?", auctionId, bidderId );
+    }
 
     public int deleteByKey(Integer... keys)
     {
@@ -145,5 +150,10 @@ public class BidStorage implements Storage<Integer, Bid>
         {
             throw new StorageException("Failed to get next BidId !", e);
         }
+    }
+    
+    public void updateBidder(Bid bid, Bidder bidder)
+    {
+        this.db.execUpdate("UPDATE {{PREFIX}}bids SET `cubeuserid`=? WHERE `id`=?", bidder.getId(), bid.getId());
     }
 }

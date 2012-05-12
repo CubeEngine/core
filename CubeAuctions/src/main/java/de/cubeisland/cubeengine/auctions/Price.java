@@ -46,12 +46,7 @@ public class Price {
             t_price += price;
             t_price /= ++t_amount;
         }
-        String item2 = Util.convertItem(item);
-        CubeAuctions.getInstance().getDB().execUpdate(
-            "DELETE FROM `price` WHERE `item`=?", item2);
-        CubeAuctions.getInstance().getDB().execUpdate(
-            "INSERT INTO `price` (`item` ,`price` ,`amount` ) VALUES ( ?, ? ,?);", item2, t_price, t_amount);
-        return this.setPrice(item, t_price, t_amount);
+return 0;
     }
     
 /**

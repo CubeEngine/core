@@ -4,6 +4,7 @@ import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -24,7 +25,8 @@ public class AuctionTimer
     private Timer notifyTimer;
     private static AuctionTimer instance = null;
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
-    private static final CubeAuctionsConfiguration config = plugin.getConfiguration();
+    private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
+    private BidderStorage bidderDB = new BidderStorage();
 
     public AuctionTimer()
     {
@@ -82,7 +84,7 @@ public class AuctionTimer
                                     else
                                     {
                                         winner.setNotifyState(Bidder.NOTIFY_WIN);
-                                        Util.updateNotifyData(winner);
+                                        bidderDB.updateNotifyData(winner);
                                     }
                                     manager.cancelAuction(auction, true);
                                     break; //NPE Prevention
@@ -105,7 +107,7 @@ public class AuctionTimer
                             if (auction.getBids().peek().getBidder().equals(auction.getOwner()))
                             {
                                 auction.getOwner().setNotifyState(Bidder.NOTIFY_CANCEL);
-                                Util.updateNotifyData(auction.getOwner());
+                                bidderDB.updateNotifyData(auction.getOwner());
                                 if (!(auction.getOwner().isServerBidder()))
                                 {
                                     econ.withdrawPlayer(auction.getOwner().getName(), auction.getBids().peek().getAmount() * config.auction_comission / 100);
@@ -231,7 +233,7 @@ public class AuctionTimer
     {
         timer.cancel();
         notifyTimer.cancel();
-        this.instance = null;
+        instance = null;
     }
     
 }
