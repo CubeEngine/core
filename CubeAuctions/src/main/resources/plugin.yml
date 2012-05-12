@@ -1,6 +1,6 @@
 name: CubeAuctions
 version: "${project.version}"
-main: de.cubeisland.cubeengine.auctions
+main: de.cubeisland.cubeengine.auctions.CubeAuctions
 commands:
   auctionhouse:
     description: "This is the base command of CubeAuctions"

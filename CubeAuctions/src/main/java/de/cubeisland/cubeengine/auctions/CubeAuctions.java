@@ -102,20 +102,18 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         this.pm.registerEvents(new CubeAuctionsListener(this), this);
         
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand
-            .registerCommands(new          AddCommand())
-            .registerCommands(new       RemoveCommand())
-            .registerCommands(new          BidCommand())
-            .registerCommands(new         InfoCommand())
-            .registerCommands(new       SearchCommand())
-            .registerCommands(new      UndoBidCommand())
-            .registerCommands(new       NotifyCommand())
-            .registerCommands(new     GetItemsCommand())
-            .registerCommands(new    SubscribeCommand())
-            .registerCommands(new  UnSubscribeCommand())
-            .registerCommands(new         ListCommand())
-            .registerCommands(new      ConfirmCommand())    
-        .setDefaultCommand("help");
+        this.baseCommand.registerCommands(new          AddCommand())
+                        .registerCommands(new       RemoveCommand())
+                        .registerCommands(new          BidCommand())
+                        .registerCommands(new         InfoCommand())
+                        .registerCommands(new       SearchCommand())
+                        .registerCommands(new      UndoBidCommand())
+                        .registerCommands(new       NotifyCommand())
+                        .registerCommands(new     GetItemsCommand())
+                        .registerCommands(new    SubscribeCommand())
+                        .registerCommands(new  UnSubscribeCommand())
+                        .registerCommands(new         ListCommand())
+                        .registerCommands(new      ConfirmCommand());    
         this.getCommand("auctionhouse").setExecutor(baseCommand);
         
         AuctionTimer.getInstance().firstschedule();
