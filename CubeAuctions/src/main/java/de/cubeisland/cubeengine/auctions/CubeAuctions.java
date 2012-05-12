@@ -114,7 +114,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
                         .registerCommands(new  UnSubscribeCommand())
                         .registerCommands(new         ListCommand())
                         .registerCommands(new      ConfirmCommand());    
-        this.getCommand("auctionhouse").setExecutor(baseCommand);
+        this.getCommand("cubeauction").setExecutor(baseCommand);
         
         AuctionTimer.getInstance().firstschedule();
         

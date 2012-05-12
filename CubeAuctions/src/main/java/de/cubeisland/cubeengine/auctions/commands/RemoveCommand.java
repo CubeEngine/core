@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.CommandArgs;
+
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.libMinecraft.command.Command;
+import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -45,7 +46,41 @@ public class RemoveCommand
         Manager manager = Manager.getInstance();
         BukkitScheduler timer = plugin.getServer().getScheduler();
         final CommandSender sender2= sender;
-        
+        if (args.hasFlag("p"))
+        {
+            Bidder player = Bidder.getInstance(args.getString(0));
+            if (player == null)
+            {
+                sender.sendMessage(t("i")+" "+t("info_p_no_auction",args.getString(0)));
+                return true;
+            }
+            else
+            {
+                if (player.getPlayer().equals((Player) sender))
+                    if (!Perm.command_delete_player.check(sender)) return true;
+                else
+                    if (!Perm.command_delete_player_other.check(sender)) return true;
+                if (!(player.getAuctions().isEmpty()))
+                {
+                    manager.getBidderConfirm().put(Bidder.getInstance(sender), player);
+                    sender.sendMessage(t("rem_play",player.getName()));
+                    sender.sendMessage(t("rem_confirm"));
+                    timer.scheduleSyncDelayedTask(CubeAuctions.getInstance(), new Runnable() 
+                        {
+                            public void run() 
+                            {
+                                Manager manager = Manager.getInstance();
+                                if (manager.getBidderConfirm().containsKey(Bidder.getInstance(sender2)))
+                                    sender2.sendMessage(t("rem_abort"));
+                                manager.getBidderConfirm().remove(Bidder.getInstance(sender2));  
+                            }
+                        }, 200L);
+                    return true;
+                }
+                sender.sendMessage(t("i")+" "+t("rem_no_auc",args.getString(0)));
+                return true;
+            }
+        }
         if (args.getString(0) != null)
         {
             if (args.getString(0).equalsIgnoreCase("all"))
@@ -141,41 +176,7 @@ public class RemoveCommand
                 return true;
             }
         }
-        else
-        {
-            Bidder player = args.getBidder("p");
-            if (player == null)
-            {
-                sender.sendMessage(t("i")+" "+t("info_p_no_auction",args.getString("p")));
-                return true;
-            }
-            else
-            {
-                if (player.getPlayer().equals((Player) sender))
-                    if (!Perm.command_delete_player.check(sender)) return true;
-                else
-                    if (!Perm.command_delete_player_other.check(sender)) return true;
-                if (!(player.getAuctions().isEmpty()))
-                {
-                    manager.getBidderConfirm().put(Bidder.getInstance(sender), player);
-                    sender.sendMessage(t("rem_play",player.getName()));
-                    sender.sendMessage(t("rem_confirm"));
-                    timer.scheduleSyncDelayedTask(CubeAuctions.getInstance(), new Runnable() 
-                        {
-                            public void run() 
-                            {
-                                Manager manager = Manager.getInstance();
-                                if (manager.getBidderConfirm().containsKey(Bidder.getInstance(sender2)))
-                                    sender2.sendMessage(t("rem_abort"));
-                                manager.getBidderConfirm().remove(Bidder.getInstance(sender2));  
-                            }
-                        }, 200L);
-                    return true;
-                }
-                sender.sendMessage(t("i")+" "+t("rem_no_auc",args.getString("p")));
-                return true;
-            }
-        }
+        return false; //TODO prüfen wann der Fall eintritt
     }
 
     public String getDescription()

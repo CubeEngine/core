@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -207,7 +208,9 @@ public class Util
     public static ItemStack convertItem(String in)
     {
         //id:data
-        int id = Integer.valueOf(in.substring(0,in.indexOf(":")));
+        String mat = in.substring(0,in.indexOf(":"));
+        Material material = Material.matchMaterial(mat);
+        if (material == null) return null;
         short data;
         if (in.indexOf(" ")==-1)
         {
@@ -222,7 +225,7 @@ public class Util
         }
         
         
-        ItemStack out = new ItemStack(id,1,data);
+        ItemStack out = new ItemStack(material,1,data);
         //ench1:val1 ench2:val2 ...
         while (in.length()>1)
         {
@@ -238,7 +241,7 @@ public class Util
                 enchval = Integer.valueOf(in.substring(in.indexOf(":")+1,in.indexOf(" ")));
                 in.replace(in.substring(0, in.indexOf(" ")+1), "");
             }
-            if (Enchantment.getById(id) != null)
+            if (Enchantment.getById(enchid) != null)
             {
                 out.addEnchantment(Enchantment.getById(enchid), enchval);
             }

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
@@ -10,6 +9,7 @@ import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.libMinecraft.command.Command;
+import de.cubeisland.libMinecraft.command.CommandArgs;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -149,7 +149,7 @@ public class InfoCommand
                             else
                             {
                                 if (!Perm.command_info_others.check(sender)) return true;
-                                Bidder player = args.getBidder(0);
+                                Bidder player = Bidder.getInstance(args.getString(0));
                                 if (player != null)
                                 {
                                     List<Auction> auctions = player.getAuctions(player);

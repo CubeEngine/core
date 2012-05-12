@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-
-import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
@@ -10,6 +8,7 @@ import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.libMinecraft.command.Command;
+import de.cubeisland.libMinecraft.command.CommandArgs;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.bukkit.Material;
@@ -38,8 +37,8 @@ public class AddCommand
         ItemStack newItem = null;
         Material newMaterial;
         Integer amount;
-        Double startBid = 0.0;
-        long auctionEnd = 1;
+        Double startBid;
+        long auctionEnd;
         Integer multiAuction = 1;
         if (!Perm.command_add.check(sender)) return true;
         if (args.isEmpty())
@@ -51,22 +50,7 @@ public class AddCommand
             sender.sendMessage("");
             return true;
         }
-
-        if (args.getString("m") != null)
-        {
-            multiAuction = args.getInt("m");
-            if (multiAuction == null)
-            {
-                sender.sendMessage(t("i")+" "+t("add_multi_number"));
-                return true;
-            }
-            if (!Perm.command_add_multi.check(sender)) return true;
-        }
-        if (args.getString(0)==null)
-        {
-            sender.sendMessage(t("e")+" "+t("invalid_com"));
-            return true;
-        }
+        int pos = 0;
         if (args.getString(0).equalsIgnoreCase("hand"))
         {
             if (!(sender instanceof ConsoleCommandSender))
@@ -77,61 +61,20 @@ public class AddCommand
                     sender.sendMessage(t("pro")+" "+t("add_sell_hand"));
                     return true;
                 }
-                if (args.getString(1) != null)
-                {
-                    Integer length = Util.convertTimeToMillis(args.getString(1));
-                    if (length == null)
-                    {
-                        sender.sendMessage(t("e")+" "+t("add_invalid_length"));
-                        return true;
-                    }
-                    if (length <= config.auction_maxLength)
-                    {
-                        auctionEnd = (System.currentTimeMillis() + length);
-                    }
-                    else
-                    {
-                        sender.sendMessage(t("i")+" "+t("add_max_length",
-                                DateFormatUtils.format(config.auction_maxLength, "dd:hh:mm:ss")));
-                        return true;
-                    }
-                }
-                else
-                {
-                    auctionEnd = (System.currentTimeMillis() + config.auction_standardLength);
-                }
-                if (args.getString(2) != null)
-                {
-                    startBid = args.getDouble(2);
-                    if (startBid == null)
-                    {
-                        sender.sendMessage(t("i")+" "+t("add_invalid_time"));
-                        return true;
-                    }
-                }
-                else
-                {
-                    startBid = 0.0;
-                }
+                pos = 1;
             }
         }
         else
         {
-            if (args.getItem(0)==null)
+            newItem = Util.convertItem(args.getString(0));
+            if (newItem==null)
             {
                 sender.sendMessage(t("e")+" "+t("add_invalid_item",args.getString(0)));
                 return true;
             }
-           
-            newMaterial = args.getItem(0).getType();
-            if (newMaterial == null)
+            if (newItem.getType().equals(Material.AIR))
             {
-                sender.sendMessage(t("i") + " " +t("add_invalid_item",args.getString(0)));
-                return true;
-            }
-            if (newMaterial.equals(Material.AIR))
-            {
-                sender.sendMessage(t("i") +t("add_invalid_item","AIR"));
+                sender.sendMessage(t("i") +t("add_invalid_item","AIR"));//Why dont you try to sell your hands?
                 return true;
             }
             amount = args.getInt(1);
@@ -140,44 +83,55 @@ public class AddCommand
                 sender.sendMessage(t("i") + " " + t("add_no_amount"));
                 return true;
             }
-            
-            newItem = new ItemStack(newMaterial, amount);
-            newItem.setDurability(args.getItem(0).getDurability());
-            if (args.getString(2) != null)
+            newItem.setAmount(amount);
+            pos = 2;
+        }
+        if (args.getString(pos+0) != null)
+        {
+            Integer length = Util.convertTimeToMillis(args.getString(pos+0));
+            if (length == -1)
             {
-                Integer length = Util.convertTimeToMillis(args.getString(2));
-                if (length == -1)
-                {
-                    sender.sendMessage(t("e") + " " + t("add_invalid_length"));
-                    return true;
-                }
-                if (length <= config.auction_maxLength)
-                {
-                    auctionEnd = (System.currentTimeMillis() + length);
-                }
-                else
-                {
-                    sender.sendMessage(t("i")+" "+t("add_max_length",Util.convertTime(config.auction_maxLength)));
-                    return true;
-                }
+                sender.sendMessage(t("e") + " " + t("add_invalid_length"));
+                return true;
+            }
+            if (length <= config.auction_maxLength)
+            {
+                auctionEnd = (System.currentTimeMillis() + length);
             }
             else
             {
-                auctionEnd = (System.currentTimeMillis() + config.auction_standardLength);
+                sender.sendMessage(t("i")+" "+t("add_max_length",Util.convertTime(config.auction_maxLength)));
+                return true;
             }
-            if (args.getString(3) != null)
+        }
+        else
+        {
+            auctionEnd = (System.currentTimeMillis() + config.auction_standardLength);
+        }
+        if (args.getString(pos+1) != null)
+        {
+            startBid = args.getDouble(pos+1);
+            if (startBid == null)
             {
-                startBid = args.getDouble(3);
-                if (startBid == null)
-                {
-                    sender.sendMessage(t("i") + " "+t("add_invalid_startbid"));
-                    return true;
-                }
+                sender.sendMessage(t("i") + " "+t("add_invalid_startbid"));
+                return true;
             }
-            else
+        }
+        else
+        {
+            startBid = 0.0;
+        }
+        pos += 2;
+        if (args.getString(pos).contains("m:"))
+        {
+            //TODO try catch wenn keine zahl 
+            multiAuction = Integer.valueOf(args.getString(pos).substring(2));
+            if (multiAuction == null)
             {
-                startBid = 0.0;
+                sender.sendMessage(t("i")+" "+t("add_multi_number"));
+                return true;
             }
+            if (!Perm.command_add_multi.check(sender)) return true;
         }
 
         if (sender instanceof ConsoleCommandSender)
@@ -220,7 +174,8 @@ public class AddCommand
         Auction newAuction;
         for (int i = 0; i < multiAuction; ++i)
         {
-            if (sender instanceof ConsoleCommandSender)
+            if (sender instanceof ConsoleCommandSender || 
+               (args.hasFlag("s")&&(sender.hasPermission("auctionhouse.command.add.server"))))
             {
                 newAuction = new Auction(newItem, Bidder.getInstance(0), auctionEnd, startBid);
             }
@@ -228,45 +183,28 @@ public class AddCommand
             {
                 newAuction = new Auction(newItem, Bidder.getInstance((Player) sender), auctionEnd, startBid);//Created Auction
             }
-            if (args.getString("s") != null)
+            if (sender.hasPermission("auctionhouse.command.add.nolomit"))
             {
-                if (args.getString("s").equalsIgnoreCase("Server"))
-                    if (sender.hasPermission("auctionhouse.command.add.server"))
-                    {
-                        newAuction.giveServer();
-                        if (!(Util.registerAuction(newAuction, Bidder.getInstance(0))))
-                        {
-                            sender.sendMessage(t("i")+" "+t("add_all_stop"));
-                            sender.sendMessage(t("i")+" "+t("add_max_auction",config.auction_maxAuctions_overall));
-                            return true;
-                        }
-                    }
+                if (Bidder.getInstance(sender).getOwnAuctions().size()>=config.auction_maxAuctions_player)
+                {
+                    sender.sendMessage(t("i")+" "+t("add_max_auction",config.auction_maxAuctions_player));
+                    return true;
+                }    
+            }
+            if (!(Util.registerAuction(newAuction, sender)))
+            {
+                sender.sendMessage(t("i")+" "+t("add_all_stop"));
+                sender.sendMessage(t("i")+" "+t("add_max_auction",config.auction_maxAuctions_overall));
+                return true;
+            }
+            if (!(sender instanceof ConsoleCommandSender))
+            {
+
+                ((Player) sender).getInventory().removeItem(removeItem);
             }
             else
             {
-                if (sender.hasPermission("auctionhouse.command.add.nolomit"))
-                {
-                    if (Bidder.getInstance(sender).getOwnAuctions().size()>=config.auction_maxAuctions_player)
-                    {
-                        sender.sendMessage(t("i")+" "+t("add_max_auction",config.auction_maxAuctions_player));
-                        return true;
-                    }    
-                }
-                if (!(Util.registerAuction(newAuction, sender)))
-                {
-                    sender.sendMessage(t("i")+" "+t("add_all_stop"));
-                    sender.sendMessage(t("i")+" "+t("add_max_auction",config.auction_maxAuctions_overall));
-                    return true;
-                }
-                if (!(sender instanceof ConsoleCommandSender))
-                {
-
-                    ((Player) sender).getInventory().removeItem(removeItem);
-                }
-                else
-                {
-                    CubeAuctions.log("ServerAuction(s) added succesfully!");
-                }
+                CubeAuctions.log("ServerAuction(s) added succesfully!");
             }
         }
 

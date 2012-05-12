@@ -92,6 +92,13 @@ public final class Bidder
         return instance;
     }
     
+    
+    
+    public static Bidder getInstance(String name)
+    {
+        return getInstance(cuManager.getCubeUser(name).getPlayer());
+    }
+    
 /**
  * @return HashMap of all current Bidder
  */   

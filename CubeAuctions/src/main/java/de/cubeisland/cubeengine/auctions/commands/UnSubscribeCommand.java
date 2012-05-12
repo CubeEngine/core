@@ -1,14 +1,16 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.CommandArgs;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.Manager;
+import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.libMinecraft.command.Command;
+import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Manages your Subscriptions
@@ -40,41 +42,46 @@ public class UnSubscribeCommand
             return true;
         }
         Bidder bidder = Bidder.getInstance((Player) sender);
-        if (args.getString("m") != null)
+        if (args.hasFlag("m"))
         {
-            if (args.getItem("m") != null)
+            ItemStack item = Util.convertItem(args.getString(0));
+            if (item != null)
             {
-                if (bidder.removeSubscription(args.getItem("m").getType()))
+                if (bidder.removeSubscription(item.getType()))
                 {
-                    sender.sendMessage(t("i")+" "+t("sub_rem_mat",args.getItem("m").getType().toString()));
+                    sender.sendMessage(t("i")+" "+t("sub_rem_mat",item.getType().toString()));
                     return true;
                 }
                 sender.sendMessage(t("e")+" "+t("sub_rem_no_mat"));
                 return true;
             }
-            sender.sendMessage(t("e")+" "+args.getString("m") + " "+t("no_valid_item"));
+            sender.sendMessage(t("e")+" "+args.getString(0) + " "+t("no_valid_item"));
             return true;
         }
-        if (args.getString("i") != null)
+        else if (args.hasFlag("i"))
         {
-            if (args.getInt("i") != null)
+            try
             {
+                int id = args.getInt(0);
                 Manager manager = Manager.getInstance();
-                if (manager.getAuction(args.getInt("i")) != null)
+                if (manager.getAuction(id) != null)
                 {
-                    if (bidder.removeSubscription(manager.getAuction(args.getInt("i"))))
+                    if (bidder.removeSubscription(manager.getAuction(id)))
                     {
-                        sender.sendMessage(t("i")+" "+t("sub_rem",args.getInt("i")));
+                        sender.sendMessage(t("i")+" "+t("sub_rem",id));
                         return true;
                     }
                     sender.sendMessage(t("e")+" "+t("sub_rem_no"));
                     return true;
                 }
-                sender.sendMessage(t("e")+" "+t("auction_no_exist",args.getInt("i")));
+                sender.sendMessage(t("e")+" "+t("auction_no_exist",id));
                 return true;
             }
-            sender.sendMessage(t("e")+" "+t("invalid_id"));
-            return true;
+            catch (NumberFormatException ex)
+            {
+                sender.sendMessage(t("e")+" "+t("invalid_id"));
+                return true;
+            }
         }
         sender.sendMessage(t("e")+" "+t("invalid_com"));
         return true;

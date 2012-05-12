@@ -1,11 +1,11 @@
 package de.cubeisland.cubeengine.auctions.commands;
 
-import de.cubeisland.cubeengine.auctions.CommandArgs;
 import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.libMinecraft.command.Command;
+import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -52,23 +52,27 @@ public class UndoBidCommand
                 return true;
             }
         }
-        if (args.getInt(0) != null)
+        try
         {
+            int id = args.getInt(0);
             Manager manager = Manager.getInstance();
-            if (manager.getAuction(args.getInt(0)) == null)
+            if (manager.getAuction(id) == null)
             {
-                sender.sendMessage(t("e")+" "+t("auction_no_exist",args.getInt(0)));
+                sender.sendMessage(t("e")+" "+t("auction_no_exist",id));
                 return true;
             }
-            if (manager.getAuction(args.getInt(0)).undobid(Bidder.getInstance(psender)))
+            if (manager.getAuction(id).undobid(Bidder.getInstance(psender)))
             {
-                sender.sendMessage(t("i")+" "+t("undo_bid_n",args.getInt(0)));
+                sender.sendMessage(t("i")+" "+t("undo_bid_n",id));
                 return true;
             }
             else return true;
         }
-        sender.sendMessage(t("e")+" "+t("undo_fail"));
-        return true;
+        catch (NumberFormatException ex)
+        {
+            sender.sendMessage(t("e")+" "+t("undo_fail"));
+            return true;
+        }
     }
 
     public String getDescription()
