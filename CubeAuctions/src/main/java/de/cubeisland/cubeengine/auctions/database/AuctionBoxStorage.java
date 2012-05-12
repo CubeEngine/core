@@ -139,7 +139,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
     public void createStructure()
     {
         this.db.exec(   "CREATE TABLE IF NOT EXISTS `boxes` ("+
-                        "`id` int(11) NOT NULL AUTO_INCREMENT"+    
+                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
                         "`cubeuserid` int(11) NOT NULL,"+
                         "`item` varchar(42) NOT NULL,"+
                         "`amount` int(11) NOT NULL,"+

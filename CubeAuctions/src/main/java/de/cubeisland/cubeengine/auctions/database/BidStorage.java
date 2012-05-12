@@ -98,7 +98,7 @@ public class BidStorage implements Storage<Integer, Bid>
 
                 int auctionId = 0;//TODO Der Auktion zuordnen
 
-                this.db.query("INSERT INTO {{PREFIX}}bids (`id`, `auctionid`,`cubeuserid`, `amount`, `timestamp`)"+
+                this.db.exec("INSERT INTO {{PREFIX}}bids (`id`, `auctionid`,`cubeuserid`, `amount`, `timestamp`)"+
                                     "VALUES (?, ?, ?, ?, ?)", id, auctionId, bidder.getId(), amount, time); 
             }
             return true;
@@ -161,7 +161,7 @@ public class BidStorage implements Storage<Integer, Bid>
     public void createStructure()
     {
         this.db.exec(   "CREATE TABLE IF NOT EXISTS `bids` ("+
-                        "`id` int(11) NOT NULL AUTO_INCREMENT"+    
+                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
                         "`auctionid` int(11) NOT NULL,"+
                         "`cubeuserid` int(11) NOT NULL,"+
                         "`amount` int(11) NOT NULL,"+

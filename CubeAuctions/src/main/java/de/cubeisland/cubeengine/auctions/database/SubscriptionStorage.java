@@ -55,7 +55,7 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
         {
             for (String s : object)
             {
-                this.db.query("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
+                this.db.exec("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
                                     "VALUES (?, ?)", cuId, s); 
             }
             return true;   
@@ -103,9 +103,10 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
     public void createStructure()
     {
         this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
-                        "`id` int(11) NOT NULL AUTO_INCREMENT"+    
+                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
                         "`cubeuserid` int(11) NOT NULL,"+
                         "`sub` varchar(42) NOT NULL,"+
+                        "PRIMARY KEY (`id`),"+
                         "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
                         ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
                     );

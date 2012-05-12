@@ -83,7 +83,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
                 int cubeuserid = bidder.getId();
                 byte notifyState = bidder.getNotifyState();
 
-                this.db.query("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
+                this.db.exec("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
                                     "VALUES (?, ?)", cubeuserid, notifyState); 
             }
             return true;

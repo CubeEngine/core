@@ -97,7 +97,7 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
                 double price = item.getAvgPrice();
                 int timessold = item.getTimesSold();
 
-                this.db.query("INSERT INTO {{PREFIX}}bids (`item`, `price`,`timessold``)"+
+                this.db.exec("INSERT INTO {{PREFIX}}bids (`item`, `price`,`timessold``)"+
                                     "VALUES (?, ?, ?)", sItem, price, timessold); 
             }
             return true;
@@ -128,7 +128,7 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
     public void createStructure()
     {
         this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
-                        "`id` int(11) NOT NULL AUTO_INCREMENT"+    
+                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
                         "`cubeuserid` int(11) NOT NULL,"+
                         "`sub` varchar(42) NOT NULL,"+
                         "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+

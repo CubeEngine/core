@@ -88,7 +88,7 @@ public class AuctionStorage implements Storage<Integer, Auction>{
                 String item = Util.convertItem(auction.getItemStack());
                 int amount = auction.getItemStack().getAmount();
                 Timestamp time = auction.getTimestamp();
-                this.db.query("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
+                this.db.exec("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
                                     "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
             }
             return true;
