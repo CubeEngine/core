@@ -1,7 +1,9 @@
-TODO IRC mode
-TODO permissions module
-TODO economy module
+TODO module: IRC
+TODO module: permissions
+TODO module: economy
+TODO module: fun
+TODO module: ban
+
 TODO configurations in core
 TODO further work on Storage
-TODO fun module
 TODO database structure

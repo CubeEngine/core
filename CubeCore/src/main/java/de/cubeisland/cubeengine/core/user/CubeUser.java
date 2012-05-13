@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -8,10 +9,10 @@ import org.bukkit.entity.Player;
  *
  * @author Phillip Schichtel
  */
-public class CubeUser
+public class CubeUser implements Model
 {
     private final OfflinePlayer player;
-    private LongBitMask flags;
+    private final LongBitMask flags;
     private final int id;
     
     public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
@@ -30,14 +31,13 @@ public class CubeUser
     }
     
     /**
-     * @return the player if online ; else null
+     * Returns the player or null if not online
+     *
+     * @return the player
      */
     public Player getPlayer()
     {
-        if (this.player.isOnline())
-            return (Player)this.player;
-        else
-            return null;
+        return this.player.getPlayer();
     }  
     
      /**

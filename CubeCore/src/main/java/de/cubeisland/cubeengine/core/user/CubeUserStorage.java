@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
@@ -16,9 +15,7 @@ import org.bukkit.Server;
  *
  * @author CodeInfection
  */
-public class CubeUserStorage implements Storage<String, CubeUser>
-//Wärs mit ner ID nicht schneller aus der Datenbank zu holen?
-//Den CubeUser müsste ich ja sehr oft benutzen wenn ich zb einen Bidder identifiziere
+public class CubeUserStorage implements Storage<CubeUser>
 {
     private final Database database;
     private final Server server;
@@ -27,25 +24,44 @@ public class CubeUserStorage implements Storage<String, CubeUser>
     {
         this.database = db;
         this.server = server;
+
+        try
+        {
+            this.database.prepareStatement("user_get",      "SELECT id,name,flags FROM {{users}} WHERE name=? LIMIT 1");
+            this.database.prepareStatement("user_getall",   "SELECT id,name,flags FROM {{users}}");
+            this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (id,name,flags) VALUES (?,?,?)");
+            this.database.prepareStatement("user_update",   "UPDATE {{users}} SET flags=? WHERE id=?");
+            this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
+            this.database.prepareStatement("user_delete",   "DELETE FROM {{users}} WHERE id=?");
+            this.database.prepareStatement("user_clear",    "DELETE FROM {{users}}");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to prepare the statements!", e);
+        }
     }
 
-    public Database getDatabase()
+    public void initialize()
     {
-        return this.database;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public Collection<CubeUser> getAll()
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id`,`name`,`flags` FROM {{PREFIX}}users");
+            ResultSet result = this.database.query("");
 
             Collection<CubeUser> users = new ArrayList<CubeUser>();
+            int id;
+            OfflinePlayer player;
+            LongBitMask bitmask;
             while (result.next())
             {
-                int id = result.getInt("id");
-                OfflinePlayer player = this.server.getOfflinePlayer(result.getString("name"));
-                LongBitMask bitmask = new LongBitMask(result.getLong("flags"));
+                id = result.getInt("id");
+                player = this.server.getOfflinePlayer(result.getString("name"));
+                bitmask = new LongBitMask(result.getLong("flags"));
+                
                 users.add(new CubeUser(id, player, bitmask));
             }
 
@@ -57,34 +73,11 @@ public class CubeUserStorage implements Storage<String, CubeUser>
         }
     }
 
-    public CubeUser getByKey(String key)
+    public CubeUser get(int key)
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id`,`name`,`flags` FROM {{PREFIX}}users WHERE name=? LIMIT 1", key);
-
-            if (!result.next())
-            {
-                return null;
-            }
-            
-            int id = result.getInt("id");
-            OfflinePlayer player = this.server.getOfflinePlayer(result.getString("name"));
-            LongBitMask bitmask = new LongBitMask(result.getLong("flags"));
-            return new CubeUser(id, player, bitmask);
-
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to load the user '" + key + "'!", e);
-        }
-    }
-    
-    public CubeUser getByKey(int key)
-    {
-        try
-        {
-            ResultSet result = this.database.query("SELECT `id`,`name`,`flags` FROM {{PREFIX}}users WHERE id=? LIMIT 1", key);
+            ResultSet result = this.database.preparedQuery("user_get", key);
 
             if (!result.next())
             {
@@ -103,49 +96,68 @@ public class CubeUserStorage implements Storage<String, CubeUser>
         }
     }
 
-    public boolean store(CubeUser... object)
+    public void store(CubeUser model)
     {
-        for (CubeUser cubeUser : object)
+        try
         {
-            String name = cubeUser.getName();
-            int id = cubeUser.getId();
-            LongBitMask bitmask = cubeUser.getFlags();
-            this.database.query("INSERT INTO {{PREFIX}}users (`id`, `name`, `flags`)"+
-                                "VALUES (?, ?, ?)", id, name, bitmask.get()); 
+            this.database.preparedExec("user_store", model.getId(), model.getName(), model.getFlags().get());
         }
-        return true; //TODO return false
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to store the user!", e);
+        }
     }
 
-    public int delete(CubeUser... object)
+    public boolean delete(CubeUser object)
     {
-        List<Integer> keys = new ArrayList<Integer>();
-        for (CubeUser cubeUser : object)
-        {
-            keys.add(cubeUser.getId());
-        }
-        return deleteByKey((Integer[])keys.toArray());
+        return delete(object.getId());
     }
 
-    public int deleteByKey(String... keys)
+    public boolean delete(int id)
     {
-        int dels = 0;
-        for (String s : keys)
+        try
         {
-            this.database.query("DELETE FROM {{PREFIX}}users WHERE name=?", s);
-            ++dels;
+            return this.database.preparedUpdate("user_delete", id) > 0;
         }
-        return dels;
-    }
-    
-    public int deleteByKey(Integer... keys)
-    {
-        int dels = 0;
-        for (int i : keys)
+        catch (SQLException e)
         {
-            this.database.query("DELETE FROM {{PREFIX}}users WHERE id=?", i);
-            ++dels;
+            throw new StorageException("Failed to delete the entry!", e);
         }
-        return dels;
     }
 
+    public void update(CubeUser object)
+    {
+        try
+        {
+            this.database.preparedUpdate("user_update", object.getFlags(), object.getId());
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to update the entry!", e);
+        }
+    }
+
+    public void merge(CubeUser object)
+    {
+        try
+        {
+            this.database.preparedUpdate("user_merge", object.getFlags());
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to merge the entry!", e);
+        }
+    }
+
+    public void clear()
+    {
+        try
+        {
+            this.database.preparedExec("user_clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
+        }
+    }
 }

@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.core.persistence;
 
-import java.io.InputStream;
+import gnu.trove.map.hash.THashMap;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.bukkit.plugin.Plugin;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -14,12 +14,16 @@ import org.bukkit.plugin.Plugin;
  */
 public class Database
 {
+    private static final Pattern PREFIX_PATTERN = Pattern.compile("\\{\\{(\\w+)\\}\\}", Pattern.CASE_INSENSITIVE);
+    private String replacement;
+
     private final String host;
     private final short port;
     private final String user;
     private final String pass;
     private final String name;
     private String prefix;
+    private final THashMap<String, PreparedStatement> preparedStatements;
 
     private final Connection connection;
 
@@ -44,6 +48,7 @@ public class Database
         this.pass = pass;
         this.name = name;
         this.prefix = "";
+        this.replacement = "$1";
         try
         {
             this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.name, this.user, this.pass);
@@ -52,6 +57,7 @@ public class Database
         {
             throw new IllegalStateException("Failed to connect to the database server!", e);
         }
+        this.preparedStatements = new THashMap<String, PreparedStatement>();
     }
 
     public String getTablePrefix()
@@ -61,76 +67,74 @@ public class Database
 
     public Database setTablePrefix(String prefix)
     {
-        this.prefix = prefix;
+        if (prefix != null)
+        {
+            this.prefix = prefix;
+            this.replacement = prefix + "$1";
+        }
         return this;
     }
 
-    public void setupStructure(Plugin plugin)
+    public ResultSet query(String query, Object... params) throws SQLException
     {
-        Class clazz = plugin.getClass();
-        InputStream inputStream = clazz.getResourceAsStream("/sql/structure.sql");
-        StringBuilder sb = new StringBuilder();
-        byte[] buffer = new byte[512];
-        int bytesRead;
-
-        try
-        {
-            while ((bytesRead = inputStream.read(buffer)) > 0)
-            {
-                sb.append(new String(buffer, 0, bytesRead, "UTF-8"));
-            }
-            inputStream.close();
-
-            this.exec(sb.toString().replace("{{PREFIX}}", this.prefix));
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace(System.err);
-        }
+        return createStatement(query, params).executeQuery();
     }
 
-    public ResultSet query(String query, Object... params)
+    public ResultSet preparedQuery(String name, Object... params) throws SQLException
     {
-        try
-        {
-            return createStatement(query, params).executeQuery();
-        }
-        catch (SQLException e)
-        {
-            throw new IllegalStateException("Failed to execute a query!", e);
-        }
+        return createStatement(getStatement(name), params).executeQuery();
     }
 
-    public int execUpdate(String query, Object... params)
+    public int update(String query, Object... params) throws SQLException
     {
-        try
-        {
-            return createStatement(query, params).executeUpdate();
-        }
-        catch (SQLException e)
-        {
-            throw new IllegalStateException("Failed to execute a query!", e);
-        }
+        return createStatement(query, params).executeUpdate();
     }
 
-    public boolean exec(String query, Object... params)
+    public int preparedUpdate(String name, Object... params) throws SQLException
     {
-        try
-        {
-            return createStatement(query, params).execute();
-        }
-        catch (SQLException e)
-        {
-            throw new IllegalStateException("Failed to execute a query!", e);
-        }
+        return createStatement(getStatement(name), params).executeUpdate();
     }
 
-    private PreparedStatement createStatement(String query, Object... params) throws SQLException
+    public boolean exec(String query, Object... params) throws SQLException
     {
-        PreparedStatement statement = this.connection.prepareStatement(query);
+        return createStatement(query, params).execute();
+    }
+
+    public boolean preparedExec(String name, Object... params) throws SQLException
+    {
+        return createStatement(getStatement(name), params).execute();
+    }
+
+    public PreparedStatement createStatement(String query, Object... params) throws SQLException
+    {
+        return this.createStatement(this.prepareStatement(query), params);
+    }
+
+    public PreparedStatement createStatement(PreparedStatement statement, Object... params) throws SQLException
+    {
         for (int i = 0; i < params.length; ++i)
         {
             statement.setObject(i + 1, params[i]);
+        }
+        return statement;
+    }
+
+    public void prepareStatement(String name, String statement) throws SQLException
+    {
+        this.preparedStatements.put(name, this.prepareStatement(statement));
+    }
+
+    public PreparedStatement prepareStatement(String statement) throws SQLException
+    {
+        return this.connection.prepareStatement(PREFIX_PATTERN.matcher(statement).replaceAll(this.replacement));
+    }
+
+    public PreparedStatement getStatement(String name)
+    {
+        PreparedStatement statement = this.preparedStatements.get(name);
+        if (statement == null)
+        {
+            throw new IllegalArgumentException("Statement not found!");
         }
         return statement;
     }

@@ -15,10 +15,12 @@ public class CubeCore extends JavaPlugin
     protected PluginManager pm;
     protected File dataFolder;
 
+    @Override
     public void onEnable()
     {
     }
 
+    @Override
     public void onDisable()
     {
     }

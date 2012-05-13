@@ -11,10 +11,10 @@ import org.bukkit.Server;
  */
 public class CubeUserManager {
 
-    private THashMap<Integer,CubeUser> cubeUserList = new THashMap<Integer,CubeUser>();
-    private static CubeUserStorage storage;
+    private final THashMap<Integer,CubeUser> cubeUserList = new THashMap<Integer,CubeUser>();
+    private final CubeUserStorage storage;
         
-    public CubeUserManager(Database db, Server server) 
+    public CubeUserManager(Database db, Server server)
     {
         storage = new CubeUserStorage(db, server);
     }
@@ -41,12 +41,12 @@ public class CubeUserManager {
     
     public CubeUser getCubeUser(OfflinePlayer player)
     {
-        return storage.getByKey(player.getName());
+        return storage.getByID(player.getName());
     }
     
     public CubeUser getCubeUser(String name)
     {
-        return storage.getByKey(name);
+        return storage.getByID(name);
     }
     
     public int getNextFreeId()
