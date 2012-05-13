@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -14,11 +15,20 @@ public class CubeUser
     private LongBitMask flags;
     private final int id;
     
+    private CubeUserStorage cubeUserDB = new CubeUserStorage(CubeCore.getDB(), CubeCore.getInstance().getServer());
+    
     public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
     {
         this.id = id;
         this.player = player;
         this.flags = flags;
+    }
+    
+    public CubeUser(OfflinePlayer player)
+    {
+        this.id = cubeUserDB.getNextId();
+        this.player = player;
+        this.flags = new LongBitMask();
     }
 
     /**

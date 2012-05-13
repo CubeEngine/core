@@ -36,6 +36,7 @@ public class CubeUserStorage implements Storage<String, CubeUser>
 
     public Collection<CubeUser> getAll()
     {
+        this.createStructure();
         try
         {
             ResultSet result = this.database.query("SELECT `id`,`name`,`flags` FROM {{PREFIX}}users");
@@ -59,6 +60,7 @@ public class CubeUserStorage implements Storage<String, CubeUser>
 
     public CubeUser getByKey(String key)
     {
+        this.createStructure();
         try
         {
             ResultSet result = this.database.query("SELECT `id`,`name`,`flags` FROM {{PREFIX}}users WHERE name=? LIMIT 1", key);
@@ -82,6 +84,7 @@ public class CubeUserStorage implements Storage<String, CubeUser>
     
     public CubeUser getByKey(int key)
     {
+        this.createStructure();
         try
         {
             ResultSet result = this.database.query("SELECT `id`,`name`,`flags` FROM {{PREFIX}}users WHERE id=? LIMIT 1", key);
@@ -105,6 +108,7 @@ public class CubeUserStorage implements Storage<String, CubeUser>
 
     public boolean store(CubeUser... object)
     {
+        this.createStructure();
         for (CubeUser cubeUser : object)
         {
             String name = cubeUser.getName();
@@ -146,6 +150,35 @@ public class CubeUserStorage implements Storage<String, CubeUser>
             ++dels;
         }
         return dels;
+    }
+    
+    public void createStructure()
+    {
+        this.database.exec( "CREATE TABLE IF NOT EXISTS `users` ("+
+                            "`id` int(11) NOT NULL,"+
+                            "`name` varchar(11) NOT NULL,"+
+                            "`flags` int(11) NOT NULL,"+
+                            "PRIMARY KEY (`id`)"+
+                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                    );
+    }
+    
+    public int getNextId()
+    {
+        this.createStructure();
+        try
+        {
+            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}users ORDER BY id DESC LIMIT 1");
+            if (!result.next())
+            {
+                return 1;
+            }
+            return result.getInt("id")+1;
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to get next BidId !", e);
+        }
     }
 
 }

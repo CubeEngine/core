@@ -47,17 +47,17 @@ public class CubeUserManager {
     
     public CubeUser getCubeUser(OfflinePlayer player)
     {
-        return storage.getByKey(player.getName());
+        CubeUser user = storage.getByKey(player.getName());
+        if (user == null)
+        {
+            storage.store(new CubeUser(player));
+            return getCubeUser(player);
+        }
+        return user;
     }
     
     public CubeUser getCubeUser(String name)
     {
         return storage.getByKey(name);
-    }
-    
-    public int getNextFreeId()
-    {
-        return 0;
-        //TODO
     }
 }

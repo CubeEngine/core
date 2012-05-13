@@ -91,6 +91,7 @@ public final class Bidder
                 serverBidder = instance;
             else
                 bidderInstances.put(cuManager.getCubeUser(id).getOfflinePlayer(),instance);
+            bidderDB.store(instance);
         }
         return instance;
     }

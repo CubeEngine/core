@@ -144,7 +144,7 @@ public class BidStorage implements Storage<Integer, Bid>
     {
         this.createStructure();
         try
-        {//TODO klappt nicht richtig
+        {
             ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}bids ORDER BY id DESC LIMIT 1");
             if (!result.next())
             {
