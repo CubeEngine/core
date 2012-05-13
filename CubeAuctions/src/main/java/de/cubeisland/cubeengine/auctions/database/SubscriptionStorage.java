@@ -18,7 +18,7 @@ import java.util.List;
 public class SubscriptionStorage implements Storage<Integer, String>//Integer = CubeUserID - String = AuctionsID oder MATERIAL-Name von Bukkit
 {
 
-    private final Database database = CubeAuctions.getDB();
+    private final Database db = CubeAuctions.getDB();
     private CubeUserManager cuManager;
     
     public SubscriptionStorage()
@@ -27,14 +27,14 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
 
     public Database getDatabase()
     {
-        return this.database;
+        return this.db;
     }
 
     public List<String> getListByKey(Integer key)
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}subscription WHERE cubeuserid=?", key);
+            ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}subscription WHERE cubeuserid=?", key);
             List<String> list = new ArrayList<String>();
             while (result.next())
             {
@@ -50,11 +50,12 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
 
     public boolean store(Integer cuId, String... object)
     {
+        this.createStructure();
         try
         {
             for (String s : object)
             {
-                this.database.query("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
+                this.db.exec("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
                                     "VALUES (?, ?)", cuId, s); 
             }
             return true;   
@@ -68,10 +69,9 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
     public int delete(String... object)
     {//macht nur Sinn bei Löschung von AuktionsSubs zb bei Ablauf
         int dels = 0;
-        List<Integer> keys = new ArrayList<Integer>();
         for (String s : object)
         {
-            this.database.query("DELETE FROM {{PREFIX}}subscription WHERE sub=?", s);
+            this.db.exec("DELETE FROM {{PREFIX}}subscription WHERE sub=?", s);
             ++dels;
         }
         return dels;
@@ -82,7 +82,7 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
         int dels = 0;
         for (String s : object)
         {
-            this.database.query("DELETE FROM {{PREFIX}}subscription WHERE sub=? && cubeuserid=?", s, key);
+            this.db.query("DELETE FROM {{PREFIX}}subscription WHERE sub=? && cubeuserid=?", s, key);
             ++dels;//TODO Zählung falsch?
         }
         return dels;
@@ -93,12 +93,24 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
         int dels = 0;
         for (int i : keys)
         {
-            this.database.query("DELETE FROM {{PREFIX}}subscription WHERE cubeuserid=?", i);
+            this.db.query("DELETE FROM {{PREFIX}}subscription WHERE cubeuserid=?", i);
             ++dels;
         }
         return dels;
     }
     
+    public void createStructure()
+    {
+        this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
+                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
+                        "`cubeuserid` int(11) NOT NULL,"+
+                        "`sub` varchar(42) NOT NULL,"+
+                        "PRIMARY KEY (`id`),"+
+                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                    );
+    }
+
     public Collection<String> getAll(){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
     public String getByKey(Integer key){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
     public boolean store(String... object){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn

@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.persistence.Database;
 import gnu.trove.map.hash.THashMap;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
 /**
@@ -16,42 +15,29 @@ public class CubeUserManager {
         
     public CubeUserManager(Database db, Server server)
     {
-        storage = new CubeUserStorage(db, server);
+        this.storage = new CubeUserStorage(db, server);
     }
     
-    public void addCubeUser(CubeUser... user)
+    public void addCubeUser(CubeUser user)
     {
-        storage.store(user);
-        for (CubeUser cu : user)
-        {
-            cubeUserList.put(cu.getId(), cu);
-        }
+        this.storage.store(user);
+        cubeUserList.put(user.getId(), user);
     }
     
-    public void remCubeUser(CubeUser... user)
+    public void remCubeUser(CubeUser user)
     {
-        storage.delete(user);
+        this.storage.delete(user);
         //TODO
     }
     
     public CubeUser getCubeUser(Integer id)
     {
-        return this.cubeUserList.get(id);
-    }
-    
-    public CubeUser getCubeUser(OfflinePlayer player)
-    {
-        return storage.getByID(player.getName());
-    }
-    
-    public CubeUser getCubeUser(String name)
-    {
-        return storage.getByID(name);
-    }
-    
-    public int getNextFreeId()
-    {
-        return 0;
-        //TODO
+        CubeUser user = this.cubeUserList.get(id);
+        if (user==null)
+        {
+            user = new CubeUser(0,null, null);
+            this.cubeUserList.put(id, user);
+        }
+        return user;
     }
 }

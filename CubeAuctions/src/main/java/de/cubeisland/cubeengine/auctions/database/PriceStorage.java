@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.auctions.database;
 
+import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.auction.PricedItemStack;
 import de.cubeisland.cubeengine.core.persistence.Database;
@@ -11,7 +12,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -20,26 +20,23 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO vlt anders machen?
 {
-    private final Database database;
-    private final Server server;
+    private final Database db = CubeAuctions.getDB();
     private CubeUserManager cuManager;
 
-    public PriceStorage(Database db, Server server)
+    public PriceStorage()
     {
-        this.database = db;
-        this.server = server;
     }
 
     public Database getDatabase()
     {
-        return this.database;
+        return this.db;
     }
 
     public Collection<PricedItemStack> getAll()
     {
         try
         {
-            ResultSet result = this.database.query("SELECT `item`,`price`,`timessold` FROM {{PREFIX}}priceditem");
+            ResultSet result = this.db.query("SELECT `item`,`price`,`timessold` FROM {{PREFIX}}priceditem");
 
             Collection<PricedItemStack> pricedItems = new ArrayList<PricedItemStack>();
             while (result.next())
@@ -67,7 +64,7 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
         try
         {
             String skey = Util.convertItem(key);
-            ResultSet result = this.database.query("SELECT `item`,`price`,`timessold` FROM {{PREFIX}}priceditem WHERE item=? LIMIT 1", skey);
+            ResultSet result = this.db.query("SELECT `item`,`price`,`timessold` FROM {{PREFIX}}priceditem WHERE item=? LIMIT 1", skey);
 
             if (!result.next())
             {
@@ -88,8 +85,10 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
         }
     }
 
+    
     public boolean store(PricedItemStack... object)
     {
+        this.createStructure();
         try
         {
             for (PricedItemStack item : object)
@@ -98,7 +97,7 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
                 double price = item.getAvgPrice();
                 int timessold = item.getTimesSold();
 
-                this.database.query("INSERT INTO {{PREFIX}}bids (`item`, `price`,`timessold``)"+
+                this.db.exec("INSERT INTO {{PREFIX}}bids (`item`, `price`,`timessold``)"+
                                     "VALUES (?, ?, ?)", sItem, price, timessold); 
             }
             return true;
@@ -120,9 +119,20 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
         for (ItemStack item : keys)
         {
             String sItem = Util.convertItem(item);
-            this.database.query("DELETE FROM {{PREFIX}}bids WHERE item=?", sItem);
+            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE item=?", sItem);
             ++dels;
         }
         return dels;
+    }
+    
+    public void createStructure()
+    {
+        this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
+                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
+                        "`cubeuserid` int(11) NOT NULL,"+
+                        "`sub` varchar(42) NOT NULL,"+
+                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                    );
     }
 }

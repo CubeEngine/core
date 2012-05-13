@@ -44,7 +44,6 @@ public class Auction
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();
         Bid bid = new Bid(owner, startBid, this);
-        bidDB.store(bid);
         this.bids.push(bid);
     }
 

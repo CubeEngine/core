@@ -74,6 +74,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
 
     public boolean store(Bidder... object)
     {
+        this.createStructure();
         try
         {
             for (Bidder bidder : object)
@@ -82,7 +83,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
                 int cubeuserid = bidder.getId();
                 byte notifyState = bidder.getNotifyState();
 
-                this.db.query("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
+                this.db.exec("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
                                     "VALUES (?, ?)", cubeuserid, notifyState); 
             }
             return true;
@@ -109,15 +110,25 @@ public class BidderStorage implements Storage<Integer, Bidder>
         int dels = 0;
         for (int i : keys)
         {
-            this.db.query("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", i);
+            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", i);
             ++dels;
         }
         return dels;
     }
     
+    public void createStructure()
+    {
+        this.db.exec(   "CREATE TABLE IF NOT EXISTS `bidder` ("+
+                        "`cubeuserid` int(11) NOT NULL,"+
+                        "`notifystate` smallint(2) NOT NULL,"+
+                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                    );
+    }
+    
     public void updateNotifyData(Bidder bidder)
     {
-        
+        //TODO
     }
 
 

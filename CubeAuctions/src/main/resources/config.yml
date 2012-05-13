@@ -22,4 +22,4 @@ auction:
     port: 3306
     user: root
     pass: ''
-    name: auctionhouse
+    name: cubeauctions

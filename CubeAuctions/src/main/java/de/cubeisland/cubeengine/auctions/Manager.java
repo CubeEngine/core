@@ -3,6 +3,8 @@ package de.cubeisland.cubeengine.auctions;
 import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
+import de.cubeisland.cubeengine.auctions.database.BidStorage;
+import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -190,7 +192,9 @@ public class Manager
             Bidder.getInstance(0).removeAuction(auction);
         }
         auctionDB.deleteByKey(auction.getId());
-        //TODO prüfen ob ALLE subs & bids von dieser Auktion gelöscht werden/sind
+        BidStorage bidDB = new BidStorage();
+        bidDB.deleteByAuction(auction.getId());
+        SubscriptionStorage subDB = new SubscriptionStorage();
         this.auctions.remove(auction);
         return true;
     }

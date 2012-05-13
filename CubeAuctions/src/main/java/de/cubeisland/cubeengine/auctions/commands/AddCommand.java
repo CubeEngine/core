@@ -34,8 +34,7 @@ public class AddCommand
     @Command(usage = "<Item> <Amount>")
     public boolean add(CommandSender sender, CommandArgs args)
     {
-        ItemStack newItem = null;
-        Material newMaterial;
+        ItemStack newItem;
         Integer amount;
         Double startBid;
         long auctionEnd;
@@ -50,7 +49,7 @@ public class AddCommand
             sender.sendMessage("");
             return true;
         }
-        int pos = 0;
+        int pos;
         if (args.getString(0).equalsIgnoreCase("hand"))
         {
             if (!(sender instanceof ConsoleCommandSender))
@@ -62,6 +61,11 @@ public class AddCommand
                     return true;
                 }
                 pos = 1;
+            }
+            else
+            {
+                sender.sendMessage(t("pro")+t("add_server_nohand"));
+                return true;
             }
         }
         else
@@ -77,8 +81,13 @@ public class AddCommand
                 sender.sendMessage(t("i") +t("add_invalid_item","AIR"));//Why dont you try to sell your hands?
                 return true;
             }
-            amount = args.getInt(1);
-            if (amount == null)
+            if (args.size()<2) 
+            {
+                sender.sendMessage(t("e")+ t("too_few_args"));
+                return true;
+            }
+            try {amount = args.getInt(1);}
+            catch (NumberFormatException ex)
             {
                 sender.sendMessage(t("i") + " " + t("add_no_amount"));
                 return true;
@@ -86,7 +95,8 @@ public class AddCommand
             newItem.setAmount(amount);
             pos = 2;
         }
-        if (args.getString(pos+0) != null)
+        if ((args.size() > pos)
+        && (args.getString(pos+0)) != null)
         {
             Integer length = Util.convertTimeToMillis(args.getString(pos+0));
             if (length == -1)
@@ -108,7 +118,8 @@ public class AddCommand
         {
             auctionEnd = (System.currentTimeMillis() + config.auction_standardLength);
         }
-        if (args.getString(pos+1) != null)
+        if ((args.size() > pos+1)
+        && (args.getString(pos+1)) != null)
         {
             startBid = args.getDouble(pos+1);
             if (startBid == null)
@@ -122,17 +133,20 @@ public class AddCommand
             startBid = 0.0;
         }
         pos += 2;
-        if (args.getString(pos).contains("m:"))
-        {
-            //TODO try catch wenn keine zahl 
-            multiAuction = Integer.valueOf(args.getString(pos).substring(2));
-            if (multiAuction == null)
+        if (args.size() > pos)
+            if (args.getString(pos).contains("m:"))
             {
-                sender.sendMessage(t("i")+" "+t("add_multi_number"));
-                return true;
+                try
+                {
+                    multiAuction = Integer.valueOf(args.getString(pos).substring(2));
+                }
+                catch (NumberFormatException ex)
+                {
+                    sender.sendMessage(t("i")+" "+t("add_multi_number"));
+                    return true;
+                }
+                if (!Perm.command_add_multi.check(sender)) return true;
             }
-            if (!Perm.command_add_multi.check(sender)) return true;
-        }
 
         if (sender instanceof ConsoleCommandSender)
         {
