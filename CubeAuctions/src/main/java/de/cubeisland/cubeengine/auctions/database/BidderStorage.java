@@ -110,7 +110,7 @@ public class BidderStorage implements Storage<Integer, Bidder>
         int dels = 0;
         for (int i : keys)
         {
-            this.db.query("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", i);
+            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", i);
             ++dels;
         }
         return dels;

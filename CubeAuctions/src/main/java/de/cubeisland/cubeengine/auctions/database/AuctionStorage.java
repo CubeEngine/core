@@ -114,7 +114,7 @@ public class AuctionStorage implements Storage<Integer, Auction>{
         int dels = 0;
         for (int i : keys)
         {
-            this.db.query("DELETE FROM {{PREFIX}}auctions WHERE id=?", i);
+            this.db.exec("DELETE FROM {{PREFIX}}auctions WHERE id=?", i);
             ++dels;
         }
         return dels;

@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 public class Bid
 {
     private int id;
-    private int cubeUserId;
     private int auctionId;
 
     private final double amount;
@@ -47,11 +46,11 @@ public class Bid
  */ 
     public Bid(int id,int cubeUserId, int auctionId, double amount, Timestamp timestamp)
     {
-        this.cubeUserId = cubeUserId;
+        this.bidder = Bidder.getInstance(cubeUserId);
         this.auctionId = auctionId;
         this.amount = amount;
         this.timestamp = timestamp.getTime();
-        this.id = bidder.getId();
+        this.id = id;
     }
     
 /**
@@ -101,5 +100,13 @@ public class Bid
     public String getDBTable()
     {
         return "`"+this.getTable()+"`";
+    }
+
+    /**
+     * @return the auctionId
+     */
+    public int getAuctionId()
+    {
+        return auctionId;
     }
 }

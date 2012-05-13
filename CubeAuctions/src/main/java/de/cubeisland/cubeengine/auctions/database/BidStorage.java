@@ -96,7 +96,7 @@ public class BidStorage implements Storage<Integer, Bid>
                 double amount = bid.getAmount();
                 Timestamp time = bid.getTimestamp();
 
-                int auctionId = 0;//TODO Der Auktion zuordnen
+                int auctionId = bid.getAuctionId();
 
                 this.db.exec("INSERT INTO {{PREFIX}}bids (`id`, `auctionid`,`cubeuserid`, `amount`, `timestamp`)"+
                                     "VALUES (?, ?, ?, ?, ?)", id, auctionId, bidder.getId(), amount, time); 
@@ -121,7 +121,12 @@ public class BidStorage implements Storage<Integer, Bid>
     
     public void delete(int auctionId, int bidderId)
     {
-        this.db.query("DELETE FROM {{PREFIX}}bids WHERE auctionid=? && cubeuserid=?", auctionId, bidderId );
+        this.db.exec("DELETE FROM {{PREFIX}}bids WHERE auctionid=? && cubeuserid=?", auctionId, bidderId );
+    }
+    
+    public void deleteByAuction(int auctionId)
+    {
+        this.db.exec("DELETE FROM {{PREFIX}}bids WHERE auctionid=?", auctionId );
     }
 
     public int deleteByKey(Integer... keys)
@@ -129,7 +134,7 @@ public class BidStorage implements Storage<Integer, Bid>
         int dels = 0;
         for (int i : keys)
         {
-            this.db.query("DELETE FROM {{PREFIX}}bids WHERE id=?", i);
+            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE id=?", i);
             ++dels;
         }
         return dels;
@@ -140,12 +145,12 @@ public class BidStorage implements Storage<Integer, Bid>
         this.createStructure();
         try
         {//TODO klappt nicht richtig
-            ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}bids ORDER BY id  LIMIT 1");
+            ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}bids ORDER BY id DESC LIMIT 1");
             if (!result.next())
             {
                 return 1;
             }
-            return result.getInt("id");
+            return result.getInt("id")+1;
         }
         catch (SQLException e)
         {

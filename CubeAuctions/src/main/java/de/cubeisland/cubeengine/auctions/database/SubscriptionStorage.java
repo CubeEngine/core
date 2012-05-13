@@ -69,10 +69,9 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
     public int delete(String... object)
     {//macht nur Sinn bei Löschung von AuktionsSubs zb bei Ablauf
         int dels = 0;
-        List<Integer> keys = new ArrayList<Integer>();
         for (String s : object)
         {
-            this.db.query("DELETE FROM {{PREFIX}}subscription WHERE sub=?", s);
+            this.db.exec("DELETE FROM {{PREFIX}}subscription WHERE sub=?", s);
             ++dels;
         }
         return dels;

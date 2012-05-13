@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
+import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -101,8 +102,10 @@ public class Util
                 }
             }
         }
+        BidStorage bidDB = new BidStorage();
         AuctionStorage auctionDB = new AuctionStorage();
         auctionDB.store(auction);
+        bidDB.store(auction.getBids().peek());
         return true;
     }
 

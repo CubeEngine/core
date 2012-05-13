@@ -119,7 +119,7 @@ public class PriceStorage implements Storage<ItemStack, PricedItemStack>//TODO v
         for (ItemStack item : keys)
         {
             String sItem = Util.convertItem(item);
-            this.db.query("DELETE FROM {{PREFIX}}bids WHERE item=?", sItem);
+            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE item=?", sItem);
             ++dels;
         }
         return dels;
