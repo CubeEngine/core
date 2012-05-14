@@ -1,11 +1,8 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import de.cubeisland.cubeengine.auctions.Util;
-import de.cubeisland.cubeengine.auctions.database.AuctionBoxStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import de.cubeisland.cubeengine.core.persistence.Model;
 import java.sql.Timestamp;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,8 +11,10 @@ import org.bukkit.inventory.ItemStack;
  * 
  * @author Faithcaio
  */
-public class AuctionItem
+public class AuctionItem implements Model
 {
+    private int id; //TODO
+    
     private Bidder bidder;
     private ItemStack item;
     private long date;
@@ -144,5 +143,10 @@ public class AuctionItem
     public Timestamp getTimestamp()
     {
         return new Timestamp(this.date);
+    }
+
+    public int getId()
+    {
+        return this.id;
     }
 }

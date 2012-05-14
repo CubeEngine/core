@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
@@ -43,7 +45,20 @@ public class CubeUserStorage implements Storage<CubeUser>
 
     public void initialize()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            this.database.exec( "CREATE TABLE IF NOT EXISTS `auctions` ("+
+                                "`id` int(11) unsigned NOT NULL,"+
+                                "`name` varchar(16) NOT NULL,"+
+                                "`flags` int(11) NOT NULL,"+
+                                "PRIMARY KEY (`id`),"+
+                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                               );
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to initialize the CubeUserTable !", ex);
+        }
     }
 
     public Collection<CubeUser> getAll()
@@ -77,7 +92,7 @@ public class CubeUserStorage implements Storage<CubeUser>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("user_get", key);
+            ResultSet result = this.database.preparedQuery("user_get", key);//WHERE name=? LIMIT 1 das wird so nichts
 
             if (!result.next())
             {
@@ -93,6 +108,26 @@ public class CubeUserStorage implements Storage<CubeUser>
         catch (SQLException e)
         {
             throw new StorageException("Failed to load the user '" + key + "'!", e);
+        }
+    }
+    
+    public int getCubeUserId(String name)
+    {
+        try
+        {
+            ResultSet result = this.database.preparedQuery("user_get", name);
+
+            if (!result.next())
+            {
+                return -1;
+            }
+            
+            return result.getInt("id");
+
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to load the user '" + name + "'!", e);
         }
     }
 

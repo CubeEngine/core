@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
+import de.cubeisland.cubeengine.core.persistence.Model;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -7,21 +8,23 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class PricedItemStack extends ItemStack {
-
+public class PricedItemStack extends ItemStack implements Model
+{
+//TODO insert into DB / update
+    private int id;
     private double price;
     private int timessold; 
     
-    public PricedItemStack(Material mat, int amount, short data) 
+    public PricedItemStack(Material mat, short data) 
     {
-        super(mat,amount,data);
+        super(mat,1,data);
         this.price = 0;
         this.timessold = 0;
     }
     
-    public PricedItemStack(Material mat, int amount, short data, double price, int timessold) 
+    public PricedItemStack(Material mat, short data, double price, int timessold) 
     {
-        super(mat,amount,data);
+        super(mat,1,data);
         this.price = price;
         this.timessold = timessold;
     }
@@ -69,5 +72,15 @@ public class PricedItemStack extends ItemStack {
         this.price = t_price;
         this.timessold = t_timessold;
         return this.price;
+    }
+
+    public int getId()
+    {
+        return this.id;
+    }
+    
+    public void setId(int id)
+    {
+        this.id = id;
     }
 }

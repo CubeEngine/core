@@ -51,7 +51,7 @@ public class CubeAuctionsListener implements Listener
         if (!event.getPlayer().hasPermission("auctionhouse.use")) return;
         
         Bidder bidder = Bidder.getInstance(event.getPlayer());
-        bidderDB.updateNotifyData(bidder);
+        bidderDB.update(bidder);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         {
             public void run()
@@ -99,7 +99,7 @@ public class CubeAuctionsListener implements Listener
         {
             bidder.setNotifyState(Bidder.NOTIFY_ITEMS);
         }
-        bidderDB.updateNotifyData(bidder);
+        bidderDB.update(bidder);
     }
 
 /**

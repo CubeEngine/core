@@ -14,7 +14,7 @@ public class CubeUser implements Model
 {
     private final OfflinePlayer player;
     private final LongBitMask flags;
-    private final int id;
+    private int id;
     
     private CubeUserStorage cubeUserDB = new CubeUserStorage(CubeCore.getDB(), CubeCore.getInstance().getServer());
     
@@ -75,5 +75,13 @@ public class CubeUser implements Model
     public boolean isOnline()
     {
         return player.isOnline();
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id)
+    {
+        this.id = id;
     }
 }

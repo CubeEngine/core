@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
+public class AuctionBoxStorage implements Storage<AuctionItem>
 {
 
     private final Database db = CubeAuctions.getDB();
@@ -58,7 +58,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         }
     }
 
-    public Collection<AuctionItem> getAllByKey(Integer key)
+    public Collection<AuctionItem> getAllByUser(Integer key)
     {
         try
         {
@@ -82,24 +82,45 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
             throw new StorageException("Failed to load the AuctionBoxItem '" + key + "'!", e);
         }
     }
-
-    public boolean store(AuctionItem... object)
+    
+    public void initialize()
     {
-        this.createStructure();
         try
         {
-            for (AuctionItem auctionItem : object)
-            {
-                int cubeUserId = auctionItem.getBidder().getId();
-                String item = Util.convertItem(auctionItem.getItemStack());
-                int amount = auctionItem.getItemStack().getAmount();
-                double price = auctionItem.getPrice();
-                int oldownerid = auctionItem.getOwner().getId();
-                Timestamp time = auctionItem.getTimestamp();
-                this.db.exec("INSERT INTO {{PREFIX}}boxes (`cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
-                                    "VALUES (?, ?, ?, ?)", cubeUserId, item, amount, price, oldownerid, time); 
-            }
-            return true;
+            this.db.exec(   "CREATE TABLE IF NOT EXISTS `boxes` ("+
+                            "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
+                            "`cubeuserid` int(11) NOT NULL,"+
+                            "`item` varchar(42) NOT NULL,"+
+                            "`amount` int(11) NOT NULL,"+
+                            "`price` decimal(11,2) NOT NULL,"+
+                            "`timestamp` timestamp NOT NULL,"+
+                            "`oldownerid` int(11) NOT NULL,"+
+                            "PRIMARY KEY (`id`),"+    
+                            "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                        );
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to initialize the AuctionBox-Table !", ex);
+        }
+    }
+
+    
+
+    public void store(AuctionItem model)
+    {
+        this.initialize();
+        try
+        {
+            int cubeUserId = model.getBidder().getId();
+            String item = Util.convertItem(model.getItemStack());
+            int amount = model.getItemStack().getAmount();
+            double price = model.getPrice();
+            int oldownerid = model.getOwner().getId();
+            Timestamp time = model.getTimestamp();
+            this.db.exec("INSERT INTO {{PREFIX}}boxes (`cubeuserid`, `item`, `amount`, `price`, `oldownerid`, `timestamp`)"+
+                                "VALUES (?, ?, ?, ?)", cubeUserId, item, amount, price, oldownerid, time); 
         }
         catch (Exception e)
         {
@@ -107,56 +128,64 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         }
     }
 
-    public void delete(AuctionItem auctionItem)
+    public void update(AuctionItem model)
     {
-        String item = Util.convertItem(auctionItem.getItemStack());
-        int amount = auctionItem.getItemStack().getAmount();
-
-        this.db.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
-                auctionItem.getBidder().getId(),item,amount,auctionItem.getTimestamp());
-    }
-
-    public int deleteByKey(Integer... keys)
-    {
-        int dels = 0;
-        for (int i : keys)
+        String item = Util.convertItem(model.getItemStack());
+        int amount = model.getItemStack().getAmount();
+        try
         {
-            this.db.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=?", i);
-            ++dels;
+            this.db.exec("UPDATE {{PREFIX}}boxes SET `amount`=? WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
+                    model.getItemStack().getAmount(),model.getBidder().getId(),item,amount,model.getTimestamp());
         }
-        return dels;
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to update the AuctionBoxItem !", ex);
+        }
+    }
+
+    
+
+    public boolean delete(AuctionItem model)
+    {
+        String item = Util.convertItem(model.getItemStack());
+        int amount = model.getItemStack().getAmount();
+        try
+        {
+            this.db.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
+                    model.getBidder().getId(),item,amount,model.getTimestamp());
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to delete the AuctionBoxItem !", ex);
+        }
+        return true;
+    }
+
+    public boolean delete(int id)
+    {
+        try
+        {
+            this.db.exec("DELETE FROM {{PREFIX}}boxes WHERE cubeuserid=?", id);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to delete the AuctionBoxItem !", ex);
+        }
+        return true;
+    }
+
+    public void clear()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void merge(AuctionItem model)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    public void update(AuctionItem auctionItem, int newamount)
+    public AuctionItem get(int key)
     {
-        String item = Util.convertItem(auctionItem.getItemStack());
-        int amount = auctionItem.getItemStack().getAmount();
-
-        this.db.execUpdate("UPDATE {{PREFIX}}boxes SET `amount`=? WHERE cubeuserid=? && item=? && amount=? && timestamp=?", 
-                newamount,auctionItem.getBidder().getId(),item,amount,auctionItem.getTimestamp());
-    }
-
-    public void createStructure()
-    {
-        this.db.exec(   "CREATE TABLE IF NOT EXISTS `boxes` ("+
-                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
-                        "`cubeuserid` int(11) NOT NULL,"+
-                        "`item` varchar(42) NOT NULL,"+
-                        "`amount` int(11) NOT NULL,"+
-                        "`price` decimal(11,2) NOT NULL,"+
-                        "`timestamp` timestamp NOT NULL,"+
-                        "`oldownerid` int(11) NOT NULL,"+
-                        "PRIMARY KEY (`id`),"+    
-                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
-                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-                    );
-    }
-    
-    public AuctionItem getByKey(Integer key) {
-        throw new UnsupportedOperationException("No Need.");
-    }
-
-    public int delete(AuctionItem... object) {
-        throw new UnsupportedOperationException("No Need.");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

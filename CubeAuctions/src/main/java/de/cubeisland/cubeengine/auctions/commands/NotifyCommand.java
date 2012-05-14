@@ -64,7 +64,7 @@ public class NotifyCommand
             sender.sendMessage(t("i")+" "+t("note_on"));
         else
             sender.sendMessage(t("i")+" "+t("note_off"));
-        bidderDB.updateNotifyData(bidder);
+        bidderDB.update(bidder);
         return true;
     }
 

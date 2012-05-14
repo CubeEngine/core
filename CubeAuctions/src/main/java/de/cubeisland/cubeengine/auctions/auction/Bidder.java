@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import org.bukkit.entity.Player;
  * 
  * @author Faithcaio
  */
-public final class Bidder
+public final class Bidder implements Model
 {
     public static final byte NOTIFY_STATUS = 8;
     public static final byte NOTIFY_ITEMS = 4;
@@ -326,7 +327,7 @@ public final class Bidder
     public boolean removeAuction(Auction auction)
     {
         
-        bidDB.delete(auction.getId() , this.getId());
+        bidDB.deleteByAuctionByUser(auction.getId() , this.getId());
         this.removeSubscription(auction);
         return activeBids.remove(auction);
     }
@@ -337,7 +338,7 @@ public final class Bidder
  */  
     public boolean removeSubscription(Auction auction)
     {
-        subDB.delete(String.valueOf(auction.getId()));
+        subDB.deleteByKeyAndValue(this.getId() ,String.valueOf(auction.getId()));
         return subscriptions.remove(auction);
     }
 
@@ -348,7 +349,7 @@ public final class Bidder
     public boolean removeSubscription(Material item)
     {
         //MAtSub delete
-        subDB.delete(item.toString());
+        subDB.deleteByKeyAndValue(this.getId(), item.toString());
         return materialSub.remove(item);
     }
 
@@ -480,7 +481,7 @@ public final class Bidder
  */  
     public void addDataBaseSub()
     {
-        for (String s : subDB.getAll())
+        for (String s : subDB.getListByUser(this.getId()))
         {
             if (Material.matchMaterial(s) != null)
                 this.materialSub.add(Material.matchMaterial(s));

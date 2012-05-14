@@ -84,8 +84,8 @@ public class AuctionBox
         else
         {
             player.sendMessage(t("i") + " " + t("cont_rec_remain"));
-            boxDB.update(auctionItem, tmp.getAmount());
             item.setAmount(tmp.getAmount());
+            boxDB.update(auctionItem);
             player.updateInventory();
             return true;
         }

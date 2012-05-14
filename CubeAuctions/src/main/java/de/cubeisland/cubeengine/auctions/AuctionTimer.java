@@ -84,7 +84,7 @@ public class AuctionTimer
                                     else
                                     {
                                         winner.setNotifyState(Bidder.NOTIFY_WIN);
-                                        bidderDB.updateNotifyData(winner);
+                                        bidderDB.update(winner);
                                     }
                                     manager.cancelAuction(auction, true);
                                     break; //NPE Prevention
@@ -107,7 +107,7 @@ public class AuctionTimer
                             if (auction.getBids().peek().getBidder().equals(auction.getOwner()))
                             {
                                 auction.getOwner().setNotifyState(Bidder.NOTIFY_CANCEL);
-                                bidderDB.updateNotifyData(auction.getOwner());
+                                bidderDB.update(auction.getOwner());
                                 if (!(auction.getOwner().isServerBidder()))
                                 {
                                     econ.withdrawPlayer(auction.getOwner().getName(), auction.getBids().peek().getAmount() * config.auction_comission / 100);

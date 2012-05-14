@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.persistence.Model;
 import java.sql.Timestamp;
 import java.util.Stack;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class Auction
+public class Auction implements Model
 {
     
     private int id;

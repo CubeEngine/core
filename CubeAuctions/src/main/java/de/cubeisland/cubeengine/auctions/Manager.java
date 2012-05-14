@@ -191,7 +191,7 @@ public class Manager
         {
             Bidder.getInstance(0).removeAuction(auction);
         }
-        auctionDB.deleteByKey(auction.getId());
+        auctionDB.delete(auction.getId());
         BidStorage bidDB = new BidStorage();
         bidDB.deleteByAuction(auction.getId());
         SubscriptionStorage subDB = new SubscriptionStorage();

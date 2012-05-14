@@ -6,14 +6,11 @@ import de.cubeisland.cubeengine.auctions.auction.Auction;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 
 
@@ -22,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class AuctionStorage implements Storage<Integer, Auction>{
+public class AuctionStorage implements Storage<Auction>{
 
     private final Database db = CubeAuctions.getDB();
 
@@ -54,7 +51,33 @@ public class AuctionStorage implements Storage<Integer, Auction>{
         }
     }
 
-    public Auction getByKey(Integer key)
+    public Database getDatabase()
+    {
+        return this.db;
+    }
+
+    public void initialize()
+    {
+        try
+        {
+            this.db.exec( "CREATE TABLE IF NOT EXISTS `auctions` ("+
+                                "`id` int(10) unsigned NOT NULL,"+
+                                "`cubeuserid` int(11) NOT NULL,"+
+                                "`item` varchar(42) NOT NULL,"+
+                                "`amount` int(11) NOT NULL,"+
+                                "`timestamp` timestamp NOT NULL,"+
+                                "PRIMARY KEY (`id`),"+
+                                "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                              );
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to initialize the Auction-Table !", ex);
+        }
+    }
+
+    public Auction get(int key)
     {
         try
         {
@@ -76,22 +99,18 @@ public class AuctionStorage implements Storage<Integer, Auction>{
         }
     }
 
-    public boolean store(Auction... object)
+    public void store(Auction model)
     {
-        this.createStructure();
+        this.initialize();
         try
         {
-            for (Auction auction : object)
-            {
-                int id = auction.getId();
-                int cubeUserId = auction.getOwner().getId();
-                String item = Util.convertItem(auction.getItemStack());
-                int amount = auction.getItemStack().getAmount();
-                Timestamp time = auction.getTimestamp();
-                this.db.exec("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
-                                    "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
-            }
-            return true;
+            int id = model.getId();
+            int cubeUserId = model.getOwner().getId();
+            String item = Util.convertItem(model.getItemStack());
+            int amount = model.getItemStack().getAmount();
+            Timestamp time = model.getTimestamp();
+            this.db.exec("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
+                                "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
         }
         catch (Exception e)
         {
@@ -99,43 +118,37 @@ public class AuctionStorage implements Storage<Integer, Auction>{
         }
     }
 
-    public int delete(Auction... object)
+
+    public boolean delete(Auction model)
     {
-        List<Integer> keys = new ArrayList<Integer>();
-        for (Auction auction : object)
-        {
-            keys.add(auction.getId());
-        }
-        return deleteByKey((Integer[])keys.toArray());
+        return this.delete(model.getId());
     }
 
-    public int deleteByKey(Integer... keys)
+    public boolean delete(int id)
     {
-        int dels = 0;
-        for (int i : keys)
+        try
         {
-            this.db.exec("DELETE FROM {{PREFIX}}auctions WHERE id=?", i);
-            ++dels;
+            this.db.exec("DELETE FROM {{PREFIX}}auctions WHERE id=?", id);
         }
-        return dels;
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to delete the Auctions !", ex);
+        }
+        return true;
+    }
+
+    public void clear()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    public void createStructure()
+    public void update(Auction model)
     {
-        this.db.exec( "CREATE TABLE IF NOT EXISTS `auctions` ("+
-                            "`id` int(10) unsigned NOT NULL,"+
-                            "`cubeuserid` int(11) NOT NULL,"+
-                            "`item` varchar(42) NOT NULL,"+
-                            "`amount` int(11) NOT NULL,"+
-                            "`timestamp` timestamp NOT NULL,"+
-                            "PRIMARY KEY (`id`),"+
-                            "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
-                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
-                          );
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Database getDatabase()
+    public void merge(Auction model)
     {
-        return this.db;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

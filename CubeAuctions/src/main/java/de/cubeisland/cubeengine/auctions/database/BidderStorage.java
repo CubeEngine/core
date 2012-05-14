@@ -9,13 +9,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  *
  * @author Faithcaio
  */
-public class BidderStorage implements Storage<Integer, Bidder>
+public class BidderStorage implements Storage<Bidder>
 {
 
     private final Database db = CubeAuctions.getDB();;
@@ -51,7 +50,25 @@ public class BidderStorage implements Storage<Integer, Bidder>
         }
     }
 
-    public Bidder getByKey(Integer key)
+
+    public void initialize()
+    {
+        try
+        {
+            this.db.exec(   "CREATE TABLE IF NOT EXISTS `bidder` ("+
+                            "`cubeuserid` int(11) NOT NULL,"+
+                            "`notifystate` smallint(2) NOT NULL,"+
+                            "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                        );
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to initialize the Bidder-Table !", ex);
+        }
+    }
+
+    public Bidder get(int key)
     {
         try
         {
@@ -72,63 +89,56 @@ public class BidderStorage implements Storage<Integer, Bidder>
         }
     }
 
-    public boolean store(Bidder... object)
+    public void store(Bidder model)
     {
-        this.createStructure();
+        this.initialize();
         try
         {
-            for (Bidder bidder : object)
-            {
+            int cubeuserid = model.getId();
+            byte notifyState = model.getNotifyState();
 
-                int cubeuserid = bidder.getId();
-                byte notifyState = bidder.getNotifyState();
-
-                this.db.exec("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
-                                    "VALUES (?, ?)", cubeuserid, notifyState); 
-            }
-            return true;
+            this.db.exec("INSERT INTO {{PREFIX}}bidder (`cubeuserid`, `notifystate`)"+
+                                "VALUES (?, ?)", cubeuserid, notifyState); 
         }
         catch (Exception e)
         {
             throw new StorageException("Failed to store the Bidder !", e);
         }
-        
     }
 
-    public int delete(Bidder... object)
-    {
-        List<Integer> keys = new ArrayList<Integer>();
-        for (Bidder bidder : object)
-        {
-            keys.add(bidder.getId());
-        }
-        return deleteByKey((Integer[])keys.toArray());
-    }
-
-    public int deleteByKey(Integer... keys)
-    {
-        int dels = 0;
-        for (int i : keys)
-        {
-            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", i);
-            ++dels;
-        }
-        return dels;
-    }
-    
-    public void createStructure()
-    {
-        this.db.exec(   "CREATE TABLE IF NOT EXISTS `bidder` ("+
-                        "`cubeuserid` int(11) NOT NULL,"+
-                        "`notifystate` smallint(2) NOT NULL,"+
-                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
-                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
-                    );
-    }
-    
-    public void updateNotifyData(Bidder bidder)
+    public void update(Bidder model)
     {
         //TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void merge(Bidder model)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean delete(Bidder model)
+    {
+        return this.delete(model.getId());
+    }
+
+    public boolean delete(int id)
+    {
+        try
+        {
+            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE cubeuserid=?", id);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to delete the Bidder !", ex);
+        }
+        
+        return true;
+    }
+
+    public void clear()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 

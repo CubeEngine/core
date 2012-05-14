@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.auctions.database;
 
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
+import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
@@ -10,12 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Faithcaio
  */
-public class SubscriptionStorage implements Storage<Integer, String>//Integer = CubeUserID - String = AuctionsID oder MATERIAL-Name von Bukkit
+public class SubscriptionStorage implements Storage<Bidder>
 {
 
     private final Database db = CubeAuctions.getDB();
@@ -30,7 +33,7 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
         return this.db;
     }
 
-    public List<String> getListByKey(Integer key)
+    public List<String> getListByUser(Integer key)
     {
         try
         {
@@ -48,70 +51,109 @@ public class SubscriptionStorage implements Storage<Integer, String>//Integer = 
         }
     }
 
-    public boolean store(Integer cuId, String... object)
+    public boolean store(Integer cuId, String sub)
     {
-        this.createStructure();
+        this.initialize();
         try
         {
-            for (String s : object)
-            {
-                this.db.exec("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
-                                    "VALUES (?, ?)", cuId, s); 
-            }
-            return true;   
+            this.db.exec("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
+                                "VALUES (?, ?)", cuId, sub); 
+
         }
         catch (Exception e)
         {
             throw new StorageException("Failed to store the Subscriptions !", e);
         }
+        return true;
     }
 
-    public int delete(String... object)
-    {//macht nur Sinn bei Löschung von AuktionsSubs zb bei Ablauf
-        int dels = 0;
-        for (String s : object)
+    public void deleteAllOfSub(String sub)
+    {   try
         {
-            this.db.exec("DELETE FROM {{PREFIX}}subscription WHERE sub=?", s);
-            ++dels;
+            //macht nur Sinn bei Löschung von AuktionsSubs zb bei Ablauf
+               this.db.exec("DELETE FROM {{PREFIX}}subscription WHERE sub=?", sub);
         }
-        return dels;
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to delete the Subscriptions !", ex);
+        }
+
     }
     
-    public int deleteByKeyAndValue(Integer key, String... object)
+    public void deleteByKeyAndValue(Integer key, String sub)
     {//Löschen von Sub von einem Spieler
-        int dels = 0;
-        for (String s : object)
+        try
         {
-            this.db.query("DELETE FROM {{PREFIX}}subscription WHERE sub=? && cubeuserid=?", s, key);
-            ++dels;//TODO Zählung falsch?
+            this.db.query("DELETE FROM {{PREFIX}}subscription WHERE sub=? && cubeuserid=?", sub, key);
         }
-        return dels;
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to delete the Subscription !", ex);
+        }
+
     }
 
-    public int deleteByKey(Integer... keys)
-    {//macht nur Sinn bei Löschung von allen Subs von einem User
-        int dels = 0;
-        for (int i : keys)
-        {
-            this.db.query("DELETE FROM {{PREFIX}}subscription WHERE cubeuserid=?", i);
-            ++dels;
-        }
-        return dels;
-    }
+
+
     
-    public void createStructure()
+    
+
+    public void initialize()
     {
-        this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
-                        "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
-                        "`cubeuserid` int(11) NOT NULL,"+
-                        "`sub` varchar(42) NOT NULL,"+
-                        "PRIMARY KEY (`id`),"+
-                        "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
-                        ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-                    );
+        try
+        {
+            this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
+                            "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
+                            "`cubeuserid` int(11) NOT NULL,"+
+                            "`sub` varchar(42) NOT NULL,"+
+                            "PRIMARY KEY (`id`),"+
+                            "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
+                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                        );
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to initialize the Subscription-Table !", ex);
+        }
     }
 
-    public Collection<String> getAll(){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
-    public String getByKey(Integer key){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
-    public boolean store(String... object){throw new UnsupportedOperationException("No Need.");}//macht keinen Sinn
+    public Bidder get(int key)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Collection<Bidder> getAll()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void store(Bidder model)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void update(Bidder model)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void merge(Bidder model)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean delete(Bidder model)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean delete(int id)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void clear()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

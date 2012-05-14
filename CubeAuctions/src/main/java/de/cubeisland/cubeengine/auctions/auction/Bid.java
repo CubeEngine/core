@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.auctions.auction;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.persistence.Model;
 import java.sql.Timestamp;
 
 /**
@@ -10,7 +11,7 @@ import java.sql.Timestamp;
  *
  * @author Faithcaio
  */
-public class Bid
+public class Bid implements Model
 {
     private int id;
     private int auctionId;
@@ -90,8 +91,8 @@ public class Bid
  */     
     public void giveServer()
     {
-        bidDB.updateBidder(this, this.bidder);
         this.bidder = Bidder.getInstance(0);
+        bidDB.update(this);
     }
     
 /**
