@@ -1,7 +1,15 @@
 package de.cubeisland.cubeengine.auctions;
 
+import de.cubeisland.cubeengine.auctions.auction.Auction;
+import de.cubeisland.cubeengine.auctions.auction.Bid;
 import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.commands.*;
+import de.cubeisland.cubeengine.auctions.database.AuctionBoxStorage;
+import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
+import de.cubeisland.cubeengine.auctions.database.BidStorage;
+import de.cubeisland.cubeengine.auctions.database.BidderStorage;
+import de.cubeisland.cubeengine.auctions.database.PriceStorage;
+import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
@@ -9,6 +17,7 @@ import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
@@ -26,7 +35,6 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     private static Logger logger = null;
     public static boolean debugMode = false;
     private static Translation translation;
-    
     private Server server;
     private PluginManager pm;
     private static CubeAuctionsConfiguration config;
@@ -35,34 +43,33 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     private static Database database;
     private BaseCommand baseCommand;
     private static final String PERMISSION_BASE = "cubeengine.auctions.commands.";
-    
     private static CubeUserManager cuManager;
+    private final Manager manager = Manager.getInstance();
 //TODO später eigene AuktionsBox als Kiste mit separatem inventar 
 //TODO flatfile mit angeboten
 //TODO DatenBankNutzung schöner machen
 //TODO ah rem last / l
-    
-    //TODO erstellen der Datenbank für alle Storage Klassen fehlt noch!!!
+
     public CubeAuctions()
     {
         instance = this;
     }
-    
+
     public static CubeAuctions getInstance()
     {
         return instance;
     }
-    
+
     public static CubeAuctionsConfiguration getConfiguration()
     {
         return config;
     }
-    
+
     public static CubeUserManager getCUManager()
     {
         return cuManager;
     }
-    
+
     public static Database getDB()
     {
         return database;
@@ -77,50 +84,40 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         this.dataFolder = this.getDataFolder();
 
         this.dataFolder.mkdirs();
-        
+
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
         config = new CubeAuctionsConfiguration(configuration);
         this.saveConfig();
-        
+
         this.economy = this.setupEconomy();
-        
+
         translation = Translation.get(this.getClass(), config.auction_language);
-        if (translation == null) translation = Translation.get(this.getClass(), "en");
+        if (translation == null)
+        {
+            translation = Translation.get(this.getClass(), "en");
+        }
 
         database = new Database(config.auction_database_host,
-                                config.auction_database_port,
-                                config.auction_database_user,
-                                config.auction_database_pass,
-                                config.auction_database_name);
-        
-        //database.loadDatabase();//TODO
-        
-        Manager.getInstance().removeOldAuctions();
-        
+            config.auction_database_port,
+            config.auction_database_user,
+            config.auction_database_pass,
+            config.auction_database_name);
+
         this.pm.registerEvents(new CubeAuctionsListener(this), this);
-        
+
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new          AddCommand())
-                        .registerCommands(new       RemoveCommand())
-                        .registerCommands(new          BidCommand())
-                        .registerCommands(new         InfoCommand())
-                        .registerCommands(new       SearchCommand())
-                        .registerCommands(new      UndoBidCommand())
-                        .registerCommands(new       NotifyCommand())
-                        .registerCommands(new     GetItemsCommand())
-                        .registerCommands(new    SubscribeCommand())
-                        .registerCommands(new  UnSubscribeCommand())
-                        .registerCommands(new         ListCommand())
-                        .registerCommands(new      ConfirmCommand());    
+        this.baseCommand.registerCommands(new AddCommand()).registerCommands(new RemoveCommand()).registerCommands(new BidCommand()).registerCommands(new InfoCommand()).registerCommands(new SearchCommand()).registerCommands(new UndoBidCommand()).registerCommands(new NotifyCommand()).registerCommands(new GetItemsCommand()).registerCommands(new SubscribeCommand()).registerCommands(new UnSubscribeCommand()).registerCommands(new ListCommand()).registerCommands(new ConfirmCommand());
         this.getCommand("cubeauctions").setExecutor(baseCommand);
-        
+
         AuctionTimer.getInstance().firstschedule();
-        
-        cuManager = new CubeUserManager(database ,this.getServer());
+
+        cuManager = new CubeUserManager(database, this.getServer());
+
+        this.loadDataBase();
     }
-    
+
     @Override
     public void onDisable()
     {
@@ -131,7 +128,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         AuctionTimer.getInstance().stop();
         Bidder.getInstances().clear();
     }
-    
+
     private Economy setupEconomy()
     {
         if (this.pm.getPlugin("Vault") != null)
@@ -148,7 +145,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         }
         throw new IllegalStateException("Failed to initialize with Vault!");
     }
-    
+
     public Economy getEconomy()
     {
         return this.economy;
@@ -176,7 +173,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
             log("[debug] " + msg);
         }
     }
-    
+
     public static String t(String key, Object... params)
     {
         return translation.translate(key, params);
@@ -190,5 +187,36 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     public void setTranslation(Translation newtranslation)
     {
         translation = newtranslation;
+    }
+
+    private void loadDataBase()
+    {
+        BidderStorage bidderDB = new BidderStorage();
+        AuctionBoxStorage boxDB = new AuctionBoxStorage();
+        
+        AuctionStorage auctionDB = new AuctionStorage();
+        BidStorage bidDB = new BidStorage();
+        
+        PriceStorage priceDB = new PriceStorage();
+        //SubscriptionStorage subDB = new SubscriptionStorage();
+        
+        bidderDB.getAll();//create all Bidder + Subs
+        for (Bidder bidder : Bidder.getInstances().values())
+        {
+            bidder.getBox().getItemList().addAll(boxDB.getAllByUser(bidder.getId()));//filled AuctionBox
+        }
+        manager.addAuctions(auctionDB.getAll());
+        for (Auction auction : manager.getAuctions())
+        {
+            Stack<Bid> bids = auction.getBids();
+            for (Bid bid : bidDB.getAllByAuction(auction.getId()))
+            {
+                bids.add(bid);//Fill Auction with bids
+            }
+        }
+        priceDB.getAll();//Loaded in all PriceData
+        
+        manager.removeOldAuctions();//remove old Auctions if needed
+
     }
 }

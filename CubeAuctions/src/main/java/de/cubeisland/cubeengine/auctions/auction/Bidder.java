@@ -72,6 +72,7 @@ public final class Bidder implements Model
         this.cubeUser = cuManager.getCubeUser(id);
         this.notifyState = notifyState;
         this.addDataBaseSub();
+        bidderInstances.put(cubeUser.getOfflinePlayer(), this);
     }
 
 /**

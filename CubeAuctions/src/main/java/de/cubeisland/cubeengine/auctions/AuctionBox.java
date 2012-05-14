@@ -22,7 +22,6 @@ public class AuctionBox
     private LinkedList<AuctionItem> itemList;
     private final Bidder bidder;
     private Economy econ = CubeAuctions.getInstance().getEconomy();
-    private final Database db;
     
     AuctionBoxStorage boxDB = new AuctionBoxStorage();
 
@@ -31,7 +30,6 @@ public class AuctionBox
  */ 
     public AuctionBox(Bidder bidder)
     {
-        this.db = CubeAuctions.getDB();
         this.bidder = bidder;
         this.itemList = new LinkedList<AuctionItem>();
     }

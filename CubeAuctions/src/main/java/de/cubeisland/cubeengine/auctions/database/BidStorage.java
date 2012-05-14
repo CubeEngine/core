@@ -25,7 +25,7 @@ public class BidStorage implements Storage<Bid>
     {
         try
         {
-            this.database.prepareStatement("bid_get", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
+            this.database.prepareStatement("bid_getall_auction", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}} WHERE auctionid=? ORDER BY timestamp ASC");
             this.database.prepareStatement("bid_getall", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}}");
             this.database.prepareStatement("bid_store", "INSERT INTO {{" + TABLE + "}} (auctionid,cubeuserid,amount,timestamp) VALUES (?,?,?,?)");
             this.database.prepareStatement("bid_get_exact", "SELECT id FROM {{" + TABLE + "}}"
@@ -71,27 +71,26 @@ public class BidStorage implements Storage<Bid>
         }
     }
 
-    public Bid get(int key)
+    public Collection<Bid> getAllByAuction(int key)
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("bid_get", key);
-            if (!result.next())
+            ResultSet result = this.database.preparedQuery("bid_getall_auction", key);
+            Collection<Bid> bids = new ArrayList<Bid>();
+            while (result.next())
             {
-                return null;
+                int id = result.getInt("id");
+                int cubeUserId = result.getInt("cubeuserid");
+                double amount = result.getDouble("amount");
+                Timestamp time = result.getTimestamp("timestamp");
+
+                bids.add(new Bid(id, cubeUserId, key, amount, time));
             }
-            int id = result.getInt("id");
-            int cubeUserId = result.getInt("cubeuserid");
-            double amount = result.getDouble("amount");
-            Timestamp time = result.getTimestamp("timestamp");
-
-            int auctionId = result.getInt("auctionid");//TODO Der Auktion zuordnen
-
-            return new Bid(id, cubeUserId, auctionId, amount, time);
+            return bids;
         }
         catch (SQLException e)
         {
-            throw new StorageException("Failed to load the Bid '" + key + "'!", e);
+            throw new StorageException("Failed to load the Bids of Auction '" + key + "'!", e);
         }
     }
 
@@ -226,6 +225,11 @@ public class BidStorage implements Storage<Bid>
     }
 
     public void merge(Bid model)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Bid get(int key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
+import de.cubeisland.cubeengine.auctions.database.PriceStorage;
 import de.cubeisland.cubeengine.core.persistence.Model;
+import gnu.trove.map.hash.THashMap;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,12 +16,26 @@ public class PricedItemStack extends ItemStack implements Model
     private int id;
     private double price;
     private int timessold; 
+    private static final THashMap<ItemStack,PricedItemStack> pricedItems = new THashMap<ItemStack,PricedItemStack>();
+    private PriceStorage priceDB = new PriceStorage();
+    
+    public PricedItemStack(ItemStack item) 
+    {
+        super(item.getType(), 1,item.getDurability());
+        this.price = 0;
+        this.timessold = 0;
+        PricedItemStack.pricedItems.put(new ItemStack(item.getType(),1,item.getDurability()),this);
+        priceDB.store(this);
+    }
+    
     
     public PricedItemStack(Material mat, short data) 
     {
         super(mat,1,data);
         this.price = 0;
         this.timessold = 0;
+        PricedItemStack.pricedItems.put(new ItemStack(mat,1,data),this);
+        priceDB.store(this);
     }
     
     public PricedItemStack(Material mat, short data, double price, int timessold) 
@@ -27,6 +43,7 @@ public class PricedItemStack extends ItemStack implements Model
         super(mat,1,data);
         this.price = price;
         this.timessold = timessold;
+        PricedItemStack.pricedItems.put(new ItemStack(mat,1,data),this);
     }
     //TODO Price.java ablösen... PricedItemStack könnte man auch ähnlich für CubeMarket nutzen
     
@@ -47,6 +64,16 @@ public class PricedItemStack extends ItemStack implements Model
         if (this.timessold==0)
             return -1;
         return this.price;
+    }
+    
+    public double getAvgPrice(ItemStack item)
+    {
+        ItemStack key = item.clone();
+        key.setAmount(1);
+        if (pricedItems.get(key) != null)
+            return pricedItems.get(key).getAvgPrice();
+        else
+            return (new PricedItemStack(key)).getAvgPrice();
     }
     
     public double getPrice()

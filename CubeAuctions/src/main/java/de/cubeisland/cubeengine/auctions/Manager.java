@@ -5,8 +5,8 @@ import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
 import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
-import de.cubeisland.cubeengine.core.persistence.Database;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,12 +24,10 @@ public class Manager
     private static Manager instance = null;
     private final List<Auction> auctions;
     private final Stack<Integer> freeIds;
-    private static final CubeAuctions plugin = CubeAuctions.getInstance();
     private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
     private HashMap<Bidder, Bidder> remBidderConfirm = new HashMap();
     private HashSet<Bidder> remAllConfirm = new HashSet();
     private HashMap<Bidder, Integer> remSingleConfirm = new HashMap();
-    private final Database db;
     private Price price = new Price();
     AuctionStorage auctionDB = new AuctionStorage();
 
@@ -38,7 +36,6 @@ public class Manager
  */    
     private Manager()
     {
-        this.db = CubeAuctions.getDB();
         int maxAuctions = config.auction_maxAuctions_overall;
         if (maxAuctions <= 0)
         {
@@ -205,6 +202,17 @@ public class Manager
     public void addAuction(Auction auction)
     {
         this.auctions.add(auction);
+    }
+    
+/**
+ * Adds auctions from DB
+ */
+    public void addAuctions(Collection<Auction> auctions)
+    {
+        for (Auction auction : auctions)
+        {
+            this.auctions.add(auction);
+        }
     }
     
 /**
