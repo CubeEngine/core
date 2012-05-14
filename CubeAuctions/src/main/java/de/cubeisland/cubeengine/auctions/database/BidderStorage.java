@@ -46,7 +46,7 @@ public class BidderStorage implements Storage<Bidder>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("user_getall");
+            ResultSet result = this.database.preparedQuery("bidder_getall");
 
             Collection<Bidder> bidder = new ArrayList<Bidder>();
             while (result.next())

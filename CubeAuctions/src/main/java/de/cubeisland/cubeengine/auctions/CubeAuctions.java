@@ -125,7 +125,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
 
         AuctionTimer.getInstance().firstschedule();
 
-        cuManager = new CubeUserManager(database, this.getServer());
+        cuManager = new CubeUserManager();
 
         this.loadDataBase();
     }
