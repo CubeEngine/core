@@ -86,7 +86,7 @@ public class Auction implements Model
             {
                 Bid bid = new Bid(bidder, amount, this);
                 bidDB.store(bid);
-                this.bids.push(bid);
+                this.bids.push(bid);    
                 return true;
             }
             bidder.getPlayer().sendMessage(t("e")+" "+t("auc_bid_money1"));
@@ -107,6 +107,11 @@ public class Auction implements Model
         if (bidder != bid.getBidder())
         {
             bidder.getPlayer().sendMessage(t("e")+" "+t("undo_bidder"));
+            return false;
+        }
+        if (bid == null)
+        {
+            bidder.getPlayer().sendMessage(t("pro")+" "+t("undo_pro"));
             return false;
         }
         if (bidder == this.owner)

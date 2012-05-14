@@ -48,7 +48,6 @@ public class UndoBidCommand
             }
             else
             {
-                sender.sendMessage(t("pro")+" "+t("undo_pro"));
                 return true;
             }
         }
