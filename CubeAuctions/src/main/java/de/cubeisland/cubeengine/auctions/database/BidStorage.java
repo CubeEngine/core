@@ -27,16 +27,15 @@ public class BidStorage implements Storage<Bid>
         {
             this.database.prepareStatement("bid_get", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
             this.database.prepareStatement("bid_getall", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("bid_store", "INSERT INTO {{" + TABLE + "}} (id,auctionid,cubeuserid,amount,timestamp) VALUES (?,?,?,?,?)");
-
+            this.database.prepareStatement("bid_store", "INSERT INTO {{" + TABLE + "}} (auctionid,cubeuserid,amount,timestamp) VALUES (?,?,?,?)");
+            this.database.prepareStatement("bid_get_exact", "SELECT id FROM {{" + TABLE + "}}"
+                + " WHERE auctionid=? && cubeuserid=? && amount=? && timestamp=? LIMIT 1");
             this.database.prepareStatement("bid_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("bid_delete_auction", "DELETE FROM {{" + TABLE + "}} WHERE auctionid=?");
             this.database.prepareStatement("bid_delete_auction_user", "DELETE FROM {{" + TABLE + "}} WHERE auctionid=? && cubeuserid=?");
-            
-            
             this.database.prepareStatement("bid_clear", "DELETE FROM {{" + TABLE + "}}");
-
-            this.database.prepareStatement("bid_update",   "UPDATE {{"+TABLE+"}} SET cubeuserid=? WHERE id=?");
+            this.database.prepareStatement("bid_update", "UPDATE {{" + TABLE + "}} SET cubeuserid=? WHERE id=?");
+            this.database.prepareStatement("bid_giveId", "UPDATE {{" + TABLE + "}} SET id=? WHERE id=-1");//TODO!!!
             //this.database.prepareStatement("auction_merge",    "INSERT INTO {{"+TABLE+"}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
         }
         catch (SQLException e)
@@ -92,30 +91,42 @@ public class BidStorage implements Storage<Bid>
         }
         catch (SQLException e)
         {
-            throw new StorageException("Failed to load the AuctionBoxItem '" + key + "'!", e);
+            throw new StorageException("Failed to load the Bid '" + key + "'!", e);
         }
     }
 
-    //TODO################################## das muss weg
-    public int getNextBidId()
+    public void giveId(Bid model)
     {
-        this.initialize();
-        try
+        if (model.getId() == -1)
         {
-            ResultSet result = this.database.query("SELECT `id` FROM {{PREFIX}}bids ORDER BY id DESC LIMIT 1");
-            if (!result.next())
+            int newId = -1;
+            try
             {
-                return 1;
+                int auctionId = model.getAuctionId();
+                Bidder bidder = model.getBidder();
+                double amount = model.getAmount();
+                Timestamp timestamp = model.getTimestamp();
+
+                this.database.preparedExec("bid_store", auctionId, bidder.getId(), amount, timestamp);
+                ResultSet result = this.database.preparedQuery("bid_get_exact", auctionId, bidder.getId(), amount, timestamp);
+
+                if (result.next())
+                {
+                    newId = result.getInt("id");
+                }
+                else
+                {
+                    return;
+                }
             }
-            return result.getInt("id") + 1;
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to get next BidId !", e);
+            catch (SQLException ex)
+            {
+                throw new StorageException("Failed to give the Bid an Id !", ex);
+            }
+            model.setId(newId);
         }
     }
 
-//##################################
     public void initialize()
     {
         try
@@ -141,14 +152,7 @@ public class BidStorage implements Storage<Bid>
     {
         try
         {
-            int id = model.getId();
-            Bidder bidder = model.getBidder();
-            double amount = model.getAmount();
-            Timestamp time = model.getTimestamp();
-
-            int auctionId = model.getAuctionId();
-
-            this.database.preparedExec("bid_store", id, auctionId, bidder.getId(), amount, time);
+            this.giveId(model);
         }
         catch (Exception e)
         {

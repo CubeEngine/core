@@ -32,7 +32,7 @@ public class Bid implements Model
         this.amount = amount;
         this.bidder = bidder;
         this.timestamp = System.currentTimeMillis();
-        this.id = bidDB.getNextBidId();
+        this.id = -1;
     }
 /**
  *  @return TableName in Database
@@ -85,6 +85,11 @@ public class Bid implements Model
     public int getId()
     {
         return this.id;
+    }
+    
+    public void setId(int id)
+    {
+        this.id = id;
     }
 /**
  *  give this bid to the Server + update Database

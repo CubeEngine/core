@@ -29,10 +29,8 @@ public class AuctionStorage implements Storage<Auction>
             this.database.prepareStatement("auction_get", "SELECT id,cubeuserid,item,amount,timestamp FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
             this.database.prepareStatement("auction_getall", "SELECT id,cubeuserid,item,amount,timestamp FROM {{" + TABLE + "}}");
             this.database.prepareStatement("auction_store", "INSERT INTO {{" + TABLE + "}} (id,cubeuserid,item,amount,timestamp) VALUES (?,?,?,?,?)");
-
             this.database.prepareStatement("auction_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("auction_clear", "DELETE FROM {{" + TABLE + "}}");
-
             //this.database.prepareStatement("auction_update",   "UPDATE {{"+TABLE+"}} SET flags=? WHERE id=?");
             //this.database.prepareStatement("auction_merge",    "INSERT INTO {{"+TABLE+"}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
         }

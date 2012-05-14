@@ -45,6 +45,7 @@ public class Auction implements Model
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();
         Bid bid = new Bid(owner, startBid, this);
+        bidDB.giveId(bid);
         this.bids.push(bid);
     }
 
@@ -84,7 +85,9 @@ public class Auction implements Model
             if (CubeAuctions.getInstance().getEconomy().getBalance(bidder.getName()) - bidder.getTotalBidAmount() >= amount
                     || Perm.command_bid_infinite.check(bidder.getPlayer()))
             {
-                this.bids.push(new Bid(bidder, amount, this));
+                Bid bid = new Bid(bidder, amount, this);
+                bidDB.giveId(bid);
+                this.bids.push(bid);
                 return true;
             }
             bidder.getPlayer().sendMessage(t("e")+" "+t("auc_bid_money1"));

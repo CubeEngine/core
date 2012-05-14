@@ -6,13 +6,10 @@ import de.cubeisland.cubeengine.auctions.auction.PricedItemStack;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,23 +19,38 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PriceStorage implements Storage<PricedItemStack>
 {
-    private final Database db = CubeAuctions.getDB();
-    private CubeUserManager cuManager;
+    private final Database database = CubeAuctions.getDB();
+    private final String TABLE = "priceditem";
 
     public PriceStorage()
     {
+        try
+        {
+            this.database.prepareStatement("price_getall", "SELECT id,item,price,timessold FROM {{" + TABLE + "}}");
+            //this.database.prepareStatement("price_get", "SELECT id,item,price,timessold FROM {{" + TABLE + "}} WHERE id=?");
+            this.database.prepareStatement("price_get", "SELECT id,item,price,timessold FROM {{" + TABLE + "}} WHERE id=?");
+            this.database.prepareStatement("price_store", "INSERT INTO {{" + TABLE + "}} (item,price,timessold) VALUES (?,?,?)");
+            this.database.prepareStatement("price_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
+            this.database.prepareStatement("price_clear", "DELETE FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("price_update", "UPDATE {{" + TABLE + "}} SET price=? timesold=? WHERE id=?");
+            //this.database.prepareStatement("auction_merge",    "INSERT INTO {{"+TABLE+"}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to prepare the statements!", e);
+        }
     }
 
     public Database getDatabase()
     {
-        return this.db;
+        return this.database;
     }
 
     public Collection<PricedItemStack> getAll()
     {
         try
         {
-            ResultSet result = this.db.query("SELECT `item`,`price`,`timessold` FROM {{PREFIX}}priceditem");
+            ResultSet result = this.database.preparedQuery("price_getall");
 
             Collection<PricedItemStack> pricedItems = new ArrayList<PricedItemStack>();
             while (result.next())
@@ -60,12 +72,87 @@ public class PriceStorage implements Storage<PricedItemStack>
         }
     }
 
-    public PricedItemStack getByItem(PricedItemStack key)
+    public void initialize()
     {
         try
         {
-            String skey = Util.convertItem(key);
-            ResultSet result = this.db.query("SELECT `item`,`price`,`timessold` FROM {{PREFIX}}priceditem WHERE item=? LIMIT 1", skey);
+            this.database.exec("CREATE TABLE IF NOT EXISTS `priceditem` ("
+                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`item` varchar(42) NOT NULL,"
+                + "`price` double(11)) NOT NULL,"
+                + "`timessold` int(11) NOT NULL,"
+                + "PRIMARY KEY (`id`)"
+                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to initialize the PricedItems-Table!", ex);
+        }
+    }
+
+    public void store(PricedItemStack model)
+    {
+        this.initialize();
+        try
+        {
+            String sItem = Util.convertItem(model);
+            double price = model.getAvgPrice();
+            int timessold = model.getTimesSold();
+
+            this.database.preparedExec("price_store", sItem, price, timessold);
+        }
+        catch (Exception ex)
+        {
+            throw new StorageException("Failed to store the Price !", ex);
+        }
+    }
+
+    public boolean delete(PricedItemStack model)
+    {
+        return this.delete(model.getId());
+    }
+
+    public boolean delete(int id)
+    {
+        try
+        {
+            return this.database.preparedExec("price_delete", id);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to delete the Price !", ex);
+        }
+    }
+
+    public void clear()
+    {
+        try
+        {
+            this.database.preparedExec("price_clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
+        }
+    }
+
+    public void update(PricedItemStack model)
+    {
+        try
+        {
+            this.database.preparedExec("price_update", model.getAvgPrice(), model.getTimesSold(), model.getId());
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to update the Price!", e);
+        }
+    }
+
+    public PricedItemStack get(int key)
+    {
+        try
+        {
+            ResultSet result = this.database.preparedQuery("price_get", key);
 
             if (!result.next())
             {
@@ -85,85 +172,7 @@ public class PriceStorage implements Storage<PricedItemStack>
         }
     }
 
-
-
-
-    
-
-
-    public void initialize()
-    {
-        try
-        {
-            this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
-                            "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
-                            "`cubeuserid` int(11) NOT NULL,"+
-                            "`sub` varchar(42) NOT NULL,"+
-                            "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
-                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-                        );
-        }
-        catch (SQLException ex)
-        {
-            Logger.getLogger(PriceStorage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    
-
-    public void store(PricedItemStack model)
-    {
-        this.initialize();
-        try
-        {
-            String sItem = Util.convertItem(model);
-            double price = model.getAvgPrice();
-            int timessold = model.getTimesSold();
-
-            this.db.exec("INSERT INTO {{PREFIX}}bids (`item`, `price`,`timessold``)"+
-                                "VALUES (?, ?, ?)", sItem, price, timessold); 
-        }
-        catch (Exception ex)
-        {
-            throw new StorageException("Failed to store the Price !", ex);
-        }
-    }
-
-    public boolean delete(PricedItemStack model)
-    {
-        String sItem = Util.convertItem(model);
-        try
-        {
-            this.db.exec("DELETE FROM {{PREFIX}}bids WHERE item=?", sItem);
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Failed to delete the Price !", ex);
-        }
-        return true;
-    }
-
-    public boolean delete(int id)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void clear()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    public void update(PricedItemStack model)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     public void merge(PricedItemStack model)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    public PricedItemStack get(int key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
