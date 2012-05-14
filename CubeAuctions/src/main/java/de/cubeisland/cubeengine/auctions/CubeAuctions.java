@@ -81,7 +81,6 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         this.server = this.getServer();
         this.pm = this.server.getPluginManager();
         this.dataFolder = this.getDataFolder();
-
         this.dataFolder.mkdirs();
 
         Configuration configuration = this.getConfig();

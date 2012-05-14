@@ -36,10 +36,15 @@ public class CubeCore extends JavaPlugin
     public void onEnable()
     {
         instance = this;
+        
+        this.dataFolder = this.getDataFolder();
+        this.dataFolder.mkdirs();
+        
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
         config = new CubeCoreConfiguration(configuration);
+        this.saveConfig();
         database = new Database(config.core_database_host,
                                 config.core_database_port,
                                 config.core_database_user,
