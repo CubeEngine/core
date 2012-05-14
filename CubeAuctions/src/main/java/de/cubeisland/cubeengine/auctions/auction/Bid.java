@@ -95,7 +95,7 @@ public class Bid implements Model
  */     
     public void giveServer()
     {
-        this.bidder = Bidder.getInstance(0);
+        this.bidder = Bidder.getInstance(1);
         bidDB.update(this);
     }
     

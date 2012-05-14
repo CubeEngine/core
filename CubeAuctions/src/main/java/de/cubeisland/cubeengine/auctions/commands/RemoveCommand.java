@@ -108,7 +108,7 @@ public class RemoveCommand
                 if (args.getString(0).equalsIgnoreCase("Server"))
                 {
                     if (!Perm.command_delete_server.check(sender)) return true;
-                    manager.getBidderConfirm().put(Bidder.getInstance(sender), Bidder.getInstance(0));
+                    manager.getBidderConfirm().put(Bidder.getInstance(sender), Bidder.getInstance(1));
                     sender.sendMessage(t("rem_allserv"));
                     sender.sendMessage(t("rem_confirm"));                    
                     timer.scheduleSyncDelayedTask(CubeAuctions.getInstance(), new Runnable() 

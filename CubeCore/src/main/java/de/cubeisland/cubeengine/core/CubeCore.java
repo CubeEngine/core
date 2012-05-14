@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core;
 
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import java.io.File;
 import java.util.logging.Logger;
 import org.bukkit.Server;
@@ -15,6 +16,7 @@ public class CubeCore extends JavaPlugin
     private static CubeCore instance;
     private static Database database;
     private static CubeCoreConfiguration config;
+    private CubeUserManager cuManager;
 
     public static Database getDB()
     {
@@ -43,6 +45,8 @@ public class CubeCore extends JavaPlugin
                                 config.core_database_user,
                                 config.core_database_pass,
                                 config.core_database_name);
+        cuManager = new CubeUserManager();
+        cuManager.loadDatabase();
     }
 
     @Override

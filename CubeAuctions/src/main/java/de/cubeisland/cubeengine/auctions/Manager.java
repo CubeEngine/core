@@ -186,7 +186,7 @@ public class Manager
         }
         else
         {
-            Bidder.getInstance(0).removeAuction(auction);
+            Bidder.getInstance(1).removeAuction(auction);
         }
         AuctionStorage auctionDB = new AuctionStorage();
         auctionDB.delete(auction.getId());

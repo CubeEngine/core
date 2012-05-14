@@ -47,7 +47,7 @@ public class ConfirmCommand
         {
             if (manager.getBidderConfirm().get(bidder).isServerBidder())
             {
-                int max = Bidder.getInstance(0).getAuctions().size();
+                int max = Bidder.getInstance(1).getAuctions().size();
                 if (max == 0)
                 {
                     sender.sendMessage(t("i")+" "+t("confirm_no_serv"));

@@ -29,6 +29,8 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
         {
             this.database.prepareStatement("box_getall", "SELECT id,cubeuserid,item,amount,price,timestamp,oldownerid FROM {{" + TABLE + "}}");
             this.database.prepareStatement("box_getall_user", "SELECT id,cubeuserid,item,amount,price,timestamp,oldownerid FROM {{" + TABLE + "}} WHERE cubeuserid=?");
+            this.database.prepareStatement("box_get_exact", "SELECT id FROM {{" + TABLE + "}} "+
+                                                            "WHERE cubeuserid=? && item=? && amount=? && price=? && timestamp=? && oldownerid=?");
             this.database.prepareStatement("box_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,item,amount,price,timestamp,oldownerid) VALUES (?,?,?,?,?,?)");
             this.database.prepareStatement("box_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("box_clear", "DELETE FROM {{" + TABLE + "}}");
@@ -129,6 +131,7 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
             int oldownerid = model.getOwner().getId();
             Timestamp time = model.getTimestamp();
             this.database.preparedExec("box_store", cubeUserId, item, amount, price, time, oldownerid);
+            this.giveId(model);
         }
         catch (Exception e)
         {
@@ -178,6 +181,32 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
         }
     }
 
+    private void giveId(AuctionItem model)
+    {
+        try
+        {
+            int cubeUserId = model.getBidder().getId();
+            String item = Util.convertItem(model.getItemStack());
+            int amount = model.getItemStack().getAmount();
+            double price = model.getPrice();
+            int oldownerid = model.getOwner().getId();
+            Timestamp time = model.getTimestamp();
+            
+            ResultSet result = this.database.preparedQuery("box_get_exact",cubeUserId,item,amount,price,time,oldownerid);
+
+            if (result.next())
+            {
+                
+                int id = result.getInt("id");
+                model.setId(id);
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to load the AuctionBoxes from the database!", e);
+        }
+    }
+    
     public void merge(AuctionItem model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -187,4 +216,6 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    
 }

@@ -191,7 +191,7 @@ public class AddCommand
             if (sender instanceof ConsoleCommandSender || 
                (args.hasFlag("s")&&(sender.hasPermission("auctionhouse.command.add.server"))))
             {
-                newAuction = new Auction(newItem, Bidder.getInstance(0), auctionEnd, startBid);
+                newAuction = new Auction(newItem, Bidder.getInstance(1), auctionEnd, startBid);
             }
             else
             {

@@ -184,7 +184,7 @@ public class Auction implements Model
  */    
     public void giveServer()
     {
-        this.owner = Bidder.getInstance(0);
+        this.owner = Bidder.getInstance(1);
         this.bids.peek().giveServer();
     }
     

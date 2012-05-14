@@ -128,6 +128,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         cuManager = new CubeUserManager();
 
         this.loadDataBase();
+        Bidder.getInstance(1);
     }
 
     @Override

@@ -149,4 +149,9 @@ public class AuctionItem implements Model
     {
         return this.id;
     }
+
+    public void setId(int id)
+    {
+        this.id = id;
+    }
 }

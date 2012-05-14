@@ -33,19 +33,19 @@ public class CubeUserManager {
     
     public CubeUser getCubeServer()
     {
-        return this.cubeUserList.get(0);
+        return this.cubeUserList.get(1);
     }
     
     
     public CubeUser getCubeUser(Integer id)
     {
         CubeUser user;
-        if (id == 0) 
+        if (id == 1) 
         {
             user = this.getCubeServer();
             if (user==null)
             {
-                user = new CubeUser(0,null, null);
+                user = new CubeUser(1,null, null);
                 this.cubeUserList.put(id, user);
                 storage.store(user);
             }
@@ -71,8 +71,18 @@ public class CubeUserManager {
             CubeUser user = new CubeUser(player);
             this.storage.store(user);
             id = storage.getCubeUserId(player.getName());
+            user.setId(id);
             this.cubeUserList.put(id, user);
         }
         return cubeUserList.get(id);
+    }
+    
+    public void loadDatabase()
+    {
+        for (CubeUser user : storage.getAll())
+        {
+            this.cubeUserList.put(user.getId(), user);
+        }
+        
     }
 }

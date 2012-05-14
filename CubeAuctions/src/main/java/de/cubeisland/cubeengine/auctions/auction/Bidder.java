@@ -41,7 +41,6 @@ public final class Bidder implements Model
 
     private static final Map<OfflinePlayer, Bidder> bidderInstances = new HashMap<OfflinePlayer, Bidder>();
     private static Bidder serverBidder;
-    private final Database db = CubeAuctions.getDB();
     
     private static CubeUserManager cuManager = CubeAuctions.getCUManager();
     private static BidderStorage bidderDB = new BidderStorage();
@@ -51,7 +50,6 @@ public final class Bidder implements Model
  * Creates a new Bidder + add him to DataBase
  */
     //TODO BidderId in Db richtig abspeichern!!
-    //TODO CubeUserServerID als 0 in DB abspeichern oder alles abändern sodass Server = ID 1
     public Bidder(OfflinePlayer player)
     {
         this.cubeUser = cuManager.getCubeUser(player);
@@ -82,7 +80,7 @@ public final class Bidder implements Model
     public static Bidder getInstance(int id)
     {
         Bidder instance;
-        if (id == 0)
+        if (id == 1)
             instance = serverBidder;
         else
             instance = bidderInstances.get(cuManager.getCubeUser(id).getOfflinePlayer());
@@ -90,7 +88,7 @@ public final class Bidder implements Model
         if (instance == null)
         {
             instance = new Bidder(id);
-            if (id==0)
+            if (id==1)
                 serverBidder = instance;
             else
                 bidderInstances.put(cuManager.getCubeUser(id).getOfflinePlayer(),instance);
@@ -158,7 +156,7 @@ public final class Bidder implements Model
         {
             return getInstance((Player)player);
         }
-        return Bidder.getInstance(0);
+        return Bidder.getInstance(1);
     }
     
 /**
@@ -282,7 +280,7 @@ public final class Bidder implements Model
  */  
     public String getName()
     {
-        if (cubeUser.getId() == 0)//TODO Bidder/CubeUser #0 is ALWAYS the Server
+        if (cubeUser.getId() == 1)
         {
             return "*Server";
         }
@@ -506,6 +504,6 @@ public final class Bidder implements Model
     
     public boolean isServerBidder()
     {
-        return (cubeUser.getId()==0);
+        return (cubeUser.getId()==1);
     }
 }
