@@ -41,14 +41,20 @@ public class CubeUserManager {
     
     public CubeUser getCubeUser(Integer id)
     {
-        if (id == 0) return this.getCubeServer();
-        CubeUser user = this.cubeUserList.get(id);
-        if (user==null)
+        CubeUser user;
+        if (id == 0) 
         {
-            user = new CubeUser(0,null, null);
-            this.cubeUserList.put(id, user);
+            user = this.getCubeServer();
+            if (user==null)
+            {
+                user = new CubeUser(0,null, null);
+                this.cubeUserList.put(id, user);
+            }
+            return user;
         }
-        return user;
+        else
+            return this.cubeUserList.get(id);
+
     }
     
     public CubeUser getCubeUser(String name)

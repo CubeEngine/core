@@ -23,6 +23,7 @@ public class BidStorage implements Storage<Bid>
 
     public BidStorage()
     {
+        this.initialize();
         try
         {
             this.database.prepareStatement("bid_getall_auction", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}} WHERE auctionid=? ORDER BY timestamp ASC");

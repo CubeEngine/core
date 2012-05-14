@@ -24,6 +24,7 @@ public class PriceStorage implements Storage<PricedItemStack>
 
     public PriceStorage()
     {
+        this.initialize();
         try
         {
             this.database.prepareStatement("price_getall", "SELECT id,item,price,timessold FROM {{" + TABLE + "}}");
@@ -78,7 +79,7 @@ public class PriceStorage implements Storage<PricedItemStack>
             this.database.exec("CREATE TABLE IF NOT EXISTS `priceditem` ("
                 + "`id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "`item` varchar(42) NOT NULL,"
-                + "`price` double(11)) NOT NULL,"
+                + "`price` decimal(11,2) NOT NULL,"
                 + "`timessold` int(11) NOT NULL,"
                 + "PRIMARY KEY (`id`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
@@ -91,7 +92,6 @@ public class PriceStorage implements Storage<PricedItemStack>
 
     public void store(PricedItemStack model)
     {
-        this.initialize();
         try
         {
             String sItem = Util.convertItem(model);

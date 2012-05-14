@@ -22,6 +22,7 @@ public class SubscriptionStorage implements Storage<Bidder>
 
     public SubscriptionStorage()
     {
+        this.initialize();
         try
         {
             //this.database.prepareStatement("sub_getall", "SELECT id,cubeuserid,sub FROM {{" + TABLE + "}}");
@@ -64,7 +65,6 @@ public class SubscriptionStorage implements Storage<Bidder>
 
     public boolean store(Integer cuId, String sub)
     {
-        this.initialize();
         try
         {
             return this.database.preparedExec("sub_store", cuId, sub);

@@ -21,15 +21,15 @@ public class BidderStorage implements Storage<Bidder>
 
     public BidderStorage()
     {
-
+        this.initialize();
         try
         {
-            this.database.prepareStatement("user_get", "SELECT cubeuserid,notifystate FROM {{" + TABLE + "}} WHERE cubeuserid=? LIMIT 1");
-            this.database.prepareStatement("user_getall", "SELECT cubeuserid,notifystate FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("user_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,notifystate) VALUES (?,?)");
-            this.database.prepareStatement("user_update", "UPDATE {{" + TABLE + "}} SET notifystate=? WHERE cubeuserid=?");
-            this.database.prepareStatement("user_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
-            this.database.prepareStatement("user_clear", "DELETE FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("bidder_get", "SELECT cubeuserid,notifystate FROM {{" + TABLE + "}} WHERE cubeuserid=? LIMIT 1");
+            this.database.prepareStatement("bidder_getall", "SELECT cubeuserid,notifystate FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("bidder_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,notifystate) VALUES (?,?)");
+            this.database.prepareStatement("bidder_update", "UPDATE {{" + TABLE + "}} SET notifystate=? WHERE cubeuserid=?");
+            this.database.prepareStatement("bidder_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
+            this.database.prepareStatement("bidder_clear", "DELETE FROM {{" + TABLE + "}}");
         }
         catch (SQLException e)
         {
@@ -70,9 +70,9 @@ public class BidderStorage implements Storage<Bidder>
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `bidder` ("
                 + "`cubeuserid` int(11) NOT NULL,"
-                + "`notifystate` smallint(2) NOT NULL,"
-                + //"FOREIGN KEY (`cubeuserid`) REFERENCES cubeuser(id)"+
-                ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                + "`notifystate` smallint(2) NOT NULL"
+                //+ "FOREIGN KEY (`cubeuserid`) REFERENCES cubeuser(id)"+
+                +") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
         {
@@ -103,7 +103,6 @@ public class BidderStorage implements Storage<Bidder>
 
     public void store(Bidder model)
     {
-        this.initialize();
         try
         {
             int cubeuserid = model.getId();

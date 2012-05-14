@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.libMinecraft.bitmask.LongBitMask;
 import org.bukkit.OfflinePlayer;
@@ -16,7 +15,7 @@ public class CubeUser implements Model
     private final LongBitMask flags;
     private int id;
     
-    private CubeUserStorage cubeUserDB = new CubeUserStorage(CubeCore.getDB(), CubeCore.getInstance().getServer());
+    //private CubeUserStorage cubeUserDB = new CubeUserStorage(CubeCore.getDB(), CubeCore.getInstance().getServer());
     
     public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
     {

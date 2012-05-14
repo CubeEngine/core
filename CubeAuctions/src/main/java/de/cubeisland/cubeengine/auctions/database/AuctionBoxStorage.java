@@ -24,6 +24,7 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
 
     public AuctionBoxStorage()
     {
+        this.initialize();
         try
         {
             this.database.prepareStatement("box_getall", "SELECT id,cubeuserid,item,amount,price,timestamp,oldownerid FROM {{" + TABLE + "}}");
@@ -119,7 +120,6 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
 
     public void store(AuctionItem model)
     {
-        this.initialize();
         try
         {
             int cubeUserId = model.getBidder().getId();

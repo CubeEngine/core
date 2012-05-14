@@ -24,6 +24,7 @@ public class AuctionStorage implements Storage<Auction>
 
     public AuctionStorage()
     {
+        this.initialize();
         try
         {
             this.database.prepareStatement("auction_get", "SELECT id,cubeuserid,item,amount,timestamp FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
@@ -108,7 +109,6 @@ public class AuctionStorage implements Storage<Auction>
 
     public void store(Auction model)
     {
-        this.initialize();
         try
         {
             int id = model.getId();

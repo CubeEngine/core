@@ -29,7 +29,7 @@ public class Manager
     private HashSet<Bidder> remAllConfirm = new HashSet();
     private HashMap<Bidder, Integer> remSingleConfirm = new HashMap();
     private Price price = new Price();
-    AuctionStorage auctionDB = new AuctionStorage();
+    
 
 /**
  * Init Manager
@@ -188,6 +188,7 @@ public class Manager
         {
             Bidder.getInstance(0).removeAuction(auction);
         }
+        AuctionStorage auctionDB = new AuctionStorage();
         auctionDB.delete(auction.getId());
         BidStorage bidDB = new BidStorage();
         bidDB.deleteByAuction(auction.getId());

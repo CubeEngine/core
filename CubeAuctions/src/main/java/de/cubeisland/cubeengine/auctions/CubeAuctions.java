@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
 import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.cubeengine.auctions.database.PriceStorage;
-import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
@@ -44,7 +43,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     private BaseCommand baseCommand;
     private static final String PERMISSION_BASE = "cubeengine.auctions.commands.";
     private static CubeUserManager cuManager;
-    private final Manager manager = Manager.getInstance();
+    private Manager manager;
 //TODO später eigene AuktionsBox als Kiste mit separatem inventar 
 //TODO flatfile mit angeboten
 //TODO DatenBankNutzung schöner machen
@@ -90,6 +89,8 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         debugMode = configuration.getBoolean("debug");
         config = new CubeAuctionsConfiguration(configuration);
         this.saveConfig();
+        
+        manager = Manager.getInstance();
 
         this.economy = this.setupEconomy();
 
@@ -100,15 +101,26 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         }
 
         database = new Database(config.auction_database_host,
-            config.auction_database_port,
-            config.auction_database_user,
-            config.auction_database_pass,
-            config.auction_database_name);
+                                config.auction_database_port,
+                                config.auction_database_user,
+                                config.auction_database_pass,
+                                config.auction_database_name);
 
         this.pm.registerEvents(new CubeAuctionsListener(this), this);
 
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new AddCommand()).registerCommands(new RemoveCommand()).registerCommands(new BidCommand()).registerCommands(new InfoCommand()).registerCommands(new SearchCommand()).registerCommands(new UndoBidCommand()).registerCommands(new NotifyCommand()).registerCommands(new GetItemsCommand()).registerCommands(new SubscribeCommand()).registerCommands(new UnSubscribeCommand()).registerCommands(new ListCommand()).registerCommands(new ConfirmCommand());
+        this.baseCommand.registerCommands(new AddCommand())
+                        .registerCommands(new RemoveCommand())
+                        .registerCommands(new BidCommand())
+                        .registerCommands(new InfoCommand())
+                        .registerCommands(new SearchCommand())
+                        .registerCommands(new UndoBidCommand())
+                        .registerCommands(new NotifyCommand())
+                        .registerCommands(new GetItemsCommand())
+                        .registerCommands(new SubscribeCommand())
+                        .registerCommands(new UnSubscribeCommand())
+                        .registerCommands(new ListCommand())
+                        .registerCommands(new ConfirmCommand());
         this.getCommand("cubeauctions").setExecutor(baseCommand);
 
         AuctionTimer.getInstance().firstschedule();
