@@ -57,12 +57,13 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
             Collection<AuctionItem> auctionItems = new ArrayList<AuctionItem>();
             while (result.next())
             {
+                int id = result.getInt("id");
                 int cubeUserId = result.getInt("cubeuserid");
                 ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
                 Timestamp time = result.getTimestamp("timestamp");
                 int ownerId = result.getInt("oldownerid");
                 double price = result.getDouble("price");
-                auctionItems.add(new AuctionItem(cubeUserId, item, time, ownerId, price));
+                auctionItems.add(new AuctionItem(id, cubeUserId, item, time, ownerId, price));
             }
 
             return auctionItems;
@@ -82,12 +83,13 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
             Collection<AuctionItem> auctionItems = new ArrayList<AuctionItem>();
             while (result.next())
             {
+                int id = result.getInt("id");
                 int cubeUserId = result.getInt("cubeuserid");
                 ItemStack item = Util.convertItem(result.getString("item"), result.getShort("amount"));
                 Timestamp time = result.getTimestamp("timestamp");
                 int ownerId = result.getInt("oldownerid");
                 double price = result.getDouble("price");
-                auctionItems.add(new AuctionItem(cubeUserId, item, time, ownerId, price));
+                auctionItems.add(new AuctionItem(id, cubeUserId, item, time, ownerId, price));
             }
 
             return auctionItems;

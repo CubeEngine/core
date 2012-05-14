@@ -14,6 +14,7 @@ public class CubeUserManager {
     private final THashMap<Integer,CubeUser> cubeUserList = new THashMap<Integer,CubeUser>();
     private final CubeUserStorage storage = new CubeUserStorage();
     private final Server server = CubeCore.getInstance().getServer();
+    private static CubeUserManager instance = null;
         
     public CubeUserManager()
     {
@@ -23,6 +24,13 @@ public class CubeUserManager {
     {
         this.storage.store(user);
         cubeUserList.put(user.getId(), user);
+    }
+    
+    public static CubeUserManager getInstance()
+    {
+        if (instance==null)
+            instance = new CubeUserManager();
+        return instance;
     }
     
     public void remCubeUser(CubeUser user)
@@ -81,7 +89,8 @@ public class CubeUserManager {
     {
         for (CubeUser user : storage.getAll())
         {
-            this.cubeUserList.put(user.getId(), user);
+            int id = user.getId();
+            this.cubeUserList.put(id, user);
         }
         
     }

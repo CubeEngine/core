@@ -56,7 +56,7 @@ public class Auction implements Model
         Manager.getInstance().getFreeIds().removeElement(id);
         this.db = CubeAuctions.getDB();
         this.id = id;
-        this.owner = Bidder.getInstance(id);
+        this.owner = Bidder.getInstance(cubeUserId);
         this.item = item;
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();

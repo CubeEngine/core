@@ -48,15 +48,16 @@ public class BidderStorage implements Storage<Bidder>
         {
             ResultSet result = this.database.preparedQuery("bidder_getall");
 
-            Collection<Bidder> bidder = new ArrayList<Bidder>();
+            Collection<Bidder> bidders = new ArrayList<Bidder>();
             while (result.next())
             {
                 int cubeuserid = result.getInt("cubeuserid");
                 byte notifyState = result.getByte("notifystate");
-                bidder.add(new Bidder(cubeuserid, notifyState));
+                Bidder bidder = new Bidder(cubeuserid, notifyState);
+                bidders.add(bidder);
             }
 
-            return bidder;
+            return bidders;
         }
         catch (SQLException e)
         {

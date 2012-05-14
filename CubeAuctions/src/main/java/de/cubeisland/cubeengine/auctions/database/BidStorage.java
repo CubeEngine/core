@@ -29,14 +29,14 @@ public class BidStorage implements Storage<Bid>
             this.database.prepareStatement("bid_getall_auction", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}} WHERE auctionid=? ORDER BY timestamp ASC");
             this.database.prepareStatement("bid_getall", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}}");
             this.database.prepareStatement("bid_store", "INSERT INTO {{" + TABLE + "}} (auctionid,cubeuserid,amount,timestamp) VALUES (?,?,?,?)");
-            this.database.prepareStatement("bid_get_exact", "SELECT id FROM {{" + TABLE + "}}"
-                + " WHERE auctionid=? && cubeuserid=? && amount=? && timestamp=? LIMIT 1");
+            this.database.prepareStatement("bid_get_exact", "SELECT id FROM {{" + TABLE + "}}"+
+                                                            " WHERE auctionid=? && cubeuserid=? && amount=? && timestamp=? LIMIT 1");
             this.database.prepareStatement("bid_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("bid_delete_auction", "DELETE FROM {{" + TABLE + "}} WHERE auctionid=?");
             this.database.prepareStatement("bid_delete_auction_user", "DELETE FROM {{" + TABLE + "}} WHERE auctionid=? && cubeuserid=?");
             this.database.prepareStatement("bid_clear", "DELETE FROM {{" + TABLE + "}}");
             this.database.prepareStatement("bid_update", "UPDATE {{" + TABLE + "}} SET cubeuserid=? WHERE id=?");
-            this.database.prepareStatement("bid_giveId", "UPDATE {{" + TABLE + "}} SET id=? WHERE id=-1");//TODO!!!
+            this.database.prepareStatement("bid_giveId", "UPDATE {{" + TABLE + "}} SET id=? WHERE id=-1");
             //this.database.prepareStatement("auction_merge",    "INSERT INTO {{"+TABLE+"}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
         }
         catch (SQLException e)

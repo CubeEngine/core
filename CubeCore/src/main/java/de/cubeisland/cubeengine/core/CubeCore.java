@@ -45,7 +45,7 @@ public class CubeCore extends JavaPlugin
                                 config.core_database_user,
                                 config.core_database_pass,
                                 config.core_database_name);
-        cuManager = new CubeUserManager();
+        cuManager = CubeUserManager.getInstance();
         cuManager.loadDatabase();
     }
 

@@ -16,6 +16,7 @@ import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
+import java.util.Collection;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +47,6 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     private Manager manager;
 //TODO später eigene AuktionsBox als Kiste mit separatem inventar 
 //TODO flatfile mit angeboten
-//TODO DatenBankNutzung schöner machen
 //TODO ah rem last / l
 
     public CubeAuctions()
@@ -125,7 +125,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
 
         AuctionTimer.getInstance().firstschedule();
 
-        cuManager = new CubeUserManager();
+        cuManager = CubeUserManager.getInstance();
 
         this.loadDataBase();
         Bidder.getInstance(1);
@@ -213,8 +213,8 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         PriceStorage priceDB = new PriceStorage();
         //SubscriptionStorage subDB = new SubscriptionStorage();
         
-        bidderDB.getAll();//create all Bidder + Subs
-        for (Bidder bidder : Bidder.getInstances().values())
+        Collection<Bidder> bidderlist = bidderDB.getAll();//create all Bidder + Subs
+        for (Bidder bidder : bidderlist)
         {
             bidder.getBox().getItemList().addAll(boxDB.getAllByUser(bidder.getId()));//filled AuctionBox
         }
