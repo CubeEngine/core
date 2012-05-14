@@ -338,7 +338,7 @@ public final class Bidder implements Model
  */  
     public boolean removeSubscription(Auction auction)
     {
-        subDB.deleteByKeyAndValue(this.getId() ,String.valueOf(auction.getId()));
+        subDB.deleteSubByUser(this.getId() ,String.valueOf(auction.getId()));
         return subscriptions.remove(auction);
     }
 
@@ -349,7 +349,7 @@ public final class Bidder implements Model
     public boolean removeSubscription(Material item)
     {
         //MAtSub delete
-        subDB.deleteByKeyAndValue(this.getId(), item.toString());
+        subDB.deleteSubByUser(this.getId(), item.toString());
         return materialSub.remove(item);
     }
 

@@ -205,13 +205,12 @@ public class BidStorage implements Storage<Bid>
     {
         try
         {
-            this.database.preparedExec("bid_delete", id);
+            return this.database.preparedExec("bid_delete", id);
         }
         catch (SQLException ex)
         {
             throw new StorageException("Failed to delete the Bid !", ex);
         }
-        return true;
     }
 
     public void clear()

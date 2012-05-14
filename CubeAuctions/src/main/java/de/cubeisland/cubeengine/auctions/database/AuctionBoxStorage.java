@@ -158,13 +158,12 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
     {
         try
         {
-            this.database.preparedExec("box_delete", id);
+            return this.database.preparedExec("box_delete", id);
         }
         catch (SQLException ex)
         {
             throw new StorageException("Failed to delete the AuctionBoxItem !", ex);
         }
-        return true;
     }
 
     public void clear()

@@ -5,14 +5,11 @@ import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -20,24 +17,38 @@ import java.util.logging.Logger;
  */
 public class SubscriptionStorage implements Storage<Bidder>
 {
+    private final Database database = CubeAuctions.getDB();
+    private final String TABLE = "subscription";
 
-    private final Database db = CubeAuctions.getDB();
-    private CubeUserManager cuManager;
-    
     public SubscriptionStorage()
     {
+        try
+        {
+            //this.database.prepareStatement("sub_getall", "SELECT id,cubeuserid,sub FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("sub_get_user", "SELECT id,cubeuserid,sub FROM {{" + TABLE + "}} WHERE cubeuserid=?");
+            this.database.prepareStatement("sub_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,sub) VALUES (?,?)");
+            this.database.prepareStatement("sub_delete_sub", "DELETE FROM {{" + TABLE + "}} WHERE sub=?");
+            this.database.prepareStatement("sub_delete_sub_user", "DELETE FROM {{" + TABLE + "}} WHERE sub=? && cubeuserid=?");
+            this.database.prepareStatement("sub_clear", "DELETE FROM {{" + TABLE + "}}");
+            //this.database.prepareStatement("sub_update", "UPDATE {{" + TABLE + "}} SET price=? timesold=? WHERE id=?");
+            //this.database.prepareStatement("auction_merge",    "INSERT INTO {{"+TABLE+"}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to prepare the statements!", e);
+        }
     }
 
     public Database getDatabase()
     {
-        return this.db;
+        return this.database;
     }
 
     public List<String> getListByUser(Integer key)
     {
         try
         {
-            ResultSet result = this.db.query("SELECT `id` FROM {{PREFIX}}subscription WHERE cubeuserid=?", key);
+            ResultSet result = this.database.preparedQuery("sub_get_user", key);
             List<String> list = new ArrayList<String>();
             while (result.next())
             {
@@ -56,22 +67,20 @@ public class SubscriptionStorage implements Storage<Bidder>
         this.initialize();
         try
         {
-            this.db.exec("INSERT INTO {{PREFIX}}subscription (`cubeuserid`, `sub`)"+
-                                "VALUES (?, ?)", cuId, sub); 
-
+            return this.database.preparedExec("sub_store", cuId, sub);
         }
         catch (Exception e)
         {
             throw new StorageException("Failed to store the Subscriptions !", e);
         }
-        return true;
     }
 
     public void deleteAllOfSub(String sub)
-    {   try
+    {
+        try
         {
             //macht nur Sinn bei Löschung von AuktionsSubs zb bei Ablauf
-               this.db.exec("DELETE FROM {{PREFIX}}subscription WHERE sub=?", sub);
+            this.database.preparedExec("sub_delete_sub", sub);
         }
         catch (SQLException ex)
         {
@@ -79,12 +88,12 @@ public class SubscriptionStorage implements Storage<Bidder>
         }
 
     }
-    
-    public void deleteByKeyAndValue(Integer key, String sub)
+
+    public void deleteSubByUser(Integer key, String sub)
     {//Löschen von Sub von einem Spieler
         try
         {
-            this.db.query("DELETE FROM {{PREFIX}}subscription WHERE sub=? && cubeuserid=?", sub, key);
+            this.database.preparedExec("sub_delete_sub_user", sub, key);
         }
         catch (SQLException ex)
         {
@@ -93,27 +102,33 @@ public class SubscriptionStorage implements Storage<Bidder>
 
     }
 
-
-
-    
-    
-
     public void initialize()
     {
         try
         {
-            this.db.exec(   "CREATE TABLE IF NOT EXISTS `subscription` ("+
-                            "`id` int(11) NOT NULL AUTO_INCREMENT,"+    
-                            "`cubeuserid` int(11) NOT NULL,"+
-                            "`sub` varchar(42) NOT NULL,"+
-                            "PRIMARY KEY (`id`),"+
-                            "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
-                            ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-                        );
+            this.database.exec("CREATE TABLE IF NOT EXISTS `subscription` ("
+                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`cubeuserid` int(11) NOT NULL,"
+                + "`sub` varchar(42) NOT NULL,"
+                + "PRIMARY KEY (`id`),"
+                + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
+                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
         }
         catch (SQLException ex)
         {
             throw new StorageException("Failed to initialize the Subscription-Table !", ex);
+        }
+    }
+
+    public void clear()
+    {
+        try
+        {
+            this.database.preparedExec("sub_clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
         }
     }
 
@@ -148,11 +163,6 @@ public class SubscriptionStorage implements Storage<Bidder>
     }
 
     public boolean delete(int id)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void clear()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

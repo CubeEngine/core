@@ -27,7 +27,6 @@ public class PriceStorage implements Storage<PricedItemStack>
         try
         {
             this.database.prepareStatement("price_getall", "SELECT id,item,price,timessold FROM {{" + TABLE + "}}");
-            //this.database.prepareStatement("price_get", "SELECT id,item,price,timessold FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("price_get", "SELECT id,item,price,timessold FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("price_store", "INSERT INTO {{" + TABLE + "}} (item,price,timessold) VALUES (?,?,?)");
             this.database.prepareStatement("price_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
