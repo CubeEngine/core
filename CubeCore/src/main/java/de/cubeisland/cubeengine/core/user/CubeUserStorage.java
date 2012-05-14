@@ -8,8 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
@@ -47,7 +45,7 @@ public class CubeUserStorage implements Storage<CubeUser>
     {
         try
         {
-            this.database.exec( "CREATE TABLE IF NOT EXISTS `auctions` ("+
+            this.database.exec( "CREATE TABLE IF NOT EXISTS `users` ("+
                                 "`id` int(11) unsigned NOT NULL,"+
                                 "`name` varchar(16) NOT NULL,"+
                                 "`flags` int(11) NOT NULL,"+
@@ -65,7 +63,7 @@ public class CubeUserStorage implements Storage<CubeUser>
     {
         try
         {
-            ResultSet result = this.database.query("");
+            ResultSet result = this.database.preparedQuery("user_getall");
 
             Collection<CubeUser> users = new ArrayList<CubeUser>();
             int id;

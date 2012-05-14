@@ -13,25 +13,40 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.bukkit.inventory.ItemStack;
 
-
-
 /**
  *
  * @author Faithcaio
  */
-public class AuctionStorage implements Storage<Auction>{
-
-    private final Database db = CubeAuctions.getDB();
+public class AuctionStorage implements Storage<Auction>
+{
+    private final Database database = CubeAuctions.getDB();
+    private final String TABLE = "auctions";
 
     public AuctionStorage()
     {
+        try
+        {
+            this.database.prepareStatement("auction_get", "SELECT id,cubeuserid,item,amount,timestamp FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
+            this.database.prepareStatement("auction_getall", "SELECT id,cubeuserid,item,amount,timestamp FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("auction_store", "INSERT INTO {{" + TABLE + "}} (id,cubeuserid,item,amount,timestamp) VALUES (?,?,?,?,?)");
+
+            this.database.prepareStatement("auction_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
+            this.database.prepareStatement("auction_clear", "DELETE FROM {{" + TABLE + "}}");
+
+            //this.database.prepareStatement("auction_update",   "UPDATE {{"+TABLE+"}} SET flags=? WHERE id=?");
+            //this.database.prepareStatement("auction_merge",    "INSERT INTO {{"+TABLE+"}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to prepare the statements!", e);
+        }
     }
 
     public Collection<Auction> getAll()
     {
         try
         {
-            ResultSet result = this.db.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions");
+            ResultSet result = this.database.preparedQuery("auction_getall");
 
             Collection<Auction> auctions = new ArrayList<Auction>();
             while (result.next())
@@ -51,25 +66,19 @@ public class AuctionStorage implements Storage<Auction>{
         }
     }
 
-    public Database getDatabase()
-    {
-        return this.db;
-    }
-
     public void initialize()
     {
         try
         {
-            this.db.exec( "CREATE TABLE IF NOT EXISTS `auctions` ("+
-                                "`id` int(10) unsigned NOT NULL,"+
-                                "`cubeuserid` int(11) NOT NULL,"+
-                                "`item` varchar(42) NOT NULL,"+
-                                "`amount` int(11) NOT NULL,"+
-                                "`timestamp` timestamp NOT NULL,"+
-                                "PRIMARY KEY (`id`),"+
-                                "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"+
-                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
-                              );
+            this.database.exec("CREATE TABLE IF NOT EXISTS `auctions` ("
+                + "`id` int(10) unsigned NOT NULL,"
+                + "`cubeuserid` int(11) NOT NULL,"
+                + "`item` varchar(42) NOT NULL,"
+                + "`amount` int(11) NOT NULL,"
+                + "`timestamp` timestamp NOT NULL,"
+                + "PRIMARY KEY (`id`),"
+                + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
+                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
         {
@@ -81,7 +90,7 @@ public class AuctionStorage implements Storage<Auction>{
     {
         try
         {
-            ResultSet result = this.db.query("SELECT `id`,`item`,`amount`,`cubeuserid`,`timestamp` FROM {{PREFIX}}auctions WHERE id=? LIMIT 1", key);
+            ResultSet result = this.database.preparedQuery("auction_get", key);
 
             if (!result.next())
             {
@@ -109,15 +118,13 @@ public class AuctionStorage implements Storage<Auction>{
             String item = Util.convertItem(model.getItemStack());
             int amount = model.getItemStack().getAmount();
             Timestamp time = model.getTimestamp();
-            this.db.exec("INSERT INTO {{PREFIX}}auctions (`id`, `cubeuserid`, `item`, `amount`, `timestamp`)"+
-                                "VALUES (?, ?, ?, ?, ?)", id, cubeUserId, item, amount, time); 
+            this.database.preparedExec("auction_store", id, cubeUserId, item, amount, time);
         }
         catch (Exception e)
         {
             throw new StorageException("Failed to store the Auctions !", e);
         }
     }
-
 
     public boolean delete(Auction model)
     {
@@ -128,20 +135,26 @@ public class AuctionStorage implements Storage<Auction>{
     {
         try
         {
-            this.db.exec("DELETE FROM {{PREFIX}}auctions WHERE id=?", id);
+            return this.database.preparedExec("auction_delete", id);
         }
         catch (SQLException ex)
         {
             throw new StorageException("Failed to delete the Auctions !", ex);
         }
-        return true;
     }
 
     public void clear()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            this.database.preparedExec("auction_clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
+        }
     }
-    
+
     public void update(Auction model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
