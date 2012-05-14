@@ -28,7 +28,7 @@ public class CubeUserStorage implements Storage<CubeUser>
         {
             this.database.prepareStatement("user_get",      "SELECT id,name,flags FROM {{users}} WHERE name=? LIMIT 1");
             this.database.prepareStatement("user_getall",   "SELECT id,name,flags FROM {{users}}");
-            this.database.prepareStatement("user_store_server",    "INSERT INTO {{users}} (id,name,flags) VALUES (0,?,?)");
+            this.database.prepareStatement("user_store_server",    "INSERT INTO {{users}} (id,name,flags) VALUES (0,?,?)");//TODO es wird 1 statt 0 eingesetzt
             this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (name,flags) VALUES (?,?)");
             this.database.prepareStatement("user_update",   "UPDATE {{users}} SET flags=? WHERE id=?");
             this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
@@ -46,11 +46,11 @@ public class CubeUserStorage implements Storage<CubeUser>
         try
         {
             this.database.exec( "CREATE TABLE IF NOT EXISTS `users` ("+
-                                "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"+
+                                "`id` int(11) NOT NULL AUTO_INCREMENT,"+
                                 "`name` varchar(16) NOT NULL,"+
                                 "`flags` int(11) NOT NULL,"+
                                 "PRIMARY KEY (`id`)"+
-                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
                                );
         }
         catch (SQLException ex)
@@ -134,7 +134,7 @@ public class CubeUserStorage implements Storage<CubeUser>
         try
         {
             if (model.getId() == 0)
-                this.database.preparedExec("user_store_server", model.getName(), model.getFlags().get());
+                this.database.preparedExec("user_store_server", "#Server", 0);
             else
                 this.database.preparedExec("user_store", model.getName(), model.getFlags().get());
         }

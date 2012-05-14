@@ -50,19 +50,18 @@ public final class Bidder implements Model
 /**
  * Creates a new Bidder + add him to DataBase
  */
-    
+    //TODO BidderId in Db richtig abspeichern!!
+    //TODO CubeUserServerID als 0 in DB abspeichern oder alles abändern sodass Server = ID 1
     public Bidder(OfflinePlayer player)
     {
         this.cubeUser = cuManager.getCubeUser(player);
         this.auctionbox = new AuctionBox(this);
-        bidderDB.store(this);
     }
 
     public Bidder(int id)
     {
         this.cubeUser = cuManager.getCubeUser(id);
         this.auctionbox = new AuctionBox(this);
-        bidderDB.store(this);
     }
     
 /**

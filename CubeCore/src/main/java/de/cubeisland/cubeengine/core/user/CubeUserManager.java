@@ -47,6 +47,7 @@ public class CubeUserManager {
             {
                 user = new CubeUser(0,null, null);
                 this.cubeUserList.put(id, user);
+                storage.store(user);
             }
             return user;
         }
