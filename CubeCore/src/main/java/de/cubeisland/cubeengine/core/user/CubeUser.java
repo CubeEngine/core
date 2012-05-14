@@ -15,8 +15,6 @@ public class CubeUser implements Model
     private final LongBitMask flags;
     private int id;
     
-    //private CubeUserStorage cubeUserDB = new CubeUserStorage(CubeCore.getDB(), CubeCore.getInstance().getServer());
-    
     public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
     {
         this.id = id;

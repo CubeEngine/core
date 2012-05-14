@@ -15,7 +15,7 @@ public class CubeCore extends JavaPlugin
 
     public static Database getDB()
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        throw new UnsupportedOperationException("Not yet implemented");//TODO
     }
     
     public static CubeCore getInstance()

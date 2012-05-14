@@ -55,12 +55,14 @@ public final class Bidder implements Model
     {
         this.cubeUser = cuManager.getCubeUser(player);
         this.auctionbox = new AuctionBox(this);
+        bidderDB.store(this);
     }
 
     public Bidder(int id)
     {
         this.cubeUser = cuManager.getCubeUser(id);
         this.auctionbox = new AuctionBox(this);
+        bidderDB.store(this);
     }
     
 /**

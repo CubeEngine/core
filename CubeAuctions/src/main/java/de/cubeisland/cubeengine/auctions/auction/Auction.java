@@ -45,7 +45,6 @@ public class Auction implements Model
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();
         Bid bid = new Bid(owner, startBid, this);
-        bidDB.giveId(bid);
         this.bids.push(bid);
     }
 
@@ -86,7 +85,7 @@ public class Auction implements Model
                     || Perm.command_bid_infinite.check(bidder.getPlayer()))
             {
                 Bid bid = new Bid(bidder, amount, this);
-                bidDB.giveId(bid);
+                bidDB.store(bid);
                 this.bids.push(bid);
                 return true;
             }

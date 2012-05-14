@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
@@ -17,19 +18,18 @@ import org.bukkit.Server;
  */
 public class CubeUserStorage implements Storage<CubeUser>
 {
-    private final Database database;
-    private final Server server;
+    private final Database database = CubeCore.getDB();
+    private final Server server = CubeCore.getInstance().getServer();
 
-    public CubeUserStorage(Database db, Server server)
+    public CubeUserStorage()
     {
-        this.database = db;
-        this.server = server;
-
+        this.initialize();
         try
         {
             this.database.prepareStatement("user_get",      "SELECT id,name,flags FROM {{users}} WHERE name=? LIMIT 1");
             this.database.prepareStatement("user_getall",   "SELECT id,name,flags FROM {{users}}");
-            this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (id,name,flags) VALUES (?,?,?)");
+            this.database.prepareStatement("user_store_server",    "INSERT INTO {{users}} (id,name,flags) VALUES (0,?,?)");
+            this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (name,flags) VALUES (?,?)");
             this.database.prepareStatement("user_update",   "UPDATE {{users}} SET flags=? WHERE id=?");
             this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
             this.database.prepareStatement("user_delete",   "DELETE FROM {{users}} WHERE id=?");
@@ -46,11 +46,11 @@ public class CubeUserStorage implements Storage<CubeUser>
         try
         {
             this.database.exec( "CREATE TABLE IF NOT EXISTS `users` ("+
-                                "`id` int(11) unsigned NOT NULL,"+
+                                "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"+
                                 "`name` varchar(16) NOT NULL,"+
                                 "`flags` int(11) NOT NULL,"+
-                                "PRIMARY KEY (`id`),"+
-                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                                "PRIMARY KEY (`id`)"+
+                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
                                );
         }
         catch (SQLException ex)
@@ -133,7 +133,10 @@ public class CubeUserStorage implements Storage<CubeUser>
     {
         try
         {
-            this.database.preparedExec("user_store", model.getId(), model.getName(), model.getFlags().get());
+            if (model.getId() == 0)
+                this.database.preparedExec("user_store_server", model.getName(), model.getFlags().get());
+            else
+                this.database.preparedExec("user_store", model.getName(), model.getFlags().get());
         }
         catch (SQLException e)
         {

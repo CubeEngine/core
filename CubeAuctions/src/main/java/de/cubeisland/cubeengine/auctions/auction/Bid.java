@@ -20,7 +20,6 @@ public class Bid implements Model
     private Bidder bidder;
     private final long timestamp;
     
-    private final Database db = CubeAuctions.getDB();
     private BidStorage bidDB = new BidStorage ();
 
 /**
