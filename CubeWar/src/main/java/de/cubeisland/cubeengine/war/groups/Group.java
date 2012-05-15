@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.war.groups;
 
+import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.user.User;
@@ -19,7 +20,7 @@ import org.bukkit.entity.Player;
  *
  * @author Faithcaio
  */
-public class Group implements Cloneable{
+public class Group implements Cloneable,Model{
 
     private static final Economy econ = CubeWar.getEconomy();
     

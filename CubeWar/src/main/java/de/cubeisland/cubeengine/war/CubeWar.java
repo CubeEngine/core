@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.war;
 
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
+import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
 import de.cubeisland.cubeengine.war.commands.ClaimCommands;
 import de.cubeisland.cubeengine.war.commands.GroupCommands;
@@ -30,6 +31,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     public static boolean debugMode = false;
     private static Translation translation;
     private static final String PERMISSION_BASE = "cubeengine.war.commands.";
+    private static Database database;
     private BaseCommand baseCommand;
     
     private Server server;
@@ -65,6 +67,11 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         this.config = new CubeWarConfiguration(configuration);
         this.saveConfig();
         
+        database = new Database(config.war_database_host,
+                                config.war_database_port,
+                                config.war_database_user,
+                                config.war_database_pass,
+                                config.war_database_name);
         
         translation = Translation.get(this.getClass(), config.cubewar_language);
         if (translation == null) translation = Translation.get(this.getClass(), "en");
@@ -86,6 +93,11 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         this.config = null;
     }
 
+    public static Database getDB()
+    {
+        return database;
+    }
+    
     private Economy setupEconomy()
     {
         if (this.pm.getPlugin("Vault") != null)

@@ -25,6 +25,11 @@ public class CubeWarConfiguration
     public List<String> IGPerm_member;
     public List<String> IGPerm_user;
     public int fly_block;
+    public final String   war_database_host;            
+    public final short    war_database_port;
+    public final String   war_database_user;
+    public final String   war_database_pass;
+    public final String   war_database_name;
     
     public CubeWarConfiguration(Configuration config)
     {
@@ -51,6 +56,12 @@ public class CubeWarConfiguration
         this.IGPerm_member = config.getStringList("cubewar.IGperm.member");
         this.IGPerm_user = config.getStringList("cubewar.IGperm.user");
         this.fly_block = config.getInt("cubewar.fly.block_sec_after_hit");
+        
+        this.war_database_host = config.getString("cubewar.database.host");
+        this.war_database_port = ((short)config.getInt("cubewar.database.port"));
+        this.war_database_user = config.getString("cubewar.database.user");
+        this.war_database_pass = config.getString("cubewar.database.pass");
+        this.war_database_name = config.getString("cubewar.database.name");
         
         GroupControl.createInstance(config.getConfigurationSection("cubewar.area"));
     }
