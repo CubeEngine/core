@@ -38,6 +38,9 @@ public class FlyCommand {
                 sender.sendMessage(t("fly_on"));
             else
                 sender.sendMessage(t("fly_off"));
+            return;
         }
+        sender.sendMessage(t("fly_server"));
+        sender.sendMessage(t("fly_joke"));
     }
 }

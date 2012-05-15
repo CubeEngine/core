@@ -58,6 +58,14 @@
                 </includes>
             </resource>
             <resource>
+                <targetPath>./language</targetPath>
+                <directory>${basedir}/src/main/resources/language/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*</include>
+                </includes>
+            </resource>
+            <resource>
                 <targetPath>.</targetPath>
                 <directory>${basedir}/</directory>
                 <filtering>false</filtering>

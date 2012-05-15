@@ -1,7 +1,10 @@
 name: CubeFly
 version: "${project.version}"
-main: de.cubeisland.CubeEngine.CubeEngine
-#commands:
+main: de.cubeisland.cubeengine.fly.CubeFly
+commands:
+  fly:
+    usage: "/fly"
+    description: "This is the base command of CubeFly"
 depend: 
   - CubeCore
 softdepend: []
