@@ -15,6 +15,10 @@ public class CubeUser implements Model
     private final LongBitMask flags;
     private int id;
     
+    
+    public static final int BLOCK_FLY = 1;
+    
+    
     public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
     {
         this.id = id;
@@ -80,5 +84,26 @@ public class CubeUser implements Model
     public void setId(int id)
     {
         this.id = id;
+    }
+    
+    public boolean hasFlag(int flag)
+    {
+        return flags.isset(flag);
+    }
+    
+    public boolean toggleFlag (int flag)
+    {
+        flags.toggle(flag);
+        return this.hasFlag(flag);
+    }
+    
+    public void setFlag(int flag)
+    {
+        flags.set(flag);
+    }
+    
+    public void unsetFlag(int flag)
+    {
+        flags.unset(flag);
     }
 }

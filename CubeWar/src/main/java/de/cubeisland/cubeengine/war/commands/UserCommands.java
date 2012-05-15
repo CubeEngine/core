@@ -44,11 +44,16 @@ public class UserCommands
         }
         return false;
     }
-    
+    //TODO Bounty auslagern in CubeBountyHunter oder CubeHunter
+    //bounty adding etc
+    /*
+     * 
     @Command(usage = "set <Player> <bounty>" )//aliases = {""}
     public void bounty(CommandSender sender, CommandArgs args)
     {
         if (Perm.command_bounty.hasNotPerm(sender)) return;
-        //TODO bounty adding etc
+        
     }
+    * 
+    */
 }

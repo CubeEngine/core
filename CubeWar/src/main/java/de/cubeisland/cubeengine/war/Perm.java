@@ -61,10 +61,6 @@ public enum Perm
     
     command_protection_BP(null),
     
-    command_fly("Perm_fly"),
-    command_fly_BP(null),
-    command_bounty("Perm_bounty"),//TODO rest.... perm in plugin.yml
-
     command_bypass("Perm_Perm"),
     command_bypass_claim("Perm_Perm_mode"),
     command_bypass_unclaim("Perm_Perm_mode"),

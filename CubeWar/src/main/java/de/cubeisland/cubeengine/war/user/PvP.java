@@ -1,13 +1,17 @@
 package de.cubeisland.cubeengine.war.user;
 
+import de.cubeisland.cubeengine.core.user.CubeUser;
+import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
+import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +22,9 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PvP{
 
+    private static CubeUserManager cuManager = CubeUserManager.getInstance();
+    private static CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+    
     public PvP() 
     {
     
@@ -25,12 +32,9 @@ public class PvP{
     
     public static boolean isFriendlyFireOn(Player damager, Player damagee)
     {
-        CubeWar.debug("FF-ON?");
         if (PvP.isAlly(damager, damagee))
         {
-            CubeWar.debug("isAlly");
             if (PvP.isAreaDenyingFF(damager, damagee)) return false;
-            CubeWar.debug("Area-FF");
             CubeWar.debug("FF-ON!");
             return true;
         }
@@ -43,22 +47,16 @@ public class PvP{
     
     public static boolean isDamageOn(Player damager, Player damagee)
     {
-        CubeWar.debug("Damage-ON?");
         if (PvP.isAreaDenyingDamage(damager, damagee)) return false;
-        CubeWar.debug("Area-ON");
         if (PvP.isPlayerRespawning(damager, damagee)) return false;
-        CubeWar.debug("User-not-respawning");
         CubeWar.debug("Damage-ON!");
         return true;
     }
     
     public static boolean isPvPallowed(Player damager, Player damagee)
     {
-        CubeWar.debug("PVP-ON?");
         if (PvP.isAreaPvPOff(damager, damagee)) return false;
-        CubeWar.debug("Area-ON");
         if (PvP.isUserPeaceFull(damager)||PvP.isUserPeaceFull(damagee)) return false;
-        CubeWar.debug("User-ON");
         CubeWar.debug("PVP-ON!");
         return true;
     }
@@ -156,15 +154,17 @@ public class PvP{
     {
         CubeWar.debug("Fall");
         player.setFlying(false);  
-        Users.getUser(player).setFly_disable(true);
-        
-        CubeWar plugin = CubeWar.getInstance();   
-        plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
-                new Runnable() {
-                    public void run()
-                    {
-                        Users.getUser(player).setFly_disable(false);
-                    }} , 10*20);
+        if (config.fly_block > 0)
+        {
+            cuManager.getCubeUser((OfflinePlayer)player).setFlag(CubeUser.BLOCK_FLY);
+            CubeWar plugin = CubeWar.getInstance(); 
+            plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
+                    new Runnable() {
+                        public void run()
+                        {
+                            cuManager.getCubeUser((OfflinePlayer)player).unsetFlag(CubeUser.BLOCK_FLY);
+                        }} , config.fly_block*20);
+        }
     }
     
     public static void loot(final Player killer,final Player killed, List<ItemStack> drops, final Location deathloc)

@@ -251,4 +251,6 @@ cubewar:
     user:
       - command.create
       - command.fly
-      
+  fly:
+    block_sec_after_hit: 10
+    

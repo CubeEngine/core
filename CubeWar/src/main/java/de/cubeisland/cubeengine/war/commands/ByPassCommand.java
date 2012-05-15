@@ -27,7 +27,7 @@ public class ByPassCommand {
             sender.sendMessage("/cw bypass <Bypass>");
             sender.sendMessage("/cw bypass off");
             sender.sendMessage("Bypasses:");
-            sender.sendMessage("claim, unclaim, relation|rel, membercontrol|mem, position|pos, create, modify, protection|prot, fly");
+            sender.sendMessage("claim, unclaim, relation|rel, membercontrol|mem, position|pos, create, modify, protection|prot");
             return;
         }
         String bp = args.getString(0);
@@ -45,7 +45,6 @@ public class ByPassCommand {
         if (equal(bp,"create")) this.toggleBP(Perm.command_create_BP.getPermText()                      , Perm.command_bypass_create, sender);
         if (equal(bp,"modify")) this.toggleBP(Perm.command_modify_BP.getPermText()                      , Perm.command_bypass_modify, sender);
         if (equal(bp,"protection","prot")) this.toggleBP(Perm.command_protection_BP.getPermText()       , Perm.command_bypass_protection, sender);
-        if (equal(bp,"fly")) this.toggleBP(Perm.command_fly_BP.getPermText()                            , Perm.command_bypass_fly, sender);
     }
     
     private boolean equal(String s, String... t)

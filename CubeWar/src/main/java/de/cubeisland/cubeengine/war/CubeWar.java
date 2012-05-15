@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.war;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
 import de.cubeisland.cubeengine.war.commands.ClaimCommands;
-import de.cubeisland.cubeengine.war.commands.FlyCommand;
 import de.cubeisland.cubeengine.war.commands.GroupCommands;
 import de.cubeisland.cubeengine.war.commands.UserCommands;
 import de.cubeisland.libMinecraft.command.BaseCommand;
@@ -32,7 +31,6 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     private static Translation translation;
     private static final String PERMISSION_BASE = "cubeengine.war.commands.";
     private BaseCommand baseCommand;
-    private BaseCommand flybaseCommand;
     
     private Server server;
     private PluginManager pm;
@@ -78,11 +76,6 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
                         .registerCommands(new ByPassCommand());
         
         this.getCommand("cubewar").setExecutor(baseCommand);
-        
-        this.flybaseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.flybaseCommand.registerCommands(new FlyCommand())
-                            .setDefaultCommand("fly");
-        this.getCommand("fly").setExecutor(flybaseCommand);
         
         this.pm.registerEvents(new CubeWarListener(), this);
     }

@@ -26,8 +26,6 @@ public class User {
     private Rank rank;
     private Group team;
     private boolean respawning;
-    private boolean fly_disable;
-    private double bounty; //TODO Kopfgeld
     private HashSet<String> bypasses = new HashSet<String>();
     
     public User(OfflinePlayer player) 
@@ -213,20 +211,6 @@ public class User {
     public void setRespawning(boolean respawning)
     {
         this.respawning = respawning;
-    }
-
-    /**
-     * @return the fly_disable
-     */
-    public boolean isFly_disable() {
-        return fly_disable;
-    }
-
-    /**
-     * @param fly_disable the fly_disable to set
-     */
-    public void setFly_disable(boolean fly_disable) {
-        this.fly_disable = fly_disable;
     }
     
     public void unsetBypasses()

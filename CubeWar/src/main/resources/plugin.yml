@@ -3,8 +3,6 @@ version: ${project.version}
 main: de.cubeisland.cubeengine.war.CubeWar
 depend:
   - CubeCore
-softdepend: 
-  - CubeFly
 website: "http://cubeisland.de/"
 description: "War module"
 authors:
@@ -17,9 +15,7 @@ commands:
     description: "This is the base command of CubeWar"
     aliases:
       - cw
-  fly:
-    usage: "/<command>"
-    description: "This is the fly command of CubeWar"
+      - war
 
 ##############GROUPED PERMISSIONS##############
 permissions:

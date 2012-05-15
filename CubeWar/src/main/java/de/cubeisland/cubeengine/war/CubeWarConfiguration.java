@@ -24,6 +24,7 @@ public class CubeWarConfiguration
     public List<String> IGPerm_mod;
     public List<String> IGPerm_member;
     public List<String> IGPerm_user;
+    public int fly_block;
     
     public CubeWarConfiguration(Configuration config)
     {
@@ -49,6 +50,7 @@ public class CubeWarConfiguration
         this.IGPerm_mod = config.getStringList("cubewar.IGperm.mod");
         this.IGPerm_member = config.getStringList("cubewar.IGperm.member");
         this.IGPerm_user = config.getStringList("cubewar.IGperm.user");
+        this.fly_block = config.getInt("cubewar.fly.block_sec_after_hit");
         
         GroupControl.createInstance(config.getConfigurationSection("cubewar.area"));
     }
