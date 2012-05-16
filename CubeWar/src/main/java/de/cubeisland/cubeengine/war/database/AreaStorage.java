@@ -31,8 +31,7 @@ public class AreaStorage implements Storage<Area>{
             this.database.prepareStatement("group_store", "INSERT INTO {{" + TABLE + "}} (groupid,x,z) VALUES (?,?,?)");
             this.database.prepareStatement("group_delete", "DELETE FROM {{" + TABLE + "}} WHERE x=? && z=?");
             this.database.prepareStatement("group_clear", "DELETE FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("group_update",   "UPDATE {{"+TABLE+"}} SET "+
-                                                        "groupid=? WHERE x=? && z=?");
+            this.database.prepareStatement("group_update",   "UPDATE {{"+TABLE+"}} SET groupid=? WHERE x=? && z=?");
         }
         catch (SQLException e)
         {
@@ -116,38 +115,25 @@ public class AreaStorage implements Storage<Area>{
             throw new StorageException("Failed to store the Chunk X:"+x+" Z:"+z+" !", ex);
         }
     }
+    
+    public void clear() 
+    {
+        try
+        {
+            this.database.preparedExec("area_clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
+        }
+    }
 
     
-    public Area get(int key) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    public Collection<Area> getAll() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void store(Area model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void update(Area model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void merge(Area model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean delete(Area model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    //TODO Store 
+    public Area get(int key) {throw new UnsupportedOperationException("No Need");}
+    public Collection<Area> getAll() {throw new UnsupportedOperationException("No Need");}
+    public void store(Area model) {throw new UnsupportedOperationException("No Need");}
+    public void update(Area model) {throw new UnsupportedOperationException("No Need");}
+    public void merge(Area model) {throw new UnsupportedOperationException("No Need");}
+    public boolean delete(Area model) {throw new UnsupportedOperationException("No Need");}
+    public boolean delete(int id) {throw new UnsupportedOperationException("No Need");}
 }

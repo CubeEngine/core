@@ -26,10 +26,6 @@ public class GroupControl {
         }
     }
 
-    public static Group getArea(int groupid) {
-        return groups.get(groupid);
-    }
-    
     public GroupControl(ConfigurationSection config) 
     {
         for (String name : config.getKeys(false))
@@ -181,7 +177,7 @@ public class GroupControl {
         return area.setValue(key, value);
     }
     
-    public Group getGroup(int id)
+    public static Group getGroup(int id)
     {
         return groups.get(id);
     }

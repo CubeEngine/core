@@ -43,6 +43,17 @@ public class User implements Model{
         rank = config.cubewar_ranks.get(0);
     }
     
+    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid) 
+    {
+        this.user = cuManager.getCubeUser(cubeuserid);
+        this.death = death;
+        this.kills = kills;
+        this.killpoints = kp;
+        this.mode = mode;
+        this.team = GroupControl.getGroup(teamid);
+        this.rank.newRank(this);
+    }
+    
     public int kill(User user)
     {
         this.killpoints += user.getRank().getKmod();

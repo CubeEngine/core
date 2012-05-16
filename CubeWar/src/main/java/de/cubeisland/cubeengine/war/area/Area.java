@@ -98,7 +98,7 @@ public class Area implements Model
     
     public void load(Chunk chunk, int groupid)
     {
-        chunks.put(chunk, GroupControl.getArea(groupid));
+        chunks.put(chunk, GroupControl.getGroup(groupid));
     }
     
 }

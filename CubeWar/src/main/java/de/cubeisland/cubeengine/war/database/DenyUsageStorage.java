@@ -5,8 +5,12 @@ import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.groups.Group;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import org.bukkit.Material;
 
 /**
  *
@@ -17,14 +21,32 @@ public class DenyUsageStorage implements Storage<Group>{
     private final Database database = CubeWar.getDB();
     private final String TABLE = "denyusage";
     
+    public DenyUsageStorage() 
+    {
+        this.initialize();
+        try
+        {
+            this.database.prepareStatement("denyuse_getall_group", "SELECT deny {{" + TABLE + "}} WHERE groupid=?");
+            this.database.prepareStatement("denyuse_store", "INSERT INTO {{" + TABLE + "}} (groupid,deny) VALUES (?,?)");
+            this.database.prepareStatement("denyuse_deleteall_group", "DELETE FROM {{" + TABLE + "}} WHERE groupid=?");
+            this.database.prepareStatement("denyuse_clear", "DELETE FROM {{" + TABLE + "}}");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to prepare the statements!", e);
+        }
+    }
+    
+    
     public void initialize() 
     {
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `denyusage` ("
+                + "`id` int(10) unsigned NOT NULL,"
                 + "`groupid` int(10) unsigned NOT NULL,"
                 + "`deny` String(42) NOT NULL,"
-                + "PRIMARY KEY (`groupid`),"
+                + "PRIMARY KEY (`id`),"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
@@ -32,37 +54,103 @@ public class DenyUsageStorage implements Storage<Group>{
             throw new StorageException("Failed to initialize the UsageDeny-Table !", ex);
         }
     }
-
-    public Group get(int key) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    
+    public List<String> getAllByGroup(Group group)
+    {
+        return this.getAllByGroup(group.getId());
+    }
+            
+    public List<String> getAllByGroup(int groupId)
+    {
+        List<String> list = new ArrayList<String>();
+        try
+        {
+            ResultSet result = this.database.preparedQuery("denyuse_getall_group", groupId);
+            while (result.next())
+            {
+                list.add(result.getString("deny"));
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to get All the UsageDeny !", ex);
+        }
+        return list;
+    }
+    
+    public void store(List<String> list, Group group)
+    {
+        for (String s : list)
+        {
+            this.store(s,group.getId());
+        }
+    }
+    
+    public void storeByGroup(Group group)
+    {
+        int id = group.getId();
+        for (Material m : group.getProtect())
+        {
+            this.store(m.toString(),id);
+        }
+        for (String s : group.getDenycommands())
+        {
+            this.store(s, id);
+        }
+    }
+    
+    public void store(String s, Group group)
+    {
+        this.store(s,group.getId());
+    }
+    
+    public void store(String s, int groupid)
+    {
+        try
+        {
+            this.database.preparedExec("denyuse_store", groupid, s);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to store the UsageDeny !", ex);
+        }
+    }
+    
+    public void deleteByGroup(Group group)
+    {
+        this.deleteByGroup(group.getId());
+    }
+    
+    public void deleteByGroup(int id)
+    {
+        try
+        {
+            this.database.preparedExec("denyuse_deleteall_group", id);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to store the UsageDeny !", ex);
+        }
+    }
+    
+    public void clear() 
+    {
+        try
+        {
+            this.database.preparedExec("denyuse_clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
+        }
     }
 
-    public Collection<Group> getAll() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void store(Group model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void update(Group model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void merge(Group model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean delete(Group model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-   //TODO deniedCmd / protections
+    public Group get(int key) {throw new UnsupportedOperationException("No Need");}
+    public Collection<Group> getAll() {throw new UnsupportedOperationException("No Need");}
+    public void store(Group model) {throw new UnsupportedOperationException("No Need");}
+    public void update(Group model) {throw new UnsupportedOperationException("No Need");}
+    public void merge(Group model) {throw new UnsupportedOperationException("No Need");}
+    public boolean delete(Group model) {throw new UnsupportedOperationException("No Need");}
+    public boolean delete(int id) {throw new UnsupportedOperationException("No Need");}
+    
 }
