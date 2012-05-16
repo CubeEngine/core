@@ -1,9 +1,11 @@
 package de.cubeisland.cubeengine.war;
 
+import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.area.Area;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.PvP;
 import de.cubeisland.cubeengine.war.user.Users;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -14,6 +16,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  *
@@ -78,7 +83,6 @@ public class CubeWarListener implements Listener
     public void damage(final EntityDamageByEntityEvent event)
     {
         if (!(event.getEntity() instanceof Player)) return;
-        
         Player damagee = (Player)event.getEntity();
         Entity damagerEntity = event.getDamager();
         Player damager;
@@ -99,6 +103,40 @@ public class CubeWarListener implements Listener
             }
             else return;
         }
+        if (!ranged)
+        {
+            ItemStack potionItem = damager.getItemInHand().clone();
+            potionItem.setAmount(1);
+            if (potionItem.getType().equals(Material.POTION))
+            if (Users.isAllied(damager, damagee))
+            {int h;
+                switch (potionItem.getDurability())
+                {
+                    case 8193: damagee.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,15*20,1)); break;//0:45 46
+                    case 8257: damagee.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,30*20,1)); break;//2:00 108
+                    case 8225: damagee.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,7*20,2)); break;//0:22 48
+                    case 8194: damagee.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,10*20,1)); break;//3:00
+                    case 8258: damagee.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,30*20,1)); break;//8:00
+                    case 8226: damagee.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,5*20,5)); break;//1:30
+                    case 8195: damagee.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE,30*20,0)); break;//3:00
+                    case 8259: damagee.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE,60*20,0)); break;//8:00
+                    case 8227: damagee.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE,30*20,0)); break;//3:00
+                    case 8197: h = damagee.getHealth()+3; if(h>20) h=20; damagee.setHealth(h); break;//6
+                    case 8261: h = damagee.getHealth()+3; if(h>20) h=20; damagee.setHealth(h); break;//6
+                    case 8229: h = damagee.getHealth()+6; if(h>20) h=20; damagee.setHealth(h); break;//12
+                    case 8201: damagee.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,10*20,5)); break;//3:00 3
+                    case 8265: damagee.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,20*20,5)); break;//8:00 3       
+                    case 8233: damagee.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,5*20,10)); break;//1:30 6
+                    default: damager.sendMessage(t("potion_not")); return;
+                }
+                damagee.getInventory().remove(potionItem);
+                damager.sendMessage(t("potion_use",damagee.getName()));
+                event.setCancelled(true);
+                return;
+
+            }
+        }
+        
         if (PvP.isPvPallowed(damager, damagee))
         {//PVP is ON Kill em all!
             //FLYMODE Disabler
