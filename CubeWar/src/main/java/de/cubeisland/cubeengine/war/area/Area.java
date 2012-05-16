@@ -95,4 +95,10 @@ public class Area implements Model
     public int getId() {
         throw new UnsupportedOperationException("Not supported.");
     }
+    
+    public void load(Chunk chunk, int groupid)
+    {
+        chunks.put(chunk, GroupControl.getArea(groupid));
+    }
+    
 }

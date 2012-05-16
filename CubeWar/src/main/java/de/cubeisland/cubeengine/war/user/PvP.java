@@ -68,8 +68,8 @@ public class PvP{
     
     private static boolean isAreaPvPOff(Player damager, Player damagee)
     {
-        if (GroupControl.getArea(damager).getBits().isset(Group.PVP_ON)) return false;
-        if (GroupControl.getArea(damagee).getBits().isset(Group.PVP_ON)) return false;
+        if (GroupControl.getGroup(damager).getBits().isset(Group.PVP_ON)) return false;
+        if (GroupControl.getGroup(damagee).getBits().isset(Group.PVP_ON)) return false;
         return true;
     }
     
@@ -82,22 +82,22 @@ public class PvP{
     
     private static boolean isAreaDenyingFF(Player damager, Player damagee)
     {
-        if (GroupControl.getArea(damager).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
-        if (GroupControl.getArea(damagee).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
+        if (GroupControl.getGroup(damager).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
+        if (GroupControl.getGroup(damagee).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
         return true;
     }
     
     private static boolean isAreaDenyingDamage(Player damager, Player damagee)
     {
-        if (GroupControl.getArea(damager).getBits().isset(Group.PVP_DAMAGE)) return false;
-        if (GroupControl.getArea(damagee).getBits().isset(Group.PVP_DAMAGE)) return false;
+        if (GroupControl.getGroup(damager).getBits().isset(Group.PVP_DAMAGE)) return false;
+        if (GroupControl.getGroup(damagee).getBits().isset(Group.PVP_DAMAGE)) return false;
         return true;
     }
     
     public static int modifyDamage(Player damager, Player damagee, int damage)
     {
         int dmg = damage;
-        Map<Group.DmgModType,Integer> modifiers = GroupControl.getArea(damagee).getDamagemodifier();
+        Map<Group.DmgModType,Integer> modifiers = GroupControl.getGroup(damagee).getDamagemodifier();
         
         Integer tmp;
         for (Group.DmgModType type : Group.DmgModType.values())

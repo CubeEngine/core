@@ -702,7 +702,7 @@ public class Group implements Cloneable,Model{
         sender.sendMessage(pvp);
         String allies = "";
         String enemies = "";
-        for (Group group : GroupControl.getAreas())
+        for (Group group : GroupControl.getGroups())
         {
             if (!this.equals(group))
                 if (this.isTrueAlly(group))

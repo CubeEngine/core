@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.area.Area;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import org.bukkit.Server;
@@ -66,7 +67,19 @@ public class AreaStorage implements Storage<Area>{
      */
     public int get(int x, int z) 
     {
-        return 0;//TODO
+        try
+        {
+            ResultSet result = this.database.preparedQuery("", x,z);
+            if (!result.next())
+            {
+                return 0;
+            }
+            return result.getInt("groupid");
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to get the Chunk X:"+x+" Z:"+z+" !", ex);
+        }
     }
     
     /**
@@ -76,12 +89,32 @@ public class AreaStorage implements Storage<Area>{
     public Area load()
     {
         Area area = new Area();
-        return area;//TODO
+        try
+        {
+            ResultSet result = this.database.preparedQuery("group_getall");
+            while (result.next())
+            {
+                area.load(server.getWorld("world").getChunkAt(result.getInt("x"), result.getInt("z")), result.getInt("groupid"));
+            }
+
+            return area;
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to load the groups from the database!", e);
+        }
     }
     
     public void store (int groupid, int x, int z)
     {
-        
+        try
+        {
+            this.database.preparedExec("group_store", groupid, x, z);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Failed to store the Chunk X:"+x+" Z:"+z+" !", ex);
+        }
     }
 
     

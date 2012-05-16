@@ -200,7 +200,7 @@ public class ClaimCommands {
         }
         if (args.isEmpty())
         {
-            if (GroupControl.getArea(player).equals(GroupControl.getWildLand()))
+            if (GroupControl.getGroup(player).equals(GroupControl.getWildLand()))
             {
                 sender.sendMessage(t("unclaim_wild"));
                 return true;

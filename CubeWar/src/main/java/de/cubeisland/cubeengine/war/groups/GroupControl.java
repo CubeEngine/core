@@ -25,6 +25,10 @@ public class GroupControl {
             Area.remAllAll();
         }
     }
+
+    public static Group getArea(int groupid) {
+        return groups.get(groupid);
+    }
     
     public GroupControl(ConfigurationSection config) 
     {
@@ -151,17 +155,17 @@ public class GroupControl {
         return instance;
     }
 
-    public static Group getArea(Player player)
+    public static Group getGroup(Player player)
     {
-        return getArea(player.getLocation());
+        return getGroup(player.getLocation());
     }
     
-    public static Collection<Group> getAreas()
+    public static Collection<Group> getGroups()
     {
         return groups.valueCollection();
     }
     
-    public static Group getArea(Location loc)
+    public static Group getGroup(Location loc)
     {
         return Area.getGroup(loc);
     }

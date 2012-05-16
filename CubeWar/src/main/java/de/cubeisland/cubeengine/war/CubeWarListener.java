@@ -35,7 +35,7 @@ public class CubeWarListener implements Listener
     public void respawn(final PlayerRespawnEvent event)
     {
         CubeWar plugin = CubeWar.getInstance();
-        int respawntime = GroupControl.getArea(event.getRespawnLocation()).getPvp_respawnprotect()*20;
+        int respawntime = GroupControl.getGroup(event.getRespawnLocation()).getPvp_respawnprotect()*20;
         if (respawntime > 0)
         {
             Users.getUser(event.getPlayer()).setRespawning(true);
@@ -55,7 +55,7 @@ public class CubeWarListener implements Listener
         {
             if (!Area.getGroup(event.getFrom().getChunk()).equals(Area.getGroup(event.getTo().getChunk())))
                 event.getPlayer().sendMessage("X: "+event.getTo().getChunk().getX()+" Z: "+event.getTo().getChunk().getZ()+
-                    " "+GroupControl.getArea(event.getPlayer()).getTag());
+                    " "+GroupControl.getGroup(event.getPlayer()).getTag());
         }
     }
     

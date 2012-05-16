@@ -203,7 +203,7 @@ public class User implements Model{
                 sender.sendMessage(t("user_052",this.getTeamTag()));
         if (sender instanceof Player)
             if (this.equals(Users.getUser(sender)))
-                sender.sendMessage(t("user_06",GroupControl.getArea((Player)sender).getTag()));
+                sender.sendMessage(t("user_06",GroupControl.getGroup((Player)sender).getTag()));
     }
     /**
      * @return the respawning
