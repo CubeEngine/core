@@ -120,7 +120,7 @@ public class AuctionStorage implements Storage<Auction>
         }
         catch (Exception e)
         {
-            throw new StorageException("Failed to store the Auctions !", e);
+            throw new StorageException("Failed to store the Auction !", e);
         }
     }
 
@@ -137,7 +137,7 @@ public class AuctionStorage implements Storage<Auction>
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Failed to delete the Auctions !", ex);
+            throw new StorageException("Failed to delete the Auction !", ex);
         }
     }
 

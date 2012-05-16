@@ -63,6 +63,69 @@ public class Group implements Cloneable,Model{
         this.bits = new BitMask();
     }
     
+    public Group(int id,String tag,String name,String desc,boolean isarena,int respawnprot,String dmgmod,int pwrboost,Integer permpwr,int flags) 
+    {
+        this.setId(id);
+        this.setStringValue("tag", tag);
+        this.setStringValue("name", name);
+        this.setStringValue("description", desc);
+        if (isarena) this.type = AreaType.ARENA;
+        else this.type = AreaType.TEAMZONE;
+        this.setIntegerValue("pvp_spawnprotect", respawnprot);
+        Integer per= null, set= null, add = null;
+        if (dmgmod.startsWith("P"))
+        {
+            per = Integer.valueOf(dmgmod.substring(1));
+        }
+        else if (dmgmod.startsWith("S"))
+        {
+            set = Integer.valueOf(dmgmod.substring(1));
+        }
+        else
+        {
+            add = Integer.valueOf(dmgmod);
+        }
+        this.setIntegerValue("damagemodifier_percent", per);
+        this.setIntegerValue("damagemodifier_set", set);
+        this.setIntegerValue("damagemodifier_add", add);
+        this.setIntegerValue("power_boost", pwrboost); 
+        this.setIntegerValue("power_perm", permpwr);
+        this.bits = new BitMask(flags);
+    }
+    /*
+     * group.setIntegerValue("id", this.getId());
+        group.setStringValue("name", this.getName());
+        group.setStringValue("tag", this.getTag());
+        group.setStringValue("description", this.getDescription());
+        if (this.getBits().isset(Group.ECONOMY_BANK)) group.setBit(Group.ECONOMY_BANK);
+        group.setIntegerValue("power_perm", this.getPower_perm());
+        group.setIntegerValue("power_boost", this.getPower_boost());
+        if (this.getBits().isset(Group.POWER_LOSS)) group.setBit(Group.POWER_LOSS);
+        if (this.getBits().isset(Group.POWER_GAIN)) group.setBit(Group.POWER_GAIN);
+        if (this.getBits().isset(Group.PVP_ON)) group.setBit(Group.PVP_ON);
+        if (this.getBits().isset(Group.PVP_DAMAGE)) group.setBit(Group.PVP_DAMAGE);
+        if (this.getBits().isset(Group.PVP_FRIENDLYFIRE)) group.setBit(Group.PVP_FRIENDLYFIRE);
+        group.setIntegerValue("pvp_spawnprotect", this.getPvp_respawnprotect());
+        group.setIntegerValue("damagemodifier_percent", this.getDamagemodifier_percent());
+        group.setIntegerValue("damagemodifier_set", this.getDamagemodifier_set());
+        group.setIntegerValue("damagemodifier_add", this.getDamagemodifier_add());
+        if (this.getBits().isset(Group.MONSTER_SPAWN)) group.setBit(Group.MONSTER_SPAWN);
+        if (this.getBits().isset(Group.MONSTER_DAMAGE)) group.setBit(Group.MONSTER_DAMAGE);
+        if (this.getBits().isset(Group.BUILD_DESTROY)) group.setBit(Group.BUILD_DESTROY);
+        if (this.getBits().isset(Group.BUILD_PLACE)) group.setBit(Group.BUILD_PLACE);
+        group.setListValue("protect", this.getProtect());
+        if (this.getBits().isset(Group.USE_FIRE)) group.setBit(Group.USE_FIRE);
+        if (this.getBits().isset(Group.USE_LAVA)) group.setBit(Group.USE_LAVA);
+        if (this.getBits().isset(Group.USE_WATER)) group.setBit(Group.USE_WATER);
+        group.setListValue("denycommands", this.getDenycommands
+     */
+    
+    
+    private void setId(int id)
+    {
+        this.setIntegerValue("id", id);
+    }
+    
     public void setBit(int Bit)
     {
         this.getBits().set(Bit);
@@ -242,7 +305,7 @@ public class Group implements Cloneable,Model{
         if (this.getBits().isset(Group.PVP_ON)) group.setBit(Group.PVP_ON);
         if (this.getBits().isset(Group.PVP_DAMAGE)) group.setBit(Group.PVP_DAMAGE);
         if (this.getBits().isset(Group.PVP_FRIENDLYFIRE)) group.setBit(Group.PVP_FRIENDLYFIRE);
-        group.setIntegerValue("pvp_spawnprotect", this.getPvp_spawnprotect());
+        group.setIntegerValue("pvp_spawnprotect", this.getPvp_respawnprotect());
         group.setIntegerValue("damagemodifier_percent", this.getDamagemodifier_percent());
         group.setIntegerValue("damagemodifier_set", this.getDamagemodifier_set());
         group.setIntegerValue("damagemodifier_add", this.getDamagemodifier_add());
@@ -386,7 +449,7 @@ public class Group implements Cloneable,Model{
     /**
      * @return the pvp_spawnprotect
      */
-    public int getPvp_spawnprotect()
+    public int getPvp_respawnprotect()
     {
         return (Integer)this.getValue("pvp_spawnprotect");
     }
