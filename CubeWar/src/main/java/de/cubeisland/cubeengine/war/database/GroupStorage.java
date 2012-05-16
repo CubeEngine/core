@@ -35,7 +35,7 @@ public class GroupStorage implements Storage<Group>{
          //ID, TAG, NAME, DESCRIPTION, ISARENA?, respawnprotect, dmgmod, pwrboost, permpwr,  flags
          //int str  str   str          bool      int (in sec)    str     int       int(NULL) int
             
-         //deniedCmd / protections woanders rein
+         //TODO deniedCmd / protections zu DenyUsageStorage
             this.database.prepareStatement("group_get", "SELECT id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
             this.database.prepareStatement("group_getall", "SELECT id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags FROM {{" + TABLE + "}}");
             this.database.prepareStatement("group_store", "INSERT INTO {{" + TABLE + "}} (id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags) VALUES (?,?,?,?,?,?,?,?,?,?)");
@@ -54,7 +54,7 @@ public class GroupStorage implements Storage<Group>{
     {        
         try
         {
-            this.database.exec("CREATE TABLE IF NOT EXISTS `auctions` ("
+            this.database.exec("CREATE TABLE IF NOT EXISTS `groups` ("
                 + "`id` int(10) unsigned NOT NULL,"
                 + "`tag` varchar(10) NOT NULL,"//TODO limit Tag to 10
                 + "`name` varchar(20) NOT NULL,"//TODO limit name to 20

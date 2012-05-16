@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.war.area;
 
+import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
@@ -13,7 +14,8 @@ import org.bukkit.Location;
  *
  * @author Faithcaio
  */
-public class Area {
+public class Area implements Model 
+{
 
     private static THashMap<Chunk,Group> chunks = new THashMap<Chunk,Group>();
     
@@ -88,5 +90,9 @@ public class Area {
     public static void remAllAll()
     {
         chunks.clear();
+    }
+
+    public int getId() {
+        throw new UnsupportedOperationException("Not supported.");
     }
 }

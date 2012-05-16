@@ -133,7 +133,6 @@ public class CubeWarListener implements Listener
                 damager.sendMessage(t("potion_use",damagee.getName()));
                 event.setCancelled(true);
                 return;
-
             }
         }
         

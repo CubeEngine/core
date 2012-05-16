@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.war.user;
 
+import de.cubeisland.cubeengine.core.persistence.Model;
+import de.cubeisland.cubeengine.core.user.CubeUser;
+import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
@@ -14,11 +17,11 @@ import org.bukkit.entity.*;
  *
  * @author Faithcaio
  */
-public class User {
+public class User implements Model{
 
     private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     
-    private OfflinePlayer player;
+    private CubeUser user;
     private int death = 0;
     private int kills = 0;
     private int killpoints = 0;
@@ -27,10 +30,16 @@ public class User {
     private Group team;
     private boolean respawning;
     private HashSet<String> bypasses = new HashSet<String>();
+    private CubeUserManager cuManager = CubeUserManager.getInstance();
+    
+    public int getId()
+    {
+        return this.user.getId();
+    }
     
     public User(OfflinePlayer player) 
     {
-        this.player = player;
+        this.user = cuManager.getCubeUser(player);
         rank = config.cubewar_ranks.get(0);
     }
     
@@ -120,7 +129,6 @@ public class User {
         return -1;
     }
     
-    //Getter...
     public int getKills()
     {
         return this.kills;    
@@ -133,15 +141,15 @@ public class User {
     
     public Player getPlayer()
     {
-        if (this.player.isOnline())
-            return this.player.getPlayer();
+        if (this.user.isOnline())
+            return this.user.getPlayer();
         else
             return null;
     }
     
     public String getName()
     {
-        return this.player.getName();
+        return this.user.getName();
     }
     
     public PlayerMode getMode()
