@@ -8,9 +8,12 @@ import de.cubeisland.cubeengine.war.commands.ClaimCommands;
 import de.cubeisland.cubeengine.war.commands.GroupCommands;
 import de.cubeisland.cubeengine.war.commands.UserCommands;
 import de.cubeisland.cubeengine.war.database.AreaStorage;
+import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
+import de.cubeisland.cubeengine.war.database.GroupStorage;
+import de.cubeisland.cubeengine.war.database.UserStorage;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.PvP;
-import de.cubeisland.cubeengine.war.user.Users;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -29,7 +32,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 /**
  * Main Class
  */
-public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
+public class CubeWar extends CubeModuleBase implements TranslatablePlugin
+{
 
     private static CubeWar instance = null;
     private static Logger logger = null;
@@ -45,18 +49,26 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
     private Economy economy = null;
     private AreaControl areas = new AreaControl();
     private GroupControl groups;
+    private UserControl users = new UserControl();
     private PvP pvp = new PvP();
+    private AreaStorage areaDB;
+    private DenyUsageStorage denyuseDB;
+    private GroupStorage groupDB;
+    private UserStorage userDB;
 
-    public CubeWar() {
+    public CubeWar()
+    {
         instance = this;
     }
 
-    public static CubeWar getInstance() {
+    public static CubeWar getInstance()
+    {
         return instance;
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
         logger = this.getLogger();
         this.server = this.getServer();
         this.pm = this.server.getPluginManager();
@@ -78,38 +90,45 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
                 config.war_database_name);
 
         translation = Translation.get(this.getClass(), config.cubewar_language);
-        if (translation == null) {
+        if (translation == null)
+        {
             translation = Translation.get(this.getClass(), "en");
         }
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new ClaimCommands())
-                        .registerCommands(new GroupCommands())
-                        .registerCommands(new UserCommands())
-                        .registerCommands(new ByPassCommand());
+        this.baseCommand.registerCommands(new ClaimCommands()).registerCommands(new GroupCommands()).registerCommands(new UserCommands()).registerCommands(new ByPassCommand());
         this.getCommand("cubewar").setExecutor(baseCommand);
         this.pm.registerEvents(new CubeWarListener(), this);
         //Load in DB...
-        Users.loadDB();
+        areaDB = new AreaStorage();
+        denyuseDB = new DenyUsageStorage();
+        groupDB = new GroupStorage();
+        userDB = new UserStorage();
+        users.loadDB();
         groups.loadDB();
-        AreaStorage areaDB = new AreaStorage();
         areaDB.load();
     }
 
     @Override
-    public void onDisable() {
+    public void onDisable()
+    {
         this.config = null;
     }
 
-    public static Database getDB() {
+    public static Database getDB()
+    {
         return database;
     }
 
-    private Economy setupEconomy() {
-        if (this.pm.getPlugin("Vault") != null) {
+    private Economy setupEconomy()
+    {
+        if (this.pm.getPlugin("Vault") != null)
+        {
             RegisteredServiceProvider<Economy> rsp = this.server.getServicesManager().getRegistration(Economy.class);
-            if (rsp != null) {
+            if (rsp != null)
+            {
                 Economy eco = rsp.getProvider();
-                if (eco != null) {
+                if (eco != null)
+                {
                     return eco;
                 }
             }
@@ -117,55 +136,107 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
         throw new IllegalStateException("Failed to initialize with Vault!");
     }
 
-    public Economy getEconomy() {
+    public Economy getEconomy()
+    {
         return economy;
     }
 
-    public CubeWarConfiguration getConfiguration() {
+    public CubeWarConfiguration getConfiguration()
+    {
         return this.config;
     }
 
-    public static void log(String msg) {
+    public static void log(String msg)
+    {
         logger.log(Level.INFO, msg);
     }
 
-    public static void error(String msg) {
+    public static void error(String msg)
+    {
         logger.log(Level.SEVERE, msg);
     }
 
-    public static void error(String msg, Throwable t) {
+    public static void error(String msg, Throwable t)
+    {
         logger.log(Level.SEVERE, msg, t);
     }
 
-    public static void debug(String msg) {
-        if (debugMode) {
+    public static void debug(String msg)
+    {
+        if (debugMode)
+        {
             log("[debug] " + msg);
         }
     }
 
-    public static String t(String key, Object... params) {
+    public static String t(String key, Object... params)
+    {
         return translation.translate(key, params);
     }
 
-    public Translation getTranslation() {
+    public Translation getTranslation()
+    {
         return translation;
     }
 
-    public void setTranslation(Translation newtranslation) {
+    public void setTranslation(Translation newtranslation)
+    {
         translation = newtranslation;
     }
 
     /**
      * @return the areas
      */
-    public AreaControl getAreas() {
+    public AreaControl getAreas()
+    {
         return areas;
     }
 
     /**
      * @return the pvp
      */
-    public PvP getPvp() {
+    public PvP getPvp()
+    {
         return pvp;
+    }
+
+    /**
+     * @return the areaDB
+     */
+    public AreaStorage getAreaDB()
+    {
+        return areaDB;
+    }
+
+    /**
+     * @return the denyuseDB
+     */
+    public DenyUsageStorage getDenyuseDB()
+    {
+        return denyuseDB;
+    }
+
+    /**
+     * @return the groupDB
+     */
+    public GroupStorage getGroupDB()
+    {
+        return groupDB;
+    }
+
+    /**
+     * @return the userDB
+     */
+    public UserStorage getUserDB()
+    {
+        return userDB;
+    }
+
+    /**
+     * @return the users
+     */
+    public UserControl getUserControl()
+    {
+        return users;
     }
 }

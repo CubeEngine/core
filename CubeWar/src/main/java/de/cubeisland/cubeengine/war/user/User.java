@@ -18,10 +18,10 @@ import org.bukkit.entity.*;
  *
  * @author Faithcaio
  */
-public class User implements Model{
+public class User implements Model
+{
 
     private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
-    
     private CubeUser user;
     private int death = 0;
     private int kills = 0;
@@ -34,20 +34,20 @@ public class User implements Model{
     private CubeUserManager cuManager = CubeUserManager.getInstance();
     private UserStorage userDB = new UserStorage();
     private GroupControl groups = GroupControl.get();
-    
-    
+    private UserControl users = CubeWar.getInstance().getUserControl();
+
     public int getId()
     {
         return this.user.getId();
     }
-    
-    public User(OfflinePlayer player) 
+
+    public User(OfflinePlayer player)
     {
         this.user = cuManager.getCubeUser(player);
         rank = config.cubewar_ranks.get(0);
     }
-    
-    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid) 
+
+    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid)
     {
         this.user = cuManager.getCubeUser(cubeuserid);
         this.death = death;
@@ -57,14 +57,14 @@ public class User implements Model{
         this.team = groups.getGroup(teamid);
         this.rank.newRank(this);
     }
-    
+
     public int kill(User user)
     {
         this.killpoints += user.getRank().getKmod();
         this.rank = this.rank.newRank(this);
         return this.kill_kd(user);
     }
-    
+
     public void kill(Monster monster)
     {
         int kp=0;
@@ -96,7 +96,7 @@ public class User implements Model{
         this.killpoints += kp;
         this.rank = this.rank.newRank(this);
     }
-    
+
     private int kill_kd(User user)
     {
         if (mode.equals(PlayerMode.NORMAL))
@@ -114,16 +114,19 @@ public class User implements Model{
         }
         return -1;
     }
-    
+
     public int die()
     {
         this.killpoints -= this.rank.getDmod();
-        if (this.killpoints < config.killpoint_min) this.killpoints = config.killpoint_min;
+        if (this.killpoints < config.killpoint_min)
+        {
+            this.killpoints = config.killpoint_min;
+        }
         this.rank = this.rank.newRank(this);
         return this.die_kd();
-                    
+
     }
-    
+
     private int die_kd()
     {
         if (mode.equals(PlayerMode.NORMAL))
@@ -143,86 +146,111 @@ public class User implements Model{
         }
         return -1;
     }
-    
+
     public int getKills()
     {
-        return this.kills;    
+        return this.kills;
     }
-    
+
     public int getDeath()
     {
         return this.death;
     }
-    
+
     public Player getPlayer()
     {
         if (this.user.isOnline())
+        {
             return this.user.getPlayer();
+        }
         else
+        {
             return null;
+        }
     }
-    
+
     public String getName()
     {
         return this.user.getName();
     }
-    
+
     public PlayerMode getMode()
     {
         return this.mode;
     }
-    
+
     public int getKp()
     {
         return this.killpoints;
     }
-    
+
     public Rank getRank()
     {
         return this.rank;
     }
-    
+
     public void setTeam(Group team)
     {
         userDB.update(this);
         this.team = team;
     }
-    
+
     public Group getTeam()
     {
-        if (this.team == null) 
+        if (this.team == null)
+        {
             return groups.getWildLand();
+        }
         return this.team;
     }
-    
+
     public String getTeamTag()
     {
         if (this.team != null)
+        {
             return this.team.getTag();
+        }
         else
+        {
             return t("none");
+        }
     }
-    
+
     public void showInfo(CommandSender sender)
     {
         sender.sendMessage(t("user_01"));
-        sender.sendMessage(t("user_02",this.getName()));
-        sender.sendMessage(t("user_03",this.rank.getName(),this.killpoints));
+        sender.sendMessage(t("user_02", this.getName()));
+        sender.sendMessage(t("user_03", this.rank.getName(), this.killpoints));
         int kd;
         if (this.death == 0)
+        {
             kd = 0;
+        }
         else
-            kd = (int)(this.kills/this.death *100);
-        sender.sendMessage(t("user_04",this.kills,this.death,String.valueOf(kd/100)));
+        {
+            kd = (int) (this.kills / this.death * 100);
+        }
+        sender.sendMessage(t("user_04", this.kills, this.death, String.valueOf(kd / 100)));
         if (this.team != null)
-            if (this.team.isTrueAlly(Users.getUser(sender).getTeam()))
-                sender.sendMessage(t("user_051",this.getTeamTag()));
+        {
+            if (this.team.isTrueAlly(users.getUser(sender).getTeam()))
+            {
+                sender.sendMessage(t("user_051", this.getTeamTag()));
+            }
             else
-                sender.sendMessage(t("user_052",this.getTeamTag()));
+            {
+                sender.sendMessage(t("user_052", this.getTeamTag()));
+            }
+        }
         if (sender instanceof Player)
-            if (this.equals(Users.getUser(sender)))
-                sender.sendMessage(t("user_06",groups.getGroup((Player)sender).getTag()));
+        {
+            if (this.equals(users.getUser(sender)))
+            {
+                sender.sendMessage(t("user_06", groups.getGroup((Player) sender).getTag()));
+            }
+        }
     }
+
     /**
      * @return the respawning
      */
@@ -238,24 +266,26 @@ public class User implements Model{
     {
         this.respawning = respawning;
     }
-    
+
     public void unsetBypasses()
     {
         this.bypasses.clear();
     }
-    
+
     public void toggleBypass(String bypass)
     {
         if (this.hasBypass(bypass))
+        {
             this.bypasses.remove(bypass);
+        }
         else
+        {
             this.bypasses.add(bypass);
+        }
     }
-    
+
     public boolean hasBypass(String bypass)
     {
         return this.bypasses.contains(bypass);
     }
-    
-    
 }

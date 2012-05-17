@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.war.commands;
 
+import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.User;
-import de.cubeisland.cubeengine.war.user.Users;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,8 @@ import org.bukkit.command.CommandSender;
  */
 public class GroupCommands {
 
-    GroupControl groupcontrol = GroupControl.get();
+    private GroupControl groupcontrol = GroupControl.get();
+    private UserControl users = CubeWar.getInstance().getUserControl();
     
     public GroupCommands() 
     {
@@ -54,10 +56,10 @@ public class GroupCommands {
                         name += " "+args.getString(i); 
                     }
                     Group team = groupcontrol.newTeam(tag, name);
-                    User user = Users.getUser(sender);
+                    User user = users.getUser(sender);
                     if (user.getTeam() == null)
                     {
-                        team.addAdmin(Users.getUser(sender));
+                        team.addAdmin(users.getUser(sender));
                         sender.sendMessage(t("i")+t("ct1", tag, name));
                     }
                     else
@@ -142,7 +144,7 @@ public class GroupCommands {
         if (args.size() > 2)    
         {
             String t = args.getString(0);
-            User user = Users.getUser(args.getString(1));
+            User user = users.getUser(args.getString(1));
             Group area = user.getTeam();
             if (t.equalsIgnoreCase("admin")||t.equalsIgnoreCase("a"))
             {
@@ -173,7 +175,7 @@ public class GroupCommands {
                 sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
-            User user = Users.getUser(sender);
+            User user = users.getUser(sender);
             return this.toggleTeamPos(sender, user, group, "userjoin");
         }
         return false;
@@ -186,7 +188,7 @@ public class GroupCommands {
             if (Perm.command_leave.hasNotPerm(sender)) return true;
         if (args.isEmpty())
         {
-            User user = Users.getUser(sender);
+            User user = users.getUser(sender);
             return this.toggleTeamPos(sender, user, user.getTeam(), "userleave");
         }
         return false;
@@ -199,7 +201,7 @@ public class GroupCommands {
             if (Perm.command_kick.hasNotPerm(sender)) return true;
         if (args.size() > 0)
         {
-            User user = Users.getUser(args.getString(0));
+            User user = users.getUser(args.getString(0));
             if (user != null )
             {
                 if (user.getTeam() == null)
@@ -208,7 +210,7 @@ public class GroupCommands {
                     return true;
                 }
                 if (Perm.command_membercontrol_BP.hasNotPerm(sender))
-                    if (! user.getTeam().equals(Users.getUser(sender).getTeam()))
+                    if (! user.getTeam().equals(users.getUser(sender).getTeam()))
                         if (Perm.command_kick_other.hasNotPerm(sender)) return true;
                 user.getPlayer().sendMessage(t("i")+t("team_kick",user.getTeamTag()));
                 return this.toggleTeamPos(sender, user, user.getTeam(), "userleave");
@@ -358,7 +360,7 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Users.getUser(sender).getTeam();
+            Group team = users.getUser(sender).getTeam();
             if (team == null)
             {
                 sender.sendMessage(t("m_noTeam"));
@@ -417,7 +419,7 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Users.getUser(sender).getTeam();
+            Group team = users.getUser(sender).getTeam();
             if (team == null)
             {
                 sender.sendMessage(t("m_noTeam"));
@@ -477,7 +479,7 @@ public class GroupCommands {
         if (args.size() > 0)
         {
             Group team2 = groupcontrol.getGroup(args.getString(0));
-            Group team = Users.getUser(sender).getTeam();
+            Group team = users.getUser(sender).getTeam();
             if (team == null)
             {
                 sender.sendMessage(t("m_noTeam"));
@@ -530,7 +532,7 @@ public class GroupCommands {
         }
         if (args.isEmpty())
         {
-            Group group = Users.getUser(sender).getTeam();
+            Group group = users.getUser(sender).getTeam();
             if (group == null)
             {
                 sender.sendMessage(t("e")+t("m_noTeam"));
@@ -549,7 +551,7 @@ public class GroupCommands {
             if (Perm.command_invite.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
-            User user = Users.getUser(args.getString(0));
+            User user = users.getUser(args.getString(0));
             if (user == null)
             {
                 sender.sendMessage(t("g_noPlayer"));
@@ -557,7 +559,7 @@ public class GroupCommands {
             }
             else
             {
-                Group team = Users.getUser(sender).getTeam();
+                Group team = users.getUser(sender).getTeam();
                 if (team == null)
                 {
                     sender.sendMessage(t("m_noTeam"));
@@ -583,7 +585,7 @@ public class GroupCommands {
             if (Perm.command_uninvite.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
-            User user = Users.getUser(args.getString(0));
+            User user = users.getUser(args.getString(0));
             if (user == null)
             {
                 sender.sendMessage(t("g_noPlayer"));
@@ -591,7 +593,7 @@ public class GroupCommands {
             }
             else
             {
-                Group team = Users.getUser(sender).getTeam();
+                Group team = users.getUser(sender).getTeam();
                 if (team == null)
                 {
                     sender.sendMessage(t("m_noTeam"));

@@ -16,12 +16,13 @@ import org.bukkit.Material;
  *
  * @author Anselm
  */
-public class DenyUsageStorage implements Storage<Group>{
+public class DenyUsageStorage implements Storage<Group>
+{
 
     private final Database database = CubeWar.getDB();
     private final String TABLE = "denyusage";
-    
-    public DenyUsageStorage() 
+
+    public DenyUsageStorage()
     {
         this.initialize();
         try
@@ -36,44 +37,43 @@ public class DenyUsageStorage implements Storage<Group>{
             throw new StorageException("Failed to prepare the statements!", e);
         }
     }
-    
-    
-    public void initialize() 
+
+    public void initialize()
     {
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `denyusage` ("
-                + "`id` int(10) unsigned NOT NULL,"
-                + "`groupid` int(10) unsigned NOT NULL,"
-                + "`deny` String(42) NOT NULL,"
-                + "PRIMARY KEY (`id`)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                    + "`id` int(10) unsigned NOT NULL,"
+                    + "`groupid` int(10) unsigned NOT NULL,"
+                    + "`deny` String(42) NOT NULL,"
+                    + "PRIMARY KEY (`id`)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
         {
             throw new StorageException("Failed to initialize the UsageDeny-Table !", ex);
         }
     }
-    
+
     public List<Material> getAllMatByGroup(Group group)
     {
         List<String> list = this.getAllByGroup(group);
-        List<Material> newlist = new ArrayList<Material>();    
+        List<Material> newlist = new ArrayList<Material>();
         for (String s : list)
         {
-            if (Material.matchMaterial(s)!=null)
+            if (Material.matchMaterial(s) != null)
             {
                 newlist.add(Material.matchMaterial(s));
             }
         }
-        
+
         return newlist;
     }
-    
+
     public List<String> getAllCmdByGroup(Group group)
     {
         List<String> list = this.getAllByGroup(group);
-        List<String> newlist = new ArrayList<String>();    
+        List<String> newlist = new ArrayList<String>();
         for (String s : list)
         {
             if (s.startsWith("CMD_"))
@@ -81,15 +81,15 @@ public class DenyUsageStorage implements Storage<Group>{
                 newlist.add(s.substring(4));
             }
         }
-        
+
         return newlist;
     }
-    
+
     public List<String> getAllByGroup(Group group)
     {
         return this.getAllByGroup(group.getId());
     }
-            
+
     public List<String> getAllByGroup(int groupId)
     {
         List<String> list = new ArrayList<String>();
@@ -107,33 +107,33 @@ public class DenyUsageStorage implements Storage<Group>{
         }
         return list;
     }
-    
+
     public void store(List<String> list, Group group)
     {
         for (String s : list)
         {
-            this.store(s,group.getId());
+            this.store(s, group.getId());
         }
     }
-    
+
     public void storeByGroup(Group group)
     {
         int id = group.getId();
         for (Material m : group.getProtect())
         {
-            this.store(m.toString(),id);
+            this.store(m.toString(), id);
         }
         for (String s : group.getDenycommands())
         {
-            this.store("CMD_"+s, id);
+            this.store("CMD_" + s, id);
         }
     }
-    
+
     public void store(String s, Group group)
     {
-        this.store(s,group.getId());
+        this.store(s, group.getId());
     }
-    
+
     public void store(String s, int groupid)
     {
         try
@@ -145,12 +145,12 @@ public class DenyUsageStorage implements Storage<Group>{
             throw new StorageException("Failed to store the UsageDeny !", ex);
         }
     }
-    
+
     public void deleteByGroup(Group group)
     {
         this.deleteByGroup(group.getId());
     }
-    
+
     public void deleteByGroup(int id)
     {
         try
@@ -162,8 +162,8 @@ public class DenyUsageStorage implements Storage<Group>{
             throw new StorageException("Failed to store the UsageDeny !", ex);
         }
     }
-    
-    public void clear() 
+
+    public void clear()
     {
         try
         {
@@ -175,12 +175,38 @@ public class DenyUsageStorage implements Storage<Group>{
         }
     }
 
-    public Group get(int key) {throw new UnsupportedOperationException("No Need");}
-    public Collection<Group> getAll() {throw new UnsupportedOperationException("No Need");}
-    public void store(Group model) {throw new UnsupportedOperationException("No Need");}
-    public void update(Group model) {throw new UnsupportedOperationException("No Need");}
-    public void merge(Group model) {throw new UnsupportedOperationException("No Need");}
-    public boolean delete(Group model) {throw new UnsupportedOperationException("No Need");}
-    public boolean delete(int id) {throw new UnsupportedOperationException("No Need");}
-    
+    public Group get(int key)
+    {
+        throw new UnsupportedOperationException("No Need");
+    }
+
+    public Collection<Group> getAll()
+    {
+        throw new UnsupportedOperationException("No Need");
+    }
+
+    public void store(Group model)
+    {
+        throw new UnsupportedOperationException("No Need");
+    }
+
+    public void update(Group model)
+    {
+        throw new UnsupportedOperationException("No Need");
+    }
+
+    public void merge(Group model)
+    {
+        throw new UnsupportedOperationException("No Need");
+    }
+
+    public boolean delete(Group model)
+    {
+        throw new UnsupportedOperationException("No Need");
+    }
+
+    public boolean delete(int id)
+    {
+        throw new UnsupportedOperationException("No Need");
+    }
 }

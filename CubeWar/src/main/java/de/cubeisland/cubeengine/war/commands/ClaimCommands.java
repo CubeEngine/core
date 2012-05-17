@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.User;
-import de.cubeisland.cubeengine.war.user.Users;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ public class ClaimCommands {
 
     private AreaControl areas = CubeWar.getInstance().getAreas();
     private GroupControl groups = GroupControl.get();
+    private UserControl users = CubeWar.getInstance().getUserControl();
 
     public ClaimCommands() {
     }
@@ -37,7 +38,7 @@ public class ClaimCommands {
         }
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            User user = Users.getUser(player);
+            User user = users.getUser(player);
             if (args.isEmpty()) {
                 if ((Perm.command_claim_BP.hasPerm(sender))
                         || (Perm.command_claim_ownTeam.hasPerm(sender))) {
@@ -190,7 +191,7 @@ public class ClaimCommands {
         if (sender instanceof Player) {
             player = (Player) sender;
             loc = player.getLocation();
-            user = Users.getUser(sender);
+            user = users.getUser(sender);
         } else {
             sender.sendMessage(t("unclaim_never"));
             return true;

@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.war.commands;
 
+import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
-import de.cubeisland.cubeengine.war.user.Users;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
@@ -13,11 +14,13 @@ import org.bukkit.command.CommandSender;
  */
 public class ByPassCommand {
 
+    private UserControl users = CubeWar.getInstance().getUserControl();
+    
     public ByPassCommand() 
     {
     
     }
-    
+
     @Command(usage = "<Bypass>", aliases={"bp"})
     public void bypass(CommandSender sender, CommandArgs args)
     {
@@ -33,7 +36,7 @@ public class ByPassCommand {
         String bp = args.getString(0);
         if (equal(bp,"off")) 
         {
-            Users.getUser(sender).unsetBypasses();
+            users.getUser(sender).unsetBypasses();
             sender.sendMessage(t("bypass_off_all"));
             return;
         }
@@ -61,8 +64,8 @@ public class ByPassCommand {
     private void toggleBP(String bp, Perm perm, CommandSender sender)
     {
         if (perm.hasNotPerm(sender)) return;
-        Users.getUser(sender).toggleBypass(bp);
-        if (Users.getUser(sender).hasBypass(bp))
+        users.getUser(sender).toggleBypass(bp);
+        if (users.getUser(sender).hasBypass(bp))
             sender.sendMessage(t("bypass_on",bp));
         else
             sender.sendMessage(t("bypass_off",bp));

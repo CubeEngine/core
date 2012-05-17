@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cubeisland.cubeengine.war.database;
 
 import de.cubeisland.cubeengine.core.persistence.Database;
@@ -21,28 +20,29 @@ import java.util.Map;
  *
  * @author Faithcaio
  */
-public class GroupStorage implements Storage<Group>{
+public class GroupStorage implements Storage<Group>
+{
 
     private final Database database = CubeWar.getDB();
     private final String TABLE = "groups";
-    
-    public GroupStorage() 
+
+    public GroupStorage()
     {
         this.initialize();
         try
         {//Area IDs Safe = -10 | War = -50 | WildLand = 0 | DefaultTeam = -1 | DefaultArena = -2
-         //More Teams/Arena ID = 1+...
-         //ID, TAG, NAME, DESCRIPTION, ISARENA?, respawnprotect, dmgmod, pwrboost, permpwr,  flags
-         //int str  str   str          bool      int (in sec)    str     int       int(NULL) int
-            
-         //TODO deniedCmd / protections zu DenyUsageStorage
+            //More Teams/Arena ID = 1+...
+            //ID, TAG, NAME, DESCRIPTION, ISARENA?, respawnprotect, dmgmod, pwrboost, permpwr,  flags
+            //int str  str   str          bool      int (in sec)    str     int       int(NULL) int
+
+            //TODO deniedCmd / protections zu DenyUsageStorage
             this.database.prepareStatement("group_get", "SELECT * FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
             this.database.prepareStatement("group_getall", "SELECT * FROM {{" + TABLE + "}}");
             this.database.prepareStatement("group_store", "INSERT INTO {{" + TABLE + "}} (id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags) VALUES (?,?,?,?,?,?,?,?,?,?)");
             this.database.prepareStatement("group_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("group_clear", "DELETE FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("group_update",   "UPDATE {{"+TABLE+"}} SET "+
-                                                        "name=?, desc=?, respawnprot=?, dmgmod=?,pwrboost=?,permpwr=?,flags=? WHERE id=?");
+            this.database.prepareStatement("group_update", "UPDATE {{" + TABLE + "}} SET "
+                    + "name=?, desc=?, respawnprot=?, dmgmod=?,pwrboost=?,permpwr=?,flags=? WHERE id=?");
         }
         catch (SQLException e)
         {
@@ -51,22 +51,22 @@ public class GroupStorage implements Storage<Group>{
     }
 
     public void initialize()
-    {        
+    {
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `groups` ("
-                + "`id` int(10) unsigned NOT NULL,"
-                + "`tag` varchar(10) NOT NULL,"//TODO limit Tag to 10
-                + "`name` varchar(20) NOT NULL,"//TODO limit name to 20
-                + "`desc` varchar(42) NOT NULL,"  //TODO limit desc to 42     
-                + "`isarena` smallint(2) NOT NULL,"//bool?
-                + "`respawnprot` int(3) NOT NULL,"//TODO limit to 999 sec
-                + "`dmgmod` varchar(5) NOT NULL,"//TODO limit to 5  //Format +1 -1 P30 P-30 S1 S-1
-                + "`pwrboost` int(11) NOT NULL,"
-                + "`permpwr` int(11) DEFAULT NULL,"
-                + "`flags` int(11) NOT NULL,"
-                + "PRIMARY KEY (`id`)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                    + "`id` int(10) unsigned NOT NULL,"
+                    + "`tag` varchar(10) NOT NULL,"//TODO limit Tag to 10
+                    + "`name` varchar(20) NOT NULL,"//TODO limit name to 20
+                    + "`desc` varchar(42) NOT NULL," //TODO limit desc to 42     
+                    + "`isarena` smallint(2) NOT NULL,"//bool?
+                    + "`respawnprot` int(3) NOT NULL,"//TODO limit to 999 sec
+                    + "`dmgmod` varchar(5) NOT NULL,"//TODO limit to 5  //Format +1 -1 P30 P-30 S1 S-1
+                    + "`pwrboost` int(11) NOT NULL,"
+                    + "`permpwr` int(11) DEFAULT NULL,"
+                    + "`flags` int(11) NOT NULL,"
+                    + "PRIMARY KEY (`id`)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
         {
@@ -84,18 +84,18 @@ public class GroupStorage implements Storage<Group>{
             {
                 return null;
             }
-            int id= result.getInt("id");
-            String tag= result.getString("tag");
-            String name= result.getString("name");
-            String desc= result.getString("desc");
-            boolean isarena= result.getBoolean("isarena");
-            int respawnprot= result.getInt("respawnprot");
-            String dmgmod= result.getString("dmgmod");
-            int pwrboost= result.getInt("pwrboost");
-            Integer permpwr= result.getInt("permpwr");
-            int flags= result.getInt("flags");
-            
-            return new Group(id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags);
+            int id = result.getInt("id");
+            String tag = result.getString("tag");
+            String name = result.getString("name");
+            String desc = result.getString("desc");
+            boolean isarena = result.getBoolean("isarena");
+            int respawnprot = result.getInt("respawnprot");
+            String dmgmod = result.getString("dmgmod");
+            int pwrboost = result.getInt("pwrboost");
+            Integer permpwr = result.getInt("permpwr");
+            int flags = result.getInt("flags");
+
+            return new Group(id, tag, name, desc, isarena, respawnprot, dmgmod, pwrboost, permpwr, flags);
 
         }
         catch (SQLException e)
@@ -113,17 +113,17 @@ public class GroupStorage implements Storage<Group>{
             Collection<Group> groups = new ArrayList<Group>();
             while (result.next())
             {
-                int id= result.getInt("id");
-                String tag= result.getString("tag");
-                String name= result.getString("name");
-                String desc= result.getString("desc");
-                boolean isarena= result.getBoolean("isarena");
-                int respawnprot= result.getInt("respawnprot");
-                String dmgmod= result.getString("dmgmod");
-                int pwrboost= result.getInt("pwrboost");
-                Integer permpwr= result.getInt("permpwr");
-                int flags= result.getInt("flags");
-                groups.add(new Group(id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags));
+                int id = result.getInt("id");
+                String tag = result.getString("tag");
+                String name = result.getString("name");
+                String desc = result.getString("desc");
+                boolean isarena = result.getBoolean("isarena");
+                int respawnprot = result.getInt("respawnprot");
+                String dmgmod = result.getString("dmgmod");
+                int pwrboost = result.getInt("pwrboost");
+                Integer permpwr = result.getInt("permpwr");
+                int flags = result.getInt("flags");
+                groups.add(new Group(id, tag, name, desc, isarena, respawnprot, dmgmod, pwrboost, permpwr, flags));
             }
 
             return groups;
@@ -138,14 +138,17 @@ public class GroupStorage implements Storage<Group>{
     {
         try
         {
-            int id= model.getId();
-            String tag= model.getTag();
-            String name= model.getName();
-            String desc= model.getDescription();
+            int id = model.getId();
+            String tag = model.getTag();
+            String name = model.getName();
+            String desc = model.getDescription();
             boolean isarena = false;
-            if (model.getType().equals(AreaType.ARENA)) isarena = true;
-            int respawnprot= model.getPvp_respawnprotect();
-            Map<Group.DmgModType,Integer> modifiers = model.getDamagemodifier();
+            if (model.getType().equals(AreaType.ARENA))
+            {
+                isarena = true;
+            }
+            int respawnprot = model.getPvp_respawnprotect();
+            Map<Group.DmgModType, Integer> modifiers = model.getDamagemodifier();
             String dmgmod = "0"; //If wrong set to ADD 0
             for (Group.DmgModType type : Group.DmgModType.values())
             {
@@ -161,22 +164,22 @@ public class GroupStorage implements Storage<Group>{
                         }
                         case PERCENT:
                         {
-                            dmgmod = "P"+String.valueOf(tmp);
+                            dmgmod = "P" + String.valueOf(tmp);
                             break;
-                        } 
+                        }
                         case SET:
                         {
-                            dmgmod = "S"+String.valueOf(tmp);
+                            dmgmod = "S" + String.valueOf(tmp);
                             break;
                         }
                     }
                     break;
                 }
             }
-            int pwrboost= model.getPower_boost();
-            Integer permpwr= model.getPower_perm();
-            int flags= model.getBits().get();
-            this.database.preparedExec("group_store", id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags);
+            int pwrboost = model.getPower_boost();
+            Integer permpwr = model.getPower_perm();
+            int flags = model.getBits().get();
+            this.database.preparedExec("group_store", id, tag, name, desc, isarena, respawnprot, dmgmod, pwrboost, permpwr, flags);
             DenyUsageStorage denyuseDB = new DenyUsageStorage();
             denyuseDB.storeByGroup(model);
         }
@@ -190,13 +193,16 @@ public class GroupStorage implements Storage<Group>{
     {
         try
         {
-            int id= model.getId();
-            String name= model.getName();
-            String desc= model.getDescription();
+            int id = model.getId();
+            String name = model.getName();
+            String desc = model.getDescription();
             boolean isarena = false;
-            if (model.getType().equals(AreaType.ARENA)) isarena = true;
-            int respawnprot= model.getPvp_respawnprotect();
-            Map<Group.DmgModType,Integer> modifiers = model.getDamagemodifier();
+            if (model.getType().equals(AreaType.ARENA))
+            {
+                isarena = true;
+            }
+            int respawnprot = model.getPvp_respawnprotect();
+            Map<Group.DmgModType, Integer> modifiers = model.getDamagemodifier();
             String dmgmod = "0"; //If wrong set to ADD 0
             for (Group.DmgModType type : Group.DmgModType.values())
             {
@@ -212,22 +218,22 @@ public class GroupStorage implements Storage<Group>{
                         }
                         case PERCENT:
                         {
-                            dmgmod = "P"+String.valueOf(tmp);
+                            dmgmod = "P" + String.valueOf(tmp);
                             break;
-                        } 
+                        }
                         case SET:
                         {
-                            dmgmod = "S"+String.valueOf(tmp);
+                            dmgmod = "S" + String.valueOf(tmp);
                             break;
                         }
                     }
                     break;
                 }
             }
-            int pwrboost= model.getPower_boost();
-            Integer permpwr= model.getPower_perm();
-            int flags= model.getBits().get();
-            this.database.preparedExec("group_update", name,desc,respawnprot,dmgmod,pwrboost,permpwr,flags, id);
+            int pwrboost = model.getPower_boost();
+            Integer permpwr = model.getPower_perm();
+            int flags = model.getBits().get();
+            this.database.preparedExec("group_update", name, desc, respawnprot, dmgmod, pwrboost, permpwr, flags, id);
         }
         catch (Exception e)
         {

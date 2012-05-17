@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.war.commands;
 
+import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
 import de.cubeisland.cubeengine.war.user.User;
-import de.cubeisland.cubeengine.war.user.Users;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
@@ -15,6 +16,8 @@ import org.bukkit.command.CommandSender;
 public class UserCommands 
 {
 
+    private UserControl users = CubeWar.getInstance().getUserControl();
+    
     public UserCommands() 
     {
     
@@ -27,7 +30,7 @@ public class UserCommands
         if (args.size() > 0)    
         {
             if (Perm.command_whois_other.hasNotPerm(sender)) return true;
-            User user = Users.getUser(args.getString(0));
+            User user = users.getUser(args.getString(0));
             if (user == null)
             {
                 sender.sendMessage(t("e")+t("g_noplayer"));
@@ -38,7 +41,7 @@ public class UserCommands
         }
         if (args.isEmpty())
         {
-            User user = Users.getUser(sender);
+            User user = users.getUser(sender);
             user.showInfo(sender);
             return true;
         }
