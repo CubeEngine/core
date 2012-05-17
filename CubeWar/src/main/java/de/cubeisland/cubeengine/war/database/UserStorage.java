@@ -49,7 +49,7 @@ public class UserStorage implements Storage<User>{
                 + "`kp` int(11) NOT NULL,"  
                 + "`mode` int(2) NOT NULL,"
                 + "`teamid` int(4) NOT NULL,"
-                + "PRIMARY KEY (`cubeuserid`),"
+                + "PRIMARY KEY (`cubeuserid`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
@@ -138,7 +138,6 @@ public class UserStorage implements Storage<User>{
             int kills= model.getKills();
             int kp= model.getKp();
             int teamid= model.getTeam().getId();
-            
             int modeInt = 0;
             PlayerMode mode = model.getMode();
             if (mode.equals(PlayerMode.NORMAL)) modeInt = 1;

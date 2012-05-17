@@ -49,7 +49,7 @@ public class AreaStorage implements Storage<Area>{
                 + "`groupid` int(11) NOT NULL,"
                 + "`x` int(10) NOT NULL,"
                 + "`z` int(11) NOT NULL,"
-                + "PRIMARY KEY (`id`),"
+                + "PRIMARY KEY (`id`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
         }
         catch (SQLException ex)

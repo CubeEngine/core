@@ -189,6 +189,8 @@ public class User implements Model{
     
     public Group getTeam()
     {
+        if (this.team == null) 
+            return GroupControl.getWildLand();
         return this.team;
     }
     

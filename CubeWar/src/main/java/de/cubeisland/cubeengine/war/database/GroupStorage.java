@@ -36,8 +36,8 @@ public class GroupStorage implements Storage<Group>{
          //int str  str   str          bool      int (in sec)    str     int       int(NULL) int
             
          //TODO deniedCmd / protections zu DenyUsageStorage
-            this.database.prepareStatement("group_get", "SELECT id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("group_getall", "SELECT id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("group_get", "SELECT * FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
+            this.database.prepareStatement("group_getall", "SELECT * FROM {{" + TABLE + "}}");
             this.database.prepareStatement("group_store", "INSERT INTO {{" + TABLE + "}} (id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags) VALUES (?,?,?,?,?,?,?,?,?,?)");
             this.database.prepareStatement("group_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("group_clear", "DELETE FROM {{" + TABLE + "}}");
@@ -61,11 +61,11 @@ public class GroupStorage implements Storage<Group>{
                 + "`desc` varchar(42) NOT NULL,"  //TODO limit desc to 42     
                 + "`isarena` smallint(2) NOT NULL,"//bool?
                 + "`respawnprot` int(3) NOT NULL,"//TODO limit to 999 sec
-                + "`dmgmod` string(5) NOT NULL,"//TODO limit to 5  //Format +1 -1 P30 P-30 S1 S-1
+                + "`dmgmod` varchar(5) NOT NULL,"//TODO limit to 5  //Format +1 -1 P30 P-30 S1 S-1
                 + "`pwrboost` int(11) NOT NULL,"
                 + "`permpwr` int(11) DEFAULT NULL,"
                 + "`flags` int(11) NOT NULL,"
-                + "PRIMARY KEY (`id`),"
+                + "PRIMARY KEY (`id`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)

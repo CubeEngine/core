@@ -46,7 +46,7 @@ public class DenyUsageStorage implements Storage<Group>{
                 + "`id` int(10) unsigned NOT NULL,"
                 + "`groupid` int(10) unsigned NOT NULL,"
                 + "`deny` String(42) NOT NULL,"
-                + "PRIMARY KEY (`id`),"
+                + "PRIMARY KEY (`id`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
