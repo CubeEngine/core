@@ -30,7 +30,7 @@ public class UserStorage implements Storage<User>{
             this.database.prepareStatement("user_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,death,kills,kp,mode,teamid) VALUES (?,?,?,?,?,?)");
             this.database.prepareStatement("user_delete", "DELETE FROM {{" + TABLE + "}} WHERE cubeuserid=?");
             this.database.prepareStatement("user_clear", "DELETE FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("user_update", "UPDATE {{"+TABLE+"}} SET groupid=? WHERE x=? && z=?");
+            this.database.prepareStatement("user_update", "UPDATE {{"+TABLE+"}} SET death=?,kills=?,kp=?,mode=?,teamid=? WHERE cubeuserid=?");
         }
         catch (SQLException e)
         {
@@ -153,25 +153,64 @@ public class UserStorage implements Storage<User>{
             throw new StorageException("Failed to store the user !", e);
         }
     }
-
-    public void update(User model) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    
+    public boolean delete(User model) 
+    {
+        return this.delete(model.getId());
     }
 
+    public boolean delete(int id) 
+    {
+        try
+        {
+            return this.database.preparedExec("group_delete",id);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to delete the user", e);
+        }
+    }
+
+    public void clear() 
+    {
+        try
+        {
+            this.database.preparedExec("user_clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
+        }
+    }
+    
     public void merge(User model) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    public boolean delete(User model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
     
+
+    public void update(User model) 
+    {
+        try
+        {
+            int cubeuserid= model.getId();
+            int death= model.getDeath();
+            int kills= model.getKills();
+            int kp= model.getKp();
+            int teamid= model.getTeam().getId();
+            int modeInt = 0;
+            PlayerMode mode = model.getMode();
+            if (mode.equals(PlayerMode.NORMAL)) modeInt = 1;
+            if (mode.equals(PlayerMode.KILLRESET)) modeInt = 2;
+            if (mode.equals(PlayerMode.HIGHLANDER)) modeInt = 3;
+            if (mode.equals(PlayerMode.PEACE)) modeInt = 4;
+            if (mode.equals(PlayerMode.DUEL)) modeInt = 5;
+            this.database.preparedExec("user_update",death,kills,kp,modeInt,teamid,cubeuserid);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to update the user !", e);
+        }
+    }
+
+
 }

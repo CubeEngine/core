@@ -30,6 +30,7 @@ public class AreaStorage implements Storage<Area>{
             this.database.prepareStatement("group_getall", "SELECT groupid,x,z FROM {{" + TABLE + "}}");
             this.database.prepareStatement("group_store", "INSERT INTO {{" + TABLE + "}} (groupid,x,z) VALUES (?,?,?)");
             this.database.prepareStatement("group_delete", "DELETE FROM {{" + TABLE + "}} WHERE x=? && z=?");
+            this.database.prepareStatement("group_delete_group", "DELETE FROM {{" + TABLE + "}} WHERE groupid=?");
             this.database.prepareStatement("group_clear", "DELETE FROM {{" + TABLE + "}}");
             this.database.prepareStatement("group_update",   "UPDATE {{"+TABLE+"}} SET groupid=? WHERE x=? && z=?");
         }
@@ -116,6 +117,30 @@ public class AreaStorage implements Storage<Area>{
         }
     }
     
+    public void delete(int x, int z) 
+    {
+        try
+        {
+            this.database.preparedExec("area_delete",x,z);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to delete the Chunk!", e);
+        }
+    }
+    
+    public void deleteByGroup(int groupid) 
+    {
+        try
+        {
+            this.database.preparedExec("group_delete_group",groupid);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to delete the Chunk!", e);
+        }
+    }        
+            
     public void clear() 
     {
         try

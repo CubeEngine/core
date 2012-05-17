@@ -177,6 +177,8 @@ public class GroupStorage implements Storage<Group>{
             Integer permpwr= model.getPower_perm();
             int flags= model.getBits().get();
             this.database.preparedExec("group_store", id,tag,name,desc,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags);
+            DenyUsageStorage denyuseDB = new DenyUsageStorage();
+            denyuseDB.storeByGroup(model);
         }
         catch (Exception e)
         {

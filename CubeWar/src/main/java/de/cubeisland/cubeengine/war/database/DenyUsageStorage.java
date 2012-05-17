@@ -55,6 +55,36 @@ public class DenyUsageStorage implements Storage<Group>{
         }
     }
     
+    public List<Material> getAllMatByGroup(Group group)
+    {
+        List<String> list = this.getAllByGroup(group);
+        List<Material> newlist = new ArrayList<Material>();    
+        for (String s : list)
+        {
+            if (Material.matchMaterial(s)!=null)
+            {
+                newlist.add(Material.matchMaterial(s));
+            }
+        }
+        
+        return newlist;
+    }
+    
+    public List<String> getAllCmdByGroup(Group group)
+    {
+        List<String> list = this.getAllByGroup(group);
+        List<String> newlist = new ArrayList<String>();    
+        for (String s : list)
+        {
+            if (s.startsWith("CMD_"))
+            {
+                newlist.add(s.substring(4));
+            }
+        }
+        
+        return newlist;
+    }
+    
     public List<String> getAllByGroup(Group group)
     {
         return this.getAllByGroup(group.getId());
@@ -95,7 +125,7 @@ public class DenyUsageStorage implements Storage<Group>{
         }
         for (String s : group.getDenycommands())
         {
-            this.store(s, id);
+            this.store("CMD_"+s, id);
         }
     }
     

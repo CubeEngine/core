@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.war.area;
 
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.CubeWar;
+import de.cubeisland.cubeengine.war.database.AreaStorage;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import gnu.trove.map.hash.THashMap;
@@ -16,7 +17,8 @@ import org.bukkit.Location;
  */
 public class Area implements Model 
 {
-
+    private static AreaStorage areaDB = new AreaStorage();
+    
     private static THashMap<Chunk,Group> chunks = new THashMap<Chunk,Group>();
     
     public Area() {}
@@ -41,6 +43,7 @@ public class Area implements Model
                 chunks.get(chunk).remPower_used();
             }
         }
+        areaDB.store(group.getId(),chunk.getX(),chunk.getZ());
         return chunks.put(chunk, group);
     }
     
@@ -59,12 +62,13 @@ public class Area implements Model
     
     public static Group remChunk(Location loc)
     {
-        return chunks.remove(loc.getChunk());
+        return remChunk(loc.getChunk());
     }
     
     public static Group remChunk(Chunk chunk)
     {
         CubeWar.debug("REM X: "+chunk.getX()+" Z:"+chunk.getZ()+" "+chunks.get(chunk));
+        areaDB.delete(chunk.getX(), chunk.getZ());
         Group group = chunks.remove(chunk);
         if (group != null)
             group.remPower_used();
@@ -84,16 +88,14 @@ public class Area implements Model
         {
             chunks.remove(chunk);
         }
+        areaDB.deleteByGroup(group.getId());
         group.resetPower_used();
     }
     
     public static void remAllAll()
     {
         chunks.clear();
-    }
-
-    public int getId() {
-        throw new UnsupportedOperationException("Not supported.");
+        areaDB.clear();
     }
     
     public void load(Chunk chunk, int groupid)
@@ -101,4 +103,5 @@ public class Area implements Model
         chunks.put(chunk, GroupControl.getGroup(groupid));
     }
     
+    public int getId() {throw new UnsupportedOperationException("No Need");}
 }

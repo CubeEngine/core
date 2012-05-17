@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.war.user;
 
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
+import de.cubeisland.cubeengine.war.database.UserStorage;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Effect;
@@ -19,7 +20,8 @@ public class Users {
 
     private static Map<OfflinePlayer,User> users= new HashMap<OfflinePlayer,User>();
     private static Server server = CubeWar.getInstance().getServer();
-
+    private static UserStorage userDB = new UserStorage();
+    
     public Users() 
     {
     
@@ -46,12 +48,15 @@ public class Users {
             killer.kill(killed);
             killed.die();
         }
+        userDB.update(killed);
+        userDB.update(killer);
     }
     
     public static void kill(Player killerPlayer, Monster monster)
     {
         User killer = getOfflineUser(killerPlayer);
-        killer.kill(monster);           
+        killer.kill(monster);  
+        userDB.update(killer);
     }
     
     public static String getUserKD(User user, User killed, int kill)
@@ -90,8 +95,10 @@ public class Users {
             return users.get(user);
         else
         {
-            users.put(user, new User(user));
-            return users.get(user);        
+            User newuser = new User(user);
+            users.put(user, newuser);
+            userDB.store(newuser);
+            return newuser;      
         }
     }
     

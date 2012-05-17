@@ -38,7 +38,6 @@ public class ClaimCommands {
         {
             Player player = (Player)sender;
             User user = Users.getUser(player);
-            Location loc = player.getLocation();
             if (args.isEmpty()) 
             {
                 if ((Perm.command_claim_BP.hasPerm(sender))

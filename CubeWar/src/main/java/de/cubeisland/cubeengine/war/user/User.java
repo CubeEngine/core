@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
+import de.cubeisland.cubeengine.war.database.UserStorage;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import java.util.HashSet;
@@ -31,6 +32,8 @@ public class User implements Model{
     private boolean respawning;
     private HashSet<String> bypasses = new HashSet<String>();
     private CubeUserManager cuManager = CubeUserManager.getInstance();
+    private UserStorage userDB = new UserStorage();
+    
     
     public int getId()
     {
@@ -180,6 +183,7 @@ public class User implements Model{
     
     public void setTeam(Group team)
     {
+        userDB.update(this);
         this.team = team;
     }
     
