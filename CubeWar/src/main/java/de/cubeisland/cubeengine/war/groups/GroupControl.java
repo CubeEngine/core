@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.war.groups;
 
 import de.cubeisland.cubeengine.war.Util;
 import de.cubeisland.cubeengine.war.area.Area;
+import de.cubeisland.cubeengine.war.database.AreaStorage;
 import de.cubeisland.cubeengine.war.database.GroupStorage;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.Collection;
@@ -17,7 +18,8 @@ public class GroupControl {
 
     private static TIntObjectHashMap<Group> groups = new TIntObjectHashMap<Group>();
     private static GroupControl instance = null;
-
+    private static GroupStorage groupDB = new GroupStorage();
+    
     public static void wipeArea()
     {
         for (Group g : groups.valueCollection())
@@ -27,6 +29,17 @@ public class GroupControl {
         }
     }
 
+    public static void loadDB()
+    {
+        for (Group group : groupDB.getAll())
+        {
+            group.loadDenyUsage();
+            groups.put(group.getId(), group);
+        }
+        
+    }
+    
+    
     public GroupControl(ConfigurationSection config) 
     {
         for (String name : config.getKeys(false))
@@ -128,7 +141,6 @@ public class GroupControl {
         int id = groups.size()-4;
         newGroup.setIntegerValue("id", id);
         groups.put(id, newGroup);
-        GroupStorage groupDB = new GroupStorage();
         groupDB.store(newGroup);
         return newGroup;
     }

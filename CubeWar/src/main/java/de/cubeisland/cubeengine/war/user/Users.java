@@ -27,6 +27,14 @@ public class Users {
     
     }
     
+    public static void loadDB()
+    {
+        for (User user : userDB.getAll())
+        {
+            users.put(user.getPlayer(), user);
+        }
+    }
+    
     public static void kill(Player killerPlayer,Player killedPlayer)
     {
         User killer = getUser(killerPlayer);

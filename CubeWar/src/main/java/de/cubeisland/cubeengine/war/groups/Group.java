@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.war.groups;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
+import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
 import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.cubeengine.war.user.Users;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
@@ -526,6 +527,12 @@ public class Group implements Cloneable,Model{
     {
         if (closed) this.bits.set(AUTO_CLOSE);
         else this.bits.unset(AUTO_CLOSE);
+    }
+
+    public void loadDenyUsage() {
+        DenyUsageStorage denyuseDB = new DenyUsageStorage();
+        this.setListValue("protect", denyuseDB.getAllMatByGroup(this));
+        this.setListValue("denycommands", denyuseDB.getAllCmdByGroup(this));
     }
     
     public static enum DmgModType 
