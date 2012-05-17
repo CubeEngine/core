@@ -27,13 +27,13 @@ public class AreaStorage implements Storage<AreaControl>
         this.initialize();
         try
         {
-            this.database.prepareStatement("group_get", "SELECT groupid {{" + TABLE + "}} WHERE x=? && z=? LIMIT 1");
-            this.database.prepareStatement("group_getall", "SELECT groupid,x,z FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("group_store", "INSERT INTO {{" + TABLE + "}} (groupid,x,z) VALUES (?,?,?)");
-            this.database.prepareStatement("group_delete", "DELETE FROM {{" + TABLE + "}} WHERE x=? && z=?");
-            this.database.prepareStatement("group_delete_group", "DELETE FROM {{" + TABLE + "}} WHERE groupid=?");
-            this.database.prepareStatement("group_clear", "DELETE FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("group_update", "UPDATE {{" + TABLE + "}} SET groupid=? WHERE x=? && z=?");
+            this.database.prepareStatement("area_get", "SELECT groupid {{" + TABLE + "}} WHERE x=? && z=? LIMIT 1");
+            this.database.prepareStatement("area_getall", "SELECT * FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("area_store", "INSERT INTO {{" + TABLE + "}} (groupid,x,z) VALUES (?,?,?)");
+            this.database.prepareStatement("area_delete", "DELETE FROM {{" + TABLE + "}} WHERE x=? && z=?");
+            this.database.prepareStatement("area_delete_group", "DELETE FROM {{" + TABLE + "}} WHERE groupid=?");
+            this.database.prepareStatement("area_clear", "DELETE FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("area_update", "UPDATE {{" + TABLE + "}} SET groupid=? WHERE x=? && z=?");
         }
         catch (SQLException e)
         {
@@ -69,7 +69,7 @@ public class AreaStorage implements Storage<AreaControl>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("", x, z);
+            ResultSet result = this.database.preparedQuery("area_get", x, z);
             if (!result.next())
             {
                 return 0;
@@ -91,7 +91,7 @@ public class AreaStorage implements Storage<AreaControl>
         AreaControl area = new AreaControl();
         try
         {
-            ResultSet result = this.database.preparedQuery("group_getall");
+            ResultSet result = this.database.preparedQuery("area_getall");
             while (result.next())
             {
                 area.load(server.getWorld("world").getChunkAt(result.getInt("x"), result.getInt("z")), result.getInt("groupid"));
@@ -101,7 +101,7 @@ public class AreaStorage implements Storage<AreaControl>
         }
         catch (SQLException e)
         {
-            throw new StorageException("Failed to load the groups from the database!", e);
+            throw new StorageException("Failed to load the areas from the database!", e);
         }
     }
 
@@ -109,7 +109,7 @@ public class AreaStorage implements Storage<AreaControl>
     {
         try
         {
-            this.database.preparedExec("group_store", groupid, x, z);
+            this.database.preparedExec("area_store", groupid, x, z);
         }
         catch (SQLException ex)
         {
@@ -133,7 +133,7 @@ public class AreaStorage implements Storage<AreaControl>
     {
         try
         {
-            this.database.preparedExec("group_delete_group", groupid);
+            this.database.preparedExec("area_delete_group", groupid);
         }
         catch (SQLException e)
         {

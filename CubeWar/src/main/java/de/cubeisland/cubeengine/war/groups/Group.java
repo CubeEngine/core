@@ -669,7 +669,7 @@ public class Group implements Cloneable, Model
 
     public void loadDenyUsage()
     {
-        DenyUsageStorage denyuseDB = new DenyUsageStorage();
+        DenyUsageStorage denyuseDB = CubeWar.getInstance().getDenyuseDB();
         this.setListValue("protect", denyuseDB.getAllMatByGroup(this));
         this.setListValue("denycommands", denyuseDB.getAllCmdByGroup(this));
     }

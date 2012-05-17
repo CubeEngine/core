@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 import de.cubeisland.cubeengine.war.database.UserStorage;
+import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import java.util.HashSet;
@@ -32,7 +33,7 @@ public class User implements Model
     private boolean respawning;
     private HashSet<String> bypasses = new HashSet<String>();
     private CubeUserManager cuManager = CubeUserManager.getInstance();
-    private UserStorage userDB = new UserStorage();
+    private UserStorage userDB = CubeWar.getInstance().getUserDB();
     private GroupControl groups = GroupControl.get();
     private UserControl users = CubeWar.getInstance().getUserControl();
 
@@ -55,6 +56,7 @@ public class User implements Model
         this.killpoints = kp;
         this.mode = mode;
         this.team = groups.getGroup(teamid);
+        this.rank = config.cubewar_ranks.get(0);
         this.rank.newRank(this);
     }
 
@@ -231,7 +233,8 @@ public class User implements Model
             kd = (int) (this.kills / this.death * 100);
         }
         sender.sendMessage(t("user_04", this.kills, this.death, String.valueOf(kd / 100)));
-        if (this.team != null)
+
+        if ((this.team != null)&&(!this.team.getType().equals(AreaType.WILDLAND)))
         {
             if (this.team.isTrueAlly(users.getUser(sender).getTeam()))
             {
@@ -287,5 +290,10 @@ public class User implements Model
     public boolean hasBypass(String bypass)
     {
         return this.bypasses.contains(bypass);
+    }
+
+    OfflinePlayer getOfflinePlayer()
+    {
+        return this.user.getOfflinePlayer();
     }
 }

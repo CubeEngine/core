@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.war.commands;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
+import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.User;
@@ -17,7 +18,7 @@ import org.bukkit.command.CommandSender;
  */
 public class GroupCommands {
 
-    private GroupControl groupcontrol = GroupControl.get();
+    private GroupControl groups = GroupControl.get();
     private UserControl users = CubeWar.getInstance().getUserControl();
     
     public GroupCommands() 
@@ -46,7 +47,7 @@ public class GroupCommands {
                         sender.sendMessage(t("create_tag_all"));
                         return true;
                     }
-                    if (!groupcontrol.freeTag(tag))
+                    if (!groups.freeTag(tag))
                     {
                         sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getName()));
                         return true;
@@ -55,9 +56,9 @@ public class GroupCommands {
                     {
                         name += " "+args.getString(i); 
                     }
-                    Group team = groupcontrol.newTeam(tag, name);
+                    Group team = groups.newTeam(tag, name);
                     User user = users.getUser(sender);
-                    if (user.getTeam() == null)
+                    if (user.getTeam().getType().equals(AreaType.WILDLAND))
                     {
                         team.addAdmin(users.getUser(sender));
                         sender.sendMessage(t("i")+t("ct1", tag, name));
@@ -79,7 +80,7 @@ public class GroupCommands {
                 {
                     String tag = args.getString(1);
                     String name = args.getString(2);
-                    if (!groupcontrol.freeTag(tag))
+                    if (!groups.freeTag(tag))
                     {
                         sender.sendMessage(t("create_tag_used",GroupControl.get().getGroup(tag).getTag()));
                         return true;
@@ -88,7 +89,7 @@ public class GroupCommands {
                     {
                         name += " "+args.getString(i); 
                     }
-                    groupcontrol.newArena(tag, name);
+                    groups.newArena(tag, name);
                     sender.sendMessage(t("i")+t("ca", tag, name));
                     return true;
                 }
@@ -120,7 +121,7 @@ public class GroupCommands {
                 {
                     val += " "+args.getString(i); 
                 }
-                if (groupcontrol.setGroupValue(group.getId(), args.getString(1), val))
+                if (groups.setGroupValue(group.getId(), args.getString(1), val))
                 {
                     sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
                     return true;
@@ -169,7 +170,7 @@ public class GroupCommands {
         if (Perm.command_join.hasNotPerm(sender)) return true;
         if (args.size() > 0)
         {
-            Group group = groupcontrol.getGroup(args.getString(0));
+            Group group = groups.getGroup(args.getString(0));
             if (group == null)
             {
                 sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
@@ -204,7 +205,7 @@ public class GroupCommands {
             User user = users.getUser(args.getString(0));
             if (user != null )
             {
-                if (user.getTeam() == null)
+                if (user.getTeam().getType().equals(AreaType.WILDLAND))
                 {
                     sender.sendMessage(t("team_noteam",user.getName()));
                     return true;
@@ -287,12 +288,12 @@ public class GroupCommands {
         
         if (position.equalsIgnoreCase("userjoin"))
         {
-            if (user.getTeam()!=null)
+            if (!user.getTeam().getType().equals(AreaType.WILDLAND))
             {
                 if (area.isUser(user))
                     sender.sendMessage(t("e")+t("team_joined",area.getTag()));
                 else
-                    sender.sendMessage(t("e")+t("team_leavefirst",area.getTag()));
+                    sender.sendMessage(t("e")+t("team_leavefirst",user.getTeamTag()));
                 return true;
             }
             else
@@ -315,7 +316,7 @@ public class GroupCommands {
         
         if (position.equalsIgnoreCase("userleave"))
         {
-            if (user.getTeam()==null)
+            if (user.getTeam().getType().equals(AreaType.WILDLAND))
             {
                 sender.sendMessage(t("e")+t("team_noleave",user.getName()));
                 return true;
@@ -340,8 +341,8 @@ public class GroupCommands {
         {
             if (Perm.command_relation_BP.hasNotPerm(sender))
                 if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
-            Group team = groupcontrol.getGroup(args.getString(0));
-            Group team2 = groupcontrol.getGroup(args.getString(1));
+            Group team = groups.getGroup(args.getString(0));
+            Group team2 = groups.getGroup(args.getString(1));
             if (team == null)
             {
                 sender.sendMessage(t("m_noTeamExist",args.getString(0)));
@@ -359,7 +360,7 @@ public class GroupCommands {
         }
         if (args.size() > 0)
         {
-            Group team2 = groupcontrol.getGroup(args.getString(0));
+            Group team2 = groups.getGroup(args.getString(0));
             Group team = users.getUser(sender).getTeam();
             if (team == null)
             {
@@ -398,8 +399,8 @@ public class GroupCommands {
         {
             if (Perm.command_relation_BP.hasNotPerm(sender))
                 if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
-            Group team = groupcontrol.getGroup(args.getString(0));
-            Group team2 = groupcontrol.getGroup(args.getString(1));
+            Group team = groups.getGroup(args.getString(0));
+            Group team2 = groups.getGroup(args.getString(1));
             if (team == null)
             {
                 sender.sendMessage(t("m_noTeamExist",args.getString(0)));
@@ -418,7 +419,7 @@ public class GroupCommands {
         }
         if (args.size() > 0)
         {
-            Group team2 = groupcontrol.getGroup(args.getString(0));
+            Group team2 = groups.getGroup(args.getString(0));
             Group team = users.getUser(sender).getTeam();
             if (team == null)
             {
@@ -458,8 +459,8 @@ public class GroupCommands {
         {
             if (Perm.command_relation_BP.hasNotPerm(sender))
                 if (Perm.command_relation_change_other.hasNotPerm(sender)) return true;
-            Group team = groupcontrol.getGroup(args.getString(0));
-            Group team2 = groupcontrol.getGroup(args.getString(1));
+            Group team = groups.getGroup(args.getString(0));
+            Group team2 = groups.getGroup(args.getString(1));
             if (team == null)
             {
                 sender.sendMessage(t("m_noTeamExist",args.getString(0)));
@@ -478,7 +479,7 @@ public class GroupCommands {
         }
         if (args.size() > 0)
         {
-            Group team2 = groupcontrol.getGroup(args.getString(0));
+            Group team2 = groups.getGroup(args.getString(0));
             Group team = users.getUser(sender).getTeam();
             if (team == null)
             {

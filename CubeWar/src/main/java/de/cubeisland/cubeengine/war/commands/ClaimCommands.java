@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
 import de.cubeisland.cubeengine.war.area.AreaControl;
+import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.User;
@@ -22,77 +23,76 @@ import org.bukkit.entity.Player;
  *
  * @author Faithcaio
  */
-public class ClaimCommands {
+public class ClaimCommands
+{
 
     private AreaControl areas = CubeWar.getInstance().getAreas();
     private GroupControl groups = GroupControl.get();
     private UserControl users = CubeWar.getInstance().getUserControl();
 
-    public ClaimCommands() {
+    public ClaimCommands()
+    {
     }
 
     @Command(usage = "[Radius] [Tag]")
-    public boolean claim(CommandSender sender, CommandArgs args) {
-        if (Perm.command_claim.hasNotPerm(sender)) {
+    public boolean claim(CommandSender sender, CommandArgs args)
+    {
+        if (Perm.command_claim.hasNotPerm(sender))
+        {
             return true;
         }
-        if (sender instanceof Player) {
+        if (sender instanceof Player)
+        {
             Player player = (Player) sender;
             User user = users.getUser(player);
-            if (args.isEmpty()) {
+            if (args.isEmpty())
+            {
                 if ((Perm.command_claim_BP.hasPerm(sender))
-                        || (Perm.command_claim_ownTeam.hasPerm(sender))) {
+                        || (Perm.command_claim_ownTeam.hasPerm(sender)))
+                {
                     this.claim(player.getLocation(), 0, user.getTeam(), player, user);
                 }
                 return true;
             }
-            if (args.size() > 0) {
+            
+            if (args.size() > 1)
+            {
                 int rad;
-                try {
-                    rad = args.getInt(0);
-                } catch (NumberFormatException ex) {
-                    sender.sendMessage(t("claim_invalid_radius", args.getString(0)));
-                    return true;
-                }
-                if (rad > CubeWar.getInstance().getConfiguration().max_claim) {
-                    sender.sendMessage(t("claim_big_radius", rad));
-                    return true;
-                }
-                if (rad > 0) {
-                    if ((Perm.command_claim_BP.hasNotPerm(sender))
-                            && (Perm.command_claim_radius.hasNotPerm(sender))) {
-                        return true;
-                    }
-                }
-                this.claim(player.getLocation(), rad, user.getTeam(), player, user);
-                return true;
-            }
+                try
+                {
 
-            if (args.size() > 1) {
-                int rad;
-                try {
                     rad = args.getInt(0);
-                } catch (NumberFormatException ex) {
+                }
+                catch (NumberFormatException ex)
+                {
                     sender.sendMessage(t("claim_invalid_radius", args.getString(0)));
                     return true;
                 }
-                if (rad > CubeWar.getInstance().getConfiguration().max_claim) {
+                if (rad > CubeWar.getInstance().getConfiguration().max_claim)
+                {
                     sender.sendMessage(t("claim_big_radius", rad));
                     return true;
                 }
-                Group team = GroupControl.get().getGroup(args.getString(1));
-                if (team == null) {
+                Group team = groups.getGroup(args.getString(1));
+                if (team == null)
+                {
                     sender.sendMessage(t("claim_invalid_team", args.getString(1)));
                     return true;
                 }
-                if (Perm.command_claim_BP.hasNotPerm(sender)) {
-                    if (!team.equals(user.getTeam())) {
-                        if (Perm.command_claim_otherTeam.hasNotPerm(sender)) {
+                if (Perm.command_claim_BP.hasNotPerm(sender))
+                {
+                    if (!team.equals(user.getTeam()))
+                    {
+                        if (Perm.command_claim_otherTeam.hasNotPerm(sender))
+                        {
+                            //TODO msg
                             return true;
                         }
                     }
-                    if (rad > 0) {
-                        if (Perm.command_claim_radius.hasNotPerm(sender)) {
+                    if (rad > 0)
+                    {
+                        if (Perm.command_claim_radius.hasNotPerm(sender))
+                        {
                             return true;
                         }
                     }
@@ -100,104 +100,173 @@ public class ClaimCommands {
                 this.claim(player.getLocation(), rad, team, player, user);
                 return true;
             }
-        } else {
+            if (args.size() > 0)
+            {
+                int rad;
+                try
+                {
+                    rad = args.getInt(0);
+                }
+                catch (NumberFormatException ex)
+                {
+                    sender.sendMessage(t("claim_invalid_radius", args.getString(0)));
+                    return true;
+                }
+                if (rad > CubeWar.getInstance().getConfiguration().max_claim)
+                {
+                    sender.sendMessage(t("claim_big_radius", rad));
+                    return true;
+                }
+                if (rad > 0)
+                {
+                    if ((Perm.command_claim_BP.hasNotPerm(sender))
+                            && (Perm.command_claim_radius.hasNotPerm(sender)))
+                    {
+                        return true;
+                    }
+                }
+                this.claim(player.getLocation(), rad, user.getTeam(), player, user);
+                return true;
+            }
+
+        }
+        else
+        {
             sender.sendMessage(t("claim_never"));
             return true;
         }
         return false;
     }
 
-    private void claim(Location loc, int rad, Group g, Player player, User user) {
-        if (g == null) {
+    private void claim(Location loc, int rad, Group team, Player player, User user)
+    {
+
+        if (team == null)
+        {
             player.sendMessage(t("claim_noteam"));
             return;
         }
-        if (rad == 0) {
-            if (areas.getGroup(loc).equals(user.getTeam())) {
+        if (rad == 0)
+        {
+            if (areas.getGroup(loc).equals(team))
+            {
                 player.sendMessage(t("claim_deny_own"));
                 return;
             }
         }
-        if (areas.getGroup(loc) != null) {
-            if (g.equals(areas.getGroup(loc))) {
-                if (Perm.command_claim_BP.hasNotPerm(player)) {
-                    if (Perm.command_claim_fromother.hasNotPerm(player)) {
+        if (areas.getGroup(loc) != null)
+        {
+            if (team.equals(areas.getGroup(loc)))
+            {
+                if (Perm.command_claim_BP.hasNotPerm(player))
+                {
+                    if (Perm.command_claim_fromother.hasNotPerm(player))
+                    {
                         return;
                     }
                 }
             }
         }
         List<Chunk> chunks = new ArrayList<Chunk>();
-        if (rad == 0) {
-            Group group = areas.addChunk(loc.getChunk(), user.getTeam());
-            if (group == null) {
+        if (rad == 0)
+        {
+            Group group = areas.addChunk(loc.getChunk(), team);
+            if (group == null)
+            {
                 group = groups.getWildLand();
             }
-            if (Perm.command_claim_BP.hasPerm(player)) {
-                player.sendMessage(t("claim_claimed_bypass", group.getTag(), user.getTeamTag()));
-            } else {
-                if (group.equals(groups.getWildLand())) {
-                    player.sendMessage(t("claim_claimed_wild", user.getTeamTag()));
-                } else {
-                    player.sendMessage(t("claim_claimed_enemy", group.getTag(), user.getTeamTag()));
+            if (Perm.command_claim_BP.hasPerm(player))
+            {
+                player.sendMessage(t("claim_claimed_bypass", group.getTag(), team.getTag()));
+            }
+            else
+            {
+                if (group.equals(groups.getWildLand()))
+                {
+                    player.sendMessage(t("claim_claimed_wild", team.getTag()));
+                }
+                else
+                {
+                    player.sendMessage(t("claim_claimed_enemy", group.getTag(), team.getTag()));
                 }
             }
             return;
-        } else {
+        }
+        else
+        {
             World world = loc.getWorld();
             int x = (int) loc.getChunk().getX();
             int z = (int) loc.getChunk().getZ();
-            for (int i = -rad; i <= rad; ++i) {
-                for (int j = -rad; j <= rad; ++j) {
+            for (int i = -rad; i <= rad; ++i)
+            {
+                for (int j = -rad; j <= rad; ++j)
+                {
                     chunks.add(world.getChunkAt(x + i, z + j));
                 }
             }
         }
         int sum = 0, wild = 0, enemy = 0, own = 0;
         boolean noEnemyClaim = false;
-        if (Perm.command_claim_BP.hasNotPerm(player)) {
+        if (Perm.command_claim_BP.hasNotPerm(player))
+        {
             noEnemyClaim = Perm.command_claim_fromother.checkPerm(player);
         }
-        for (Chunk chunk : chunks) {//TODO Check Power / Money
+        for (Chunk chunk : chunks)
+        {//TODO Check Power / Money
             ++sum;
             Group group = areas.getGroup(chunk);
-            if (group != null) {
-                if ((noEnemyClaim && !g.equals(group))) {
+            if (!group.getType().equals(AreaType.WILDLAND))
+            {
+                if ((noEnemyClaim && !team.equals(group)))
+                {
                     continue;
                 }
             }
             areas.addChunk(chunk, user.getTeam());
-            if (group == null) {
+            if (group.getType().equals(AreaType.WILDLAND))
+            {
                 ++wild;
-            } else if (group.equals(user.getTeam())) {
+            }
+            else if (group.equals(user.getTeam()))
+            {
                 ++own;
-            } else {
+            }
+            else
+            {
                 ++enemy;
             }
         }
-        player.sendMessage(t("claim_more", sum, g.getTag(), wild, enemy, sum - own, own));
+        player.sendMessage(t("claim_more", sum, team.getTag(), wild, enemy, sum - own, own));
     }
 
     @Command(usage = "[radius]|[all] [Tag]|[all]")
-    public boolean unclaim(CommandSender sender, CommandArgs args) {
-        if (Perm.command_unclaim_BP.hasNotPerm(sender)) {
-            if (Perm.command_unclaim.hasNotPerm(sender)) {
+    public boolean unclaim(CommandSender sender, CommandArgs args)
+    {
+        if (Perm.command_unclaim_BP.hasNotPerm(sender))
+        {
+            if (Perm.command_unclaim.hasNotPerm(sender))
+            {
                 return true;
             }
         }
         Player player;
         Location loc;
         User user;
-        if (sender instanceof Player) {
+        if (sender instanceof Player)
+        {
             player = (Player) sender;
             loc = player.getLocation();
             user = users.getUser(sender);
-        } else {
+        }
+        else
+        {
             sender.sendMessage(t("unclaim_never"));
             return true;
         }
-        if (args.isEmpty()) {
-            if (groups.getGroup(player).equals(groups.getWildLand())) {
+        if (args.isEmpty())
+        {
+            if (groups.getGroup(player).equals(groups.getWildLand()))
+            {
                 sender.sendMessage(t("unclaim_wild"));
                 return true;
             }
@@ -207,64 +276,75 @@ public class ClaimCommands {
             return true;
         }
         int rad;
-        try {
+        try
+        {
             rad = args.getInt(0);
-        } catch (NumberFormatException ex) {
-            if (args.getString(0).equalsIgnoreCase("all")) {
+        }
+        catch (NumberFormatException ex)
+        {
+            if (args.getString(0).equalsIgnoreCase("all"))
+            {
                 rad = -1;
-            } else {
+            }
+            else
+            {
                 sender.sendMessage(t("claim_invalid_radius"));
                 return true;
             }
         }
-        if (args.size() > 0) {
-            if (Perm.command_unclaim_BP.hasNotPerm(sender)) {
-                if (Perm.command_unclaim_radius.hasNotPerm(sender)) {
-                    return true;
-                }
-                if (rad == -1) {
-                    if (Perm.command_unclaim_ownTeam_all.hasNotPerm(sender)) {
-                        return true;
-                    }
-                }
-            }
-            this.unclaim(loc, rad, user.getTeam(), sender);
-            return true;
-        }
-        if (args.size() > 1) {
+        if (args.size() > 1)
+        {
             Group group = GroupControl.get().getGroup(args.getString(1));
-            if (group == null) {
-                if (!args.getString(1).equalsIgnoreCase("all")) {
+            if (group == null)
+            {
+                if (!args.getString(1).equalsIgnoreCase("all"))
+                {
                     sender.sendMessage(t("g_noGroup"));
                     return true;
                 }
             }
-            if (Perm.command_unclaim_BP.hasNotPerm(sender)) {
-                if (group == null) {
-                    if (Perm.command_unclaim_allTeam.hasNotPerm(sender)) {
+            if (Perm.command_unclaim_BP.hasNotPerm(sender))
+            {
+                if (group == null)
+                {
+                    if (Perm.command_unclaim_allTeam.hasNotPerm(sender))
+                    {
                         return true;
                     }
-                    if (rad == -1) {
-                        if (Perm.command_unclaim_allTeam_all.hasNotPerm(sender)) {
+                    if (rad == -1)
+                    {
+                        if (Perm.command_unclaim_allTeam_all.hasNotPerm(sender))
+                        {
                             return true;
                         }
                     }
-                } else {
-                    if (group.equals(user.getTeam())) {
-                        if (Perm.command_unclaim_radius.hasNotPerm(sender)) {
+                }
+                else
+                {
+                    if (group.equals(user.getTeam()))
+                    {
+                        if (Perm.command_unclaim_radius.hasNotPerm(sender))
+                        {
                             return true;
                         }
-                        if (rad == -1) {
-                            if (Perm.command_unclaim_ownTeam_all.hasNotPerm(sender)) {
+                        if (rad == -1)
+                        {
+                            if (Perm.command_unclaim_ownTeam_all.hasNotPerm(sender))
+                            {
                                 return true;
                             }
                         }
-                    } else {
-                        if (Perm.command_unclaim_otherTeam.hasNotPerm(sender)) {
+                    }
+                    else
+                    {
+                        if (Perm.command_unclaim_otherTeam.hasNotPerm(sender))
+                        {
                             return true;
                         }
-                        if (rad == -1) {
-                            if (Perm.command_unclaim_otherTeam_all.hasNotPerm(sender)) {
+                        if (rad == -1)
+                        {
+                            if (Perm.command_unclaim_otherTeam_all.hasNotPerm(sender))
+                            {
                                 return true;
                             }
                         }
@@ -274,44 +354,81 @@ public class ClaimCommands {
             this.unclaim(loc, rad, group, sender);
             return true;
         }
+        if (args.size() > 0)
+        {
+            if (Perm.command_unclaim_BP.hasNotPerm(sender))
+            {
+                if (Perm.command_unclaim_radius.hasNotPerm(sender))
+                {
+                    return true;
+                }
+                if (rad == -1)
+                {
+                    if (Perm.command_unclaim_ownTeam_all.hasNotPerm(sender))
+                    {
+                        return true;
+                    }
+                }
+            }
+            this.unclaim(loc, rad, user.getTeam(), sender);
+            return true;
+        }
         return false;
     }
 
-    private void unclaim(Location loc, int radius, Group group, CommandSender sender) {
-        if (radius == 0) {
+    private void unclaim(Location loc, int radius, Group group, CommandSender sender)
+    {
+        if (radius == 0)
+        {
             areas.remChunk(loc);
             sender.sendMessage(t("unclaim_single"));
-        } else if (radius < 0) {
-            if (radius == -1) {
-                if (group == null) {
+        }
+        else if (radius < 0)
+        {
+            if (radius == -1)
+            {
+                if (group == null)
+                {
                     groups.wipeArea();
                     sender.sendMessage(t("unclaim_all"));
-                } else {
+                }
+                else
+                {
                     areas.remAll(group);
                     sender.sendMessage(t("unclaim_group_all", group.getTag()));
                 }
-            } else {
+            }
+            else
+            {
                 sender.sendMessage(t("claim_neg_radius"));
             }
-        } else {
+        }
+        else
+        {
             List<Chunk> chunks = new ArrayList<Chunk>();
             World world = loc.getWorld();
             int x = (int) loc.getChunk().getX();
             int z = (int) loc.getChunk().getZ();
-            for (int i = -radius; i <= radius; ++i) {
-                for (int j = -radius; j <= radius; ++j) {
+            for (int i = -radius; i <= radius; ++i)
+            {
+                for (int j = -radius; j <= radius; ++j)
+                {
                     chunks.add(world.getChunkAt(x + i, z + j));
                 }
             }
             int i = 0;
-            for (Chunk chunk : chunks) {
-                if (group != null) {
-                    if (!group.equals(areas.getGroup(chunk))) {
+            for (Chunk chunk : chunks)
+            {
+                if (group != null)
+                {
+                    if (!group.equals(areas.getGroup(chunk)))
+                    {
                         continue;
                     }
                 }
                 Group g = areas.remChunk(chunk);
-                if (g != null) {
+                if (g != null)
+                {
                     ++i;
                 }
             }

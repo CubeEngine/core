@@ -19,11 +19,7 @@ public class GroupControl
 
     private TIntObjectHashMap<Group> groups = new TIntObjectHashMap<Group>();
     private static GroupControl instance = null;
-    private AreaControl areas = CubeWar.getInstance().getAreas();
-
-    public GroupControl()
-    {
-    }
+    private AreaControl areas;
 
     public void wipeArea()
     {
@@ -36,7 +32,9 @@ public class GroupControl
 
     public void loadDB()
     {
-        GroupStorage groupDB = new GroupStorage();
+        areas = CubeWar.getInstance().getAreas();
+        
+        GroupStorage groupDB = CubeWar.getInstance().getGroupDB();
         for (Group group : groupDB.getAll())
         {
             group.loadDenyUsage();
@@ -189,7 +187,7 @@ public class GroupControl
         int id = groups.size() - 4;
         newGroup.setIntegerValue("id", id);
         groups.put(id, newGroup);
-        GroupStorage groupDB = new GroupStorage();
+        GroupStorage groupDB = CubeWar.getInstance().getGroupDB();
         groupDB.store(newGroup);
         return newGroup;
     }
@@ -227,6 +225,7 @@ public class GroupControl
 
     public Group getGroup(Location loc)
     {
+
         return areas.getGroup(loc);
     }
 

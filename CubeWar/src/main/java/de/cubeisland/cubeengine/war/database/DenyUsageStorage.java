@@ -27,7 +27,7 @@ public class DenyUsageStorage implements Storage<Group>
         this.initialize();
         try
         {
-            this.database.prepareStatement("denyuse_getall_group", "SELECT deny {{" + TABLE + "}} WHERE groupid=?");
+            this.database.prepareStatement("denyuse_getall_group", "SELECT deny FROM {{" + TABLE + "}} WHERE groupid=?");
             this.database.prepareStatement("denyuse_store", "INSERT INTO {{" + TABLE + "}} (groupid,deny) VALUES (?,?)");
             this.database.prepareStatement("denyuse_deleteall_group", "DELETE FROM {{" + TABLE + "}} WHERE groupid=?");
             this.database.prepareStatement("denyuse_clear", "DELETE FROM {{" + TABLE + "}}");
@@ -43,11 +43,11 @@ public class DenyUsageStorage implements Storage<Group>
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `denyusage` ("
-                    + "`id` int(10) unsigned NOT NULL,"
+                    + "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,"
                     + "`groupid` int(10) unsigned NOT NULL,"
-                    + "`deny` String(42) NOT NULL,"
+                    + "`deny` varchar(42) NOT NULL,"
                     + "PRIMARY KEY (`id`)"
-                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
         }
         catch (SQLException ex)
         {

@@ -18,12 +18,13 @@ import org.bukkit.Location;
 public class AreaControl implements Model
 {
 
-    private AreaStorage areaDB = new AreaStorage();
+    private AreaStorage areaDB;
     private GroupControl groups = GroupControl.get();
     private THashMap<Chunk, Group> chunks = new THashMap<Chunk, Group>();
 
     public AreaControl()
     {
+        areaDB = CubeWar.getInstance().getAreaDB();
     }
 
     public Group addChunk(Location loc, Group group)

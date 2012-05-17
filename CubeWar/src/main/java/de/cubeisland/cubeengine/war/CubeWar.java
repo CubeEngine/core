@@ -47,10 +47,10 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     private CubeWarConfiguration config;
     private File dataFolder;
     private Economy economy = null;
-    private AreaControl areas = new AreaControl();
+    private AreaControl areas;
     private GroupControl groups;
-    private UserControl users = new UserControl();
-    private PvP pvp = new PvP();
+    private UserControl users;
+    private PvP pvp;
     private AreaStorage areaDB;
     private DenyUsageStorage denyuseDB;
     private GroupStorage groupDB;
@@ -94,18 +94,24 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         {
             translation = Translation.get(this.getClass(), "en");
         }
-        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new ClaimCommands()).registerCommands(new GroupCommands()).registerCommands(new UserCommands()).registerCommands(new ByPassCommand());
-        this.getCommand("cubewar").setExecutor(baseCommand);
-        this.pm.registerEvents(new CubeWarListener(), this);
+        
         //Load in DB...
+        users = new UserControl();
         areaDB = new AreaStorage();
+        areas = new AreaControl();
         denyuseDB = new DenyUsageStorage();
         groupDB = new GroupStorage();
         userDB = new UserStorage();
         users.loadDB();
         groups.loadDB();
         areaDB.load();
+        
+        pvp = new PvP();
+        
+        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
+        this.baseCommand.registerCommands(new ClaimCommands()).registerCommands(new GroupCommands()).registerCommands(new UserCommands()).registerCommands(new ByPassCommand());
+        this.getCommand("cubewar").setExecutor(baseCommand);
+        this.pm.registerEvents(new CubeWarListener(), this);
     }
 
     @Override
