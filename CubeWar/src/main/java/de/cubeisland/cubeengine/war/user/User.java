@@ -33,6 +33,7 @@ public class User implements Model{
     private HashSet<String> bypasses = new HashSet<String>();
     private CubeUserManager cuManager = CubeUserManager.getInstance();
     private UserStorage userDB = new UserStorage();
+    private GroupControl groups = GroupControl.get();
     
     
     public int getId()
@@ -53,7 +54,7 @@ public class User implements Model{
         this.kills = kills;
         this.killpoints = kp;
         this.mode = mode;
-        this.team = GroupControl.getGroup(teamid);
+        this.team = groups.getGroup(teamid);
         this.rank.newRank(this);
     }
     
@@ -190,7 +191,7 @@ public class User implements Model{
     public Group getTeam()
     {
         if (this.team == null) 
-            return GroupControl.getWildLand();
+            return groups.getWildLand();
         return this.team;
     }
     
@@ -220,7 +221,7 @@ public class User implements Model{
                 sender.sendMessage(t("user_052",this.getTeamTag()));
         if (sender instanceof Player)
             if (this.equals(Users.getUser(sender)))
-                sender.sendMessage(t("user_06",GroupControl.getGroup((Player)sender).getTag()));
+                sender.sendMessage(t("user_06",groups.getGroup((Player)sender).getTag()));
     }
     /**
      * @return the respawning

@@ -2,12 +2,14 @@ package de.cubeisland.cubeengine.war;
 
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
 import de.cubeisland.cubeengine.war.commands.ClaimCommands;
 import de.cubeisland.cubeengine.war.commands.GroupCommands;
 import de.cubeisland.cubeengine.war.commands.UserCommands;
 import de.cubeisland.cubeengine.war.database.AreaStorage;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.user.PvP;
 import de.cubeisland.cubeengine.war.user.Users;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
@@ -40,7 +42,10 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
     private PluginManager pm;
     private CubeWarConfiguration config;
     private File dataFolder;
-    private static Economy economy = null;
+    private Economy economy = null;
+    private AreaControl areas = new AreaControl();
+    private GroupControl groups;
+    private PvP pvp = new PvP();
 
     public CubeWar() {
         instance = this;
@@ -63,6 +68,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
         this.config = new CubeWarConfiguration(configuration);
+        groups = GroupControl.get();
         this.saveConfig();
 
         database = new Database(config.war_database_host,
@@ -72,17 +78,19 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
                 config.war_database_name);
 
         translation = Translation.get(this.getClass(), config.cubewar_language);
-        if (translation == null) 
-        {
+        if (translation == null) {
             translation = Translation.get(this.getClass(), "en");
         }
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new ClaimCommands()).registerCommands(new GroupCommands()).registerCommands(new UserCommands()).registerCommands(new ByPassCommand());
+        this.baseCommand.registerCommands(new ClaimCommands())
+                        .registerCommands(new GroupCommands())
+                        .registerCommands(new UserCommands())
+                        .registerCommands(new ByPassCommand());
         this.getCommand("cubewar").setExecutor(baseCommand);
         this.pm.registerEvents(new CubeWarListener(), this);
         //Load in DB...
         Users.loadDB();
-        GroupControl.loadDB();
+        groups.loadDB();
         AreaStorage areaDB = new AreaStorage();
         areaDB.load();
     }
@@ -109,7 +117,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
         throw new IllegalStateException("Failed to initialize with Vault!");
     }
 
-    public static Economy getEconomy() {
+    public Economy getEconomy() {
         return economy;
     }
 
@@ -145,5 +153,19 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin {
 
     public void setTranslation(Translation newtranslation) {
         translation = newtranslation;
+    }
+
+    /**
+     * @return the areas
+     */
+    public AreaControl getAreas() {
+        return areas;
+    }
+
+    /**
+     * @return the pvp
+     */
+    public PvP getPvp() {
+        return pvp;
     }
 }

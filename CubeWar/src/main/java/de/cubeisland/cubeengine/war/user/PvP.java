@@ -22,19 +22,20 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PvP{
 
-    private static CubeUserManager cuManager = CubeUserManager.getInstance();
-    private static CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+    private CubeUserManager cuManager = CubeUserManager.getInstance();
+    private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+    private GroupControl groups = GroupControl.get();
     
     public PvP() 
     {
     
     }
     
-    public static boolean isFriendlyFireOn(Player damager, Player damagee)
+    public boolean isFriendlyFireOn(Player damager, Player damagee)
     {
-        if (PvP.isAlly(damager, damagee))
+        if (isAlly(damager, damagee))
         {
-            if (PvP.isAreaDenyingFF(damager, damagee)) return false;
+            if (isAreaDenyingFF(damager, damagee)) return false;
             CubeWar.debug("FF-ON!");
             return true;
         }
@@ -45,59 +46,59 @@ public class PvP{
         }
     }
     
-    public static boolean isDamageOn(Player damager, Player damagee)
+    public boolean isDamageOn(Player damager, Player damagee)
     {
-        if (PvP.isAreaDenyingDamage(damager, damagee)) return false;
-        if (PvP.isPlayerRespawning(damager, damagee)) return false;
+        if (isAreaDenyingDamage(damager, damagee)) return false;
+        if (isPlayerRespawning(damager, damagee)) return false;
         CubeWar.debug("Damage-ON!");
         return true;
     }
     
-    public static boolean isPvPallowed(Player damager, Player damagee)
+    public boolean isPvPallowed(Player damager, Player damagee)
     {
-        if (PvP.isAreaPvPOff(damager, damagee)) return false;
-        if (PvP.isUserPeaceFull(damager)||PvP.isUserPeaceFull(damagee)) return false;
+        if (isAreaPvPOff(damager, damagee)) return false;
+        if (isUserPeaceFull(damager)||isUserPeaceFull(damagee)) return false;
         CubeWar.debug("PVP-ON!");
         return true;
     }
     
-    private static boolean isUserPeaceFull(Player player)
+    private boolean isUserPeaceFull(Player player)
     {
         return Users.getUser(player).getMode().equals(PlayerMode.PEACE);
     }
     
-    private static boolean isAreaPvPOff(Player damager, Player damagee)
+    private boolean isAreaPvPOff(Player damager, Player damagee)
     {
-        if (GroupControl.getGroup(damager).getBits().isset(Group.PVP_ON)) return false;
-        if (GroupControl.getGroup(damagee).getBits().isset(Group.PVP_ON)) return false;
+        if (groups.getGroup(damager).getBits().isset(Group.PVP_ON)) return false;
+        if (groups.getGroup(damagee).getBits().isset(Group.PVP_ON)) return false;
         return true;
     }
     
-    private static boolean isPlayerRespawning(Player damager, Player damagee)
+    private boolean isPlayerRespawning(Player damager, Player damagee)
     {
         if (Users.getUser(damager).isRespawning()) return true;
         if (Users.getUser(damagee).isRespawning()) return true;
         return false;
     }
     
-    private static boolean isAreaDenyingFF(Player damager, Player damagee)
+    private boolean isAreaDenyingFF(Player damager, Player damagee)
     {
-        if (GroupControl.getGroup(damager).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
-        if (GroupControl.getGroup(damagee).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
+        if (groups.getGroup(damager).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
+        if (groups.getGroup(damagee).getBits().isset(Group.PVP_FRIENDLYFIRE)) return false;
         return true;
     }
     
-    private static boolean isAreaDenyingDamage(Player damager, Player damagee)
+    private boolean isAreaDenyingDamage(Player damager, Player damagee)
     {
-        if (GroupControl.getGroup(damager).getBits().isset(Group.PVP_DAMAGE)) return false;
-        if (GroupControl.getGroup(damagee).getBits().isset(Group.PVP_DAMAGE)) return false;
+        if (groups.getGroup(damager).getBits().isset(Group.PVP_DAMAGE)) return false;
+        if (groups.getGroup(damagee).getBits().isset(Group.PVP_DAMAGE)) return false;
         return true;
     }
     
-    public static int modifyDamage(Player damager, Player damagee, int damage)
+    public int modifyDamage(Player damager, Player damagee, int damage)
     {
         int dmg = damage;
-        Map<Group.DmgModType,Integer> modifiers = GroupControl.getGroup(damagee).getDamagemodifier();
+        Map<Group.DmgModType,Integer> modifiers = groups.getGroup(damagee).getDamagemodifier();
         
         Integer tmp;
         for (Group.DmgModType type : Group.DmgModType.values())
@@ -130,27 +131,27 @@ public class PvP{
         return dmg;
     }
     
-    private static boolean isAlly(Player damager, Player damagee)
+    private boolean isAlly(Player damager, Player damagee)
     {
         return Users.isAllied(damager, damagee);
     }
     
     
-    public static void stopFlyArrow(Player player)
+    public void stopFlyArrow(Player player)
     {
         
         player.sendMessage(t("event_arrow"));
-        PvP.stopFlyAndFall(player);
+        stopFlyAndFall(player);
     }
     
-    public static void stopFlyAndFall(Player player)
+    public void stopFlyAndFall(Player player)
     {
         CubeWar.debug("Fly Stop + Fall");
-        PvP.stopFly(player);
+        stopFly(player);
         player.setAllowFlight(false);
     }
     
-    public static void stopFly(final Player player)
+    public void stopFly(final Player player)
     {
         CubeWar.debug("Fall");
         player.setFlying(false);  
@@ -167,7 +168,7 @@ public class PvP{
         }
     }
     
-    public static void loot(final Player killer,final Player killed, List<ItemStack> drops, final Location deathloc)
+    public void loot(final Player killer,final Player killed, List<ItemStack> drops, final Location deathloc)
     {
         final Inventory loot = Bukkit.createInventory(killed, 6*9, killed.getName());
         for (ItemStack item : drops)

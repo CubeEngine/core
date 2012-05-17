@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.war.CubeWar;
-import de.cubeisland.cubeengine.war.area.Area;
+import de.cubeisland.cubeengine.war.area.AreaControl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import org.bukkit.Server;
  *
  * @author Anselm
  */
-public class AreaStorage implements Storage<Area>{
+public class AreaStorage implements Storage<AreaControl>{
 
     private final Database database = CubeWar.getDB();
     private final String TABLE = "area";
@@ -86,9 +86,9 @@ public class AreaStorage implements Storage<Area>{
      * 
      * @return Area filled with all Areas from DB
      */
-    public Area load()
+    public AreaControl load()
     {
-        Area area = new Area();
+        AreaControl area = new AreaControl();
         try
         {
             ResultSet result = this.database.preparedQuery("group_getall");
@@ -154,11 +154,11 @@ public class AreaStorage implements Storage<Area>{
     }
 
     
-    public Area get(int key) {throw new UnsupportedOperationException("No Need");}
-    public Collection<Area> getAll() {throw new UnsupportedOperationException("No Need");}
-    public void store(Area model) {throw new UnsupportedOperationException("No Need");}
-    public void update(Area model) {throw new UnsupportedOperationException("No Need");}
-    public void merge(Area model) {throw new UnsupportedOperationException("No Need");}
-    public boolean delete(Area model) {throw new UnsupportedOperationException("No Need");}
+    public AreaControl get(int key) {throw new UnsupportedOperationException("No Need");}
+    public Collection<AreaControl> getAll() {throw new UnsupportedOperationException("No Need");}
+    public void store(AreaControl model) {throw new UnsupportedOperationException("No Need");}
+    public void update(AreaControl model) {throw new UnsupportedOperationException("No Need");}
+    public void merge(AreaControl model) {throw new UnsupportedOperationException("No Need");}
+    public boolean delete(AreaControl model) {throw new UnsupportedOperationException("No Need");}
     public boolean delete(int id) {throw new UnsupportedOperationException("No Need");}
 }

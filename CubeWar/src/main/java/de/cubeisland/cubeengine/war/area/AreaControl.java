@@ -15,20 +15,21 @@ import org.bukkit.Location;
  *
  * @author Faithcaio
  */
-public class Area implements Model 
+public class AreaControl implements Model 
 {
-    private static AreaStorage areaDB = new AreaStorage();
+    private AreaStorage areaDB = new AreaStorage();
+    private GroupControl groups = GroupControl.get();
     
-    private static THashMap<Chunk,Group> chunks = new THashMap<Chunk,Group>();
+    private THashMap<Chunk,Group> chunks = new THashMap<Chunk,Group>();
     
-    public Area() {}
+    public AreaControl() {}
     
-    public static Group addChunk(Location loc, Group group)
+    public Group addChunk(Location loc, Group group)
     {
         return addChunk(loc.getChunk(), group);
     }
     
-    public static Group addChunk(Chunk chunk, Group group)
+    public Group addChunk(Chunk chunk, Group group)
     {
         CubeWar.debug("ADD X: "+chunk.getX()+" Z:"+chunk.getZ()+" "+chunks.get(chunk)+" -->"+group);
         if (!(group.equals(chunks.get(chunk))))
@@ -47,25 +48,25 @@ public class Area implements Model
         return chunks.put(chunk, group);
     }
     
-    public static Group getGroup(Location loc)
+    public Group getGroup(Location loc)
     {
         return getGroup(loc.getChunk());
     }
     
-    public static Group getGroup(Chunk chunk)
+    public Group getGroup(Chunk chunk)
     {
         Group tmp = chunks.get(chunk);
         if (tmp == null)
-            return GroupControl.getWildLand();
+            return groups.getWildLand();
         return chunks.get(chunk);
     }
     
-    public static Group remChunk(Location loc)
+    public Group remChunk(Location loc)
     {
         return remChunk(loc.getChunk());
     }
     
-    public static Group remChunk(Chunk chunk)
+    public Group remChunk(Chunk chunk)
     {
         CubeWar.debug("REM X: "+chunk.getX()+" Z:"+chunk.getZ()+" "+chunks.get(chunk));
         areaDB.delete(chunk.getX(), chunk.getZ());
@@ -75,7 +76,7 @@ public class Area implements Model
         return group;
     }
     
-    public static void remAll(Group group)
+    public void remAll(Group group)
     {
         List<Chunk> remlist = new ArrayList<Chunk>();
         for (Chunk chunk : chunks.keySet())
@@ -92,7 +93,7 @@ public class Area implements Model
         group.resetPower_used();
     }
     
-    public static void remAllAll()
+    public void remAllAll()
     {
         chunks.clear();
         areaDB.clear();
@@ -100,7 +101,7 @@ public class Area implements Model
     
     public void load(Chunk chunk, int groupid)
     {
-        chunks.put(chunk, GroupControl.getGroup(groupid));
+        chunks.put(chunk, groups.getGroup(groupid));
     }
     
     public int getId() {throw new UnsupportedOperationException("No Need");}

@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
  */
 public class Group implements Cloneable,Model{
 
-    private static final Economy econ = CubeWar.getEconomy();
+    private static final Economy econ = CubeWar.getInstance().getEconomy();
     
     public static final int PVP_ON = 1;
     public static final int PVP_DAMAGE = 2;
@@ -58,6 +58,8 @@ public class Group implements Cloneable,Model{
     
     private List<Group> enemy = new ArrayList<Group>();
     private List<Group> ally = new ArrayList<Group>();
+    
+    private GroupControl groups = GroupControl.get();
 
     public Group() 
     {
@@ -709,7 +711,7 @@ public class Group implements Cloneable,Model{
         sender.sendMessage(pvp);
         String allies = "";
         String enemies = "";
-        for (Group group : GroupControl.getGroups())
+        for (Group group : groups.getGroups())
         {
             if (!this.equals(group))
                 if (this.isTrueAlly(group))

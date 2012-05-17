@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.war;
 
 import static de.cubeisland.cubeengine.war.CubeWar.t;
-import de.cubeisland.cubeengine.war.area.Area;
+import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.PvP;
 import de.cubeisland.cubeengine.war.user.Users;
@@ -26,6 +26,10 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class CubeWarListener implements Listener
 {
+    private AreaControl areas = CubeWar.getInstance().getAreas();
+    private GroupControl groups = GroupControl.get();
+    private PvP pvp = CubeWar.getInstance().getPvp();
+    
     public CubeWarListener() 
     {
         
@@ -35,7 +39,7 @@ public class CubeWarListener implements Listener
     public void respawn(final PlayerRespawnEvent event)
     {
         CubeWar plugin = CubeWar.getInstance();
-        int respawntime = GroupControl.getGroup(event.getRespawnLocation()).getPvp_respawnprotect()*20;
+        int respawntime = groups.getGroup(event.getRespawnLocation()).getPvp_respawnprotect()*20;
         if (respawntime > 0)
         {
             Users.getUser(event.getPlayer()).setRespawning(true);
@@ -53,9 +57,9 @@ public class CubeWarListener implements Listener
     {
         if (!event.getFrom().getChunk().equals(event.getTo().getChunk()))
         {
-            if (!Area.getGroup(event.getFrom().getChunk()).equals(Area.getGroup(event.getTo().getChunk())))
+            if (!areas.getGroup(event.getFrom().getChunk()).equals(areas.getGroup(event.getTo().getChunk())))
                 event.getPlayer().sendMessage("X: "+event.getTo().getChunk().getX()+" Z: "+event.getTo().getChunk().getZ()+
-                    " "+GroupControl.getGroup(event.getPlayer()).getTag());
+                    " "+groups.getGroup(event.getPlayer()).getTag());
         }
     }
     
@@ -67,7 +71,7 @@ public class CubeWarListener implements Listener
             if (event.getEntity().getKiller()!=null)
             {
                 Users.kill(event.getEntity().getKiller(), (Player)event.getEntity());
-                PvP.loot(event.getEntity().getKiller().getPlayer(), (Player)event.getEntity(), event.getDrops(), event.getEntity().getLocation());
+                pvp.loot(event.getEntity().getKiller().getPlayer(), (Player)event.getEntity(), event.getDrops(), event.getEntity().getLocation());
                 event.getDrops().clear();
             }
                 
@@ -136,26 +140,26 @@ public class CubeWarListener implements Listener
             }
         }
         
-        if (PvP.isPvPallowed(damager, damagee))
+        if (pvp.isPvPallowed(damager, damagee))
         {//PVP is ON Kill em all!
             //FLYMODE Disabler
             if (damagee.isFlying()||damagee.getAllowFlight())
             {
                 if (ranged)
-                    PvP.stopFlyArrow(damagee);//Arrow to the knee :)
+                    pvp.stopFlyArrow(damagee);//Arrow to the knee :)
                 else
-                    PvP.stopFlyAndFall(damagee);//Falling flies
+                    pvp.stopFlyAndFall(damagee);//Falling flies
             } 
             if (damager.isFlying())
-                PvP.stopFly(damager); //Falling attacker
+                pvp.stopFly(damager); //Falling attacker
             //DAMAGE Disabler
-            if (PvP.isDamageOn(damager, damagee))
+            if (pvp.isDamageOn(damager, damagee))
             {
                 //FRIENDLY Beschuss Disabler (Denglisch FTGewinn)
-                if (!PvP.isFriendlyFireOn(damager, damagee))
+                if (!pvp.isFriendlyFireOn(damager, damagee))
                     event.setCancelled(true);
                 //DAMAGE Modifier
-                int modDamage = PvP.modifyDamage(damager, damagee, event.getDamage());
+                int modDamage = pvp.modifyDamage(damager, damagee, event.getDamage());
                 event.setDamage(modDamage);
             }
             else

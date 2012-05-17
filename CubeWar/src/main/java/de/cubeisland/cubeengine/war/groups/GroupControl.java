@@ -1,7 +1,8 @@
 package de.cubeisland.cubeengine.war.groups;
 
+import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.Util;
-import de.cubeisland.cubeengine.war.area.Area;
+import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.database.GroupStorage;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.Collection;
@@ -15,19 +16,22 @@ import org.bukkit.entity.Player;
  */
 public class GroupControl {
 
-    private static TIntObjectHashMap<Group> groups = new TIntObjectHashMap<Group>();
+    private TIntObjectHashMap<Group> groups = new TIntObjectHashMap<Group>();
     private static GroupControl instance = null;
+    private AreaControl areas = CubeWar.getInstance().getAreas();
+
+    public GroupControl() {}
     
-    public static void wipeArea()
+    public void wipeArea()
     {
         for (Group g : groups.valueCollection())
         {
             g.resetPower_used();
-            Area.remAllAll();
+            areas.remAllAll();
         }
     }
 
-    public static void loadDB()
+    public void loadDB()
     {
         GroupStorage groupDB = new GroupStorage();
         for (Group group : groupDB.getAll())
@@ -166,22 +170,22 @@ public class GroupControl {
         return instance;
     }
 
-    public static Group getGroup(Player player)
+    public Group getGroup(Player player)
     {
         return getGroup(player.getLocation());
     }
     
-    public static Collection<Group> getGroups()
+    public Collection<Group> getGroups()
     {
         return groups.valueCollection();
     }
     
-    public static Group getGroup(Location loc)
+    public Group getGroup(Location loc)
     {
-        return Area.getGroup(loc);
+        return areas.getGroup(loc);
     }
     
-    public static Group getWildLand()
+    public Group getWildLand()
     {
         return groups.get(0);
     }
@@ -192,7 +196,7 @@ public class GroupControl {
         return area.setValue(key, value);
     }
     
-    public static Group getGroup(int id)
+    public Group getGroup(int id)
     {
         return groups.get(id);
     }
