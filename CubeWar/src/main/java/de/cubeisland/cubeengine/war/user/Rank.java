@@ -38,6 +38,20 @@ public class Rank
         }
         return config.cubewar_ranks.get(kp);
     }
+    
+    public static Rank newRank(int userkp)
+    {
+        final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+        Integer kp = null;
+        for (int i = userkp; kp == null; --i)
+        {
+            if (config.cubewar_ranks.containsKey(i))
+            {
+                kp = i;
+            }
+        }
+        return config.cubewar_ranks.get(kp);
+    }
 
     public int getKmod()
     {

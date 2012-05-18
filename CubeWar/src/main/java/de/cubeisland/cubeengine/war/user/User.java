@@ -23,6 +23,11 @@ public class User implements Model
 {
 
     private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+    private CubeUserManager cuManager = CubeUserManager.getInstance();
+    private UserStorage userDB = CubeWar.getInstance().getUserDB();
+    private GroupControl groups = GroupControl.get();
+    private UserControl users = CubeWar.getInstance().getUserControl();
+    
     private CubeUser user;
     private int death = 0;
     private int kills = 0;
@@ -33,10 +38,6 @@ public class User implements Model
     private Group team;
     private boolean respawning;
     private HashSet<String> bypasses = new HashSet<String>();
-    private CubeUserManager cuManager = CubeUserManager.getInstance();
-    private UserStorage userDB = CubeWar.getInstance().getUserDB();
-    private GroupControl groups = GroupControl.get();
-    private UserControl users = CubeWar.getInstance().getUserControl();
 
     public int getId()
     {
