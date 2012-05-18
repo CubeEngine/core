@@ -66,1592 +66,1592 @@ public class CubeUserBase implements Player
     
     public String getDisplayName()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getDisplayName();
+            return player.getDisplayName();
         }
         return null;
     }
 
     public void setDisplayName(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setDisplayName(string);
+            player.setDisplayName(string);
         }
     }
 
     public String getPlayerListName()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getPlayerListName();
+            return player.getPlayerListName();
         }
         return null;
     }
 
     public void setPlayerListName(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setPlayerListName(string);
+            player.setPlayerListName(string);
         }
     }
 
     public void setCompassTarget(Location lctn)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setCompassTarget(lctn);
+            player.setCompassTarget(lctn);
         }
     }
 
     public Location getCompassTarget()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getCompassTarget();
+            return player.getCompassTarget();
         }
         return null;
     }
 
     public InetSocketAddress getAddress()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getAddress();
+            return player.getAddress();
         }
         return null;
     }
 
     public void sendRawMessage(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.sendRawMessage(string);
+            player.sendRawMessage(string);
         }
     }
 
     public void kickPlayer(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.kickPlayer(string);
+            player.kickPlayer(string);
         }
     }
 
     public void chat(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.chat(string);
+            player.chat(string);
         }
     }
 
     public boolean performCommand(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.performCommand(string);
+            return player.performCommand(string);
         }
         return false;
     }
 
     public boolean isSneaking()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isSneaking();
+            return player.isSneaking();
         }
         return false;
     }
 
     public void setSneaking(boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setSneaking(bln);
+            player.setSneaking(bln);
         }
     }
 
     public boolean isSprinting()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isSprinting();
+            return player.isSprinting();
         }
         return false;
     }
 
     public void setSprinting(boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setSprinting(bln);
+            player.setSprinting(bln);
         }
     }
 
     public void saveData()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.saveData();
+            player.saveData();
         }
     }
 
     public void loadData()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.loadData();
+            player.loadData();
         }
     }
 
     public void setSleepingIgnored(boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setSleepingIgnored(bln);
+            player .setSleepingIgnored(bln);
         }
     }
 
     public boolean isSleepingIgnored()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .isSleepingIgnored();
+            return player .isSleepingIgnored();
         }
         return false;
     }
 
     public void playNote(Location lctn, byte b, byte b1)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .playNote(lctn, b, b1);
+            player .playNote(lctn, b, b1);
         }
     }
 
     public void playNote(Location lctn, Instrument i, Note note)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .playNote(lctn, i, note);
+            player .playNote(lctn, i, note);
         }
     }
 
     public void playEffect(Location lctn, Effect effect, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .playEffect(lctn, effect, i);
+            player .playEffect(lctn, effect, i);
         }
     }
 
     public <T> void playEffect(Location lctn, Effect effect, T t)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .playEffect(lctn, effect, t);
+            player .playEffect(lctn, effect, t);
         }
     }
 
     public void sendBlockChange(Location lctn, Material mtrl, byte b)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .sendBlockChange(lctn, mtrl, b);
+            player .sendBlockChange(lctn, mtrl, b);
         }
     }
 
     public boolean sendChunkChange(Location lctn, int i, int i1, int i2, byte[] bytes)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .sendChunkChange(lctn, i, i1, i2, bytes);
+            return player .sendChunkChange(lctn, i, i1, i2, bytes);
         }
         return false;
     }
 
     public void sendBlockChange(Location lctn, int i, byte b)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .sendBlockChange(lctn, i, b);
+            player .sendBlockChange(lctn, i, b);
         }
     }
 
     public void sendMap(MapView mv)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .sendMap(mv);
+            player .sendMap(mv);
         }
     }
 
     public void updateInventory()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .updateInventory();
+            player .updateInventory();
         }
     }
 
     public void awardAchievement(Achievement a)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .awardAchievement(a);
+            player .awardAchievement(a);
         }
     }
 
     public void incrementStatistic(Statistic ststc)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .incrementStatistic(ststc);
+            player .incrementStatistic(ststc);
         }
     }
 
     public void incrementStatistic(Statistic ststc, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .incrementStatistic(ststc, i);
+            player .incrementStatistic(ststc, i);
         }
     }
 
     public void incrementStatistic(Statistic ststc, Material mtrl)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .incrementStatistic(ststc, mtrl);
+            player .incrementStatistic(ststc, mtrl);
         }
     }
 
     public void incrementStatistic(Statistic ststc, Material mtrl, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .incrementStatistic(ststc, mtrl, i);
+            player .incrementStatistic(ststc, mtrl, i);
         }
     }
 
     public void setPlayerTime(long l, boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setPlayerTime(l, bln);
+            player .setPlayerTime(l, bln);
         }
     }
 
     public long getPlayerTime()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getPlayerTime();
+            return player .getPlayerTime();
         }
         return 0;
     }
 
     public long getPlayerTimeOffset()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getPlayerTimeOffset();
+            return player .getPlayerTimeOffset();
         }
         return 0;
     }
 
     public boolean isPlayerTimeRelative()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .isPlayerTimeRelative();
+            return player .isPlayerTimeRelative();
         }
         return false;
     }
 
     public void resetPlayerTime()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .resetPlayerTime();
+            player .resetPlayerTime();
         }
     }
 
     public void giveExp(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .giveExp(i);
+            player .giveExp(i);
         }
     }
 
     public float getExp()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getExp();
+            return player .getExp();
         }
         return 0;
     }
 
     public void setExp(float f)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setExp(f);
+            player .setExp(f);
         }
     }
 
     public int getLevel()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getLevel();
+            return player .getLevel();
         }
         return 0;
     }
 
     public void setLevel(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setLevel(i);
+            player .setLevel(i);
         }
     }
 
     public int getTotalExperience()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getTotalExperience();
+            return player .getTotalExperience();
         }
         return 0;
     }
 
     public void setTotalExperience(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setTotalExperience(i);
+            player .setTotalExperience(i);
         }
     }
 
     public float getExhaustion()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getExhaustion();
+            return player .getExhaustion();
         }
         return 0;
     }
 
     public void setExhaustion(float f)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setExhaustion(f);
+            player .setExhaustion(f);
         }
     }
 
     public float getSaturation()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getSaturation();
+            return player .getSaturation();
         }
         return 0;
     }
 
     public void setSaturation(float f)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setSaturation(f);
+            player .setSaturation(f);
         }
     }
 
     public int getFoodLevel()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getFoodLevel();
+            return player .getFoodLevel();
         }
         return 0;
     }
 
     public void setFoodLevel(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setFoodLevel(i);
+            player .setFoodLevel(i);
         }
     }
 
     public Location getBedSpawnLocation()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getBedSpawnLocation();
+            return player .getBedSpawnLocation();
         }
         return null;
     }
 
     public void setBedSpawnLocation(Location lctn)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setBedSpawnLocation(lctn);
+            player .setBedSpawnLocation(lctn);
         }
     }
 
     public boolean getAllowFlight()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            return user .getAllowFlight();
+            return player.getAllowFlight();
         }
         return false;
     }
 
     public void setAllowFlight(boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user  != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player  != null)
         {
-            user .setAllowFlight(bln);
+            player.setAllowFlight(bln);
         }
     }
 
-    public void hidePlayer(Player player)
+    public void hidePlayer(Player playerToHide)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.hidePlayer(player);
+            player.hidePlayer(playerToHide);
         }
     }
 
-    public void showPlayer(Player player)
+    public void showPlayer(Player playerToShow)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.showPlayer(player);
+            player.showPlayer(playerToShow);
         }
     }
 
-    public boolean canSee(Player player)
+    public boolean canSee(Player playerToCheck)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.canSee(player);
+            return player.canSee(playerToCheck);
         }
         return false;
     }
 
     public boolean isFlying()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isFlying();
+            return player.isFlying();
         }
         return false;
     }
 
     public void setFlying(boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setFlying(bln);
+            player.setFlying(bln);
         }
     }
 
     public String getName()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getName();
+            return player.getName();
         }
         return null;
     }
 
     public PlayerInventory getInventory()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getInventory();
+            return player.getInventory();
         }
         return null;
     }
 
     public boolean setWindowProperty(Property prprt, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.setWindowProperty(prprt, i);
+            return player.setWindowProperty(prprt, i);
         }
         return false;
     }
 
     public InventoryView getOpenInventory()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getOpenInventory();
+            return player.getOpenInventory();
         }
         return null;
     }
 
     public InventoryView openInventory(Inventory invntr)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.openInventory(invntr);
+            return player.openInventory(invntr);
         }
         return null;
     }
 
     public InventoryView openWorkbench(Location lctn, boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.openWorkbench(lctn, bln);
+            return player.openWorkbench(lctn, bln);
         }
         return null;
     }
 
     public InventoryView openEnchanting(Location lctn, boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.openEnchanting(lctn, bln);
+            return player.openEnchanting(lctn, bln);
         }
         return null;
     }
 
     public void openInventory(InventoryView iv)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.openInventory(iv);
+            player.openInventory(iv);
         }
     }
 
     public void closeInventory()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.closeInventory();
+            player.closeInventory();
         }
     }
 
     public ItemStack getItemInHand()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getItemInHand();
+            return player.getItemInHand();
         }
         return null;
     }
 
     public void setItemInHand(ItemStack is)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setItemInHand(is);
+            player.setItemInHand(is);
         }
     }
 
     public ItemStack getItemOnCursor()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getItemOnCursor();
+            return player.getItemOnCursor();
         }
         return null;
     }
 
     public void setItemOnCursor(ItemStack is)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setItemOnCursor(is);
+            player.setItemOnCursor(is);
         }
     }
 
     public boolean isSleeping()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isSleeping();
+            return player.isSleeping();
         }
         return false;
     }
 
     public int getSleepTicks()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getSleepTicks();
+            return player.getSleepTicks();
         }
         return 0;
     }
 
     public GameMode getGameMode()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getGameMode();
+            return player.getGameMode();
         }
         return null;
     }
 
     public void setGameMode(GameMode gm)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setGameMode(gm);
+            player.setGameMode(gm);
         }
     }
 
     public boolean isBlocking()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isBlocking();
+            return player.isBlocking();
         }
         return false;
     }
 
     public int getHealth()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getHealth();
+            return player.getHealth();
         }
         return 0;
     }
 
     public void setHealth(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setHealth(i);
+            player.setHealth(i);
         }
     }
 
     public int getMaxHealth()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getMaxHealth();
+            return player.getMaxHealth();
         }
         return 0;
     }
 
     public double getEyeHeight()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getMaxHealth();
+            return player.getMaxHealth();
         }
         return 0;
     }
 
     public double getEyeHeight(boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getEyeHeight();
+            return player.getEyeHeight();
         }
         return 0;
     }
 
     public Location getEyeLocation()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getEyeLocation();
+            return player.getEyeLocation();
         }
         return null;
     }
 
     public List<Block> getLineOfSight(HashSet<Byte> hs, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getLineOfSight(hs, i);
+            return player.getLineOfSight(hs, i);
         }
         return null;
     }
 
     public Block getTargetBlock(HashSet<Byte> hs, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getTargetBlock(hs, i);
+            return player.getTargetBlock(hs, i);
         }
         return null;
     }
 
     public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hs, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getLastTwoTargetBlocks(hs, i);
+            return player.getLastTwoTargetBlocks(hs, i);
         }
         return null;
     }
 
     public Egg throwEgg()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.throwEgg();
+            return player.throwEgg();
         }
         return null;
     }
 
     public Snowball throwSnowball()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.throwSnowball();
+            return player.throwSnowball();
         }
         return null;
     }
 
     public Arrow shootArrow()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.shootArrow();
+            return player.shootArrow();
         }
         return null;
     }
 
     public <T extends Projectile> T launchProjectile(Class<? extends T> type)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.launchProjectile(type);
+            return player.launchProjectile(type);
         }
         return null;
     }
 
     public int getRemainingAir()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getRemainingAir();
+            return player.getRemainingAir();
         }
         return 0;
     }
 
     public void setRemainingAir(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setRemainingAir(i);
+            player.setRemainingAir(i);
         }
     }
 
     public int getMaximumAir()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getMaximumAir();
+            return player.getMaximumAir();
         }
         return 0;
     }
 
     public void setMaximumAir(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setMaximumAir(i);
+            player.setMaximumAir(i);
         }
     }
 
     public void damage(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.damage(i);
+            player.damage(i);
         }
     }
 
     public void damage(int i, Entity entity)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.damage(i, entity);
+            player.damage(i, entity);
         }
     }
 
     public int getMaximumNoDamageTicks()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getMaximumNoDamageTicks();
+            return player.getMaximumNoDamageTicks();
         }
         return 0;
     }
 
     public void setMaximumNoDamageTicks(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setMaximumNoDamageTicks(i);
+            player.setMaximumNoDamageTicks(i);
         }
     }
 
     public int getLastDamage()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getLastDamage();
+            return player.getLastDamage();
         }
         return 0;
     }
 
     public void setLastDamage(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setLastDamage(i);
+            player.setLastDamage(i);
         }
     }
 
     public int getNoDamageTicks()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getNoDamageTicks();
+            return player.getNoDamageTicks();
         }
         return 0;
     }
 
     public void setNoDamageTicks(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setNoDamageTicks(i);
+            player.setNoDamageTicks(i);
         }
     }
 
     public Player getKiller()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getKiller();
+            return player.getKiller();
         }
         return null;
     }
 
     public boolean addPotionEffect(PotionEffect pe)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.addPotionEffect(pe);
+            return player.addPotionEffect(pe);
         }
         return false;
     }
 
     public boolean addPotionEffect(PotionEffect pe, boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.addPotionEffect(pe);
+            return player.addPotionEffect(pe);
         }
         return false;
     }
 
     public boolean addPotionEffects(Collection<PotionEffect> clctn)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.addPotionEffects(clctn);
+            return player.addPotionEffects(clctn);
         }
         return false;
     }
 
     public boolean hasPotionEffect(PotionEffectType pet)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.hasPotionEffect(pet);
+            return player.hasPotionEffect(pet);
         }
         return false;
     }
 
     public void removePotionEffect(PotionEffectType pet)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.removePotionEffect(pet);
+            player.removePotionEffect(pet);
         }
     }
 
     public Collection<PotionEffect> getActivePotionEffects()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getActivePotionEffects();
+            return player.getActivePotionEffects();
         }
         return null;
     }
 
     public Location getLocation()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getLocation();
+            return player.getLocation();
         }
         return null;
     }
 
     public void setVelocity(Vector vector)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setVelocity(vector);
+            player.setVelocity(vector);
         }
     }
 
     public Vector getVelocity()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getVelocity();
+            return player.getVelocity();
         }
         return null;
     }
 
     public World getWorld()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getWorld();
+            return player.getWorld();
         }
         return null;
     }
 
     public boolean teleport(Location lctn)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.teleport(lctn);
+            return player.teleport(lctn);
         }
         return false;
     }
 
     public boolean teleport(Location lctn, TeleportCause tc)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.teleport(lctn, tc);
+            return player.teleport(lctn, tc);
         }
         return false;
     }
 
     public boolean teleport(Entity entity)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.teleport(entity);
+            return player.teleport(entity);
         }
         return false;
     }
 
     public boolean teleport(Entity entity, TeleportCause tc)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.teleport(entity, tc);
+            return player.teleport(entity, tc);
         }
         return false;
     }
 
     public List<Entity> getNearbyEntities(double d, double d1, double d2)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getNearbyEntities(d, d1, d2);
+            return player.getNearbyEntities(d, d1, d2);
         }
         return null;
     }
 
     public int getEntityId()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getEntityId();
+            return player.getEntityId();
         }
         return -1;
     }
 
     public int getFireTicks()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getFireTicks();
+            return player.getFireTicks();
         }
         return 0;
     }
 
     public int getMaxFireTicks()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getMaxFireTicks();
+            return player.getMaxFireTicks();
         }
         return 0;
     }
 
     public void setFireTicks(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setFireTicks(i);
+            player.setFireTicks(i);
         }
     }
 
     public void remove()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.remove();
+            player.remove();
         }
     }
 
     public boolean isDead()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isDead();
+            return player.isDead();
         }
         return false;
     }
 
     public Server getServer()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getServer();
+            return player.getServer();
         }
         return null;
     }
 
     public Entity getPassenger()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getPassenger();
+            return player.getPassenger();
         }
         return null;
     }
 
     public boolean setPassenger(Entity entity)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.setPassenger(entity);
+            return player.setPassenger(entity);
         }
         return false;
     }
 
     public boolean isEmpty()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isEmpty();
+            return player.isEmpty();
         }
         return false;
     }
 
     public boolean eject()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.eject();
+            return player.eject();
         }
         return false;
     }
 
     public float getFallDistance()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getFallDistance();
+            return player.getFallDistance();
         }
         return 0;
     }
 
     public void setFallDistance(float f)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setFallDistance(f);
+            player.setFallDistance(f);
         }
     }
 
     public void setLastDamageCause(EntityDamageEvent ede)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setLastDamageCause(ede);
+            player.setLastDamageCause(ede);
         }
     }
 
     public EntityDamageEvent getLastDamageCause()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getLastDamageCause();
+            return player.getLastDamageCause();
         }
         return null;
     }
 
     public UUID getUniqueId()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getUniqueId();
+            return player.getUniqueId();
         }
         return null;
     }
 
     public int getTicksLived()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getTicksLived();
+            return player.getTicksLived();
         }
         return 0;
     }
 
     public void setTicksLived(int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setTicksLived(i);
+            player.setTicksLived(i);
         }
     }
 
     public void playEffect(EntityEffect ee)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.playEffect(ee);
+            player.playEffect(ee);
         }
     }
 
     public EntityType getType()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getType();
+            return player.getType();
         }
         return null;
     }
 
     public boolean isInsideVehicle()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isInsideVehicle();
+            return player.isInsideVehicle();
         }
         return false;
     }
 
     public boolean leaveVehicle()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.leaveVehicle();
+            return player.leaveVehicle();
         }
         return false;
     }
 
     public Entity getVehicle()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getVehicle();
+            return player.getVehicle();
         }
         return null;
     }
 
     public void setMetadata(String string, MetadataValue mv)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setMetadata(string, mv);
+            player.setMetadata(string, mv);
         }
     }
 
     public List<MetadataValue> getMetadata(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getMetadata(string);
+            return player.getMetadata(string);
         }
         return null;
     }
 
     public boolean hasMetadata(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.hasMetadata(string);
+            return player.hasMetadata(string);
         }
         return false;
     }
 
     public void removeMetadata(String string, Plugin plugin)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.removeMetadata(string, plugin);
+            player.removeMetadata(string, plugin);
         }
     }
 
     public boolean isPermissionSet(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isPermissionSet(string);
+            return player.isPermissionSet(string);
         }
         return false;
     }
 
     public boolean isPermissionSet(Permission prmsn)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isPermissionSet(prmsn);
+            return player.isPermissionSet(prmsn);
         }
         return false;
     }
 
     public boolean hasPermission(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.hasPermission(string);
+            return player.hasPermission(string);
         }
         return false;
     }
 
     public boolean hasPermission(Permission prmsn)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.hasPermission(prmsn);
+            return player.hasPermission(prmsn);
         }
         return false;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.addAttachment(plugin, string, bln);
+            return player.addAttachment(plugin, string, bln);
         }
         return null;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.addAttachment(plugin);
+            return player.addAttachment(plugin);
         }
         return null;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.addAttachment(plugin, string, bln, i);
+            return player.addAttachment(plugin, string, bln, i);
         }
         return null;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin, int i)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.addAttachment(plugin, i);
+            return player.addAttachment(plugin, i);
         }
         return null;
     }
 
     public void removeAttachment(PermissionAttachment pa)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.removeAttachment(pa);
+            player.removeAttachment(pa);
         }
     }
 
     public void recalculatePermissions()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.recalculatePermissions();
+            player.recalculatePermissions();
         }
     }
 
     public Set<PermissionAttachmentInfo> getEffectivePermissions()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getEffectivePermissions();
+            return player.getEffectivePermissions();
         }
         return null;
     }
 
     public boolean isOp()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isOp();
+            return player.isOp();
         }
         return false;
     }
 
     public void setOp(boolean bln)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.setOp(bln);
+            player.setOp(bln);
         }
     }
 
     public boolean isConversing()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.isConversing();
+            return player.isConversing();
         }
         return false;
     }
 
     public void acceptConversationInput(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.acceptConversationInput(string);
+            player.acceptConversationInput(string);
         }
     }
 
     public boolean beginConversation(Conversation c)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.beginConversation(c);
+            return player.beginConversation(c);
         }
         return false;
     }
 
     public void abandonConversation(Conversation c)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.abandonConversation(c);
+            player.abandonConversation(c);
         }
     }
 
     public void abandonConversation(Conversation c, ConversationAbandonedEvent cae)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.abandonConversation(c,cae);
+            player.abandonConversation(c,cae);
         }
     }
 
     public void sendMessage(String string)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.sendMessage(string);
+            player.sendMessage(string);
         }
     }
 
     public void sendMessage(String[] strings)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.sendMessage(strings);
+            player.sendMessage(strings);
         }
     }
 
@@ -1707,21 +1707,20 @@ public class CubeUserBase implements Player
 
     public void sendPluginMessage(Plugin plugin, String string, byte[] bytes)
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            user.sendPluginMessage(plugin, string, bytes);
+            player.sendPluginMessage(plugin, string, bytes);
         }
     }
 
     public Set<String> getListeningPluginChannels()
     {
-        Player user = this.offlinePlayer.getPlayer();
-        if (user != null)
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
         {
-            return user.getListeningPluginChannels();
+            return player.getListeningPluginChannels();
         }
         return null;
     }
-    
 }
