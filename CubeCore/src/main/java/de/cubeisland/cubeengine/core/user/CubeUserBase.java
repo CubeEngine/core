@@ -66,906 +66,1662 @@ public class CubeUserBase implements Player
     
     public String getDisplayName()
     {
-        if (offlinePlayer.isOnline())
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
         {
-            return this.offlinePlayer.getPlayer().getDisplayName();
+            return user.getDisplayName();
         }
-        else
-        {
-            return this.offlinePlayer.getName();
-        }
+        return null;
     }
 
     public void setDisplayName(String string)
     {
-        if (this.offlinePlayer.isOnline())
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
         {
-            this.offlinePlayer.getPlayer().setDisplayName(string);
-        }
-        else
-        {
-            //TODO
+            user.setDisplayName(string);
         }
     }
 
     public String getPlayerListName()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getPlayerListName();
+        }
+        return null;
     }
 
     public void setPlayerListName(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setPlayerListName(string);
+        }
     }
 
     public void setCompassTarget(Location lctn)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setCompassTarget(lctn);
+        }
     }
 
     public Location getCompassTarget()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getCompassTarget();
+        }
+        return null;
     }
 
     public InetSocketAddress getAddress()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getAddress();
+        }
+        return null;
     }
 
     public void sendRawMessage(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.sendRawMessage(string);
+        }
     }
 
     public void kickPlayer(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.kickPlayer(string);
+        }
     }
 
     public void chat(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.chat(string);
+        }
     }
 
     public boolean performCommand(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.performCommand(string);
+        }
+        return false;
     }
 
     public boolean isSneaking()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isSneaking();
+        }
+        return false;
     }
 
     public void setSneaking(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setSneaking(bln);
+        }
     }
 
     public boolean isSprinting()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isSprinting();
+        }
+        return false;
     }
 
     public void setSprinting(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setSprinting(bln);
+        }
     }
 
     public void saveData()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.saveData();
+        }
     }
 
     public void loadData()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.loadData();
+        }
     }
 
     public void setSleepingIgnored(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setSleepingIgnored(bln);
+        }
     }
 
     public boolean isSleepingIgnored()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .isSleepingIgnored();
+        }
+        return false;
     }
 
     public void playNote(Location lctn, byte b, byte b1)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .playNote(lctn, b, b1);
+        }
     }
 
     public void playNote(Location lctn, Instrument i, Note note)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .playNote(lctn, i, note);
+        }
     }
 
     public void playEffect(Location lctn, Effect effect, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .playEffect(lctn, effect, i);
+        }
     }
 
     public <T> void playEffect(Location lctn, Effect effect, T t)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .playEffect(lctn, effect, t);
+        }
     }
 
     public void sendBlockChange(Location lctn, Material mtrl, byte b)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .sendBlockChange(lctn, mtrl, b);
+        }
     }
 
     public boolean sendChunkChange(Location lctn, int i, int i1, int i2, byte[] bytes)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .sendChunkChange(lctn, i, i1, i2, bytes);
+        }
+        return false;
     }
 
     public void sendBlockChange(Location lctn, int i, byte b)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .sendBlockChange(lctn, i, b);
+        }
     }
 
     public void sendMap(MapView mv)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .sendMap(mv);
+        }
     }
 
     public void updateInventory()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .updateInventory();
+        }
     }
 
     public void awardAchievement(Achievement a)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .awardAchievement(a);
+        }
     }
 
     public void incrementStatistic(Statistic ststc)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .incrementStatistic(ststc);
+        }
     }
 
     public void incrementStatistic(Statistic ststc, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .incrementStatistic(ststc, i);
+        }
     }
 
     public void incrementStatistic(Statistic ststc, Material mtrl)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .incrementStatistic(ststc, mtrl);
+        }
     }
 
     public void incrementStatistic(Statistic ststc, Material mtrl, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .incrementStatistic(ststc, mtrl, i);
+        }
     }
 
     public void setPlayerTime(long l, boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setPlayerTime(l, bln);
+        }
     }
 
     public long getPlayerTime()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getPlayerTime();
+        }
+        return 0;
     }
 
     public long getPlayerTimeOffset()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getPlayerTimeOffset();
+        }
+        return 0;
     }
 
     public boolean isPlayerTimeRelative()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .isPlayerTimeRelative();
+        }
+        return false;
     }
 
     public void resetPlayerTime()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .resetPlayerTime();
+        }
     }
 
     public void giveExp(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .giveExp(i);
+        }
     }
 
     public float getExp()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getExp();
+        }
+        return 0;
     }
 
     public void setExp(float f)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setExp(f);
+        }
     }
 
     public int getLevel()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getLevel();
+        }
+        return 0;
     }
 
     public void setLevel(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setLevel(i);
+        }
     }
 
     public int getTotalExperience()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getTotalExperience();
+        }
+        return 0;
     }
 
     public void setTotalExperience(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setTotalExperience(i);
+        }
     }
 
     public float getExhaustion()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getExhaustion();
+        }
+        return 0;
     }
 
     public void setExhaustion(float f)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setExhaustion(f);
+        }
     }
 
     public float getSaturation()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getSaturation();
+        }
+        return 0;
     }
 
     public void setSaturation(float f)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setSaturation(f);
+        }
     }
 
     public int getFoodLevel()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getFoodLevel();
+        }
+        return 0;
     }
 
     public void setFoodLevel(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setFoodLevel(i);
+        }
     }
 
     public Location getBedSpawnLocation()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getBedSpawnLocation();
+        }
+        return null;
     }
 
     public void setBedSpawnLocation(Location lctn)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setBedSpawnLocation(lctn);
+        }
     }
 
     public boolean getAllowFlight()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            return user .getAllowFlight();
+        }
+        return false;
     }
 
     public void setAllowFlight(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user  != null)
+        {
+            user .setAllowFlight(bln);
+        }
     }
 
     public void hidePlayer(Player player)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.hidePlayer(player);
+        }
     }
 
     public void showPlayer(Player player)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.showPlayer(player);
+        }
     }
 
     public boolean canSee(Player player)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.canSee(player);
+        }
+        return false;
     }
 
     public boolean isFlying()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isFlying();
+        }
+        return false;
     }
 
     public void setFlying(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setFlying(bln);
+        }
     }
 
     public String getName()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getName();
+        }
+        return null;
     }
 
     public PlayerInventory getInventory()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getInventory();
+        }
+        return null;
     }
 
     public boolean setWindowProperty(Property prprt, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.setWindowProperty(prprt, i);
+        }
+        return false;
     }
 
     public InventoryView getOpenInventory()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getOpenInventory();
+        }
+        return null;
     }
 
     public InventoryView openInventory(Inventory invntr)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.openInventory(invntr);
+        }
+        return null;
     }
 
     public InventoryView openWorkbench(Location lctn, boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.openWorkbench(lctn, bln);
+        }
+        return null;
     }
 
     public InventoryView openEnchanting(Location lctn, boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.openEnchanting(lctn, bln);
+        }
+        return null;
     }
 
     public void openInventory(InventoryView iv)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.openInventory(iv);
+        }
     }
 
     public void closeInventory()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.closeInventory();
+        }
     }
 
     public ItemStack getItemInHand()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getItemInHand();
+        }
+        return null;
     }
 
     public void setItemInHand(ItemStack is)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setItemInHand(is);
+        }
     }
 
     public ItemStack getItemOnCursor()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getItemOnCursor();
+        }
+        return null;
     }
 
     public void setItemOnCursor(ItemStack is)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setItemOnCursor(is);
+        }
     }
 
     public boolean isSleeping()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isSleeping();
+        }
+        return false;
     }
 
     public int getSleepTicks()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getSleepTicks();
+        }
+        return 0;
     }
 
     public GameMode getGameMode()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getGameMode();
+        }
+        return null;
     }
 
     public void setGameMode(GameMode gm)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setGameMode(gm);
+        }
     }
 
     public boolean isBlocking()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isBlocking();
+        }
+        return false;
     }
 
     public int getHealth()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getHealth();
+        }
+        return 0;
     }
 
     public void setHealth(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setHealth(i);
+        }
     }
 
     public int getMaxHealth()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getMaxHealth();
+        }
+        return 0;
     }
 
     public double getEyeHeight()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getMaxHealth();
+        }
+        return 0;
     }
 
     public double getEyeHeight(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getEyeHeight();
+        }
+        return 0;
     }
 
     public Location getEyeLocation()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getEyeLocation();
+        }
+        return null;
     }
 
     public List<Block> getLineOfSight(HashSet<Byte> hs, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getLineOfSight(hs, i);
+        }
+        return null;
     }
 
     public Block getTargetBlock(HashSet<Byte> hs, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getTargetBlock(hs, i);
+        }
+        return null;
     }
 
     public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hs, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getLastTwoTargetBlocks(hs, i);
+        }
+        return null;
     }
 
     public Egg throwEgg()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.throwEgg();
+        }
+        return null;
     }
 
     public Snowball throwSnowball()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.throwSnowball();
+        }
+        return null;
     }
 
     public Arrow shootArrow()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.shootArrow();
+        }
+        return null;
     }
 
     public <T extends Projectile> T launchProjectile(Class<? extends T> type)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.launchProjectile(type);
+        }
+        return null;
     }
 
     public int getRemainingAir()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getRemainingAir();
+        }
+        return 0;
     }
 
     public void setRemainingAir(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setRemainingAir(i);
+        }
     }
 
     public int getMaximumAir()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getMaximumAir();
+        }
+        return 0;
     }
 
     public void setMaximumAir(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setMaximumAir(i);
+        }
     }
 
     public void damage(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.damage(i);
+        }
     }
 
     public void damage(int i, Entity entity)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.damage(i, entity);
+        }
     }
 
     public int getMaximumNoDamageTicks()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getMaximumNoDamageTicks();
+        }
+        return 0;
     }
 
     public void setMaximumNoDamageTicks(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setMaximumNoDamageTicks(i);
+        }
     }
 
     public int getLastDamage()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getLastDamage();
+        }
+        return 0;
     }
 
     public void setLastDamage(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setLastDamage(i);
+        }
     }
 
     public int getNoDamageTicks()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getNoDamageTicks();
+        }
+        return 0;
     }
 
     public void setNoDamageTicks(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setNoDamageTicks(i);
+        }
     }
 
     public Player getKiller()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getKiller();
+        }
+        return null;
     }
 
     public boolean addPotionEffect(PotionEffect pe)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.addPotionEffect(pe);
+        }
+        return false;
     }
 
     public boolean addPotionEffect(PotionEffect pe, boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.addPotionEffect(pe);
+        }
+        return false;
     }
 
     public boolean addPotionEffects(Collection<PotionEffect> clctn)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.addPotionEffects(clctn);
+        }
+        return false;
     }
 
     public boolean hasPotionEffect(PotionEffectType pet)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.hasPotionEffect(pet);
+        }
+        return false;
     }
 
     public void removePotionEffect(PotionEffectType pet)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.removePotionEffect(pet);
+        }
     }
 
     public Collection<PotionEffect> getActivePotionEffects()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getActivePotionEffects();
+        }
+        return null;
     }
 
     public Location getLocation()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getLocation();
+        }
+        return null;
     }
 
     public void setVelocity(Vector vector)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setVelocity(vector);
+        }
     }
 
     public Vector getVelocity()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getVelocity();
+        }
+        return null;
     }
 
     public World getWorld()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getWorld();
+        }
+        return null;
     }
 
     public boolean teleport(Location lctn)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.teleport(lctn);
+        }
+        return false;
     }
 
     public boolean teleport(Location lctn, TeleportCause tc)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.teleport(lctn, tc);
+        }
+        return false;
     }
 
     public boolean teleport(Entity entity)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.teleport(entity);
+        }
+        return false;
     }
 
     public boolean teleport(Entity entity, TeleportCause tc)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.teleport(entity, tc);
+        }
+        return false;
     }
 
     public List<Entity> getNearbyEntities(double d, double d1, double d2)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getNearbyEntities(d, d1, d2);
+        }
+        return null;
     }
 
     public int getEntityId()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getEntityId();
+        }
+        return -1;
     }
 
     public int getFireTicks()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getFireTicks();
+        }
+        return 0;
     }
 
     public int getMaxFireTicks()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getMaxFireTicks();
+        }
+        return 0;
     }
 
     public void setFireTicks(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setFireTicks(i);
+        }
     }
 
     public void remove()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.remove();
+        }
     }
 
     public boolean isDead()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isDead();
+        }
+        return false;
     }
 
     public Server getServer()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getServer();
+        }
+        return null;
     }
 
     public Entity getPassenger()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getPassenger();
+        }
+        return null;
     }
 
     public boolean setPassenger(Entity entity)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.setPassenger(entity);
+        }
+        return false;
     }
 
     public boolean isEmpty()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isEmpty();
+        }
+        return false;
     }
 
     public boolean eject()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.eject();
+        }
+        return false;
     }
 
     public float getFallDistance()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getFallDistance();
+        }
+        return 0;
     }
 
     public void setFallDistance(float f)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setFallDistance(f);
+        }
     }
 
     public void setLastDamageCause(EntityDamageEvent ede)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setLastDamageCause(ede);
+        }
     }
 
     public EntityDamageEvent getLastDamageCause()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getLastDamageCause();
+        }
+        return null;
     }
 
     public UUID getUniqueId()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getUniqueId();
+        }
+        return null;
     }
 
     public int getTicksLived()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getTicksLived();
+        }
+        return 0;
     }
 
     public void setTicksLived(int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setTicksLived(i);
+        }
     }
 
     public void playEffect(EntityEffect ee)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.playEffect(ee);
+        }
     }
 
     public EntityType getType()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getType();
+        }
+        return null;
     }
 
     public boolean isInsideVehicle()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isInsideVehicle();
+        }
+        return false;
     }
 
     public boolean leaveVehicle()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.leaveVehicle();
+        }
+        return false;
     }
 
     public Entity getVehicle()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getVehicle();
+        }
+        return null;
     }
 
     public void setMetadata(String string, MetadataValue mv)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setMetadata(string, mv);
+        }
     }
 
     public List<MetadataValue> getMetadata(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getMetadata(string);
+        }
+        return null;
     }
 
     public boolean hasMetadata(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.hasMetadata(string);
+        }
+        return false;
     }
 
     public void removeMetadata(String string, Plugin plugin)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.removeMetadata(string, plugin);
+        }
     }
 
     public boolean isPermissionSet(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isPermissionSet(string);
+        }
+        return false;
     }
 
     public boolean isPermissionSet(Permission prmsn)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isPermissionSet(prmsn);
+        }
+        return false;
     }
 
     public boolean hasPermission(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.hasPermission(string);
+        }
+        return false;
     }
 
     public boolean hasPermission(Permission prmsn)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.hasPermission(prmsn);
+        }
+        return false;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.addAttachment(plugin, string, bln);
+        }
+        return null;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.addAttachment(plugin);
+        }
+        return null;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.addAttachment(plugin, string, bln, i);
+        }
+        return null;
     }
 
     public PermissionAttachment addAttachment(Plugin plugin, int i)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.addAttachment(plugin, i);
+        }
+        return null;
     }
 
     public void removeAttachment(PermissionAttachment pa)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.removeAttachment(pa);
+        }
     }
 
     public void recalculatePermissions()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.recalculatePermissions();
+        }
     }
 
     public Set<PermissionAttachmentInfo> getEffectivePermissions()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getEffectivePermissions();
+        }
+        return null;
     }
 
     public boolean isOp()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isOp();
+        }
+        return false;
     }
 
     public void setOp(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.setOp(bln);
+        }
     }
 
     public boolean isConversing()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.isConversing();
+        }
+        return false;
     }
 
     public void acceptConversationInput(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.acceptConversationInput(string);
+        }
     }
 
     public boolean beginConversation(Conversation c)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.beginConversation(c);
+        }
+        return false;
     }
 
     public void abandonConversation(Conversation c)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.abandonConversation(c);
+        }
     }
 
     public void abandonConversation(Conversation c, ConversationAbandonedEvent cae)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.abandonConversation(c,cae);
+        }
     }
 
     public void sendMessage(String string)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.sendMessage(string);
+        }
     }
 
     public void sendMessage(String[] strings)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.sendMessage(strings);
+        }
     }
 
     public boolean isOnline()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.isOnline();
     }
 
     public boolean isBanned()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.isBanned();
     }
 
     public void setBanned(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.offlinePlayer.setBanned(bln);
     }
 
     public boolean isWhitelisted()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.isWhitelisted();
     }
 
     public void setWhitelisted(boolean bln)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.offlinePlayer.setWhitelisted(bln);
     }
 
     public Player getPlayer()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.getPlayer();
     }
 
     public long getFirstPlayed()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.getFirstPlayed();
     }
 
     public long getLastPlayed()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.getLastPlayed();
     }
 
     public boolean hasPlayedBefore()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.hasPlayedBefore();
     }
 
     public Map<String, Object> serialize()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.offlinePlayer.serialize();
     }
 
     public void sendPluginMessage(Plugin plugin, String string, byte[] bytes)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            user.sendPluginMessage(plugin, string, bytes);
+        }
     }
 
     public Set<String> getListeningPluginChannels()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Player user = this.offlinePlayer.getPlayer();
+        if (user != null)
+        {
+            return user.getListeningPluginChannels();
+        }
+        return null;
     }
     
 }
