@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
  *
  * @author Phillip Schichtel
  */
-public class CubeUser implements Model
+public class CubeUser extends CubeUserBase implements Model 
 {
     private final OfflinePlayer player;
     private final LongBitMask flags;
@@ -21,6 +21,7 @@ public class CubeUser implements Model
     
     public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
     {
+        super(player);
         this.id = id;
         this.player = player;
         this.flags = flags;
