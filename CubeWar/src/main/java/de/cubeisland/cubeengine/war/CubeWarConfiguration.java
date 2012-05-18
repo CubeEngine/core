@@ -31,6 +31,11 @@ public class CubeWarConfiguration
     public final String war_database_user;
     public final String war_database_pass;
     public final String war_database_name;
+    public final double influencePerMin;
+    public final double influencePerMinOnline;
+    public final int afterDaysOffline;
+    public final double loosePerMin;
+    public final double influenceCost;
 
     public CubeWarConfiguration(Configuration config)
     {
@@ -40,7 +45,8 @@ public class CubeWarConfiguration
         for (String rankname : ranksection.getKeys(false))
         {
             ConfigurationSection cursection = ranksection.getConfigurationSection(rankname);
-            Rank rank = new Rank(rankname, cursection.getInt("deathmodifier"), cursection.getInt("killmodifier"), cursection.getInt("killpointlimit"));
+            Rank rank = new Rank(rankname, cursection.getInt("deathmodifier"), cursection.getInt("killmodifier"), 
+                                           cursection.getInt("killpointlimit"), cursection.getDouble("influence"));
             this.cubewar_ranks.put(cursection.getInt("killpointlimit"), rank);
         }
         this.killpoint_min = config.getInt("cubewar.killpoint.min");
@@ -48,7 +54,7 @@ public class CubeWarConfiguration
         ConfigurationSection kps = config.getConfigurationSection("cubewar.killpoint.kp");
         for (String key : kps.getKeys(false))
         {
-            this.killKP.put(key, config.getInt(key));
+            this.killKP.put(key, kps.getInt(key));
         }
         this.max_claim = config.getInt("cubewar.claim.maxclaim");
 
@@ -63,6 +69,11 @@ public class CubeWarConfiguration
         this.war_database_user = config.getString("cubewar.database.user");
         this.war_database_pass = config.getString("cubewar.database.pass");
         this.war_database_name = config.getString("cubewar.database.name");
+        this.influencePerMin = config.getDouble("cubewar.influence.gainPerMin");
+        this.influencePerMinOnline = config.getDouble("cubewar.influence.gainPerMinOnline");
+        this.afterDaysOffline = config.getInt("cubewar.influence.loose.afterDaysOffline");
+        this.loosePerMin = config.getInt("cubewar.influence.loose.loosePerMin");
+        this.influenceCost = config.getDouble("cubewar.influence.buy");
 
         GroupControl.createInstance(config.getConfigurationSection("cubewar.area"));
     }

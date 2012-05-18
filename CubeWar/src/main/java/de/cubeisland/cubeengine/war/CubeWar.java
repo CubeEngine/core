@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
 import de.cubeisland.cubeengine.war.database.GroupStorage;
 import de.cubeisland.cubeengine.war.database.UserStorage;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.user.InfluenceControl;
 import de.cubeisland.cubeengine.war.user.PvP;
 import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.BaseCommand;
@@ -112,6 +113,8 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         this.baseCommand.registerCommands(new ClaimCommands()).registerCommands(new GroupCommands()).registerCommands(new UserCommands()).registerCommands(new ByPassCommand());
         this.getCommand("cubewar").setExecutor(baseCommand);
         this.pm.registerEvents(new CubeWarListener(), this);
+        
+        InfluenceControl.startTimer();
     }
 
     @Override

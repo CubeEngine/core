@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
-import de.cubeisland.cubeengine.war.database.GroupStorage;
 import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
@@ -25,6 +24,7 @@ import org.bukkit.entity.Player;
 public class Group implements Cloneable, Model
 {
 
+    //TODO Fly abschalten wenn in Gebiet reinkommt
     private static final Economy econ = CubeWar.getInstance().getEconomy();
     public static final int PVP_ON = 1;
     public static final int PVP_DAMAGE = 2;
@@ -41,33 +41,39 @@ public class Group implements Cloneable, Model
     public static final int ECONOMY_BANK = 4096;
     public static final int IS_CLOSED = 8192;
     public static final int AUTO_CLOSE = 16384;
+    public static final int IS_PEACEFUL = 32768;
+    
     private BitMask bits;
     private AreaType type;
     private Map<String, Integer> intval = new HashMap<String, Integer>();
     private Map<String, String> stringval = new HashMap<String, String>();
     private Map<String, List> listval = new HashMap<String, List>();
-    private int power_used;
-    private int power_max;//TODO ausrechnen
-    private int power_max_used;//TODO ausrechnen
-    private List<User> admin = new ArrayList<User>();
-    private List<User> mod = new ArrayList<User>();
-    private List<User> user = new ArrayList<User>();
-    //TODO in separater Tabelle
+    private int influence = 0;
+    private int influence_max = 0;
+    private List<User> adminlist = new ArrayList<User>();
+    private List<User> modlist = new ArrayList<User>();
+    private List<User> userlist = new ArrayList<User>();
+    //TODO DB in separater Tabelle
     private List<User> invited = new ArrayList<User>();
-    //TODO in separater Tabelle
+    //TODO DB in separater Tabelle
     private List<Group> enemy = new ArrayList<Group>();
     private List<Group> ally = new ArrayList<Group>();
     
-    private GroupControl groups = GroupControl.get();
-    private UserControl users = CubeWar.getInstance().getUserControl();
+    private GroupControl groups;
+    private UserControl users;
 
     public Group()
     {
         this.bits = new BitMask();
+        users = CubeWar.getInstance().getUserControl();
+        groups = GroupControl.get();
     }
 
-    public Group(int id, String tag, String name, String desc, boolean isarena, int respawnprot, String dmgmod, int pwrboost, Integer permpwr, int flags)
+    public Group(int id, String tag, String name, String desc, boolean isarena, int respawnprot,
+                 String dmgmod, int pwrboost, Integer permpwr, int flags)
     {
+        users = CubeWar.getInstance().getUserControl();
+        groups = GroupControl.get();
         this.setId(id);
         this.setStringValue("tag", tag);
         this.setStringValue("name", name);
@@ -432,21 +438,21 @@ public class Group implements Cloneable, Model
         {
             return;
         }
-        this.admin.add(user);
-        this.mod.remove(user);
-        this.user.remove(user);
+        this.adminlist.add(user);
+        this.modlist.remove(user);
+        this.userlist.remove(user);
         user.setTeam(this);
     }
 
     public void delAdmin(User user)
     {
-        this.admin.remove(user);
+        this.adminlist.remove(user);
         user.setTeam(groups.getWildLand());
     }
 
     public boolean isAdmin(User user)
     {
-        return this.admin.contains(user);
+        return this.adminlist.contains(user);
     }
 
     public void addMod(User user)
@@ -455,26 +461,26 @@ public class Group implements Cloneable, Model
         {
             return;
         }
-        this.mod.add(user);
-        this.admin.remove(user);
-        this.user.remove(user);
+        this.modlist.add(user);
+        this.adminlist.remove(user);
+        this.userlist.remove(user);
         user.setTeam(this);
     }
 
     public void delMod(User user)
     {
-        this.mod.remove(user);
-        this.admin.remove(user);
+        this.modlist.remove(user);
+        this.adminlist.remove(user);
         user.setTeam(groups.getWildLand());
     }
 
     public boolean isMod(User user)
     {
-        if (this.admin.contains(user))
+        if (this.adminlist.contains(user))
         {
             return true;
         }
-        return this.mod.contains(user);
+        return this.modlist.contains(user);
     }
 
     public void addUser(User user)
@@ -483,31 +489,31 @@ public class Group implements Cloneable, Model
         {
             return;
         }
-        this.user.add(user);
-        this.mod.remove(user);
-        this.admin.remove(user);
+        this.userlist.add(user);
+        this.modlist.remove(user);
+        this.adminlist.remove(user);
         user.setTeam(this);
     }
 
     public void delUser(User user)
     {
-        this.user.remove(user);
-        this.mod.remove(user);
-        this.admin.remove(user);
+        this.userlist.remove(user);
+        this.modlist.remove(user);
+        this.adminlist.remove(user);
         user.setTeam(groups.getWildLand());
     }
 
     public boolean isUser(User user)
     {
-        if (this.admin.contains(user))
+        if (this.adminlist.contains(user))
         {
             return true;
         }
-        if (this.mod.contains(user))
+        if (this.modlist.contains(user))
         {
             return true;
         }
-        return this.user.contains(user);
+        return this.userlist.contains(user);
     }
 
     public boolean invite(User user)
@@ -682,9 +688,17 @@ public class Group implements Cloneable, Model
         this.setListValue("denycommands", denyuseDB.getAllCmdByGroup(this));
     }
 
+    public void adjustMaxInfluence()
+    {
+        this.influence_max = 0;
+        for (User user : this.getUserList())
+        {
+            this.influence_max += user.getTotalInfluence();
+        }
+    }
+
     public static enum DmgModType
     {
-
         PERCENT(null),
         SET(null),
         ADD(null);
@@ -723,40 +737,32 @@ public class Group implements Cloneable, Model
     /**
      * @return the power_max
      */
-    public Integer getPower_max()
+    public Integer getInfluence_max()
     {
-        return this.power_max;
-    }
-
-    /**
-     * @return the power_max_used
-     */
-    public Integer getPower_max_used()
-    {
-        return this.power_max_used;
+        return this.influence_max;
     }
 
     /**
      * @return the power_used
      */
-    public Integer getPower_used()
+    public Integer getInfluence_used()
     {
-        return this.power_used;
+        return this.influence;
     }
 
-    public void addPower_used()
+    public void addInfluence_used()
     {
-        this.power_used++;
+        this.influence++;
     }
 
-    public void remPower_used()
+    public void remInfluence_used()
     {
-        this.power_used--;
+        this.influence--;
     }
 
-    public void resetPower_used()
+    public void resetInfluence_used()
     {
-        this.power_used = 0;
+        this.influence = 0;
     }
 
     /**
@@ -842,11 +848,13 @@ public class Group implements Cloneable, Model
 
     public void sendInfo(CommandSender sender)
     {
+        users = CubeWar.getInstance().getUserControl();
+        groups = GroupControl.get();
         sender.sendMessage(t("g_01", this.getTag()));
         sender.sendMessage(t("g_02", this.getName()));
         sender.sendMessage(t("g_03", this.getDescription()));
         sender.sendMessage(t("g_04", GroupControl.get().getRank(this),
-                t("g_05", this.power_used, this.power_max_used, this.power_max)));
+                t("g_05", this.influence, this.influence_max)));
         User user = users.getUser(sender);
         Group team = user.getTeam();
         if (team != null && ((team.equals(this)) || (team.isAlly(this) && this.isAlly(team))))
@@ -944,9 +952,9 @@ public class Group implements Cloneable, Model
     public List<User> getUserList()
     {
         List<User> list = new ArrayList<User>();
-        list.addAll(0, this.admin);
-        list.addAll(0, this.mod);
-        list.addAll(0, this.user);
+        list.addAll(0, this.adminlist);
+        list.addAll(0, this.modlist);
+        list.addAll(0, this.userlist);
         return list;
     }
 
@@ -996,5 +1004,10 @@ public class Group implements Cloneable, Model
     public boolean isBalancing()
     {
         return this.bits.isset(AUTO_CLOSE);
+    }
+    
+    public boolean isPeaceful()
+    {
+        return this.bits.isset(IS_PEACEFUL);
     }
 }

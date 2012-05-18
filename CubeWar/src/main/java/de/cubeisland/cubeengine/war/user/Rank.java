@@ -14,13 +14,15 @@ public class Rank
     private int killmodifier;
     private int deathmodifier;
     private int killpointlimit;
+    private double influencemod;
 
-    public Rank(String name, int killMod, int deathMod, int kplimit)
+    public Rank(String name, int killMod, int deathMod, int kplimit, double influence)
     {
         this.name = name;
         this.deathmodifier = deathMod;
         this.killmodifier = killMod;
         this.killpointlimit = kplimit;
+        this.influencemod = influence;
     }
 
     public Rank newRank(User user)
@@ -45,6 +47,11 @@ public class Rank
     public int getDmod()
     {
         return this.deathmodifier;
+    }
+    
+    public double getImod()
+    {
+        return this.influencemod;
     }
 
     public String getName()

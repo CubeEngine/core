@@ -39,12 +39,12 @@ public class AreaControl implements Model
         {
             if (chunks.get(chunk) == null)
             {
-                group.addPower_used();
+                group.addInfluence_used();
             }
             else
             {
-                group.addPower_used();
-                chunks.get(chunk).remPower_used();
+                group.addInfluence_used();
+                chunks.get(chunk).remInfluence_used();
             }
         }
         areaDB.store(group.getId(), chunk.getX(), chunk.getZ());
@@ -78,7 +78,7 @@ public class AreaControl implements Model
         Group group = chunks.remove(chunk);
         if (group != null)
         {
-            group.remPower_used();
+            group.remInfluence_used();
         }
         return group;
     }
@@ -99,7 +99,7 @@ public class AreaControl implements Model
             chunks.remove(chunk);
         }
         areaDB.deleteByGroup(group.getId());
-        group.resetPower_used();
+        group.resetInfluence_used();
     }
 
     public void remAllAll()
@@ -112,7 +112,7 @@ public class AreaControl implements Model
     {
         Group group = groups.getGroup(groupid);
         chunks.put(chunk, group);
-        group.addPower_used();
+        group.addInfluence_used();
     }
 
     public int getId()

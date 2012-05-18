@@ -169,6 +169,11 @@ public class ClaimCommands
         List<Chunk> chunks = new ArrayList<Chunk>();
         if (rad == 0)
         {
+            if (team.getInfluence_used()>=team.getInfluence_max())
+            {
+                player.sendMessage(t("claim_influence"));
+                return;
+            }
             Group group = areas.addChunk(loc.getChunk(), team);
             if (group == null)
             {
@@ -210,9 +215,15 @@ public class ClaimCommands
         {
             noEnemyClaim = Perm.command_claim_fromother.checkPerm(player);
         }
+        boolean influence_low = false;
         for (Chunk chunk : chunks)
-        {//TODO Check Power / Money
-
+        {//TODO Check Money
+            
+            if (team.getInfluence_used()>=team.getInfluence_max())
+            {
+                influence_low = true;
+                continue;
+            }
             Group group = areas.getGroup(chunk);
             if (!group.getType().equals(AreaType.WILDLAND))
             {
@@ -237,6 +248,7 @@ public class ClaimCommands
                 ++enemy;
             }
         }
+        if (influence_low) player.sendMessage(t("claim_influence"));
         player.sendMessage(t("claim_more", sum, team.getTag(), wild, enemy, sum - own, own));
     }
 

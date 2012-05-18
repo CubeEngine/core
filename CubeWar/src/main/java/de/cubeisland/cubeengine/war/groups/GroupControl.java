@@ -25,7 +25,7 @@ public class GroupControl
     {
         for (Group g : groups.valueCollection())
         {
-            g.resetPower_used();
+            g.resetInfluence_used();
             areas.remAllAll();
         }
     }
@@ -272,10 +272,10 @@ public class GroupControl
     public int getRank(Group group)
     {
         int position = 1;
-        int power = group.getPower_used();
+        int power = group.getInfluence_used();
         for (Group g : groups.valueCollection())
         {
-            int gpower = g.getPower_used();
+            int gpower = g.getInfluence_used();
             if (gpower > 0)
             {
                 if (power < gpower)

@@ -27,6 +27,7 @@ public class User implements Model
     private int death = 0;
     private int kills = 0;
     private int killpoints = 0;
+    private double influence = 0;
     private PlayerMode mode = PlayerMode.NORMAL;
     private Rank rank;
     private Group team;
@@ -48,7 +49,7 @@ public class User implements Model
         rank = config.cubewar_ranks.get(0);
     }
 
-    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid, int teampos)
+    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid, int teampos, double influence)
     {
         this.user = cuManager.getCubeUser(cubeuserid);
         this.death = death;
@@ -57,6 +58,7 @@ public class User implements Model
         this.mode = mode;
         this.team = groups.getGroup(teamid);
         this.rank = config.cubewar_ranks.get(0);
+        this.influence = influence;
         switch (teampos)
         {
             case 0: break; //Kein Team
@@ -240,6 +242,7 @@ public class User implements Model
         {
             kd = (int) (this.kills / this.death * 100);
         }
+        sender.sendMessage(t("user_07",(int)this.getTotalInfluence()));
         sender.sendMessage(t("user_04", this.kills, this.death, String.valueOf(kd / 100)));
 
         if ((this.team != null)&&(!this.team.getType().equals(AreaType.WILDLAND)))
@@ -313,5 +316,24 @@ public class User implements Model
         if (this.team.isMod(this)) return 2;
         if (this.team.isUser(this)) return 1;
         return 0;
+    }
+    
+    public void addInfluence(double amount)
+    {
+        this.influence += amount;
+    }
+    public void looseInfluence(double amount)
+    {
+        this.influence -= amount;
+    }
+    
+    public double getBaseInfluence()
+    {
+        return this.influence;
+    }
+    
+    public double getTotalInfluence()
+    {
+        return this.influence * this.getRank().getImod();
     }
 }

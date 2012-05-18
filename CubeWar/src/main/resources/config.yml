@@ -2,44 +2,58 @@ debug: true
 cubewar:
   language: de
   ranks:
+    Zombie:
+      deathmodifier: 1
+      killmodifier: 0
+      killpointlimit: -200
+      influence: 0.5
     Wegelagerer:
-      deathmodifier: 45
+      deathmodifier: 20
       killmodifier: 50
       killpointlimit: -100
+      influence: 0.9
     Vagabund:
       deathmodifier: 45
       killmodifier: 50
       killpointlimit: 0
+      influence: 1
     Schläger:
       deathmodifier: 90
       killmodifier: 100
       killpointlimit: 250
+      influence: 1.1
     Bandit:
       deathmodifier: 225
       killmodifier: 250
       killpointlimit: 600
+      influence: 1.2
     Plünderer:
       deathmodifier: 540
       killmodifier: 600
       killpointlimit: 1500
+      influence: 1.3
     Söldner:
       deathmodifier: 1350
       killmodifier: 1500
       killpointlimit: 3500
+      influence: 1.4
     Berserker:
       deathmodifier: 3150
       killmodifier: 3500
       killpointlimit: 8000
+      influence: 1.5
     Gladiator:
       deathmodifier: 7200
       killmodifier: 8000
       killpointlimit: 20000
+      influence: 1.8
     Held:
       deathmodifier: 18000
       killmodifier: 20000
       killpointlimit: 100000
+      influence: 2
   killpoint:
-     min: -100
+     min: -200
      max: 200000
      kp:
         Chicken: 0
@@ -251,6 +265,14 @@ cubewar:
     user:
       - command.create
       - command.fly
+  influence:
+    gainPerMin: 0.007
+    #~ 10 IP per day
+    gainPerMinOnline: 0.01
+    loose:
+      afterDaysOffline: 7
+      loosePerMin: 0.1
+    buy: 100
   fly:
     block_sec_after_hit: 10
   database:

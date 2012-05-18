@@ -28,10 +28,10 @@ public class UserStorage implements Storage<User>
         {
             this.database.prepareStatement("user_get", "SELECT * FROM {{" + TABLE + "}} WHERE cubeuserid=? LIMIT 1");
             this.database.prepareStatement("user_getall", "SELECT * FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("user_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,death,kills,kp,mode,teamid,teampos) VALUES (?,?,?,?,?,?,?)");
+            this.database.prepareStatement("user_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,death,kills,kp,mode,teamid,teampos,influence) VALUES (?,?,?,?,?,?,?,?)");
             this.database.prepareStatement("user_delete", "DELETE FROM {{" + TABLE + "}} WHERE cubeuserid=?");
             this.database.prepareStatement("user_clear", "DELETE FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("user_update", "UPDATE {{" + TABLE + "}} SET death=?,kills=?,kp=?,mode=?,teamid=?,teampos=? WHERE cubeuserid=?");
+            this.database.prepareStatement("user_update", "UPDATE {{" + TABLE + "}} SET death=?,kills=?,kp=?,mode=?,teamid=?,teampos=?,influence=? WHERE cubeuserid=?");
         }
         catch (SQLException e)
         {
@@ -51,6 +51,7 @@ public class UserStorage implements Storage<User>
                     + "`mode` int(2) NOT NULL,"
                     + "`teamid` int(4) NOT NULL,"
                     + "`teampos` int(3) NOT NULL,"
+                    + "`influence` decimal(11,6) NOT NULL,"
                     + "PRIMARY KEY (`cubeuserid`)"
                     + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
@@ -75,6 +76,7 @@ public class UserStorage implements Storage<User>
                 int modeInt = result.getInt("mode");
                 int teamid = result.getInt("teamid");
                 int teampos = result.getInt("teampos");
+                double influence = result.getDouble("influence");
                 PlayerMode mode = null;
                 switch (modeInt)
                 {
@@ -94,7 +96,7 @@ public class UserStorage implements Storage<User>
                         mode = PlayerMode.DUEL;
                         break;
                 }
-                users.add(new User(cubeuserid, death, kills, kp, mode, teamid, teampos));
+                users.add(new User(cubeuserid, death, kills, kp, mode, teamid, teampos, influence));
             }
             return users;
 
@@ -118,6 +120,7 @@ public class UserStorage implements Storage<User>
             int teamid = model.getTeam().getId();
             int modeInt = 0;
             int teampos = model.getTeamPos();
+            double influence = model.getBaseInfluence();
             PlayerMode mode = model.getMode();
             if (mode.equals(PlayerMode.NORMAL))
             {
@@ -139,7 +142,7 @@ public class UserStorage implements Storage<User>
             {
                 modeInt = 5;
             }
-            this.database.preparedExec("user_store", cubeuserid, death, kills, kp, modeInt, teamid, teampos);
+            this.database.preparedExec("user_store", cubeuserid, death, kills, kp, modeInt, teamid, teampos, influence);
         }
         catch (SQLException e)
         {
@@ -186,6 +189,7 @@ public class UserStorage implements Storage<User>
             int kp = model.getKp();
             int teamid = model.getTeam().getId();
             int teampos = model.getTeamPos();
+            double influence = model.getBaseInfluence();
             int modeInt = 0;
             PlayerMode mode = model.getMode();
             if (mode.equals(PlayerMode.NORMAL))
@@ -208,7 +212,7 @@ public class UserStorage implements Storage<User>
             {
                 modeInt = 5;
             }
-            this.database.preparedExec("user_update", death, kills, kp, modeInt, teamid, teampos, cubeuserid);
+            this.database.preparedExec("user_update", death, kills, kp, modeInt, teamid, teampos, influence, cubeuserid);
         }
         catch (SQLException e)
         {

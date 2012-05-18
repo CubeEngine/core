@@ -51,6 +51,7 @@ public enum Perm
     command_modify_BP(null),
     command_description("Perm_desc"),//TODO
     command_description_other("Perm_desc_other"),//TODO
+    command_peacefull("Perm_peace"),//TODO
     command_create("Perm_create"),
     command_create_team("Perm_create_team"),
     command_create_arena("Perm_create_arena"),

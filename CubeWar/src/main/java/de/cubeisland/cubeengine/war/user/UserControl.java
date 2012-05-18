@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.database.UserStorage;
 import de.cubeisland.cubeengine.war.groups.AreaType;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Effect;
@@ -161,6 +162,11 @@ public class UserControl
             }
         }
         return null;
+    }
+    
+    public Collection<User> getUsers()
+    {
+        return this.users.values();
     }
 
     public boolean isAllied(Player player1, Player player2)

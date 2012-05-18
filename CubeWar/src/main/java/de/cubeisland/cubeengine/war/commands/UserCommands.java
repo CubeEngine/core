@@ -47,6 +47,25 @@ public class UserCommands
         }
         return false;
     }
+    
+    @Command(usage = "buy <amount>")
+    public boolean influence(CommandSender sender, CommandArgs args)
+    {
+        if (args.size()>1)
+        {
+            User user = users.getUser(sender);
+            int amount = args.getInt(1);
+            double price = CubeWar.getInstance().getConfiguration().influenceCost * amount;
+            //TODO buy for money...
+            //KP kaufen für IP ???
+            user.addInfluence(amount);
+        }
+       
+        
+        return false;
+    }
+    
+    
     //TODO Bounty auslagern in CubeBountyHunter oder CubeHunter
     //bounty adding etc
     /*

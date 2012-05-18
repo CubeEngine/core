@@ -215,6 +215,24 @@ public class GroupCommands {
         return false;
     }
     
+    @Command(usage = "<Tag>", aliases = {"peace"})
+    public boolean peaceful(CommandSender sender, CommandArgs args)
+    {
+        if (Perm.command_peacefull.hasNotPerm(sender)) return true;
+        //TODO schaden verhindern wenn user im team PvP...
+        if (args.size()>0)
+        {
+            Group group = groups.getGroup(args.getString(0));
+            group.toggleBit(Group.IS_PEACEFUL);
+            if (group.isPeaceful())
+                sender.sendMessage(t("peace_isnow",group.getTag()));
+            else
+                sender.sendMessage(t("peace_isnot",group.getTag()));
+            return true;
+        }
+        return false;
+    }
+    
     @Command(usage = "[-t <Tag>] <description>", aliases = {"desc"})
     public boolean description(CommandSender sender, CommandArgs args)
     {
@@ -469,6 +487,7 @@ public class GroupCommands {
     @Command(usage = "<Tag> [Tag]")
     public boolean enemy(CommandSender sender, CommandArgs args)
     {
+
         if (Perm.command_relation_BP.hasNotPerm(sender))
             if (Perm.command_relation_change.hasNotPerm(sender)) return true;
         if (args.size() > 1)

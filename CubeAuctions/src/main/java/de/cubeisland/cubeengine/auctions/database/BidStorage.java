@@ -135,7 +135,7 @@ public class BidStorage implements Storage<Bid>
                 + "`id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "`auctionid` int(11) NOT NULL,"
                 + "`cubeuserid` int(11) NOT NULL,"
-                + "`amount` int(11) NOT NULL,"
+                + "`amount` decimal(11,2) NOT NULL,"
                 + "`timestamp` timestamp NOT NULL,"
                 + "PRIMARY KEY (`id`),"
                 + "FOREIGN KEY (auctionid) REFERENCES auctions(id),"
