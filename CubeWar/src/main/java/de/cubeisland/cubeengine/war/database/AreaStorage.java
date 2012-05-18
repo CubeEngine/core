@@ -59,28 +59,7 @@ public class AreaStorage implements Storage<AreaControl>
         }
     }
 
-    /**
-     *
-     * @param x
-     * @param z
-     * @return GroupId of this Chunk
-     */
-    public int get(int x, int z)
-    {
-        try
-        {
-            ResultSet result = this.database.preparedQuery("area_get", x, z);
-            if (!result.next())
-            {
-                return 0;
-            }
-            return result.getInt("groupid");
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Failed to get the Chunk X:" + x + " Z:" + z + " !", ex);
-        }
-    }
+    
 
     /**
      *
@@ -88,16 +67,16 @@ public class AreaStorage implements Storage<AreaControl>
      */
     public AreaControl load()
     {
-        AreaControl area = new AreaControl();
+        AreaControl areas = CubeWar.getInstance().getAreas();
         try
         {
             ResultSet result = this.database.preparedQuery("area_getall");
             while (result.next())
             {
-                area.load(server.getWorld("world").getChunkAt(result.getInt("x"), result.getInt("z")), result.getInt("groupid"));
+                areas.load(server.getWorld("world").getChunkAt(result.getInt("x"), result.getInt("z")), result.getInt("groupid"));
             }
 
-            return area;
+            return areas;
         }
         catch (SQLException e)
         {
@@ -153,38 +132,12 @@ public class AreaStorage implements Storage<AreaControl>
         }
     }
 
-    public AreaControl get(int key)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public Collection<AreaControl> getAll()
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public void store(AreaControl model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public void update(AreaControl model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public void merge(AreaControl model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public boolean delete(AreaControl model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public boolean delete(int id)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
+    public AreaControl get(int key){throw new UnsupportedOperationException("No need.");}
+    public Collection<AreaControl> getAll(){throw new UnsupportedOperationException("No need.");}
+    public void store(AreaControl model){throw new UnsupportedOperationException("No need.");}
+    public void update(AreaControl model){throw new UnsupportedOperationException("No need.");}
+    public void merge(AreaControl model){throw new UnsupportedOperationException("No need.");}
+    public boolean delete(AreaControl model){throw new UnsupportedOperationException("No need.");}
+    public boolean delete(int id){throw new UnsupportedOperationException("No need.");}
+    public int get(int x, int z){throw new UnsupportedOperationException("No need.");}
 }

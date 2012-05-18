@@ -85,7 +85,6 @@ public class ClaimCommands
                     {
                         if (Perm.command_claim_otherTeam.hasNotPerm(sender))
                         {
-                            //TODO msg
                             return true;
                         }
                     }
@@ -141,7 +140,7 @@ public class ClaimCommands
     private void claim(Location loc, int rad, Group team, Player player, User user)
     {
 
-        if (team == null)
+        if (team.getId() == 0)
         {
             player.sendMessage(t("claim_noteam"));
             return;
@@ -213,7 +212,7 @@ public class ClaimCommands
         }
         for (Chunk chunk : chunks)
         {//TODO Check Power / Money
-            ++sum;
+
             Group group = areas.getGroup(chunk);
             if (!group.getType().equals(AreaType.WILDLAND))
             {
@@ -222,12 +221,14 @@ public class ClaimCommands
                     continue;
                 }
             }
-            areas.addChunk(chunk, user.getTeam());
+            ++sum;
+            areas.addChunk(chunk, team);
             if (group.getType().equals(AreaType.WILDLAND))
             {
+
                 ++wild;
             }
-            else if (group.equals(user.getTeam()))
+            else if (group.equals(team))
             {
                 ++own;
             }

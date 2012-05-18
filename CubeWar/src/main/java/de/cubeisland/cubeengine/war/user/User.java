@@ -48,7 +48,7 @@ public class User implements Model
         rank = config.cubewar_ranks.get(0);
     }
 
-    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid)
+    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid, int teampos)
     {
         this.user = cuManager.getCubeUser(cubeuserid);
         this.death = death;
@@ -57,6 +57,14 @@ public class User implements Model
         this.mode = mode;
         this.team = groups.getGroup(teamid);
         this.rank = config.cubewar_ranks.get(0);
+        switch (teampos)
+        {
+            case 0: break; //Kein Team
+            case 1: this.team.addUser(this); break;
+            case 2: this.team.addMod(this); break;
+            case 3: this.team.addAdmin(this); break;
+                
+        }
         this.rank.newRank(this);
     }
 
@@ -193,8 +201,8 @@ public class User implements Model
 
     public void setTeam(Group team)
     {
-        userDB.update(this);
         this.team = team;
+        userDB.update(this);
     }
 
     public Group getTeam()
@@ -295,5 +303,15 @@ public class User implements Model
     OfflinePlayer getOfflinePlayer()
     {
         return this.user.getOfflinePlayer();
+    }
+
+    public int getTeamPos()
+    {
+        if (this.team == null) return 0;
+        if (this.team.getId()==0) return 0;
+        if (this.team.isAdmin(this)) return 3;
+        if (this.team.isMod(this)) return 2;
+        if (this.team.isUser(this)) return 1;
+        return 0;
     }
 }

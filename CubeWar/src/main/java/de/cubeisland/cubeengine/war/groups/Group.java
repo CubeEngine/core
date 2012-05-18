@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
+import de.cubeisland.cubeengine.war.database.GroupStorage;
 import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
@@ -46,14 +47,17 @@ public class Group implements Cloneable, Model
     private Map<String, String> stringval = new HashMap<String, String>();
     private Map<String, List> listval = new HashMap<String, List>();
     private int power_used;
-    private int power_max;
-    private int power_max_used;
+    private int power_max;//TODO ausrechnen
+    private int power_max_used;//TODO ausrechnen
     private List<User> admin = new ArrayList<User>();
     private List<User> mod = new ArrayList<User>();
     private List<User> user = new ArrayList<User>();
+    //TODO in separater Tabelle
     private List<User> invited = new ArrayList<User>();
+    //TODO in separater Tabelle
     private List<Group> enemy = new ArrayList<Group>();
     private List<Group> ally = new ArrayList<Group>();
+    
     private GroupControl groups = GroupControl.get();
     private UserControl users = CubeWar.getInstance().getUserControl();
 
@@ -120,20 +124,24 @@ public class Group implements Cloneable, Model
 
     private String convertKey(String key)
     {
-        if (key.equalsIgnoreCase("dmgmod"))
-        {
-            return "damagemodifier";
-        }
-        else
-        {
-            return key;
-        }
+        
+        if (key.equalsIgnoreCase("dmgmod")) return "damagemodifier";
+        if (key.equalsIgnoreCase("ff")) return "pvp_friendlyfire";
+        if (key.equalsIgnoreCase("respawntime")) return "pvp_spawnprotect";
+        
+
+        return key;
     }
 
     public boolean setValue(String key, String value)
     {
 
         key = this.convertKey(key);
+        if (key.equalsIgnoreCase("damagemodifier"))
+            if (value.length()>5) return false;
+        if (key.equalsIgnoreCase("pvp_spawnprotect"))
+            if (value.length()>3) return false;
+        
         if (intval.containsKey(key.toLowerCase()))
         {
             try
@@ -433,7 +441,7 @@ public class Group implements Cloneable, Model
     public void delAdmin(User user)
     {
         this.admin.remove(user);
-        user.setTeam(null);
+        user.setTeam(groups.getWildLand());
     }
 
     public boolean isAdmin(User user)
@@ -457,7 +465,7 @@ public class Group implements Cloneable, Model
     {
         this.mod.remove(user);
         this.admin.remove(user);
-        user.setTeam(null);
+        user.setTeam(groups.getWildLand());
     }
 
     public boolean isMod(User user)
@@ -486,7 +494,7 @@ public class Group implements Cloneable, Model
         this.user.remove(user);
         this.mod.remove(user);
         this.admin.remove(user);
-        user.setTeam(null);
+        user.setTeam(groups.getWildLand());
     }
 
     public boolean isUser(User user)
@@ -839,7 +847,8 @@ public class Group implements Cloneable, Model
         sender.sendMessage(t("g_03", this.getDescription()));
         sender.sendMessage(t("g_04", GroupControl.get().getRank(this),
                 t("g_05", this.power_used, this.power_max_used, this.power_max)));
-        Group team = users.getUser(sender).getTeam();
+        User user = users.getUser(sender);
+        Group team = user.getTeam();
         if (team != null && ((team.equals(this)) || (team.isAlly(this) && this.isAlly(team))))
         {
             sender.sendMessage(t("g_06"));
@@ -922,10 +931,13 @@ public class Group implements Cloneable, Model
         {
             sender.sendMessage(t("g_13", list.size(), offplayer.substring(2)));
         }
-        if (this.isClosed()
-                || (this.isBalancing() && !this.isBalanced(users.getUser(sender))))
+        if (!this.isUser(user))
         {
-            sender.sendMessage(t("g_14"));
+            if (this.isClosed()
+                || (this.isBalancing() && !this.isBalanced(user)))
+            {
+                sender.sendMessage(t("g_14"));
+            }
         }
     }
 

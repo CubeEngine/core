@@ -110,7 +110,9 @@ public class AreaControl implements Model
 
     public void load(Chunk chunk, int groupid)
     {
-        chunks.put(chunk, groups.getGroup(groupid));
+        Group group = groups.getGroup(groupid);
+        chunks.put(chunk, group);
+        group.addPower_used();
     }
 
     public int getId()

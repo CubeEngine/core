@@ -102,9 +102,9 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         denyuseDB = new DenyUsageStorage();
         groupDB = new GroupStorage();
         userDB = new UserStorage();
-        users.loadDB();
         groups.loadDB();
         areaDB.load();
+        users.loadDB();
         
         pvp = new PvP();
         

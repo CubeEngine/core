@@ -26,12 +26,12 @@ public class UserStorage implements Storage<User>
         this.initialize();
         try
         {
-            this.database.prepareStatement("user_get", "SELECT cubeuserid,death,kills,kp,mode,teamid {{" + TABLE + "}} WHERE cubeuserid=? LIMIT 1");
-            this.database.prepareStatement("user_getall", "SELECT cubeuserid,death,kills,kp,mode,teamid FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("user_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,death,kills,kp,mode,teamid) VALUES (?,?,?,?,?,?)");
+            this.database.prepareStatement("user_get", "SELECT * FROM {{" + TABLE + "}} WHERE cubeuserid=? LIMIT 1");
+            this.database.prepareStatement("user_getall", "SELECT * FROM {{" + TABLE + "}}");
+            this.database.prepareStatement("user_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,death,kills,kp,mode,teamid,teampos) VALUES (?,?,?,?,?,?,?)");
             this.database.prepareStatement("user_delete", "DELETE FROM {{" + TABLE + "}} WHERE cubeuserid=?");
             this.database.prepareStatement("user_clear", "DELETE FROM {{" + TABLE + "}}");
-            this.database.prepareStatement("user_update", "UPDATE {{" + TABLE + "}} SET death=?,kills=?,kp=?,mode=?,teamid=? WHERE cubeuserid=?");
+            this.database.prepareStatement("user_update", "UPDATE {{" + TABLE + "}} SET death=?,kills=?,kp=?,mode=?,teamid=?,teampos=? WHERE cubeuserid=?");
         }
         catch (SQLException e)
         {
@@ -50,57 +50,13 @@ public class UserStorage implements Storage<User>
                     + "`kp` int(11) NOT NULL,"
                     + "`mode` int(2) NOT NULL,"
                     + "`teamid` int(4) NOT NULL,"
+                    + "`teampos` int(3) NOT NULL,"
                     + "PRIMARY KEY (`cubeuserid`)"
                     + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
         {
             throw new StorageException("Failed to initialize the User-Table !", ex);
-        }
-    }
-
-    public User get(int key)
-    {
-        try
-        {
-            ResultSet result = this.database.preparedQuery("user_get", key);
-
-            if (!result.next())
-            {
-                return null;
-            }
-            int cubeuserid = result.getInt("cubeuserid");
-            int death = result.getInt("death");
-            int kills = result.getInt("kills");
-            int kp = result.getInt("kp");
-            int modeInt = result.getInt("mode");
-            int teamid = result.getInt("teamid");
-            PlayerMode mode = null;
-            switch (modeInt)
-            {
-                case 1:
-                    mode = PlayerMode.NORMAL;
-                    break;
-                case 2:
-                    mode = PlayerMode.KILLRESET;
-                    break;
-                case 3:
-                    mode = PlayerMode.HIGHLANDER;
-                    break;
-                case 4:
-                    mode = PlayerMode.PEACE;
-                    break;
-                case 5:
-                    mode = PlayerMode.DUEL;
-                    break;
-            }
-
-            return new User(cubeuserid, death, kills, kp, mode, teamid);
-
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to load the user '" + key + "'!", e);
         }
     }
 
@@ -118,6 +74,7 @@ public class UserStorage implements Storage<User>
                 int kp = result.getInt("kp");
                 int modeInt = result.getInt("mode");
                 int teamid = result.getInt("teamid");
+                int teampos = result.getInt("teampos");
                 PlayerMode mode = null;
                 switch (modeInt)
                 {
@@ -137,7 +94,7 @@ public class UserStorage implements Storage<User>
                         mode = PlayerMode.DUEL;
                         break;
                 }
-                users.add(new User(cubeuserid, death, kills, kp, mode, teamid));
+                users.add(new User(cubeuserid, death, kills, kp, mode, teamid, teampos));
             }
             return users;
 
@@ -160,6 +117,7 @@ public class UserStorage implements Storage<User>
             int kp = model.getKp();
             int teamid = model.getTeam().getId();
             int modeInt = 0;
+            int teampos = model.getTeamPos();
             PlayerMode mode = model.getMode();
             if (mode.equals(PlayerMode.NORMAL))
             {
@@ -181,7 +139,7 @@ public class UserStorage implements Storage<User>
             {
                 modeInt = 5;
             }
-            this.database.preparedExec("user_store", cubeuserid, death, kills, kp, modeInt, teamid);
+            this.database.preparedExec("user_store", cubeuserid, death, kills, kp, modeInt, teamid, teampos);
         }
         catch (SQLException e)
         {
@@ -218,11 +176,6 @@ public class UserStorage implements Storage<User>
         }
     }
 
-    public void merge(User model)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     public void update(User model)
     {
         try
@@ -232,6 +185,7 @@ public class UserStorage implements Storage<User>
             int kills = model.getKills();
             int kp = model.getKp();
             int teamid = model.getTeam().getId();
+            int teampos = model.getTeamPos();
             int modeInt = 0;
             PlayerMode mode = model.getMode();
             if (mode.equals(PlayerMode.NORMAL))
@@ -254,11 +208,14 @@ public class UserStorage implements Storage<User>
             {
                 modeInt = 5;
             }
-            this.database.preparedExec("user_update", death, kills, kp, modeInt, teamid, cubeuserid);
+            this.database.preparedExec("user_update", death, kills, kp, modeInt, teamid, teampos, cubeuserid);
         }
         catch (SQLException e)
         {
             throw new StorageException("Failed to update the user !", e);
         }
     }
+
+    public User get(int key){throw new UnsupportedOperationException("No need.");}
+    public void merge(User model){throw new UnsupportedOperationException("No need.");}
 }

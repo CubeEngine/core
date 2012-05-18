@@ -175,38 +175,11 @@ public class DenyUsageStorage implements Storage<Group>
         }
     }
 
-    public Group get(int key)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public Collection<Group> getAll()
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public void store(Group model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public void update(Group model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public void merge(Group model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public boolean delete(Group model)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
-
-    public boolean delete(int id)
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
+    public Group get(int key){throw new UnsupportedOperationException("No need.");}
+    public Collection<Group> getAll(){throw new UnsupportedOperationException("No need.");}
+    public void store(Group model){throw new UnsupportedOperationException("No need.");}
+    public void update(Group model){throw new UnsupportedOperationException("No need.");}
+    public void merge(Group model){throw new UnsupportedOperationException("No need.");}
+    public boolean delete(Group model){throw new UnsupportedOperationException("No need.");}
+    public boolean delete(int id){throw new UnsupportedOperationException("No need.");}
 }

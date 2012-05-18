@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.war.commands;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
+import de.cubeisland.cubeengine.war.database.GroupStorage;
 import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
@@ -20,6 +21,7 @@ public class GroupCommands {
 
     private GroupControl groups = GroupControl.get();
     private UserControl users = CubeWar.getInstance().getUserControl();
+    private GroupStorage groupDB = CubeWar.getInstance().getGroupDB();
     
     public GroupCommands() 
     {
@@ -42,6 +44,16 @@ public class GroupCommands {
                 {
                     String tag = args.getString(1);
                     String name = args.getString(2);
+                    if (tag.length() >10)
+                    {
+                        sender.sendMessage(t("create_tag_long"));
+                        return true;
+                    }
+                    if (name.length() >20)
+                    {
+                        sender.sendMessage(t("create_name_long"));
+                        return true;
+                    }
                     if (tag.equalsIgnoreCase("all"))
                     {
                         sender.sendMessage(t("create_tag_all"));
@@ -60,7 +72,8 @@ public class GroupCommands {
                     User user = users.getUser(sender);
                     if (user.getTeam().getType().equals(AreaType.WILDLAND))
                     {
-                        team.addAdmin(users.getUser(sender));
+                        team.addAdmin(user);
+                        user.setTeam(team);
                         sender.sendMessage(t("i")+t("ct1", tag, name));
                     }
                     else
@@ -108,10 +121,15 @@ public class GroupCommands {
             if (Perm.command_modify.hasNotPerm(sender)) return true;
         if (args.size() > 2)
         {
-            Group group = GroupControl.get().getGroup(args.getString(0).substring(1));
+            Group group = groups.getGroup(args.getString(0));
             String val = args.getString(2);
             if (group != null)
             {
+                if (group.getId()<1)
+                {
+                    sender.sendMessage(t("no_def_group"));
+                    return true;
+                }
                 if (args.getString(1).equalsIgnoreCase("tag"))
                 {
                     sender.sendMessage(t("m_tag"));
@@ -124,6 +142,8 @@ public class GroupCommands {
                 if (groups.setGroupValue(group.getId(), args.getString(1), val))
                 {
                     sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
+                    groupDB.update(group);
+                    //CubeWar.getInstance().getDenyuseDB().update(group); TODO UsageDeny Updaten
                     return true;
                 }
                 else
@@ -142,7 +162,7 @@ public class GroupCommands {
     {
         if (Perm.command_position_BP.hasNotPerm(sender))
             if (Perm.command_position.hasNotPerm(sender)) return true;
-        if (args.size() > 2)    
+        if (args.size() > 1)    
         {
             String t = args.getString(0);
             User user = users.getUser(args.getString(1));
@@ -195,6 +215,62 @@ public class GroupCommands {
         return false;
     }
     
+    @Command(usage = "[-t <Tag>] <description>", aliases = {"desc"})
+    public boolean description(CommandSender sender, CommandArgs args)
+    {
+        if (Perm.command_description.hasNotPerm(sender)) return true;
+        if (args.size()>0)
+        {
+            Group group;   
+            int pos=0;
+            if (args.hasFlag("t"))
+            {
+                if (Perm.command_description_other.hasNotPerm(sender)) return true;
+                group = groups.getGroup(args.getString(0));
+                if (group == null)
+                {
+                    sender.sendMessage(t("m_noGroupExist",args.getString(0)));
+                    return true;
+                }
+                if (group.getId()<1)
+                {
+                    sender.sendMessage(t("no_def_group"));
+                    return true;
+                }
+                pos = 1;
+            }
+            else
+            {
+                group = users.getUser(sender).getTeam();
+                if (group.getId()==0)
+                {
+                    sender.sendMessage(t("m_noTeam"));
+                    return true;
+                }
+            }
+            if (args.hasFlag("t") && args.size()<2)
+            {
+                sender.sendMessage(t("too_few_args"));
+                return true;
+            }
+            String desc = args.getString(pos); 
+            for (int i = pos+1; i < args.size();++i)
+            {
+                desc += " "+args.getString(i); 
+            }
+            if (desc.length() > 100)
+            {
+                sender.sendMessage(t("desc_long"));
+                return true;
+            }
+            group.setStringValue("description", desc);
+            sender.sendMessage(t("desc_changed",desc));
+            groupDB.update(group);
+            return true;
+        }
+        return false;
+    }
+
     @Command(usage = "<Player>")
     public boolean kick(CommandSender sender, CommandArgs args)
     {

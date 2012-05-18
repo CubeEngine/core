@@ -230,9 +230,8 @@ cubewar:
         - spawn
         - warp
         - home
-  #Permissions to DENY for IG TeamPositions even if given permissions in GM
+  #Permissions to DENY for InGroup TeamPositions even if given permissions in Perm_System
   #You can still use bypass to access commands that are denied here
-  #OP ALWAYS has all bypass ON (abändern?)
   IGperm:
     leader:
       - command.unclaim.ownTeam.all
@@ -248,6 +247,7 @@ cubewar:
       - command.invite
       - command.uninvite
       - command.position.*
+      - command.description
     user:
       - command.create
       - command.fly

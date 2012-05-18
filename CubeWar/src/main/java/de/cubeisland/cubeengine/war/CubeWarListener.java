@@ -2,9 +2,11 @@ package de.cubeisland.cubeengine.war;
 
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.area.AreaControl;
+import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.PvP;
 import de.cubeisland.cubeengine.war.user.UserControl;
+import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
@@ -59,12 +61,16 @@ public class CubeWarListener implements Listener
     @EventHandler
     public void move(final PlayerMoveEvent event)
     {
-        if (!event.getFrom().getChunk().equals(event.getTo().getChunk()))
+        Chunk chunkFrom = event.getFrom().getChunk();
+        Chunk chunkTo = event.getTo().getChunk();
+        if (!chunkFrom.equals(chunkTo))
         {
-            if (!areas.getGroup(event.getFrom().getChunk()).equals(areas.getGroup(event.getTo().getChunk())))
+            Group groupFrom = areas.getGroup(chunkFrom);
+            Group groupTo = areas.getGroup(chunkTo);
+            if (!groupFrom.equals(groupTo))
             {
                 event.getPlayer().sendMessage("X: " + event.getTo().getChunk().getX() + " Z: " + event.getTo().getChunk().getZ()
-                        + " " + groups.getGroup(event.getPlayer()).getTag());
+                        + " " + groupTo.getTag());
             }
         }
     }

@@ -13,7 +13,7 @@ import org.bukkit.permissions.Permissible;
  */
 public enum Perm
 {
-
+    //TODO Permissions dynamisch registrieren
     command_claim("Perm_claim"),
     command_claim_ownTeam("Perm_claim_ownTeam"),
     command_claim_radius("Perm_claim_radius"),
@@ -49,6 +49,8 @@ public enum Perm
     command_whois_other("Perm_whois_other"),
     command_modify("Perm_modify"),
     command_modify_BP(null),
+    command_description("Perm_desc"),//TODO
+    command_description_other("Perm_desc_other"),//TODO
     command_create("Perm_create"),
     command_create_team("Perm_create_team"),
     command_create_arena("Perm_create_arena"),

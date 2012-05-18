@@ -30,11 +30,7 @@ public class GroupStorage implements Storage<Group>
     {
         this.initialize();
         try
-        {//Area IDs Safe = -10 | War = -50 | WildLand = 0 | DefaultTeam = -1 | DefaultArena = -2
-            //More Teams/Arena ID = 1+...
-            //ID, TAG, NAME, DESCRIPTION, ISARENA?, respawnprotect, dmgmod, pwrboost, permpwr,  flags
-            //int str  str   str          bool      int (in sec)    str     int       int(NULL) int
-
+        {
             this.database.prepareStatement("group_get", "SELECT * FROM {{" + TABLE + "}} WHERE id=? LIMIT 1");
             this.database.prepareStatement("group_getall", "SELECT * FROM {{" + TABLE + "}}");//
             this.database.prepareStatement("group_store", "INSERT INTO {{" + TABLE + "}} (id,tag,name,description,isarena,respawnprot,dmgmod,pwrboost,permpwr,flags) VALUES (?,?,?,?,?,?,?,?,?,?)");
@@ -55,12 +51,12 @@ public class GroupStorage implements Storage<Group>
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `groups` ("
                     + "`id` int(10) unsigned NOT NULL,"
-                    + "`tag` varchar(10) NOT NULL,"//TODO limit Tag to 10
-                    + "`name` varchar(20) NOT NULL,"//TODO limit name to 20
-                    + "`description` varchar(42) NOT NULL," //TODO limit desc to 42     
-                    + "`isarena` smallint(2) NOT NULL,"//bool?
-                    + "`respawnprot` int(3) NOT NULL,"//TODO limit to 999 sec
-                    + "`dmgmod` varchar(5) NOT NULL,"//TODO limit to 5  //Format +1 -1 P30 P-30 S1 S-1
+                    + "`tag` varchar(10) NOT NULL,"
+                    + "`name` varchar(20) NOT NULL,"
+                    + "`description` varchar(100) NOT NULL,"
+                    + "`isarena` smallint(2) NOT NULL,"
+                    + "`respawnprot` int(3) NOT NULL,"
+                    + "`dmgmod` varchar(5) NOT NULL,"//Format +1 -1 P30 P-30 S1 S-1
                     + "`pwrboost` int(11) NOT NULL,"
                     + "`permpwr` int(11) DEFAULT NULL,"
                     + "`flags` int(11) NOT NULL,"
@@ -70,36 +66,6 @@ public class GroupStorage implements Storage<Group>
         catch (SQLException ex)
         {
             throw new StorageException("Failed to initialize the Groups-Table !", ex);
-        }
-    }
-
-    public Group get(int key)
-    {
-        try
-        {
-            ResultSet result = this.database.preparedQuery("group_get", key);
-
-            if (!result.next())
-            {
-                return null;
-            }
-            int id = result.getInt("id");
-            String tag = result.getString("tag");
-            String name = result.getString("name");
-            String description = result.getString("description");
-            boolean isarena = result.getBoolean("isarena");
-            int respawnprot = result.getInt("respawnprot");
-            String dmgmod = result.getString("dmgmod");
-            int pwrboost = result.getInt("pwrboost");
-            Integer permpwr = result.getInt("permpwr");
-            int flags = result.getInt("flags");
-
-            return new Group(id, tag, name, description, isarena, respawnprot, dmgmod, pwrboost, permpwr, flags);
-
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to load the group '" + key + "'!", e);
         }
     }
 
@@ -239,12 +205,7 @@ public class GroupStorage implements Storage<Group>
             throw new StorageException("Failed to update the group !", e);
         }
     }
-
-    public void merge(Group model)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    
     public boolean delete(Group model)
     {
         return this.delete(model.getId());
@@ -273,4 +234,7 @@ public class GroupStorage implements Storage<Group>
             throw new StorageException("Failed to clear the database!", e);
         }
     }
+    
+    public Group get(int key){throw new UnsupportedOperationException("No need.");}
+    public void merge(Group model){throw new UnsupportedOperationException("No need.");}
 }
