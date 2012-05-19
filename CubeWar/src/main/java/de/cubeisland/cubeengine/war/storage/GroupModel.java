@@ -385,4 +385,14 @@ public class GroupModel implements Model
     {
         this.userlist = userlist;
     }
+
+    public void setType(AreaType type)
+    {
+        this.type = type;
+    }
+    
+    public int getBitMaskValue()
+    {
+        return this.bits.get();
+    }
 }
