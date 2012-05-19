@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.core.util;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -57,41 +59,45 @@ public final class StringUtils
 
         return tokens.toArray(new String[tokens.size()]);
     }
-    
+
+
     /**
      * This method merges an array of strings to a single string
      *
      * @param delim the delimiter
-     * @param inputArray the array to merge
-     * @return a String containing the inputArray delimited by delim
+     * @param strings the strings to implode
+     * @return the imploded string
      */
-    public static String implode(String delim, String[] inputArray)
+    public static String implode(CharSequence delim, CharSequence[] strings)
     {
-        return implode(delim, inputArray, true);
+        return implode(delim, Arrays.asList(strings));
     }
     
     /**
      * This method merges an array of strings to a single string
      * 
      * @param delim the delimiter
-     * @param inputArray the array to merge
-     * @param keepEmptyParts whether to keep empty parts
-     * @return a String containing the inputArray delimited by delim
+     * @param strings the strings to implode
+     * @return the imploded string
      */
-    public static String implode(String delim, String[] inputArray, boolean keepEmptyParts)
+    public static String implode(CharSequence delim, Iterable<CharSequence> strings)
     {
-        int max = inputArray.length;
-        if (max == 0) return "";
-        String output = inputArray[0];
-        for (int i=1; i<max; ++i)
+        Iterator<CharSequence> iterator = strings.iterator();
+        if (!iterator.hasNext())
         {
-            if ((inputArray[i].length() > 0) || (keepEmptyParts))
-            {
-                output += delim;
-                output += inputArray[i];
-            }
+            return "";
         }
-        return output;
+        else
+        {
+            StringBuilder sb = new StringBuilder(iterator.next());
+
+            while (iterator.hasNext())
+            {
+                sb.append(delim).append(iterator.next());
+            }
+            
+            return sb.toString();
+        }
     }
 
     /**
