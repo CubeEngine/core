@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.war.storage;
 
-import org.bukkit.Chunk;
-
 /**
  *
  * @author Faithcaio
@@ -10,8 +8,13 @@ public class Area
 {
     AreaModel model;
     
-    public Area(Chunk chunk, Group group)
+    public Area(AreaModel model)
     {
-        this.model = new AreaModel(chunk, group);
+        this.model = model;
+    }
+
+    public Group getGroup()
+    {
+        return this.model.getGroup();
     }
 }

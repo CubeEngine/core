@@ -50,5 +50,10 @@ public class AreaModel implements Model
     {
         this.group = group;
     }
+
+    public Chunk getChunk()
+    {
+        return this.chunk;
+    }
     
 }

@@ -42,11 +42,8 @@ public class AreaStorage implements Storage<AreaModel>
             this.database.prepareStatement("area_getall", "SELECT * FROM {{" + TABLE + "}}");
             this.database.prepareStatement("area_store", "INSERT INTO {{" + TABLE + "}} (id,world,x,z,groupid) VALUES (?,?,?,?,?)");
             this.database.prepareStatement("area_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
-           
             this.database.prepareStatement("area_clear", "DELETE FROM {{" + TABLE + "}}");
             this.database.prepareStatement("area_update", "UPDATE {{" + TABLE + "}} SET groupid=? WHERE id=?");
-            
-            this.database.prepareStatement("area_delete_group", "DELETE FROM {{" + TABLE + "}} WHERE groupid=?");
         }
         catch (SQLException e)
         {

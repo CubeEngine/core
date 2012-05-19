@@ -181,7 +181,8 @@ public class GroupControl
         GroupModel newModel = this.groups.get(parent).model.deepCopy();
         newModel.setTag(tag);
         newModel.setName(name);
-        int id = groups.size() - 4;
+        int id = groups.size() - 4; //TODO kann Fehler verursachen wenn eine Gruppe wieder gelöscht wird
+        //TODO im Storage.store Id dem model zuweisen?
         newModel.setId(id);
         groups.put(id, new Group(newModel));
         groupDB.store(newModel);
@@ -229,7 +230,7 @@ public class GroupControl
     public Group getGroupAtLocation(Location loc)
     {
 
-        return areas.getGroup(loc);//TODO areaStorage etc...
+        return AreaControl.get().getGroup(loc);
     }
     
     public Group getWildLand()
@@ -305,5 +306,15 @@ public class GroupControl
             return true;
         }
         return false;
+    }
+    
+    public void wipeArea()
+    {
+        for (Group g : groups.values())
+        {
+            g.resetInfluence_used();
+            
+        }
+        AreaControl.get().remAllAll();
     }
 }

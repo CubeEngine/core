@@ -80,14 +80,6 @@ public class GroupStorage implements Storage<GroupModel>
                     + "`ally` text NOT NULL,"
                     + "PRIMARY KEY (`id`)"
                     + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
-            //TODO einbinden der Listen
-            /*
-             * private List<Material> protect = new ArrayList<Material>();
-             * private List<String> denyCmd = new ArrayList<String>(); private
-             * List<String> invited = new ArrayList<String>(); private
-             * List<Group> enemy = new ArrayList<Group>(); private List<Group>
-             * ally = new ArrayList<Group>();
-             */
         }
         catch (SQLException ex)
         {
