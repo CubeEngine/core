@@ -8,5 +8,10 @@ import org.bukkit.plugin.Plugin;
  */
 public interface CubeModule extends Plugin
 {
-    
+    /**
+     * Returns the name of this module
+     *
+     * @return the module name
+     */
+    public String getModuleName();
 }

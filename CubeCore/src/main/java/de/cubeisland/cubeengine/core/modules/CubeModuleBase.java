@@ -8,5 +8,15 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public abstract class CubeModuleBase extends JavaPlugin implements CubeModule
 {
+    private final String name;
 
+    public CubeModuleBase(String name)
+    {
+        this.name = name;
+    }
+
+    public String getModuleName()
+    {
+        return this.name;
+    }
 }

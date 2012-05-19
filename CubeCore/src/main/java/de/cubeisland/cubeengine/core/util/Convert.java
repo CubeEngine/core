@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.libMinecraft.math.Vector2;
-import de.cubeisland.libMinecraft.math.Vector3;
+import de.cubeisland.cubeengine.core.util.math.Vector2;
+import de.cubeisland.cubeengine.core.util.math.Vector3;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;

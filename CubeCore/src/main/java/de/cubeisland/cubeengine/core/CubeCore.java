@@ -1,61 +1,74 @@
 package de.cubeisland.cubeengine.core;
 
+import de.cubeisland.cubeengine.core.configuration.ConfigurationManager;
+import de.cubeisland.cubeengine.core.configuration.CubeConfiguration;
+import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
-import java.io.File;
-import java.util.logging.Logger;
-import org.bukkit.Server;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CubeCore extends JavaPlugin
 {
-    protected static Logger logger = null;
-    public static boolean debugMode = false;
     private static CubeCore instance;
-    private static Database database;
-    private static CubeCoreConfiguration config;
-    private CubeUserManager cuManager;
 
-    public static Database getDB()
+    private Database database;
+    private CubeUserManager cuManager;
+    private PermissionRegistration permissionRegistration;
+    private CubeUserManager userManager;
+    private ConfigurationManager configManager;
+
+    public CubeCore()
     {
-        return database;
+        instance = this;
+    }
+
+    public Database getDB()
+    {
+        return this.database;
     }
     
     public static CubeCore getInstance()
     {
         return instance;
     }
-    
-    protected Server server;
-    protected PluginManager pm;
-    protected File dataFolder;
 
     @Override
     public void onEnable()
     {
-        instance = this;
+        this.configManager = new ConfigurationManager(this);
+        final CubeConfiguration coreConfig = this.configManager.getCoreConfig();
+        coreConfig.safeSave();
+
+        final CubeConfiguration databaseConfig = this.configManager.getDatabaseConfig();
+        databaseConfig.safeSave();
         
-        this.dataFolder = this.getDataFolder();
-        this.dataFolder.mkdirs();
-        
-        Configuration configuration = this.getConfig();
-        configuration.options().copyDefaults(true);
-        debugMode = configuration.getBoolean("debug");
-        config = new CubeCoreConfiguration(configuration);
-        this.saveConfig();
-        database = new Database(config.core_database_host,
-                                config.core_database_port,
-                                config.core_database_user,
-                                config.core_database_pass,
-                                config.core_database_name);
-        cuManager = CubeUserManager.getInstance();
-        cuManager.loadDatabase();
+        this.database = new Database(
+            databaseConfig.getString("mysql.host"),
+            (short)databaseConfig.getInt("mysql.port"),
+            databaseConfig.getString("mysql.user"),
+            databaseConfig.getString("mysql.password"),
+            databaseConfig.getString("mysql.database"),
+            databaseConfig.getString("mysql.tableprefix")
+        );
+
+        this.userManager = new CubeUserManager(this);
+        this.permissionRegistration = new PermissionRegistration(getServer().getPluginManager());
     }
 
     @Override
     public void onDisable()
     {
+        this.configManager.clean();
+        this.configManager = null;
+
+        this.userManager.clean();
+        this.userManager = null;
+
+        this.permissionRegistration = null;
+    }
+
+    public PermissionRegistration getPermissionRegistration()
+    {
+        return this.permissionRegistration;
     }
 }

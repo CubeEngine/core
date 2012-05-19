@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class Database
 {
@@ -22,17 +22,17 @@ public class Database
     private final String user;
     private final String pass;
     private final String name;
-    private String prefix;
+    private String tablePrefix;
     private final THashMap<String, PreparedStatement> preparedStatements;
 
     private final Connection connection;
 
-    public Database(String user, String pass, String name)
+    public Database(String user, String pass, String name, String tablePrefix)
     {
-        this("localhost", (short)3306, user, pass, name);
+        this("localhost", (short)3306, user, pass, name, tablePrefix);
     }
 
-    public Database(String host, short port, String user, String pass, String name)
+    public Database(String host, short port, String user, String pass, String name, String tablePrefix)
     {
         try
         {
@@ -47,8 +47,8 @@ public class Database
         this.user = user;
         this.pass = pass;
         this.name = name;
-        this.prefix = "";
-        this.replacement = "$1";
+        this.tablePrefix = tablePrefix;
+        this.replacement = this.tablePrefix + "$1";
         try
         {
             this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.name, this.user, this.pass);
@@ -62,14 +62,14 @@ public class Database
 
     public String getTablePrefix()
     {
-        return this.prefix;
+        return this.tablePrefix;
     }
 
     public Database setTablePrefix(String prefix)
     {
         if (prefix != null)
         {
-            this.prefix = prefix;
+            this.tablePrefix = prefix;
             this.replacement = prefix + "$1";
         }
         return this;

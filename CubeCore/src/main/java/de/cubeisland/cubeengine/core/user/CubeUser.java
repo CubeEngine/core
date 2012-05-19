@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.persistence.Model;
-import de.cubeisland.libMinecraft.bitmask.LongBitMask;
+import de.cubeisland.cubeengine.core.util.bitmask.LongBitMask;
 import org.bukkit.OfflinePlayer;
 
 /**

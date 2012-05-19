@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.libMinecraft.bitmask.LongBitMask;
+import de.cubeisland.cubeengine.core.util.bitmask.LongBitMask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,12 +17,13 @@ import org.bukkit.Server;
  */
 public class CubeUserStorage implements Storage<CubeUser>
 {
-    private final Database database = CubeCore.getDB();
-    private final Server server = CubeCore.getInstance().getServer();
+    private final Database database;
+    private final Server server;
 
-    public CubeUserStorage()
+    public CubeUserStorage(Database database, Server server)
     {
-        this.initialize();
+        this.database = database;
+        this.server = server;
         try
         {
             this.database.prepareStatement("user_get",      "SELECT id,name,flags FROM {{users}} WHERE name=? LIMIT 1");
