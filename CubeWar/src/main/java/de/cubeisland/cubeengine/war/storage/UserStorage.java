@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
-import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.storage.UserModel.TeamPos;
 import de.cubeisland.cubeengine.war.user.PlayerMode;
 import java.sql.ResultSet;

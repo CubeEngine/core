@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 import de.cubeisland.cubeengine.war.groups.AreaType;
-import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.PlayerMode;
 import de.cubeisland.cubeengine.war.user.Rank;
 import org.bukkit.OfflinePlayer;
@@ -24,7 +22,8 @@ public class User
     private UserStorage userDB = UserStorage.get();
     private UserControl users = UserControl.get();
     private GroupControl groups = GroupControl.get();
-    private UserModel model;
+    
+    protected UserModel model;
 
     public User(UserModel model)
     {
@@ -280,7 +279,7 @@ public class User
         {
             if (this.equals(users.getUser(sender)))
             {
-                sender.sendMessage(t("user_06", groups.getGroup((Player) sender).getTag()));
+                sender.sendMessage(t("user_06", groups.getGroupAtLocation((Player) sender).getTag()));
             }
         }
     }

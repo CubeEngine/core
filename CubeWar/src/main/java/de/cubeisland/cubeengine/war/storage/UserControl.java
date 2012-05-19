@@ -41,8 +41,7 @@ public class UserControl
     public void loadDataBase()
     {
         UserStorage userDB = UserStorage.get();
-        Collection<UserModel> modellist = userDB.getAll();
-        for (UserModel model : modellist)
+        for (UserModel model : userDB.getAll())
         {
             this.users.put(model.getCubeUser().getOfflinePlayer(), new User(model));
         }

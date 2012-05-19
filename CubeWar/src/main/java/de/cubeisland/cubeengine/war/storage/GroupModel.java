@@ -47,7 +47,7 @@ public class GroupModel implements Model
     private List<Group> enemy = new ArrayList<Group>();
     private List<Group> ally = new ArrayList<Group>();
     //No Save in DB / load in later from other source
-    private int influence;
+    private int influence_used;
     private int influence_max;
     private List<User> adminlist = new ArrayList<User>();
     private List<User> modlist = new ArrayList<User>();
@@ -62,6 +62,8 @@ public class GroupModel implements Model
     {
         this.id = id;
     }
+    
+    public GroupModel(){}//for deepCopy
 
     public GroupModel(AreaType area)
     {
@@ -89,21 +91,26 @@ public class GroupModel implements Model
 
     public void setStringVal(String tag, String name, String description)
     {
-        this.tag = tag;
+        this.setTag(tag);
         this.setName(name);
         this.setDescription(description);
     }
 
-    public void setIntVal(int bitmask, Integer influence_perm, int influence_boost, int respawnProtection,
+    public void setIntVal(Integer influence_perm, int influence_boost, int respawnProtection,
             Integer dmg_mod_percent, Integer dmg_mod_set, Integer dmg_mod_add)
     {
-        this.bits.reset(bitmask);
+        
         this.setInfluence_perm(influence_perm);
         this.setInfluence_boost(influence_boost);
         this.setRespawnProtection(respawnProtection);
         this.setDmg_mod_percent(dmg_mod_percent);
         this.setDmg_mod_set(dmg_mod_set);
         this.setDmg_mod_add(dmg_mod_add);
+    }
+    
+    public void resetBitMask(int bitmask)
+    {
+        this.bits.reset(bitmask);
     }
 
     /**
@@ -309,17 +316,17 @@ public class GroupModel implements Model
     /**
      * @return the influence
      */
-    public int getInfluence()
+    public int getInfluence_used()
     {
-        return influence;
+        return influence_used;
     }
 
     /**
      * @param influence the influence to set
      */
-    public void setInfluence(int influence)
+    public void setInfluence_used(int influence)
     {
-        this.influence = influence;
+        this.influence_used = influence;
     }
 
     /**
@@ -395,4 +402,60 @@ public class GroupModel implements Model
     {
         return this.bits.get();
     }
+    
+    /**
+     * Use only for Default Groups
+     * 
+     * @param id 
+     */
+    public void setId(int id)
+    {
+        this.id = id;
+    }
+
+    public void setBit(int bit)
+    {
+        this.bits.set(bit);
+    }
+    
+    public void unsetBit(int bit)
+    {
+        this.bits.unset(bit);
+    }
+    
+    public void toggleBit(int bit)
+    {
+        this.bits.toggle(bit);
+    }
+    
+    public boolean hasBit(int bit)
+    {
+        return this.bits.isset(bit);
+    }
+    
+    public GroupModel deepCopy()
+    {
+        GroupModel newModel = new GroupModel();//ID is NOT set
+        newModel.setStringVal(tag, name, description);
+        newModel.setIntVal(influence_perm, influence_boost, respawnProtection, dmg_mod_percent, dmg_mod_set, dmg_mod_add);
+        newModel.resetBitMask(this.getBitMaskValue());
+        newModel.setListVal(protect, denyCmd, invited);
+        newModel.setType(type);
+        return newModel;
+    }
+
+    /**
+     * @param tag the tag to set
+     */
+    public void setTag(String tag)
+    {
+        this.tag = tag;
+    }
+    
+    public void addInfluence_used(int amount)
+    {
+        this.influence_used += amount;
+    }
+    
+    
 }
