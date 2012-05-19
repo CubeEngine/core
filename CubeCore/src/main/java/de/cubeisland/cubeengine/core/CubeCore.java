@@ -1,16 +1,20 @@
 package de.cubeisland.cubeengine.core;
 
+import com.maxmind.geoip.LookupService;
 import de.cubeisland.cubeengine.core.configuration.ConfigurationManager;
 import de.cubeisland.cubeengine.core.configuration.CubeConfiguration;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
+import java.io.IOException;
+import java.net.InetAddress;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CubeCore extends JavaPlugin
 {
     private static CubeCore instance;
 
+    private LookupService lookupService;
     private Database database;
     private CubeUserManager cuManager;
     private PermissionRegistration permissionRegistration;
@@ -41,6 +45,15 @@ public class CubeCore extends JavaPlugin
 
         final CubeConfiguration databaseConfig = this.configManager.getDatabaseConfig();
         databaseConfig.safeSave();
+
+        try
+        {
+            this.lookupService = new LookupService(this.configManager.getGeoipFile());
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("CubeCore failed to load the GeoIP database!");
+        }
         
         this.database = new Database(
             databaseConfig.getString("mysql.host"),
@@ -70,5 +83,10 @@ public class CubeCore extends JavaPlugin
     public PermissionRegistration getPermissionRegistration()
     {
         return this.permissionRegistration;
+    }
+
+    public String locateAddress(InetAddress address)
+    {
+        return this.lookupService.getCountry(address).getCode();
     }
 }
