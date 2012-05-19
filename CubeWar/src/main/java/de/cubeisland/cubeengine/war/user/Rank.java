@@ -25,11 +25,11 @@ public class Rank
         this.influencemod = influence;
     }
 
-    public Rank newRank(User_old user)
+    public Rank newRank(User user)
     {
         final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
         Integer kp = null;
-        for (int i = user.getKp(); kp == null; --i)
+        for (int i = user.getKillpoints(); kp == null; --i)
         {
             if (config.cubewar_ranks.containsKey(i))
             {

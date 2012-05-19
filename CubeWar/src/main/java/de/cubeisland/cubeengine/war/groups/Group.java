@@ -48,7 +48,7 @@ public class Group
         return model.getTag();
     }
 
-    int getInfluence_used()
+    public int getInfluence_used()
     {
         return model.getInfluence_used();
     }
@@ -423,5 +423,50 @@ public class Group
     public boolean isPeaceful()
     {
         return this.model.hasBit(GroupModel.IS_PEACEFUL);
+    }
+
+    public int getRespawnProtect()
+    {
+        return this.model.getRespawnProtection();
+    }
+
+    public int getInfluence_max()
+    {
+        return this.model.getInfluence_max();
+    }
+    
+    public String getName()
+    {
+        return this.model.getName();
+    }
+
+    public void setDescription(String desc)
+    {
+        this.model.setDescription(desc);
+    }
+
+    public void toggleBit(int bit)
+    {
+        this.model.toggleBit(bit);
+    }
+
+    public boolean hasBit(int bit)
+    {
+        return this.model.hasBit(bit);
+    }
+
+    public Integer getDmgMod_P()
+    {
+        return this.model.getDmg_mod_percent();
+    }
+    
+    public Integer getDmgMod_S()
+    {
+        return this.model.getDmg_mod_set();
+    }
+    
+    public Integer getDmgMod_A()
+    {
+        return this.model.getDmg_mod_add();
     }
 }

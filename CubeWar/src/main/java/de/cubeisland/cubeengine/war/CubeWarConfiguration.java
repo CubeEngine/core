@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.war;
 
-import de.cubeisland.cubeengine.war.groups.GroupControl_old;
+import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.Rank;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.HashMap;
@@ -74,7 +74,7 @@ public class CubeWarConfiguration
         this.afterDaysOffline = config.getInt("cubewar.influence.loose.afterDaysOffline");
         this.loosePerMin = config.getInt("cubewar.influence.loose.loosePerMin");
         this.influenceCost = config.getDouble("cubewar.influence.buy");
-
-        GroupControl_old.createInstance(config.getConfigurationSection("cubewar.area"));
+        
+        GroupControl.create(config.getConfigurationSection("cubewar.area"));
     }
 }

@@ -2,19 +2,18 @@ package de.cubeisland.cubeengine.war;
 
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
-import de.cubeisland.cubeengine.war.area.AreaControl_old;
+import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
 import de.cubeisland.cubeengine.war.commands.ClaimCommands;
 import de.cubeisland.cubeengine.war.commands.GroupCommands;
 import de.cubeisland.cubeengine.war.commands.UserCommands;
-import de.cubeisland.cubeengine.war.database.AreaStorage;
-import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
-import de.cubeisland.cubeengine.war.database.GroupStorage;
-import de.cubeisland.cubeengine.war.database.UserStorage;
-import de.cubeisland.cubeengine.war.groups.GroupControl_old;
+import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.storage.AreaStorage;
+import de.cubeisland.cubeengine.war.storage.GroupStorage;
+import de.cubeisland.cubeengine.war.storage.UserStorage;
 import de.cubeisland.cubeengine.war.user.InfluenceControl;
 import de.cubeisland.cubeengine.war.user.PvP;
-import de.cubeisland.cubeengine.war.user.UserControl_old;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -35,7 +34,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  */
 public class CubeWar extends CubeModuleBase implements TranslatablePlugin
 {
-
     private static CubeWar instance = null;
     private static Logger logger = null;
     public static boolean debugMode = false;
@@ -48,12 +46,11 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     private CubeWarConfiguration config;
     private File dataFolder;
     private Economy economy = null;
-    private AreaControl_old areas;
-    private GroupControl_old groups;
-    private UserControl_old users;
+    private AreaControl areas;
+    private GroupControl groups;
+    private UserControl users;
     private PvP pvp;
     private AreaStorage areaDB;
-    private DenyUsageStorage denyuseDB;
     private GroupStorage groupDB;
     private UserStorage userDB;
 
@@ -81,7 +78,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
         this.config = new CubeWarConfiguration(configuration);
-        groups = GroupControl_old.get();
+        groups = GroupControl.get();
         this.saveConfig();
 
         database = new Database(config.war_database_host,
@@ -95,25 +92,27 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         {
             translation = Translation.get(this.getClass(), "en");
         }
-        
+
         //Load in DB...
-        users = new UserControl_old();
-        areaDB = new AreaStorage();
-        areas = new AreaControl_old();
-        denyuseDB = new DenyUsageStorage();
-        groupDB = new GroupStorage();
-        userDB = new UserStorage();
-        groups.loadDB();
-        areaDB.load();
-        users.loadDB();
-        
+        users = UserControl.get();
+        areaDB = AreaStorage.get();
+        areas = AreaControl.get();
+        groupDB = GroupStorage.get();
+        userDB = UserStorage.get();
+        groups.loadDataBase();
+        areas.loadDataBase();
+        users.loadDataBase();
+
         pvp = new PvP();
-        
+
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new ClaimCommands()).registerCommands(new GroupCommands()).registerCommands(new UserCommands()).registerCommands(new ByPassCommand());
+        this.baseCommand.registerCommands(new ClaimCommands())
+                        .registerCommands(new GroupCommands())
+                        .registerCommands(new UserCommands())
+                        .registerCommands(new ByPassCommand());
         this.getCommand("cubewar").setExecutor(baseCommand);
         this.pm.registerEvents(new CubeWarListener(), this);
-        
+
         InfluenceControl.startTimer();
     }
 
@@ -194,58 +193,10 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     }
 
     /**
-     * @return the areas
-     */
-    public AreaControl_old getAreas()
-    {
-        return areas;
-    }
-
-    /**
      * @return the pvp
      */
     public PvP getPvp()
     {
         return pvp;
-    }
-
-    /**
-     * @return the areaDB
-     */
-    public AreaStorage getAreaDB()
-    {
-        return areaDB;
-    }
-
-    /**
-     * @return the denyuseDB
-     */
-    public DenyUsageStorage getDenyuseDB()
-    {
-        return denyuseDB;
-    }
-
-    /**
-     * @return the groupDB
-     */
-    public GroupStorage getGroupDB()
-    {
-        return groupDB;
-    }
-
-    /**
-     * @return the userDB
-     */
-    public UserStorage getUserDB()
-    {
-        return userDB;
-    }
-
-    /**
-     * @return the users
-     */
-    public UserControl_old getUserControl()
-    {
-        return users;
     }
 }

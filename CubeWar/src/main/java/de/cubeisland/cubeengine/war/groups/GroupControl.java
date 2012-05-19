@@ -29,10 +29,15 @@ public class GroupControl
     {
         return instance;
     }
+    
+    public static void create(ConfigurationSection config)
+    {
+        instance = new GroupControl(config);
+    }
 
     private GroupControl(ConfigurationSection config)
     {
-        instance = this;
+        
         
         groups = new HashMap<Integer, Group>();
 
@@ -171,17 +176,17 @@ public class GroupControl
         }
     }
 
-    public void newTeam(String tag, String name)
+    public Group newTeam(String tag, String name)
     {
-        this.newGroup(tag, name, -1);
+        return this.newGroup(tag, name, -1);
     }
 
-    public void newArena(String tag, String name)
+    public Group newArena(String tag, String name)
     {
-        this.newGroup(tag, name, -2);
+        return this.newGroup(tag, name, -2);
     }
     
-    public void newGroup(String tag, String name, int parent)
+    public Group newGroup(String tag, String name, int parent)
     {
         GroupModel newModel = this.groups.get(parent).model.deepCopy();
         newModel.setTag(tag);
@@ -189,8 +194,10 @@ public class GroupControl
         int id = groups.size() - 4; //TODO kann Fehler verursachen wenn eine Gruppe wieder gelöscht wird
         //TODO im Storage.store Id dem model zuweisen?
         newModel.setId(id);
-        groups.put(id, new Group(newModel));
+        Group group = new Group(newModel);
+        groups.put(id, group);
         groupDB.store(newModel);
+        return group;
     }
     
     public void loadDataBase()

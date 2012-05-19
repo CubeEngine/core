@@ -2,8 +2,9 @@ package de.cubeisland.cubeengine.war.user;
 
 import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
-import de.cubeisland.cubeengine.war.groups.Group_old;
-import de.cubeisland.cubeengine.war.groups.GroupControl_old;
+import de.cubeisland.cubeengine.war.groups.Group;
+import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.storage.UserStorage;
 import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,10 +28,10 @@ public class InfluenceControl
             public void run()
             {
                 CubeWar.debug("Influence-Control");
-                Collection<User_old> users = CubeWar.getInstance().getUserControl().getUsers();
-                Collection<Group_old> groups = GroupControl_old.get().getGroups();
+                Collection<User> users = UserControl.get().getUsers();
+                Collection<Group> groups = GroupControl.get().getGroups();
                 //ADD / REM Influence
-                for (User_old user : users)
+                for (User user : users)
                 {
                     if (user.getMode().equals(PlayerMode.PEACE))
                     {
@@ -45,10 +46,10 @@ public class InfluenceControl
                     }
                     else
                         user.looseInfluence(config.loosePerMin);
-                    CubeWar.getInstance().getUserDB().update(user);
+                    user.updateDB();
                 }
                 //ADJUST GROUP influence
-                for (Group_old group : groups)
+                for (Group group : groups)
                 {
                     if (group.getId()>0)
                         group.adjustMaxInfluence();

@@ -3,8 +3,8 @@ package de.cubeisland.cubeengine.war.commands;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
-import de.cubeisland.cubeengine.war.user.User_old;
-import de.cubeisland.cubeengine.war.user.UserControl_old;
+import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,7 @@ import org.bukkit.command.CommandSender;
 public class UserCommands 
 {
 
-    private UserControl_old users = CubeWar.getInstance().getUserControl();
+    private UserControl users = UserControl.get();
     
     public UserCommands() 
     {
@@ -30,7 +30,7 @@ public class UserCommands
         if (args.size() > 0)    
         {
             if (Perm.command_whois_other.hasNotPerm(sender)) return true;
-            User_old user = users.getUser(args.getString(0));
+            User user = users.getUser(args.getString(0));
             if (user == null)
             {
                 sender.sendMessage(t("e")+t("g_noplayer"));
@@ -41,7 +41,7 @@ public class UserCommands
         }
         if (args.isEmpty())
         {
-            User_old user = users.getUser(sender);
+            User user = users.getUser(sender);
             user.showInfo(sender);
             return true;
         }
@@ -53,7 +53,7 @@ public class UserCommands
     {
         if (args.size()>1)
         {
-            User_old user = users.getUser(sender);
+            User user = users.getUser(sender);
             int amount = args.getInt(1);
             double price = CubeWar.getInstance().getConfiguration().influenceCost * amount;
             //TODO buy for money...

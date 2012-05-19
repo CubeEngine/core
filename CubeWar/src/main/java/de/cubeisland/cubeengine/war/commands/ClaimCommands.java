@@ -3,12 +3,12 @@ package de.cubeisland.cubeengine.war.commands;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
-import de.cubeisland.cubeengine.war.area.AreaControl_old;
+import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.groups.AreaType;
-import de.cubeisland.cubeengine.war.groups.Group_old;
-import de.cubeisland.cubeengine.war.groups.GroupControl_old;
-import de.cubeisland.cubeengine.war.user.User_old;
-import de.cubeisland.cubeengine.war.user.UserControl_old;
+import de.cubeisland.cubeengine.war.groups.Group;
+import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import java.util.ArrayList;
@@ -26,9 +26,9 @@ import org.bukkit.entity.Player;
 public class ClaimCommands
 {
 
-    private AreaControl_old areas = CubeWar.getInstance().getAreas();
-    private GroupControl_old groups = GroupControl_old.get();
-    private UserControl_old users = CubeWar.getInstance().getUserControl();
+    private AreaControl areas = AreaControl.get();
+    private GroupControl groups = GroupControl.get();
+    private UserControl users = UserControl.get();
 
     public ClaimCommands()
     {
@@ -44,7 +44,7 @@ public class ClaimCommands
         if (sender instanceof Player)
         {
             Player player = (Player) sender;
-            User_old user = users.getUser(player);
+            User user = users.getUser(player);
             if (args.isEmpty())
             {
                 if ((Perm.command_claim_BP.hasPerm(sender))
@@ -73,7 +73,7 @@ public class ClaimCommands
                     sender.sendMessage(t("claim_big_radius", rad));
                     return true;
                 }
-                Group_old team = groups.getGroup(args.getString(1));
+                Group team = groups.getGroup(args.getString(1));
                 if (team == null)
                 {
                     sender.sendMessage(t("claim_invalid_team", args.getString(1)));
@@ -137,7 +137,7 @@ public class ClaimCommands
         return false;
     }
 
-    private void claim(Location loc, int rad, Group_old team, Player player, User_old user)
+    private void claim(Location loc, int rad, Group team, Player player, User user)
     {
 
         if (team.getId() == 0)
@@ -174,7 +174,7 @@ public class ClaimCommands
                 player.sendMessage(t("claim_influence"));
                 return;
             }
-            Group_old group = areas.addChunk(loc.getChunk(), team);
+            Group group = areas.giveChunk(loc.getChunk(), team);
             if (group == null)
             {
                 group = groups.getWildLand();
@@ -224,7 +224,7 @@ public class ClaimCommands
                 influence_low = true;
                 continue;
             }
-            Group_old group = areas.getGroup(chunk);
+            Group group = areas.getGroup(chunk);
             if (!group.getType().equals(AreaType.WILDLAND))
             {
                 if ((noEnemyClaim && !team.equals(group)))
@@ -233,7 +233,7 @@ public class ClaimCommands
                 }
             }
             ++sum;
-            areas.addChunk(chunk, team);
+            areas.giveChunk(chunk, team);
             if (group.getType().equals(AreaType.WILDLAND))
             {
 
@@ -264,7 +264,7 @@ public class ClaimCommands
         }
         Player player;
         Location loc;
-        User_old user;
+        User user;
         if (sender instanceof Player)
         {
             player = (Player) sender;
@@ -278,7 +278,7 @@ public class ClaimCommands
         }
         if (args.isEmpty())
         {
-            if (groups.getGroup(player).equals(groups.getWildLand()))
+            if (groups.getGroupAtLocation(player).equals(groups.getWildLand()))
             {
                 sender.sendMessage(t("unclaim_wild"));
                 return true;
@@ -307,7 +307,7 @@ public class ClaimCommands
         }
         if (args.size() > 1)
         {
-            Group_old group = GroupControl_old.get().getGroup(args.getString(1));
+            Group group = GroupControl.get().getGroup(args.getString(1));
             if (group == null)
             {
                 if (!args.getString(1).equalsIgnoreCase("all"))
@@ -389,7 +389,7 @@ public class ClaimCommands
         return false;
     }
 
-    private void unclaim(Location loc, int radius, Group_old group, CommandSender sender)
+    private void unclaim(Location loc, int radius, Group group, CommandSender sender)
     {
         if (radius == 0)
         {
@@ -439,7 +439,7 @@ public class ClaimCommands
                         continue;
                     }
                 }
-                Group_old g = areas.remChunk(chunk);
+                Group g = areas.remChunk(chunk);
                 if (g != null)
                 {
                     ++i;

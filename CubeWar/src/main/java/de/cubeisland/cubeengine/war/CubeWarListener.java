@@ -1,11 +1,11 @@
 package de.cubeisland.cubeengine.war;
 
 import static de.cubeisland.cubeengine.war.CubeWar.t;
-import de.cubeisland.cubeengine.war.area.AreaControl_old;
-import de.cubeisland.cubeengine.war.groups.Group_old;
-import de.cubeisland.cubeengine.war.groups.GroupControl_old;
+import de.cubeisland.cubeengine.war.area.AreaControl;
+import de.cubeisland.cubeengine.war.groups.Group;
+import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.PvP;
-import de.cubeisland.cubeengine.war.user.UserControl_old;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -29,10 +29,10 @@ import org.bukkit.potion.PotionEffectType;
 public class CubeWarListener implements Listener
 {
 
-    private AreaControl_old areas = CubeWar.getInstance().getAreas();
-    private GroupControl_old groups = GroupControl_old.get();
+    private AreaControl areas = AreaControl.get();
+    private GroupControl groups = GroupControl.get();
     private PvP pvp = CubeWar.getInstance().getPvp();
-    private UserControl_old users = CubeWar.getInstance().getUserControl();
+    private UserControl users = UserControl.get();
 
     public CubeWarListener()
     {
@@ -42,7 +42,7 @@ public class CubeWarListener implements Listener
     public void respawn(final PlayerRespawnEvent event)
     {
         CubeWar plugin = CubeWar.getInstance();
-        int respawntime = groups.getGroup(event.getRespawnLocation()).getPvp_respawnprotect() * 20;
+        int respawntime = groups.getGroupAtLocation(event.getRespawnLocation()).getRespawnProtect() * 20;
         if (respawntime > 0)
         {
             users.getUser(event.getPlayer()).setRespawning(true);
@@ -65,8 +65,8 @@ public class CubeWarListener implements Listener
         Chunk chunkTo = event.getTo().getChunk();
         if (!chunkFrom.equals(chunkTo))
         {
-            Group_old groupFrom = areas.getGroup(chunkFrom);
-            Group_old groupTo = areas.getGroup(chunkTo);
+            Group groupFrom = areas.getGroup(chunkFrom);
+            Group groupTo = areas.getGroup(chunkTo);
             if (!groupFrom.equals(groupTo))
             {
                 event.getPlayer().sendMessage("X: " + event.getTo().getChunk().getX() + " Z: " + event.getTo().getChunk().getZ()
