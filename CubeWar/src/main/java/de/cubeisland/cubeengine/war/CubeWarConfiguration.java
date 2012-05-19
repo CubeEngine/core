@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.war;
 
+import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.Rank;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -74,6 +75,12 @@ public class CubeWarConfiguration
         this.afterDaysOffline = config.getInt("cubewar.influence.loose.afterDaysOffline");
         this.loosePerMin = config.getInt("cubewar.influence.loose.loosePerMin");
         this.influenceCost = config.getDouble("cubewar.influence.buy");
+        CubeWar.setDB(new Database(
+                        this.war_database_host,
+                        this.war_database_port,
+                        this.war_database_user,
+                        this.war_database_pass,
+                        this.war_database_name));
         
         GroupControl.create(config.getConfigurationSection("cubewar.area"));
     }

@@ -32,7 +32,7 @@ public class GroupModel implements Model
     public static final int AUTO_CLOSE = 16384;
     public static final int IS_PEACEFUL = 32768;
     private int id;
-    private BitMask bits;
+    private BitMask bits = new BitMask();
     private AreaType type;
     private String tag;
     private String name;

@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 public class Group
 {
     private static final Economy econ = CubeWar.getInstance().getEconomy();
-    private GroupStorage groupDB = GroupStorage.get();
+    private GroupStorage groupDB;
     GroupControl groups;
     UserControl users;
     protected GroupModel model;
@@ -28,6 +28,7 @@ public class Group
     Group(GroupModel model)
     {
         this.model = model;
+        groupDB  = GroupStorage.get();
         groups = GroupControl.get();
         users = UserControl.get();
     }

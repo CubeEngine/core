@@ -59,7 +59,7 @@ public class UserStorage implements Storage<UserModel>
     {
         try
         {
-            this.database.exec("CREATE TABLE IF NOT EXISTS {{PREFIX}}" + TABLE + "("
+            this.database.exec("CREATE TABLE IF NOT EXISTS " + TABLE + "("
                     + "`cubeuserid` int(10) unsigned NOT NULL,"
                     + "`death` int(10) NOT NULL,"
                     + "`kills` int(20) NOT NULL,"

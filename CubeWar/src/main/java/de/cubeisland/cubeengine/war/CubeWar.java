@@ -81,12 +81,6 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         groups = GroupControl.get();
         this.saveConfig();
 
-        database = new Database(config.war_database_host,
-                config.war_database_port,
-                config.war_database_user,
-                config.war_database_pass,
-                config.war_database_name);
-
         translation = Translation.get(this.getClass(), config.cubewar_language);
         if (translation == null)
         {
@@ -125,6 +119,11 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     public static Database getDB()
     {
         return database;
+    }
+    
+    public static void setDB(Database db)
+    {
+        database = db;
     }
 
     private Economy setupEconomy()
