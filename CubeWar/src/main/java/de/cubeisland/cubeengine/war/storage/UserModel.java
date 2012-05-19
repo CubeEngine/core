@@ -156,7 +156,7 @@ public class UserModel implements Model
     {
         this.death = death;
     }
-    
+
     /**
      * @param death the death to add
      */
@@ -180,7 +180,7 @@ public class UserModel implements Model
     {
         this.kills = kills;
     }
-    
+
     /**
      * @param kills the kills to add
      */
@@ -204,7 +204,7 @@ public class UserModel implements Model
     {
         this.killpoints = killpoints;
     }
-    
+
     /**
      * @param killpoints the killpoints to add
      */
@@ -228,7 +228,7 @@ public class UserModel implements Model
     {
         this.influence = influence;
     }
-    
+
     /**
      * @param influence the influence to add
      */

@@ -20,44 +20,43 @@ import org.bukkit.entity.*;
  */
 public class User
 {
-    private UserStorage userDB = new UserStorage();//TODO aus CubeWar holen
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
-    private UserControl users = new UserControl();//TODO aus CubeWar holen
+    private UserStorage userDB = UserStorage.get();
+    private UserControl users = UserControl.get();
     private GroupControl groups = GroupControl.get();
-    
-    private UserModel model; 
-   
+    private UserModel model;
+
     public User(UserModel model)
     {
         this.model = model;
     }
-    
+
     public User(OfflinePlayer player)
     {
         this(CubeUserManager.getInstance().getCubeUser(player));
     }
-    
+
     public User(CubeUser cubeUser)
     {
         this.model = new UserModel(cubeUser);
         this.userDB.store(this.model);
     }
-    
+
     public void updateDB()
     {
         this.userDB.update(this.model);
     }
-    
+
     public int getId()
     {
         return model.getId();
     }
-    
+
     public Rank getRank()
     {
         return model.getRank();
     }
-    
+
     public void kill(User user)
     {
         model.addKillpoints(user.getRank().getKmod());
@@ -96,12 +95,12 @@ public class User
         model.addKillpoints(kp);
         this.updateRank();
     }
-    
+  
     public int getKills()
     {
         return model.getKills();
     }
-    
+
     private void kill_kd(User user)
     {
         PlayerMode mode = model.getMode();
@@ -118,15 +117,15 @@ public class User
                 break;
         }
     }
-    
+
     public void updateRank()
     {
         model.setRank(Rank.newRank(model.getKillpoints()));
     }
-    
+
     public void die()
     {
-        model.addKillpoints(- model.getRank().getDmod());
+        model.addKillpoints(-model.getRank().getDmod());
         if (model.getKillpoints() < config.killpoint_min)
         {
             model.setKillpoints(config.killpoint_min);
@@ -153,63 +152,63 @@ public class User
                 break;
         }
     }
-    
+
     public Player getPlayer()
     {
         return model.getCubeUser().getPlayer();
     }
-    
+
     OfflinePlayer getOfflinePlayer()
     {
         return model.getCubeUser().getOfflinePlayer();
     }
-    
+
     public String getName()
     {
         return model.getCubeUser().getName();
     }
-    
+
     public PlayerMode getMode()
     {
         return model.getMode();
     }
-    
+
     public int getKillpoints()
     {
         return model.getKillpoints();
     }
-    
+
     public void setTeam(Group team)
     {
         model.setTeam(team);
         this.updateDB();
     }
-    
+
     public Group getTeam()
     {
         return model.getTeam();
     }
-    
+
     public String getTeamTag()
     {
         return model.getTeam().getTag();
     }
-    
+
     public boolean isRespawning()
     {
         return model.isRespawning();
     }
-    
+
     public void setRespawning(boolean respawning)
     {
         model.setRespawning(respawning);
     }
-    
+
     public void resetBypasses()
     {
         model.resetBypasses();
     }
-    
+
     public void toggleBypass(String bypass)
     {
         if (model.getBypasses().contains(bypass))
@@ -221,31 +220,32 @@ public class User
             model.addBypass(bypass);
         }
     }
-    
+
     public boolean hasBypass(String bypass)
     {
         return model.getBypasses().contains(bypass);
     }
-    
+
     public void addInfluence(double amount)
     {
         model.addInfluence(amount);
     }
+
     public void looseInfluence(double amount)
     {
-        model.addInfluence(- amount);
+        model.addInfluence(-amount);
     }
-    
+
     public double getBaseInfluence()
     {
         return model.getInfluence();
     }
-    
+
     public double getTotalInfluence()
     {
         return model.getInfluence() * model.getRank().getImod();
     }
-    
+
     public void showInfo(CommandSender sender)
     {
         sender.sendMessage(t("user_01"));
@@ -262,10 +262,10 @@ public class User
         {
             kd = (int) (kills / death * 100);
         }
-        sender.sendMessage(t("user_07",(int)this.getTotalInfluence()));
+        sender.sendMessage(t("user_07", (int) this.getTotalInfluence()));
         sender.sendMessage(t("user_04", kills, death, String.valueOf(kd / 100)));
         Group team = model.getTeam();
-        if ((team != null)&&(!team.getType().equals(AreaType.WILDLAND)))
+        if ((team != null) && (!team.getType().equals(AreaType.WILDLAND)))
         {
             if (team.isTrueAlly(users.getUser(sender).getTeam()))
             {
@@ -283,5 +283,10 @@ public class User
                 sender.sendMessage(t("user_06", groups.getGroup((Player) sender).getTag()));
             }
         }
+    }
+
+    public int getDeath()
+    {
+        return model.getDeath();
     }
 }

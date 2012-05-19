@@ -21,11 +21,23 @@ import java.util.Collection;
  */
 public class UserStorage implements Storage<UserModel>
 {
-    private final Database database = CubeWar.getDB();
+    private final Database database;
     private final String TABLE = "user";
+    private static UserStorage instance = null;
+
+    public static UserStorage get()
+    {
+        if (instance == null)
+        {
+            instance = new UserStorage();
+        }
+        return instance;
+    }
 
     public UserStorage()
     {
+        this.database = CubeWar.getDB();
+
         try
         {
             this.database.prepareStatement("user_get", "SELECT * FROM {{" + TABLE + "}} WHERE cubeuserid=? LIMIT 1");
@@ -274,7 +286,7 @@ public class UserStorage implements Storage<UserModel>
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     public UserModel get(int key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
