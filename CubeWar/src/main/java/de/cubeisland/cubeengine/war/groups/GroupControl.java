@@ -23,6 +23,8 @@ public class GroupControl
     private static GroupControl instance = null;
     GroupStorage groupDB;
 
+    //TODO Method for setting Values cannot use old anymore
+    
     public static GroupControl get()
     {
         return instance;

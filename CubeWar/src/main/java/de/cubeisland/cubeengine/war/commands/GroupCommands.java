@@ -59,7 +59,7 @@ public class GroupCommands {
                         sender.sendMessage(t("create_tag_all"));
                         return true;
                     }
-                    if (!groups.freeTag(tag))
+                    if (!groups.isTagFree(tag))
                     {
                         sender.sendMessage(t("create_tag_used",GroupControl_old.get().getGroup(tag).getName()));
                         return true;
@@ -93,7 +93,7 @@ public class GroupCommands {
                 {
                     String tag = args.getString(1);
                     String name = args.getString(2);
-                    if (!groups.freeTag(tag))
+                    if (!groups.isTagFree(tag))
                     {
                         sender.sendMessage(t("create_tag_used",GroupControl_old.get().getGroup(tag).getTag()));
                         return true;

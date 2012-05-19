@@ -1,16 +1,16 @@
 package de.cubeisland.cubeengine.war.groups;
 
-import de.cubeisland.cubeengine.war.user.UserControl;
-import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
-import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.storage.GroupModel;
 import de.cubeisland.cubeengine.war.storage.GroupStorage;
+import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.UserControl;
 import java.util.ArrayList;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -19,16 +19,20 @@ import org.bukkit.command.CommandSender;
 public class Group
 {
     private static final Economy econ = CubeWar.getInstance().getEconomy();
-    
     private GroupStorage groupDB = GroupStorage.get();
-    
+    GroupControl groups;
+    UserControl users;
     protected GroupModel model;
 
     Group(GroupModel model)
     {
         this.model = model;
+        groups = GroupControl.get();
+        users = UserControl.get();
     }
 
+    //TODO Method for setting Values cannot use old anymore
+    //TODO Bank ist enfernt später mit CubeConomy wieder einfügen
     public int getId()
     {
         return model.getId();
@@ -38,7 +42,7 @@ public class Group
     {
         this.groupDB.update(this.model);
     }
-    
+
     public String getTag()
     {
         return model.getTag();
@@ -48,7 +52,7 @@ public class Group
     {
         return model.getInfluence_used();
     }
-    
+
     public void addInfluence_used()
     {
         model.addInfluence_used(1);
@@ -68,7 +72,7 @@ public class Group
     {
         return model.hasBit(GroupModel.AUTO_CLOSE);
     }
-    
+
     public List<User> getUserList()
     {
         List<User> list = new ArrayList<User>();
@@ -82,21 +86,19 @@ public class Group
     {
         return this.getUserList().size();
     }
-    
-    public boolean isAlly(Group g)
-    {
-        return model.getAlly().contains(g);
-    }
-    
+
     public boolean isEnemy(Group g)
     {
         return model.getEnemy().contains(g);
     }
-    
+
+    public boolean isneutral(Group g)
+    {
+        return (!(model.getEnemy().contains(g) || model.getAlly().contains(g)));
+    }
+
     public void sendInfo(CommandSender sender)
     {
-        UserControl users = UserControl.get();
-        GroupControl groups = GroupControl.get();
         sender.sendMessage(t("g_01", model.getTag()));
         sender.sendMessage(t("g_02", model.getName()));
         sender.sendMessage(t("g_03", model.getDescription()));
@@ -189,7 +191,7 @@ public class Group
         if (!this.isUser(user))
         {
             if (this.isClosed()
-                || (this.isBalancing() && !this.isBalanced(user)))
+                    || (this.isBalancing() && !this.isBalanced(user)))
             {
                 sender.sendMessage(t("g_14"));
             }
@@ -216,7 +218,7 @@ public class Group
     {
         return model.getType();
     }
-    
+
     public int getKPSum()
     {
         int kp = 0;
@@ -226,7 +228,92 @@ public class Group
         }
         return kp;
     }
-    
+
+    public boolean isBalanced(User user)
+    {
+        if (this.model.getInvited().contains(user.getName()))
+        {
+            return true; //Invited Player can always join!
+        }
+        return GroupControl.get().isBalanced(this);
+    }
+
+    public boolean isClosed()
+    {
+        return model.hasBit(GroupModel.IS_CLOSED);
+    }
+
+    public void addAdmin(User user)
+    {
+        if (user == null)
+        {
+            return;
+        }
+        this.model.getAdminlist().add(user);
+        this.model.getModlist().remove(user);
+        this.model.getUserlist().remove(user);
+        user.setTeam(this);
+    }
+
+    public void delAdmin(User user)
+    {
+        this.model.getAdminlist().remove(user);
+        user.setTeam(groups.getWildLand());
+    }
+
+    public boolean isAdmin(User user)
+    {
+        return this.model.getAdminlist().contains(user);
+    }
+
+    public void addMod(User user)
+    {
+        if (user == null)
+        {
+            return;
+        }
+        this.model.getModlist().add(user);
+        this.model.getAdminlist().remove(user);
+        this.model.getUserlist().remove(user);
+        user.setTeam(this);
+    }
+
+    public void delMod(User user)
+    {
+        this.model.getModlist().remove(user);
+        this.model.getAdminlist().remove(user);
+        user.setTeam(groups.getWildLand());
+    }
+
+    public boolean isMod(User user)
+    {
+        if (this.model.getAdminlist().contains(user))
+        {
+            return true;
+        }
+        return this.model.getModlist().contains(user);
+    }
+
+    public void addUser(User user)
+    {
+        if (user == null)
+        {
+            return;
+        }
+        this.model.getUserlist().add(user);
+        this.model.getModlist().remove(user);
+        this.model.getAdminlist().remove(user);
+        user.setTeam(this);
+    }
+
+    public void delUser(User user)
+    {
+        this.model.getUserlist().remove(user);
+        this.model.getModlist().remove(user);
+        this.model.getAdminlist().remove(user);
+        user.setTeam(groups.getWildLand());
+    }
+
     public boolean isUser(User user)
     {
         if (this.model.getAdminlist().contains(user))
@@ -239,18 +326,102 @@ public class Group
         }
         return this.model.getUserlist().contains(user);
     }
-    
-    public boolean isBalanced(User user)
+
+    public boolean invite(User user)
     {
         if (this.model.getInvited().contains(user.getName()))
         {
-            return true; //Invited Player can always join!
+            return false;
         }
-        return GroupControl.get().isBalanced(this);
+        this.model.getInvited().add(user.getName());
+        return true;
     }
-    
-    public boolean isClosed()
+
+    public boolean uninvite(User user)
     {
-        return model.hasBit(GroupModel.IS_CLOSED);
+        if (this.model.getInvited().contains(user.getName()))
+        {
+            return false;
+        }
+        this.model.getInvited().remove(user.getName());
+        return true;
+    }
+
+    public boolean isInvited(User user)
+    {
+        if (this.model.hasBit(GroupModel.IS_CLOSED))
+        {
+            if (this.model.getInvited().contains(user.getName()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void adjustMaxInfluence()
+    {
+        int influence = 0;
+        for (User user : this.getUserList())
+        {
+            influence += user.getTotalInfluence();
+        }
+        this.model.setInfluence_max(influence);
+    }
+
+    public void setneutral(Group g)
+    {
+        this.model.getEnemy().remove(g);
+        this.model.getEnemy().remove(g);
+    }
+
+    public void setally(Group g)
+    {
+        this.model.getAlly().add(g);
+        this.model.getEnemy().remove(g);
+    }
+
+    public void setenemy(Group g)
+    {
+        this.model.getAlly().remove(g);
+        this.model.getEnemy().add(g);
+    }
+
+    public boolean isAlly(Group g)
+    {
+        return model.getAlly().contains(g);
+    }
+
+    public void sendToTeam(String msg)
+    {
+        Player[] players = CubeWar.getInstance().getServer().getOnlinePlayers();
+        for (Player player : players)
+        {
+            if (this.isUser(users.getOfflineUser(player)))
+            {
+                player.sendMessage(msg);
+            }
+        }
+    }
+
+    public void sendToAlly(String msg)
+    {
+        this.sendToTeam(msg);
+        for (Group theally : this.model.getAlly())
+        {
+            if (theally.isAlly(this))
+            {
+                theally.sendToTeam(msg);
+            }
+        }
+    }
+
+    public boolean isPeaceful()
+    {
+        return this.model.hasBit(GroupModel.IS_PEACEFUL);
     }
 }
