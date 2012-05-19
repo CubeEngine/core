@@ -12,37 +12,45 @@ import java.util.HashSet;
 
 /**
  *
- * @author Anselm
+ * @author Faithcaio
  */
 public class UserModel implements Model
 {
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     private GroupControl groups = GroupControl.get();
-        
     private CubeUser cubeUser;
     private int death = 0;
     private int kills = 0;
     private int killpoints = 0;
     private double influence = 0;
     private PlayerMode mode = PlayerMode.NORMAL;
-    private Group team = groups.getWildLand();   
+    private Group team = groups.getWildLand();
     //No DB saving
     private Rank rank;
     private boolean respawning;
     private HashSet<String> bypasses = new HashSet<String>();
-    
+    private TeamPos teampos;
+
+    public enum TeamPos
+    {
+        ADMIN,
+        MODERATOR,
+        MEMBER,
+        NONE
+    }
+
     /**
      * Loads in a UserModel
-     * 
+     *
      * @param cubeUser
      * @param death
      * @param kills
      * @param killpoints
      * @param influence
      * @param mode
-     * @param team 
+     * @param team
      */
-    public UserModel(CubeUser cubeUser, int death, int kills, int killpoints, double influence, PlayerMode mode, Group team)
+    public UserModel(CubeUser cubeUser, int death, int kills, int killpoints, double influence, PlayerMode mode, Group team, TeamPos teampos)
     {
         this.cubeUser = cubeUser;
         this.death = death;
@@ -51,15 +59,16 @@ public class UserModel implements Model
         this.influence = influence;
         this.mode = mode;
         this.team = team;
-        
+        this.teampos = teampos;
+
         this.rank = Rank.newRank(this.killpoints);
         this.respawning = false;
     }
-    
+
     /**
      * Creates a new UserModel
-     * 
-     * @param cubeUser 
+     *
+     * @param cubeUser
      */
     public UserModel(CubeUser cubeUser)
     {
@@ -70,12 +79,13 @@ public class UserModel implements Model
         this.influence = 0;
         this.mode = PlayerMode.NORMAL;
         this.team = groups.getWildLand();
+        this.teampos = TeamPos.NONE;
         this.rank = Rank.newRank(0);
         this.respawning = false;
     }
-    
+
     /**
-     * 
+     *
      * @return the ID of the CubeUser
      */
     public int getId()
@@ -146,6 +156,14 @@ public class UserModel implements Model
     {
         this.death = death;
     }
+    
+    /**
+     * @param death the death to add
+     */
+    public void addDeath(int death)
+    {
+        this.death += death;
+    }
 
     /**
      * @return the kills
@@ -161,6 +179,14 @@ public class UserModel implements Model
     public void setKills(int kills)
     {
         this.kills = kills;
+    }
+    
+    /**
+     * @param kills the kills to add
+     */
+    public void addKills(int kills)
+    {
+        this.kills += kills;
     }
 
     /**
@@ -178,6 +204,14 @@ public class UserModel implements Model
     {
         this.killpoints = killpoints;
     }
+    
+    /**
+     * @param killpoints the killpoints to add
+     */
+    public void addKillpoints(int killpoints)
+    {
+        this.killpoints += killpoints;
+    }
 
     /**
      * @return the influence
@@ -193,6 +227,14 @@ public class UserModel implements Model
     public void setInfluence(double influence)
     {
         this.influence = influence;
+    }
+    
+    /**
+     * @param influence the influence to add
+     */
+    public void addInfluence(double influence)
+    {
+        this.influence += influence;
     }
 
     /**
@@ -274,23 +316,23 @@ public class UserModel implements Model
     {
         this.bypasses = bypasses;
     }
-    
+
     /**
      * @param bypasses the bypass to add
      */
-    public void addBypasses(String bypass)
+    public void addBypass(String bypass)
     {
         this.bypasses.add(bypass);
     }
-    
+
     /**
      * @param bypasses the bypass to add
      */
-    public boolean removeBypasses(String bypass)
+    public boolean removeBypass(String bypass)
     {
         return this.bypasses.remove(bypass);
     }
-    
+
     /**
      * Resets the bypasses
      */
@@ -298,7 +340,20 @@ public class UserModel implements Model
     {
         this.bypasses.clear();
     }
-    
-    
-    
+
+    /**
+     * @return the teampos
+     */
+    public TeamPos getTeampos()
+    {
+        return teampos;
+    }
+
+    /**
+     * @param teampos the teampos to set
+     */
+    public void setTeampos(TeamPos teampos)
+    {
+        this.teampos = teampos;
+    }
 }
