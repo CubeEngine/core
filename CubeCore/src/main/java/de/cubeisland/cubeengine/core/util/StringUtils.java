@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
  * This class contains some utillities to work with Strings
  *
  * @author Phillip Schichtel
+ * @author Faithcaio
  */
 public final class StringUtils
 {
@@ -24,7 +25,7 @@ public final class StringUtils
     {
         return explode(delim, string, true);
     }
-
+    
     /**
      * This method splits a string without RegExes
      *
@@ -55,6 +56,42 @@ public final class StringUtils
         }
 
         return tokens.toArray(new String[tokens.size()]);
+    }
+    
+    /**
+     * This method merges an array of strings to a single string
+     *
+     * @param delim the delimiter
+     * @param inputArray the array to merge
+     * @return a String containing the inputArray delimited by delim
+     */
+    public static String implode(String delim, String[] inputArray)
+    {
+        return implode(delim, inputArray, true);
+    }
+    
+    /**
+     * This method merges an array of strings to a single string
+     * 
+     * @param delim the delimiter
+     * @param inputArray the array to merge
+     * @param keepEmptyParts whether to keep empty parts
+     * @return a String containing the inputArray delimited by delim
+     */
+    public static String implode(String delim, String[] inputArray, boolean keepEmptyParts)
+    {
+        int max = inputArray.length;
+        if (max == 0) return "";
+        String output = inputArray[0];
+        for (int i=1; i<max; ++i)
+        {
+            if ((inputArray[i].length() > 0) || (keepEmptyParts))
+            {
+                output += delim;
+                output += inputArray[i];
+            }
+        }
+        return output;
     }
 
     /**
