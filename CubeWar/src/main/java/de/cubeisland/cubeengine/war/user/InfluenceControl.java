@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
-import de.cubeisland.cubeengine.war.storage.UserStorage;
 import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;

@@ -139,19 +139,14 @@ public class GroupCommands {
                 {
                     val += " "+args.getString(i); 
                 }
-                /*
-                //TODO werte setzen muss neugeschrieben werden
-                if (groups.setGroupValue(group.getId(), args.getString(1), val))
+                if (group.setValue(args.getString(1),val))
                 {
                     sender.sendMessage(t("i")+t("m_keyset",args.getString(1),val));
-                    groupDB.update(group);
-                    //CubeWar.getInstance().getDenyuseDB().update(group); TODO UsageDeny Updaten
+                    group.updateDB();
                     return true;
                 }
                 else
                     sender.sendMessage(t("e")+t("m_invalid"));
-
-                */
             }
             else
                 sender.sendMessage(t("e")+t("m_noGroupExist",args.getString(0)));

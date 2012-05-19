@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.war.storage;
 
-import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.groups.AreaType;
+import de.cubeisland.cubeengine.war.groups.Group;
+import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,17 +66,6 @@ public class GroupModel implements Model
     }
     
     public GroupModel(){}//for deepCopy
-
-    public GroupModel(AreaType area)
-    {
-        switch (area)
-        {
-            case TEAMZONE://TODO
-                break;
-            case ARENA://TODO
-                break;
-        }
-    }
 
     public void setRelations(List<Group> enemy, List<Group> ally)
     {

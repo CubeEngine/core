@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.war.user.UserControl;
 import java.util.ArrayList;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +32,6 @@ public class Group
         users = UserControl.get();
     }
 
-    //TODO Method for setting Values cannot use old anymore
     //TODO Bank ist enfernt später mit CubeConomy wieder einfügen
     public int getId()
     {
@@ -434,7 +434,7 @@ public class Group
     {
         return this.model.getInfluence_max();
     }
-    
+
     public String getName()
     {
         return this.model.getName();
@@ -459,14 +459,459 @@ public class Group
     {
         return this.model.getDmg_mod_percent();
     }
-    
+
     public Integer getDmgMod_S()
     {
         return this.model.getDmg_mod_set();
     }
-    
+
     public Integer getDmgMod_A()
     {
         return this.model.getDmg_mod_add();
+    }
+
+    public boolean setValue(String key, String val)
+    {
+        key = this.formatKey(val);
+        if (key == null)
+        {
+            return false;
+        }
+        if (key.equalsIgnoreCase("name"))
+        {
+            model.setName(val);
+            return true;
+        }
+        if (key.equalsIgnoreCase("description"))
+        {
+            model.setDescription(val);
+            return true;
+        }
+
+        if (key.equalsIgnoreCase("influence_perm"))
+        {
+            try
+            {
+                int permip = Integer.valueOf(val);
+                model.setInfluence_perm(permip);
+            }
+            catch (NumberFormatException ex)
+            {
+                if (val.equalsIgnoreCase("null"))
+                {
+                    model.setInfluence_perm(null);
+                    return true;
+                }
+                return false;
+            }
+            model.setDescription(val);
+            return true;
+        }
+        if (key.equalsIgnoreCase("influence_boost"))
+        {
+            try
+            {
+                int boostip = Integer.valueOf(val);
+                model.setInfluence_perm(boostip);
+            }
+            catch (NumberFormatException ex)
+            {
+                if (val.equalsIgnoreCase("reset"))
+                {
+                    model.setInfluence_boost(0);
+                    return true;
+                }
+                return false;
+            }
+            model.setDescription(val);
+            return true;
+        }
+        if (key.equalsIgnoreCase("respawnProtection"))
+        {
+            try
+            {
+                int respawn = Integer.valueOf(val);
+                model.setRespawnProtection(respawn);
+            }
+            catch (NumberFormatException ex)
+            {
+                return false;
+            }
+            model.setDescription(val);
+            return true;
+        }
+        if (key.equalsIgnoreCase("dmg_mod"))
+        {
+            try
+            {
+                Integer dmg_mod_percent = null;
+                Integer dmg_mod_set = null;
+                Integer dmg_mod_add = null;
+                if (val != null)
+                {
+                    if (val.charAt(0) == 'P')
+                    {
+                        dmg_mod_percent = Integer.valueOf(val.substring(1));
+                    }
+                    else if (val.charAt(0) == 'S')
+                    {
+                        dmg_mod_set = Integer.valueOf(val.substring(1));
+                    }
+                    else
+                    {
+                        dmg_mod_add = Integer.valueOf(val);
+                    }
+                }
+                model.setDmg_mod_add(dmg_mod_add);
+                model.setDmg_mod_percent(dmg_mod_percent);
+                model.setDmg_mod_set(dmg_mod_set);
+            }
+            catch (NumberFormatException ex)
+            {
+                return false;
+            }
+            model.setDescription(val);
+            return true;
+        }
+        if (key.equalsIgnoreCase("protect"))
+        {
+            if (Material.matchMaterial(val) != null)
+            {
+                model.getProtect().add(Material.matchMaterial(val));
+                return true;
+            }
+            return false;
+
+        }
+        if (key.equalsIgnoreCase("denyCmd"))
+        {
+            model.getDenyCmd().add(val);
+            return true;
+        }
+        return this.setBoolValue(key, val);
+    }
+
+    private String formatKey(String string)
+    {
+        String key = null;
+        if (key == null)
+        {
+            key = this.formatKey(string, "PVP_ON", "pvp");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "PVP_DAMAGE", "damage");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "PVP_FRIENDLYFIRE", "ff", "friendlyfire");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "MONSTER_SPAWN", "monsterspawn", "monster");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "MONSTER_DAMAGE", "monsterdamage", "mdamage");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "BUILD_PLACE", "place");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "BUILD_DESTROY", "break");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "USE_FIRE", "fire");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "USE_LAVA", "lava");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "USE_WATER", "water");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "POWER_LOSS", "iploss", "influenceloss");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "POWER_GAIN", "ipgain", "influencegain");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "ECONOMY_BANK", "bank");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "IS_CLOSED", "closed");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "AUTO_CLOSE", "balance", "autoclose");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "IS_PEACEFUL", "peaceful", "peace");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "name");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "description", "desc");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "influence_perm", "permip");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "influence_boost", "boostip");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "respawnProtection", "respawn");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "dmg_mod", "dmgmod", "damagemod", "damagemodifier");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "protect", "prot", "denyusage");
+        }
+        else if (key == null)
+        {
+            key = this.formatKey(string, "denyCmd", "blockcommand", "denycommand");
+        }
+
+        return key;
+    }
+
+    private String formatKey(String keyToCheck, String key, String... aliases)
+    {
+        if (key.equalsIgnoreCase(keyToCheck))
+        {
+            return key;
+        }
+        for (String alias : aliases)
+        {
+            if (alias.equalsIgnoreCase(keyToCheck))
+            {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    private boolean setBoolValue(String key, String val)
+    {
+        boolean boolval;
+        if (val.equalsIgnoreCase("true"))
+        {
+            boolval = true;
+        }
+        else if (val.equalsIgnoreCase("false"))
+        {
+            boolval = false;
+        }
+        else if (val.equalsIgnoreCase("on"))
+        {
+            boolval = true;
+        }
+        else if (val.equalsIgnoreCase("off"))
+        {
+            boolval = false;
+        }
+        else
+        {
+            return false;
+        }
+
+        if (key.equalsIgnoreCase("PVP_ON"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.PVP_ON);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.PVP_ON);
+            }
+        }
+        if (key.equalsIgnoreCase("PVP_DAMAGE"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.PVP_DAMAGE);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.PVP_DAMAGE);
+            }
+        }
+        if (key.equalsIgnoreCase("PVP_FRIENDLYFIRE"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.PVP_FRIENDLYFIRE);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.PVP_FRIENDLYFIRE);
+            }
+        }
+        if (key.equalsIgnoreCase("MONSTER_SPAWN"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.MONSTER_SPAWN);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.MONSTER_SPAWN);
+            }
+        }
+        if (key.equalsIgnoreCase("MONSTER_DAMAGE"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.MONSTER_DAMAGE);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.MONSTER_DAMAGE);
+            }
+        }
+        if (key.equalsIgnoreCase("BUILD_PLACE"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.BUILD_PLACE);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.BUILD_PLACE);
+            }
+        }
+        if (key.equalsIgnoreCase("BUILD_DESTROY"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.BUILD_DESTROY);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.BUILD_DESTROY);
+            }
+        }
+        if (key.equalsIgnoreCase("USE_FIRE"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.USE_FIRE);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.USE_FIRE);
+            }
+        }
+        if (key.equalsIgnoreCase("USE_LAVA"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.USE_LAVA);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.USE_LAVA);
+            }
+        }
+        if (key.equalsIgnoreCase("USE_WATER"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.USE_WATER);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.USE_WATER);
+            }
+        }
+        if (key.equalsIgnoreCase("POWER_LOSS"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.POWER_LOSS);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.POWER_LOSS);
+            }
+        }
+        if (key.equalsIgnoreCase("POWER_GAIN"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.POWER_GAIN);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.POWER_GAIN);
+            }
+        }
+        if (key.equalsIgnoreCase("ECONOMY_BANK"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.ECONOMY_BANK);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.ECONOMY_BANK);
+            }
+        }
+        if (key.equalsIgnoreCase("IS_CLOSED"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.IS_CLOSED);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.IS_CLOSED);
+            }
+        }
+        if (key.equalsIgnoreCase("AUTO_CLOSE"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.AUTO_CLOSE);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.AUTO_CLOSE);
+            }
+        }
+        if (key.equalsIgnoreCase("IS_PEACEFUL"))
+        {
+            if (boolval)
+            {
+                model.setBit(GroupModel.IS_PEACEFUL);
+            }
+            else
+            {
+                model.unsetBit(GroupModel.IS_PEACEFUL);
+            }
+        }
+
+
+        return false;
     }
 }

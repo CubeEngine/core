@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.war.groups;
 
-import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.Util;
-import de.cubeisland.cubeengine.war.groups.AreaType;
+import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.storage.GroupModel;
 import de.cubeisland.cubeengine.war.storage.GroupStorage;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ public class GroupControl
     private static GroupControl instance = null;
     GroupStorage groupDB;
 
-    //TODO Method for setting Values cannot use old anymore
-    
     public static GroupControl get()
     {
         return instance;

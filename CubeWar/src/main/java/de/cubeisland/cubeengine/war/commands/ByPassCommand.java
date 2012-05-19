@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.war.commands;
 
-import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
 import de.cubeisland.cubeengine.war.user.UserControl;

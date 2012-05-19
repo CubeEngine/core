@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.war.storage;
 
-import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.core.persistence.Model;
+import de.cubeisland.cubeengine.war.groups.Group;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
