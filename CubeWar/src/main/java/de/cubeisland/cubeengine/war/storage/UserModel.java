@@ -25,7 +25,7 @@ public class UserModel implements Model
     private double influence = 0;
     private PlayerMode mode = PlayerMode.NORMAL;
     private Group team = groups.getWildLand();
-    //No DB saving
+    //No DB saving, resets when joining anyway
     private Rank rank;
     private boolean respawning;
     private HashSet<String> bypasses = new HashSet<String>();
