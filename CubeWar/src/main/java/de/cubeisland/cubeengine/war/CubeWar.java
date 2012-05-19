@@ -199,3 +199,4 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         return pvp;
     }
 }
+
