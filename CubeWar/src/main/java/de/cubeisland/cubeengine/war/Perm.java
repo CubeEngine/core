@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.war;
 
 import static de.cubeisland.cubeengine.war.CubeWar.t;
-import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.war.user.User;
-import de.cubeisland.cubeengine.war.user.UserControl;
+import de.cubeisland.cubeengine.war.groups.Group_old;
+import de.cubeisland.cubeengine.war.user.User_old;
+import de.cubeisland.cubeengine.war.user.UserControl_old;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
@@ -70,7 +70,7 @@ public enum Perm
     private final String text;
     private final String permission;
     private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
-    private UserControl users = CubeWar.getInstance().getUserControl();
+    private UserControl_old users = CubeWar.getInstance().getUserControl();
 
     private Perm(final String text)
     {
@@ -85,8 +85,8 @@ public enum Perm
 
     private boolean checkIGPerm(CommandSender sender)
     {
-        User user = users.getUser(sender);
-        Group team = user.getTeam();
+        User_old user = users.getUser(sender);
+        Group_old team = user.getTeam();
         if (team.getId() == 0)
         {
             return !config.IGPerm_user.contains(this.permission);

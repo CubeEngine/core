@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.war.area;
 
-import de.cubeisland.cubeengine.core.persistence.Model;
-import de.cubeisland.cubeengine.war.CubeWar;
-import de.cubeisland.cubeengine.war.database.AreaStorage;
+import de.cubeisland.cubeengine.war.storage.AreaModel;
+import de.cubeisland.cubeengine.war.storage.AreaStorage;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
-import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -15,40 +15,60 @@ import org.bukkit.Location;
  *
  * @author Faithcaio
  */
-public class AreaControl implements Model
+public class AreaControl
 {
 
     private AreaStorage areaDB;
-    private GroupControl groups = GroupControl.get();
-    private THashMap<Chunk, Group> chunks = new THashMap<Chunk, Group>();
-
+    private HashMap<Chunk, Area> areas = new HashMap<Chunk, Area>();
+    private static AreaControl instance = null;
+    
     public AreaControl()
     {
-        areaDB = CubeWar.getInstance().getAreaDB();
+        areaDB = AreaStorage.get();
     }
 
-    public Group addChunk(Location loc, Group group)
+    public static AreaControl get()
     {
-        return addChunk(loc.getChunk(), group);
-    }
-
-    public Group addChunk(Chunk chunk, Group group)
-    {
-        CubeWar.debug("ADD X: " + chunk.getX() + " Z:" + chunk.getZ() + " " + chunks.get(chunk) + " -->" + group);
-        if (!(group.equals(chunks.get(chunk))))
+        if (instance == null)
         {
-            if (chunks.get(chunk) == null)
+            instance = new AreaControl();
+        }
+        return instance;
+    }
+    
+    public void loadDataBase()
+    {
+        Collection<AreaModel> models = areaDB.getAll();
+        for (AreaModel model : models)
+        {
+            areas.put(model.getChunk(), new Area(model));
+        }
+    }
+    
+    public Group giveChunk(Chunk chunk, Group group)
+    {
+        if (!(group.equals(areas.get(chunk).getGroup())))
+        {
+            if (areas.get(chunk) == null)
             {
                 group.addInfluence_used();
+                
+                AreaModel model = new AreaModel(chunk, group);
+                areaDB.store(model); //TODO ID zuweisen ; selbes Problem bei Group
+                return GroupControl.get().getWildLand();
             }
             else
             {
                 group.addInfluence_used();
-                chunks.get(chunk).remInfluence_used();
+                areas.get(chunk).getGroup().remInfluence_used();
+                
+                AreaModel model = areas.get(chunk).model;
+                model.setGroup(group);
+                areaDB.update(model);
+                return (areas.put(chunk, new Area(model))).getGroup();
             }
         }
-        areaDB.store(group.getId(), chunk.getX(), chunk.getZ());
-        return chunks.put(chunk, group);
+        return null;//Chunk was already claimed
     }
 
     public Group getGroup(Location loc)
@@ -58,14 +78,14 @@ public class AreaControl implements Model
 
     public Group getGroup(Chunk chunk)
     {
-        Group tmp = chunks.get(chunk);
+        Group tmp = areas.get(chunk).getGroup();
         if (tmp == null)
         {
-            return groups.getWildLand();
+            return GroupControl.get().getWildLand();
         }
-        return chunks.get(chunk);
+        return areas.get(chunk).getGroup();
     }
-
+    
     public Group remChunk(Location loc)
     {
         return remChunk(loc.getChunk());
@@ -73,50 +93,39 @@ public class AreaControl implements Model
 
     public Group remChunk(Chunk chunk)
     {
-        CubeWar.debug("REM X: " + chunk.getX() + " Z:" + chunk.getZ() + " " + chunks.get(chunk));
-        areaDB.delete(chunk.getX(), chunk.getZ());
-        Group group = chunks.remove(chunk);
+        AreaModel model = areas.get(chunk).model;
+        Group group = areas.remove(chunk).getGroup();
+        areaDB.delete(model);
         if (group != null)
         {
             group.remInfluence_used();
         }
         return group;
     }
-
+    
     public void remAll(Group group)
     {
         List<Chunk> remlist = new ArrayList<Chunk>();
-        for (Chunk chunk : chunks.keySet())
+        for (Chunk chunk : areas.keySet())
         {
-            if (chunks.get(chunk).equals(group))
+            if (areas.get(chunk).getGroup().equals(group))
             {
                 remlist.add(chunk);
             }
-
         }
         for (Chunk chunk : remlist)
         {
-            chunks.remove(chunk);
+            areaDB.delete(areas.get(chunk).model);
+            areas.remove(chunk);
         }
-        areaDB.deleteByGroup(group.getId());
         group.resetInfluence_used();
     }
 
     public void remAllAll()
     {
-        chunks.clear();
+        areas.clear();
         areaDB.clear();
     }
-
-    public void load(Chunk chunk, int groupid)
-    {
-        Group group = groups.getGroup(groupid);
-        chunks.put(chunk, group);
-        group.addInfluence_used();
-    }
-
-    public int getId()
-    {
-        throw new UnsupportedOperationException("No Need");
-    }
+    
+    
 }

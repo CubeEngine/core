@@ -1,4 +1,7 @@
-package de.cubeisland.cubeengine.war.storage;
+package de.cubeisland.cubeengine.war.area;
+
+import de.cubeisland.cubeengine.war.storage.AreaModel;
+import de.cubeisland.cubeengine.war.groups.Group;
 
 /**
  *

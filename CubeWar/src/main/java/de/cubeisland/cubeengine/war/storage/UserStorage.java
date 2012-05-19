@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.war.storage;
 
+import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;

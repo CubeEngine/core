@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.war.commands;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.Perm;
-import de.cubeisland.cubeengine.war.user.UserControl;
+import de.cubeisland.cubeengine.war.user.UserControl_old;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
  */
 public class ByPassCommand {
 
-    private UserControl users = CubeWar.getInstance().getUserControl();
+    private UserControl_old users = CubeWar.getInstance().getUserControl();
     
     public ByPassCommand() 
     {

@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.war.storage;
 
+import de.cubeisland.cubeengine.war.groups.Group;
+import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.libMinecraft.bitmask.BitMask;

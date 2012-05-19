@@ -5,8 +5,8 @@ import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
-import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.groups.Group_old;
+import de.cubeisland.cubeengine.war.groups.GroupControl_old;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -25,8 +25,8 @@ public class PvP
 
     private CubeUserManager cuManager = CubeUserManager.getInstance();
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
-    private GroupControl groups = GroupControl.get();
-    private UserControl users = CubeWar.getInstance().getUserControl();
+    private GroupControl_old groups = GroupControl_old.get();
+    private UserControl_old users = CubeWar.getInstance().getUserControl();
 
     public PvP()
     {
@@ -85,11 +85,11 @@ public class PvP
 
     private boolean isAreaPvPOff(Player damager, Player damagee)
     {
-        if (groups.getGroup(damager).getBits().isset(Group.PVP_ON))
+        if (groups.getGroup(damager).getBits().isset(Group_old.PVP_ON))
         {
             return false;
         }
-        if (groups.getGroup(damagee).getBits().isset(Group.PVP_ON))
+        if (groups.getGroup(damagee).getBits().isset(Group_old.PVP_ON))
         {
             return false;
         }
@@ -111,11 +111,11 @@ public class PvP
 
     private boolean isAreaDenyingFF(Player damager, Player damagee)
     {
-        if (groups.getGroup(damager).getBits().isset(Group.PVP_FRIENDLYFIRE))
+        if (groups.getGroup(damager).getBits().isset(Group_old.PVP_FRIENDLYFIRE))
         {
             return false;
         }
-        if (groups.getGroup(damagee).getBits().isset(Group.PVP_FRIENDLYFIRE))
+        if (groups.getGroup(damagee).getBits().isset(Group_old.PVP_FRIENDLYFIRE))
         {
             return false;
         }
@@ -124,11 +124,11 @@ public class PvP
 
     private boolean isAreaDenyingDamage(Player damager, Player damagee)
     {
-        if (groups.getGroup(damager).getBits().isset(Group.PVP_DAMAGE))
+        if (groups.getGroup(damager).getBits().isset(Group_old.PVP_DAMAGE))
         {
             return false;
         }
-        if (groups.getGroup(damagee).getBits().isset(Group.PVP_DAMAGE))
+        if (groups.getGroup(damagee).getBits().isset(Group_old.PVP_DAMAGE))
         {
             return false;
         }
@@ -138,10 +138,10 @@ public class PvP
     public int modifyDamage(Player damager, Player damagee, int damage)
     {
         int dmg = damage;
-        Map<Group.DmgModType, Integer> modifiers = groups.getGroup(damagee).getDamagemodifier();
+        Map<Group_old.DmgModType, Integer> modifiers = groups.getGroup(damagee).getDamagemodifier();
 
         Integer tmp;
-        for (Group.DmgModType type : Group.DmgModType.values())
+        for (Group_old.DmgModType type : Group_old.DmgModType.values())
         {
             tmp = modifiers.get(type);
             if (tmp != null)

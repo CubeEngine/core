@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.war;
 
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
-import de.cubeisland.cubeengine.war.area.AreaControl;
+import de.cubeisland.cubeengine.war.area.AreaControl_old;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
 import de.cubeisland.cubeengine.war.commands.ClaimCommands;
 import de.cubeisland.cubeengine.war.commands.GroupCommands;
@@ -11,10 +11,10 @@ import de.cubeisland.cubeengine.war.database.AreaStorage;
 import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
 import de.cubeisland.cubeengine.war.database.GroupStorage;
 import de.cubeisland.cubeengine.war.database.UserStorage;
-import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.groups.GroupControl_old;
 import de.cubeisland.cubeengine.war.user.InfluenceControl;
 import de.cubeisland.cubeengine.war.user.PvP;
-import de.cubeisland.cubeengine.war.user.UserControl;
+import de.cubeisland.cubeengine.war.user.UserControl_old;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -48,9 +48,9 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     private CubeWarConfiguration config;
     private File dataFolder;
     private Economy economy = null;
-    private AreaControl areas;
-    private GroupControl groups;
-    private UserControl users;
+    private AreaControl_old areas;
+    private GroupControl_old groups;
+    private UserControl_old users;
     private PvP pvp;
     private AreaStorage areaDB;
     private DenyUsageStorage denyuseDB;
@@ -81,7 +81,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
         this.config = new CubeWarConfiguration(configuration);
-        groups = GroupControl.get();
+        groups = GroupControl_old.get();
         this.saveConfig();
 
         database = new Database(config.war_database_host,
@@ -97,9 +97,9 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
         }
         
         //Load in DB...
-        users = new UserControl();
+        users = new UserControl_old();
         areaDB = new AreaStorage();
-        areas = new AreaControl();
+        areas = new AreaControl_old();
         denyuseDB = new DenyUsageStorage();
         groupDB = new GroupStorage();
         userDB = new UserStorage();
@@ -196,7 +196,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     /**
      * @return the areas
      */
-    public AreaControl getAreas()
+    public AreaControl_old getAreas()
     {
         return areas;
     }
@@ -244,7 +244,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
     /**
      * @return the users
      */
-    public UserControl getUserControl()
+    public UserControl_old getUserControl()
     {
         return users;
     }

@@ -1,16 +1,17 @@
 package de.cubeisland.cubeengine.war.user;
 
-import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
-import de.cubeisland.cubeengine.war.database.UserStorage;
 import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
-import java.util.HashSet;
+import de.cubeisland.cubeengine.war.storage.UserModel;
+import de.cubeisland.cubeengine.war.storage.UserStorage;
+import de.cubeisland.cubeengine.war.user.PlayerMode;
+import de.cubeisland.cubeengine.war.user.Rank;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
@@ -19,65 +20,53 @@ import org.bukkit.entity.*;
  *
  * @author Faithcaio
  */
-public class User implements Model
+public class User
 {
-
-    private final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
-    private CubeUserManager cuManager = CubeUserManager.getInstance();
-    private UserStorage userDB = CubeWar.getInstance().getUserDB();
+    private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
+    private UserStorage userDB = UserStorage.get();
+    private UserControl users = UserControl.get();
     private GroupControl groups = GroupControl.get();
-    private UserControl users = CubeWar.getInstance().getUserControl();
     
-    private CubeUser user;
-    private int death = 0;
-    private int kills = 0;
-    private int killpoints = 0;
-    private double influence = 0;
-    private PlayerMode mode = PlayerMode.NORMAL;
-    private Rank rank;
-    private Group team;
-    private boolean respawning;
-    private HashSet<String> bypasses = new HashSet<String>();
+    protected UserModel model;
 
-    public int getId()
+    public User(UserModel model)
     {
-        return this.user.getId();
+        this.model = model;
     }
 
     public User(OfflinePlayer player)
     {
-        this.user = cuManager.getCubeUser(player);
-        rank = config.cubewar_ranks.get(0);
+        this(CubeUserManager.getInstance().getCubeUser(player));
     }
 
-    public User(int cubeuserid, int death, int kills, int kp, PlayerMode mode, int teamid, int teampos, double influence)
+    public User(CubeUser cubeUser)
     {
-        this.user = cuManager.getCubeUser(cubeuserid);
-        this.death = death;
-        this.kills = kills;
-        this.killpoints = kp;
-        this.mode = mode;
-        this.team = groups.getGroup(teamid);
-        this.rank = config.cubewar_ranks.get(0);
-        this.influence = influence;
-        switch (teampos)
-        {
-            case 0: break; //Kein Team
-            case 1: this.team.addUser(this); break;
-            case 2: this.team.addMod(this); break;
-            case 3: this.team.addAdmin(this); break;
-                
-        }
-        this.rank.newRank(this);
+        this.model = new UserModel(cubeUser);
+        this.userDB.store(this.model);
     }
 
-    public int kill(User user)
+    public void updateDB()
     {
-        this.killpoints += user.getRank().getKmod();
-        this.rank = this.rank.newRank(this);
-        return this.kill_kd(user);
+        this.userDB.update(this.model);
     }
 
+    public int getId()
+    {
+        return model.getId();
+    }
+
+    public Rank getRank()
+    {
+        return model.getRank();
+    }
+
+    public void kill(User user)
+    {
+        model.addKillpoints(user.getRank().getKmod());
+        this.kill_kd(user);
+        this.updateRank();
+    }
+    
     public void kill(Monster monster)
     {
         int kp=0;
@@ -106,149 +95,182 @@ public class User implements Model
         if (monster instanceof IronGolem) kp = config.killKP.get("IronGolem");
         if (monster instanceof EnderDragon) kp = config.killKP.get("EnderDragon");
         if (monster instanceof Giant) kp = config.killKP.get("Giant");
-        this.killpoints += kp;
-        this.rank = this.rank.newRank(this);
+        model.addKillpoints(kp);
+        this.updateRank();
     }
-
-    private int kill_kd(User user)
-    {
-        if (mode.equals(PlayerMode.NORMAL))
-        {
-            return ++this.kills;
-        }
-        else if (mode.equals(PlayerMode.KILLRESET))
-        {
-            return ++this.kills;
-        }
-        else if (mode.equals(PlayerMode.HIGHLANDER))
-        {
-            this.kills += user.getKills();
-            return this.kills;
-        }
-        return -1;
-    }
-
-    public int die()
-    {
-        this.killpoints -= this.rank.getDmod();
-        if (this.killpoints < config.killpoint_min)
-        {
-            this.killpoints = config.killpoint_min;
-        }
-        this.rank = this.rank.newRank(this);
-        return this.die_kd();
-
-    }
-
-    private int die_kd()
-    {
-        if (mode.equals(PlayerMode.NORMAL))
-        {
-            return ++this.death;
-        }
-        else if (mode.equals(PlayerMode.KILLRESET))
-        {
-            this.kills = 0;
-            return ++this.death;
-        }
-        else if (mode.equals(PlayerMode.HIGHLANDER))
-        {
-            this.kills = 0;
-            return ++this.death;
-
-        }
-        return -1;
-    }
-
+  
     public int getKills()
     {
-        return this.kills;
+        return model.getKills();
     }
 
-    public int getDeath()
+    private void kill_kd(User user)
     {
-        return this.death;
+        PlayerMode mode = model.getMode();
+        switch (mode)
+        {
+            case NORMAL:
+                model.addKills(1);
+                break;
+            case KILLRESET:
+                model.addKills(1);
+                break;
+            case HIGHLANDER:
+                model.addKills(user.getKills());
+                break;
+        }
+    }
+
+    public void updateRank()
+    {
+        model.setRank(Rank.newRank(model.getKillpoints()));
+    }
+
+    public void die()
+    {
+        model.addKillpoints(-model.getRank().getDmod());
+        if (model.getKillpoints() < config.killpoint_min)
+        {
+            model.setKillpoints(config.killpoint_min);
+        }
+        this.die_kd();
+        this.updateRank();
+    }
+
+    private void die_kd()
+    {
+        PlayerMode mode = model.getMode();
+        switch (mode)
+        {
+            case NORMAL:
+                model.addDeath(1);
+                break;
+            case KILLRESET:
+                model.addDeath(1);
+                model.setKills(0);
+                break;
+            case HIGHLANDER:
+                model.addDeath(1);
+                model.setKills(0);
+                break;
+        }
     }
 
     public Player getPlayer()
     {
-        if (this.user.isOnline())
-        {
-            return this.user.getPlayer();
-        }
-        else
-        {
-            return null;
-        }
+        return model.getCubeUser().getPlayer();
+    }
+
+    OfflinePlayer getOfflinePlayer()
+    {
+        return model.getCubeUser().getOfflinePlayer();
     }
 
     public String getName()
     {
-        return this.user.getName();
+        return model.getCubeUser().getName();
     }
 
     public PlayerMode getMode()
     {
-        return this.mode;
+        return model.getMode();
     }
 
-    public int getKp()
+    public int getKillpoints()
     {
-        return this.killpoints;
-    }
-
-    public Rank getRank()
-    {
-        return this.rank;
+        return model.getKillpoints();
     }
 
     public void setTeam(Group team)
     {
-        this.team = team;
-        userDB.update(this);
+        model.setTeam(team);
+        this.updateDB();
     }
 
     public Group getTeam()
     {
-        if (this.team == null)
-        {
-            return groups.getWildLand();
-        }
-        return this.team;
+        return model.getTeam();
     }
 
     public String getTeamTag()
     {
-        if (this.team != null)
+        return model.getTeam().getTag();
+    }
+
+    public boolean isRespawning()
+    {
+        return model.isRespawning();
+    }
+
+    public void setRespawning(boolean respawning)
+    {
+        model.setRespawning(respawning);
+    }
+
+    public void resetBypasses()
+    {
+        model.resetBypasses();
+    }
+
+    public void toggleBypass(String bypass)
+    {
+        if (model.getBypasses().contains(bypass))
         {
-            return this.team.getTag();
+            model.removeBypass(bypass);
         }
         else
         {
-            return t("none");
+            model.addBypass(bypass);
         }
+    }
+
+    public boolean hasBypass(String bypass)
+    {
+        return model.getBypasses().contains(bypass);
+    }
+
+    public void addInfluence(double amount)
+    {
+        model.addInfluence(amount);
+    }
+
+    public void looseInfluence(double amount)
+    {
+        model.addInfluence(-amount);
+    }
+
+    public double getBaseInfluence()
+    {
+        return model.getInfluence();
+    }
+
+    public double getTotalInfluence()
+    {
+        return model.getInfluence() * model.getRank().getImod();
     }
 
     public void showInfo(CommandSender sender)
     {
         sender.sendMessage(t("user_01"));
         sender.sendMessage(t("user_02", this.getName()));
-        sender.sendMessage(t("user_03", this.rank.getName(), this.killpoints));
+        sender.sendMessage(t("user_03", model.getRank().getName(), model.getKillpoints()));
+        int kills = model.getKills();
+        int death = model.getDeath();
         int kd;
-        if (this.death == 0)
+        if (death == 0)
         {
             kd = 0;
         }
         else
         {
-            kd = (int) (this.kills / this.death * 100);
+            kd = (int) (kills / death * 100);
         }
-        sender.sendMessage(t("user_07",(int)this.getTotalInfluence()));
-        sender.sendMessage(t("user_04", this.kills, this.death, String.valueOf(kd / 100)));
-
-        if ((this.team != null)&&(!this.team.getType().equals(AreaType.WILDLAND)))
+        sender.sendMessage(t("user_07", (int) this.getTotalInfluence()));
+        sender.sendMessage(t("user_04", kills, death, String.valueOf(kd / 100)));
+        Group team = model.getTeam();
+        if ((team != null) && (!team.getType().equals(AreaType.WILDLAND)))
         {
-            if (this.team.isTrueAlly(users.getUser(sender).getTeam()))
+            if (team.isTrueAlly(users.getUser(sender).getTeam()))
             {
                 sender.sendMessage(t("user_051", this.getTeamTag()));
             }
@@ -261,80 +283,13 @@ public class User implements Model
         {
             if (this.equals(users.getUser(sender)))
             {
-                sender.sendMessage(t("user_06", groups.getGroup((Player) sender).getTag()));
+                sender.sendMessage(t("user_06", groups.getGroupAtLocation((Player) sender).getTag()));
             }
         }
     }
 
-    /**
-     * @return the respawning
-     */
-    public boolean isRespawning()
+    public int getDeath()
     {
-        return respawning;
-    }
-
-    /**
-     * @param respawning the respawning to set
-     */
-    public void setRespawning(boolean respawning)
-    {
-        this.respawning = respawning;
-    }
-
-    public void unsetBypasses()
-    {
-        this.bypasses.clear();
-    }
-
-    public void toggleBypass(String bypass)
-    {
-        if (this.hasBypass(bypass))
-        {
-            this.bypasses.remove(bypass);
-        }
-        else
-        {
-            this.bypasses.add(bypass);
-        }
-    }
-
-    public boolean hasBypass(String bypass)
-    {
-        return this.bypasses.contains(bypass);
-    }
-
-    OfflinePlayer getOfflinePlayer()
-    {
-        return this.user.getOfflinePlayer();
-    }
-
-    public int getTeamPos()
-    {
-        if (this.team == null) return 0;
-        if (this.team.getId()==0) return 0;
-        if (this.team.isAdmin(this)) return 3;
-        if (this.team.isMod(this)) return 2;
-        if (this.team.isUser(this)) return 1;
-        return 0;
-    }
-    
-    public void addInfluence(double amount)
-    {
-        this.influence += amount;
-    }
-    public void looseInfluence(double amount)
-    {
-        this.influence -= amount;
-    }
-    
-    public double getBaseInfluence()
-    {
-        return this.influence;
-    }
-    
-    public double getTotalInfluence()
-    {
-        return this.influence * this.getRank().getImod();
+        return model.getDeath();
     }
 }

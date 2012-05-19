@@ -1,860 +1,107 @@
 package de.cubeisland.cubeengine.war.groups;
 
-import de.cubeisland.cubeengine.core.persistence.Model;
+import de.cubeisland.cubeengine.war.user.UserControl;
+import de.cubeisland.cubeengine.war.user.User;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
-import de.cubeisland.cubeengine.war.database.DenyUsageStorage;
-import de.cubeisland.cubeengine.war.user.User;
-import de.cubeisland.cubeengine.war.user.UserControl;
-import de.cubeisland.libMinecraft.bitmask.BitMask;
+import de.cubeisland.cubeengine.war.groups.AreaType;
+import de.cubeisland.cubeengine.war.storage.GroupModel;
+import de.cubeisland.cubeengine.war.storage.GroupStorage;
 import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  *
  * @author Faithcaio
  */
-public class Group implements Cloneable, Model
+public class Group
 {
-
-    //TODO Fly abschalten wenn in Gebiet reinkommt
     private static final Economy econ = CubeWar.getInstance().getEconomy();
-    public static final int PVP_ON = 1;
-    public static final int PVP_DAMAGE = 2;
-    public static final int PVP_FRIENDLYFIRE = 4;
-    public static final int MONSTER_SPAWN = 8;
-    public static final int MONSTER_DAMAGE = 16;
-    public static final int BUILD_PLACE = 32;
-    public static final int BUILD_DESTROY = 64;
-    public static final int USE_FIRE = 128;
-    public static final int USE_LAVA = 256;
-    public static final int USE_WATER = 512;
-    public static final int POWER_LOSS = 1024;
-    public static final int POWER_GAIN = 2048;
-    public static final int ECONOMY_BANK = 4096;
-    public static final int IS_CLOSED = 8192;
-    public static final int AUTO_CLOSE = 16384;
-    public static final int IS_PEACEFUL = 32768;
     
-    private BitMask bits;
-    private AreaType type;
-    private Map<String, Integer> intval = new HashMap<String, Integer>();
-    private Map<String, String> stringval = new HashMap<String, String>();
-    private Map<String, List> listval = new HashMap<String, List>();
-    private int influence = 0;
-    private int influence_max = 0;
-    private List<User> adminlist = new ArrayList<User>();
-    private List<User> modlist = new ArrayList<User>();
-    private List<User> userlist = new ArrayList<User>();
-    //TODO DB in separater Tabelle
-    private List<User> invited = new ArrayList<User>();
-    //TODO DB in separater Tabelle
-    private List<Group> enemy = new ArrayList<Group>();
-    private List<Group> ally = new ArrayList<Group>();
+    private GroupStorage groupDB = GroupStorage.get();
     
-    private GroupControl groups;
-    private UserControl users;
+    protected GroupModel model;
 
-    public Group()
+    Group(GroupModel model)
     {
-        this.bits = new BitMask();
-        users = CubeWar.getInstance().getUserControl();
-        groups = GroupControl.get();
+        this.model = model;
     }
 
-    public Group(int id, String tag, String name, String desc, boolean isarena, int respawnprot,
-                 String dmgmod, int pwrboost, Integer permpwr, int flags)
-    {
-        users = CubeWar.getInstance().getUserControl();
-        groups = GroupControl.get();
-        this.setId(id);
-        this.setStringValue("tag", tag);
-        this.setStringValue("name", name);
-        this.setStringValue("description", desc);
-        if (isarena)
-        {
-            this.type = AreaType.ARENA;
-        }
-        else
-        {
-            this.type = AreaType.TEAMZONE;
-        }
-        this.setIntegerValue("pvp_spawnprotect", respawnprot);
-        Integer per = null, set = null, add = null;
-        if (dmgmod.startsWith("P"))
-        {
-            per = Integer.valueOf(dmgmod.substring(1));
-        }
-        else if (dmgmod.startsWith("S"))
-        {
-            set = Integer.valueOf(dmgmod.substring(1));
-        }
-        else
-        {
-            add = Integer.valueOf(dmgmod);
-        }
-        this.setIntegerValue("damagemodifier_percent", per);
-        this.setIntegerValue("damagemodifier_set", set);
-        this.setIntegerValue("damagemodifier_add", add);
-        this.setIntegerValue("power_boost", pwrboost);
-        this.setIntegerValue("power_perm", permpwr);
-        this.bits = new BitMask(flags);
-    }
-
-    private void setId(int id)
-    {
-        this.setIntegerValue("id", id);
-    }
-
-    public void setBit(int Bit)
-    {
-        this.getBits().set(Bit);
-    }
-
-    public void unsetBit(int Bit)
-    {
-        this.getBits().unset(Bit);
-    }
-
-    public void toggleBit(int Bit)
-    {
-        this.getBits().toggle(Bit);
-    }
-
-    private String convertKey(String key)
-    {
-        
-        if (key.equalsIgnoreCase("dmgmod")) return "damagemodifier";
-        if (key.equalsIgnoreCase("ff")) return "pvp_friendlyfire";
-        if (key.equalsIgnoreCase("respawntime")) return "pvp_spawnprotect";
-        
-
-        return key;
-    }
-
-    public boolean setValue(String key, String value)
-    {
-
-        key = this.convertKey(key);
-        if (key.equalsIgnoreCase("damagemodifier"))
-            if (value.length()>5) return false;
-        if (key.equalsIgnoreCase("pvp_spawnprotect"))
-            if (value.length()>3) return false;
-        
-        if (intval.containsKey(key.toLowerCase()))
-        {
-            try
-            {
-                Integer intvalue = Integer.valueOf(value);
-                return this.setIntegerValue(key, intvalue);
-            }
-            catch (NumberFormatException ex)
-            {
-                return false;
-            }
-        }
-        if (stringval.containsKey(key.toLowerCase()))
-        {
-            return this.setStringValue(key, value);
-        }
-        if (listval.containsKey(key.toLowerCase()))
-        {
-            return this.setListValue(key, value);
-        }
-
-        return this.setOtherValue(key, value);
-
-    }
-
-    public boolean setStringValue(String key, String value)
-    {
-        stringval.put(key, value);
-        return true;
-    }
-
-    public boolean setIntegerValue(String key, Integer value)
-    {
-        intval.put(key, value);
-        return true;
-    }
-
-    public boolean setListValue(String key, String value)
-    {
-        if (key.equalsIgnoreCase("denycommands"))
-        {
-            List<String> list = listval.get(key);
-            if (value.charAt(0) == '-')
-            {
-                list.remove(value.substring(1));
-            }
-            else
-            {
-                list.add(value);
-            }
-            listval.put(key, list);
-            return true;
-        }
-        if (key.equalsIgnoreCase("protect"))
-        {
-            List<Material> list = listval.get(key);
-            if (value.charAt(0) == '-')
-            {
-                list.remove(Material.matchMaterial(value.substring(1)));
-            }
-            else
-            {
-                list.add(Material.matchMaterial(value));
-            }
-            listval.put(key, list);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean setListValue(String key, List value)
-    {
-        listval.put(key, value);
-        return true;
-    }
-
-    public boolean setOtherValue(String key, String value)
-    {
-        int bitkey = -1;
-        if (key.equalsIgnoreCase("PVP_ON"))
-        {
-            bitkey = Group.PVP_ON;
-        }
-        if (key.equalsIgnoreCase("PVP_DAMAGE"))
-        {
-            bitkey = Group.PVP_DAMAGE;
-        }
-        if (key.equalsIgnoreCase("PVP_FRIENDLYFIRE"))
-        {
-            bitkey = Group.PVP_FRIENDLYFIRE;
-        }
-        if (key.equalsIgnoreCase("MONSTER_SPAWN"))
-        {
-            bitkey = Group.MONSTER_SPAWN;
-        }
-        if (key.equalsIgnoreCase("MONSTER_DAMAGE"))
-        {
-            bitkey = Group.MONSTER_DAMAGE;
-        }
-        if (key.equalsIgnoreCase("BUILD_PLACE"))
-        {
-            bitkey = Group.BUILD_PLACE;
-        }
-        if (key.equalsIgnoreCase("BUILD_DESTROY"))
-        {
-            bitkey = Group.BUILD_DESTROY;
-        }
-        if (key.equalsIgnoreCase("USE_FIRE"))
-        {
-            bitkey = Group.USE_FIRE;
-        }
-        if (key.equalsIgnoreCase("USE_LAVA"))
-        {
-            bitkey = Group.USE_LAVA;
-        }
-        if (key.equalsIgnoreCase("USE_WATER"))
-        {
-            bitkey = Group.USE_WATER;
-        }
-        if (key.equalsIgnoreCase("POWER_LOSS"))
-        {
-            bitkey = Group.POWER_LOSS;
-        }
-        if (key.equalsIgnoreCase("POWER_GAIN"))
-        {
-            bitkey = Group.POWER_GAIN;
-        }
-        if (key.equalsIgnoreCase("ECONOMY_BANK"))
-        {
-            bitkey = Group.ECONOMY_BANK;
-        }
-        if (key.equalsIgnoreCase("IS_CLOSED"))
-        {
-            bitkey = Group.IS_CLOSED;
-        }
-        if (key.equalsIgnoreCase("AUTO_CLOSE"))
-        {
-            bitkey = Group.AUTO_CLOSE;
-        }
-        if (bitkey > 0)
-        {
-            return this.setBoolValue(bitkey, value);
-        }
-        else
-        {
-            if ((key.equalsIgnoreCase("damagemodifier")))
-            {
-                this.setIntegerValue("damagemodifier_percent", null);
-                this.setIntegerValue("damagemodifier_set", null);
-                this.setIntegerValue("damagemodifier_add", null);
-                if (value.charAt(0) == '%')
-                {
-                    this.setIntegerValue("damagemodifier_percent", Integer.valueOf(value.substring(1)));
-                }
-                else if (value.charAt(0) == '#')
-                {
-                    this.setIntegerValue("damagemodifier_set", Integer.valueOf(value.substring(1)));
-                }
-                else
-                {
-                    this.setIntegerValue("damagemodifier_add", Integer.valueOf(value.substring(1)));
-                }
-                return true;
-            }
-            return false;
-        }
-    }
-
-    public boolean setBoolValue(int bit, String value)
-    {
-        if (value.equalsIgnoreCase("toggle") || value.equalsIgnoreCase("t"))
-        {
-            this.getBits().toggle(bit);
-        }
-        else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on"))
-        {
-            this.getBits().set(bit);
-        }
-        else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("off"))
-        {
-            this.getBits().unset(bit);
-        }
-        else
-        {
-            return false;
-        }
-        return true;
-
-    }
-
-    public Object getValue(String key)
-    {
-
-        if (intval.containsKey(key))
-        {
-            return intval.get(key);
-        }
-        if (stringval.containsKey(key))
-        {
-            return stringval.get(key);
-        }
-        if (listval.containsKey(key))
-        {
-            return listval.get(key);
-        }
-        return null;
-    }
-
-    @Override
-    public Group clone()
-    {
-        Group group = new Group();
-        group.getBits().reset();
-        group.setType(AreaType.TEAMZONE);
-        group.setIntegerValue("id", this.getId());
-        group.setStringValue("name", this.getName());
-        group.setStringValue("tag", this.getTag());
-        group.setStringValue("description", this.getDescription());
-        if (this.getBits().isset(Group.ECONOMY_BANK))
-        {
-            group.setBit(Group.ECONOMY_BANK);
-        }
-        group.setIntegerValue("power_perm", this.getPower_perm());
-        group.setIntegerValue("power_boost", this.getPower_boost());
-        if (this.getBits().isset(Group.POWER_LOSS))
-        {
-            group.setBit(Group.POWER_LOSS);
-        }
-        if (this.getBits().isset(Group.POWER_GAIN))
-        {
-            group.setBit(Group.POWER_GAIN);
-        }
-        if (this.getBits().isset(Group.PVP_ON))
-        {
-            group.setBit(Group.PVP_ON);
-        }
-        if (this.getBits().isset(Group.PVP_DAMAGE))
-        {
-            group.setBit(Group.PVP_DAMAGE);
-        }
-        if (this.getBits().isset(Group.PVP_FRIENDLYFIRE))
-        {
-            group.setBit(Group.PVP_FRIENDLYFIRE);
-        }
-        group.setIntegerValue("pvp_spawnprotect", this.getPvp_respawnprotect());
-        group.setIntegerValue("damagemodifier_percent", this.getDamagemodifier_percent());
-        group.setIntegerValue("damagemodifier_set", this.getDamagemodifier_set());
-        group.setIntegerValue("damagemodifier_add", this.getDamagemodifier_add());
-        if (this.getBits().isset(Group.MONSTER_SPAWN))
-        {
-            group.setBit(Group.MONSTER_SPAWN);
-        }
-        if (this.getBits().isset(Group.MONSTER_DAMAGE))
-        {
-            group.setBit(Group.MONSTER_DAMAGE);
-        }
-        if (this.getBits().isset(Group.BUILD_DESTROY))
-        {
-            group.setBit(Group.BUILD_DESTROY);
-        }
-        if (this.getBits().isset(Group.BUILD_PLACE))
-        {
-            group.setBit(Group.BUILD_PLACE);
-        }
-        group.setListValue("protect", this.getProtect());
-        if (this.getBits().isset(Group.USE_FIRE))
-        {
-            group.setBit(Group.USE_FIRE);
-        }
-        if (this.getBits().isset(Group.USE_LAVA))
-        {
-            group.setBit(Group.USE_LAVA);
-        }
-        if (this.getBits().isset(Group.USE_WATER))
-        {
-            group.setBit(Group.USE_WATER);
-        }
-        group.setListValue("denycommands", this.getDenycommands());
-        group.setClosed(this.isClosed());
-        group.setAutoClose(this.isAutoClose());
-
-        return group;
-    }
-
-    public void addAdmin(User user)
-    {
-        if (user == null)
-        {
-            return;
-        }
-        this.adminlist.add(user);
-        this.modlist.remove(user);
-        this.userlist.remove(user);
-        user.setTeam(this);
-    }
-
-    public void delAdmin(User user)
-    {
-        this.adminlist.remove(user);
-        user.setTeam(groups.getWildLand());
-    }
-
-    public boolean isAdmin(User user)
-    {
-        return this.adminlist.contains(user);
-    }
-
-    public void addMod(User user)
-    {
-        if (user == null)
-        {
-            return;
-        }
-        this.modlist.add(user);
-        this.adminlist.remove(user);
-        this.userlist.remove(user);
-        user.setTeam(this);
-    }
-
-    public void delMod(User user)
-    {
-        this.modlist.remove(user);
-        this.adminlist.remove(user);
-        user.setTeam(groups.getWildLand());
-    }
-
-    public boolean isMod(User user)
-    {
-        if (this.adminlist.contains(user))
-        {
-            return true;
-        }
-        return this.modlist.contains(user);
-    }
-
-    public void addUser(User user)
-    {
-        if (user == null)
-        {
-            return;
-        }
-        this.userlist.add(user);
-        this.modlist.remove(user);
-        this.adminlist.remove(user);
-        user.setTeam(this);
-    }
-
-    public void delUser(User user)
-    {
-        this.userlist.remove(user);
-        this.modlist.remove(user);
-        this.adminlist.remove(user);
-        user.setTeam(groups.getWildLand());
-    }
-
-    public boolean isUser(User user)
-    {
-        if (this.adminlist.contains(user))
-        {
-            return true;
-        }
-        if (this.modlist.contains(user))
-        {
-            return true;
-        }
-        return this.userlist.contains(user);
-    }
-
-    public boolean invite(User user)
-    {
-        if (this.invited.contains(user))
-        {
-            return false;
-        }
-        this.invited.add(user);
-        return true;
-    }
-
-    public boolean uninvite(User user)
-    {
-        if (this.invited.contains(user))
-        {
-            return false;
-        }
-        this.invited.remove(user);
-        return true;
-    }
-
-    public boolean isInvited(User user)
-    {
-        if (this.bits.isset(IS_CLOSED))
-        {
-            if (this.invited.contains(user))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean isBalanced(User user)
-    {
-        if (this.invited.contains(user))
-        {
-            return true; //Invited Player can always join!
-        }
-        return GroupControl.get().isBalanced(this);
-    }
-
-    /**
-     * @return the id
-     */
     public int getId()
     {
-        return (Integer) this.getValue("id");
+        return model.getId();
     }
 
-    /**
-     * @return the type
-     */
-    public AreaType getType()
+    public void updateDB()
     {
-        return type;
+        this.groupDB.update(this.model);
     }
-
-    /**
-     * @return the name
-     */
-    public String getName()
-    {
-        return (String) this.getValue("name");
-    }
-
-    /**
-     * @return the pvp_spawnprotect
-     */
-    public int getPvp_respawnprotect()
-    {
-        return (Integer) this.getValue("pvp_spawnprotect");
-    }
-
-    /**
-     * @return the denycommands
-     */
-    public List<String> getDenycommands()
-    {
-        return (List<String>) this.getValue("denycommands");
-    }
-
-    /**
-     * @return the protect
-     */
-    public List<Material> getProtect()
-    {
-        return (List<Material>) this.getValue("protect");
-    }
-
-    /**
-     * @return the tag
-     */
+    
     public String getTag()
     {
-        return (String) this.getValue("tag");
+        return model.getTag();
     }
 
-    /**
-     * @return the description
-     */
-    public String getDescription()
+    int getInfluence_used()
     {
-        return (String) this.getValue("description");
+        return model.getInfluence_used();
     }
-
-    /**
-     * @return the power_perm
-     */
-    public Integer getPower_perm()
-    {
-        return (Integer) this.getValue("power_perm");
-    }
-
-    /**
-     * @return the power_boost
-     */
-    public int getPower_boost()
-    {
-        return (Integer) this.getValue("power_boost");
-    }
-
-    /**
-     * @return the closed
-     */
-    public boolean isClosed()
-    {
-        return this.bits.isset(IS_CLOSED);
-    }
-
-    /**
-     * @param closed the closed to set
-     */
-    public void setClosed(boolean closed)
-    {
-        if (closed)
-        {
-            this.bits.set(IS_CLOSED);
-        }
-        else
-        {
-            this.bits.unset(IS_CLOSED);
-        }
-    }
-
-    public boolean isAutoClose()
-    {
-        return this.bits.isset(AUTO_CLOSE);
-    }
-
-    public void setAutoClose(boolean closed)
-    {
-        if (closed)
-        {
-            this.bits.set(AUTO_CLOSE);
-        }
-        else
-        {
-            this.bits.unset(AUTO_CLOSE);
-        }
-    }
-
-    public void loadDenyUsage()
-    {
-        DenyUsageStorage denyuseDB = CubeWar.getInstance().getDenyuseDB();
-        this.setListValue("protect", denyuseDB.getAllMatByGroup(this));
-        this.setListValue("denycommands", denyuseDB.getAllCmdByGroup(this));
-    }
-
-    public void adjustMaxInfluence()
-    {
-        this.influence_max = 0;
-        for (User user : this.getUserList())
-        {
-            this.influence_max += user.getTotalInfluence();
-        }
-    }
-
-    public static enum DmgModType
-    {
-        PERCENT(null),
-        SET(null),
-        ADD(null);
-        public Integer val;
-
-        private DmgModType(Integer val)
-        {
-            this.val = val;
-        }
-    }
-
-    private Integer getDamagemodifier_percent()
-    {
-        return (Integer) this.getValue("damagemodifier_percent");
-    }
-
-    private Integer getDamagemodifier_set()
-    {
-        return (Integer) this.getValue("damagemodifier_set");
-    }
-
-    private Integer getDamagemodifier_add()
-    {
-        return (Integer) this.getValue("damagemodifier_add");
-    }
-
-    public Map<DmgModType, Integer> getDamagemodifier()
-    {
-        Map<DmgModType, Integer> tmp = new EnumMap<DmgModType, Integer>(DmgModType.class);
-        tmp.put(DmgModType.SET, (Integer) this.getValue("damagemodifier_set"));
-        tmp.put(DmgModType.PERCENT, (Integer) this.getValue("damagemodifier_percent"));
-        tmp.put(DmgModType.ADD, (Integer) this.getValue("damagemodifier_add"));
-        return tmp;
-    }
-
-    /**
-     * @return the power_max
-     */
-    public Integer getInfluence_max()
-    {
-        return this.influence_max;
-    }
-
-    /**
-     * @return the power_used
-     */
-    public Integer getInfluence_used()
-    {
-        return this.influence;
-    }
-
+    
     public void addInfluence_used()
     {
-        this.influence++;
+        model.addInfluence_used(1);
     }
 
     public void remInfluence_used()
     {
-        this.influence--;
+        model.addInfluence_used(-1);
     }
 
     public void resetInfluence_used()
     {
-        this.influence = 0;
+        model.setInfluence_used(0);
     }
 
-    /**
-     * @param type the type to set
-     */
-    public void setType(AreaType type)
+    boolean isBalancing()
     {
-        this.type = type;
+        return model.hasBit(GroupModel.AUTO_CLOSE);
     }
-
-    public void setneutral(Group g)
+    
+    public List<User> getUserList()
     {
-        this.ally.remove(g);
-        this.enemy.remove(g);
+        List<User> list = new ArrayList<User>();
+        list.addAll(0, model.getAdminlist());
+        list.addAll(0, model.getModlist());
+        list.addAll(0, model.getUserlist());
+        return list;
     }
 
-    public void setally(Group g)
+    public int getUserSum()
     {
-        this.ally.add(g);
-        this.enemy.remove(g);
+        return this.getUserList().size();
     }
-
-    public void setenemy(Group g)
-    {
-        this.ally.remove(g);
-        this.enemy.add(g);
-    }
-
+    
     public boolean isAlly(Group g)
     {
-        return ally.contains(g);
+        return model.getAlly().contains(g);
     }
-
-    public boolean isTrueAlly(Group g)
-    {
-        if (this.equals(g))
-        {
-            return true;
-        }
-        if (this.ally.contains(g))
-        {
-            return g.isAlly(this);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
+    
     public boolean isEnemy(Group g)
     {
-        return enemy.contains(g);
+        return model.getEnemy().contains(g);
     }
-
-    public boolean isneutral(Group g)
-    {
-        return (!(enemy.contains(g) || ally.contains(g)));
-    }
-
-    public void sendToTeam(String msg)
-    {
-        Player[] players = CubeWar.getInstance().getServer().getOnlinePlayers();
-        for (Player player : players)
-        {
-            if (this.isUser(users.getOfflineUser(player)))
-            {
-                player.sendMessage(msg);
-            }
-        }
-    }
-
-    public void sendToAlly(String msg)
-    {
-        this.sendToTeam(msg);
-        for (Group theally : this.ally)
-        {
-            if (theally.isAlly(this))
-            {
-                theally.sendToTeam(msg);
-            }
-        }
-    }
-
+    
     public void sendInfo(CommandSender sender)
     {
-        users = CubeWar.getInstance().getUserControl();
-        groups = GroupControl.get();
-        sender.sendMessage(t("g_01", this.getTag()));
-        sender.sendMessage(t("g_02", this.getName()));
-        sender.sendMessage(t("g_03", this.getDescription()));
-        sender.sendMessage(t("g_04", GroupControl.get().getRank(this),
-                t("g_05", this.influence, this.influence_max)));
+        UserControl users = UserControl.get();
+        GroupControl groups = GroupControl.get();
+        sender.sendMessage(t("g_01", model.getTag()));
+        sender.sendMessage(t("g_02", model.getName()));
+        sender.sendMessage(t("g_03", model.getDescription()));
+        sender.sendMessage(t("g_04", groups.getRank(this),
+                t("g_05", model.getInfluence_used(), model.getInfluence_max())));
         User user = users.getUser(sender);
         Group team = user.getTeam();
         if (team != null && ((team.equals(this)) || (team.isAlly(this) && this.isAlly(team))))
@@ -866,9 +113,9 @@ public class Group implements Cloneable, Model
             sender.sendMessage(t("g_07"));
         }
         String pvp;
-        if (this.getBits().isset(PVP_ON))
+        if (this.model.hasBit(GroupModel.PVP_ON))
         {
-            if (this.getBits().isset(PVP_FRIENDLYFIRE))
+            if (this.model.hasBit(GroupModel.PVP_FRIENDLYFIRE))
             {
                 pvp = t("g_081");
             }
@@ -906,7 +153,7 @@ public class Group implements Cloneable, Model
         {
             sender.sendMessage(t("g_10", enemies.substring(2)));
         }
-        if (this.getBits().isset(ECONOMY_BANK))
+        if (this.model.hasBit(GroupModel.ECONOMY_BANK))
         {
             sender.sendMessage(t("g_11", econ.bankBalance("#" + this.getTag())));
         }
@@ -949,65 +196,61 @@ public class Group implements Cloneable, Model
         }
     }
 
-    public List<User> getUserList()
+    boolean isTrueAlly(Group g)
     {
-        List<User> list = new ArrayList<User>();
-        list.addAll(0, this.adminlist);
-        list.addAll(0, this.modlist);
-        list.addAll(0, this.userlist);
-        return list;
+        if (this.equals(g))
+        {
+            return true;
+        }
+        if (this.model.getAlly().contains(g))
+        {
+            return g.isAlly(this);
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public int getUserSum()
+    public AreaType getType()
     {
-        return this.getUserList().size();
+        return model.getType();
     }
-
+    
     public int getKPSum()
     {
         int kp = 0;
         for (User tmp : this.getUserList())
         {
-            kp += tmp.getKp();
+            kp += tmp.getKillpoints();
         }
         return kp;
     }
-
-    /**
-     * @return the bits
-     */
-    public BitMask getBits()
+    
+    public boolean isUser(User user)
     {
-        return bits;
-    }
-
-    public void createBank()
-    {
-        econ.createBank("#" + this.getTag(), "CubeWar#" + this.getId());
-    }
-
-    public void deleteBank()
-    {
-        econ.deleteBank("#" + this.getTag());
-    }
-
-    public void addToBank(double val)
-    {
-        econ.bankDeposit("#" + this.getTag(), val);
-    }
-
-    public void remFromBank(double val)
-    {
-        econ.bankWithdraw("#" + this.getTag(), val);
-    }
-
-    public boolean isBalancing()
-    {
-        return this.bits.isset(AUTO_CLOSE);
+        if (this.model.getAdminlist().contains(user))
+        {
+            return true;
+        }
+        if (this.model.getModlist().contains(user))
+        {
+            return true;
+        }
+        return this.model.getUserlist().contains(user);
     }
     
-    public boolean isPeaceful()
+    public boolean isBalanced(User user)
     {
-        return this.bits.isset(IS_PEACEFUL);
+        if (this.model.getInvited().contains(user.getName()))
+        {
+            return true; //Invited Player can always join!
+        }
+        return GroupControl.get().isBalanced(this);
+    }
+    
+    public boolean isClosed()
+    {
+        return model.hasBit(GroupModel.IS_CLOSED);
     }
 }

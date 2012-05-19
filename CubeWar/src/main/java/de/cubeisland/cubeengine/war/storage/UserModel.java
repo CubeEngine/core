@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.war.storage;
 
 
+import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.war.CubeWar;
