@@ -10,8 +10,6 @@ import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.storage.UserModel;
 import de.cubeisland.cubeengine.war.storage.UserStorage;
-import de.cubeisland.cubeengine.war.user.PlayerMode;
-import de.cubeisland.cubeengine.war.user.Rank;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
@@ -26,7 +24,6 @@ public class User
     private UserStorage userDB = UserStorage.get();
     private UserControl users = UserControl.get();
     private GroupControl groups = GroupControl.get();
-    
     protected UserModel model;
 
     public User(UserModel model)
@@ -66,7 +63,7 @@ public class User
         this.kill_kd(user);
         this.updateRank();
     }
-    
+
     public void kill(Monster monster)
     {
         int kp=0;
@@ -98,7 +95,7 @@ public class User
         model.addKillpoints(kp);
         this.updateRank();
     }
-  
+ 
     public int getKills()
     {
         return model.getKills();

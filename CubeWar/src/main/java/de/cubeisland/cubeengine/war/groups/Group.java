@@ -198,7 +198,7 @@ public class Group
         }
     }
 
-    boolean isTrueAlly(Group g)
+    public boolean isTrueAlly(Group g)
     {
         if (this.equals(g))
         {

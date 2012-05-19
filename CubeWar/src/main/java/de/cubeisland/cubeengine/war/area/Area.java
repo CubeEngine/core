@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.war.area;
 
-import de.cubeisland.cubeengine.war.storage.AreaModel;
 import de.cubeisland.cubeengine.war.groups.Group;
+import de.cubeisland.cubeengine.war.storage.AreaModel;
 
 /**
  *
@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.war.groups.Group;
 public class Area
 {
     AreaModel model;
-    
+
     public Area(AreaModel model)
     {
         this.model = model;

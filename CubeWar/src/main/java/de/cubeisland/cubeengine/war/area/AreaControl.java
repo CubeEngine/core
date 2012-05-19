@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.war.area;
 
-import de.cubeisland.cubeengine.war.storage.AreaModel;
-import de.cubeisland.cubeengine.war.storage.AreaStorage;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
+import de.cubeisland.cubeengine.war.storage.AreaModel;
+import de.cubeisland.cubeengine.war.storage.AreaStorage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,11 +17,10 @@ import org.bukkit.Location;
  */
 public class AreaControl
 {
-
     private AreaStorage areaDB;
     private HashMap<Chunk, Area> areas = new HashMap<Chunk, Area>();
     private static AreaControl instance = null;
-    
+
     public AreaControl()
     {
         areaDB = AreaStorage.get();
@@ -35,7 +34,7 @@ public class AreaControl
         }
         return instance;
     }
-    
+
     public void loadDataBase()
     {
         Collection<AreaModel> models = areaDB.getAll();
@@ -44,7 +43,12 @@ public class AreaControl
             areas.put(model.getChunk(), new Area(model));
         }
     }
-    
+
+    public Group giveChunk(Location loc, Group group)
+    {
+        return this.giveChunk(loc.getChunk(), group);
+    }
+
     public Group giveChunk(Chunk chunk, Group group)
     {
         if (!(group.equals(areas.get(chunk).getGroup())))
@@ -52,7 +56,7 @@ public class AreaControl
             if (areas.get(chunk) == null)
             {
                 group.addInfluence_used();
-                
+
                 AreaModel model = new AreaModel(chunk, group);
                 areaDB.store(model); //TODO ID zuweisen ; selbes Problem bei Group
                 return GroupControl.get().getWildLand();
@@ -61,7 +65,7 @@ public class AreaControl
             {
                 group.addInfluence_used();
                 areas.get(chunk).getGroup().remInfluence_used();
-                
+
                 AreaModel model = areas.get(chunk).model;
                 model.setGroup(group);
                 areaDB.update(model);
@@ -85,7 +89,7 @@ public class AreaControl
         }
         return areas.get(chunk).getGroup();
     }
-    
+
     public Group remChunk(Location loc)
     {
         return remChunk(loc.getChunk());
@@ -102,7 +106,7 @@ public class AreaControl
         }
         return group;
     }
-    
+
     public void remAll(Group group)
     {
         List<Chunk> remlist = new ArrayList<Chunk>();
@@ -126,6 +130,4 @@ public class AreaControl
         areas.clear();
         areaDB.clear();
     }
-    
-    
 }

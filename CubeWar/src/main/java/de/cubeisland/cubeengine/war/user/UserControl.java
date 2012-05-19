@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.war.user;
 
 import de.cubeisland.cubeengine.war.CubeWar;
+import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.storage.UserModel;
 import de.cubeisland.cubeengine.war.storage.UserStorage;
-import static de.cubeisland.cubeengine.war.CubeWar.t;
-import de.cubeisland.cubeengine.war.user.PlayerMode;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
