@@ -1,14 +1,9 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
-import de.cubeisland.libMinecraft.translation.Translation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.bukkit.command.CommandExecutor;
@@ -25,7 +20,7 @@ import org.bukkit.plugin.PluginManager;
  */
 public class BaseCommand implements CommandExecutor
 {
-    private final TranslatablePlugin plugin;
+    private final Plugin plugin;
     private final PluginManager pm;
     private final Map<Object, Set<String>> objectCommandMap;
     private final Map<String, SubCommand> commands;
@@ -35,12 +30,12 @@ public class BaseCommand implements CommandExecutor
     private final Permission parentPermission;
     private final String permissionBase;
 
-    public BaseCommand(TranslatablePlugin plugin, String permissionBase)
+    public BaseCommand(Plugin plugin, String permissionBase)
     {
         this(plugin, permissionBase, PermissionDefault.OP);
     }
 
-    public BaseCommand(TranslatablePlugin plugin, String permissionBase, PermissionDefault parentDefault)
+    public BaseCommand(Plugin plugin, String permissionBase, PermissionDefault parentDefault)
     {
         if (plugin == null)
         {
@@ -70,60 +65,6 @@ public class BaseCommand implements CommandExecutor
 
     }
 
-    private String _(String key, Object... params)
-    {
-        return this.plugin.getTranslation().translate(key, params);
-    }
-
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args)
-    {
-        SubCommand subCommand;
-        if (args.length > 0)
-        {
-            subCommand = this.getCommand(args[0]);
-        }
-        else
-        {
-            subCommand = this.getCommandByName(this.defaultCommand);
-            args = new String[] {subCommand.getName()};
-        }
-
-        if (subCommand != null)
-        {
-            Permission permission = subCommand.getPermission();
-            if (permission != null && !sender.hasPermission(permission))
-            {
-                sender.sendMessage(_("command_permdenied"));
-            }
-            else
-            {
-                try
-                {
-                    CommandArgs commandArgs = new CommandArgs(this, label, subCommand, args);
-                    if (!subCommand.execute(sender, commandArgs))
-                    {
-                        sender.sendMessage("/" + label + " " + commandArgs.getLabel() + " " + subCommand.getUsage());
-                    }
-                    return true;
-                }
-                catch (CommandException e)
-                {
-                    sender.sendMessage(e.getLocalizedMessage());
-                }
-                catch (Throwable t)
-                {
-                    sender.sendMessage(_("command_internalerror"));
-                    t.printStackTrace(System.err);
-                }
-            }
-        }
-        else
-        {
-            sender.sendMessage(_("command_notfound"));
-        }
-
-        return true;
-    }
 
     public BaseCommand setDefaultCommand(String name)
     {
@@ -316,85 +257,7 @@ public class BaseCommand implements CommandExecutor
         }
     }
 
-    @Command(name = "help")
-    public void helpCommand(CommandSender sender, CommandArgs args)
-    {
-        if (args.size() > 0)
-        {
-            String commandName = args.getString(0);
-            SubCommand command = getCommand(commandName);
-            if (command != null)
-            {
-                sender.sendMessage("/" + args.getBaseLabel() + " " + args.getString(0) + " " + command.getUsage());
-                sender.sendMessage("    " + _(command.getName() + "_description"));
-            }
-            else
-            {
-                sender.sendMessage(_("help_cmdnotfound", args.getString(0)));
-            }
-        }
-        else
-        {
-            sender.sendMessage(_("help_listofcommands"));
-            sender.sendMessage(" ");
-
-            List<SubCommand> subCommands = new ArrayList<SubCommand>(args.getBaseCommand().getAllSubCommands());
-            Collections.sort(subCommands, SubCommand.COMPARATOR);
-
-            for (SubCommand command : subCommands)
-            {
-                if (command.getPermission() != null && !sender.hasPermission(command.getPermission()))
-                {
-                    continue;
-                }
-                sender.sendMessage("/" + args.getBaseLabel() + " " + command.getName() + " " + command.getUsage());
-                sender.sendMessage("    " + _(command.getName() + "_description"));
-                sender.sendMessage(" ");
-            }
-        }
-    }
-
-    @Command(name = "version")
-    private void versionCommand(CommandSender sender, CommandArgs args)
-    {
-        sender.sendMessage(_("version_pluginversion", this.plugin.getDescription().getVersion()));
-        sender.sendMessage(" ");
-    }
-
-    @Command(name = "reload")
-    @RequiresPermission
-    private void reloadCommand(CommandSender sender, CommandArgs args)
-    {
-        this.pm.disablePlugin(this.plugin);
-        this.pm.enablePlugin(this.plugin);
-        sender.sendMessage(_("reload_completed"));
-    }
-
-    @Command(name = "language", usage = "[language]")
-    @RequiresPermission
-    private void languageCommand(CommandSender sender, CommandArgs args)
-    {
-        if (args.size() > 0)
-        {
-            String language = args.getString(0);
-            Translation tranlation = Translation.get(this.plugin.getClass(), language);
-            if (tranlation != null)
-            {
-                plugin.setTranslation(tranlation);
-                plugin.getConfig().set("language", language);
-                plugin.saveConfig();
-                sender.sendMessage(_("language_changed", _("language_" + tranlation.getLanguage())));
-            }
-            else
-            {
-                sender.sendMessage(_("language_failed", language));
-            }
-        }
-        else
-        {
-            sender.sendMessage(_("language_current", _("language_" + this.plugin.getTranslation().getLanguage())));
-        }
-    }
+   
 
     //@Command
     @RequiresPermission("libminecraft.test")
@@ -413,5 +276,10 @@ public class BaseCommand implements CommandExecutor
         {
             sender.sendMessage(" - '" + flag + "'");
         }
+    }
+
+    public boolean onCommand(CommandSender cs, org.bukkit.command.Command cmnd, String string, String[] strings)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
