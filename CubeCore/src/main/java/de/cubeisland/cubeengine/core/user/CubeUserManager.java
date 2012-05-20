@@ -56,6 +56,11 @@ public class CubeUserManager
     {
         return this.getUser(sender.getName());
     }
+    
+    public CubeUser getUser(int id)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     public void clean()
     {

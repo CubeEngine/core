@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.war.user;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
@@ -33,7 +34,7 @@ public class User
 
     public User(OfflinePlayer player)
     {
-        this(CubeUserManager.getInstance().getCubeUser(player));
+        this(CubeCore.getInstance().getUserManager().getUser(player));
     }
 
     public User(CubeUser cubeUser)

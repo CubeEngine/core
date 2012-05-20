@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.war.user;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
@@ -23,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 public class PvP
 {
 
-    private CubeUserManager cuManager = CubeUserManager.getInstance();
+    private CubeUserManager cuManager = CubeCore.getInstance().getUserManager();
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     private GroupControl groups = GroupControl.get();
     private UserControl users = UserControl.get();
@@ -190,7 +191,7 @@ public class PvP
         player.setFlying(false);
         if (config.fly_block > 0)
         {
-            cuManager.getCubeUser((OfflinePlayer) player).setFlag(CubeUser.BLOCK_FLY);
+            cuManager.getUser((OfflinePlayer) player).setFlag(CubeUser.BLOCK_FLY);
             CubeWar plugin = CubeWar.getInstance();
             plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
                     new Runnable()
@@ -198,7 +199,7 @@ public class PvP
 
                         public void run()
                         {
-                            cuManager.getCubeUser((OfflinePlayer) player).unsetFlag(CubeUser.BLOCK_FLY);
+                            cuManager.getUser((OfflinePlayer) player).unsetFlag(CubeUser.BLOCK_FLY);
                         }
                     }, config.fly_block * 20);
         }

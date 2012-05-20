@@ -25,6 +25,7 @@ public class CubeFly extends CubeModuleBase implements TranslatablePlugin
 
     public CubeFly()
     {
+        super("fly");
     }
 
     public void onEnable()

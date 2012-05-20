@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.auctions.database.AuctionStorage;
 import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.cubeengine.auctions.database.PriceStorage;
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
@@ -51,6 +52,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
 
     public CubeAuctions()
     {
+        super("auctions");
         instance = this;
     }
 
@@ -62,11 +64,6 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     public static CubeAuctionsConfiguration getConfiguration()
     {
         return config;
-    }
-
-    public static CubeUserManager getCUManager()
-    {
-        return cuManager;
     }
 
     public static Database getDB()
@@ -98,12 +95,14 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
         {
             translation = Translation.get(this.getClass(), "en");
         }
-
+/*
         database = new Database(config.auction_database_host,
                                 config.auction_database_port,
                                 config.auction_database_user,
                                 config.auction_database_pass,
                                 config.auction_database_name);
+                                * 
+                                */
 
         this.pm.registerEvents(new CubeAuctionsListener(this), this);
 
@@ -124,7 +123,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
 
         AuctionTimer.getInstance().firstschedule();
 
-        cuManager = CubeUserManager.getInstance();
+        cuManager = CubeCore.getInstance().getUserManager();
 
         this.loadDataBase();
         Bidder.getInstance(1);

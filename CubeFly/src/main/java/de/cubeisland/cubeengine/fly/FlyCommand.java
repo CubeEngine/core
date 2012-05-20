@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.CubeUser;
 import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import static de.cubeisland.cubeengine.fly.CubeFly.t;
@@ -15,7 +16,7 @@ import org.bukkit.entity.Player;
  */
 public class FlyCommand {
     
-    CubeUserManager cuManager = CubeUserManager.getInstance();
+    CubeUserManager cuManager = CubeCore.getInstance().getUserManager();
     
     public FlyCommand() {}
     
@@ -24,7 +25,7 @@ public class FlyCommand {
     public void fly(CommandSender sender, CommandArgs args)
     {
         //TODO Permission abfragen bei CubeFly
-        CubeUser user = cuManager.getCubeUser(sender);
+        CubeUser user = cuManager.getUser(sender);
         if (user.hasFlag(CubeUser.BLOCK_FLY))
         {
             sender.sendMessage(t("fly_block"));

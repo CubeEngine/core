@@ -74,7 +74,7 @@ public class CubeCore extends JavaPlugin
         this.configManager.clean();
         this.configManager = null;
 
-        this.userManager.clean();
+        this.getUserManager().clean();
         this.userManager = null;
 
         this.permissionRegistration = null;
@@ -88,5 +88,13 @@ public class CubeCore extends JavaPlugin
     public String locateAddress(InetAddress address)
     {
         return this.lookupService.getCountry(address).getCode();
+    }
+
+    /**
+     * @return the userManager
+     */
+    public CubeUserManager getUserManager()
+    {
+        return userManager;
     }
 }

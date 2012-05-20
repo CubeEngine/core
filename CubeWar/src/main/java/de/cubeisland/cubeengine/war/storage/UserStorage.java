@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.war.storage;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
@@ -86,7 +87,7 @@ public class UserStorage implements Storage<UserModel>
             while (result.next())
             {
                 int cubeuserid = result.getInt("cubeuserid");
-                CubeUser cubeUser = CubeUserManager.getInstance().getCubeUser(cubeuserid);
+                CubeUser cubeUser = CubeCore.getInstance().getUserManager().getUser(cubeuserid);
                 int death = result.getInt("death");
                 int kills = result.getInt("kills");
                 int killpoints = result.getInt("kp");

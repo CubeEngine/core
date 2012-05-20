@@ -56,6 +56,7 @@ public class CubeWar extends CubeModuleBase implements TranslatablePlugin
 
     public CubeWar()
     {
+        super("war");
         instance = this;
     }
 
