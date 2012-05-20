@@ -44,7 +44,7 @@ public class UserManager
     
     public User getUser(String name)
     {
-        return this.getUser(name);
+        return this.users.get(name);
     }
     
     public User getUser(OfflinePlayer player)
