@@ -3,7 +3,8 @@ package de.cubeisland.cubeengine.core.modules;
 import org.bukkit.plugin.Plugin;
 
 /**
- *
+ * module for CubeEngine
+ * 
  * @author Phillip Schichtel
  */
 public interface CubeModule extends Plugin

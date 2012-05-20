@@ -39,9 +39,9 @@ public class ShortBitMask
     }
 
     /**
-     * Sets the specified Bit
+     * Sets the specified Bits
      * 
-     * @param bits The bit to set
+     * @param bits The bits to set
      * @return the new value of this BitMask
      */
     public short set(short bits)
@@ -71,9 +71,9 @@ public class ShortBitMask
     }
 
     /**
-     * Unsets the specified Bit
+     * Unsets the specified Bits
      * 
-     * @param bits The bit to unset
+     * @param bits The bits to unset
      * @return the new value of this BitMask
      */
     public short unset(short bits)
@@ -82,9 +82,9 @@ public class ShortBitMask
     }
 
     /**
-     * Toggles the specified Bit
+     * Toggles the specified Bits
      * 
-     * @param bits The bit to toggle
+     * @param bits The bits to toggle
      * @return the new value of this BitMask
      */
     public short toggle(short bits)
@@ -93,10 +93,10 @@ public class ShortBitMask
     }
 
     /**
-     * Checks whether the specified Bit is set.
+     * Checks whether the specified Bits are set.
      * 
-     * @param bits The bit to check.
-     * @return whether the specified Bit is set or not
+     * @param bits The bits to check.
+     * @return whether the specified Bits are set or not
      */
     public boolean isset(short bits)
     {

@@ -9,7 +9,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
- * 
+ * Configuration for a CubeEngine module
  *
  * @author Phillip Schichtel
  */

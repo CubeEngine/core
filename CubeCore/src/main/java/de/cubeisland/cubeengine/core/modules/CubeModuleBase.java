@@ -3,7 +3,8 @@ package de.cubeisland.cubeengine.core.modules;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- *
+ * Represents a Module of CubeEngine
+ * 
  * @author Phillip Schichtel
  */
 public abstract class CubeModuleBase extends JavaPlugin implements CubeModule

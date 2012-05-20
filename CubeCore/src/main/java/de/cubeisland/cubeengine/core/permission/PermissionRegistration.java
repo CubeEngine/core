@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.permission;
 import org.bukkit.plugin.PluginManager;
 
 /**
+ * Registrates Permissions
  *
  * @author CodeInfection
  */
