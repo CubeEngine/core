@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.util.bitmask.LongBitMask;
@@ -15,12 +15,12 @@ import org.bukkit.Server;
  *
  * @author CodeInfection
  */
-public class CubeUserStorage implements Storage<CubeUser>
+public class UserStorage implements Storage<User>
 {
     private final Database database;
     private final Server server;
 
-    public CubeUserStorage(Database database, Server server)
+    public UserStorage(Database database, Server server)
     {
         this.database = database;
         this.server = server;
@@ -59,13 +59,13 @@ public class CubeUserStorage implements Storage<CubeUser>
         }
     }
 
-    public Collection<CubeUser> getAll()
+    public Collection<User> getAll()
     {
         try
         {
             ResultSet result = this.database.preparedQuery("user_getall");
 
-            Collection<CubeUser> users = new ArrayList<CubeUser>();
+            Collection<User> users = new ArrayList<User>();
             int id;
             OfflinePlayer player;
             LongBitMask bitmask;
@@ -75,7 +75,7 @@ public class CubeUserStorage implements Storage<CubeUser>
                 player = this.server.getOfflinePlayer(result.getString("name"));
                 bitmask = new LongBitMask(result.getLong("flags"));
                 
-                users.add(new CubeUser(id, player, bitmask));
+                users.add(new User(id, player, bitmask));
             }
 
             return users;
@@ -86,7 +86,7 @@ public class CubeUserStorage implements Storage<CubeUser>
         }
     }
 
-    public CubeUser get(int key)
+    public User get(int key)
     {
         try
         {
@@ -100,7 +100,7 @@ public class CubeUserStorage implements Storage<CubeUser>
             int id = result.getInt("id");
             OfflinePlayer player = this.server.getOfflinePlayer(result.getString("name"));
             LongBitMask bitmask = new LongBitMask(result.getLong("flags"));
-            return new CubeUser(id, player, bitmask);
+            return new User(id, player, bitmask);
 
         }
         catch (SQLException e)
@@ -129,7 +129,7 @@ public class CubeUserStorage implements Storage<CubeUser>
         }
     }
 
-    public void store(CubeUser model)
+    public void store(User model)
     {
         try
         {
@@ -144,7 +144,7 @@ public class CubeUserStorage implements Storage<CubeUser>
         }
     }
 
-    public boolean delete(CubeUser object)
+    public boolean delete(User object)
     {
         return delete(object.getId());
     }
@@ -161,7 +161,7 @@ public class CubeUserStorage implements Storage<CubeUser>
         }
     }
 
-    public void update(CubeUser object)
+    public void update(User object)
     {
         try
         {
@@ -173,7 +173,7 @@ public class CubeUserStorage implements Storage<CubeUser>
         }
     }
 
-    public void merge(CubeUser object)
+    public void merge(User object)
     {
         try
         {

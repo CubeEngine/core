@@ -50,16 +50,16 @@ import org.bukkit.util.Vector;
  *
  * @author Faithcaio
  */
-public class CubeUserBase implements Player
+public class UserBase implements Player
 {
     protected OfflinePlayer offlinePlayer;
     
-    public CubeUserBase(OfflinePlayer offlinePlayer)
+    public UserBase(OfflinePlayer offlinePlayer)
     {
         this.offlinePlayer = offlinePlayer;
     }
     
-    public CubeUserBase(Player player)
+    public UserBase(Player player)
     {
         this.offlinePlayer = player;
     }
