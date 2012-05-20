@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.user.CubeUserManager;
 import static de.cubeisland.cubeengine.fly.CubeFly.t;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
-import de.cubeisland.libMinecraft.command.RequiresPermission;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,30 +13,41 @@ import org.bukkit.entity.Player;
  *
  * @author Faithcaio
  */
-public class FlyCommand {
-    
+public class FlyCommand
+{
     CubeUserManager cuManager = CubeCore.getInstance().getUserManager();
-    
-    public FlyCommand() {}
-    
+
     @Command
     public void fly(CommandSender sender, CommandArgs args)
     {
-        //TODO Permission abfragen bei CubeFly
-        CubeUser user = cuManager.getUser(sender);
-        if (user.hasFlag(CubeUser.BLOCK_FLY))
+        //PermissionCheck
+        if (Perm.COMMAND_FLY_BYPASS.isAuthorized(sender));
         {
-            sender.sendMessage(t("fly_block"));
-            return;
+            if (!Perm.COMMAND_FLY.isAuthorized(sender))
+            {
+                //TODO You dont have permission to use this Command
+                return;
+            }
+            CubeUser user = cuManager.getUser(sender);
+            if (user.hasFlag(CubeUser.BLOCK_FLY))
+            {
+                sender.sendMessage(t("fly_block"));
+                return;
+            }
         }
+        //I Believe I Can Fly ...     
         if (sender instanceof Player)
         {
-            Player player = (Player)sender;
+            Player player = (Player) sender;
             player.setAllowFlight(!player.getAllowFlight());
             if (player.getAllowFlight())
+            {
                 sender.sendMessage(t("fly_on"));
+            }
             else
+            {
                 sender.sendMessage(t("fly_off"));
+            }
             return;
         }
         sender.sendMessage(t("fly_server"));

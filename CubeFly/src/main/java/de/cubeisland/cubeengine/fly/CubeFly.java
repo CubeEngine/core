@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
@@ -51,6 +52,8 @@ public class CubeFly extends CubeModuleBase implements TranslatablePlugin
                         .setDefaultCommand("fly")
                         .unregisterCommand("reload");
         this.getCommand("fly").setExecutor(baseCommand);
+        
+        CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }

@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.fly;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 
 /**
@@ -21,10 +22,9 @@ public enum Perm implements Permission
     {
         this.permission = BASE + permission;
         this.permissionDefault = permissionDefault;
-        CubeCore.getInstance().getPermissionRegistration().registerPermission(this);
     }
 
-    public boolean isAuthorized(Player player)
+    public boolean isAuthorized(Permissible player)
     {
         return player.hasPermission(permission);
     }

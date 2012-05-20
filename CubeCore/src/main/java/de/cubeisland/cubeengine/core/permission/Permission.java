@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.permission;
 
-import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 
 /**
@@ -10,7 +10,7 @@ import org.bukkit.permissions.PermissionDefault;
  */
 public interface Permission
 {
-    public boolean isAuthorized(Player player);
+    public boolean isAuthorized(Permissible player);
     public String getPermission();
     public PermissionDefault getPermissionDefault();
 }
