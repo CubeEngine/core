@@ -22,7 +22,7 @@ The IRC module synchronizes the ingame chat and an IRC server
 
 ==== CubeConomy ====
 
-The CubeConomy module provide an API for all economy-based module and some basic commands
+The (e)conomy module provides an API for all economy-based modules and some basic commands
 
 ==== CubeFun ====
 
@@ -60,6 +60,9 @@ Description
 
 The vanish module allows players to hide themselfes
 
+==== CubeGreylist
+
+The greylist module provides greylisting ala AntiGuest
 
 ==== Folder structure ====
 
