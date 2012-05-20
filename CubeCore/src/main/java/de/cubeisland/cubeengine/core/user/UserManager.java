@@ -9,24 +9,24 @@ import org.bukkit.command.CommandSender;
  *
  * @author Faithcaio
  */
-public class CubeUserManager
+public class UserManager
 {
-    private final THashMap<String, CubeUser> users;
-    private CubeUserStorage storage;
+    private final THashMap<String, User> users;
+    private UserStorage storage;
         
-    public CubeUserManager(CubeCore core)
+    public UserManager(CubeCore core)
     {
-        this.storage = new CubeUserStorage(core.getDB(), core.getServer());
+        this.storage = new UserStorage(core.getDB(), core.getServer());
         this.storage.initialize();
 
-        this.users = new THashMap<String, CubeUser>();
-        for (CubeUser user : storage.getAll())
+        this.users = new THashMap<String, User>();
+        for (User user : storage.getAll())
         {
             this.users.put(user.getName(), user);
         }
     }
     
-    public CubeUserManager addUser(CubeUser user)
+    public UserManager addUser(User user)
     {
         this.storage.store(user);
         this.users.put(user.getName(), user);
@@ -34,7 +34,7 @@ public class CubeUserManager
         return this;
     }
     
-    public CubeUserManager removeUser(CubeUser user)
+    public UserManager removeUser(User user)
     {
         this.storage.delete(user);
         this.users.remove(user.getName());
@@ -42,22 +42,22 @@ public class CubeUserManager
         return this;
     }
     
-    public CubeUser getUser(String name)
+    public User getUser(String name)
     {
         return this.getUser(name);
     }
     
-    public CubeUser getUser(OfflinePlayer player)
+    public User getUser(OfflinePlayer player)
     {
         return this.getUser(player.getName());
     }
     
-    public CubeUser getUser(CommandSender sender)
+    public User getUser(CommandSender sender)
     {
         return this.getUser(sender.getName());
     }
     
-    public CubeUser getUser(int id)
+    public User getUser(int id)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

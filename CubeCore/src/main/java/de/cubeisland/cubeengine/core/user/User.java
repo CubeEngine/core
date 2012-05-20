@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
  *
  * @author Phillip Schichtel
  */
-public class CubeUser extends CubeUserBase implements Model 
+public class User extends UserBase implements Model
 {
     private final OfflinePlayer player;
     private final LongBitMask flags;
@@ -18,7 +18,7 @@ public class CubeUser extends CubeUserBase implements Model
     public static final int BLOCK_FLY = 1;
     
     
-    public CubeUser(int id, OfflinePlayer player, LongBitMask flags)
+    public User(int id, OfflinePlayer player, LongBitMask flags)
     {
         super(player);
         this.id = id;
@@ -26,7 +26,7 @@ public class CubeUser extends CubeUserBase implements Model
         this.flags = flags;
     }
     
-    public CubeUser(OfflinePlayer player)
+    public User(OfflinePlayer player)
     {
         this(-1, player, new LongBitMask());
     }

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.configuration;
+package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.modules.CubeModule;
@@ -17,7 +17,7 @@ import org.bukkit.configuration.MemoryConfiguration;
  *
  * @author Phillip Schichtel
  */
-public class ConfigurationManager
+public class FileManager
 {
     private CubeCore core;
     private Map<CubeModule, CubeConfiguration> configs;
@@ -28,7 +28,7 @@ public class ConfigurationManager
     private CubeConfiguration databaseConfig;
     private CubeConfiguration coreConfig;
 
-    public ConfigurationManager(CubeCore core)
+    public FileManager(CubeCore core)
     {
         this.core = core;
         this.configs = new THashMap<CubeModule, CubeConfiguration>();

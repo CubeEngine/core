@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.configuration;
+package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import de.cubeisland.cubeengine.core.modules.CubeModule;
 import java.io.File;

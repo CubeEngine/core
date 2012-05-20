@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.core;
 
 import com.maxmind.geoip.LookupService;
-import de.cubeisland.cubeengine.core.configuration.ConfigurationManager;
-import de.cubeisland.cubeengine.core.configuration.CubeConfiguration;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
-import de.cubeisland.cubeengine.core.persistence.Database;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.filesystem.CubeConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,10 +17,9 @@ public class CubeCore extends JavaPlugin
 
     private LookupService lookupService;
     private Database database;
-    private CubeUserManager cuManager;
     private PermissionRegistration permissionRegistration;
-    private CubeUserManager userManager;
-    private ConfigurationManager configManager;
+    private UserManager userManager;
+    private FileManager fileManager;
 
     public CubeCore()
     {
@@ -39,16 +39,16 @@ public class CubeCore extends JavaPlugin
     @Override
     public void onEnable()
     {
-        this.configManager = new ConfigurationManager(this);
-        final CubeConfiguration coreConfig = this.configManager.getCoreConfig();
+        this.fileManager = new FileManager(this);
+        final CubeConfiguration coreConfig = this.fileManager.getCoreConfig();
         coreConfig.safeSave();
 
-        final CubeConfiguration databaseConfig = this.configManager.getDatabaseConfig();
+        final CubeConfiguration databaseConfig = this.fileManager.getDatabaseConfig();
         databaseConfig.safeSave();
 
         try
         {
-            this.lookupService = new LookupService(this.configManager.getGeoipFile());
+            this.lookupService = new LookupService(this.fileManager.getGeoipFile());
         }
         catch (IOException e)
         {
@@ -64,15 +64,19 @@ public class CubeCore extends JavaPlugin
             databaseConfig.getString("mysql.tableprefix")
         );
 
-        this.userManager = new CubeUserManager(this);
+        this.userManager = new UserManager(this);
         this.permissionRegistration = new PermissionRegistration(getServer().getPluginManager());
+
+        CubeEngine.initialize(this);
     }
 
     @Override
     public void onDisable()
     {
-        this.configManager.clean();
-        this.configManager = null;
+        CubeEngine.clean();
+        
+        this.fileManager.clean();
+        this.fileManager = null;
 
         this.getUserManager().clean();
         this.userManager = null;
@@ -93,8 +97,13 @@ public class CubeCore extends JavaPlugin
     /**
      * @return the userManager
      */
-    public CubeUserManager getUserManager()
+    public UserManager getUserManager()
     {
         return userManager;
+    }
+
+    public FileManager getFileManager()
+    {
+        return this.fileManager;
     }
 }
