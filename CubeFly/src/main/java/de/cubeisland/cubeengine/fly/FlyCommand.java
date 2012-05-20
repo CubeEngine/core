@@ -21,7 +21,6 @@ public class FlyCommand {
     public FlyCommand() {}
     
     @Command
-    @RequiresPermission
     public void fly(CommandSender sender, CommandArgs args)
     {
         //TODO Permission abfragen bei CubeFly
