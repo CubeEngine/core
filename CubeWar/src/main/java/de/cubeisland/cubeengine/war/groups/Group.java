@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.storage.GroupModel;
 import de.cubeisland.cubeengine.war.storage.GroupStorage;
-import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.WarUser;
 import de.cubeisland.cubeengine.war.user.UserControl;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,9 +74,9 @@ public class Group
         return model.hasBit(GroupModel.AUTO_CLOSE);
     }
 
-    public List<User> getUserList()
+    public List<WarUser> getUserList()
     {
-        List<User> list = new ArrayList<User>();
+        List<WarUser> list = new ArrayList<WarUser>();
         list.addAll(0, model.getAdminlist());
         list.addAll(0, model.getModlist());
         list.addAll(0, model.getUserlist());
@@ -105,7 +105,7 @@ public class Group
         sender.sendMessage(t("g_03", model.getDescription()));
         sender.sendMessage(t("g_04", groups.getRank(this),
                 t("g_05", model.getInfluence_used(), model.getInfluence_max())));
-        User user = users.getUser(sender);
+        WarUser user = users.getUser(sender);
         Group team = user.getTeam();
         if (team != null && ((team.equals(this)) || (team.isAlly(this) && this.isAlly(team))))
         {
@@ -160,11 +160,11 @@ public class Group
         {
             sender.sendMessage(t("g_11", econ.bankBalance("#" + this.getTag())));
         }
-        List<User> list = this.getUserList();
+        List<WarUser> list = this.getUserList();
         sender.sendMessage(t("g_15", list.size(), this.getKPSum()));
         String onplayer = "";
-        List<User> onlist = new ArrayList<User>();
-        for (User player : list)
+        List<WarUser> onlist = new ArrayList<WarUser>();
+        for (WarUser player : list)
         {
             if (player.getPlayer() != null)
             {
@@ -178,7 +178,7 @@ public class Group
         }
         list.removeAll(onlist);
         String offplayer = "";
-        for (User player : list)
+        for (WarUser player : list)
         {
             if (player.getPlayer() != null)
             {
@@ -223,14 +223,14 @@ public class Group
     public int getKPSum()
     {
         int kp = 0;
-        for (User tmp : this.getUserList())
+        for (WarUser tmp : this.getUserList())
         {
             kp += tmp.getKillpoints();
         }
         return kp;
     }
 
-    public boolean isBalanced(User user)
+    public boolean isBalanced(WarUser user)
     {
         if (this.model.getInvited().contains(user.getName()))
         {
@@ -244,7 +244,7 @@ public class Group
         return model.hasBit(GroupModel.IS_CLOSED);
     }
 
-    public void addAdmin(User user)
+    public void addAdmin(WarUser user)
     {
         if (user == null)
         {
@@ -256,18 +256,18 @@ public class Group
         user.setTeam(this);
     }
 
-    public void delAdmin(User user)
+    public void delAdmin(WarUser user)
     {
         this.model.getAdminlist().remove(user);
         user.setTeam(groups.getWildLand());
     }
 
-    public boolean isAdmin(User user)
+    public boolean isAdmin(WarUser user)
     {
         return this.model.getAdminlist().contains(user);
     }
 
-    public void addMod(User user)
+    public void addMod(WarUser user)
     {
         if (user == null)
         {
@@ -279,14 +279,14 @@ public class Group
         user.setTeam(this);
     }
 
-    public void delMod(User user)
+    public void delMod(WarUser user)
     {
         this.model.getModlist().remove(user);
         this.model.getAdminlist().remove(user);
         user.setTeam(groups.getWildLand());
     }
 
-    public boolean isMod(User user)
+    public boolean isMod(WarUser user)
     {
         if (this.model.getAdminlist().contains(user))
         {
@@ -295,7 +295,7 @@ public class Group
         return this.model.getModlist().contains(user);
     }
 
-    public void addUser(User user)
+    public void addUser(WarUser user)
     {
         if (user == null)
         {
@@ -307,7 +307,7 @@ public class Group
         user.setTeam(this);
     }
 
-    public void delUser(User user)
+    public void delUser(WarUser user)
     {
         this.model.getUserlist().remove(user);
         this.model.getModlist().remove(user);
@@ -315,7 +315,7 @@ public class Group
         user.setTeam(groups.getWildLand());
     }
 
-    public boolean isUser(User user)
+    public boolean isUser(WarUser user)
     {
         if (this.model.getAdminlist().contains(user))
         {
@@ -328,7 +328,7 @@ public class Group
         return this.model.getUserlist().contains(user);
     }
 
-    public boolean invite(User user)
+    public boolean invite(WarUser user)
     {
         if (this.model.getInvited().contains(user.getName()))
         {
@@ -338,7 +338,7 @@ public class Group
         return true;
     }
 
-    public boolean uninvite(User user)
+    public boolean uninvite(WarUser user)
     {
         if (this.model.getInvited().contains(user.getName()))
         {
@@ -348,7 +348,7 @@ public class Group
         return true;
     }
 
-    public boolean isInvited(User user)
+    public boolean isInvited(WarUser user)
     {
         if (this.model.hasBit(GroupModel.IS_CLOSED))
         {
@@ -367,7 +367,7 @@ public class Group
     public void adjustMaxInfluence()
     {
         int influence = 0;
-        for (User user : this.getUserList())
+        for (WarUser user : this.getUserList())
         {
             influence += user.getTotalInfluence();
         }

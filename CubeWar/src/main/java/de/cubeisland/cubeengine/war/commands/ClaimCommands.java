@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
-import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.WarUser;
 import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
@@ -44,7 +44,7 @@ public class ClaimCommands
         if (sender instanceof Player)
         {
             Player player = (Player) sender;
-            User user = users.getUser(player);
+            WarUser user = users.getUser(player);
             if (args.isEmpty())
             {
                 if ((Perm.command_claim_BP.hasPerm(sender))
@@ -137,7 +137,7 @@ public class ClaimCommands
         return false;
     }
 
-    private void claim(Location loc, int rad, Group team, Player player, User user)
+    private void claim(Location loc, int rad, Group team, Player player, WarUser user)
     {
 
         if (team.getId() == 0)
@@ -264,7 +264,7 @@ public class ClaimCommands
         }
         Player player;
         Location loc;
-        User user;
+        WarUser user;
         if (sender instanceof Player)
         {
             player = (Player) sender;

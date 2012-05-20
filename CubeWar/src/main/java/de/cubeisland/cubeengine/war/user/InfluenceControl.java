@@ -27,10 +27,10 @@ public class InfluenceControl
             public void run()
             {
                 CubeWar.debug("Influence-Control");
-                Collection<User> users = UserControl.get().getUsers();
+                Collection<WarUser> users = UserControl.get().getUsers();
                 Collection<Group> groups = GroupControl.get().getGroups();
                 //ADD / REM Influence
-                for (User user : users)
+                for (WarUser user : users)
                 {
                     if (user.getMode().equals(PlayerMode.PEACE))
                     {

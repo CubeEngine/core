@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.storage.GroupModel;
 import de.cubeisland.cubeengine.war.storage.GroupStorage;
-import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.WarUser;
 import de.cubeisland.cubeengine.war.user.UserControl;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
@@ -69,7 +69,7 @@ public class GroupCommands {
                         name += " "+args.getString(i); 
                     }
                     Group team = groups.newTeam(tag, name);
-                    User user = users.getUser(sender);
+                    WarUser user = users.getUser(sender);
                     if (user.getTeam().getType().equals(AreaType.WILDLAND))
                     {
                         team.addAdmin(user);
@@ -164,7 +164,7 @@ public class GroupCommands {
         if (args.size() > 1)    
         {
             String t = args.getString(0);
-            User user = users.getUser(args.getString(1));
+            WarUser user = users.getUser(args.getString(1));
             Group area = user.getTeam();
             if (t.equalsIgnoreCase("admin")||t.equalsIgnoreCase("a"))
             {
@@ -195,7 +195,7 @@ public class GroupCommands {
                 sender.sendMessage(t("e")+t("team_noTag",args.getString(0)));
                 return true;
             }
-            User user = users.getUser(sender);
+            WarUser user = users.getUser(sender);
             return this.toggleTeamPos(sender, user, group, "userjoin");
         }
         return false;
@@ -208,7 +208,7 @@ public class GroupCommands {
             if (Perm.command_leave.hasNotPerm(sender)) return true;
         if (args.isEmpty())
         {
-            User user = users.getUser(sender);
+            WarUser user = users.getUser(sender);
             return this.toggleTeamPos(sender, user, user.getTeam(), "userleave");
         }
         return false;
@@ -295,7 +295,7 @@ public class GroupCommands {
             if (Perm.command_kick.hasNotPerm(sender)) return true;
         if (args.size() > 0)
         {
-            User user = users.getUser(args.getString(0));
+            WarUser user = users.getUser(args.getString(0));
             if (user != null )
             {
                 if (user.getTeam().getType().equals(AreaType.WILDLAND))
@@ -314,7 +314,7 @@ public class GroupCommands {
         return false;
     }
     
-    private boolean toggleTeamPos(CommandSender sender, User user, Group area, String position)
+    private boolean toggleTeamPos(CommandSender sender, WarUser user, Group area, String position)
     {
         if (user == null)
         {
@@ -646,7 +646,7 @@ public class GroupCommands {
             if (Perm.command_invite.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
-            User user = users.getUser(args.getString(0));
+            WarUser user = users.getUser(args.getString(0));
             if (user == null)
             {
                 sender.sendMessage(t("g_noPlayer"));
@@ -680,7 +680,7 @@ public class GroupCommands {
             if (Perm.command_uninvite.hasNotPerm(sender)) return true;
         if (args.size()>0)
         {
-            User user = users.getUser(args.getString(0));
+            WarUser user = users.getUser(args.getString(0));
             if (user == null)
             {
                 sender.sendMessage(t("g_noPlayer"));

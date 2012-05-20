@@ -1,11 +1,11 @@
 package de.cubeisland.cubeengine.war.storage;
 
-import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.groups.AreaType;
+import de.cubeisland.cubeengine.war.groups.Group;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

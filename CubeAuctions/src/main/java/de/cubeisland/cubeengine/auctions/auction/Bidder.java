@@ -1,15 +1,14 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
 import de.cubeisland.cubeengine.auctions.AuctionBox;
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.cubeengine.auctions.database.SubscriptionStorage;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.Model;
-import de.cubeisland.cubeengine.core.user.CubeUser;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +30,7 @@ public final class Bidder implements Model
     public static final byte NOTIFY_CANCEL = 2;
     public static final byte NOTIFY_WIN = 1;
     
-    private CubeUser cubeUser;
+    private User User;
     
     private final ArrayList<Auction> activeBids = new ArrayList<Auction>();;
     private final ArrayList<Auction> subscriptions = new ArrayList<Auction>();;
@@ -42,7 +41,7 @@ public final class Bidder implements Model
     private static final Map<OfflinePlayer, Bidder> bidderInstances = new HashMap<OfflinePlayer, Bidder>();
     private static Bidder serverBidder;
     
-    private static CubeUserManager cuManager = CubeCore.getInstance().getUserManager();
+    private static UserManager cuManager = CubeCore.getInstance().getUserManager();
     private static BidderStorage bidderDB = new BidderStorage();
     private SubscriptionStorage subDB = new SubscriptionStorage();
     private BidStorage bidDB = new BidStorage();
@@ -51,13 +50,13 @@ public final class Bidder implements Model
  */
     public Bidder(OfflinePlayer player)
     {
-        this.cubeUser = cuManager.getUser(player);
+        this.User = cuManager.getUser(player);
         this.auctionbox = new AuctionBox(this);
     }
 
     public Bidder(int id)
     {
-        this.cubeUser = cuManager.getUser(id);
+        this.User = cuManager.getUser(id);
         this.auctionbox = new AuctionBox(this);
     }
     
@@ -67,13 +66,13 @@ public final class Bidder implements Model
     public Bidder(int id, byte notifyState)
     {
         this.auctionbox = new AuctionBox(this);
-        this.cubeUser = cuManager.getUser(id);
+        this.User = cuManager.getUser(id);
         this.notifyState = notifyState;
         this.addDataBaseSub();
         if (id == 1)
             serverBidder = this;
         else
-            bidderInstances.put(cubeUser.getOfflinePlayer(), this);
+            bidderInstances.put(User.getOfflinePlayer(), this);
     }
 
 /**
@@ -258,7 +257,7 @@ public final class Bidder implements Model
  */ 
     public Player getPlayer()
     {
-        return this.cubeUser.getPlayer();
+        return this.User.getPlayer();
     }
     
 /**
@@ -266,7 +265,7 @@ public final class Bidder implements Model
  */ 
     public int getId()
     {
-        return this.cubeUser.getId();
+        return this.User.getId();
     }
     
 /**
@@ -274,7 +273,7 @@ public final class Bidder implements Model
  */ 
     public OfflinePlayer getOffPlayer()
     {
-        return cubeUser.getOfflinePlayer();
+        return User.getOfflinePlayer();
     }
 
 /**
@@ -282,13 +281,13 @@ public final class Bidder implements Model
  */  
     public String getName()
     {
-        if (cubeUser.getId() == 1)
+        if (User.getId() == 1)
         {
             return "*Server";
         }
         else
         {
-            return cubeUser.getName();
+            return User.getName();
         }
     }
     
@@ -297,11 +296,11 @@ public final class Bidder implements Model
  */  
     public boolean isOnline()
     {
-        if (cubeUser == null)
+        if (User == null)
         {
             return false;
         }
-        return cubeUser.isOnline();
+        return User.isOnline();
     }
     
 /**
@@ -472,7 +471,7 @@ public final class Bidder implements Model
     public boolean addSubscription(Auction auction)
     {
         if (this.subscriptions.contains(auction)) return false;
-        subDB.store(this.cubeUser.getId(), String.valueOf(auction.getId()));
+        subDB.store(this.User.getId(), String.valueOf(auction.getId()));
         this.subscriptions.add(auction);
         return true;
     }
@@ -499,13 +498,13 @@ public final class Bidder implements Model
     public boolean addSubscription(Material item)
     {
         if (this.materialSub.contains(item)) return false;
-        subDB.store(this.cubeUser.getId(), item.toString());
+        subDB.store(this.User.getId(), item.toString());
         this.materialSub.add(item);
         return true;
     }
     
     public boolean isServerBidder()
     {
-        return (cubeUser.getId()==1);
+        return (User.getId()==1);
     }
 }

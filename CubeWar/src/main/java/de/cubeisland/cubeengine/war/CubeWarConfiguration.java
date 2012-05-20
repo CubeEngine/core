@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.war;
 
-import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.user.Rank;
 import gnu.trove.map.hash.TIntObjectHashMap;

@@ -7,8 +7,8 @@ import de.cubeisland.cubeengine.auctions.Manager;
 import de.cubeisland.cubeengine.auctions.Perm;
 import de.cubeisland.cubeengine.auctions.Util;
 import de.cubeisland.cubeengine.auctions.database.BidStorage;
-import de.cubeisland.cubeengine.core.persistence.Database;
 import de.cubeisland.cubeengine.core.persistence.Model;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import java.sql.Timestamp;
 import java.util.Stack;
 import org.bukkit.inventory.ItemStack;
@@ -51,12 +51,12 @@ public class Auction implements Model
 /**
  * Load in auction from DataBase
  */
-    public Auction(int id,ItemStack item, int cubeUserId, long auctionEnd)
+    public Auction(int id,ItemStack item, int UserId, long auctionEnd)
     {
         Manager.getInstance().getFreeIds().removeElement(id);
         this.db = CubeAuctions.getDB();
         this.id = id;
-        this.owner = Bidder.getInstance(cubeUserId);
+        this.owner = Bidder.getInstance(UserId);
         this.item = item;
         this.auctionEnd = auctionEnd;
         this.bids = new Stack<Bid>();

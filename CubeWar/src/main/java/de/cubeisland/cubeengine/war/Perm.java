@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.war;
 
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.WarUser;
 import de.cubeisland.cubeengine.war.user.UserControl;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
@@ -85,7 +85,7 @@ public enum Perm
 
     private boolean checkIGPerm(CommandSender sender)
     {
-        User user = users.getUser(sender);
+        WarUser user = users.getUser(sender);
         Group team = user.getTeam();
         if (team.getId() == 0)
         {

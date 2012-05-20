@@ -22,7 +22,7 @@ public class UserControl
 {
     private CubeWar plugin = CubeWar.getInstance();
     private Server server = plugin.getServer();
-    private Map<OfflinePlayer, User> users;
+    private Map<OfflinePlayer, WarUser> users;
     private static UserControl instance = null;
 
     public static UserControl get()
@@ -36,7 +36,7 @@ public class UserControl
 
     private UserControl()
     {
-        users = new HashMap<OfflinePlayer, User>();
+        users = new HashMap<OfflinePlayer, WarUser>();
     }
 
     public void loadDataBase()
@@ -44,31 +44,31 @@ public class UserControl
         UserStorage userDB = UserStorage.get();
         for (UserModel model : userDB.getAll())
         {
-            this.users.put(model.getCubeUser().getOfflinePlayer(), new User(model));
+            this.users.put(model.getCubeUser().getOfflinePlayer(), new WarUser(model));
         }
     }
 
-    public void updateDataBase(User... userToUpdate)
+    public void updateDataBase(WarUser... userToUpdate)
     {
 
         if (userToUpdate.length == 0)
         {
-            Collection<User> userlist = this.users.values();
-            for (User user : userlist)
+            Collection<WarUser> userlist = this.users.values();
+            for (WarUser user : userlist)
             {
                 user.updateDB();
             }
         }
         else
         {
-            for (User user : userToUpdate)
+            for (WarUser user : userToUpdate)
             {
                 user.updateDB();
             }
         }
     }
 
-    public User getOfflineUser(OfflinePlayer user)
+    public WarUser getOfflineUser(OfflinePlayer user)
     {
         if (users.containsKey(user))
         {
@@ -77,13 +77,13 @@ public class UserControl
         }
         else
         {
-            User newuser = new User(user);
+            WarUser newuser = new WarUser(user);
             users.put(user, newuser);
             return newuser;
         }
     }
 
-    public User getUser(CommandSender sender)
+    public WarUser getUser(CommandSender sender)
     {
         if (sender instanceof Player)
         {
@@ -92,7 +92,7 @@ public class UserControl
         return null;
     }
 
-    public User getUser(String name)
+    public WarUser getUser(String name)
     {
         if (server.getPlayer(name) != null)
         {
@@ -109,15 +109,15 @@ public class UserControl
         return null;
     }
 
-    public Collection<User> getUsers()
+    public Collection<WarUser> getUsers()
     {
         return this.users.values();
     }
 
     public void kill(Player killerPlayer, Player killedPlayer)
     {
-        User killer = getUser(killerPlayer);
-        User killed = getUser(killedPlayer);
+        WarUser killer = getUser(killerPlayer);
+        WarUser killed = getUser(killedPlayer);
         if (killer.equals(killed))
         {
             //Suicide
@@ -144,12 +144,12 @@ public class UserControl
 
     public void kill(Player killerPlayer, Monster monster)
     {
-        User killer = getOfflineUser(killerPlayer);
+        WarUser killer = getOfflineUser(killerPlayer);
         killer.kill(monster);
         this.updateDataBase(killer);
     }
 
-    public String getUserKD(User user, User killed, int kill)
+    public String getUserKD(WarUser user, WarUser killed, int kill)
     {
         String name = user.getName();
         int k = user.getKills();
@@ -199,8 +199,8 @@ public class UserControl
 
     public boolean isAllied(Player player1, Player player2)
     {
-        User user1 = getUser(player1);
-        User user2 = getUser(player2);
+        WarUser user1 = getUser(player1);
+        WarUser user2 = getUser(player2);
         if (player1.equals(player2))
         {
             return true;

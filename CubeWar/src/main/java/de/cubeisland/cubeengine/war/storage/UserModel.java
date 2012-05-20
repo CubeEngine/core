@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.war.storage;
 
 
 import de.cubeisland.cubeengine.core.persistence.Model;
-import de.cubeisland.cubeengine.core.user.CubeUser;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 import de.cubeisland.cubeengine.war.groups.Group;
@@ -19,7 +19,7 @@ public class UserModel implements Model
 {
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     private GroupControl groups = GroupControl.get();
-    private CubeUser cubeUser;
+    private User cubeUser;
     private int death = 0;
     private int kills = 0;
     private int killpoints = 0;
@@ -51,7 +51,7 @@ public class UserModel implements Model
      * @param mode
      * @param team
      */
-    public UserModel(CubeUser cubeUser, int death, int kills, int killpoints, double influence, PlayerMode mode, Group team, TeamPos teampos)
+    public UserModel(User cubeUser, int death, int kills, int killpoints, double influence, PlayerMode mode, Group team, TeamPos teampos)
     {
         this.cubeUser = cubeUser;
         this.death = death;
@@ -71,7 +71,7 @@ public class UserModel implements Model
      *
      * @param cubeUser
      */
-    public UserModel(CubeUser cubeUser)
+    public UserModel(User cubeUser)
     {
         this.cubeUser = cubeUser;
         this.death = 0;
@@ -129,7 +129,7 @@ public class UserModel implements Model
     /**
      * @return the cubeUser
      */
-    public CubeUser getCubeUser()
+    public User getCubeUser()
     {
         return cubeUser;
     }
@@ -137,7 +137,7 @@ public class UserModel implements Model
     /**
      * @param cubeUser the cubeUser to set
      */
-    public void setCubeUser(CubeUser cubeUser)
+    public void setCubeUser(User cubeUser)
     {
         this.cubeUser = cubeUser;
     }

@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.user.CubeUser;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import static de.cubeisland.cubeengine.fly.CubeFly.t;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
  */
 public class FlyCommand
 {
-    CubeUserManager cuManager = CubeCore.getInstance().getUserManager();
+    UserManager cuManager = CubeCore.getInstance().getUserManager();
 
     @Command
     public void fly(CommandSender sender, CommandArgs args)
@@ -29,8 +29,8 @@ public class FlyCommand
                 //TODO You dont have permission to use this Command
                 return;
             }
-            CubeUser user = cuManager.getUser(sender);
-            if (user.hasFlag(CubeUser.BLOCK_FLY))
+            User user = cuManager.getUser(sender);
+            if (user.hasFlag(User.BLOCK_FLY))
             {
                 sender.sendMessage(t("fly_block"));
                 return;

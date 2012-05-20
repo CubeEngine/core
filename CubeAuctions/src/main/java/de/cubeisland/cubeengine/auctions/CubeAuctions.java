@@ -11,8 +11,8 @@ import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.cubeengine.auctions.database.PriceStorage;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
-import de.cubeisland.cubeengine.core.persistence.Database;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -44,7 +44,7 @@ public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
     private static Database database;
     private BaseCommand baseCommand;
     private static final String PERMISSION_BASE = "cubeengine.auctions.commands.";
-    private static CubeUserManager cuManager;
+    private static UserManager cuManager;
     private Manager manager;
 //TODO später eigene AuktionsBox als Kiste mit separatem inventar 
 //TODO flatfile mit angeboten

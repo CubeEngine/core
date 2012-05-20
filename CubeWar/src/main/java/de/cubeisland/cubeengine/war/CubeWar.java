@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.war;
 
 import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
-import de.cubeisland.cubeengine.core.persistence.Database;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
 import de.cubeisland.cubeengine.war.commands.ClaimCommands;

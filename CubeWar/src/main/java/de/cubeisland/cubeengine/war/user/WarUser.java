@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.war.user;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.user.CubeUser;
-import de.cubeisland.cubeengine.core.user.CubeUserManager;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
@@ -19,7 +19,7 @@ import org.bukkit.entity.*;
  *
  * @author Faithcaio
  */
-public class User
+public class WarUser
 {
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     private UserStorage userDB = UserStorage.get();
@@ -27,17 +27,17 @@ public class User
     private GroupControl groups = GroupControl.get();
     protected UserModel model;
 
-    public User(UserModel model)
+    public WarUser(UserModel model)
     {
         this.model = model;
     }
 
-    public User(OfflinePlayer player)
+    public WarUser(OfflinePlayer player)
     {
         this(CubeCore.getInstance().getUserManager().getUser(player));
     }
 
-    public User(CubeUser cubeUser)
+    public WarUser(User cubeUser)
     {
         this.model = new UserModel(cubeUser);
         this.userDB.store(this.model);
@@ -58,7 +58,7 @@ public class User
         return model.getRank();
     }
 
-    public void kill(User user)
+    public void kill(WarUser user)
     {
         model.addKillpoints(user.getRank().getKmod());
         this.kill_kd(user);
@@ -102,7 +102,7 @@ public class User
         return model.getKills();
     }
 
-    private void kill_kd(User user)
+    private void kill_kd(WarUser user)
     {
         PlayerMode mode = model.getMode();
         switch (mode)

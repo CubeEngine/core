@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.war.storage;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.war.groups.AreaType;
 import de.cubeisland.cubeengine.war.groups.Group;
-import de.cubeisland.cubeengine.war.user.User;
+import de.cubeisland.cubeengine.war.user.WarUser;
 import de.cubeisland.libMinecraft.bitmask.BitMask;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +51,9 @@ public class GroupModel implements Model
     //No Save in DB / load in later from other source
     private int influence_used;
     private int influence_max;
-    private List<User> adminlist = new ArrayList<User>();
-    private List<User> modlist = new ArrayList<User>();
-    private List<User> userlist = new ArrayList<User>();
+    private List<WarUser> adminlist = new ArrayList<WarUser>();
+    private List<WarUser> modlist = new ArrayList<WarUser>();
+    private List<WarUser> userlist = new ArrayList<WarUser>();
 
     public int getId()
     {
@@ -339,7 +339,7 @@ public class GroupModel implements Model
     /**
      * @return the adminlist
      */
-    public List<User> getAdminlist()
+    public List<WarUser> getAdminlist()
     {
         return adminlist;
     }
@@ -347,7 +347,7 @@ public class GroupModel implements Model
     /**
      * @param adminlist the adminlist to set
      */
-    public void setAdminlist(List<User> adminlist)
+    public void setAdminlist(List<WarUser> adminlist)
     {
         this.adminlist = adminlist;
     }
@@ -355,7 +355,7 @@ public class GroupModel implements Model
     /**
      * @return the modlist
      */
-    public List<User> getModlist()
+    public List<WarUser> getModlist()
     {
         return modlist;
     }
@@ -363,7 +363,7 @@ public class GroupModel implements Model
     /**
      * @param modlist the modlist to set
      */
-    public void setModlist(List<User> modlist)
+    public void setModlist(List<WarUser> modlist)
     {
         this.modlist = modlist;
     }
@@ -371,7 +371,7 @@ public class GroupModel implements Model
     /**
      * @return the userlist
      */
-    public List<User> getUserlist()
+    public List<WarUser> getUserlist()
     {
         return userlist;
     }
@@ -379,7 +379,7 @@ public class GroupModel implements Model
     /**
      * @param userlist the userlist to set
      */
-    public void setUserlist(List<User> userlist)
+    public void setUserlist(List<WarUser> userlist)
     {
         this.userlist = userlist;
     }
