@@ -1,0 +1,70 @@
+== CubeEngine ==
+
+Description
+
+=== Modules ===
+
+==== CubeMarket ====
+
+Description
+
+==== CubeAuctions ====
+
+Description
+
+==== CubeChat ====
+
+Description
+
+==== CubeIRC ====
+
+The IRC module synchronizes the ingame chat and an IRC server
+
+==== CubeConomy ====
+
+Description
+
+==== CubeFun ====
+
+The fun module provides stuff like the rocket command and such
+
+==== CubeBan ====
+
+The ban module is used for advanced banning
+
+==== CubePermissions ====
+
+The permissions module provides groups and assigns permissions to the players
+
+==== CubeStats ====
+
+The stats module gathers lots of statistics of the users
+
+==== CubeLog ====
+
+The log module logs any action on the server likie modifing the world or executing commands
+
+==== CubeGuard ====
+
+The guard module prevents specific world modifications
+
+==== CubeFly ====
+
+The fly module allows the player to fly
+
+==== CubeWar ====
+
+Description
+
+==== CubeVanish ====
+
+The vanish module allows players to hide themselfes
+
+
+==== Folder structure ====
+
+* CubeEngine/
+** modules/
+*** all the module configs come here
+** core.yml
+** database.yml
