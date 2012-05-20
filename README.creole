@@ -22,7 +22,7 @@ The IRC module synchronizes the ingame chat and an IRC server
 
 ==== CubeConomy ====
 
-Description
+The CubeConomy module provide an API for all economy-based module and some basic commands
 
 ==== CubeFun ====
 
@@ -42,7 +42,7 @@ The stats module gathers lots of statistics of the users
 
 ==== CubeLog ====
 
-The log module logs any action on the server likie modifing the world or executing commands
+The log module logs any action on the server like modifing the world or executing commands
 
 ==== CubeGuard ====
 

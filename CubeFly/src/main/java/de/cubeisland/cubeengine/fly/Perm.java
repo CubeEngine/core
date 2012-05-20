@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 

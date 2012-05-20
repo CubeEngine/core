@@ -25,6 +25,7 @@ public class FlyCommand
         {
             if (!Perm.COMMAND_FLY.isAuthorized(sender))
             {
+                sender.sendMessage("Permission fehlt");
                 //TODO You dont have permission to use this Command
                 return;
             }
