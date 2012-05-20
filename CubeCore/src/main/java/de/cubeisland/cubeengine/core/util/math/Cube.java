@@ -1,11 +1,13 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- *
+ * Represents a Cube specified by a corner and size
+ * 
  * @author CodeInfection
  */
 public class Cube extends Cuboid
 {
+    
     public Cube(Vector3 corner, int size)
     {
         this(corner, (double)size);

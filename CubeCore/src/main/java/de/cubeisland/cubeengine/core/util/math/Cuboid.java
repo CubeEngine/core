@@ -1,20 +1,32 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- *
- * @author CodeInfection
+ * Represents a Cuboid specified by two corners
+ * 
+ * @author CubeIsland Dev
  */
 public class Cuboid
 {
     private final Vector3 corner1;
     private final Vector3 corner2;
 
+    /**
+     * Creates a Cuboid with the 2 Vectors
+     * 
+     * @param corner1 Vektor to the first corner
+     * @param corner2 Vektor to the second corner 
+     */
     public Cuboid(Vector3 corner1, Vector3 corner2)
     {
         this.corner1 = corner1;
         this.corner2 = corner2;
     }
 
+    /**
+     * Gets a Vektor3 pointing to the minium point
+     * 
+     * @return the Vektor pointing to the minimum point
+     */
     public Vector3 getMinimumPoint()
     {
         return new Vector3(
@@ -24,6 +36,11 @@ public class Cuboid
         );
     }
 
+    /**
+     * Gets a Vektor3 pointing to the maximum point
+     * 
+     * @return the Vektor pointing to the maximum point
+     */
     public Vector3 getMaximumPoint()
     {
         return new Vector3(
@@ -33,6 +50,12 @@ public class Cuboid
         );
     }
 
+    /**
+     * Check whether the given point is in this Cuboid
+     * 
+     * @param point the point to check
+     * @return whether the point is in the cuboid or not
+     */
     public boolean contains(Vector3 point)
     {
         Vector3 min = this.getMinimumPoint();
