@@ -263,7 +263,8 @@ public class Vector3
      * 
      * @param other an Object
      * @return whether o is the same Vector as this one
-     */@Override
+     */
+    @Override
     public boolean equals(Object o)
     {
         if (o == null)

@@ -7,5 +7,10 @@ package de.cubeisland.cubeengine.core.persistence;
  */
 public interface Model
 {
+    /**
+     * Returns the ID of this Model
+     * 
+     * @return the ID
+     */
     public int getId();
 }
