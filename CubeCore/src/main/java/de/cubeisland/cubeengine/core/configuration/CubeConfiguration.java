@@ -72,9 +72,7 @@ public class CubeConfiguration extends YamlConfiguration
             return true;
         }
         catch (Throwable t)
-        {
-            t.printStackTrace(System.err);
-        }
+        {}
         return false;
     }
 
