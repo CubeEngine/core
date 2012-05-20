@@ -70,7 +70,12 @@ public class Vector3
         return (this.x * other.x + this.y * other.y + this.z * other.z);
     }
 
-    
+    /**
+     * Returns the cross product of this Vektor and the other
+     * 
+     * @param other
+     * @return the cross product
+     */
     public Vector3 cross(Vector3 other)
     {
         return new Vector3(
@@ -132,7 +137,7 @@ public class Vector3
      */
     public Vector3 divide(int n)
     {
-        return this.multiply((double)n);
+        return this.divide((double)n);
     }
 
     /**

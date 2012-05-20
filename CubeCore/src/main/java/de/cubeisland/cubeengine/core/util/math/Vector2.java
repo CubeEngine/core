@@ -119,7 +119,7 @@ public class Vector2
      */
     public Vector2 divide(int n)
     {
-        return this.multiply((double)n);
+        return this.divide((double)n);
     }
 
     /**
