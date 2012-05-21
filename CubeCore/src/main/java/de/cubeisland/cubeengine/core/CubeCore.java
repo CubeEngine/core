@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core;
 
 import com.maxmind.geoip.LookupService;
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.CubeConfiguration;
@@ -68,6 +69,7 @@ public class CubeCore extends JavaPlugin
         this.permissionRegistration = new PermissionRegistration(getServer().getPluginManager());
 
         CubeEngine.initialize(this);
+        this.permissionRegistration.registerPermissions(Perm.values());
     }
 
     @Override
