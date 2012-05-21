@@ -187,17 +187,6 @@ public class Vector2
     }
 
     /**
-     * Returns the angle of the other Vector to this one in degree
-     * 
-     * @param other the other Vector2 to calculate the angle to
-     * @return the angle between the vectors in degree
-     */
-    public double crossAngle(Vector2 other)
-    {
-        return this.crossAngle(other, true);
-    }
-
-    /**
      * Returns the angle of the other Vector to this one
      * 
      * @param other the other Vector2 to calculate the angle to
@@ -206,12 +195,7 @@ public class Vector2
      */
     public double crossAngle(Vector2 other, boolean degree)
     {
-        double result = Math.acos(this.dot(other) / (this.length() * other.length()));
-        if (degree)
-        {
-            result *= 180 / Math.PI;
-        }
-        return result;
+        return Math.acos(this.dot(other) / (this.length() * other.length()));
     }
 
     /**
