@@ -48,6 +48,12 @@ public class TestInstanceFactory
     //@Test
     public void setUp()
     {
+        //TODO Das hier zum laufen bringen...
+        //CubeCore initialiesieren
+        //FakeServer erstellen
+        //OP-CommandSender erstellen
+        
+        
         pluginDirectory.mkdirs();
         Assert.assertTrue(pluginDirectory.exists());
 
