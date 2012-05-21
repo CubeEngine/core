@@ -10,17 +10,18 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.io.IOException;
 import java.net.InetAddress;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CubeCore extends JavaPlugin
 {
     private static CubeCore instance;
-
     private LookupService lookupService;
     private Database database;
     private PermissionRegistration permissionRegistration;
     private UserManager userManager;
     private FileManager fileManager;
+    private PluginManager pm;
 
     public CubeCore()
     {
@@ -31,7 +32,7 @@ public class CubeCore extends JavaPlugin
     {
         return this.database;
     }
-    
+
     public static CubeCore getInstance()
     {
         return instance;
@@ -46,6 +47,8 @@ public class CubeCore extends JavaPlugin
 
         final CubeConfiguration databaseConfig = this.fileManager.getDatabaseConfig();
         databaseConfig.safeSave();
+        
+        this.pm = this.getServer().getPluginManager();
 
         try
         {
@@ -55,28 +58,29 @@ public class CubeCore extends JavaPlugin
         {
             throw new RuntimeException("CubeCore failed to load the GeoIP database!");
         }
-        
+
         this.database = new Database(
-            databaseConfig.getString("mysql.host"),
-            (short)databaseConfig.getInt("mysql.port"),
-            databaseConfig.getString("mysql.user"),
-            databaseConfig.getString("mysql.password"),
-            databaseConfig.getString("mysql.database"),
-            databaseConfig.getString("mysql.tableprefix")
-        );
+                databaseConfig.getString("mysql.host"),
+                (short) databaseConfig.getInt("mysql.port"),
+                databaseConfig.getString("mysql.user"),
+                databaseConfig.getString("mysql.password"),
+                databaseConfig.getString("mysql.database"),
+                databaseConfig.getString("mysql.tableprefix"));
 
         this.userManager = new UserManager(this);
         this.permissionRegistration = new PermissionRegistration(getServer().getPluginManager());
-
-        CubeEngine.initialize(this);
         this.permissionRegistration.registerPermissions(Perm.values());
+        this.pm.registerEvents(new CoreListener(), this);
+        
+        CubeEngine.initialize(this);
+        
     }
 
     @Override
     public void onDisable()
     {
         CubeEngine.clean();
-        
+
         this.fileManager.clean();
         this.fileManager = null;
 

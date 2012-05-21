@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.CubeCore;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -48,6 +49,11 @@ public class UserManager
     }
     
     public User getUser(OfflinePlayer player)
+    {
+        return this.getUser(player.getName());
+    }
+    
+    public User getUser(Player player)
     {
         return this.getUser(player.getName());
     }
