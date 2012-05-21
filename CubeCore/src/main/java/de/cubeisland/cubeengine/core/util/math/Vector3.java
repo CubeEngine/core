@@ -210,7 +210,7 @@ public class Vector3
      * @param other the other Vector3 to calculate the angle to
      * @return the angle between the vectors
      */
-    public double crossAngle(Vector3 other, boolean degree)
+    public double crossAngle(Vector3 other)
     {
         return Math.acos(this.dot(other) / (this.length() * other.length()));
     }

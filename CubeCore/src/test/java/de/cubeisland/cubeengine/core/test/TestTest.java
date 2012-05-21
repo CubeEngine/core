@@ -52,7 +52,7 @@ public class TestTest extends TestCase
         assertTrue( v22.distanceVector(v24).equals(v21));
         assertTrue( v22.squaredDistance(v24) == 20);
         assertTrue( v25.distance(v26) == 5);
-        assertTrue( v21.crossAngle(v22) == 90);
+        assertTrue( v21.crossAngle(v22) == 90*Math.PI/180);
         assertTrue( v21.normalize().length() == v22.normalize().length());
         assertTrue( v21.midpoint(v22).equals(v26));
         assertTrue( v27.toString().equals("(1.5|2.5)"));

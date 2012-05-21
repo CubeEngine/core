@@ -193,7 +193,7 @@ public class Vector2
      * @param degree whether to return the angle in degree or not
      * @return the angle between the vectors
      */
-    public double crossAngle(Vector2 other, boolean degree)
+    public double crossAngle(Vector2 other)
     {
         return Math.acos(this.dot(other) / (this.length() * other.length()));
     }
