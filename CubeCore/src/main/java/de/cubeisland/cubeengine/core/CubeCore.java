@@ -67,10 +67,10 @@ public class CubeCore extends JavaPlugin
                 databaseConfig.getString("mysql.database"),
                 databaseConfig.getString("mysql.tableprefix"));
 
-        this.userManager = new UserManager(this);
+        this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(getServer().getPluginManager());
         this.permissionRegistration.registerPermissions(Perm.values());
-        this.pm.registerEvents(new CoreListener(), this);
+        this.pm.registerEvents(new CoreListener(this.userManager), this);
         
         CubeEngine.initialize(this);
         

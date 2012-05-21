@@ -628,12 +628,7 @@ public class UserBase implements Player
 
     public String getName()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.getName();
-        }
-        return null;
+        return this.offlinePlayer.getName();
     }
 
     public PlayerInventory getInventory()

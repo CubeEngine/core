@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.util.bitmask.LongBitMask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +29,6 @@ public class UserStorage implements Storage<User>
         {
             this.database.prepareStatement("user_get",      "SELECT id,name,flags FROM {{users}} WHERE name=? LIMIT 1");
             this.database.prepareStatement("user_getall",   "SELECT id,name,flags FROM {{users}}");
-            this.database.prepareStatement("user_store_server",    "INSERT INTO {{users}} (id,name,flags) VALUES (1,?,0)");
             this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (name,flags) VALUES (?,?)");
             this.database.prepareStatement("user_update",   "UPDATE {{users}} SET flags=? WHERE id=?");
             this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
@@ -45,12 +45,12 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.exec( "CREATE TABLE IF NOT EXISTS `users` ("+
+            this.database.exec( "CREATE TABLE IF NOT EXISTS `"+this.database.getTablePrefix()+"users` ("+
                                 "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"+
                                 "`name` varchar(16) NOT NULL,"+
                                 "`flags` int(11) NOT NULL,"+
                                 "PRIMARY KEY (`id`)"+
-                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
                                );
         }
         catch (SQLException ex)
@@ -133,10 +133,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            if (model.getId() == 1)
-                this.database.preparedExec("user_store_server", "*Server");
-            else
-                this.database.preparedExec("user_store", model.getName(), model.getFlags().get());
+            this.database.preparedExec("user_store", model.getName(), model.getFlags().get());
         }
         catch (SQLException e)
         {

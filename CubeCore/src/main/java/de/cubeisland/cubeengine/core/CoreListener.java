@@ -14,13 +14,19 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class CoreListener implements Listener
 {
+    private final UserManager cuManager;
+    
+    public CoreListener(UserManager cuManager)
+    {
+        this.cuManager = cuManager;
+    }
+    
     @EventHandler
     public void goesOnline(final PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
         if (Perm.USE.isAuthorized(player))
         {
-            UserManager cuManager = CubeCore.getInstance().getUserManager();
             if (cuManager.getUser(player) == null)
                 cuManager.addUser(new User(player));
             //else: User is already created

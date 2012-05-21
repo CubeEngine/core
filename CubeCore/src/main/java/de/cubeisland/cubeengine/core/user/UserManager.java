@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,9 +16,9 @@ public class UserManager
     private final THashMap<String, User> users;
     private UserStorage storage;
         
-    public UserManager(CubeCore core)
+    public UserManager(Database database, Server server)
     {
-        this.storage = new UserStorage(core.getDB(), core.getServer());
+        this.storage = new UserStorage(database, server);
         this.storage.initialize();
 
         this.users = new THashMap<String, User>();
