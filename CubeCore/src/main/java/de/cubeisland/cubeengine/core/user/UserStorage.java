@@ -68,24 +68,14 @@ public class UserStorage implements Storage<User>
             PreparedStatement ps = this.database.getStatement("user_store");
             ps.setString(1, model.getName());
             ps.setLong(2, model.getFlags().get());
-            final int insertStatus = ps.executeUpdate();
-            int newKey = -1;
-            try
+            if (ps.executeUpdate() > 0) 
             {
-                if (insertStatus == 1) 
+                final ResultSet result = ps.getGeneratedKeys();
+                if (result.next())
                 {
-                    final ResultSet result = ps.getGeneratedKeys();
-                    if (result.next())
-                    {
-                        newKey = result.getInt("GENERATED_KEY");
-                    }
+                    model.setId(result.getInt("GENERATED_KEY"));
                 }
             }
-            catch(SQLException ex)
-            {
-                throw new StorageException("Failed to assign ID!", ex);
-            }
-            model.setId(newKey);
         }
         catch (SQLException e)
         {
