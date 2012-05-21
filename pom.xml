@@ -34,9 +34,6 @@
         <module>CubeCore</module>
         <module>CubeWar</module>
         <module>CubeAuctions</module>
-        <module>CubeChat</module>
         <module>CubeFly</module>
-        <module>CubeVanish</module>
-        <module>CubeGuard</module>
     </modules>
 </project>

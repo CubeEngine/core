@@ -4,65 +4,69 @@ Description
 
 === Modules ===
 
-==== CubeMarket ====
-
-Description
-
 ==== CubeAuctions ====
 
-Description
-
-==== CubeChat ====
-
-Description
-
-==== CubeIRC ====
-
-The IRC module synchronizes the ingame chat and an IRC server
-
-==== CubeConomy ====
-
-The (e)conomy module provides an API for all economy-based modules and some basic commands
-
-==== CubeFun ====
-
-The fun module provides stuff like the rocket command and such
+The auctions module provides a system to create auctions.
 
 ==== CubeBan ====
 
 The ban module is used for advanced banning
 
-==== CubePermissions ====
+==== CubeChat ====
 
-The permissions module provides groups and assigns permissions to the players
+The chat module provides various options for different chatchannels
 
-==== CubeStats ====
+==== CubeConomy ====
 
-The stats module gathers lots of statistics of the users
-
-==== CubeLog ====
-
-The log module logs any action on the server like modifing the world or executing commands
-
-==== CubeGuard ====
-
-The guard module prevents specific world modifications
+The (e)conomy module provides an API for all economy-based modules and some basic commands
 
 ==== CubeFly ====
 
 The fly module allows the player to fly
 
-==== CubeWar ====
+==== CubeFun ====
 
-Description
+The fun module provides stuff like the rocket command and such
+
+==== CubeGreylist
+
+The greylist module provides greylisting ala AntiGuest
+
+==== CubeGuard ====
+
+The guard module prevents specific world modifications
+
+==== CubeIRC ====
+
+The IRC module synchronizes the ingame chat and an IRC server
+
+==== CubeLog ====
+
+The log module logs any action on the server like modifing the world or executing commands
+
+==== CubeMarket ====
+
+The market module provides a simple market with signs and/or chatcommands.
+
+==== CubePermissions ====
+
+The permissions module provides groups and assigns permissions to the players
+
+==== CubeRPG ====
+
+The rpg module provides a lot of cutomizable skills and classes for best rpg feeling
+
+==== CubeStats ====
+
+The stats module gathers lots of statistics of the users
 
 ==== CubeVanish ====
 
 The vanish module allows players to hide themselfes
 
-==== CubeGreylist
+==== CubeWar ====
 
-The greylist module provides greylisting ala AntiGuest
+Description
 
 ==== Folder structure ====
 
