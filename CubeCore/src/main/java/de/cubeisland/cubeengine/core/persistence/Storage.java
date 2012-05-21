@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence;
 
+import java.sql.PreparedStatement;
 import java.util.Collection;
 
 /**

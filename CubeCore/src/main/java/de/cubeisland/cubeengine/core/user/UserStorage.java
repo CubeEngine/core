@@ -5,8 +5,10 @@ import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.util.bitmask.LongBitMask;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.bukkit.OfflinePlayer;
@@ -57,6 +59,43 @@ public class UserStorage implements Storage<User>
         {
             throw new StorageException("Failed to initialize the CubeUserTable !", ex);
         }
+    }
+    
+    public void store(User model)
+    {
+        try
+        {
+            PreparedStatement ps = this.database.getStatement("user_store");
+            ps.setString(1, model.getName());
+            ps.setLong(2, model.getFlags().get());
+            final int insertStatus = ps.executeUpdate();
+            int newKey = -1;
+            try
+            {
+                if (insertStatus == 1) 
+                {
+                    final ResultSet result = ps.getGeneratedKeys();
+                    if (result.next())
+                    {
+                        newKey = result.getInt("GENERATED_KEY");
+                    }
+                }
+            }
+            catch(SQLException ex)
+            {
+                throw new StorageException("Failed to assign ID!", ex);
+            }
+            model.setId(newKey);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to store the user!", e);
+        }
+    }
+
+    public boolean delete(User object)
+    {
+        return delete(object.getId());
     }
 
     public Collection<User> getAll()
@@ -127,23 +166,6 @@ public class UserStorage implements Storage<User>
         {
             throw new StorageException("Failed to load the user '" + name + "'!", e);
         }
-    }
-
-    public void store(User model)
-    {
-        try
-        {
-            this.database.preparedExec("user_store", model.getName(), model.getFlags().get());
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to store the user!", e);
-        }
-    }
-
-    public boolean delete(User object)
-    {
-        return delete(object.getId());
     }
 
     public boolean delete(int id)

@@ -81,6 +81,8 @@ public class TestTest extends TestCase
         //Init & Clear DB
         storage.initialize();
         storage.clear();
+        //is Empty?
+        assertTrue(storage.getAll().isEmpty());
         
         UserManager cuManager = new UserManager(database,server);
         CoreListener listener = new CoreListener(cuManager);
@@ -110,8 +112,8 @@ public class TestTest extends TestCase
         storage.delete(cuManager.getUser(player3));//TODO ID not assigned
         //3 -1 Player in DB
         assertTrue(storage.getAll().size() == 2);
-        
     }
+
     public PlayerJoinEvent createPlayerJointEvent(Player player)
     {
         return new PlayerJoinEvent(player,"");

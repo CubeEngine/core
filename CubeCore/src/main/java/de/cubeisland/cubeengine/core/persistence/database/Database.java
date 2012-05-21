@@ -126,7 +126,7 @@ public class Database
 
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        return this.connection.prepareStatement(PREFIX_PATTERN.matcher(statement).replaceAll(this.replacement));
+        return this.connection.prepareStatement(PREFIX_PATTERN.matcher(statement).replaceAll(this.replacement),PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
     public PreparedStatement getStatement(String name)
