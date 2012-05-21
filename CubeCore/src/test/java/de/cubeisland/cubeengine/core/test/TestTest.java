@@ -61,8 +61,8 @@ public class TestTest extends TestCase
     @Test
     public void testCorePlayerJoinEvent()
     {
-        //TestInstanceFactory factory = new TestInstanceFactory();
-        //factory.setUp();
+        TestInstanceFactory factory = new TestInstanceFactory();
+        factory.setUp();
         
         //CubeCore core = factory.getCore();
         Server server = mock(Server.class);

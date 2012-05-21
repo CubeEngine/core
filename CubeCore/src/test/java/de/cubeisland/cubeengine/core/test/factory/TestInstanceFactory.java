@@ -37,7 +37,7 @@ public class TestInstanceFactory
     public static final File configDirectory = new File("bin/test/server/plugins/coretest/CubeCore");
     public static final File worldsDirectory = new File("bin/test/server");
     
-    @Test
+    //@Test
     public void setUp()
     {
         //TODO Das hier zum laufen bringen...
