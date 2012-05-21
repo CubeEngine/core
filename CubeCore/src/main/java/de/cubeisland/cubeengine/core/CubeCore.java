@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core;
 import com.maxmind.geoip.LookupService;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.Perm;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.CubeConfiguration;
@@ -38,6 +39,11 @@ public class CubeCore extends JavaPlugin
         return instance;
     }
 
+    public PluginManager getPluginManager()
+    {
+        return this.getServer().getPluginManager();
+    }
+    
     @Override
     public void onEnable()
     {
@@ -48,7 +54,7 @@ public class CubeCore extends JavaPlugin
         final CubeConfiguration databaseConfig = this.fileManager.getDatabaseConfig();
         databaseConfig.safeSave();
         
-        this.pm = this.getServer().getPluginManager();
+        this.pm = this.getPluginManager();
 
         try
         {
@@ -68,8 +74,8 @@ public class CubeCore extends JavaPlugin
                 databaseConfig.getString("mysql.tableprefix"));
 
         this.userManager = new UserManager(this.database, this.getServer());
-        this.permissionRegistration = new PermissionRegistration(getServer().getPluginManager());
-        this.permissionRegistration.registerPermissions(Perm.values());
+        this.permissionRegistration = new PermissionRegistration(getPluginManager());
+        this.registerPermissions(Perm.values());
         this.pm.registerEvents(new CoreListener(this.userManager), this);
         
         CubeEngine.initialize(this);
@@ -113,5 +119,10 @@ public class CubeCore extends JavaPlugin
         if (fileManager == null)
             fileManager = new FileManager(this);
         return this.fileManager;
+    }
+
+    public void registerPermissions(Permission... values)
+    {
+        this.permissionRegistration.registerPermissions(values);
     }
 }
