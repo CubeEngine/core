@@ -1,0 +1,7 @@
+mysql:
+  host: localhost
+  port: 3306
+  user: minecraft
+  password: '12345678'
+  database: minecraft
+  tableprefix: cube_

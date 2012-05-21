@@ -45,7 +45,7 @@ public class TestInstanceFactory
     public static final File configDirectory = new File("bin/test/server/plugins/coretest/CubeCore");
     public static final File worldsDirectory = new File("bin/test/server");
     
-    //@Test
+    @Test
     public void setUp()
     {
         //TODO Das hier zum laufen bringen...
@@ -53,16 +53,38 @@ public class TestInstanceFactory
         //FakeServer erstellen
         //OP-CommandSender erstellen
         
+        core = PowerMockito.spy(new CubeCore());
+        when(core.getDataFolder()).thenReturn(pluginDirectory);
         
+        FileManager fileManager = PowerMockito.spy(new FileManager(core));
+        
+        CubeConfiguration config = mock(CubeConfiguration.class);
+        FileConfiguration fileconfig = mock(FileConfiguration.class);
+
+        doReturn(fileconfig).when(core).getConfig(); 
+        doReturn(config).when(fileManager).getCoreConfig();
+        doReturn(config).when(fileManager).getDatabaseConfig();
+        //Config Files are now simulated ...
+        
+        //TODO PluginManager faken
+        
+        mockServer = mock(Server.class);
+        PluginManager manager = mock(PluginManager.class);
+        when(mockServer.getPluginManager()).thenReturn(manager);
+        doReturn(mockServer).when(core.getServer());
+        
+        
+        //when(core.getServer()).thenReturn(mockServer);
+        
+        // when(core.getDataFolder().getParentFile()).thenReturn(pluginDirectory);
+        
+        /* 
         pluginDirectory.mkdirs();
         Assert.assertTrue(pluginDirectory.exists());
 
         MockGateway.MOCK_STANDARD_METHODS = false;
 
         core = PowerMockito.spy(new CubeCore());
-        
-        when(core.getDataFolder()).thenReturn(pluginDirectory);
-        when(core.getDataFolder().getParentFile()).thenReturn(pluginDirectory);
         
         FileManager fileManager = mock(FileManager.class);
         CubeConfiguration config = mock(CubeConfiguration.class);
@@ -76,6 +98,8 @@ public class TestInstanceFactory
         // Let's let all files go to bin/test
         doReturn(pluginDirectory).when(core).getDataFolder();
 
+* 
+*/
 
         final Logger commandSenderLogger = Logger.getLogger("CommandSender");
         commandSenderLogger.setParent(Util.logger);
