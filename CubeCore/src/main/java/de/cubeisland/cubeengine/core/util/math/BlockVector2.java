@@ -1,26 +1,27 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm
  */
-public class BlockVector
+public class BlockVector2
 {
     public final int x;
-    public final int y;
     public final int z;
 
     /**
-     * Creates a new Vektor3 with a triple of int
+     * Creates a new Vektor2 with a pair of int
      * 
      * @param x
-     * @param y 
      * @param z
      */
-    public BlockVector(final int x, final int y, final int z)
+    public BlockVector2(final int x, final int z)
     {
         this.x = x;
-        this.y = y;
         this.z = z;
     }
 
@@ -30,7 +31,7 @@ public class BlockVector
      * @param other the other BlockVector
      * @return whether the other BlockVector is orthogonal to this one
      */
-    public boolean isOrthogonal(BlockVector other)
+    public boolean isOrthogonal(BlockVector2 other)
     {
         return (this.dot(other) == 0.0);
     }
@@ -41,9 +42,9 @@ public class BlockVector
      * @param other the other BlockVector
      * @return whether the other BlockVector is parallel to this one
      */
-    public boolean isParallel(BlockVector other)
+    public boolean isParallel(BlockVector2 other)
     {
-        return (this.x / other.x == this.y / other.y);
+        return (this.x / other.x == this.z / other.z);
     }
 
     /**
@@ -52,24 +53,9 @@ public class BlockVector
      * @param other the second vector to multiply with
      * @return the scalar product
      */
-    public double dot(BlockVector other)
+    public double dot(BlockVector2 other)
     {
-        return (this.x * other.x + this.y * other.y + this.z * other.z);
-    }
-
-    /**
-     * Returns the cross product of this Vektor and the other
-     * 
-     * @param other
-     * @return the cross product
-     */
-    public BlockVector cross(BlockVector other)
-    {
-        return new BlockVector(
-            this.y * other.z - this.z * other.y,
-            this.z * other.x - this.x * other.z,
-            this.x * other.y - this.y * other.x
-        );
+        return (this.x * other.x + this.z * other.z);
     }
 
     /**
@@ -78,9 +64,9 @@ public class BlockVector
      * @param other the BlockVector to add
      * @return the new Vector
      */
-    public BlockVector add(BlockVector other)
+    public BlockVector2 add(BlockVector2 other)
     {
-        return new BlockVector(this.x + other.x, this.y + other.y, this.z + other.z);
+        return new BlockVector2(this.x + other.x, this.z + other.z);
     }
 
     /**
@@ -89,9 +75,9 @@ public class BlockVector
      * @param other the BlockVector to substract
      * @return the new Vector
      */
-    public BlockVector substract(BlockVector other)
+    public BlockVector2 substract(BlockVector2 other)
     {
-        return new BlockVector(this.x - other.x, this.y - other.y, this.z - other.z);
+        return new BlockVector2(this.x - other.x, this.z - other.z);
     }
 
     /**
@@ -100,9 +86,9 @@ public class BlockVector
      * @param other the factor to multiply with
      * @return the new Vector
      */
-    public BlockVector multiply(int n)
+    public BlockVector2 multiply(int n)
     {
-        return new BlockVector(this.x * n, this.y * n, this.z * n);
+        return new BlockVector2(this.x * n, this.z * n);
     }
     
     /**
@@ -111,9 +97,9 @@ public class BlockVector
      * @param other the factor to multiply with
      * @return the new Vector
      */
-    public BlockVector multiply(double n)
+    public BlockVector2 multiply(double n)
     {
-        return new BlockVector((int)(this.x * n), (int)(this.y * n), (int)(this.z * n));
+        return new BlockVector2((int)(this.x * n), (int)(this.z * n));
     }
 
     /**
@@ -122,7 +108,7 @@ public class BlockVector
      * @param other the quotient to divide with
      * @return the new Vector
      */
-    public BlockVector divide(int n)
+    public BlockVector2 divide(int n)
     {
         return this.divide((double)n);
     }
@@ -133,9 +119,9 @@ public class BlockVector
      * @param other the quotient to divide with
      * @return the new Vector
      */
-    public BlockVector divide(double n)
+    public BlockVector2 divide(double n)
     {
-        return new BlockVector((int)(this.x / n), (int)(this.y / n), (int)(this.z / n));
+        return new BlockVector2((int)(this.x / n), (int)(this.z / n));
     }
 
     /**
@@ -145,7 +131,7 @@ public class BlockVector
      */
     public double squaredLength()
     {
-        return (Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
+        return (Math.pow(this.x, 2) + Math.pow(this.z, 2));
     }
 
     /**
@@ -164,7 +150,7 @@ public class BlockVector
      * @param other the BlockVector to substract from
      * @return the new Vector
      */
-    public BlockVector distanceVector(BlockVector other)
+    public BlockVector2 distanceVector(BlockVector2 other)
     {
         return other.substract(this);
     }
@@ -175,7 +161,7 @@ public class BlockVector
      * @param other the BlockVector to get the distance from
      * @return the squared distance
      */
-    public double squaredDistance(BlockVector other)
+    public double squaredDistance(BlockVector2 other)
     {
         return this.distanceVector(other).squaredLength();
     }
@@ -186,7 +172,7 @@ public class BlockVector
      * @param other the BlockVector to get the distance from
      * @return the distance
      */
-    public double distance(BlockVector other)
+    public double distance(BlockVector2 other)
     {
         return this.distanceVector(other).length();
     }
@@ -197,7 +183,7 @@ public class BlockVector
      * @param other the other BlockVector to calculate the angle to
      * @return the angle between the vectors
      */
-    public double crossAngle(BlockVector other)
+    public double crossAngle(BlockVector2 other)
     {
         return Math.acos(this.dot(other) / (this.length() * other.length()));
     }
@@ -207,7 +193,7 @@ public class BlockVector
      * 
      * @return the normalized BlockVector
      */
-    public BlockVector normalize()
+    public BlockVector2 normalize()
     {
         return this.divide(this.length());
     }
@@ -218,7 +204,7 @@ public class BlockVector
      * @param other the other BlockVector
      * @return the midpoint
      */
-    public BlockVector midpoint(BlockVector other)
+    public BlockVector2 midpoint(BlockVector2 other)
     {
         return this.add(other.substract(this).divide(2));
     }
@@ -246,14 +232,14 @@ public class BlockVector
         {
             return false;
         }
-        if (!(o instanceof BlockVector))
+        if (!(o instanceof BlockVector2))
         {
             return false;
         }
 
-        BlockVector other = (BlockVector)o;
+        BlockVector2 other = (BlockVector2)o;
 
-        return (this.x == other.x && this.y == other.y && this.z == other.z);
+        return (this.x == other.x && this.z == other.z);
     }
 
     /**
@@ -265,9 +251,8 @@ public class BlockVector
     public int hashCode()
     {
         int hash = 7;
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
+        hash = 53 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 53 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
         return hash;
     }
 
@@ -279,6 +264,6 @@ public class BlockVector
     @Override
     public String toString()
     {
-        return "(" + this.x + "|" + this.y  + "|" + this.z + ")";
+        return "(" + this.x + "|" + this.z + ")";
     }
 }

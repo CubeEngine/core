@@ -507,4 +507,9 @@ public final class Bidder implements Model
     {
         return (User.getId()==1);
     }
+
+    public void setId(int id)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
