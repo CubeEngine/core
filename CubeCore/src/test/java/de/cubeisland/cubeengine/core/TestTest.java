@@ -109,9 +109,13 @@ public class TestTest extends TestCase
         //1 +2 Player in DB
         assertTrue(storage.getAll().size() == 3);
         //delete Member2
-        storage.delete(cuManager.getUser(player3));//TODO ID not assigned
+        storage.delete(cuManager.getUser(player3));
         //3 -1 Player in DB
         assertTrue(storage.getAll().size() == 2);
+        //Clear DB again
+        cuManager.clean();
+        //Db should be empty
+        assertTrue(storage.getAll().isEmpty());
     }
 
     public PlayerJoinEvent createPlayerJointEvent(Player player)

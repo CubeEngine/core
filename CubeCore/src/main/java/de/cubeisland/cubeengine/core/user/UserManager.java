@@ -72,6 +72,7 @@ public class UserManager
     public void clean()
     {
         this.users.clear();
+        this.storage.clear();
         this.storage = null;
     }
 }
