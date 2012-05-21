@@ -20,7 +20,7 @@ public class CubeCore extends JavaPlugin
     private Database database;
     private PermissionRegistration permissionRegistration;
     private UserManager userManager;
-    private FileManager fileManager;
+    private FileManager fileManager = null;
     private PluginManager pm;
 
     public CubeCore()
@@ -41,7 +41,7 @@ public class CubeCore extends JavaPlugin
     @Override
     public void onEnable()
     {
-        this.fileManager = new FileManager(this);
+        this.fileManager = this.getFileManager();
         final CubeConfiguration coreConfig = this.fileManager.getCoreConfig();
         coreConfig.safeSave();
 
@@ -110,6 +110,8 @@ public class CubeCore extends JavaPlugin
 
     public FileManager getFileManager()
     {
+        if (fileManager == null)
+            fileManager = new FileManager(this);
         return this.fileManager;
     }
 }
