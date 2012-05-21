@@ -57,4 +57,9 @@ public class AreaModel implements Model
         return this.chunk;
     }
     
+    public void setId(int id)
+    {
+        this.id = id;
+    }
+    
 }

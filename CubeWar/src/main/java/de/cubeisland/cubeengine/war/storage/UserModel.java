@@ -32,6 +32,11 @@ public class UserModel implements Model
     private HashSet<String> bypasses = new HashSet<String>();
     private TeamPos teampos;
 
+    public void setId(int id)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     public enum TeamPos
     {
         ADMIN,
@@ -357,5 +362,6 @@ public class UserModel implements Model
     {
         this.teampos = teampos;
     }
+    
     
 }

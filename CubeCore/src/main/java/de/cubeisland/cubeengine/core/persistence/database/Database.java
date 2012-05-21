@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.database;
 
+import de.cubeisland.cubeengine.core.persistence.Model;
+import de.cubeisland.cubeengine.core.persistence.StorageException;
 import gnu.trove.map.hash.THashMap;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -137,5 +139,25 @@ public class Database
             throw new IllegalArgumentException("Statement not found!");
         }
         return statement;
+    }
+    
+    public void assignId(PreparedStatement ps, Model model)
+    {
+        try
+        {
+            if (ps.executeUpdate() > 0) 
+            {
+                final ResultSet result = ps.getGeneratedKeys();
+                if (result.next())
+                {
+                    model.setId(result.getInt("GENERATED_KEY"));
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to store the user!", e);
+        }
+        
     }
 }
