@@ -11,7 +11,10 @@ import org.bukkit.permissions.PermissionDefault;
 public enum Perm implements Permission
 {
     COMMAND_FLY("command.fly", PermissionDefault.OP),
-    COMMAND_FLY_BYPASS("command.fly.bypass", PermissionDefault.OP);
+    COMMAND_FLY_BYPASS("command.fly.bypass", PermissionDefault.OP),
+    FLY_FEAHTER("fly.feather", PermissionDefault.OP),
+    FLY_BYPASS("fly.bypass", PermissionDefault.OP),
+    ;
     private String BASE = "cubeengine.fly.";
     private String permission;
     private PermissionDefault permissionDefault;

@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.test;
 
 import de.cubeisland.cubeengine.core.CoreListener;
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.test.factory.PlayerFactory;
 import de.cubeisland.cubeengine.core.test.factory.TestInstanceFactory;

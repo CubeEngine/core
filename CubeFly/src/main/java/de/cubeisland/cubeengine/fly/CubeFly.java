@@ -53,6 +53,8 @@ public class CubeFly extends CubeModuleBase implements TranslatablePlugin
                         .unregisterCommand("reload");
         this.getCommand("fly").setExecutor(baseCommand);
         
+        this.pm.registerEvents(new FlyListener(), this);
+        
         CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
 
         log("Version " + this.getDescription().getVersion() + " enabled");

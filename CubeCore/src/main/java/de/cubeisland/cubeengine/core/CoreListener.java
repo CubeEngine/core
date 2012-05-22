@@ -28,10 +28,11 @@ public class CoreListener implements Listener
         if (Perm.USE.isAuthorized(player))
         {
             if (cuManager.getUser(player) == null)
+            {
                 cuManager.addUser(new User(player));
+            }
             //else: User is already created
         }
         //else: Player has no Permission to use any CubeEngine Module
-        
     }
 }

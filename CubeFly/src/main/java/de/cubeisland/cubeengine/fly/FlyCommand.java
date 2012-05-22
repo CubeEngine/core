@@ -20,33 +20,36 @@ public class FlyCommand
     @Command
     public void fly(CommandSender sender, CommandArgs args)
     {
-        //PermissionCheck
-        if (Perm.COMMAND_FLY_BYPASS.isAuthorized(sender));
-        {
-            if (!Perm.COMMAND_FLY.isAuthorized(sender))
-            {
-                sender.sendMessage("Permission fehlt");
-                //TODO You dont have permission to use this Command
-                return;
-            }
-            User user = cuManager.getUser(sender);
-            if (user.hasFlag(User.BLOCK_FLY))
-            {
-                sender.sendMessage(t("fly_block"));
-                return;
-            }
-        }
-        //I Believe I Can Fly ...     
         if (sender instanceof Player)
         {
             Player player = (Player) sender;
+            //PermissionCheck
+            if (Perm.COMMAND_FLY_BYPASS.isAuthorized(sender));
+            {
+                if (!Perm.COMMAND_FLY.isAuthorized(sender))
+                {
+                    sender.sendMessage("Permission fehlt");
+                    //TODO Translation: You dont have permission to use this Command!
+                    //Du bist nicht berechtigt diesen Befehl zu nutzen!
+                    player.setAllowFlight(false); //Disable when player is flying
+                    return;
+                }
+                User user = cuManager.getUser(sender);
+                if (user.hasFlag(User.BLOCK_FLY))
+                {
+                    sender.sendMessage(t("fly_block"));
+                    player.setAllowFlight(false); //Disable when player is flying
+                    return;
+                }
+            }
+            //I Believe I Can Fly ...     
             player.setAllowFlight(!player.getAllowFlight());
             if (player.getAllowFlight())
             {
                 sender.sendMessage(t("fly_on"));
             }
             else
-            {
+            {//or not
                 sender.sendMessage(t("fly_off"));
             }
             return;
