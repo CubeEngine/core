@@ -13,11 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
-import org.hamcrest.Matcher;
-import org.junit.Test;
 import org.mockito.Matchers;
 import static org.mockito.Matchers.anyString;
-import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -81,8 +78,7 @@ public class TestInstanceFactory
         when(commandSender.hasPermission(Matchers.isA(Permission.class))).thenReturn(true);
         when(commandSender.addAttachment(core)).thenReturn(null);
         when(commandSender.isOp()).thenReturn(true);
-
-        
+       
         core.onLoad();
         core.onEnable();
     }

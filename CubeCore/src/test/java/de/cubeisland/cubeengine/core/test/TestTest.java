@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.test;
 
 import de.cubeisland.cubeengine.core.CoreListener;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
-import de.cubeisland.cubeengine.core.test.factory.PlayerFactory;
 import de.cubeisland.cubeengine.core.test.factory.TestInstanceFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.user.UserStorage;
@@ -11,16 +10,22 @@ import junit.framework.TestCase;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class TestTest extends TestCase
 {
-    @Test
-    public void testNothing()
+    TestInstanceFactory factory;
+    
+    @Before
+    public void initTests()
     {
-        //This does nothing!
+        factory = new TestInstanceFactory();
+        factory.setUp();
     }
     
     @Test
@@ -60,10 +65,6 @@ public class TestTest extends TestCase
     @Test
     public void testCorePlayerJoinEvent()
     {
-        TestInstanceFactory factory = new TestInstanceFactory();
-        factory.setUp();
-        
-        //CubeCore core = factory.getCore();
         Server server = mock(Server.class);
         Database database = new Database("localhost",(short)3306,"root","","cubeengine","cube_test_");
         
@@ -78,10 +79,10 @@ public class TestTest extends TestCase
         CoreListener listener = new CoreListener(cuManager);
         
         //Create New Player to join
-        Player player1 = PlayerFactory.createOPPlayer("Member1");
-        Player player2 = PlayerFactory.createGuestPlayer("GuestN00B");
-        Player player3 = PlayerFactory.createOPPlayer("Member2");
-        Player player4 = PlayerFactory.createOPPlayer("Member3");
+        Player player1 = this.createOPPlayer("Member1");
+        Player player2 = this.createGuestPlayer("GuestN00B");
+        Player player3 = this.createOPPlayer("Member2");
+        Player player4 = this.createOPPlayer("Member3");
         //Create new PlayerJoinEvents
         PlayerJoinEvent join1 = this.createPlayerJointEvent(player1);
         PlayerJoinEvent join2 = this.createPlayerJointEvent(player2);
@@ -112,4 +113,34 @@ public class TestTest extends TestCase
     {
         return new PlayerJoinEvent(player,"");
     }
+    
+    public Player createSimplePlayer(String name)
+    {
+        Player player = mock(Player.class);
+        //Give Player his Name
+        when(player.getName()).thenReturn(name);
+        return player;
+    }
+    
+    public Player createOPPlayer(String name)
+    {
+        Player player = mock(Player.class);
+        //Give Player his Name
+        when(player.getName()).thenReturn(name);
+        //Give Player all Permissions
+        when(player.hasPermission(Matchers.anyString())).thenReturn(true);
+        when(player.isOp()).thenReturn(true);
+        return player;
+    }
+    
+    public Player createGuestPlayer(String name)
+    {
+        Player player = mock(Player.class);
+        //Give Player his Name
+        when(player.getName()).thenReturn(name);
+        //Give Player all Permissions
+        when(player.hasPermission(Matchers.anyString())).thenReturn(false);
+        return player;
+    }
+
 }

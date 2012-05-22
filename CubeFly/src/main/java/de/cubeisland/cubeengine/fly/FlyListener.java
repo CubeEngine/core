@@ -19,12 +19,18 @@ import org.bukkit.inventory.ItemStack;
  */
 public class FlyListener implements Listener
 {
-    UserManager cuManager = CubeCore.getInstance().getUserManager();
-    CubeCore plugin = CubeCore.getInstance();
+    UserManager cuManager;
+    CubeFly plugin;
     HashMap<Player,MyTask> tasks = new HashMap<Player,MyTask>();
 
+    public FlyListener(UserManager cuManager, CubeFly plugin)
+    {
+        this.cuManager = cuManager;
+        this.plugin = plugin;
+    }
+    
     @EventHandler
-    public void goesOnline(final PlayerInteractEvent event)
+    public void playerInteract(final PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
         if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR)
@@ -41,6 +47,11 @@ public class FlyListener implements Listener
                 return;
             }
             User user = cuManager.getUser(player);
+            if (user == null)
+            {
+                //User does not exist -> No Permissions for using any CubeModule
+                return;
+            }
             if (user.hasFlag(User.BLOCK_FLY))
             {
                 player.sendMessage("fly_block");
