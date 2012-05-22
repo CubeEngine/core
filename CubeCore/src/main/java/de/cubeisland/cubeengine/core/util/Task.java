@@ -7,10 +7,10 @@ import org.bukkit.plugin.Plugin;
  * 
  * @author Faithcaio
  */
-public abstract class MyTask implements Runnable {
+public abstract class Task implements Runnable {
     private int taskid;
     private Plugin plugin;
-    public MyTask(Plugin plugin) {
+    public Task(Plugin plugin) {
         this.plugin = plugin;
     }
     public void setTaskId(int taskid) {

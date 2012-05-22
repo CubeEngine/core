@@ -1,9 +1,8 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.MyTask;
+import de.cubeisland.cubeengine.core.util.Task;
 import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,7 +20,7 @@ public class FlyListener implements Listener
 {
     UserManager cuManager;
     CubeFly plugin;
-    HashMap<Player,MyTask> tasks = new HashMap<Player,MyTask>();
+    HashMap<Player,Task> tasks = new HashMap<Player,Task>();
 
     public FlyListener(UserManager cuManager, CubeFly plugin)
     {
@@ -70,7 +69,7 @@ public class FlyListener implements Listener
             player.sendMessage("fly_on");
             //You can now fly!
             //Du kannst jetzt fliegen!
-            MyTask flymore = new MyTask(plugin)
+            Task flymore = new Task(plugin)
             {
                 public void run()//2 feather/min
                 {
@@ -98,7 +97,7 @@ public class FlyListener implements Listener
             };
             final int taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, flymore , 1000*30, 1000*30);
             flymore.setTaskId(taskId);
-            MyTask oldTask = this.tasks.put(player, flymore);
+            Task oldTask = this.tasks.put(player, flymore);
             if (oldTask != null)
                 oldTask.cancelTask();
         }
