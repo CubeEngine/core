@@ -1,0 +1,12 @@
+{
+    "name": "German",
+    "countries": ["de", "at", "ch"],
+    "formatstrings": {
+        "number": "%mayor,%minor",
+        "date": "dd. MM. YYYY",
+        "time": "hh:mm"
+    }
+    "text": {
+        "I'm a test :)": "Ich bin ein Test :)"
+    }
+}

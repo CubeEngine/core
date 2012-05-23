@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 
 /**
@@ -63,5 +64,20 @@ public final class CubeEngine
     public static FileManager getFileManager()
     {
         return core.getFileManager();
+    }
+
+    public static String _(User user, String category, String text, Object... params)
+    {
+        return text; // TODO implement me
+    }
+
+    public static String _(String language, String category, String text, Object... params)
+    {
+        return text; // TODO implement me
+    }
+
+    public static String _(String category, String text, Object... params)
+    {
+        return _("en", category, text, params);
     }
 }
