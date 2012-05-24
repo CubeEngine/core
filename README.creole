@@ -12,9 +12,17 @@ The auctions module provides a system to create auctions.
 
 The ban module is used for advanced banning
 
+==== CubeBook ====
+
+The book module allows you to remodify finished books
+
 ==== CubeChat ====
 
 The chat module provides various options for different chatchannels
+
+==== CubeCircuits ====
+
+The circuits module provides lots of handy ICs to simplify all your redstone stuff
 
 ==== CubeConomy ====
 
@@ -40,6 +48,10 @@ The guard module prevents specific world modifications
 
 The IRC module synchronizes the ingame chat and an IRC server
 
+==== CubeFacebook ====
+
+The facebook module: Like it!
+
 ==== CubeLog ====
 
 The log module logs any action on the server like modifing the world or executing commands
@@ -47,6 +59,10 @@ The log module logs any action on the server like modifing the world or executin
 ==== CubeMarket ====
 
 The market module provides a simple market with signs and/or chatcommands.
+
+==== CubeMechanics ====
+
+The mechanic module provides Bridges, Lifts etc.
 
 ==== CubePermissions ====
 
@@ -59,6 +75,10 @@ The rpg module provides a lot of cutomizable skills and classes for best rpg fee
 ==== CubeStats ====
 
 The stats module gathers lots of statistics of the users
+
+==== CubeTraps ====
+
+The traps module provides various types of traps to trick your foes
 
 ==== CubeVanish ====
 
