@@ -13,22 +13,24 @@ public class User extends UserBase implements Model
     private final OfflinePlayer player;
     private final LongBitMask flags;
     private int id;
+    private String language;
     
     
     public static final int BLOCK_FLY = 1;
     
     
-    public User(int id, OfflinePlayer player, LongBitMask flags)
+    public User(int id, OfflinePlayer player, LongBitMask flags, String language)
     {
         super(player);
         this.id = id;
         this.player = player;
         this.flags = flags;
+        this.language = language;
     }
     
     public User(OfflinePlayer player)
     {
-        this(-1, player, new LongBitMask());
+        this(-1, player, new LongBitMask(), "en");//TODO assign correct Language ?
     }
 
     /**
@@ -82,5 +84,15 @@ public class User extends UserBase implements Model
     public void unsetFlag(int flag)
     {
         flags.unset(flag);
+    }
+    
+    public void setLanguage(String lang)
+    {
+        this.language = lang;
+    }
+    
+    public String getLanguage()
+    {
+        return this.language;
     }
 }

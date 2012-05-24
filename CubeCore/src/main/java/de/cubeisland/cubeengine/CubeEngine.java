@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 
 /**
  *
- * @author CodeInfection
+ * @author CubeIsland-Dev
  */
 public final class CubeEngine
 {
@@ -68,12 +68,19 @@ public final class CubeEngine
 
     public static String _(User user, String category, String text, Object... params)
     {
-        return text; // TODO implement me
+        return _(user.getLanguage(), category, text, params);
     }
 
     public static String _(String language, String category, String text, Object... params)
     {
-        return text; // TODO implement me
+        if (language.equalsIgnoreCase("de"))
+        {
+            return text; // TODO implement me
+        }
+        else
+        {
+            return text; // TODO implement me
+        }
     }
 
     public static String _(String category, String text, Object... params)

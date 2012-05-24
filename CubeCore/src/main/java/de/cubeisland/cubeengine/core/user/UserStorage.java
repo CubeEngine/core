@@ -29,11 +29,11 @@ public class UserStorage implements Storage<User>
         this.server = server;
         try
         {
-            this.database.prepareStatement("user_get",      "SELECT id,name,flags FROM {{users}} WHERE name=? LIMIT 1");
-            this.database.prepareStatement("user_getall",   "SELECT id,name,flags FROM {{users}}");
-            this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (name,flags) VALUES (?,?)");
-            this.database.prepareStatement("user_update",   "UPDATE {{users}} SET flags=? WHERE id=?");
-            this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,flags) VALUES (?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
+            this.database.prepareStatement("user_get",      "SELECT * FROM {{users}} WHERE id=? LIMIT 1");
+            this.database.prepareStatement("user_getall",   "SELECT * FROM {{users}}");
+            this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
+            this.database.prepareStatement("user_update",   "UPDATE {{users}} SET flags=?, language=? WHERE id=?");
+            this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
             this.database.prepareStatement("user_delete",   "DELETE FROM {{users}} WHERE id=?");
             this.database.prepareStatement("user_clear",    "DELETE FROM {{users}}");
         }
@@ -51,6 +51,7 @@ public class UserStorage implements Storage<User>
                                 "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"+
                                 "`name` varchar(16) NOT NULL,"+
                                 "`flags` int(11) NOT NULL,"+
+                                "`language` varchar(10) NOT NULL,"+
                                 "PRIMARY KEY (`id`)"+
                                 ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
                                );
@@ -68,6 +69,7 @@ public class UserStorage implements Storage<User>
             PreparedStatement ps = this.database.getStatement("user_store");
             ps.setString(1, model.getName());
             ps.setLong(2, model.getFlags().get());
+            ps.setString(3, model.getLanguage());
             this.database.assignId(ps,model);
         }
         catch (SQLException e)
@@ -91,13 +93,15 @@ public class UserStorage implements Storage<User>
             int id;
             OfflinePlayer player;
             LongBitMask bitmask;
+            String language;
             while (result.next())
             {
                 id = result.getInt("id");
                 player = this.server.getOfflinePlayer(result.getString("name"));
                 bitmask = new LongBitMask(result.getLong("flags"));
-                
-                users.add(new User(id, player, bitmask));
+                language = result.getString("language");
+                User user = new User(id, player, bitmask, language);
+                users.add(user);
             }
 
             return users;
@@ -112,7 +116,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("user_get", key);//WHERE name=? LIMIT 1 das wird so nichts
+            ResultSet result = this.database.preparedQuery("user_get", key);
 
             if (!result.next())
             {
@@ -122,7 +126,8 @@ public class UserStorage implements Storage<User>
             int id = result.getInt("id");
             OfflinePlayer player = this.server.getOfflinePlayer(result.getString("name"));
             LongBitMask bitmask = new LongBitMask(result.getLong("flags"));
-            return new User(id, player, bitmask);
+            String language = result.getString("language");
+            return new User(id, player, bitmask, language);
 
         }
         catch (SQLException e)
@@ -167,7 +172,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.preparedUpdate("user_update", object.getFlags(), object.getId());
+            this.database.preparedUpdate("user_update", object.getFlags(), object.getLanguage(), object.getId());
         }
         catch (SQLException e)
         {
@@ -179,7 +184,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.preparedUpdate("user_merge", object.getFlags());
+            this.database.preparedUpdate("user_merge", object.getFlags(), object.getLanguage());
         }
         catch (SQLException e)
         {
