@@ -95,8 +95,7 @@ public class FlyListener implements Listener
                     }
                 }
             };
-            final int taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, flymore , 1000*30, 1000*30);
-            flymore.setTaskId(taskId);
+            flymore.scheduleAsyncRepeatingTask(1000*30, 1000*30);
             Task oldTask = this.tasks.put(player, flymore);
             if (oldTask != null)
                 oldTask.cancelTask();
