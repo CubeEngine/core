@@ -4,6 +4,10 @@ Description
 
 === Modules ===
 
+==== CubeAntiCheat ====
+
+The anticheat module is used to prevent any sort of cheating
+
 ==== CubeAuctions ====
 
 The auctions module provides a system to create auctions.
@@ -64,9 +68,21 @@ The market module provides a simple market with signs and/or chatcommands.
 
 The mechanic module provides Bridges, Lifts etc.
 
+==== CubeNPC ====
+
+The npc module creates NPCs to populate your world
+
 ==== CubePermissions ====
 
 The permissions module provides groups and assigns permissions to the players
+
+==== CubePortals ====
+
+The portals module provides free shapable portals to travel faster in your Minecraft-World
+
+==== CubeRelations ====
+
+The relation module provides an ingame marriage system and much more
 
 ==== CubeRPG ====
 
@@ -86,7 +102,11 @@ The vanish module allows players to hide themselfes
 
 ==== CubeWar ====
 
-Description
+PvP stuff (other module for pvp itself and leave Factions/Groups/Guilds whatever here)
+
+==== CubeWorlds ====
+
+The worlds module can manage multiple world in different gamemodes
 
 ==== Folder structure ====
 
