@@ -16,6 +16,4 @@ public class UserCreatedEvent extends UserEvent
     {
         super(core, user);
     }
-
-
 }

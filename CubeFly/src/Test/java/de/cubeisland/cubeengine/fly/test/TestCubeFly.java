@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginManager;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -33,6 +34,8 @@ public class TestCubeFly
     {
         CubeFly plugin = mock(CubeFly.class);
         Server server = mock(Server.class);
+        PluginManager pm = mock(PluginManager.class);
+        when(server.getPluginManager()).thenReturn(pm);
         Database database = new Database("localhost",(short)3306,"root","","cubeengine","cube_test_");
         UserStorage storage = new UserStorage(database, server);
         //Init & Clear DB

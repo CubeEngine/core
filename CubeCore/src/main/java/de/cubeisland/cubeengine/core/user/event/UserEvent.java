@@ -19,5 +19,10 @@ public class UserEvent extends ModelEvent
         super(core, user);
         this.user = user;
     }
+    
+    public User getUser()
+    {
+        return this.user;
+    }
 
 }
