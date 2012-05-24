@@ -18,18 +18,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package com.maxmind.geoip;
+package de.cubeisland.cubeengine.core.i18n.geoip;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.InetAddress;
 import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
@@ -562,7 +560,7 @@ public class LookupService {
                 }
             }
         catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
         return new DatabaseInfo("");
     }
@@ -585,49 +583,6 @@ public class LookupService {
       }
     }
 
-    // for GeoIP City only
-    public Location getLocationV6(String str) {
-        if (dnsService == 0) {
-            InetAddress addr;
-            try {
-                addr = InetAddress.getByName(str);
-            }
-            catch (UnknownHostException e) {
-                return null;
-            }
-
-            return getLocationV6(addr);
-        } else {
-            String str2 = getDnsAttributes(str);
- 	    return getLocationwithdnsservice(str2);
-	    // TODO if DNS is not available, go to local file as backup
-	}
-    }
-
-    // for GeoIP City only
-    public Location getLocation(InetAddress addr) {
-        return getLocation(bytesToLong(addr.getAddress()));
-    }
-
-    // for GeoIP City only
-    public Location getLocation(String str) {
-        if (dnsService == 0) {
-            InetAddress addr;
-            try {
-                addr = InetAddress.getByName(str);
-            }
-            catch (UnknownHostException e) {
-                return null;
-            }
-
-            return getLocation(addr);
-        } else {
-            String str2 = getDnsAttributes(str);
- 	    return getLocationwithdnsservice(str2);
-	    // TODO if DNS is not available, go to local file as backup
-	}
-    }
-
     String getDnsAttributes(String ip) {
         try {
             Hashtable env = new Hashtable();
@@ -647,302 +602,6 @@ public class LookupService {
             return null;
         }
 
-    }
-
-    public Location getLocationwithdnsservice(String str) {
-        Location record = new Location();
-        String key;
-        String value;
-        StringTokenizer st = new StringTokenizer(str,";=\""); 
-        while (st.hasMoreTokens()) {
-	    key = st.nextToken();
-            if (st.hasMoreTokens()) {
-                value = st.nextToken();
-            } else {
-	        value = "";}
-	    if (key.equals("co")) {
-		Integer i = (Integer)hashmapcountryCodetoindex.get(value);
-		record.countryCode = value;
-		record.countryName = countryName[i.intValue()];
-	    }
-	    if (key.equals("ci")) {
-		record.city = value;
-	    }
-	    if (key.equals("re")) {
-		record.region = value;
-	    }
-	    if (key.equals("zi")) {
-	        record.postalCode = value;
-	    }
-	    // TODO, ISP and Organization
-	    //if (key.equals("or")) {
-	    //record.org = value;
-	    //}
-	    //if (key.equals("is")) {
-	    //record.isp = value;
-	    //}
-	    if (key.equals("la")) {
-		try{
-		    record.latitude = Float.parseFloat(value);
-		} catch(NumberFormatException e) {
-		    record.latitude = 0;
-		}
-	    }
-	    if (key.equals("lo")) {
-		try{
-		    record.longitude = Float.parseFloat(value);
-		} catch(NumberFormatException e) {
-		    record.latitude = 0;
-		}
-	    }
-	    // dm depreciated use me ( metro_code ) instead
-	    if (key.equals("dm") || key.equals("me")) {
-		try{
-		    record.metro_code = record.dma_code = Integer.parseInt(value);
-		} catch(NumberFormatException e) {
-		    record.metro_code = record.dma_code = 0;
-		}
-	    }
-	    if (key.equals("ac")) {
-		try{
-		    record.area_code = Integer.parseInt(value);
-		} catch(NumberFormatException e) {
-		    record.area_code = 0;
-		}
-	    }
-	}
-        return record;
-    }
-
-    public synchronized Region getRegion(String str) {
-	InetAddress addr;
-	try {
-	    addr = InetAddress.getByName(str);
-	}
-	catch (UnknownHostException e) {
-	    return null;
-	}
-
-	return getRegion(bytesToLong(addr.getAddress()));
-    }
-
-    public synchronized Region getRegion(long ipnum) {
-        Region record = new Region();
-        int seek_region = 0;
-        if (databaseType == DatabaseInfo.REGION_EDITION_REV0) {
-            seek_region = seekCountry(ipnum) - STATE_BEGIN_REV0;
-            char ch[] = new char[2];
-            if (seek_region >= 1000) {
-                record.countryCode = "US";
-                record.countryName = "United States";
-                ch[0] = (char)(((seek_region - 1000)/26) + 65);
-                ch[1] = (char)(((seek_region - 1000)%26) + 65);
-	        record.region = new String(ch);
-            } else {
-                record.countryCode = countryCode[seek_region];
-                record.countryName = countryName[seek_region];
-                record.region = "";
-            }
-        } else if (databaseType == DatabaseInfo.REGION_EDITION_REV1) {
-            seek_region = seekCountry(ipnum) - STATE_BEGIN_REV1;
-            char ch[] = new char[2];
-            if (seek_region < US_OFFSET) {
-                record.countryCode = "";
-                record.countryName = "";
-	        record.region = "";
-            } else if (seek_region < CANADA_OFFSET) {
-                record.countryCode = "US";
-                record.countryName = "United States";
-                ch[0] = (char)(((seek_region - US_OFFSET)/26) + 65);
-                ch[1] = (char)(((seek_region - US_OFFSET)%26) + 65);
-	        record.region = new String(ch);
-            } else if (seek_region < WORLD_OFFSET) {
-                record.countryCode = "CA";
-                record.countryName = "Canada";
-                ch[0] = (char)(((seek_region - CANADA_OFFSET)/26) + 65);
-                ch[1] = (char)(((seek_region - CANADA_OFFSET)%26) + 65);
-	        record.region = new String(ch);
-            } else {
-                record.countryCode = countryCode[(seek_region - WORLD_OFFSET) / FIPS_RANGE];
-                record.countryName = countryName[(seek_region - WORLD_OFFSET) / FIPS_RANGE];
-                record.region = "";
-            }
-	}
-	return record;
-    }
-
-    public synchronized Location getLocationV6(InetAddress addr) {
-        int record_pointer;
-        byte record_buf[] = new byte[FULL_RECORD_LENGTH];
-        int record_buf_offset = 0;
-        Location record = new Location();
-        int str_length = 0;
-        int j, seek_country;
-        double latitude = 0, longitude = 0;
-
-        try {
-            seek_country = seekCountryV6(addr);
-            if (seek_country == databaseSegments[0]) {
-                return null;
-            }
-            record_pointer = seek_country + (2 * recordLength - 1) * databaseSegments[0];
-
-            if ((dboptions & GEOIP_MEMORY_CACHE) == 1) {
-                //read from memory
-		System.arraycopy(dbbuffer, record_pointer, record_buf, 0, Math.min(dbbuffer.length - record_pointer, FULL_RECORD_LENGTH));
-} else {
-                //read from disk
-                file.seek(record_pointer);
-                file.readFully(record_buf);
-            }
-
-            // get country
-            record.countryCode = countryCode[unsignedByteToInt(record_buf[0])];
-            record.countryName = countryName[unsignedByteToInt(record_buf[0])];
-            record_buf_offset++;
-
-            // get region
-            while (record_buf[record_buf_offset + str_length] != '\0')
-                str_length++;
-            if (str_length > 0) {
-                record.region = new String(record_buf, record_buf_offset, str_length);
-            }
-            record_buf_offset += str_length + 1;
-            str_length = 0;
-
-            // get city
-            while (record_buf[record_buf_offset + str_length] != '\0')
-                str_length++;
-            if (str_length > 0) {
-                record.city = new String(record_buf, record_buf_offset, str_length, "ISO-8859-1");
-            }
-            record_buf_offset += str_length + 1;
-            str_length = 0;
-
-            // get postal code
-            while (record_buf[record_buf_offset + str_length] != '\0')
-                str_length++;
-            if (str_length > 0) {
-                record.postalCode = new String(record_buf, record_buf_offset, str_length);
-            }
-            record_buf_offset += str_length + 1;
-
-            // get latitude
-            for (j = 0; j < 3; j++)
-                latitude += (unsignedByteToInt(record_buf[record_buf_offset + j]) << (j * 8));
-            record.latitude = (float) latitude/10000 - 180;
-            record_buf_offset += 3;
-
-            // get longitude
-            for (j = 0; j < 3; j++)
-                longitude += (unsignedByteToInt(record_buf[record_buf_offset + j]) << (j * 8));
-	    record.longitude = (float) longitude/10000 - 180;
-
-	    record.dma_code = record.metro_code = 0;
-	    record.area_code = 0;
-	    if (databaseType == DatabaseInfo.CITY_EDITION_REV1) {
-		// get DMA code
-		int metroarea_combo = 0;
-		if (record.countryCode == "US") {
-		    record_buf_offset += 3;
-		    for (j = 0; j < 3; j++)
-			metroarea_combo += (unsignedByteToInt(record_buf[record_buf_offset + j]) << (j * 8));
-		    record.metro_code = record.dma_code = metroarea_combo/1000;
-		    record.area_code = metroarea_combo % 1000;
-		}
-            }
-	}
-	catch (IOException e) {
-            System.err.println("IO Exception while seting up segments");
-        }
-        return record;
-    }
-
-    public synchronized Location getLocation(long ipnum) {
-        int record_pointer;
-        byte record_buf[] = new byte[FULL_RECORD_LENGTH];
-        int record_buf_offset = 0;
-        Location record = new Location();
-        int str_length = 0;
-        int j, seek_country;
-        double latitude = 0, longitude = 0;
-
-        try {
-            seek_country = seekCountry(ipnum);
-            if (seek_country == databaseSegments[0]) {
-                return null;
-            }
-            record_pointer = seek_country + (2 * recordLength - 1) * databaseSegments[0];
-
-            if ((dboptions & GEOIP_MEMORY_CACHE) == 1) {
-                //read from memory
-		System.arraycopy(dbbuffer, record_pointer, record_buf, 0, Math.min(dbbuffer.length - record_pointer, FULL_RECORD_LENGTH));
-} else {
-                //read from disk
-                file.seek(record_pointer);
-                file.readFully(record_buf);
-            }
-
-            // get country
-            record.countryCode = countryCode[unsignedByteToInt(record_buf[0])];
-            record.countryName = countryName[unsignedByteToInt(record_buf[0])];
-            record_buf_offset++;
-
-            // get region
-            while (record_buf[record_buf_offset + str_length] != '\0')
-                str_length++;
-            if (str_length > 0) {
-                record.region = new String(record_buf, record_buf_offset, str_length);
-            }
-            record_buf_offset += str_length + 1;
-            str_length = 0;
-
-            // get city
-            while (record_buf[record_buf_offset + str_length] != '\0')
-                str_length++;
-            if (str_length > 0) {
-                record.city = new String(record_buf, record_buf_offset, str_length, "ISO-8859-1");
-            }
-            record_buf_offset += str_length + 1;
-            str_length = 0;
-
-            // get postal code
-            while (record_buf[record_buf_offset + str_length] != '\0')
-                str_length++;
-            if (str_length > 0) {
-                record.postalCode = new String(record_buf, record_buf_offset, str_length);
-            }
-            record_buf_offset += str_length + 1;
-
-            // get latitude
-            for (j = 0; j < 3; j++)
-                latitude += (unsignedByteToInt(record_buf[record_buf_offset + j]) << (j * 8));
-            record.latitude = (float) latitude/10000 - 180;
-            record_buf_offset += 3;
-
-            // get longitude
-            for (j = 0; j < 3; j++)
-                longitude += (unsignedByteToInt(record_buf[record_buf_offset + j]) << (j * 8));
-	    record.longitude = (float) longitude/10000 - 180;
-
-	    record.dma_code = record.metro_code = 0;
-	    record.area_code = 0;
-	    if (databaseType == DatabaseInfo.CITY_EDITION_REV1) {
-		// get DMA code
-		int metroarea_combo = 0;
-		if (record.countryCode == "US") {
-		    record_buf_offset += 3;
-		    for (j = 0; j < 3; j++)
-			metroarea_combo += (unsignedByteToInt(record_buf[record_buf_offset + j]) << (j * 8));
-		    record.metro_code = record.dma_code = metroarea_combo/1000;
-		    record.area_code = metroarea_combo % 1000;
-		}
-            }
-	}
-	catch (IOException e) {
-            System.err.println("IO Exception while seting up segments");
-        }
-        return record;
     }
 
     public String getOrg(InetAddress addr) {

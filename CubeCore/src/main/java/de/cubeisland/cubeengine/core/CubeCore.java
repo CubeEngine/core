@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core;
 
-import com.maxmind.geoip.LookupService;
+import de.cubeisland.cubeengine.core.i18n.geoip.LookupService;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
