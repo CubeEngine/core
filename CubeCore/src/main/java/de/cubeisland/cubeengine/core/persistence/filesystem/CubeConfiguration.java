@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
-import de.cubeisland.cubeengine.core.modules.CubeModule;
+import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class CubeConfiguration extends YamlConfiguration
         return config;
     }
 
-    public static CubeConfiguration get(File dir, CubeModule module)
+    public static CubeConfiguration get(File dir, Module module)
     {
         if (module == null)
         {

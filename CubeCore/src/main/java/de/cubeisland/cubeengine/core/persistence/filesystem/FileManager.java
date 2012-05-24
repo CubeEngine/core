@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.modules.CubeModule;
+import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,7 +20,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 public class FileManager
 {
     private CubeCore core;
-    private Map<CubeModule, CubeConfiguration> configs;
+    private Map<Module, CubeConfiguration> configs;
     private File configBaseDir;
     private File moduleConfigDir;
     private File geoipFile;
@@ -31,7 +31,7 @@ public class FileManager
     public FileManager(CubeCore core)
     {
         this.core = core;
-        this.configs = new THashMap<CubeModule, CubeConfiguration>();
+        this.configs = new THashMap<Module, CubeConfiguration>();
         this.configBaseDir = new File(core.getDataFolder().getParentFile(), "CubeEngine");
         this.configBaseDir.mkdirs();
 
@@ -110,7 +110,7 @@ public class FileManager
         return this.databaseConfig;
     }
 
-    public CubeConfiguration getModuleConfig(CubeModule module)
+    public CubeConfiguration getModuleConfig(Module module)
     {
         CubeConfiguration config = this.configs.get(module);
         if (config == null)

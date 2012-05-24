@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core;
 
 import com.maxmind.geoip.LookupService;
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
@@ -21,8 +22,9 @@ public class CubeCore extends JavaPlugin
     private Database database;
     private PermissionRegistration permissionRegistration;
     private UserManager userManager;
-    private FileManager fileManager = null;
+    private FileManager fileManager;
     private PluginManager pm;
+    private ModuleManager moduleManager;
 
     public CubeCore()
     {
@@ -47,7 +49,8 @@ public class CubeCore extends JavaPlugin
     @Override
     public void onEnable()
     {
-        this.fileManager = this.getFileManager();
+        this.moduleManager = new ModuleManager(this);
+        this.fileManager = new FileManager(this);
         final CubeConfiguration coreConfig = this.fileManager.getCoreConfig();
         coreConfig.safeSave();
 
@@ -67,7 +70,7 @@ public class CubeCore extends JavaPlugin
 
         this.database = new Database(
                 databaseConfig.getString("mysql.host"),
-                (short) databaseConfig.getInt("mysql.port"),
+                (short)databaseConfig.getInt("mysql.port"),
                 databaseConfig.getString("mysql.user"),
                 databaseConfig.getString("mysql.password"),
                 databaseConfig.getString("mysql.database"),
@@ -105,10 +108,7 @@ public class CubeCore extends JavaPlugin
     {
         return this.lookupService.getCountry(address).getCode();
     }
-
-    /**
-     * @return the userManager
-     */
+    
     public UserManager getUserManager()
     {
         return userManager;
@@ -116,13 +116,16 @@ public class CubeCore extends JavaPlugin
 
     public FileManager getFileManager()
     {
-        if (fileManager == null)
-            fileManager = new FileManager(this);
         return this.fileManager;
     }
 
     public void registerPermissions(Permission... values)
     {
         this.permissionRegistration.registerPermissions(values);
+    }
+
+    public ModuleManager getModuleManager()
+    {
+        return this.moduleManager;
     }
 }
