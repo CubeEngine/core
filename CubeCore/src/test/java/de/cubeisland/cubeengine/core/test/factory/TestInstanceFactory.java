@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.*;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.persistence.filesystem.CubeConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.test.util.Util;
 import java.io.File;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
@@ -62,7 +61,6 @@ public class TestInstanceFactory
         doNothing().when(core).registerPermissions(Perm.values());
 
         final Logger commandSenderLogger = Logger.getLogger("CommandSender");
-        commandSenderLogger.setParent(Util.logger);
         commandSender = mock(CommandSender.class);
         doAnswer(new Answer<Void>() {
             @Override
