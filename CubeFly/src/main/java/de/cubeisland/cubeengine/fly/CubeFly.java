@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
+import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
@@ -12,7 +12,7 @@ import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 
-public class CubeFly extends CubeModuleBase implements TranslatablePlugin
+public class CubeFly extends ModuleBase implements TranslatablePlugin
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;

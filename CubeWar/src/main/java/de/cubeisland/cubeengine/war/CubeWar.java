@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.war;
 
-import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
+import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.war.area.AreaControl;
 import de.cubeisland.cubeengine.war.commands.ByPassCommand;
@@ -32,7 +32,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 /**
  * Main Class
  */
-public class CubeWar extends CubeModuleBase implements TranslatablePlugin
+public class CubeWar extends ModuleBase implements TranslatablePlugin
 {
     private static CubeWar instance = null;
     private static Logger logger = null;
