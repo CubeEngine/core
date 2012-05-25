@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.conomy;
 
-import de.cubeisland.cubeengine.core.command.BaseCommand;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
 import java.io.File;
 import java.util.logging.Level;
@@ -24,6 +23,7 @@ public class CubeConomy extends ModuleBase
         super("conomy");
     }
 
+    @Override
     public void onEnable()
     {
         logger = this.getLogger();
@@ -44,6 +44,7 @@ public class CubeConomy extends ModuleBase
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
 
+    @Override
     public void onDisable()
     {
         log("Version " + this.getDescription().getVersion() + " disabled");
