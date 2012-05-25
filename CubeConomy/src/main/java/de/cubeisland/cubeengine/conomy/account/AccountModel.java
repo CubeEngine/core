@@ -11,6 +11,13 @@ public abstract class AccountModel implements IAccount,Model
     private double balance;
     private int id;
     
+    /**
+     * Returns the Name of this Account
+     * Bank Accounts : #BankName
+     * Player Account : PlayerName
+     * 
+     * @return the AccountName
+     */
     public abstract String getName();
 
     public double give(double amount)
