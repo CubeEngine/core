@@ -1,7 +1,5 @@
-package de.cubeisland.cubeengine.fly;
+package de.cubeisland.cubeengine.conomy;
 
-import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.command.BaseCommand;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
 import java.io.File;
 import java.util.logging.Level;
@@ -10,7 +8,7 @@ import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 
-public class CubeFly extends ModuleBase
+public class CubeConomy extends ModuleBase
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;
@@ -18,14 +16,14 @@ public class CubeFly extends ModuleBase
     protected Server server;
     protected PluginManager pm;
     protected File dataFolder;
-    private static final String PERMISSION_BASE = "cubewar.fly";
-    private BaseCommand baseCommand;
+    private static final String PERMISSION_BASE = "cubewar.conomy";
 
-    public CubeFly()
+    public CubeConomy()
     {
-        super("fly");
+        super("conomy");
     }
 
+    @Override
     public void onEnable()
     {
         logger = this.getLogger();
@@ -41,19 +39,12 @@ public class CubeFly extends ModuleBase
         
         this.saveConfig();
         
-        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new FlyCommand())
-                        .setDefaultCommand("fly")
-                        .unregisterCommand("reload");
-        this.getCommand("fly").setExecutor(baseCommand);
-        
-        this.pm.registerEvents(new FlyListener(CubeCore.getInstance().getUserManager(),this), this);
-        
-        CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
+        //CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
 
+    @Override
     public void onDisable()
     {
         log("Version " + this.getDescription().getVersion() + " disabled");

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
@@ -8,7 +7,6 @@ import de.cubeisland.cubeengine.core.util.bitmask.LongBitMask;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.bukkit.OfflinePlayer;
@@ -29,12 +27,12 @@ public class UserStorage implements Storage<User>
         this.server = server;
         try
         {
-            this.database.prepareStatement("user_get",      "SELECT * FROM {{users}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("user_getall",   "SELECT * FROM {{users}}");
+            this.database.prepareStatement("user_get",      "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
+            this.database.prepareStatement("user_getall",   "SELECT id,name,language FROM {{users}}");
             this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
-            this.database.prepareStatement("user_update",   "UPDATE {{users}} SET flags=?, language=? WHERE id=?");
-            this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?) ON DUPLICATE KEY UPDATE flags=values(flags)");
-            this.database.prepareStatement("user_delete",   "DELETE FROM {{users}} WHERE id=?");
+            this.database.prepareStatement("user_update",   "UPDATE {{users}} SET language=? WHERE id=?");
+            this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
+            this.database.prepareStatement("user_delete",   "DELETE FROM {{users}} WHERE id=? LIMIT 1");
             this.database.prepareStatement("user_clear",    "DELETE FROM {{users}}");
         }
         catch (SQLException e)
@@ -47,30 +45,29 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.exec( "CREATE TABLE IF NOT EXISTS `"+this.database.getTablePrefix()+"users` ("+
-                                "`id` int(11) unsigned NOT NULL AUTO_INCREMENT,"+
-                                "`name` varchar(16) NOT NULL,"+
-                                "`flags` int(11) NOT NULL,"+
-                                "`language` varchar(10) NOT NULL,"+
-                                "PRIMARY KEY (`id`)"+
-                                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-                               );
+            this.database.exec(
+                "CREATE TABLE IF NOT EXISTS `{{users}}` (" +
+                "  `id` int(11) unsigned NOT NULL AUTO_INCREMENT," +
+                "  `name` varchar(16) NOT NULL," +
+                "  `language` varchar(10) NOT NULL," +
+                "  PRIMARY KEY (`id`)" +
+                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+            );
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Failed to initialize the CubeUserTable !", ex);
+            throw new StorageException("Failed to initialize the UserTable !", ex);
         }
     }
     
-    public void store(User model)
+    public void store(User user)
     {
         try
         {
             PreparedStatement ps = this.database.getStatement("user_store");
-            ps.setString(1, model.getName());
-            ps.setLong(2, model.getFlags().get());
-            ps.setString(3, model.getLanguage());
-            this.database.assignId(ps,model);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getLanguage());
+            this.database.assignId(ps,user);
         }
         catch (SQLException e)
         {
@@ -100,7 +97,7 @@ public class UserStorage implements Storage<User>
                 player = this.server.getOfflinePlayer(result.getString("name"));
                 bitmask = new LongBitMask(result.getLong("flags"));
                 language = result.getString("language");
-                User user = new User(id, player, bitmask, language);
+                User user = new User(id, player, language);
                 users.add(user);
             }
 
@@ -125,34 +122,13 @@ public class UserStorage implements Storage<User>
             
             int id = result.getInt("id");
             OfflinePlayer player = this.server.getOfflinePlayer(result.getString("name"));
-            LongBitMask bitmask = new LongBitMask(result.getLong("flags"));
             String language = result.getString("language");
-            return new User(id, player, bitmask, language);
+            return new User(id, player, language);
 
         }
         catch (SQLException e)
         {
             throw new StorageException("Failed to load the user '" + key + "'!", e);
-        }
-    }
-    
-    public int getCubeUserId(String name)
-    {
-        try
-        {
-            ResultSet result = this.database.preparedQuery("user_get", name);
-
-            if (!result.next())
-            {
-                return -1;
-            }
-            
-            return result.getInt("id");
-
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to load the user '" + name + "'!", e);
         }
     }
 
@@ -172,7 +148,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.preparedUpdate("user_update", object.getFlags(), object.getLanguage(), object.getId());
+            this.database.preparedUpdate("user_update", object.getLanguage(), object.getId());
         }
         catch (SQLException e)
         {
@@ -180,11 +156,11 @@ public class UserStorage implements Storage<User>
         }
     }
 
-    public void merge(User object)
+    public void merge(User user)
     {
         try
         {
-            this.database.preparedUpdate("user_merge", object.getFlags(), object.getLanguage());
+            this.database.preparedUpdate("user_merge", user.getName(), user.getLanguage());
         }
         catch (SQLException e)
         {

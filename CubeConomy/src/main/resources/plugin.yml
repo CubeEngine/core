@@ -1,0 +1,20 @@
+name: CubeConomy
+version: "${project.version}"
+main: de.cubeisland.cubeengine.conomy.CubeConomy
+commands:
+  cubeconomy:
+    usage: "/cc"
+    description: "This is the base command of CubeConomy"
+    aliases: 
+      - cc
+depend: 
+  - CubeCore
+softdepend: []
+database: false
+website: "http://cubeisland.de"
+description: "Economy API"
+author: "Cube Island"
+authors:
+  - "Cube Island"
+load: postworld
+#permissions:

@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.auctions.database.BidderStorage;
 import de.cubeisland.cubeengine.auctions.database.PriceStorage;
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.modules.CubeModuleBase;
+import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.libMinecraft.command.BaseCommand;
@@ -30,7 +30,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 /**
  * Main Class
  */
-public class CubeAuctions extends CubeModuleBase implements TranslatablePlugin
+public class CubeAuctions extends ModuleBase implements TranslatablePlugin
 {
     private static CubeAuctions instance = null;
     private static Logger logger = null;

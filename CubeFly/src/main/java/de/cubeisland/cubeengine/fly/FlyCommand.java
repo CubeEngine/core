@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.fly;
 
+import static de.cubeisland.cubeengine.CubeEngine._;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import static de.cubeisland.cubeengine.fly.CubeFly.t;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
@@ -23,21 +23,24 @@ public class FlyCommand
         if (sender instanceof Player)
         {
             Player player = (Player) sender;
+            User user = cuManager.getUser(sender);
             //PermissionCheck
             if (Perm.COMMAND_FLY_BYPASS.isAuthorized(sender));
             {
+                
                 if (!Perm.COMMAND_FLY.isAuthorized(sender))
                 {
-                    sender.sendMessage("Permission fehlt");
-                    //TODO Translation: You dont have permission to use this Command!
-                    //Du bist nicht berechtigt diesen Befehl zu nutzen!
+                    sender.sendMessage(_(user.getLanguage(), "core" , "&cYou dont have permission to use this Command!"));
+                    //TODO Translations
+                    //&cDu bist nicht berechtigt diesen Befehl zu nutzen!
                     player.setAllowFlight(false); //Disable when player is flying
                     return;
                 }
-                User user = cuManager.getUser(sender);
-                if (user.hasFlag(User.BLOCK_FLY))
+                FlyStartEvent event = new FlyStartEvent(CubeCore.getInstance(), user);
+                if (event.isCancelled())
                 {
-                    sender.sendMessage(t("fly_block"));
+                    sender.sendMessage(_(user.getLanguage(), "fly" , "&cYou are not allowed to fly now!"));
+                    //&cDu darfst jetzt nicht fliegen!
                     player.setAllowFlight(false); //Disable when player is flying
                     return;
                 }
@@ -46,15 +49,19 @@ public class FlyCommand
             player.setAllowFlight(!player.getAllowFlight());
             if (player.getAllowFlight())
             {
-                sender.sendMessage(t("fly_on"));
+                sender.sendMessage(_(user.getLanguage(), "fly" , "&6You can now fly!"));
+                //&6Du kannst jetzt fliegen!
             }
             else
             {//or not
-                sender.sendMessage(t("fly_off"));
+                sender.sendMessage(_(user.getLanguage(), "fly" , "&6You cannot fly anymore!"));
+                //&6Du kannst jetzt nicht mehr fliegen!
             }
             return;
         }
-        sender.sendMessage(t("fly_server"));
-        sender.sendMessage(t("fly_joke"));
+        sender.sendMessage(_("fly" , "&6ProTip: &eIf your server fly away it goes offline."));
+        sender.sendMessage(_("fly" , "So... Stopping the Server in 3.."));
+        //&6ProTipp: &eWenn der Server wegfliegt geht er aus.
+        //Also... Server fährt runter in 3..
     }
 }

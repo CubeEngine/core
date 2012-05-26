@@ -40,11 +40,6 @@ public class CubeCore extends JavaPlugin
     {
         return instance;
     }
-
-    public PluginManager getPluginManager()
-    {
-        return this.getServer().getPluginManager();
-    }
     
     @Override
     public void onEnable()
@@ -57,7 +52,7 @@ public class CubeCore extends JavaPlugin
         final CubeConfiguration databaseConfig = this.fileManager.getDatabaseConfig();
         databaseConfig.safeSave();
         
-        this.pm = this.getPluginManager();
+        this.pm = getServer().getPluginManager();
 
         try
         {
@@ -77,17 +72,18 @@ public class CubeCore extends JavaPlugin
                 databaseConfig.getString("mysql.tableprefix"));
 
         this.userManager = new UserManager(this.database, this.getServer());
-        this.permissionRegistration = new PermissionRegistration(getPluginManager());
+        this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
-        this.pm.registerEvents(new CoreListener(this.userManager), this);
         
         CubeEngine.initialize(this);
-        
     }
 
     @Override
     public void onDisable()
     {
+        this.moduleManager.clean();
+        this.moduleManager = null;
+        
         CubeEngine.clean();
 
         this.fileManager.clean();
@@ -99,31 +95,66 @@ public class CubeCore extends JavaPlugin
         this.permissionRegistration = null;
     }
 
+    /**
+     * Returns the PermissionRegistration
+     *
+     * @return the PermissionRegistration
+     */
     public PermissionRegistration getPermissionRegistration()
     {
         return this.permissionRegistration;
+    }
+
+    /**
+     * Returns the PluginManager
+     *
+     * @return the PluginManager
+     */
+    public PluginManager getPluginManager()
+    {
+        return this.pm;
     }
 
     public String locateAddress(InetAddress address)
     {
         return this.lookupService.getCountry(address).getCode();
     }
-    
+
+    /**
+     * Returns the UserManager
+     *
+     * @return the UserManager
+     */
     public UserManager getUserManager()
     {
         return userManager;
     }
 
+    /**
+     * Returns the FileManager
+     *
+     * @return the FileManager
+     */
     public FileManager getFileManager()
     {
         return this.fileManager;
     }
 
+    /**
+     * This method is a proxy to PermissionRegistration.registerPermissions
+     *
+     * @see de.cubeisland.cubeengine.core.permission.PermissionRegistration
+     */
     public void registerPermissions(Permission... values)
     {
         this.permissionRegistration.registerPermissions(values);
     }
 
+    /**
+     * Returns the module manager
+     *
+     * @return the module manager
+     */
     public ModuleManager getModuleManager()
     {
         return this.moduleManager;

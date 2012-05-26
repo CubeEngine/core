@@ -7,55 +7,40 @@
     </parent>
 
     <groupId>de.cubeisland</groupId>
-    <artifactId>cubewar</artifactId>
+    <artifactId>cubeconomy</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>CubeWar</name>
+    <name>CubeConomy</name>
     <url>http://cubeisland.de</url>
     <packaging>jar</packaging>
-    <description>Enhanced PvP for your Server</description>
+    <description>Economy API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
   
     <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
+        </repository>
     </repositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.2.5-R1.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland</groupId>
-            <artifactId>libminecraft</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.trove4j</groupId>
-            <artifactId>trove4j</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.2.16-SNAPSHOT</version>
+            <version>1.2.5-R1.3</version>
         </dependency>
         <dependency>
             <groupId>de.cubeisland</groupId>
             <artifactId>cubecore</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland</groupId>
-            <artifactId>cubefly</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>CubeWar</finalName>
+        <finalName>CubeConomy</finalName>
         <resources>
             <resource>
                 <targetPath>.</targetPath>
@@ -91,9 +76,27 @@
                 <version>2.3.2</version>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
-                    <source>1.5</source>
-                    <target>1.5</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>de.cubeisland:libminecraft</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

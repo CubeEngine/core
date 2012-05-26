@@ -11,7 +11,6 @@ import org.bukkit.OfflinePlayer;
 public class User extends UserBase implements Model
 {
     private final OfflinePlayer player;
-    private final LongBitMask flags;
     private int id;
     private String language;
     
@@ -19,18 +18,17 @@ public class User extends UserBase implements Model
     public static final int BLOCK_FLY = 1;
     
     
-    public User(int id, OfflinePlayer player, LongBitMask flags, String language)
+    public User(int id, OfflinePlayer player, String language)
     {
         super(player);
         this.id = id;
         this.player = player;
-        this.flags = flags;
         this.language = language;
     }
     
     public User(OfflinePlayer player)
     {
-        this(-1, player, new LongBitMask(), "en");//TODO assign correct Language ?
+        this(-1, player, "en"); //TODO locate user and lookup language ?
     }
 
     /**
@@ -39,14 +37,6 @@ public class User extends UserBase implements Model
     public OfflinePlayer getOfflinePlayer()
     {
         return this.player;
-    }
-    
-    /**
-     * @return the flags
-     */
-    public LongBitMask getFlags()
-    {
-        return this.flags;
     }
 
     /**
@@ -63,27 +53,6 @@ public class User extends UserBase implements Model
     public void setId(int id)
     {
         this.id = id;
-    }
-    
-    public boolean hasFlag(int flag)
-    {
-        return flags.isset(flag);
-    }
-    
-    public boolean toggleFlag (int flag)
-    {
-        flags.toggle(flag);
-        return this.hasFlag(flag);
-    }
-    
-    public void setFlag(int flag)
-    {
-        flags.set(flag);
-    }
-    
-    public void unsetFlag(int flag)
-    {
-        flags.unset(flag);
     }
     
     public void setLanguage(String lang)

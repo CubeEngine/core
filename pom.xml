@@ -35,5 +35,6 @@
         <module>CubeWar</module>
         <module>CubeAuctions</module>
         <module>CubeFly</module>
+        <module>CubeConomy</module>
     </modules>
 </project>

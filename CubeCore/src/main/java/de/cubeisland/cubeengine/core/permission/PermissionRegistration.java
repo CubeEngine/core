@@ -3,9 +3,9 @@ package de.cubeisland.cubeengine.core.permission;
 import org.bukkit.plugin.PluginManager;
 
 /**
- * Registrates Permissions
+ * Registrates Permissions to the server
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class PermissionRegistration
 {
@@ -16,6 +16,12 @@ public class PermissionRegistration
         this.pm = pm;
     }
 
+    /**
+     * Registeres a permission
+     *
+     * @param permission the permission
+     * @return fluent interface
+     */
     public PermissionRegistration registerPermission(Permission permission)
     {
         this.pm.addPermission(new org.bukkit.permissions.Permission(permission.getPermission(), permission.getPermissionDefault()));
@@ -23,6 +29,12 @@ public class PermissionRegistration
         return this;
     }
 
+    /**
+     * Registered an array of permissions
+     *
+     * @param permissions the array of permissions
+     * @return fluent interface
+     */
     public PermissionRegistration registerPermissions(Permission[] permissions)
     {
         for (Permission permission : permissions)
