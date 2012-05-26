@@ -5,6 +5,7 @@ import gnu.trove.map.hash.THashMap;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import org.bukkit.plugin.PluginManager;
 
 /**
  *
@@ -14,11 +15,13 @@ public class ModuleManager
 {
     private final Map<String, Module> modules;
     private final CubeCore core;
+    private final PluginManager pm;
 
     public ModuleManager(CubeCore core)
     {
         this.modules = new THashMap<String, Module>();
         this.core = core;
+        this.pm = core.getServer().getPluginManager();
     }
 
     public ModuleManager registerModule(Module module)
@@ -75,7 +78,7 @@ public class ModuleManager
                     this.disableModule(name);
                 }
             }
-            this.core.getPluginManager().disablePlugin(module);
+            this.pm.disablePlugin(module);
             this.modules.remove(name);
         }
         return this;
