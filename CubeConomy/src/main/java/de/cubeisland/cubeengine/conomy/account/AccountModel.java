@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.core.persistence.Model;
 public abstract class AccountModel implements IAccount,Model
 {
     private double balance;
-    private int id;
     
     /**
      * Returns the Name of this Account
@@ -19,6 +18,8 @@ public abstract class AccountModel implements IAccount,Model
      * @return the AccountName
      */
     public abstract String getName();
+    public abstract int getId();
+    public abstract void setId(int id);
 
     public double give(double amount)
     {
@@ -60,15 +61,5 @@ public abstract class AccountModel implements IAccount,Model
     public double scale(double factor)
     {
         return (this.balance *= factor);
-    }
-    
-    public int getId()
-    {
-        return this.id;
-    }
-
-    public void setId(int id)
-    {
-        this.id = id;
     }
 }

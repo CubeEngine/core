@@ -9,6 +9,14 @@ import de.cubeisland.cubeengine.conomy.account.AccountModel;
 public class BankAccount extends AccountModel
 {
     private final String name;
+    private int id;
+    
+    public BankAccount(int id, String name, double start)
+    {
+        this.id = id;
+        this.name = name;
+        this.set(start);
+    }
     
     public BankAccount(String name, double start)
     {
@@ -25,5 +33,17 @@ public class BankAccount extends AccountModel
     public String getName()
     {
         return this.name;
+    }
+
+    @Override
+    public int getId()
+    {
+        return this.id;
+    }
+
+    @Override
+    public void setId(int id)
+    {
+        this.id = id;
     }
 }
