@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.war;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.war.area.AreaControl;
@@ -107,6 +108,8 @@ public class CubeWar extends ModuleBase implements TranslatablePlugin
                         .registerCommands(new ByPassCommand());
         this.getCommand("cubewar").setExecutor(baseCommand);
         this.pm.registerEvents(new CubeWarListener(), this);
+        if (CubeCore.getInstance().getModuleManager().getModule("fly") != null)
+            this.pm.registerEvents(new FlyListener(), this);
 
         InfluenceControl.startTimer();
     }

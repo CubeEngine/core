@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 import de.cubeisland.cubeengine.war.groups.Group;
 import de.cubeisland.cubeengine.war.groups.GroupControl;
 import de.cubeisland.cubeengine.war.storage.GroupModel;
+import java.util.HashSet;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -185,13 +186,19 @@ public class PvP
         player.setAllowFlight(false);
     }
 
+    private static HashSet<User> blockFly = new HashSet<User>();
+    public static boolean isFlyBlocked(User user)
+    {
+        return blockFly.contains(user);
+    }
+    
     public void stopFly(final Player player)
     {
         CubeWar.debug("Fall");
         player.setFlying(false);
         if (config.fly_block > 0)
         {
-            cuManager.getUser((OfflinePlayer) player).setFlag(User.BLOCK_FLY);
+            blockFly.add(cuManager.getUser(player));
             CubeWar plugin = CubeWar.getInstance();
             plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
                     new Runnable()
@@ -199,7 +206,7 @@ public class PvP
 
                         public void run()
                         {
-                            cuManager.getUser((OfflinePlayer) player).unsetFlag(User.BLOCK_FLY);
+                            blockFly.remove(cuManager.getUser(player));
                         }
                     }, config.fly_block * 20);
         }

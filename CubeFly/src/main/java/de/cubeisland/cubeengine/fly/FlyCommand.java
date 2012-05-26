@@ -36,7 +36,8 @@ public class FlyCommand
                     player.setAllowFlight(false); //Disable when player is flying
                     return;
                 }
-                if (user.hasFlag(User.BLOCK_FLY))
+                FlyStartEvent event = new FlyStartEvent(CubeCore.getInstance(), user);
+                if (event.isCancelled())
                 {
                     sender.sendMessage(_(user.getLanguage(), "fly" , "&cYou are not allowed to fly now!"));
                     //&cDu darfst jetzt nicht fliegen!

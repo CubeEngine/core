@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
 import static de.cubeisland.cubeengine.CubeEngine._;
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
@@ -52,7 +53,8 @@ public class FlyListener implements Listener
                 //User does not exist -> No Permissions for using any CubeModule
                 return;
             }
-            if (user.hasFlag(User.BLOCK_FLY))
+            FlyStartEvent flyStartEvent = new FlyStartEvent(CubeCore.getInstance(), user);
+            if (flyStartEvent.isCancelled())
             {
                 player.sendMessage(_(user.getLanguage(), "fly" , "&cYou are not allowed to fly now!"));
                 //&cDu darfst jetzt nicht fliegen!
