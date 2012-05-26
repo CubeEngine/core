@@ -1,10 +1,8 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.command.BaseCommand;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
-import de.cubeisland.libMinecraft.command.BaseCommand;
-import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
-import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,11 +10,10 @@ import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 
-public class CubeFly extends ModuleBase implements TranslatablePlugin
+public class CubeFly extends ModuleBase
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;
-    private static Translation translation;
     
     protected Server server;
     protected PluginManager pm;
@@ -43,9 +40,6 @@ public class CubeFly extends ModuleBase implements TranslatablePlugin
         debugMode = configuration.getBoolean("debug");
         
         this.saveConfig();
-        
-        translation = Translation.get(this.getClass(), configuration.getString("language"));
-        if (translation == null) translation = Translation.get(this.getClass(), "en");
         
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand.registerCommands(new FlyCommand())
@@ -86,20 +80,5 @@ public class CubeFly extends ModuleBase implements TranslatablePlugin
         {
             log("[debug] " + msg);
         }
-    }
-    
-    public static String t(String key, Object... params)
-    {
-        return translation.translate(key, params);
-    }
-
-    public Translation getTranslation()
-    {
-        return translation;
-    }
-
-    public void setTranslation(Translation newtranslation)
-    {
-        translation = newtranslation;
     }
 }
