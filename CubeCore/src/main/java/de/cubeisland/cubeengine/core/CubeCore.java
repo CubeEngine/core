@@ -79,7 +79,6 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(getPluginManager());
         this.registerPermissions(Perm.values());
-        this.pm.registerEvents(new CoreListener(this.userManager), this);
         
         CubeEngine.initialize(this);
         

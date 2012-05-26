@@ -316,6 +316,7 @@ public class UserBase implements Player
         }
     }
 
+    @Deprecated
     public void updateInventory()
     {
         Player player = this.offlinePlayer.getPlayer();
@@ -885,6 +886,7 @@ public class UserBase implements Player
         return null;
     }
 
+    @Deprecated
     public Egg throwEgg()
     {
         Player player = this.offlinePlayer.getPlayer();
@@ -895,6 +897,7 @@ public class UserBase implements Player
         return null;
     }
 
+    @Deprecated
     public Snowball throwSnowball()
     {
         Player player = this.offlinePlayer.getPlayer();
@@ -905,6 +908,7 @@ public class UserBase implements Player
         return null;
     }
 
+    @Deprecated
     public Arrow shootArrow()
     {
         Player player = this.offlinePlayer.getPlayer();
