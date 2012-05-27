@@ -21,7 +21,7 @@ public class FileManager
 {
     private CubeCore core;
     private Map<Module, CubeConfiguration> configs;
-    private File configBaseDir;
+    private File dataFolder;
     private File moduleConfigDir;
     private File geoipFile;
 
@@ -32,18 +32,18 @@ public class FileManager
     {
         this.core = core;
         this.configs = new THashMap<Module, CubeConfiguration>();
-        this.configBaseDir = new File(core.getDataFolder().getParentFile(), "CubeEngine");
-        this.configBaseDir.mkdirs();
+        this.dataFolder = new File(core.getDataFolder().getParentFile(), "CubeEngine");
+        this.dataFolder.mkdirs();
 
-        this.moduleConfigDir = new File(this.configBaseDir, "modules");
+        this.moduleConfigDir = new File(this.dataFolder, "modules");
         this.moduleConfigDir.mkdirs();
 
-        this.geoipFile = new File(this.configBaseDir, "GeoIP.dat");
+        this.geoipFile = new File(this.dataFolder, "GeoIP.dat");
     }
 
-    public File getConfigDir()
+    public File getDataFolder()
     {
-        return this.configBaseDir;
+        return this.dataFolder;
     }
 
     public File getModuleConfigDir()
@@ -51,41 +51,11 @@ public class FileManager
         return this.moduleConfigDir;
     }
 
-    public File getGeoipFile()
-    {
-        if (!this.geoipFile.exists())
-        {
-            InputStream reader = this.getClass().getResourceAsStream("/resources/GeoIP.dat");
-            if (reader != null)
-            {
-                try
-                {
-                    OutputStream writer = new FileOutputStream(this.geoipFile);
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = reader.read(buffer)) > 0)
-                    {
-                        writer.write(buffer);
-                    }
-                    writer.flush();
-                    writer.close();
-                    reader.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-
-        return this.geoipFile;
-    }
-
     public CubeConfiguration getCoreConfig()
     {
         if (this.coreConfig == null)
         {
-            this.coreConfig = CubeConfiguration.get(this.configBaseDir, "core", this.core.getConfig().getDefaults());
+            this.coreConfig = CubeConfiguration.get(this.dataFolder, "core", this.core.getConfig().getDefaults());
             this.coreConfig.safeLoad();
         }
 
@@ -104,7 +74,7 @@ public class FileManager
             defaults.set("mysql.database", "minecraft");
             defaults.set("mysql.tableprefix", "cube_");
 
-            this.databaseConfig = CubeConfiguration.get(this.configBaseDir, "database", defaults);
+            this.databaseConfig = CubeConfiguration.get(this.dataFolder, "database", defaults);
             this.databaseConfig.safeLoad();
         }
         return this.databaseConfig;
@@ -120,6 +90,53 @@ public class FileManager
         }
 
         return config;
+    }
+    public File getResource(Class clazz, String path)
+    {
+        if (clazz == null)
+        {
+            throw new IllegalArgumentException("The class must not be null!");
+        }
+        if (path == null)
+        {
+            throw new IllegalArgumentException("The path must not be null!");
+        }
+        if (path.startsWith("/"))
+        {
+            path = path.substring(1);
+        }
+        File target = new File(this.dataFolder, path);
+        if (!target.exists())
+        {
+            InputStream reader = this.getClass().getResourceAsStream("/resources/" + path);
+            if (reader != null)
+            {
+                try
+                {
+                    OutputStream writer = new FileOutputStream(target);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = reader.read(buffer)) > 0)
+                    {
+                        writer.write(buffer, 0, bytesRead);
+                    }
+                    writer.flush();
+                    writer.close();
+                    reader.close();
+                    return target;
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace(System.err);
+                }
+            }
+        }
+        else
+        {
+            return target;
+        }
+
+        return null;
     }
 
     public void clean()

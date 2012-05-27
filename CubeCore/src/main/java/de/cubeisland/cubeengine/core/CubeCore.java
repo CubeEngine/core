@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.i18n.geoip.LookupService;
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -10,21 +10,19 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.CubeConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.io.IOException;
-import java.net.InetAddress;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CubeCore extends JavaPlugin
 {
     private static CubeCore instance;
-    private LookupService lookupService;
     private Database database;
     private PermissionRegistration permissionRegistration;
     private UserManager userManager;
     private FileManager fileManager;
     private PluginManager pm;
     private ModuleManager moduleManager;
+    private I18n i18n;
 
     public CubeCore()
     {
@@ -53,15 +51,6 @@ public class CubeCore extends JavaPlugin
         databaseConfig.safeSave();
         
         this.pm = getServer().getPluginManager();
-
-        try
-        {
-            this.lookupService = new LookupService(this.fileManager.getGeoipFile());
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException("CubeCore failed to load the GeoIP database!");
-        }
 
         this.database = new Database(
                 databaseConfig.getString("mysql.host"),
@@ -113,11 +102,6 @@ public class CubeCore extends JavaPlugin
     public PluginManager getPluginManager()
     {
         return this.pm;
-    }
-
-    public String locateAddress(InetAddress address)
-    {
-        return this.lookupService.getCountry(address).getCode();
     }
 
     /**
