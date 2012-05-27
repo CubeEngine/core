@@ -36,5 +36,6 @@
         <module>CubeAuctions</module>
         <module>CubeFly</module>
         <module>CubeConomy</module>
+        <module>CubeBasics</module>
     </modules>
 </project>

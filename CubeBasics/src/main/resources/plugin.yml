@@ -1,0 +1,15 @@
+name: CubeBasics
+version: "${project.version}"
+main: de.cubeisland.cubeengine.conomy.CubeBasics
+commands:
+depend: 
+  - CubeCore
+softdepend: []
+database: false
+website: "http://cubeisland.de"
+description: "Just the Basics"
+author: "Cube Island"
+authors:
+  - "Cube Island"
+load: postworld
+#permissions:
