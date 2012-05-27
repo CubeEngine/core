@@ -56,7 +56,7 @@ public class UserAccountStorage implements Storage<UserAccount>
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Failed to initialize the UserTable !", ex);
+            throw new StorageException("Failed to initialize the UserAcc-Table !", ex);
         }
     }
 

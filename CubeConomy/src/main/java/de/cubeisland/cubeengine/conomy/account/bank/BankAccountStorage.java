@@ -53,7 +53,7 @@ public class BankAccountStorage implements Storage<BankAccount>
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Failed to initialize the UserTable !", ex);
+            throw new StorageException("Failed to initialize the BankAcc-Table !", ex);
         }
     }
 
