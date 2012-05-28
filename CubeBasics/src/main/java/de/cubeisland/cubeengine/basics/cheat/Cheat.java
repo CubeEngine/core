@@ -12,6 +12,12 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Cheat
 {
+    /**
+     * Sets the GameMode of Player
+     * 
+     * @param player the player to set its gamemode
+     * @param bln true=CREATIVE false=SURVIVAL
+     */
     public static void gamemode(Player player, boolean bln)
     {
         if (bln)

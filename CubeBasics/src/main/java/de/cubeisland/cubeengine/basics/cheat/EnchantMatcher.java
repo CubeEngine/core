@@ -23,7 +23,7 @@ public class EnchantMatcher
         if (match(name,"infarrow","infinitearrow","infinity")) return Enchantment.ARROW_INFINITE;
         if (match(name,"arrowkb","arrowknockback","kbarrow")) return Enchantment.ARROW_KNOCKBACK;
         if (match(name,"damage","alldamage","damageall","sharpness")) return Enchantment.DAMAGE_ALL;
-        if (match(name,"ardamage","spiderdamage","spiderdmg","ardmg")) return Enchantment.DAMAGE_ARTHROPODS;
+        if (match(name,"arthropodsdamage","spiderdamage","spiderdmg","ardmg")) return Enchantment.DAMAGE_ARTHROPODS;
         if (match(name,"smite","undeaddmg","undeaddamage")) return Enchantment.DAMAGE_UNDEAD;
         if (match(name,"digspeed","effi","efficiency")) return Enchantment.DIG_SPEED;
         if (match(name,"dura","durability","unbreaking")) return Enchantment.DURABILITY;
