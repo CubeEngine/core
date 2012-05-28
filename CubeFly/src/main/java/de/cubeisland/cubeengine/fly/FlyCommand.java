@@ -30,7 +30,7 @@ public class FlyCommand
                 
                 if (!Perm.COMMAND_FLY.isAuthorized(sender))
                 {
-                    sender.sendMessage(_(user.getLanguage(), "core" , "&cYou dont have permission to use this Command!"));
+                    sender.sendMessage(_(user, "core" , "&cYou dont have permission to use this Command!"));
                     //TODO Translations
                     //&cDu bist nicht berechtigt diesen Befehl zu nutzen!
                     player.setAllowFlight(false); //Disable when player is flying
@@ -39,7 +39,7 @@ public class FlyCommand
                 FlyStartEvent event = new FlyStartEvent(CubeCore.getInstance(), user);
                 if (event.isCancelled())
                 {
-                    sender.sendMessage(_(user.getLanguage(), "fly" , "&cYou are not allowed to fly now!"));
+                    sender.sendMessage(_(user, "fly" , "&cYou are not allowed to fly now!"));
                     //&cDu darfst jetzt nicht fliegen!
                     player.setAllowFlight(false); //Disable when player is flying
                     return;
@@ -49,12 +49,12 @@ public class FlyCommand
             player.setAllowFlight(!player.getAllowFlight());
             if (player.getAllowFlight())
             {
-                sender.sendMessage(_(user.getLanguage(), "fly" , "&6You can now fly!"));
+                sender.sendMessage(_(user, "fly" , "&6You can now fly!"));
                 //&6Du kannst jetzt fliegen!
             }
             else
             {//or not
-                sender.sendMessage(_(user.getLanguage(), "fly" , "&6You cannot fly anymore!"));
+                sender.sendMessage(_(user, "fly" , "&6You cannot fly anymore!"));
                 //&6Du kannst jetzt nicht mehr fliegen!
             }
             return;
