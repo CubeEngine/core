@@ -8,8 +8,12 @@ import de.cubeisland.cubeengine.core.command.CommandArgs;
 import de.cubeisland.cubeengine.core.command.RequiresPermission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -234,19 +238,114 @@ public class CheatCommands
         sender.sendMessage(_(user,"basics","Refilled Stack in Hand!"));
     }
     
+    @RequiresPermission
+    //@Param(type=String.class)
+    //@Param(type=User.class)
+    //@Usage("<day|night|dawn|even> [player] [-all]")
+    //@Description("Changes the time for a player")
+    @Command()//min=1,//max=2
     public void ptime(CommandSender sender, CommandArgs args)
     {
-        
+        long time = 0;
+             if (args.getString(1).equalsIgnoreCase("day")) time = 12*1000;
+        else if (args.getString(1).equalsIgnoreCase("night")) time = 0;
+        else if (args.getString(1).equalsIgnoreCase("dawn")) time = 6*1000;
+        else if (args.getString(1).equalsIgnoreCase("even")) time = 18*1000;
+        User user;
+        if (args.size()>1)
+        {
+            user = args.getUser(2);
+        }
+        else
+        {
+             user = cuManager.getUser(sender);
+        }
+        if (user == null)
+        {
+            sender.sendMessage(_(user,"core","&cThe User %s does not exist!",args.getString(1)));
+            return;
+        }
+        Cheat.ptime(user, time);
     }
     
+    
+    @RequiresPermission
+    //@Flag({"all","a"})
+    //@Usage("[-all]")
+    //@Description("Repairs your items")
+    @Command()//min=0,//max=0
     public void repair(CommandSender sender, CommandArgs args)
     {
-        
+        User user;
+        if (sender instanceof Player)
+        {
+            user = cuManager.getUser(sender);
+        }
+        else
+        {
+            sender.sendMessage(_("core","&cThis command can only be used ingame!"));
+            return;
+        }
+        if (args.hasFlag("a"))
+        {
+            List<ItemStack> list = Cheat.repairAll(user);
+            if (list.isEmpty())
+            {
+                sender.sendMessage(_(user,"basics","No items to repair!"));
+            }
+            else
+            {
+                String items = "";
+                for (ItemStack item : list)
+                {
+                    items += " "+item.toString();
+                }
+                sender.sendMessage(_(user,"basics","Repaired %d items:%s!",list.size(),items));
+            }
+        }
+        else
+        {
+            if (Cheat.repairInHand(user))
+                sender.sendMessage(_(user,"basics","Item repaired!"));
+            else
+                sender.sendMessage(_(user,"basics","Item cannot be repaired!"));
+        }
     }
-    
+   
+    @RequiresPermission
+    //@Param(type=String.class)
+    //@Param(type=World.class)
+    //@Flag({"all","a"})
+    //@Usage("<day|night|dawn|even> [world] [-all]")
+    //@Description("Changes the time of a world")
+    @Command()//min=1,//max=2
     public void time(CommandSender sender, CommandArgs args)
     {
-        
+        long time = 0;
+             if (args.getString(1).equalsIgnoreCase("day")) time = 12*1000;
+        else if (args.getString(1).equalsIgnoreCase("night")) time = 0;
+        else if (args.getString(1).equalsIgnoreCase("dawn")) time = 6*1000;
+        else if (args.getString(1).equalsIgnoreCase("even")) time = 18*1000;
+        User user = cuManager.getUser(sender);
+        World world = user.getWorld();
+        if (args.size()>1)
+        {
+            world = sender.getServer().getWorld(args.getString(2));//TODO getWorld() in cmdargs
+        }
+        if (world == null)
+        {
+            sender.sendMessage(_(user,"core","&cThe World %s does not exist!",args.getString(2)));
+            return;
+        }
+        if (args.hasFlag("all"))
+        {
+            for (World w : sender.getServer().getWorlds())
+            {
+                Cheat.settime(w, time);
+            }
+            return;
+        }
+        Cheat.settime(world, time);
     }
     
     public void unlimited(CommandSender sender, CommandArgs args)

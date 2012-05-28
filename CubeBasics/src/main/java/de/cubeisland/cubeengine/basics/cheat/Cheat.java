@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.basics.cheat;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
@@ -78,11 +80,12 @@ public class Cheat
         return true;
     }
     
-    public static boolean repairAll(Player player)
+    public static List<ItemStack> repairAll(Player player)
     {
+        List<ItemStack> list = new ArrayList<ItemStack>();
         //TODO repair all its inventory
         //return List of repaired items
-        return true;
+        return list;
     }
     
     public static void ptime(Player player, long time)
