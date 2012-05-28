@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
 import java.io.File;
 import java.util.logging.Level;
@@ -39,7 +40,7 @@ public class CubeBasics extends ModuleBase
         
         this.saveConfig();
         
-        //CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
+        CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }

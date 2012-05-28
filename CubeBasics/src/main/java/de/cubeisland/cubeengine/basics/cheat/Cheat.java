@@ -45,9 +45,9 @@ public class Cheat
         player.getItemInHand().addEnchantment(ench, level);
     }
     
-    public static void enchantItemInHand(Player player, Enchantment ench)
+    public static void unsafeEnchantItemInHand(Player player, Enchantment ench, int level)
     {
-        player.getItemInHand().addEnchantment(ench, ench.getMaxLevel());
+        player.getItemInHand().addUnsafeEnchantment(ench, level);
     }
     
     public static void heal(Player player, int amount)
