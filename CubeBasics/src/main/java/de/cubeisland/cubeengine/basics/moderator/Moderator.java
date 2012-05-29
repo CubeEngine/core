@@ -1,5 +1,11 @@
 package de.cubeisland.cubeengine.basics.moderator;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 /**
@@ -33,33 +39,52 @@ public class Moderator
         player.sendMessage("Pong!");
     }
     
-    public static void removeDrops(Player player, int radius)
+    public static int removeEntityType(Location loc, int radius, EntityType... types)
     {
-        //TODO
+        List<Entity> list = loc.getWorld().getEntities();
+        Collection<EntityType> entitytypes = Arrays.asList(types);
+        int removed = 0;
+        for (Entity entity : list)
+        {
+            if (!entitytypes.contains(entity.getType()))
+                continue;
+            int distance = (int)(entity.getLocation().subtract(loc)).lengthSquared();
+            if (radius != -1)
+                if (radius*radius < distance)
+                    continue;
+            entity.remove();
+            removed++;
+        }
+        return removed;
+    }
+    
+    public static int removeDrops(Location loc, int radius)
+    {
+        return removeEntityType(loc, radius, EntityType.DROPPED_ITEM);
     }
    
-    public static void removeArrows(Player player, int radius)
+    public static int removeArrows(Location loc, int radius)
     {
-        //TODO
+        return removeEntityType(loc, radius, EntityType.ARROW);
     }
     
-    public static void removeBoats(Player player, int radius)
+    public static int removeBoats(Location loc, int radius)
     {
-        //TODO
+        return removeEntityType(loc, radius, EntityType.BOAT);
     }
     
-    public static void removeMinecarts(Player player, int radius)
+    public static int removeMinecarts(Location loc, int radius)
     {
-        //TODO
+        return removeEntityType(loc, radius, EntityType.MINECART);
     }
     
-    public static void removeXp(Player player, int radius)
+    public static int removeXp(Location loc, int radius)
     {
-        //TODO
+        return removeEntityType(loc, radius, EntityType.EXPERIENCE_ORB);
     }
-    public static void removePaintings(Player player, int radius)
+    public static int removePaintings(Location loc, int radius)
     {
-        //TODO
+        return removeEntityType(loc, radius, EntityType.PAINTING);
     }
     
     public static void sudoCmd(Player player, String command)
