@@ -1,25 +1,32 @@
 package de.cubeisland.cubeengine.core.util.log;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  *
  * @author Robin Bechtel-Ostmann
  */
 
-public class logger 
+public class Logger 
 {
+    public static final byte LOGLEVEL2 = 2; //Log into file
+    public static final byte LOGLEVEL1 = 1; //Log into console
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.S");   //[datum] [module] [type] message
     private FileWriter writer;
     private String moduleName;
-
-    public logger(CubeCore core, String moduleName)
+    private Date date;
+    
+    public Logger(Module module)
     {
-        this.moduleName = moduleName;
-        File logDir = core.getFileManager().getLogDir();
+        File logDir = module.getCore().getFileManager().getLogDir();
+        this.moduleName = module.getModuleName();
+        this.date = new Date();
         
         try
         {
@@ -31,11 +38,99 @@ public class logger
         }
     }
     
-    public void log(String msg)
+    public void msg(String msg, byte logLevel)
     {
+        String dateStr = dateFormat.format(this.date);
+        try
+        {  
+            if(logLevel == LOGLEVEL1)
+            {
+                System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
+            }
+            else if(logLevel == LOGLEVEL2)
+            {
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [MSG] " + msg);
+            }
+            else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
+            {
+                System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [MSG] " + msg);
+            }
+        }
+        catch(Exception ex)
+        {
+             ex.printStackTrace(System.err);
+        }
+    }
+    
+    public void notification(String msg, byte logLevel)
+    {
+        String dateStr = dateFormat.format(this.date);
         try
         {
-            writer.append(msg);
+            if(logLevel == LOGLEVEL1)
+            {
+                System.out.println(" [" + this.moduleName + "] [NOTIFICATION] " + msg);
+            }
+            else if(logLevel == LOGLEVEL2)
+            {
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [NOTIFICATION] " + msg);
+            }
+            else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
+            {
+                System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [NOTIFICATION] " + msg);
+            }
+        }
+        catch(Exception ex)
+        {
+             ex.printStackTrace(System.err);
+        }
+    }
+    
+    public void warning(String msg, byte logLevel)
+    {
+        String dateStr = dateFormat.format(this.date);
+        try
+        {
+            if(logLevel == LOGLEVEL1)
+            {
+                System.out.println(" [" + this.moduleName + "] [WARNING] " + msg);
+            }
+            else if(logLevel == LOGLEVEL2)
+            {
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [WARNING] " + msg);
+            }
+            else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
+            {
+                System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [WARNING] " + msg);
+            }
+        }
+        catch(Exception ex)
+        {
+             ex.printStackTrace(System.err);
+        }
+    }
+       
+    public void error(String msg, byte logLevel)
+    {
+        String dateStr = dateFormat.format(this.date);
+        try
+        {
+            if(logLevel == LOGLEVEL1)
+            {
+                System.out.println(" [" + this.moduleName + "] [ERROR] " + msg);
+            }
+            else if(logLevel == LOGLEVEL2)
+            {
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [ERROR] " + msg);
+            }
+            else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
+            {
+                System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
+                writer.append("[" + dateStr + "] [" + this.moduleName + "] [ERROR] " + msg);
+            }
         }
         catch(Exception ex)
         {
