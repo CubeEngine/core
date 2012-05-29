@@ -24,6 +24,7 @@ public class FileManager
     private File configBaseDir;
     private File moduleConfigDir;
     private File geoipFile;
+    private File logDir;
 
     private CubeConfiguration databaseConfig;
     private CubeConfiguration coreConfig;
@@ -39,6 +40,9 @@ public class FileManager
         this.moduleConfigDir.mkdirs();
 
         this.geoipFile = new File(this.configBaseDir, "GeoIP.dat");
+        
+        this.logDir = new File(this.configBaseDir, "log");
+        this.logDir.mkdirs();
     }
 
     public File getConfigDir()
@@ -81,6 +85,11 @@ public class FileManager
         return this.geoipFile;
     }
 
+    public File getLogDir()
+    {
+        return this.logDir;
+    }
+    
     public CubeConfiguration getCoreConfig()
     {
         if (this.coreConfig == null)
