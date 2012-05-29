@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class Auction implements Model
+public class Auction implements Model<Integer>
 {
     
     private int id;
@@ -138,7 +138,7 @@ public class Auction implements Model
 /**
  * @return id as int
  */   
-    public int getId()
+    public Integer getKey()
     {
        return this.id; 
     }
@@ -147,7 +147,7 @@ public class Auction implements Model
  * sets the AuctionID
  * @param int id
  */   
-    public void setId(int id)
+    public void setKey(Integer id)
     {
         this.id = id;
     }
@@ -199,7 +199,7 @@ public class Auction implements Model
  */
     public int getOwnerId()
     {
-        return this.owner.getId();
+        return this.owner.getKey().getKey();
     }
     
 /**

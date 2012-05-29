@@ -23,14 +23,14 @@ import org.bukkit.entity.Player;
  * 
  * @author Faithcaio
  */
-public final class Bidder implements Model
+public final class Bidder implements Model<User>
 {
     public static final byte NOTIFY_STATUS = 8;
     public static final byte NOTIFY_ITEMS = 4;
     public static final byte NOTIFY_CANCEL = 2;
     public static final byte NOTIFY_WIN = 1;
     
-    private User User;
+    private User user;
     
     private final ArrayList<Auction> activeBids = new ArrayList<Auction>();;
     private final ArrayList<Auction> subscriptions = new ArrayList<Auction>();;
@@ -50,13 +50,13 @@ public final class Bidder implements Model
  */
     public Bidder(OfflinePlayer player)
     {
-        this.User = cuManager.getUser(player);
+        this.user = cuManager.getUser(player);
         this.auctionbox = new AuctionBox(this);
     }
 
     public Bidder(int id)
     {
-        this.User = cuManager.getUser(id);
+        this.user = cuManager.getUser(id);
         this.auctionbox = new AuctionBox(this);
     }
     
@@ -66,13 +66,13 @@ public final class Bidder implements Model
     public Bidder(int id, byte notifyState)
     {
         this.auctionbox = new AuctionBox(this);
-        this.User = cuManager.getUser(id);
+        this.user = cuManager.getUser(id);
         this.notifyState = notifyState;
         this.addDataBaseSub();
         if (id == 1)
             serverBidder = this;
         else
-            bidderInstances.put(User.getOfflinePlayer(), this);
+            bidderInstances.put(user.getOfflinePlayer(), this);
     }
 
 /**
@@ -257,15 +257,15 @@ public final class Bidder implements Model
  */ 
     public Player getPlayer()
     {
-        return this.User.getPlayer();
+        return this.user.getPlayer();
     }
     
 /**
  * @return BidderID in DataBase
  */ 
-    public int getId()
+    public User getKey()
     {
-        return this.User.getId();
+        return this.user;
     }
     
 /**
@@ -273,7 +273,7 @@ public final class Bidder implements Model
  */ 
     public OfflinePlayer getOffPlayer()
     {
-        return User.getOfflinePlayer();
+        return user.getOfflinePlayer();
     }
 
 /**
@@ -281,14 +281,7 @@ public final class Bidder implements Model
  */  
     public String getName()
     {
-        if (User.getId() == 1)
-        {
-            return "*Server";
-        }
-        else
-        {
-            return User.getName();
-        }
+        return user.getName();
     }
     
 /**
@@ -296,11 +289,11 @@ public final class Bidder implements Model
  */  
     public boolean isOnline()
     {
-        if (User == null)
+        if (user == null)
         {
             return false;
         }
-        return User.isOnline();
+        return user.isOnline();
     }
     
 /**
@@ -328,7 +321,7 @@ public final class Bidder implements Model
     public boolean removeAuction(Auction auction)
     {
         
-        bidDB.deleteByAuctionByUser(auction.getId() , this.getId());
+        bidDB.deleteByAuctionByUser(auction.getKey() , this.getKey());
         this.removeSubscription(auction);
         return activeBids.remove(auction);
     }
@@ -339,7 +332,7 @@ public final class Bidder implements Model
  */  
     public boolean removeSubscription(Auction auction)
     {
-        subDB.deleteSubByUser(this.getId() ,String.valueOf(auction.getId()));
+        subDB.deleteSubByUser(this.getKey() ,String.valueOf(auction.getKey()));
         return subscriptions.remove(auction);
     }
 
@@ -350,7 +343,7 @@ public final class Bidder implements Model
     public boolean removeSubscription(Material item)
     {
         //MAtSub delete
-        subDB.deleteSubByUser(this.getId(), item.toString());
+        subDB.deleteSubByUser(this.getKey(), item.toString());
         return materialSub.remove(item);
     }
 
@@ -471,7 +464,7 @@ public final class Bidder implements Model
     public boolean addSubscription(Auction auction)
     {
         if (this.subscriptions.contains(auction)) return false;
-        subDB.store(this.User.getId(), String.valueOf(auction.getId()));
+        subDB.store(this.user, String.valueOf(auction.getKey()));
         this.subscriptions.add(auction);
         return true;
     }
@@ -482,7 +475,7 @@ public final class Bidder implements Model
  */  
     public void addDataBaseSub()
     {
-        for (String s : subDB.getListByUser(this.getId()))
+        for (String s : subDB.getListByUser(this.getKey()))
         {
             if (Material.matchMaterial(s) != null)
                 this.materialSub.add(Material.matchMaterial(s));
@@ -498,17 +491,17 @@ public final class Bidder implements Model
     public boolean addSubscription(Material item)
     {
         if (this.materialSub.contains(item)) return false;
-        subDB.store(this.User.getId(), item.toString());
+        subDB.store(this.user, item.toString());
         this.materialSub.add(item);
         return true;
     }
-    
+
     public boolean isServerBidder()
     {
-        return (User.getId()==1);
+        throw new UnsupportedOperationException("No longer implemented");
     }
 
-    public void setId(int id)
+    public void setKey(User key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

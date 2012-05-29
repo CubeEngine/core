@@ -214,13 +214,13 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
         Collection<Bidder> bidderlist = bidderDB.getAll();//create all Bidder + Subs
         for (Bidder bidder : bidderlist)
         {
-            bidder.getBox().getItemList().addAll(boxDB.getAllByUser(bidder.getId()));//filled AuctionBox
+            bidder.getBox().getItemList().addAll(boxDB.getAllByUser(bidder.getKey()));//filled AuctionBox
         }
         manager.addAuctions(auctionDB.getAll());
         for (Auction auction : manager.getAuctions())
         {
             Stack<Bid> bids = auction.getBids();
-            for (Bid bid : bidDB.getAllByAuction(auction.getId()))
+            for (Bid bid : bidDB.getAllByAuction(auction.getKey()))
             {
                 bids.add(bid);//Fill Auction with bids
             }

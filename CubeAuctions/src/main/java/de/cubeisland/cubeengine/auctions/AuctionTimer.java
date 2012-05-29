@@ -176,12 +176,12 @@ public class AuctionTimer
                                     {
                                         if (playerlist.get(k).equals(auction.getOwner().getPlayer()))
                                         {
-                                            playerlist.get(k).getPlayer().sendMessage(t("time_end1",auction.getId(),Util.convertTime(auction.getAuctionEnd() - System.currentTimeMillis())));
+                                            playerlist.get(k).getPlayer().sendMessage(t("time_end1",auction.getKey(),Util.convertTime(auction.getAuctionEnd() - System.currentTimeMillis())));
                                         }
                                         else
                                         {
                                             String out = "";
-                                            out += t("time_end2",auction.getId(),Util.convertTime(auction.getAuctionEnd() - System.currentTimeMillis()));
+                                            out += t("time_end2",auction.getKey(),Util.convertTime(auction.getAuctionEnd() - System.currentTimeMillis()));
                                             
                                             if (playerlist.get(k).equals(auction.getBids().peek().getBidder().getPlayer()))
                                             {

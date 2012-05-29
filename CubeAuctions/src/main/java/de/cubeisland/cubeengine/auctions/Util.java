@@ -98,7 +98,7 @@ public class Util
                 if (!bidder.equals(auction.getOwner()))
                 {
                     bidder.addSubscription(auction);
-                    bidder.getPlayer().sendMessage(t("info_new",auction.getId(),auction.getItemType()));
+                    bidder.getPlayer().sendMessage(t("info_new",auction.getKey(),auction.getItemType()));
                 }
             }
         }
@@ -117,9 +117,9 @@ public class Util
         Economy econ = plugin.getEconomy();
         String output = "";
         if (auction.getItemData()==0)
-            output += t("info_out_1",auction.getId(),auction.getItemType(),auction.getItemAmount());
+            output += t("info_out_1",auction.getKey(),auction.getItemType(),auction.getItemAmount());
         else
-            output += t("info_out_11",auction.getId(),auction.getItemType(),auction.getItemData(),auction.getItemAmount());
+            output += t("info_out_11",auction.getKey(),auction.getItemType(),auction.getItemData(),auction.getItemAmount());
         if (auction.getItemStack().getEnchantments().size() > 0)
         {
             output += " "+t("info_out_ench");

@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.user.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * @author Faithcaio
  */
-public class SubscriptionStorage implements Storage<Bidder>
+public class SubscriptionStorage implements Storage<User, Bidder>
 {
     private final Database database = CubeAuctions.getDB();
     private final String TABLE = "subscription";
@@ -45,11 +46,11 @@ public class SubscriptionStorage implements Storage<Bidder>
         return this.database;
     }
 
-    public List<String> getListByUser(Integer key)
+    public List<String> getListByUser(User key)
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("sub_get_user", key);
+            ResultSet result = this.database.preparedQuery("sub_get_user", key.getKey());
             List<String> list = new ArrayList<String>();
             while (result.next())
             {
@@ -63,11 +64,11 @@ public class SubscriptionStorage implements Storage<Bidder>
         }
     }
 
-    public boolean store(Integer cuId, String sub)
+    public boolean store(User key, String sub)
     {
         try
         {
-            return this.database.preparedExec("sub_store", cuId, sub);
+            return this.database.preparedExec("sub_store", key.getKey(), sub);
         }
         catch (Exception e)
         {
@@ -89,11 +90,11 @@ public class SubscriptionStorage implements Storage<Bidder>
 
     }
 
-    public void deleteSubByUser(Integer key, String sub)
+    public void deleteSubByUser(User key, String sub)
     {//Löschen von Sub von einem Spieler
         try
         {
-            this.database.preparedExec("sub_delete_sub_user", sub, key);
+            this.database.preparedExec("sub_delete_sub_user", sub, key.getKey());
         }
         catch (SQLException ex)
         {
@@ -132,7 +133,7 @@ public class SubscriptionStorage implements Storage<Bidder>
         }
     }
 
-    public Bidder get(int key)
+    public Bidder get(User key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -162,7 +163,7 @@ public class SubscriptionStorage implements Storage<Bidder>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean delete(int id)
+    public boolean delete(User key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -23,7 +23,7 @@ public enum Sorter
         {
             public int compare(Object a1, Object a2)
             {
-                if (((Auction) a2).getId() <= ((Auction) a1).getId())
+                if (((Auction) a2).getKey() <= ((Auction) a1).getKey())
                 {
                     return 1;
                 }

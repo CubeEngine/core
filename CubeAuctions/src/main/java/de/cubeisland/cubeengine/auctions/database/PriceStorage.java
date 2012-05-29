@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class PriceStorage implements Storage<PricedItemStack>
+public class PriceStorage implements Storage<Integer, PricedItemStack>
 {
     private final Database database = CubeAuctions.getDB();
     private final String TABLE = "priceditem";
@@ -108,10 +108,10 @@ public class PriceStorage implements Storage<PricedItemStack>
 
     public boolean delete(PricedItemStack model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer id)
     {
         try
         {
@@ -139,7 +139,7 @@ public class PriceStorage implements Storage<PricedItemStack>
     {
         try
         {
-            this.database.preparedExec("price_update", model.getAvgPrice(), model.getTimesSold(), model.getId());
+            this.database.preparedExec("price_update", model.getAvgPrice(), model.getTimesSold(), model.getKey());
         }
         catch (SQLException e)
         {
@@ -147,7 +147,7 @@ public class PriceStorage implements Storage<PricedItemStack>
         }
     }
 
-    public PricedItemStack get(int key)
+    public PricedItemStack get(Integer key)
     {
         try
         {

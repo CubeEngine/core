@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  *
  * @author Faithcaio
  */
-public class Bid implements Model
+public class Bid implements Model<Integer>
 {
     private int id;
     private int auctionId;
@@ -25,7 +25,7 @@ public class Bid implements Model
  */   
     public Bid(Bidder bidder, double amount, Auction auction)
     {
-        this.auctionId = auction.getId();
+        this.auctionId = auction.getKey();
         this.amount = amount;
         this.bidder = bidder;
         this.timestamp = System.currentTimeMillis();
@@ -79,12 +79,12 @@ public class Bid implements Model
         return new Timestamp(this.timestamp);
     }
     
-    public int getId()
+    public Integer getKey()
     {
         return this.id;
     }
     
-    public void setId(int id)
+    public void setKey(Integer id)
     {
         this.id = id;
     }

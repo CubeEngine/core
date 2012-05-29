@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class AuctionItem implements Model
+public class AuctionItem implements Model<Integer>
 {
     private int id;
     private Bidder bidder;
@@ -137,12 +137,12 @@ public class AuctionItem implements Model
         return new Timestamp(this.date);
     }
 
-    public int getId()
+    public Integer getKey()
     {
         return this.id;
     }
 
-    public void setId(int id)
+    public void setKey(Integer id)
     {
         this.id = id;
     }

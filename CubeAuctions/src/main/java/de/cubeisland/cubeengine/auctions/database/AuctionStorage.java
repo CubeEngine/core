@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class AuctionStorage implements Storage<Auction>
+public class AuctionStorage implements Storage<Integer, Auction>
 {
     private final Database database = CubeAuctions.getDB();
     private final String TABLE = "auctions";
@@ -85,7 +85,7 @@ public class AuctionStorage implements Storage<Auction>
         }
     }
 
-    public Auction get(int key)
+    public Auction get(Integer key)
     {
         try
         {
@@ -111,8 +111,8 @@ public class AuctionStorage implements Storage<Auction>
     {
         try
         {
-            int id = model.getId();
-            int cubeUserId = model.getOwner().getId();
+            int id = model.getKey();
+            int cubeUserId = model.getOwner().getKey().getKey();
             String item = Util.convertItem(model.getItemStack());
             int amount = model.getItemStack().getAmount();
             Timestamp time = model.getTimestamp();
@@ -126,10 +126,10 @@ public class AuctionStorage implements Storage<Auction>
 
     public boolean delete(Auction model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer id)
     {
         try
         {

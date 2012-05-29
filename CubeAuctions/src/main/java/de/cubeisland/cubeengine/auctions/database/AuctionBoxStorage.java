@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.auctions.auction.AuctionItem;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.user.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -17,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class AuctionBoxStorage implements Storage<AuctionItem>
+public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 {
     private final Database database = CubeAuctions.getDB();
     private final String TABLE = "boxes";
@@ -74,11 +75,11 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
         }
     }
 
-    public Collection<AuctionItem> getAllByUser(Integer key)
+    public Collection<AuctionItem> getAllByUser(User key)
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("box_getall_user", key);
+            ResultSet result = this.database.preparedQuery("box_getall_user", key.getKey());
 
             Collection<AuctionItem> auctionItems = new ArrayList<AuctionItem>();
             while (result.next())
@@ -126,11 +127,11 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
     {
         try
         {
-            int cubeUserId = model.getBidder().getId();
+            int cubeUserId = model.getBidder().getKey().getKey();
             String item = Util.convertItem(model.getItemStack());
             int amount = model.getItemStack().getAmount();
             double price = model.getPrice();
-            int oldownerid = model.getOwner().getId();
+            int oldownerid = model.getOwner().getKey().getKey();
             Timestamp time = model.getTimestamp();
             this.database.preparedExec("box_store", cubeUserId, item, amount, price, time, oldownerid);
             this.giveId(model);
@@ -146,7 +147,7 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
         int amount = model.getItemStack().getAmount();
         try
         {
-            this.database.preparedExec("box_update", amount, model.getId());
+            this.database.preparedExec("box_update", amount, model.getKey());
         }
         catch (SQLException ex)
         {
@@ -156,14 +157,14 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
 
     public boolean delete(AuctionItem model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer key)
     {
         try
         {
-            return this.database.preparedExec("box_delete", id);
+            return this.database.preparedExec("box_delete", key);
         }
         catch (SQLException ex)
         {
@@ -187,11 +188,11 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
     {
         try
         {
-            int cubeUserId = model.getBidder().getId();
+            int cubeUserId = model.getBidder().getKey().getKey();
             String item = Util.convertItem(model.getItemStack());
             int amount = model.getItemStack().getAmount();
             double price = model.getPrice();
-            int oldownerid = model.getOwner().getId();
+            int oldownerid = model.getOwner().getKey().getKey();
             Timestamp time = model.getTimestamp();
             
             ResultSet result = this.database.preparedQuery("box_get_exact",cubeUserId,item,amount,price,time,oldownerid);
@@ -200,7 +201,7 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
             {
                 
                 int id = result.getInt("id");
-                model.setId(id);
+                model.setKey(id);
             }
         }
         catch (SQLException e)
@@ -214,7 +215,7 @@ public class AuctionBoxStorage implements Storage<AuctionItem>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public AuctionItem get(int key)
+    public AuctionItem get(Integer key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

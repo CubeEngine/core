@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.user.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -16,7 +17,7 @@ import java.util.Collection;
  *
  * @author Faithcaio
  */
-public class BidStorage implements Storage<Bid>
+public class BidStorage implements Storage<Integer, Bid>
 {
     private final Database database = CubeAuctions.getDB();
     private final String TABLE = "bids";
@@ -97,7 +98,7 @@ public class BidStorage implements Storage<Bid>
 
     public void giveId(Bid model)
     {
-        if (model.getId() == -1)
+        if (model.getKey() == -1)
         {
             int newId = -1;
             try
@@ -107,8 +108,8 @@ public class BidStorage implements Storage<Bid>
                 double amount = model.getAmount();
                 Timestamp timestamp = model.getTimestamp();
 
-                this.database.preparedExec("bid_store", auctionId, bidder.getId(), amount, timestamp);
-                ResultSet result = this.database.preparedQuery("bid_get_exact", auctionId, bidder.getId(), amount, timestamp);
+                this.database.preparedExec("bid_store", auctionId, bidder.getKey(), amount, timestamp);
+                ResultSet result = this.database.preparedQuery("bid_get_exact", auctionId, bidder.getKey(), amount, timestamp);
 
                 if (result.next())
                 {
@@ -123,7 +124,7 @@ public class BidStorage implements Storage<Bid>
             {
                 throw new StorageException("Failed to give the Bid an Id !", ex);
             }
-            model.setId(newId);
+            model.setKey(newId);
         }
     }
 
@@ -164,7 +165,7 @@ public class BidStorage implements Storage<Bid>
     {
         try
         {
-            this.database.preparedUpdate("bid_update", model.getBidder().getId(), model.getId());
+            this.database.preparedUpdate("bid_update", model.getBidder().getKey(), model.getKey());
         }
         catch (SQLException ex)
         {
@@ -174,18 +175,18 @@ public class BidStorage implements Storage<Bid>
 
     public boolean delete(Bid model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public void deleteByAuctionByUser(int auctionId, int bidderId)
+    public void deleteByAuctionByUser(int auctionId, User key)
     {
         try
         {
-            this.database.preparedExec("bid_delete_auction_user", auctionId, bidderId);
+            this.database.preparedExec("bid_delete_auction_user", auctionId, key.getKey());
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Failed to delete the Bids of Auction " + auctionId + " of Bidder " + bidderId + "!", ex);
+            throw new StorageException("Failed to delete the Bids of Auction " + auctionId + " of Bidder " + key.getKey() + "!", ex);
         }
     }
 
@@ -201,11 +202,11 @@ public class BidStorage implements Storage<Bid>
         }
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer key)
     {
         try
         {
-            return this.database.preparedExec("bid_delete", id);
+            return this.database.preparedExec("bid_delete", key);
         }
         catch (SQLException ex)
         {
@@ -230,7 +231,7 @@ public class BidStorage implements Storage<Bid>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Bid get(int key)
+    public Bid get(Integer key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

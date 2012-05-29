@@ -70,7 +70,7 @@ public class Manager
         int size = this.auctions.size();
         for (int i = 0; i < size; i++)
         {
-            if (this.auctions.get(i).getId() == id)
+            if (this.auctions.get(i).getKey() == id)
             {
                 auction = this.auctions.get(i);
             }
@@ -169,7 +169,7 @@ public class Manager
  */
     public boolean cancelAuction(Auction auction, boolean win)
     {
-        this.freeIds.push(auction.getId());
+        this.freeIds.push(auction.getKey());
         Collections.sort(this.freeIds);
         Collections.reverse(this.freeIds);
 
@@ -189,9 +189,9 @@ public class Manager
             Bidder.getInstance(1).removeAuction(auction);
         }
         AuctionStorage auctionDB = new AuctionStorage();
-        auctionDB.delete(auction.getId());
+        auctionDB.delete(auction.getKey());
         BidStorage bidDB = new BidStorage();
-        bidDB.deleteByAuction(auction.getId());
+        bidDB.deleteByAuction(auction.getKey());
         SubscriptionStorage subDB = new SubscriptionStorage();
         this.auctions.remove(auction);
         return true;

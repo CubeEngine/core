@@ -10,10 +10,10 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class PricedItemStack extends ItemStack implements Model
+public class PricedItemStack extends ItemStack implements Model<Integer>
 {
 //TODO insert into DB / update
-    private int id;
+    private int key;
     private double price;
     private int timessold; 
     private static final THashMap<ItemStack,PricedItemStack> pricedItems = new THashMap<ItemStack,PricedItemStack>();
@@ -101,13 +101,13 @@ public class PricedItemStack extends ItemStack implements Model
         return this.price;
     }
 
-    public int getId()
+    public Integer getKey()
     {
-        return this.id;
+        return this.key;
     }
     
-    public void setId(int id)
+    public void setKey(Integer key)
     {
-        this.id = id;
+        this.key = key;
     }
 }

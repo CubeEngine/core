@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.auctions.auction.Bidder;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.user.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Collection;
  *
  * @author Faithcaio
  */
-public class BidderStorage implements Storage<Bidder>
+public class BidderStorage implements Storage<User, Bidder>
 {
     private final Database database = CubeAuctions.getDB();
     private final String TABLE = "bidder";
@@ -81,11 +82,11 @@ public class BidderStorage implements Storage<Bidder>
         }
     }
 
-    public Bidder get(int key)
+    public Bidder get(User key)
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("bidder_get", key);
+            ResultSet result = this.database.preparedQuery("bidder_get", key.getKey());
 
             if (!result.next())
             {
@@ -106,7 +107,7 @@ public class BidderStorage implements Storage<Bidder>
     {
         try
         {
-            int cubeuserid = model.getId();
+            int cubeuserid = model.getKey().getKey();
             byte notifyState = model.getNotifyState();
 
             this.database.preparedExec("bidder_store", cubeuserid, notifyState);
@@ -121,7 +122,7 @@ public class BidderStorage implements Storage<Bidder>
     {
         try
         {
-            this.database.preparedExec("bidder_update", model.getNotifyState(), model.getId());
+            this.database.preparedExec("bidder_update", model.getNotifyState(), model.getKey());
         }
         catch (SQLException ex)
         {
@@ -136,14 +137,14 @@ public class BidderStorage implements Storage<Bidder>
 
     public boolean delete(Bidder model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(User key)
     {
         try
         {
-            return this.database.preparedExec("bidder_delete", id);
+            return this.database.preparedExec("bidder_delete", key.getKey());
         }
         catch (SQLException ex)
         {
