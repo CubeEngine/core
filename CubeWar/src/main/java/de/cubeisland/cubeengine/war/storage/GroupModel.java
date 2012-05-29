@@ -13,7 +13,7 @@ import org.bukkit.Material;
  *
  * @author Faithcaio
  */
-public class GroupModel implements Model
+public class GroupModel implements Model<Integer>
 {
     public static final int PVP_ON = 1;
     public static final int PVP_DAMAGE = 2;
@@ -31,7 +31,7 @@ public class GroupModel implements Model
     public static final int IS_CLOSED = 8192;
     public static final int AUTO_CLOSE = 16384;
     public static final int IS_PEACEFUL = 32768;
-    private int id;
+    private int key;
     private BitMask bits = new BitMask();
     private AreaType type;
     private String tag;
@@ -55,14 +55,14 @@ public class GroupModel implements Model
     private List<WarUser> modlist = new ArrayList<WarUser>();
     private List<WarUser> userlist = new ArrayList<WarUser>();
 
-    public int getId()
+    public Integer getKey()
     {
-        return this.id;
+        return this.key;
     }
 
     public GroupModel(int id)
     {
-        this.id = id;
+        this.key = id;
     }
     
     public GroupModel(){}//for deepCopy
@@ -393,16 +393,6 @@ public class GroupModel implements Model
     {
         return this.bits.get();
     }
-    
-    /**
-     * Use only for Default Groups
-     * 
-     * @param id 
-     */
-    public void setId(int id)
-    {
-        this.id = id;
-    }
 
     public void setBit(int bit)
     {
@@ -447,6 +437,9 @@ public class GroupModel implements Model
     {
         this.influence_used += amount;
     }
-    
-    
+
+    public void setKey(Integer key)
+    {
+        this.key = key;
+    }
 }

@@ -87,7 +87,7 @@ public enum Perm
     {
         WarUser user = users.getUser(sender);
         Group team = user.getTeam();
-        if (team.getId() == 0)
+        if (team.getKey() == 0)
         {
             return !config.IGPerm_user.contains(this.permission);
         }

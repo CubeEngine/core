@@ -19,7 +19,7 @@ import java.util.Collection;
  *
  * @author Faithcaio
  */
-public class UserStorage implements Storage<UserModel>
+public class UserStorage implements Storage<User, UserModel>
 {
     private final Database database;
     private final String TABLE = "user";
@@ -147,11 +147,11 @@ public class UserStorage implements Storage<UserModel>
         try
         {
 
-            int cubeuserid = model.getId();
+            int cubeuserid = model.getKey().getKey();
             int death = model.getDeath();
             int kills = model.getKills();
             int killpoints = model.getKillpoints();
-            int teamid = model.getTeam().getId();
+            int teamid = model.getTeam().getKey();
             int modeInt = 0;
             TeamPos teamPos = model.getTeampos();
             int teampos = 0;
@@ -202,11 +202,11 @@ public class UserStorage implements Storage<UserModel>
     {
         try
         {
-            int cubeuserid = model.getId();
+            int cubeuserid = model.getKey().getKey();
             int death = model.getDeath();
             int kills = model.getKills();
             int killpoints = model.getKillpoints();
-            int teamid = model.getTeam().getId();
+            int teamid = model.getTeam().getKey();
             int modeInt = 0;
             TeamPos teamPos = model.getTeampos();
             int teampos = 0;
@@ -255,13 +255,14 @@ public class UserStorage implements Storage<UserModel>
 
     public boolean delete(UserModel model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(User key)
     {
         try
         {
+            int id = key.getKey();
             return this.database.preparedExec("group_delete", id);
         }
         catch (SQLException e)
@@ -287,7 +288,7 @@ public class UserStorage implements Storage<UserModel>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public UserModel get(int key)
+    public UserModel get(User key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

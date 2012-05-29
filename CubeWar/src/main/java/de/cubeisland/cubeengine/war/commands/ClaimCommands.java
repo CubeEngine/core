@@ -140,7 +140,7 @@ public class ClaimCommands
     private void claim(Location loc, int rad, Group team, Player player, WarUser user)
     {
 
-        if (team.getId() == 0)
+        if (team.getKey() == 0)
         {
             player.sendMessage(t("claim_noteam"));
             return;

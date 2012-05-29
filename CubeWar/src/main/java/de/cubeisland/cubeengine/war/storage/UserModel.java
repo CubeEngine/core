@@ -15,7 +15,7 @@ import java.util.HashSet;
  *
  * @author Faithcaio
  */
-public class UserModel implements Model
+public class UserModel implements Model<User>
 {
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     private GroupControl groups = GroupControl.get();
@@ -32,9 +32,9 @@ public class UserModel implements Model
     private HashSet<String> bypasses = new HashSet<String>();
     private TeamPos teampos;
 
-    public void setId(int id)
+    public User getKey()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.getCubeUser();
     }
 
     public enum TeamPos
@@ -88,15 +88,6 @@ public class UserModel implements Model
         this.teampos = TeamPos.NONE;
         this.rank = Rank.newRank(0);
         this.respawning = false;
-    }
-
-    /**
-     *
-     * @return the ID of the CubeUser
-     */
-    public int getId()
-    {
-        return this.getCubeUser().getId();
     }
 
     /**
@@ -364,4 +355,8 @@ public class UserModel implements Model
     }
     
     
+    public void setKey(User key)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

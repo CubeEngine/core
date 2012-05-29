@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.war.user;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
@@ -48,9 +47,9 @@ public class WarUser
         this.userDB.update(this.model);
     }
 
-    public int getId()
+    public User getKey()
     {
-        return model.getId();
+        return model.getKey();
     }
 
     public Rank getRank()

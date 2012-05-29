@@ -9,9 +9,9 @@ import org.bukkit.World;
  *
  * @author Faithcaio
  */
-public class AreaModel implements Model
+public class AreaModel implements Model<Integer>
 {
-    private int id;
+    private int key;
     
     private Chunk chunk;
     private Group group;
@@ -22,9 +22,9 @@ public class AreaModel implements Model
         this.group = group;
     }
     
-    public int getId()
+    public Integer getKey()
     {
-        return id;
+        return key;
     }
     
     public int getX()
@@ -57,9 +57,9 @@ public class AreaModel implements Model
         return this.chunk;
     }
     
-    public void setId(int id)
+    public void setKey(Integer key)
     {
-        this.id = id;
+        this.key = key;
     }
     
 }

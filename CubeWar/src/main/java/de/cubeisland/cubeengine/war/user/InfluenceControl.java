@@ -50,7 +50,7 @@ public class InfluenceControl
                 //ADJUST GROUP influence
                 for (Group group : groups)
                 {
-                    if (group.getId()>0)
+                    if (group.getKey()>0)
                         group.adjustMaxInfluence();
                 }
             }

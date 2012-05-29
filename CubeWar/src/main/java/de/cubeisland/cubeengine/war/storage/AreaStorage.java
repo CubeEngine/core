@@ -17,7 +17,7 @@ import org.bukkit.Server;
  *
  * @author Faithcaio
  */
-public class AreaStorage implements Storage<AreaModel>
+public class AreaStorage implements Storage<Integer, AreaModel>
 {
 
     private final Database database = CubeWar.getDB();
@@ -98,7 +98,7 @@ public class AreaStorage implements Storage<AreaModel>
     {
         try
         {
-            this.database.preparedExec("area_store", model.getId(), model.getWorld().getName(), model.getX(), model.getZ(), model.getGroup().getId());
+            this.database.preparedExec("area_store", model.getKey(), model.getWorld().getName(), model.getX(), model.getZ(), model.getGroup().getKey());
         }
         catch (SQLException ex)
         {
@@ -110,7 +110,7 @@ public class AreaStorage implements Storage<AreaModel>
     {
         try
         {
-            this.database.preparedExec("area_update", model.getGroup().getId(), model.getId());
+            this.database.preparedExec("area_update", model.getGroup().getKey(), model.getKey());
         }
         catch (SQLException ex)
         {
@@ -120,14 +120,14 @@ public class AreaStorage implements Storage<AreaModel>
 
     public boolean delete(AreaModel model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer key)
     {
         try
         {
-            return this.database.preparedExec("area_delete", id);
+            return this.database.preparedExec("area_delete", key);
         }
         catch (SQLException e)
         {
@@ -147,7 +147,7 @@ public class AreaStorage implements Storage<AreaModel>
         }
     }
     
-    public AreaModel get(int key)
+    public AreaModel get(Integer key)
     {
         try
         {

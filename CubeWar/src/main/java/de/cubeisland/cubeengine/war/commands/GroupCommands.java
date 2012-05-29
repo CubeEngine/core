@@ -125,7 +125,7 @@ public class GroupCommands {
             String val = args.getString(2);
             if (group != null)
             {
-                if (group.getId()<1)
+                if (group.getKey()<1)
                 {
                     sender.sendMessage(t("no_def_group"));
                     return true;
@@ -249,7 +249,7 @@ public class GroupCommands {
                     sender.sendMessage(t("m_noGroupExist",args.getString(0)));
                     return true;
                 }
-                if (group.getId()<1)
+                if (group.getKey()<1)
                 {
                     sender.sendMessage(t("no_def_group"));
                     return true;
@@ -259,7 +259,7 @@ public class GroupCommands {
             else
             {
                 group = users.getUser(sender).getTeam();
-                if (group.getId()==0)
+                if (group.getKey()==0)
                 {
                     sender.sendMessage(t("m_noTeam"));
                     return true;

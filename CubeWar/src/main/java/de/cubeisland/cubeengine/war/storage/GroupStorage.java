@@ -18,7 +18,7 @@ import org.bukkit.Material;
  *
  * @author Faithcaio
  */
-public class GroupStorage implements Storage<GroupModel>
+public class GroupStorage implements Storage<Integer, GroupModel>
 {
     private final Database database;
     private final String TABLE = "groups";
@@ -165,7 +165,7 @@ public class GroupStorage implements Storage<GroupModel>
     {
         try
         {
-            int id = model.getId();
+            int id = model.getKey();
             String tag = model.getTag();
             String name = model.getName();
             String description = model.getDescription();
@@ -222,7 +222,7 @@ public class GroupStorage implements Storage<GroupModel>
         String out = "";
         for (Group g : groups)
         {
-            out += regex + g.getId();
+            out += regex + g.getKey();
         }
         out.replaceFirst(regex, "");
         return out;
@@ -254,7 +254,7 @@ public class GroupStorage implements Storage<GroupModel>
     {
         try
         {
-            int id = model.getId();
+            int id = model.getKey();
             String name = model.getName();
             String description = model.getDescription();
             int respawnprot = model.getRespawnProtection();
@@ -293,10 +293,10 @@ public class GroupStorage implements Storage<GroupModel>
 
     public boolean delete(GroupModel model)
     {
-        return this.delete(model.getId());
+        return this.delete(model.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer id)
     {
         try
         {
@@ -325,7 +325,7 @@ public class GroupStorage implements Storage<GroupModel>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public GroupModel get(int key)
+    public GroupModel get(Integer key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

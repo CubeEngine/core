@@ -46,31 +46,31 @@ public class GroupControl
             {
 
                 newModel.setType(AreaType.SAFEZONE);
-                newModel.setId(-10);
+                newModel.setKey(-10);
                 newModel.setStringVal("SAFE", "SafeZone", "It's safe");
             }
             else if (name.equalsIgnoreCase("warland"))
             {
                 newModel.setType(AreaType.WARLAND);
-                newModel.setId(-50);
+                newModel.setKey(-50);
                 newModel.setStringVal("WAR", "WarLand", "War everywhere");
             }
             else if (name.equalsIgnoreCase("wildland"))
             {
                 newModel.setType(AreaType.WILDLAND);
-                newModel.setId(0);
+                newModel.setKey(0);
                 newModel.setStringVal("WILD", "WildLand", "Unclaimed Land");
             }
             else if (name.equalsIgnoreCase("team_default"))
             {
                 newModel.setType(AreaType.TEAMZONE);
-                newModel.setId(-1);
+                newModel.setKey(-1);
                 newModel.setStringVal("TEAM_DEFAULT", "Default Team", "A Team");
             }
             else if (name.equalsIgnoreCase("arena_default"))
             {
                 newModel.setType(AreaType.ARENA);
-                newModel.setId(-2);
+                newModel.setKey(-2);
                 newModel.setStringVal("ARENA_DEFAULT", "Default Arena", "An Arena");
             }
             if (section.getBoolean("economy.bank", false))
@@ -169,7 +169,7 @@ public class GroupControl
                 newModel.setBit(GroupModel.AUTO_CLOSE);
             }
 
-            groups.put(newModel.getId(), new Group(newModel));
+            groups.put(newModel.getKey(), new Group(newModel));
         }
     }
 
@@ -190,7 +190,7 @@ public class GroupControl
         newModel.setName(name);
         int id = groups.size() - 4; //TODO kann Fehler verursachen wenn eine Gruppe wieder gelöscht wird
         //TODO im Storage.store Id dem model zuweisen?
-        newModel.setId(id);
+        newModel.setKey(id);
         Group group = new Group(newModel);
         groups.put(id, group);
         groupDB.store(newModel);
@@ -202,7 +202,7 @@ public class GroupControl
         groupDB = GroupStorage.get();
         for (GroupModel model : groupDB.getAll())
         {
-            this.groups.put(model.getId(), new Group(model));
+            this.groups.put(model.getKey(), new Group(model));
         }
     }
 
@@ -304,7 +304,7 @@ public class GroupControl
             {
                 continue;
             }
-            if (g.getId() > 0)
+            if (g.getKey() > 0)
             {
                 users += g.getUserSum();
                 ++teams;

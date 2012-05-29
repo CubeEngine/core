@@ -205,11 +205,11 @@ public class UserControl
         {
             return true;
         }
-        if (user1.getTeam().getId() == 0)//WILDLAND
+        if (user1.getTeam().getKey() == 0)//WILDLAND
         {
             return false;
         }
-        if (user2.getTeam().getId() == 0)//WILDLAND
+        if (user2.getTeam().getKey() == 0)//WILDLAND
         {
             return false;
         }

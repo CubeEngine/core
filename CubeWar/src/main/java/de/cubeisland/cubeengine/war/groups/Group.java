@@ -4,8 +4,8 @@ import de.cubeisland.cubeengine.war.CubeWar;
 import static de.cubeisland.cubeengine.war.CubeWar.t;
 import de.cubeisland.cubeengine.war.storage.GroupModel;
 import de.cubeisland.cubeengine.war.storage.GroupStorage;
-import de.cubeisland.cubeengine.war.user.WarUser;
 import de.cubeisland.cubeengine.war.user.UserControl;
+import de.cubeisland.cubeengine.war.user.WarUser;
 import java.util.ArrayList;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
@@ -34,9 +34,9 @@ public class Group
     }
 
     //TODO Bank ist enfernt später mit CubeConomy wieder einfügen
-    public int getId()
+    public int getKey()
     {
-        return model.getId();
+        return model.getKey();
     }
 
     public void updateDB()
