@@ -8,20 +8,20 @@ import org.bukkit.OfflinePlayer;
  *
  * @author Phillip Schichtel
  */
-public class User extends UserBase implements Model
+public class User extends UserBase implements Model<Integer>
 {
     private final OfflinePlayer player;
-    private int id;
+    private int key;
     private String language;
     
     
     public static final int BLOCK_FLY = 1;
     
     
-    public User(int id, OfflinePlayer player, String language)
+    public User(int key, OfflinePlayer player, String language)
     {
         super(player);
-        this.id = id;
+        this.key = key;
         this.player = player;
         this.language = language;
     }
@@ -39,22 +39,6 @@ public class User extends UserBase implements Model
         return this.player;
     }
 
-    /**
-     * @return the CubeUsers ID
-     */
-    public int getId()
-    {
-        return this.id;
-    }
-    
-    /**
-     * @param id the id to set
-     */
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-    
     public void setLanguage(String lang)
     {
         this.language = lang;
@@ -63,5 +47,15 @@ public class User extends UserBase implements Model
     public String getLanguage()
     {
         return this.language;
+    }
+
+    public Integer getKey()
+    {
+        return this.key;
+    }
+
+    public void setKey(Integer key)
+    {
+        this.key = key;
     }
 }

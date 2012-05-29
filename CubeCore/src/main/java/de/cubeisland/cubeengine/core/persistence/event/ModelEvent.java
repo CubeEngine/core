@@ -24,9 +24,4 @@ public class ModelEvent extends CubeEvent
     {
         return model;
     }
-    
-    public int getModelId()
-    {
-        return model.getId();
-    }
 }

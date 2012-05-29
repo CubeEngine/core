@@ -150,7 +150,7 @@ public class Database
                 final ResultSet result = ps.getGeneratedKeys();
                 if (result.next())
                 {
-                    model.setId(result.getInt("GENERATED_KEY"));
+                    model.setKey(result.getInt("GENERATED_KEY"));
                 }
             }
         }

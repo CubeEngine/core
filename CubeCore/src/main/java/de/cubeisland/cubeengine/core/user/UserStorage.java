@@ -16,7 +16,7 @@ import org.bukkit.Server;
  *
  * @author CodeInfection
  */
-public class UserStorage implements Storage<User>
+public class UserStorage implements Storage<Integer,User>
 {
     private final Database database;
     private final Server server;
@@ -77,7 +77,7 @@ public class UserStorage implements Storage<User>
 
     public boolean delete(User object)
     {
-        return delete(object.getId());
+        return delete(object.getKey());
     }
 
     public Collection<User> getAll()
@@ -109,7 +109,7 @@ public class UserStorage implements Storage<User>
         }
     }
 
-    public User get(int key)
+    public User get(Integer key)
     {
         try
         {
@@ -148,7 +148,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.preparedUpdate("user_update", object.getLanguage(), object.getId());
+            this.database.preparedUpdate("user_update", object.getLanguage(), object.getKey());
         }
         catch (SQLException e)
         {

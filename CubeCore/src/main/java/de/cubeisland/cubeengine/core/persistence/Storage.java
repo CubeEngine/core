@@ -1,13 +1,12 @@
 package de.cubeisland.cubeengine.core.persistence;
 
-import java.sql.PreparedStatement;
 import java.util.Collection;
 
 /**
  *
  * @author Phillip Schichtel
  */
-public interface Storage<V extends Model>
+public interface Storage<K, V extends Model<K>>
 {
     /**
      * Initializes the DataBase
@@ -19,7 +18,7 @@ public interface Storage<V extends Model>
      * @param key the key
      * @return the model
      */
-    public V get(int key);
+    public V get(K key);
     /**
      * Returns all the models
      * 
