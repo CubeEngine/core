@@ -9,11 +9,9 @@ import java.lang.annotation.Target;
  *
  * @author Faithcaio
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Option
 {
     public abstract String value();
 }
-
