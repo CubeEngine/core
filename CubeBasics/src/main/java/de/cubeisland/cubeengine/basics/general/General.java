@@ -10,12 +10,12 @@ import org.bukkit.entity.Player;
  */
 public class General
 {
-    public static void me(Player player, String message)
+    public void me(Player player, String message)
     {
         player.getServer().broadcastMessage("*"+ player.getName() +" "+ message);
     }
     
-    public static boolean msg(Player sender, Player sendTo ,String message)
+    public boolean msg(Player sender, Player sendTo ,String message)
     {
         if (sendTo == null ) return false;
         sendTo.sendMessage(sender.getName() + " -> You " + message);
@@ -24,19 +24,19 @@ public class General
         return true;
     }
     
-    public static List<Player> near(Player player, int radius)
+    public List<Player> near(Player player, int radius)
     {
         List<Player> nearPlayers = new ArrayList<Player>();
         //TODO
         return nearPlayers;
     }
     
-    public static double seen(Player player)
+    public double seen(Player player)
     {
         return player.getLastPlayed();
     }
 
-    public static void suicide(Player player)
+    public void suicide(Player player)
     {
         player.setHealth(0);
         player.getServer().broadcastMessage(player.getName()+" killed himself!");

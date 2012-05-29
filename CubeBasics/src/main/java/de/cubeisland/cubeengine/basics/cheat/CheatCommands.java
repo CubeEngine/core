@@ -8,8 +8,6 @@ import de.cubeisland.cubeengine.core.command.CommandArgs;
 import de.cubeisland.cubeengine.core.command.RequiresPermission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -26,7 +24,8 @@ import org.bukkit.inventory.ItemStack;
 public class CheatCommands
 {
     UserManager cuManager = CubeCore.getInstance().getUserManager();
-    
+    Cheat cheat = new Cheat();
+    //TODO constructor & register Cmds
     
     //@Flag({"unsafe","u"})
     //@Param(type=String.class)
@@ -68,12 +67,12 @@ public class CheatCommands
                     sender.sendMessage(_(user,"basics","&cYou are not allowed to use this command!"));
                     return;
                 }
-                Cheat.unsafeEnchantItemInHand(user, ench, level);
+                cheat.unsafeEnchantItemInHand(user, ench, level);
                 sender.sendMessage(_(user,"&aAdded unsafe Enchantment: &6%s&a to your item!",ench.toString()));
                 //"&6Unsichere Verzauberung: &6%s&a zu deinem Item hinzugefügt!"
                 return;
             }
-            Cheat.enchantItemInHand(user, ench, level);
+            cheat.enchantItemInHand(user, ench, level);
             sender.sendMessage(_(user,"&aAdded Enchantment: &6%s&a to your item!",ench.toString()));
             //"&Verzauberung: &6%s&a zu deinem Item hinzugefügt!"
         }
@@ -122,13 +121,13 @@ public class CheatCommands
                 sender.sendMessage(_(send,"core","&cThe User %s does not exist!",args.getString(1)));
                 return;
             }
-            Cheat.feed(user);
+            cheat.feed(user);
             sender.sendMessage(_(send,"basics","&6Feeded %s",user.getName()));
             user.sendMessage(_(user,"basics","&6You got fed by %s",sender.getName()));
         }
         else
         {
-            Cheat.feed(send);
+            cheat.feed(send);
             sender.sendMessage(_(send,"basics","&6You are now fed!"));
         }
     }
@@ -149,7 +148,7 @@ public class CheatCommands
                 sender.sendMessage(_(send,"core","&cThe User %s does not exist!",args.getString(1)));
                 return;
             }
-            Cheat.gamemode(user, user.getGameMode()!=GameMode.CREATIVE);
+            cheat.gamemode(user, user.getGameMode()!=GameMode.CREATIVE);
             if (user.getGameMode() == GameMode.CREATIVE)
             {
                 sender.sendMessage(_(send,"basics","&6%s is now in Creative-Mode!",user.getName()));
@@ -163,7 +162,7 @@ public class CheatCommands
         }
         else
         {
-            Cheat.gamemode(send, send.getGameMode()!=GameMode.CREATIVE);
+            cheat.gamemode(send, send.getGameMode()!=GameMode.CREATIVE);
             if (send.getGameMode() == GameMode.CREATIVE)
             {
                 send.sendMessage(_(send,"basics","&6Your gamemode was changed to: Creative"));
@@ -204,13 +203,13 @@ public class CheatCommands
                 sender.sendMessage(_(send,"core","&cThe User %s does not exist!",args.getString(1)));
                 return;
             }
-            Cheat.heal(user);
+            cheat.heal(user);
             sender.sendMessage(_(send,"basics","&Healed %s",user.getName()));
             user.sendMessage(_(user,"basics","&6You got healed by %s",sender.getName()));
         }
         else
         {
-            Cheat.heal(send);
+            cheat.heal(send);
             sender.sendMessage(_(send,"basics","&6You are now healed!"));
         }
     }
@@ -234,7 +233,7 @@ public class CheatCommands
     public void more(CommandSender sender, CommandArgs args)
     {
         User user = cuManager.getUser(sender);
-        Cheat.more(user);
+        cheat.more(user);
         sender.sendMessage(_(user,"basics","Refilled Stack in Hand!"));
     }
     
@@ -265,7 +264,7 @@ public class CheatCommands
             sender.sendMessage(_(user,"core","&cThe User %s does not exist!",args.getString(1)));
             return;
         }
-        Cheat.ptime(user, time);
+        cheat.ptime(user, time);
     }
     
     
@@ -288,7 +287,7 @@ public class CheatCommands
         }
         if (args.hasFlag("a"))
         {
-            List<ItemStack> list = Cheat.repairAll(user);
+            List<ItemStack> list = cheat.repairAll(user);
             if (list.isEmpty())
             {
                 sender.sendMessage(_(user,"basics","No items to repair!"));
@@ -305,7 +304,7 @@ public class CheatCommands
         }
         else
         {
-            if (Cheat.repairInHand(user))
+            if (cheat.repairInHand(user))
                 sender.sendMessage(_(user,"basics","Item repaired!"));
             else
                 sender.sendMessage(_(user,"basics","Item cannot be repaired!"));
@@ -341,11 +340,11 @@ public class CheatCommands
         {
             for (World w : sender.getServer().getWorlds())
             {
-                Cheat.settime(w, time);
+                cheat.settime(w, time);
             }
             return;
         }
-        Cheat.settime(world, time);
+        cheat.settime(world, time);
     }
     
     public void unlimited(CommandSender sender, CommandArgs args)
