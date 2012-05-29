@@ -22,8 +22,7 @@ public class FileManager
     private CubeCore core;
     private Map<Module, CubeConfiguration> configs;
     private File dataFolder;
-    private File moduleConfigDir;
-    private File geoipFile;
+    private File configDir;
 
     private CubeConfiguration databaseConfig;
     private CubeConfiguration coreConfig;
@@ -35,10 +34,8 @@ public class FileManager
         this.dataFolder = new File(core.getDataFolder().getParentFile(), "CubeEngine");
         this.dataFolder.mkdirs();
 
-        this.moduleConfigDir = new File(this.dataFolder, "modules");
-        this.moduleConfigDir.mkdirs();
-
-        this.geoipFile = new File(this.dataFolder, "GeoIP.dat");
+        this.configDir = new File(this.dataFolder, "config");
+        this.configDir.mkdirs();
     }
 
     public File getDataFolder()
@@ -46,20 +43,9 @@ public class FileManager
         return this.dataFolder;
     }
 
-    public File getModuleConfigDir()
+    public File getConfigDir()
     {
-        return this.moduleConfigDir;
-    }
-
-    public CubeConfiguration getCoreConfig()
-    {
-        if (this.coreConfig == null)
-        {
-            this.coreConfig = CubeConfiguration.get(this.dataFolder, "core", this.core.getConfig().getDefaults());
-            this.coreConfig.safeLoad();
-        }
-
-        return this.coreConfig;
+        return this.configDir;
     }
 
     public CubeConfiguration getDatabaseConfig()
@@ -80,63 +66,107 @@ public class FileManager
         return this.databaseConfig;
     }
 
+    public CubeConfiguration getCoreConfig()
+    {
+        if (this.coreConfig == null)
+        {
+            this.coreConfig = CubeConfiguration.get(this.dataFolder, "core", this.core.getConfig().getDefaults());
+            this.coreConfig.safeLoad();
+        }
+
+        return this.coreConfig;
+    }
+
     public CubeConfiguration getModuleConfig(Module module)
     {
         CubeConfiguration config = this.configs.get(module);
         if (config == null)
         {
-            config = CubeConfiguration.get(this.moduleConfigDir, module);
+            config = CubeConfiguration.get(this.configDir, module);
             this.configs.put(module, config);
         }
 
         return config;
     }
-    public File getResource(Class clazz, String path)
+
+    public File getResourceFile(Resource resource)
+    {
+        if (resource == null)
+        {
+            throw new IllegalArgumentException("The resource must not be null!");
+        }
+        String source = resource.getSource();
+        String target = resource.getTarget();
+
+        if (source.startsWith("/"))
+        {
+            source = source.substring(1);
+        }
+        if (target.startsWith("/"))
+        {
+            target = target.substring(1);
+        }
+        
+        File targetFile = new File(this.dataFolder, target);
+        this.dropResource(resource.getClass(), source, targetFile, false);
+
+        return targetFile;
+    }
+
+    public void dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
+    {
+        if (filePath == null)
+        {
+            throw new IllegalArgumentException("The file path must not be null!");
+        }
+
+        if (filePath.startsWith("/"))
+        {
+            filePath = filePath.substring(1);
+        }
+        this.dropResource(clazz, resPath, new File(this.dataFolder, filePath), overwrite);
+    }
+
+    public void dropResource(Class clazz, String resPath, File file, boolean overwrite)
     {
         if (clazz == null)
         {
             throw new IllegalArgumentException("The class must not be null!");
         }
-        if (path == null)
+        if (resPath == null)
         {
-            throw new IllegalArgumentException("The path must not be null!");
+            throw new IllegalArgumentException("The resource path must not be null!");
         }
-        if (path.startsWith("/"))
+        if (file == null)
         {
-            path = path.substring(1);
+            throw new IllegalArgumentException("The file must not be null!");
         }
-        File target = new File(this.dataFolder, path);
-        if (!target.exists())
+        if (file.exists() && !overwrite)
         {
-            InputStream reader = this.getClass().getResourceAsStream("/resources/" + path);
-            if (reader != null)
-            {
-                try
-                {
-                    OutputStream writer = new FileOutputStream(target);
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = reader.read(buffer)) > 0)
-                    {
-                        writer.write(buffer, 0, bytesRead);
-                    }
-                    writer.flush();
-                    writer.close();
-                    reader.close();
-                    return target;
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-        else
-        {
-            return target;
+            return;
         }
 
-        return null;
+        InputStream reader = this.getClass().getResourceAsStream(resPath);
+        if (reader != null)
+        {
+            try
+            {
+                OutputStream writer = new FileOutputStream(file);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = reader.read(buffer)) > 0)
+                {
+                    writer.write(buffer, 0, bytesRead);
+                }
+                writer.flush();
+                writer.close();
+                reader.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace(System.err);
+            }
+        }
     }
 
     public void clean()

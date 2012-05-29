@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.i18n.geoip.LookupService;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.persistence.filesystem.Resource;
 import gnu.trove.map.hash.THashMap;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -23,7 +23,7 @@ public class I18n
         this.fileManager = fileManager;
         try
         {
-            this.lookupService = new LookupService(this.fileManager.getResource(getClass(), Resource.GEOIP_DATABASE.getPath()));
+            this.lookupService = new LookupService(this.fileManager.getResourceFile(CoreResource.GEOIP_DATABASE));
         }
         catch (IOException e)
         {
