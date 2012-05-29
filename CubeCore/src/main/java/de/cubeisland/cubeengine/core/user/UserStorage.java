@@ -132,7 +132,7 @@ public class UserStorage implements Storage<Integer,User>
         }
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer id)
     {
         try
         {

@@ -58,7 +58,7 @@ public interface Storage<K, V extends Model<K>>
      * @param id the id to delete
      * @return whether the model got deleted
      */
-    public boolean delete(int id);
+    public boolean delete(K key);
     /**
      * Clears the Table
      */
