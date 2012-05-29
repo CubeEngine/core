@@ -35,13 +35,13 @@ public class UserAccount extends AccountModel
     }
 
     @Override
-    public int getId()
+    public Integer getKey()
     {
-        return this.user.getId();
+        return this.user.getKey();
     }
 
     @Override
-    public void setId(int id)
+    public void setKey(Integer id)
     {
         throw new UnsupportedOperationException("UserID cannot be changed here!.");
     }

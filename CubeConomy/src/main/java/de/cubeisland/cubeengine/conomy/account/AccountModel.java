@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
  *
  * @author Faithcaio
  */
-public abstract class AccountModel implements IAccount,Model
+public abstract class AccountModel implements IAccount,Model<Integer>
 {
     private double balance;
     
@@ -18,8 +18,8 @@ public abstract class AccountModel implements IAccount,Model
      * @return the AccountName
      */
     public abstract String getName();
-    public abstract int getId();
-    public abstract void setId(int id);
+    public abstract Integer getKey();
+    public abstract void setKey(Integer id);
 
     public double give(double amount)
     {

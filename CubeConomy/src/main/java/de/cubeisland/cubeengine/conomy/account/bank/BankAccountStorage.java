@@ -13,7 +13,7 @@ import java.util.Collection;
  *
  * @author Faithcaio
  */
-public class BankAccountStorage implements Storage<BankAccount>
+public class BankAccountStorage implements Storage<Integer, BankAccount>
 {
     private final Database database;
     private final String TABLE = "auctions";
@@ -57,7 +57,7 @@ public class BankAccountStorage implements Storage<BankAccount>
         }
     }
 
-    public BankAccount get(int key)
+    public BankAccount get(Integer key)
     {
         try
         {
@@ -125,7 +125,7 @@ public class BankAccountStorage implements Storage<BankAccount>
     {
         try
         {
-            this.database.preparedUpdate("bankacc_update", account.balance(), account.getId());
+            this.database.preparedUpdate("bankacc_update", account.balance(), account.getKey());
         }
         catch (SQLException e)
         {
@@ -137,7 +137,7 @@ public class BankAccountStorage implements Storage<BankAccount>
     {
         try
         {
-            this.database.preparedUpdate("bankacc_merge", account.getId(), account.balance());
+            this.database.preparedUpdate("bankacc_merge", account.getKey(), account.balance());
         }
         catch (SQLException e)
         {
@@ -147,10 +147,10 @@ public class BankAccountStorage implements Storage<BankAccount>
 
     public boolean delete(BankAccount account)
     {
-        return delete(account.getId());
+        return delete(account.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer id)
     {
         try
         {

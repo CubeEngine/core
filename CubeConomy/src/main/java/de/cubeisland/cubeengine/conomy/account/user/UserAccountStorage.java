@@ -14,7 +14,7 @@ import java.util.Collection;
  *
  * @author Faithcaio
  */
-public class UserAccountStorage implements Storage<UserAccount>
+public class UserAccountStorage implements Storage<Integer, UserAccount>
 {
     private final Database database;
     private final UserManager cuManager;
@@ -60,7 +60,7 @@ public class UserAccountStorage implements Storage<UserAccount>
         }
     }
 
-    public UserAccount get(int key)
+    public UserAccount get(Integer key)
     {
         try
         {
@@ -70,9 +70,7 @@ public class UserAccountStorage implements Storage<UserAccount>
             {
                 return null;
             }
-            
-            int id = result.getInt("id");
-            User user = this.cuManager.getUser(id);
+            User user = this.cuManager.getUser(key);
             double amount = result.getDouble("amount");
             return new UserAccount(user, amount);
         }
@@ -90,13 +88,13 @@ public class UserAccountStorage implements Storage<UserAccount>
 
             Collection<UserAccount> accs = new ArrayList<UserAccount>();
             
-            int id;
+            int key;
             double amount;
             User user;
             while (result.next())
             {
-                id = result.getInt("id");
-                user = this.cuManager.getUser(id);
+                key = result.getInt("id");
+                user = this.cuManager.getUser(key);
                 amount = result.getDouble("amount");
                 UserAccount acc = new UserAccount(user, amount);
                 accs.add(acc);
@@ -114,7 +112,7 @@ public class UserAccountStorage implements Storage<UserAccount>
     {
         try
         {
-            this.database.preparedExec("useracc_store",account.getId(),account.balance());
+            this.database.preparedExec("useracc_store",account.getKey(),account.balance());
         }
         catch (SQLException e)
         {
@@ -126,7 +124,7 @@ public class UserAccountStorage implements Storage<UserAccount>
     {
         try
         {
-            this.database.preparedUpdate("useracc_update", account.balance(), account.getId());
+            this.database.preparedUpdate("useracc_update", account.balance(), account.getKey());
         }
         catch (SQLException e)
         {
@@ -138,7 +136,7 @@ public class UserAccountStorage implements Storage<UserAccount>
     {
         try
         {
-            this.database.preparedUpdate("useracc_merge", account.getId(), account.balance());
+            this.database.preparedUpdate("useracc_merge", account.getKey(), account.balance());
         }
         catch (SQLException e)
         {
@@ -148,14 +146,14 @@ public class UserAccountStorage implements Storage<UserAccount>
 
     public boolean delete(UserAccount account)
     {
-        return delete(account.getId());
+        return delete(account.getKey());
     }
 
-    public boolean delete(int id)
+    public boolean delete(Integer key)
     {
         try
         {
-            return this.database.preparedUpdate("usercc_delete", id) > 0;
+            return this.database.preparedUpdate("usercc_delete", key) > 0;
         }
         catch (SQLException e)
         {
