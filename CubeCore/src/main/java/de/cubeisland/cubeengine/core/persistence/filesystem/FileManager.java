@@ -20,7 +20,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 public class FileManager
 {
     private CubeCore core;
-    private Map<Module, ModuleConfiguration> configs;
+    private Map<Module, CubeConfiguration> configs;
     private File configBaseDir;
     private File moduleConfigDir;
     private File geoipFile;
@@ -31,7 +31,7 @@ public class FileManager
     public FileManager(CubeCore core)
     {
         this.core = core;
-        this.configs = new THashMap<Module, ModuleConfiguration>();
+        this.configs = new THashMap<Module, CubeConfiguration>();
         this.configBaseDir = new File(core.getDataFolder().getParentFile(), "CubeEngine");
         this.configBaseDir.mkdirs();
 
@@ -110,12 +110,12 @@ public class FileManager
         return this.databaseConfig;
     }
 
-    public ModuleConfiguration getModuleConfig(Module module)
+    public CubeConfiguration getModuleConfig(Module module)
     {
-        ModuleConfiguration config = this.configs.get(module);
+        CubeConfiguration config = this.configs.get(module);
         if (config == null)
         {
-            config = new ModuleConfiguration(module, this.moduleConfigDir);
+            config = CubeConfiguration.get(this.moduleConfigDir, module);
             this.configs.put(module, config);
         }
         return config;

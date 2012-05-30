@@ -1,31 +1,36 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
-import java.io.File;
 import java.lang.reflect.Field;
 
 /**
  *
  * @author Faithcaio
  */
-public class ModuleConfiguration
+public abstract class ModuleConfiguration
 {
     protected final CubeConfiguration config;
     private final Module module;
 
-    public ModuleConfiguration(Module module, File moduleConfigDir)
+    public ModuleConfiguration(Module module)
     {
         this.module = module;
-        config = CubeConfiguration.get(moduleConfigDir, module);
+        config = CubeCore.getInstance().getFileManager().getModuleConfig(module);
     }
 
+    public CubeConfiguration getCubeConfig()
+    {
+        return this.config;
+    }
+    
     public void loadConfiguration(Class<? extends ModuleConfiguration> moduleConfig)
     {
         for (Field field : moduleConfig.getFields())
         {
             this.loadConfigElement(field);
         }
-        module.saveConfig();
+        config.safeSave();
     }
 
     private void loadConfigElement(Field field)
@@ -52,7 +57,7 @@ public class ModuleConfiguration
         {
             this.saveConfigElement(field);
         }
-        module.saveConfig();
+        config.safeSave();
     }
 
     private void saveConfigElement(Field field)
@@ -70,4 +75,15 @@ public class ModuleConfiguration
         {
         }
     }
+    
+    /**
+     * this.loadConfiguration(this.getClass())
+     */
+    abstract public void loadConfig();
+    /**
+     * this.saveConfiguration(this.getClass())
+     */
+    abstract public void saveConfig();
+    
+    
 }
