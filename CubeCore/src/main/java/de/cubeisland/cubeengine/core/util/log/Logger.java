@@ -18,9 +18,9 @@ public class Logger
     public static final byte LOGLEVEL2 = 2; //Log into file
     public static final byte LOGLEVEL1 = 1; //Log into console
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.S");   //[datum] [module] [type] message
-    private FileWriter writer;
     private String moduleName;
     private Date date;
+    private FileLogWriter fileLogWriter;
     
     public Logger(Module module)
     {
@@ -28,14 +28,7 @@ public class Logger
         this.moduleName = module.getModuleName();
         this.date = new Date();
         
-        try
-        {
-            writer = new FileWriter(logDir.getPath() + this.moduleName + ".log");
-        }
-        catch(Exception ex)
-        {
-            ex.printStackTrace(System.err);
-        }
+       this.fileLogWriter = new FileLogWriter(logDir.getAbsolutePath() + moduleName + ".log"); 
     }
     
     public void msg(String msg, byte logLevel)
@@ -49,12 +42,12 @@ public class Logger
             }
             else if(logLevel == LOGLEVEL2)
             {
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [MSG] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [MSG] " + msg);
             }
             else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
             {
                 System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [MSG] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [MSG] " + msg);
             }
         }
         catch(Exception ex)
@@ -74,12 +67,12 @@ public class Logger
             }
             else if(logLevel == LOGLEVEL2)
             {
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [NOTIFICATION] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [NOTIFICATION] " + msg);
             }
             else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
             {
                 System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [NOTIFICATION] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [NOTIFICATION] " + msg);
             }
         }
         catch(Exception ex)
@@ -99,12 +92,12 @@ public class Logger
             }
             else if(logLevel == LOGLEVEL2)
             {
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [WARNING] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [WARNING] " + msg);
             }
             else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
             {
                 System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [WARNING] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [WARNING] " + msg);
             }
         }
         catch(Exception ex)
@@ -124,12 +117,12 @@ public class Logger
             }
             else if(logLevel == LOGLEVEL2)
             {
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [ERROR] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [ERROR] " + msg);
             }
             else if(logLevel == LOGLEVEL1 + LOGLEVEL2)
             {
                 System.out.println(" [" + this.moduleName + "] [MSG] " + msg);
-                writer.append("[" + dateStr + "] [" + this.moduleName + "] [ERROR] " + msg);
+                fileLogWriter.write("[" + dateStr + "] [" + this.moduleName + "] [ERROR] " + msg);
             }
         }
         catch(Exception ex)
