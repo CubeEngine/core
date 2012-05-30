@@ -36,11 +36,7 @@ public class CubeFly extends ModuleBase
         this.dataFolder.mkdirs();
 
         this.config = new FlyConfiguration(this);
-        this.config.loadConfig();
-        //TODO remove this
-        this.config.debugMode = true;
-        this.config.saveConfig();
-        //TESTING DEBUG ALWAYS ON
+        this.config.loadConfiguration();
 
         debugMode = this.config.debugMode;
 

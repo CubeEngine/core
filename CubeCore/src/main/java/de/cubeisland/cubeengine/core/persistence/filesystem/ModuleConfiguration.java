@@ -1,8 +1,12 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Map;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 /**
  *
@@ -11,79 +15,185 @@ import java.lang.reflect.Field;
 public abstract class ModuleConfiguration
 {
     protected final CubeConfiguration config;
-    private final Module module;
 
     public ModuleConfiguration(Module module)
     {
-        this.module = module;
-        config = CubeCore.getInstance().getFileManager().getModuleConfig(module);
+        config = module.getCore().getFileManager().getModuleConfig(module);
     }
 
-    public CubeConfiguration getCubeConfig()
+    /**
+     * Returns the CubeConfiguration usually you do not need this!
+     *
+     * @return the CubeConfiguration
+     */
+    @Deprecated
+    public CubeConfiguration getCubeConfiguration()
     {
         return this.config;
     }
-    
-    public void loadConfiguration(Class<? extends ModuleConfiguration> moduleConfig)
+
+    /**
+     * Loads the Configuration | if needed set default Values and save
+     */
+    public void loadConfiguration()
     {
-        for (Field field : moduleConfig.getFields())
+        try
         {
-            this.loadConfigElement(field);
+            //Loading config from file
+            config.load();
+        }
+        catch (FileNotFoundException ex)
+        {
+            //TODO
+        }
+        catch (IOException ex)
+        {
+            //TODO
+        }
+        catch (InvalidConfigurationException ex)
+        {
+            //TODO
+        }
+
+        for (Field field : this.getClass().getFields())
+        {
+            //set all declared Fields & if needed set default values
+            this.loadElement(field);
         }
         config.safeSave();
     }
 
-    private void loadConfigElement(Field field)
+    /**
+     * Loads in a ConfigurationElement from the ConfigurationFile into an Object
+     * (or a Map(String->Object))
+     *
+     * @param field the field to load
+     */
+    private void loadElement(Field field)
     {
         try
         {
-            if (!field.isAnnotationPresent(Option.class))
+            if (field.isAnnotationPresent(Option.class))
             {
-                return;
+                String path = field.getAnnotation(Option.class).value();
+                if (Map.class.isAssignableFrom(field.getType()))
+                {
+                    //Field is a Map
+                    this.loadSection(field);
+                }
+                else
+                {
+                    //Get savedValue or default
+                    Object configElem = config.get(path);
+                    if (configElem == null)
+                    {
+                        //Set defaultValue if no value saved
+                        config.addDefault(path, field.get(this));
+                        return; //Field Value is already set to default
+                    }
+                    //Set new Field Value
+                    field.set(this, configElem);
+                }
             }
-            String path = field.getAnnotation(Option.class).value();
-            config.addDefault(path, field.get(this));
-            Object configElem = config.get(path);
-            field.set(this, configElem);
         }
         catch (IllegalAccessException ex)
         {
         }
     }
 
-    public void saveConfiguration(Class<? extends ModuleConfiguration> moduleConfig)
-    {
-        for (Field field : moduleConfig.getFields())
-        {
-            this.saveConfigElement(field);
-        }
-        config.safeSave();
-    }
-
-    private void saveConfigElement(Field field)
+    /**
+     * Loads in a ConfigurationSection from the ConfigurationFile into a
+     * Map(String->Object)
+     *
+     * @param field the field to load
+     */
+    private void loadSection(Field field)
     {
         try
         {
-            if (!field.isAnnotationPresent(Option.class))
-            {
-                return;
-            }
             String path = field.getAnnotation(Option.class).value();
-            config.set(path, field.get(this));
+            //get Default Keys
+            Map<String, Object> section = (Map<String, Object>) field.get(this);
+            //get saved Values from ConfigFile
+            ConfigurationSection configSection = config.getConfigurationSection(path);
+            if (configSection == null)
+            {
+                //if section is not yet created: Create it
+                configSection = config.createSection(path);
+            }
+            Map<String, Object> loadedSection = configSection.getValues(true);
+            for (String key : section.keySet())
+            {
+                //Check if all Keys were loaded | If not: set to Default Key
+                if (!loadedSection.containsKey(key))
+                {
+                    configSection.addDefault(key, section.get(key));
+                    loadedSection.put(key, section.get(key));
+                }
+            }
+            //Set Field with loaded Values
+            field.set(this, loadedSection);
         }
         catch (IllegalAccessException ex)
         {
         }
     }
-    
+
     /**
-     * this.loadConfiguration(this.getClass())
+     * Saves the Configuration
      */
-    abstract public void loadConfig();
+    public void saveConfiguration()
+    {
+        for (Field field : this.getClass().getFields())
+        {
+            this.saveElement(field);
+        }
+        config.safeSave();
+    }
+
     /**
-     * this.saveConfiguration(this.getClass())
+     * Saves a field(Object) into the config
+     *
+     * @param field the field to save
      */
-    abstract public void saveConfig();
-    
-    
+    private void saveElement(Field field)
+    {
+        try
+        {
+            if (field.isAnnotationPresent(Option.class))
+            {
+                if (Map.class.isAssignableFrom(field.getType()))
+                {
+                    this.saveSection(field);
+                }
+                String path = field.getAnnotation(Option.class).value();
+                config.set(path, field.get(this));
+            }
+        }
+        catch (IllegalAccessException ex)
+        {
+        }
+    }
+
+    /**
+     * Saves a field(Map) into the config
+     *
+     * @param field the field to save
+     */
+    private void saveSection(Field field)
+    {
+        try
+        {
+            String path = field.getAnnotation(Option.class).value();
+            Map<String, Object> section = (Map<String, Object>) field.get(this);
+            ConfigurationSection configSection = config.getConfigurationSection(path);
+            for (String key : section.keySet())
+            {
+                configSection.set(key, section.get(key));
+            }
+        }
+        catch (IllegalAccessException ex)
+        {
+        }
+    }
 }
