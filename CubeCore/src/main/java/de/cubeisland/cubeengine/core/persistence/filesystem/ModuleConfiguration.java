@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import java.io.File;
 import java.lang.reflect.Field;
-import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  *
@@ -10,13 +10,13 @@ import org.bukkit.configuration.file.FileConfiguration;
  */
 public class ModuleConfiguration
 {
-    protected final FileConfiguration config;
+    protected final CubeConfiguration config;
     private final Module module;
 
-    public ModuleConfiguration(Module module)
+    public ModuleConfiguration(Module module, File moduleConfigDir)
     {
         this.module = module;
-        config = module.getConfig();
+        config = CubeConfiguration.get(moduleConfigDir, module);
     }
 
     public void loadConfiguration(Class<? extends ModuleConfiguration> moduleConfig)

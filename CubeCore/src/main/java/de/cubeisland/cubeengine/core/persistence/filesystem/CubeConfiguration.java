@@ -50,7 +50,7 @@ public class CubeConfiguration extends YamlConfiguration
         {
             throw new IllegalArgumentException("The module must not be null!");
         }
-        
+
         dir.mkdirs();
         if (!dir.isDirectory())
         {
@@ -72,10 +72,10 @@ public class CubeConfiguration extends YamlConfiguration
             return true;
         }
         catch (Throwable t)
-        {}
+        {
+        }
         return false;
     }
-
 
     public void save() throws IOException
     {
