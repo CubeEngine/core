@@ -116,8 +116,8 @@ public abstract class ModuleConfiguration
             {
                 if (loadedSection.get(s) instanceof ConfigurationSection)
                 {
-                    ConfigurationSection subsection = (ConfigurationSection)loadedSection.get(s);
-                    loadedSection.put(s, this.loadSubSection(subsection));
+                    ConfigurationSection subsection = (ConfigurationSection) loadedSection.get(s);
+                    loadedSection.put(s, this.getSection(subsection));
                 }
             }
             for (String key : section.keySet())
@@ -136,16 +136,16 @@ public abstract class ModuleConfiguration
         {
         }
     }
-    
-    private Map<String,Object> loadSubSection(ConfigurationSection configSection)
+
+    private Map<String, Object> getSection(ConfigurationSection configSection)
     {
-        Map<String,Object> section = new HashMap<String,Object>();
+        Map<String, Object> section = new HashMap<String, Object>();
         for (String key : configSection.getKeys(false))
         {
             Object value = configSection.get(key);
             if (value instanceof ConfigurationSection)
             {
-                value = this.loadSubSection((ConfigurationSection)value);
+                value = this.getSection((ConfigurationSection) value);
             }
             section.put(key, value);
         }
