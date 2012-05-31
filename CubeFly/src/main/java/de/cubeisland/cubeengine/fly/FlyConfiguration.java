@@ -38,6 +38,8 @@ public class FlyConfiguration extends ModuleConfiguration
             put("2ObjectTest3", blub);
         }
     };
+    @Option("configtests.test3")
+    public HashMap<String, Object> test3 = new HashMap<String, Object>();
 
     public FlyConfiguration(Module module)
     {

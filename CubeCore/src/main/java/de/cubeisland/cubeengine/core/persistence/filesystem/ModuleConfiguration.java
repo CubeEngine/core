@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -110,7 +111,15 @@ public abstract class ModuleConfiguration
                 //if section is not yet created: Create it
                 configSection = config.createSection(path);
             }
-            Map<String, Object> loadedSection = configSection.getValues(true);
+            Map<String, Object> loadedSection = configSection.getValues(false);
+            for (String s : loadedSection.keySet())
+            {
+                if (loadedSection.get(s) instanceof ConfigurationSection)
+                {
+                    ConfigurationSection subsection = (ConfigurationSection)loadedSection.get(s);
+                    loadedSection.put(s, this.loadSubSection(subsection));
+                }
+            }
             for (String key : section.keySet())
             {
                 //Check if all Keys were loaded | If not: set to Default Key
@@ -126,6 +135,21 @@ public abstract class ModuleConfiguration
         catch (IllegalAccessException ex)
         {
         }
+    }
+    
+    private Map<String,Object> loadSubSection(ConfigurationSection configSection)
+    {
+        Map<String,Object> section = new HashMap<String,Object>();
+        for (String key : configSection.getKeys(false))
+        {
+            Object value = configSection.get(key);
+            if (value instanceof ConfigurationSection)
+            {
+                value = this.loadSubSection((ConfigurationSection)value);
+            }
+            section.put(key, value);
+        }
+        return section;
     }
 
     /**
