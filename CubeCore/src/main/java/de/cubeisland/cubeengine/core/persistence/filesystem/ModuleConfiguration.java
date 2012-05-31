@@ -22,17 +22,6 @@ public abstract class ModuleConfiguration
     }
 
     /**
-     * Returns the CubeConfiguration usually you do not need this!
-     *
-     * @return the CubeConfiguration
-     */
-    @Deprecated
-    public CubeConfiguration getCubeConfiguration()
-    {
-        return this.config;
-    }
-
-    /**
      * Loads the Configuration | if needed set default Values and save
      */
     public void loadConfiguration()
