@@ -10,9 +10,9 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.Resource;
 public enum CoreResource implements Resource
 {
     GEOIP_DATABASE("GeoIP.dat", "GeoIP.dat"),
-    ENGLISH_META("language/english.json", "language/english.json"),
-    GERMAN_META("language/german.json", "language/german.json"),
-    GERMAN_MESSAGES("language/messages/german.json", "language/german/core.json");
+    ENGLISH_META("language/en_US.json", "language/en_US.json"),
+    GERMAN_META("language/de_DE.json", "language/de_DE.json"),
+    GERMAN_MESSAGES("language/messages/de_DE.json", "language/de_DE/core.json");
 
     private final String target;
     private final String source;

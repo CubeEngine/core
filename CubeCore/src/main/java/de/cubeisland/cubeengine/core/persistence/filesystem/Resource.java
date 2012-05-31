@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 /**
- * Holds all the resource of the core
+ * Holds a resource
  *
  * @author Phillip Schichtel
  */

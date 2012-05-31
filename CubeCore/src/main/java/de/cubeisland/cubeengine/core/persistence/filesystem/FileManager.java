@@ -23,6 +23,7 @@ public class FileManager
     private Map<Module, CubeConfiguration> configs;
     private File dataFolder;
     private File configDir;
+    private File languageDir;
 
     private CubeConfiguration databaseConfig;
     private CubeConfiguration coreConfig;
@@ -46,6 +47,11 @@ public class FileManager
     public File getConfigDir()
     {
         return this.configDir;
+    }
+
+    public File getLanguageDir()
+    {
+        return this.languageDir;
     }
 
     public CubeConfiguration getDatabaseConfig()
