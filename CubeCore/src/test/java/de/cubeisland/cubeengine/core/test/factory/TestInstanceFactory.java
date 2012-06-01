@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.test.factory;
 
 import de.cubeisland.cubeengine.core.*;
 import de.cubeisland.cubeengine.core.permission.Perm;
-import de.cubeisland.cubeengine.core.persistence.filesystem.CubeConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import java.io.File;
 import java.util.logging.Logger;
@@ -36,7 +35,7 @@ public class TestInstanceFactory
     //@Test
     public void setUp()
     {
-        //TODO Das hier zum laufen bringen...
+        //Das hier zum laufen bringen...
         //CubeCore initialiesieren
         //FakeServer erstellen
         //OP-CommandSender erstellen
@@ -46,12 +45,9 @@ public class TestInstanceFactory
         
         FileManager fileManager = PowerMockito.spy(new FileManager(core));
         
-        CubeConfiguration config = mock(CubeConfiguration.class);
         FileConfiguration fileconfig = mock(FileConfiguration.class);
 
         doReturn(fileconfig).when(core).getConfig(); 
-        doReturn(config).when(fileManager).getCoreConfig();
-        doReturn(config).when(fileManager).getDatabaseConfig();
         //Config Files are now simulated ...
         
         //TODO PluginManager faken

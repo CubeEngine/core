@@ -7,7 +7,9 @@ import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
-import de.cubeisland.cubeengine.core.persistence.filesystem.CubeConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.CoreConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import org.bukkit.plugin.PluginManager;
@@ -38,32 +40,30 @@ public class CubeCore extends JavaPlugin
     {
         return instance;
     }
-    
+
     @Override
     public void onEnable()
     {
         this.moduleManager = new ModuleManager(this);
         this.fileManager = new FileManager(this);
-        final CubeConfiguration coreConfig = this.fileManager.getCoreConfig();
-        coreConfig.safeSave();
+        final CoreConfiguration coreConfig = Configuration.load(this.fileManager.getCoreConfigDir(), CoreConfiguration.class);
 
-        final CubeConfiguration databaseConfig = this.fileManager.getDatabaseConfig();
-        databaseConfig.safeSave();
-        
+        final DatabaseConfiguration databaseConfig = Configuration.load(this.fileManager.getDatabaseConfigDir(), DatabaseConfiguration.class);
+
         this.pm = getServer().getPluginManager();
 
         this.database = new Database(
-                databaseConfig.getString("mysql.host"),
-                (short)databaseConfig.getInt("mysql.port"),
-                databaseConfig.getString("mysql.user"),
-                databaseConfig.getString("mysql.password"),
-                databaseConfig.getString("mysql.database"),
-                databaseConfig.getString("mysql.tableprefix"));
+                databaseConfig.mysql_host,
+                databaseConfig.mysql_port,
+                databaseConfig.mysql_user,
+                databaseConfig.mysql_pass,
+                databaseConfig.mysql_database,
+                databaseConfig.mysql_tableprefix);
 
         this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
-        
+
         CubeEngine.initialize(this);
     }
 
@@ -72,7 +72,7 @@ public class CubeCore extends JavaPlugin
     {
         this.moduleManager.clean();
         this.moduleManager = null;
-        
+
         CubeEngine.clean();
 
         this.fileManager.clean();

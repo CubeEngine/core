@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.Option;
 import java.io.File;

@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.MemoryConfiguration;
 
 /**
  * Manages all the configurations of the CubeEngine
@@ -24,10 +22,6 @@ public class FileManager
     private File dataFolder;
     private File configDir;
     private File languageDir;
-
-    private CubeConfiguration databaseConfig;
-    private CubeConfiguration coreConfig;
-    
     private static final String FILE_EXTENTION = ".yml";
 
     public FileManager(CubeCore core)
@@ -56,36 +50,17 @@ public class FileManager
         return this.languageDir;
     }
 
-    public CubeConfiguration getDatabaseConfig()
+    public File getDatabaseConfigDir()
     {
-        if (databaseConfig == null)
-        {
-            Configuration defaults = new MemoryConfiguration();
-            defaults.set("mysql.host", "localhost");
-            defaults.set("mysql.port", 3306);
-            defaults.set("mysql.user", "minecraft");
-            defaults.set("mysql.password", "12345678");
-            defaults.set("mysql.database", "minecraft");
-            defaults.set("mysql.tableprefix", "cube_");
-
-            this.databaseConfig = CubeConfiguration.get(this.dataFolder, "database", defaults);
-            this.databaseConfig.safeLoad();
-        }
-        return this.databaseConfig;
+        return new File(this.dataFolder, "database" + FILE_EXTENTION);
     }
 
-    public CubeConfiguration getCoreConfig()
+    public File getCoreConfigDir()
     {
-        if (this.coreConfig == null)
-        {
-            this.coreConfig = CubeConfiguration.get(this.dataFolder, "core", this.core.getConfig().getDefaults());
-            this.coreConfig.safeLoad();
-        }
-
-        return this.coreConfig;
+        return new File(this.dataFolder, "core" + FILE_EXTENTION);
     }
 
-    public File getModuleConfig(Module module)
+    public File getModuleConfigDir(Module module)
     {
         File file = this.configsDirs.get(module);
         if (file == null)
@@ -114,7 +89,7 @@ public class FileManager
         {
             target = target.substring(1);
         }
-        
+
         File targetFile = new File(this.dataFolder, target);
         this.dropResource(resource.getClass(), source, targetFile, false);
 
@@ -179,8 +154,6 @@ public class FileManager
 
     public void clean()
     {
-        this.configsDirs.clear();
-        this.coreConfig = null;
-        this.databaseConfig = null;
+        //TODO noch nötig??
     }
 }

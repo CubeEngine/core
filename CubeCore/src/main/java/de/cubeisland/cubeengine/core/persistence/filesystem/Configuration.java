@@ -27,7 +27,7 @@ public abstract class Configuration
 
     /**
      * Returns the loaded Configuration
-     * 
+     *
      * @param file the configurationfile
      * @param clazz the configuration
      * @return the loaded configuration
