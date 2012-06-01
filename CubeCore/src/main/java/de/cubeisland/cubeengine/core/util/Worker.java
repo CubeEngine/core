@@ -9,28 +9,46 @@ import java.util.Queue;
  * @author Robin Bechtel-Ostmann
  */
 
-public class Worker implements Runnable
+public class Worker
 {
+    private Queue<Runnable> jobs;
+    private boolean pause;
+    private boolean running;
+    
     public void worker()
     {
-        Queue<Runnable> jobs = new LinkedList<Runnable>();
+        this.jobs = new LinkedList<Runnable>();
+        this.pause = false;
+        this.running = false;
     }
     
-    public void run()
+    public void shedule()
     {
-        while(true)
+        this.running = true;
+        while(!(this.jobs.isEmpty() && pause))
         {
-            
+            this.jobs.poll().run();
+        }
+        this.running = false;
+    }
+    
+    public void addJob(Runnable job)
+    {
+        this.jobs.add(job);
+        if(!running)
+        {
+            this.shedule();
         }
     }
     
     public void pauseWorker()
     {
-        
+        this.pause = true;
     }
     
-    public void stopWorker()
+    public void resume()
     {
-        
+        this.pause = false;
+        this.shedule();
     }
 }
