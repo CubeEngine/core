@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
@@ -37,8 +38,8 @@ public abstract class Configuration
         try
         {
             YamlConfiguration configuration = new YamlConfiguration();
-            loadFromFile(configuration, file); //Load configFile
             T newInstance = (clazz.getConstructor(YamlConfiguration.class, File.class)).newInstance(configuration, file);
+            newInstance.reload();
             newInstance.loadConfiguration(); //Load in config and/or set default values
             return newInstance;
         }
@@ -48,22 +49,9 @@ public abstract class Configuration
         }
     }
 
-    public static boolean loadFromFile(YamlConfiguration configuration, File file)
+    public void reload() throws InvalidConfigurationException, IOException
     {
-        try
-        {
-            configuration.load(file);
-            return true;
-        }
-        catch (Throwable t)
-        {
-        }
-        return false;
-    }
-
-    public boolean reload()
-    {
-        return loadFromFile(this.config, this.file);
+        this.config.load(file);
     }
 
     public void save()
