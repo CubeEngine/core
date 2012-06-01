@@ -10,7 +10,6 @@ import org.bukkit.permissions.PermissionDefault;
  */
 public enum Perm implements Permission
 {
-    
     ;
     private String BASE = "cubeengine.auctions.";
     private String permission;

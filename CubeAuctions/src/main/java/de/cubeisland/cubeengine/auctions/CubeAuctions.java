@@ -20,6 +20,7 @@ public class CubeAuctions extends ModuleBase
     private static final String PERMISSION_BASE = "cubewar.fly";
     private BaseCommand baseCommand;
     private AuctionsConfiguration config;
+    private static CubeAuctions instance = null;
 
     public CubeAuctions()
     {
@@ -39,15 +40,7 @@ public class CubeAuctions extends ModuleBase
         this.config = Configuration.load(this.getCore().getFileManager().getModuleConfigDir(this), AuctionsConfiguration.class);
 
         debugMode = this.config.debugMode;
-/*
-        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");
-        this.getCommand("fly").setExecutor(baseCommand);
 
-        this.pm.registerEvents(new FlyListener(CubeCore.getInstance().getUserManager(), this), this);
-
-*/ 
-  
         CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
 
         log("Version " + this.getDescription().getVersion() + " enabled");
@@ -80,5 +73,15 @@ public class CubeAuctions extends ModuleBase
         {
             log("[debug] " + msg);
         }
+    }
+
+    public static CubeAuctions getInstance()
+    {
+        return instance;
+    }
+
+    public AuctionsConfiguration getConfiguration()
+    {
+        return config;
     }
 }
