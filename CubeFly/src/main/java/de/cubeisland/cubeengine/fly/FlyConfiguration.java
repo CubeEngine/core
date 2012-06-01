@@ -1,17 +1,19 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.persistence.filesystem.ModuleConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.Option;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  *
  * @author Faithcaio
  */
-public class FlyConfiguration extends ModuleConfiguration
+public class FlyConfiguration extends Configuration
 {
     @Option("debug")
     public boolean debugMode = false;
@@ -118,9 +120,9 @@ public class FlyConfiguration extends ModuleConfiguration
     public Integer log_file_open_files = 10;
     @Option("summary-on-start")
     public boolean summary_on_start = false;
-
-    public FlyConfiguration(Module module)
+    
+    public FlyConfiguration(YamlConfiguration config, File file)
     {
-        super(module);
+        super(config, file);
     }
 }

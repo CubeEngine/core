@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.fly;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.command.BaseCommand;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
+import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,8 +36,9 @@ public class CubeFly extends ModuleBase
 
         this.dataFolder.mkdirs();
 
-        this.config = new FlyConfiguration(this);
-        this.config.loadConfiguration();
+        this.config = Configuration.load(this.getCore().getFileManager().getModuleConfigDir(this), FlyConfiguration.class);
+        //this.config = new FlyConfiguration(this);
+        //this.config.loadConfiguration();
 
         debugMode = this.config.debugMode;
 

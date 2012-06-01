@@ -20,18 +20,20 @@ import org.bukkit.configuration.MemoryConfiguration;
 public class FileManager
 {
     private CubeCore core;
-    private Map<Module, CubeConfiguration> configs;
+    private Map<Module, File> moduleconfigDirs;
     private File configBaseDir;
     private File moduleConfigDir;
     private File geoipFile;
 
     private CubeConfiguration databaseConfig;
     private CubeConfiguration coreConfig;
+    
+    private static final String FILE_EXTENTION = ".yml";
 
     public FileManager(CubeCore core)
     {
         this.core = core;
-        this.configs = new THashMap<Module, CubeConfiguration>();
+        this.moduleconfigDirs = new THashMap<Module, File>();
         this.configBaseDir = new File(core.getDataFolder().getParentFile(), "CubeEngine");
         this.configBaseDir.mkdirs();
 
@@ -110,20 +112,20 @@ public class FileManager
         return this.databaseConfig;
     }
 
-    public CubeConfiguration getModuleConfig(Module module)
+    public File getModuleConfigDir(Module module)
     {
-        CubeConfiguration config = this.configs.get(module);
-        if (config == null)
+        File file = this.moduleconfigDirs.get(module);
+        if (file == null)
         {
-            config = CubeConfiguration.get(this.moduleConfigDir, module);
-            this.configs.put(module, config);
+            file = new File(this.moduleConfigDir, module.getModuleName() + FILE_EXTENTION);
+            this.moduleconfigDirs.put(module, file);
         }
-        return config;
+        return file;
     }
 
     public void clean()
     {
-        this.configs.clear();
+        this.moduleconfigDirs.clear();
         this.coreConfig = null;
         this.databaseConfig = null;
     }

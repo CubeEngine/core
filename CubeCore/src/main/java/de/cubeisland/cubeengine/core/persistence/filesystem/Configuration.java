@@ -1,25 +1,81 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
-import de.cubeisland.cubeengine.core.module.Module;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  *
  * @author Faithcaio
  */
-public abstract class ModuleConfiguration
+public abstract class Configuration
 {
-    protected final CubeConfiguration config;
+    protected final YamlConfiguration config;
+    protected final File file;
 
-    public ModuleConfiguration(Module module)
+    public Configuration(YamlConfiguration config, File file)
     {
-        config = module.getCore().getFileManager().getModuleConfig(module);
+        this.config = config;
+        this.file = file;
+    }
+
+    /**
+     * Returns the loaded Configuration
+     * 
+     * @param file the configurationfile
+     * @param clazz the configuration
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T load(File file, Class<T> clazz)
+    {
+        try
+        {
+            YamlConfiguration configuration = new YamlConfiguration();
+            loadFromFile(configuration, file); //Load configFile
+            T newInstance = (clazz.getConstructor(YamlConfiguration.class, File.class)).newInstance(configuration, file);
+            newInstance.loadConfiguration(); //Load in config and/or set default values
+            return newInstance;
+        }
+        catch (Throwable t)
+        {
+            return null;
+        }
+    }
+
+    public static boolean loadFromFile(YamlConfiguration configuration, File file)
+    {
+        try
+        {
+            configuration.load(file);
+            return true;
+        }
+        catch (Throwable t)
+        {
+        }
+        return false;
+    }
+
+    public boolean reload()
+    {
+        return loadFromFile(this.config, this.file);
+    }
+
+    public void save()
+    {
+        try
+        {
+            this.config.save(this.file);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -27,30 +83,12 @@ public abstract class ModuleConfiguration
      */
     public void loadConfiguration()
     {
-        try
-        {
-            //Loading config from file
-            config.load();
-        }
-        catch (FileNotFoundException ex)
-        {
-            //TODO
-        }
-        catch (IOException ex)
-        {
-            //TODO
-        }
-        catch (InvalidConfigurationException ex)
-        {
-            //TODO
-        }
-
         for (Field field : this.getClass().getFields())
         {
             //set all declared Fields & if needed set default values
             this.loadElement(field);
         }
-        config.safeSave();
+        this.save();
     }
 
     /**
@@ -161,7 +199,7 @@ public abstract class ModuleConfiguration
         {
             this.saveElement(field);
         }
-        config.safeSave();
+        this.save();
     }
 
     /**
