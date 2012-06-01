@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.util;
 
 import java.lang.Runnable;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -11,28 +11,28 @@ import java.util.Queue;
 
 public class Worker
 {
-    private Queue<Runnable> jobs;
+    private ConcurrentLinkedQueue<Runnable> jobs;
     private boolean pause;
     private boolean running;
     
     public void worker()
     {
-        this.jobs = new LinkedList<Runnable>();
+        this.jobs = new  ConcurrentLinkedQueue<Runnable>();
         this.pause = false;
         this.running = false;
     }
     
-    public void shedule()
+    public synchronized void shedule()
     {
         this.running = true;
         while(!(this.jobs.isEmpty() && pause))
         {
-            this.jobs.poll().run();
+            new Thread(this.jobs.poll()).start();
         }
         this.running = false;
     }
     
-    public void addJob(Runnable job)
+    public synchronized void addJob(Runnable job)
     {
         this.jobs.add(job);
         if(!running)
