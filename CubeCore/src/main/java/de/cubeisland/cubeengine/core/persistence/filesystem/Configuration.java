@@ -116,7 +116,7 @@ public abstract class Configuration
                     if (configElem == null)
                     {
                         //Set defaultValue if no value saved
-                        config.addDefault(path, field.get(this));
+                        this.config.set(path, field.get(this));
                         return; //Field Value is already set to default
                     }
                     //Set new Field Value
@@ -147,7 +147,7 @@ public abstract class Configuration
             if (configSection == null)
             {
                 //if section is not yet created: Create it
-                configSection = config.createSection(path);
+                configSection = this.config.createSection(path);
             }
             Map<String, Object> loadedSection = configSection.getValues(false);
             for (String s : loadedSection.keySet())
@@ -163,7 +163,7 @@ public abstract class Configuration
                 //Check if all Keys were loaded | If not: set to Default Key
                 if (!loadedSection.containsKey(key))
                 {
-                    configSection.addDefault(key, section.get(key));
+                    configSection.set(key, section.get(key));
                     loadedSection.put(key, section.get(key));
                 }
             }

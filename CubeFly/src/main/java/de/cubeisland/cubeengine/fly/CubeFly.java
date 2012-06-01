@@ -37,12 +37,8 @@ public class CubeFly extends ModuleBase
         this.dataFolder.mkdirs();
 
         this.config = Configuration.load(this.getCore().getFileManager().getModuleConfigDir(this), FlyConfiguration.class);
-        //this.config = new FlyConfiguration(this);
-        //this.config.loadConfiguration();
 
         debugMode = this.config.debugMode;
-
-        this.saveConfig();
 
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");

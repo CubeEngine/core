@@ -119,7 +119,7 @@ public class FlyConfiguration extends Configuration
     public Integer log_file_open_files = 10;
     @Option("summary-on-start")
     public boolean summary_on_start = false;
-    
+
     public FlyConfiguration(YamlConfiguration config, File file)
     {
         super(config, file);
