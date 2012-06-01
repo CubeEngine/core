@@ -85,16 +85,16 @@ public class FileManager
         return this.coreConfig;
     }
 
-    public CubeConfiguration getModuleConfig(Module module)
+    public File getModuleConfig(Module module)
     {
-        CubeConfiguration config = this.configs.get(module);
-        if (config == null)
+        File file = this.configsDirs.get(module);
+        if (file == null)
         {
-            config = CubeConfiguration.get(this.configDir, module);
-            this.configs.put(module, config);
+            file = new File(this.configDir, module.getModuleName() + FILE_EXTENTION);
+            this.configsDirs.put(module, file);
         }
 
-        return config;
+        return file;
     }
 
     public File getResourceFile(Resource resource)
