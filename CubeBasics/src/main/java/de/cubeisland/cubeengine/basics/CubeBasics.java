@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,10 +19,16 @@ public class CubeBasics extends ModuleBase
     protected PluginManager pm;
     protected File dataFolder;
     private static final String PERMISSION_BASE = "cubeengine.basics";
+    
+    private UserManager cuManager;
+    private BasicUserManager buManager;
+    
+    private static CubeBasics instance;
 
     public CubeBasics()
     {
         super("basics");
+        instance = this;
     }
 
     @Override
@@ -39,8 +46,10 @@ public class CubeBasics extends ModuleBase
         debugMode = configuration.getBoolean("debug");
         
         this.saveConfig();
-        
-        CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
+        CubeCore core = CubeCore.getInstance();
+        cuManager = core.getUserManager();
+        core.registerPermissions(Perm.values());
+        buManager = new BasicUserManager();
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
@@ -72,5 +81,29 @@ public class CubeBasics extends ModuleBase
         {
             log("[debug] " + msg);
         }
+    }
+
+    /**
+     * @return the cuManager
+     */
+    public UserManager getCuManager()
+    {
+        return cuManager;
+    }
+
+    /**
+     * @return the buManager
+     */
+    public BasicUserManager getBuManager()
+    {
+        return buManager;
+    }
+
+    /**
+     * @return the instance
+     */
+    public static CubeBasics getInstance()
+    {
+        return instance;
     }
 }

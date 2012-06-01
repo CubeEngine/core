@@ -26,6 +26,8 @@ public class CheatCommands
     UserManager cuManager = CubeCore.getInstance().getUserManager();
     Cheat cheat = new Cheat();
     //TODO constructor & register Cmds
+    //TODO language stuff
+    //TODO command stuff
     
     //@Flag({"unsafe","u"})
     //@Param(type=String.class)
@@ -36,8 +38,6 @@ public class CheatCommands
     @Command()//min=0,//max=2
     public void enchant(CommandSender sender, CommandArgs args)
     {
-        //TODO language stuff
-        //TODO command stuff
         User user = cuManager.getUser(sender);
         if (user == null)
         {
@@ -184,7 +184,31 @@ public class CheatCommands
     @Command()//min=2,//max=3
     public void give(CommandSender sender, CommandArgs args)
     {
-        //TODO blacklist items
+        User user = args.getUser(1);
+        User send = cuManager.getUser(sender);
+        ItemStack item = args.getItemStack(2);
+        int amount = item.getMaxStackSize();
+        if (args.size()>2)
+            amount = args.getInt(3);
+        item.setAmount(amount);
+        if (1==1)//TODO item is blacklisted
+        {
+            if (args.hasFlag("blacklist"))
+            {
+                if (Perm.COMMAND_GIVE_BLACKLIST.isAuthorized(user))
+                {
+                    sender.sendMessage(_(send,"basics","You gave %s %s x&d",user.getName(),item.toString(),amount));
+                    sender.sendMessage(_(user,"basics","%s just gave you %s x&d",send.getName(),item.toString(),amount));
+                    cheat.item(user, item);
+                    return;
+                }
+            }
+            sender.sendMessage(_(send,"basics","This item is blacklisted!"));
+            return;
+        }
+        cheat.item(user, item);
+        sender.sendMessage(_(send,"basics","You gave %s %s x&d",user.getName(),item.toString(),amount));
+        sender.sendMessage(_(user,"basics","%s just gave you %s x&d",send.getName(),item.toString(),amount));
     }
     
     //@Param(type=User.class)
@@ -224,7 +248,28 @@ public class CheatCommands
     @Command()//min=1,//max=2
     public void item(CommandSender sender, CommandArgs args)
     {
-        //TODO blacklist items -b Flag ignores Blacklist
+        User user = cuManager.getUser(sender);
+        ItemStack item = args.getItemStack(2);
+        int amount = item.getMaxStackSize();
+        if (args.size()>2)
+            amount = args.getInt(3);
+        item.setAmount(amount);
+        if (1==1)//TODO item is blacklisted
+        {
+            if (args.hasFlag("blacklist"))
+            {
+                if (Perm.COMMAND_ITEM_BLACKLIST.isAuthorized(user))
+                {
+                    sender.sendMessage(_(user,"basics","Received: %s x&d",item.toString(),amount));
+                    cheat.item(user, item);
+                    return;
+                }
+            }
+            sender.sendMessage(_(user,"basics","This item is blacklisted!"));
+            return;
+        }
+        cheat.item(user, item);
+        sender.sendMessage(_(user,"basics","Received: %s x&d",item.toString(),amount));
     }
     
     @RequiresPermission

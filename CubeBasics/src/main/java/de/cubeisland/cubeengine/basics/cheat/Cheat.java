@@ -75,16 +75,51 @@ public class Cheat
     
     public boolean repairInHand(Player player)
     {
-        //TODO check if it is repairable
+        ItemStack item = player.getItemInHand();
+        if (!this.checkRepairableItem(item)) return false;
         player.getItemInHand().setDurability((short)0);
         return true;
+    }
+    
+    private boolean checkRepairableItem(ItemStack item)
+    {
+        switch (item.getType())
+        {
+            case IRON_SPADE: case IRON_PICKAXE: case IRON_AXE: case IRON_SWORD:
+            case WOOD_SPADE: case WOOD_PICKAXE: case WOOD_AXE: case WOOD_SWORD:
+            case STONE_SPADE: case STONE_PICKAXE: case STONE_AXE: case STONE_SWORD:
+            case DIAMOND_SPADE: case DIAMOND_PICKAXE: case DIAMOND_AXE: case DIAMOND_SWORD:
+            case GOLD_SPADE: case GOLD_PICKAXE: case GOLD_AXE: case GOLD_SWORD:
+            case WOOD_HOE: case STONE_HOE: case IRON_HOE: case DIAMOND_HOE: case GOLD_HOE:
+            case LEATHER_HELMET: case LEATHER_CHESTPLATE: case LEATHER_LEGGINGS: case LEATHER_BOOTS:    
+            case CHAINMAIL_HELMET: case CHAINMAIL_CHESTPLATE: case CHAINMAIL_LEGGINGS: case CHAINMAIL_BOOTS:   
+            case IRON_HELMET: case IRON_CHESTPLATE: case IRON_LEGGINGS: case IRON_BOOTS:   
+            case DIAMOND_HELMET: case DIAMOND_CHESTPLATE: case DIAMOND_LEGGINGS: case DIAMOND_BOOTS:   
+            case GOLD_HELMET: case GOLD_CHESTPLATE: case GOLD_LEGGINGS: case GOLD_BOOTS:
+            case FLINT_AND_STEEL: case BOW: case FISHING_ROD: case SHEARS: return true;
+            default: return false;
+        }
     }
     
     public List<ItemStack> repairAll(Player player)
     {
         List<ItemStack> list = new ArrayList<ItemStack>();
-        //TODO repair all its inventory
-        //return List of repaired items
+        for (ItemStack item : player.getInventory().getContents())
+        {
+            if (this.checkRepairableItem(item))
+            {
+                list.add(item);
+                item.setDurability((short)0);
+            }
+        }
+        for (ItemStack item : player.getInventory().getArmorContents())
+        {
+            if (this.checkRepairableItem(item))
+            {
+                list.add(item);
+                item.setDurability((short)0);
+            }
+        }
         return list;
     }
     

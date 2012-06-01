@@ -11,6 +11,8 @@ import org.bukkit.permissions.PermissionDefault;
 public enum Perm implements Permission
 {
     COMMAND_ENCHANT_UNSAFE("command.enchant.unsafe", PermissionDefault.OP),
+    COMMAND_GIVE_BLACKLIST("command.give.blacklist", PermissionDefault.OP),
+    COMMAND_ITEM_BLACKLIST("command.give.blacklist", PermissionDefault.OP),
     ;
     private String BASE = "cubeengine.basics.";
     private String permission;
