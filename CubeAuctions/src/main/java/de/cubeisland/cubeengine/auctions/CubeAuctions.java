@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.auctions;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.command.BaseCommand;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
 import java.io.File;
@@ -17,8 +16,6 @@ public class CubeAuctions extends ModuleBase
     protected Server server;
     protected PluginManager pm;
     protected File dataFolder;
-    private static final String PERMISSION_BASE = "cubewar.fly";
-    private BaseCommand baseCommand;
     private AuctionsConfiguration config;
     private static CubeAuctions instance = null;
 
