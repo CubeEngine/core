@@ -3,6 +3,11 @@ package de.cubeisland.cubeengine.auctions.auction;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.bitmask.ByteBitMask;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 
 /**
  *
@@ -16,12 +21,15 @@ public class Bidder implements Model<Integer>
     private Integer userId;
     private User user;
     private ByteBitMask notifyState;
+    
+    private Queue<Auction> auctionBox;
 
     public Bidder(User user)
     {
         this.userId = user.getKey();
         this.user = user;
         this.notifyState = new ByteBitMask();
+        this.auctionBox = new LinkedTransferQueue<Auction>();
         //TODO store bidder in db
     }
 
@@ -29,6 +37,7 @@ public class Bidder implements Model<Integer>
     {
         this.userId = userId;
         this.notifyState = new ByteBitMask(notifyState);
+        this.auctionBox = new LinkedTransferQueue<Auction>();
     }
 
     public Integer getKey()
@@ -55,5 +64,20 @@ public class Bidder implements Model<Integer>
     public User getUser()
     {
         return user;
+    }
+    
+    public void addToBox(Auction auction)
+    {
+        this.auctionBox.offer(auction);
+    }
+    
+    public Auction getFromBox()
+    {
+        return this.auctionBox.peek();
+    }
+            
+    public void removeFromBox()
+    {
+        this.auctionBox.poll();
     }
 }
