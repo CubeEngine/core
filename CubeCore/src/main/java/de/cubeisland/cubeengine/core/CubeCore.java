@@ -143,4 +143,9 @@ public class CubeCore extends JavaPlugin
     {
         return this.moduleManager;
     }
+
+    public I18n getI18n()
+    {
+        return this.i18n;
+    }
 }
