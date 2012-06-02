@@ -31,6 +31,7 @@ public class DatabaseLogWriter implements LogWriter
         try
         {
             this.db.query("DROPTABLE {{log}}");
+            this.db.query("CREATE TABLE {{log}}");
         }
         catch(Exception ex)
         {
