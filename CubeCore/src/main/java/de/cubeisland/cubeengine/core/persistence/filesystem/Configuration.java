@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
+import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -48,12 +50,34 @@ public abstract class Configuration
             return null;
         }
     }
+    
+    /**
+     * Returns the loaded Configuration
+     *
+     * @param module the module to load the configuration from
+     * @param clazz the configuration
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T load(Module module, Class<T> clazz)
+    {
+        File file = CubeCore.getInstance().getFileManager().getModuleConfigFile(module);
+        return load(file, clazz);
+    }
 
+    /**
+     * Loads in the config from File
+     * 
+     * @throws InvalidConfigurationException
+     * @throws IOException 
+     */
     public void reload() throws InvalidConfigurationException, IOException
     {
         this.config.load(file);
     }
 
+    /**
+     * Saves the Configuration to the File
+     */
     public void save()
     {
         try
@@ -163,6 +187,12 @@ public abstract class Configuration
         }
     }
 
+    /**
+     * Loads in a Section (and its SubSections)
+     * 
+     * @param configSection the Section to load
+     * @return the loaded Section
+     */
     private Map<String, Object> getSection(ConfigurationSection configSection)
     {
         Map<String, Object> section = new HashMap<String, Object>();

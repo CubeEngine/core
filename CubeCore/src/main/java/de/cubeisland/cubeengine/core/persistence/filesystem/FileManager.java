@@ -60,7 +60,7 @@ public class FileManager
         return new File(this.dataFolder, "core" + FILE_EXTENTION);
     }
 
-    public File getModuleConfigDir(Module module)
+    public File getModuleConfigFile(Module module)
     {
         File file = this.configsDirs.get(module);
         if (file == null)
