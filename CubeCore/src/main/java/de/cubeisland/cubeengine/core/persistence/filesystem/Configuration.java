@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
+import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
@@ -16,14 +18,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public abstract class Configuration
 {
-    protected final YamlConfiguration config;
-    protected final File file;
-
-    public Configuration(YamlConfiguration config, File file)
-    {
-        this.config = config;
-        this.file = file;
-    }
+    protected YamlConfiguration config;
+    protected File file;
 
     /**
      * Returns the loaded Configuration
@@ -36,36 +32,45 @@ public abstract class Configuration
     {
         try
         {
-            YamlConfiguration configuration = new YamlConfiguration();
-            loadFromFile(configuration, file); //Load configFile
-            T newInstance = (clazz.getConstructor(YamlConfiguration.class, File.class)).newInstance(configuration, file);
-            newInstance.loadConfiguration(); //Load in config and/or set default values
-            return newInstance;
+            T config = clazz.newInstance();
+            config.file = file;
+            config.config = new YamlConfiguration();
+            config.reload();
+            config.loadConfiguration(); //Load in config and/or set default values
+            return config;
         }
         catch (Throwable t)
         {
             return null;
         }
     }
-
-    public static boolean loadFromFile(YamlConfiguration configuration, File file)
+    
+    /**
+     * Returns the loaded Configuration
+     *
+     * @param module the module to load the configuration from
+     * @param clazz the configuration
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T load(Module module, Class<T> clazz)
     {
-        try
-        {
-            configuration.load(file);
-            return true;
-        }
-        catch (Throwable t)
-        {
-        }
-        return false;
+        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + ".yml"), clazz);
     }
 
-    public boolean reload()
+    /**
+     * Loads in the config from File
+     * 
+     * @throws InvalidConfigurationException
+     * @throws IOException 
+     */
+    public void reload() throws InvalidConfigurationException, IOException
     {
-        return loadFromFile(this.config, this.file);
+        this.config.load(file);
     }
 
+    /**
+     * Saves the Configuration to the File
+     */
     public void save()
     {
         try
@@ -175,6 +180,12 @@ public abstract class Configuration
         }
     }
 
+    /**
+     * Loads in a Section (and its SubSections)
+     * 
+     * @param configSection the Section to load
+     * @return the loaded Section
+     */
     private Map<String, Object> getSection(ConfigurationSection configSection)
     {
         Map<String, Object> section = new HashMap<String, Object>();
