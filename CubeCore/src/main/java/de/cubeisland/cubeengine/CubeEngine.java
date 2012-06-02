@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
@@ -43,7 +44,7 @@ public final class CubeEngine
 
     public static Database getDatabase()
     {
-        return core.getDB();
+        return core.CubeCore.super.getDatabase();
     }
 
     public static PermissionRegistration getPermissionRegistration()
@@ -71,20 +72,19 @@ public final class CubeEngine
         return _(user.getLanguage(), category, text, params);
     }
 
-    public static String _(String language, String category, String text, Object... params)
+    public static String _(User user, String text, Object... params)
     {
-        if (language.equalsIgnoreCase("de"))
-        {
-            return text; // TODO implement me
-        }
-        else
-        {
-            return text; // TODO implement me
-        }
+        final String className = Thread.currentThread().getStackTrace()[2].getClassName();
+        return _(user.getLanguage(), className.substring(25, className.indexOf(".", 26)), text, params);
     }
 
     public static String _(String category, String text, Object... params)
     {
-        return _("en", category, text, params);
+        return _(I18n.SOURCE_LANGUAGE, category, text, params);
+    }
+
+    public static String _(String language, String category, String text, Object... params)
+    {
+        return core.getI18n().translate(language, category, language, params);
     }
 }
