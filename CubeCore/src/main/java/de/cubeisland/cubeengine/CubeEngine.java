@@ -44,7 +44,7 @@ public final class CubeEngine
 
     public static Database getDatabase()
     {
-        return core.getDB();
+        return core.CubeCore.super.getDatabase();
     }
 
     public static PermissionRegistration getPermissionRegistration()

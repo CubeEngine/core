@@ -128,4 +128,10 @@ public class Language
         }
         return null;
     }
+
+    void clean()
+    {
+        this.countries.clear();
+        this.messages.clear();
+    }
 }

@@ -95,4 +95,14 @@ public class I18n
         }
         return String.format(translation == null ? message : translation, params);
     }
+
+    public void clean()
+    {
+        this.countryMap.clear();
+        for (Language language : this.languageMap.values())
+        {
+            language.clean();
+        }
+        this.languageMap.clear();
+    }
 }
