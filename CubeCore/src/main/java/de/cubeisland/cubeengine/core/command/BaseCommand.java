@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.annotation.RequiresPermission;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
@@ -138,7 +140,7 @@ public class BaseCommand implements CommandExecutor
                     }
                     try
                     {
-                        this.commands.put(name, new SubCommand(commandContainer, method, name, annotation.aliases(), permission, addPermissionParent, annotation.usage()));
+                        this.commands.put(name, new SubCommand(commandContainer, method, name, annotation.aliases(), permission, addPermissionParent, null));
                         registeredCommands.add(name);
 
                         for (String alias : annotation.aliases())
@@ -261,7 +263,7 @@ public class BaseCommand implements CommandExecutor
 
     //@Command
     @RequiresPermission("libminecraft.test")
-    private void test(CommandSender sender, CommandArgs args)
+    private void test(CommandSender sender, CommandContext args)
     {
         sender.sendMessage("Params:");
 

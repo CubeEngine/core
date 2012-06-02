@@ -44,7 +44,7 @@ public class SubCommand
         }
 
         Class<?>[] paramTypes = method.getParameterTypes();
-        if (paramTypes.length != 2 || paramTypes[0] != CommandSender.class || paramTypes[1] != CommandArgs.class)
+        if (paramTypes.length != 2 || paramTypes[0] != CommandSender.class || paramTypes[1] != CommandContext.class)
         {
             throw new IllegalArgumentException("The methods signature is invalid!");
         }
@@ -60,7 +60,7 @@ public class SubCommand
         this.usage = usage;
     }
 
-    public boolean execute(CommandSender sender, CommandArgs args) throws Throwable
+    public boolean execute(CommandSender sender, CommandContext args) throws Throwable
     {
         try
         {

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command;
+package de.cubeisland.cubeengine.core.command.annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,5 +15,6 @@ public @interface Command
 {
     public String name() default "";
     public String[] aliases() default {};
-    public String usage() default "";
+    public int min() default -1;
+    public int max() default -1;
 }
