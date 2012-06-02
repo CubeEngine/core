@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.util.log;
 
+import de.cubeisland.cubeengine.core.persistence.database.Database;
+
 /**
  *
  * @author Robin Bechtel-Ostmann
@@ -7,18 +9,44 @@ package de.cubeisland.cubeengine.core.util.log;
 
 public class DatabaseLogWriter implements LogWriter
 {
-    public DatabaseLogWriter()
+    private Database db;
+    private String trigger;
+    
+    public DatabaseLogWriter(Database db, String trigger)
     {
-        
+        this.db = db;
+        this.trigger = trigger;
+        try
+        {
+            this.db.query("CREATE TABLE IF NOT EXISTS {{log}}");
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace(System.err);
+        }
     }
     
     public void clearLog()
     {
-        
+        try
+        {
+            this.db.query("DROPTABLE {{log}}");
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace(System.err);
+        }
     }
     
     public void write(String text)
     {
-        
+        try
+        {
+            this.db.query("INSERT INTO {{log}} (date, trigger, message) VALUES(NOW(), " + this.trigger + ", " + text + ")");
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace(System.err);
+        }
     }
 }
