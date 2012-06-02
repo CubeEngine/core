@@ -23,11 +23,11 @@ public class FileManager
     private File configDir;
     private File languageDir;
 
-    public FileManager(CubeCore core)
+    public FileManager(CubeCore core, File pluginsFolder)
     {
         this.core = core;
         this.configsDirs = new THashMap<Module, File>();
-        this.dataFolder = new File(core.getDataFolder().getParentFile(), "CubeEngine");
+        this.dataFolder = new File(pluginsFolder, "CubeEngine");
         this.dataFolder.mkdirs();
 
         this.configDir = new File(this.dataFolder, "config");

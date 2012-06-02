@@ -46,7 +46,7 @@ public class CubeCore extends JavaPlugin
     public void onEnable()
     {
         this.moduleManager = new ModuleManager(this);
-        this.fileManager = new FileManager(this);
+        this.fileManager = new FileManager(this, super.getDataFolder().getParentFile());
         CoreConfiguration coreConfig = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
 
