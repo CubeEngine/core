@@ -1,20 +1,5 @@
 package de.cubeisland.cubeengine.auctions_old;
 
-import de.cubeisland.cubeengine.auctions_old.commands.SearchCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.UndoBidCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.AddCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.UnSubscribeCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.ListCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.InfoCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.ConfirmCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.SubscribeCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.BidCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.GetItemsCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.RemoveCommand;
-import de.cubeisland.cubeengine.auctions_old.commands.NotifyCommand;
-import de.cubeisland.cubeengine.auctions_old.auction.Auction;
-import de.cubeisland.cubeengine.auctions_old.auction.Bid;
-import de.cubeisland.cubeengine.auctions_old.auction.Bidder;
 import de.cubeisland.cubeengine.auctions_old.database.AuctionBoxStorage;
 import de.cubeisland.cubeengine.auctions_old.database.AuctionStorage;
 import de.cubeisland.cubeengine.auctions_old.database.BidStorage;
@@ -28,8 +13,6 @@ import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
-import java.util.Collection;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
@@ -49,14 +32,12 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
     private static Translation translation;
     private Server server;
     private PluginManager pm;
-    private static CubeAuctionsConfiguration config;
     private File dataFolder;
     private Economy economy = null;
     private static Database database;
     private BaseCommand baseCommand;
     private static final String PERMISSION_BASE = "cubeengine.auctions.commands.";
     private static UserManager cuManager;
-    private Manager manager;
 //TODO später eigene AuktionsBox als Kiste mit separatem inventar 
 //TODO flatfile mit angeboten
 //TODO ah rem last / l
@@ -72,10 +53,7 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
         return instance;
     }
 
-    public static CubeAuctionsConfiguration getConfiguration()
-    {
-        return config;
-    }
+
 
     public static Database getDB()
     {
@@ -94,50 +72,21 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
-        config = new CubeAuctionsConfiguration(configuration);
+ 
         this.saveConfig();
         
-        manager = Manager.getInstance();
+
 
         this.economy = this.setupEconomy();
 
-        translation = Translation.get(this.getClass(), config.auction_language);
-        if (translation == null)
-        {
-            translation = Translation.get(this.getClass(), "en");
-        }
-/*
-        database = new Database(config.auction_database_host,
-                                config.auction_database_port,
-                                config.auction_database_user,
-                                config.auction_database_pass,
-                                config.auction_database_name);
-                                * 
-                                */
 
-        this.pm.registerEvents(new CubeAuctionsListener(this), this);
-
-        this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
-        this.baseCommand.registerCommands(new AddCommand())
-                        .registerCommands(new RemoveCommand())
-                        .registerCommands(new BidCommand())
-                        .registerCommands(new InfoCommand())
-                        .registerCommands(new SearchCommand())
-                        .registerCommands(new UndoBidCommand())
-                        .registerCommands(new NotifyCommand())
-                        .registerCommands(new GetItemsCommand())
-                        .registerCommands(new SubscribeCommand())
-                        .registerCommands(new UnSubscribeCommand())
-                        .registerCommands(new ListCommand())
-                        .registerCommands(new ConfirmCommand());
         this.getCommand("cubeauctions").setExecutor(baseCommand);
 
-        AuctionTimer.getInstance().firstschedule();
 
         cuManager = CubeCore.getInstance().getUserManager();
 
         this.loadDataBase();
-        Bidder.getInstance(1);
+
     }
 
     @Override
@@ -146,9 +95,7 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
         //this.database.close(); //TODO gibt nach reload Fehler weil verbindung geschlossen
         database = null;
         economy = null;
-        config = null;
-        AuctionTimer.getInstance().stop();
-        Bidder.getInstances().clear();
+
     }
 
     private Economy setupEconomy()
@@ -221,24 +168,7 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
         
         PriceStorage priceDB = new PriceStorage();
         //SubscriptionStorage subDB = new SubscriptionStorage();
-        
-        Collection<Bidder> bidderlist = bidderDB.getAll();//create all Bidder + Subs
-        for (Bidder bidder : bidderlist)
-        {
-            bidder.getBox().getItemList().addAll(boxDB.getAllByUser(bidder.getKey()));//filled AuctionBox
-        }
-        manager.addAuctions(auctionDB.getAll());
-        for (Auction auction : manager.getAuctions())
-        {
-            Stack<Bid> bids = auction.getBids();
-            for (Bid bid : bidDB.getAllByAuction(auction.getKey()))
-            {
-                bids.add(bid);//Fill Auction with bids
-            }
-        }
-        priceDB.getAll();//Loaded in all PriceData
-        
-        manager.removeOldAuctions();//remove old Auctions if needed
+       
 
     }
 }

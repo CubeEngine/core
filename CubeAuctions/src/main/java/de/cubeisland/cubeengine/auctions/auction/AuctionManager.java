@@ -45,14 +45,17 @@ public class AuctionManager
         this.startAuction(owner, item, duration, StringUtils.convertTimeToMillis(config.default_length));
     }
 
-    public void startAuction(Bidder bidder, ItemStack item, long duration, double startbid)
+    public boolean startAuction(Bidder bidder, ItemStack item, long duration, double startbid)
     {
-        Auction auction = new Auction(bidder, item, duration);
+        Auction auction = new Auction(bidder, item, duration + System.currentTimeMillis());
+        //TODO check if auction can be started
+        
         //TODO store auction in db
         this.pushbid(auction, bidder, startbid);
         this.registerAuction(auction);
         AuctionTimer.startTimer();
         CubeAuctions.debug("START auction");
+        return true;
     }
 
     public void pushbid(Auction auction, Bidder bidder, double amount)

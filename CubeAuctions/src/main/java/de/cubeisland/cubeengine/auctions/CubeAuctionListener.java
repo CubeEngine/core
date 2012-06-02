@@ -10,6 +10,8 @@ import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -17,10 +19,13 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -208,6 +213,114 @@ public class CubeAuctionListener implements Listener
                         {
                             event.setCancelled(true);
                             return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event)
+    {
+        final Block block = event.getClickedBlock();
+        if (block == null)
+        {
+            return;
+        }
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        {
+            if (block.getType().equals(Material.WALL_SIGN))
+            {
+                Sign sign = (Sign) block.getState();
+                if (sign.getLine(0).equals("[CubeAuctions]"))
+                {
+                    final Player player = event.getPlayer();
+                    User user = cuManager.getUser(player);
+                    event.setCancelled(true);
+                    if ((sign).getLine(1).equals("AuctionBox"))
+                    {
+                        //AuktionBox GetItems
+                        //TODO perm   if (!Perm.sign_auctionbox.check(player)) return;
+                        if (bidderManager.giveNextItem(user))
+                        {
+                            //TODO msg player.sendMessage(t("i")+" "+t("time_sign_empty"));
+                        }
+                    }
+                    if (sign.getLine(1).equals("Start"))
+                    {
+                        if (player.getItemInHand().getType().equals(Material.AIR))
+                        {
+                            //TODO msg player.sendMessage(t("pro")+" "+t("add_sell_hand"));
+                            return;
+                        }
+                        //AuktionBox Start Auktion
+                        //TODO perm if (!Perm.sign_start.check(player)) return;
+                        Double startbid;
+                        long length = StringUtils.convertTimeToMillis(sign.getLine(2));
+                        if (length == -1)
+                        {
+                            return;
+                        }
+                        try
+                        {
+                            startbid = Double.parseDouble(sign.getLine(3));
+                        }
+                        catch (NumberFormatException ex)
+                        {
+                            startbid = 0.0;
+                        }
+                        if (startbid == null)
+                        {
+                            startbid = 0.0;
+                        }
+
+                        if (config.blacklist.contains(player.getItemInHand().getType()))
+                        {
+                            //TODO msg  player.sendMessage(t("e") + " " + t("add_blacklist"));
+                            return;
+                        }
+                        if (!auctionManager.startAuction(this.getBidderOfPlayer(player), player.getItemInHand(), length, startbid))
+                        {
+                            //TODO msg auction could not start
+                            return;
+                        }
+                        player.getInventory().removeItem(player.getItemInHand());
+                        player.updateInventory();
+                        //TODO msg auction started oder auslagern zum AuctionManager
+
+                    }
+                    if ((sign).getLine(1).equals("AuctionSearch"))
+                    {
+                        //TODO perm if (!Perm.sign_list.check(player))  return;
+
+                        List<Auction> auctions;
+                        if ((sign).getLine(2).equals("# All #"))
+                        {
+                            auctions = auctionManager.getSoonEndingAuctions();
+                        }
+                        else
+                        {
+                            auctions = auctionManager.getSoonEndingAuctions();
+                            List<Auction> tmp = new ArrayList<Auction>();
+                            for (Auction auction : auctions)
+                            {
+                                if (auction.getItem().getType().equals(Material.matchMaterial(sign.getLine(2))))
+                                {
+                                    tmp.add(auction);
+                                }
+                            }
+                            auctions = tmp;
+                        }
+                        if (auctions.isEmpty())
+                        {
+                            //TODO msg  player.sendMessage(t("no_detect"));
+                            return;
+                        }
+                        Collections.reverse(auctions);
+                        for (Auction auction : auctions)
+                        {
+                            //TODO send info about auctions Util.sendInfo(player, auction);
                         }
                     }
                 }
