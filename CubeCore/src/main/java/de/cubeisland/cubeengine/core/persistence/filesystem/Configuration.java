@@ -41,6 +41,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
+            t.printStackTrace();
             return null;
         }
     }
@@ -65,7 +66,12 @@ public abstract class Configuration
      */
     public void reload() throws InvalidConfigurationException, IOException
     {
-        this.config.load(file);
+        try
+        {
+            this.config.load(file);
+        }
+        catch (Throwable t)
+        {}
     }
 
     /**
@@ -125,7 +131,20 @@ public abstract class Configuration
                         return; //Field Value is already set to default
                     }
                     //Set new Field Value
-                    field.set(this, configElem);
+                    if ((Short.class == field.getType())
+                      || short.class == field.getType())
+                    {
+                        field.set(this, ((Integer)configElem).shortValue());
+                    }
+                    else if ((Byte.class == field.getType())
+                           || byte.class == field.getType())
+                    {
+                        field.set(this, ((Integer)configElem).byteValue());
+                    }
+                    else
+                    {
+                        field.set(this, configElem);
+                    }
                 }
             }
         }
