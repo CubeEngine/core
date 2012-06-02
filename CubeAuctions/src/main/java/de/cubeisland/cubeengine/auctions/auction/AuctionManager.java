@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.auctions.AuctionsConfiguration;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Sorter;
 import de.cubeisland.cubeengine.auctions.auction.timer.AuctionTimer;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class AuctionManager
 
     public void startAuction(Bidder owner, ItemStack item, long duration)
     {
-        this.startAuction(owner, item, duration, config.default_length);
+        this.startAuction(owner, item, duration, StringUtils.convertTimeToMillis(config.default_length));
     }
 
     public void startAuction(Bidder bidder, ItemStack item, long duration, double startbid)
@@ -63,10 +64,17 @@ public class AuctionManager
 
     public boolean bid(Auction auction, Bidder bidder, double amount)
     {
-        //TODO check money
-        //TODO check auctions
-        if (1 == 0)
+
+        if (auction.getTopBid().getAmount() <= amount)//TODO check bid amount
         {
+            //t("auc_bid_low2"));
+            return false;
+        }
+        double moneyNeeded = bidder.getTotalBidAmount() + amount;
+        if (1 == 0)//TODO check money
+        {
+            //TODO bypass money permission
+            //auc_bid_money1 and 2
             return false;
         }
         this.pushbid(auction, bidder, amount);
@@ -80,21 +88,39 @@ public class AuctionManager
 
     public boolean undobid(Auction auction, Bidder bidder)
     {
-        if (auction.isTopBidder(bidder))
+        //TODO msgs
+        if (auction.isOwner(bidder))
         {
-            auction.popBid();
-            return true;
+            //undo_pro2
+            return false;
         }
-        return false;
+        if (!auction.isTopBidder(bidder))
+        {
+            // undo_bidder
+            return false;
+        }
+        if (config.undotime > 0)
+        {
+            if (System.currentTimeMillis() - auction.getTopBid().getTimestamp() > config.undotime * 1000)
+            {
+                // undo_time
+                return false;
+            }
+        }
+        auction.popBid();
+        //TODO update DB
+        //undo_bid_n
+        return true;
+
     }
 
     public void endAuction(Auction auction)
     {
         if (auction.isTopBidder(auction.getOwner()))
         {
-            this.abortAuction(auction);
             double comission = auction.getTopBid().getAmount() * config.comission / 100;
             //TODO charge comission to User
+            //TODO t("time_pun4
             this.abortAuction(auction);
             return;
         }
@@ -105,7 +131,7 @@ public class AuctionManager
     {
         Bid bid = auction.getTopBid();
 
-        if (auction.isTopBidder(auction.getOwner()))
+        if (bid.getBidder().equals(auction.getOwner()))
         {
             //all Bidder had not enough money
             this.abortAuction(auction);
@@ -126,6 +152,8 @@ public class AuctionManager
             }
             double punish = bid.getAmount() * config.punish;
             //TODO punish player
+            //TODO msgs...
+            //time_pun1 - 3
             auction.popBid();
             punished.add(bid.getBidder());
             //get next Winner
@@ -134,12 +162,14 @@ public class AuctionManager
         }
         //TODO take money
         Bidder bidder = bid.getBidder();
+        // t("time_sold" (msg to owner)
         this.notify(bidder, Bidder.NOTIFY_WIN);
         this.notify(bidder, Bidder.NOTIFY_ITEMS);
         //TODO notify or set notifyState
-
+        //TODO adjust av. Price
         this.activeAuctions.remove(auction.getKey());
         this.registerEndingAuction(auction);
+        auction.getTopBid().getBidder().addToBox(auction);
         //TODO move auction to other storage in db
         CubeAuctions.debug("END auction");
     }
@@ -150,9 +180,9 @@ public class AuctionManager
         {
             switch (notifyState)
             {
-                case Bidder.NOTIFY_CANCEL://TODO msg
+                case Bidder.NOTIFY_CANCEL://TODO msg 
                     return;
-                case Bidder.NOTIFY_WIN://TODO msg
+                case Bidder.NOTIFY_WIN://TODO msg time_won
                     return;
             }
             return;
@@ -168,7 +198,11 @@ public class AuctionManager
         auction.pushBid(bid);
         this.activeAuctions.remove(auction.getKey());
         this.registerEndingAuction(auction);
+        auction.setEndedTime();
+        auction.getOwner().addToBox(auction);
         //TODO move auction to other storage in db
+        //TODO retain only last Bid and move to other auction database
+        //TODO msg _(auction was not succesful
         this.notify(bid.getBidder(), Bidder.NOTIFY_CANCEL);
         CubeAuctions.debug("ABORT auction");
     }
@@ -179,7 +213,7 @@ public class AuctionManager
         this.endedAuctions.remove(auction.getKey());
         for (Bid bid : auction.getBids())
         {
-            //TODO delete bid in db
+            //TODO delete bid in db or delete all bids of thus auction...
         }
         auction.setBids(null);
         //TODO delete auction in db
@@ -202,5 +236,23 @@ public class AuctionManager
             return null;
         }
         return sortList.get(0);
+    }
+
+    public List<Auction> getAuctionsOf(Bidder bidder)
+    {
+        List<Auction> list = new ArrayList<Auction>();
+        for (Auction auction : this.activeAuctions.values())
+        {
+            if (auction.isTopBidder(bidder))
+            {
+                list.add(auction);
+            }
+        }
+        return list;
+    }
+
+    public Auction getAuction(Integer id)
+    {
+        return this.activeAuctions.get(id);
     }
 }

@@ -24,6 +24,11 @@ public class BidderManager
         this.bidders.put(bidder.getUser(), bidder);
     }
 
+    public Bidder getBidder(User user)
+    {
+        return this.bidders.get(user);
+    }
+
     /**
      * try to give Next AuctionItem to the player
      */
@@ -42,6 +47,7 @@ public class BidderManager
         if ((remain != null) && (remain.getAmount() != 0))
         {
             item.setAmount(remain.getAmount());
+            //t("cont_rec_remain"));
             //TODO update in database
         }
         else
@@ -60,7 +66,7 @@ public class BidderManager
         }
         return true;
     }
-    
+
     public void giveAllItems(User user)
     {
         Material fake = null;

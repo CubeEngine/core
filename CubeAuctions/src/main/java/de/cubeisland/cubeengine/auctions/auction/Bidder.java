@@ -3,10 +3,8 @@ package de.cubeisland.cubeengine.auctions.auction;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.bitmask.ByteBitMask;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
 /**
@@ -21,8 +19,8 @@ public class Bidder implements Model<Integer>
     private Integer userId;
     private User user;
     private ByteBitMask notifyState;
-    
     private Queue<Auction> auctionBox;
+    private AuctionManager auctionManager;
 
     public Bidder(User user)
     {
@@ -65,19 +63,41 @@ public class Bidder implements Model<Integer>
     {
         return user;
     }
-    
+
     public void addToBox(Auction auction)
     {
         this.auctionBox.offer(auction);
     }
-    
+
     public Auction getFromBox()
     {
         return this.auctionBox.peek();
     }
-            
+
     public void removeFromBox()
     {
         this.auctionBox.poll();
+    }
+
+    /**
+     * @return Total amount of money spend in leading bids
+     */
+    public double getTotalBidAmount()
+    {
+        double total = 0;
+        List<Auction> auctionlist = this.auctionManager.getAuctionsOf(this);
+        if (!auctionlist.isEmpty())
+        {
+            for (Auction auction : auctionlist)
+            {
+                total += auction.getTopBid().getAmount();
+            }
+        }
+        return total;
+    }
+
+    public Queue<Auction> getBox()
+    {
+        return this.auctionBox;
     }
 }

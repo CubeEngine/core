@@ -13,7 +13,7 @@ public class Auction implements Model<Integer>
     private Integer id;
     private Bidder owner;
     private ItemStack item;
-    private final long auctionEnd;
+    private long auctionEnd;
     private Stack<Bid> bids;
 
     public Auction(Bidder owner, ItemStack item, long auctionEnd)
@@ -105,5 +105,10 @@ public class Auction implements Model<Integer>
     public ItemStack getItem()
     {
         return item;
+    }
+
+    void setEndedTime()
+    {
+        this.auctionEnd = System.currentTimeMillis();
     }
 }

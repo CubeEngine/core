@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.auctions;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
 import java.io.File;
@@ -35,10 +34,12 @@ public class CubeAuctions extends ModuleBase
         this.dataFolder.mkdirs();
 
         this.config = Configuration.load(this.getCore().getFileManager().getModuleConfigDir(this), AuctionsConfiguration.class);
+        this.config.convert(); // StringList -> MaterialList
 
         debugMode = this.config.debugMode;
 
-        CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
+        this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
+        this.pm.registerEvents(new CubeAuctionListener(this), this);
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
