@@ -39,7 +39,7 @@ public class Language
         this.name = root.get("name").getAsString();
         this.localName = root.get("localName").getAsString();
 
-        if (this.code.equalsIgnoreCase(I18n.SOURCE_LANGUAGE))
+        if (!this.code.equalsIgnoreCase(I18n.SOURCE_LANGUAGE))
         {
             for (JsonElement elem : root.getAsJsonArray("countries"))
             {
@@ -112,7 +112,6 @@ public class Language
                     elem = entry.getValue();
                     if (elem.isJsonPrimitive())
                     {
-                        // TODO parse colors
                         catMessages.put(entry.getKey(), elem.getAsString());
                     }
                 }

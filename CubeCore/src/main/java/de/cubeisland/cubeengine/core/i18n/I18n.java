@@ -83,6 +83,10 @@ public class I18n
 
     public String translate(String language, String category, String message, Object... params)
     {
+        if (SOURCE_LANGUAGE.equalsIgnoreCase(language))
+        {
+            return message;
+        }
         String translation = null;
         Language lang = this.languageMap.get(language);
         if (lang != null)
