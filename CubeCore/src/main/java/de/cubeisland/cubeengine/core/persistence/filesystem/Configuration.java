@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.IOException;
@@ -19,14 +18,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public abstract class Configuration
 {
-    protected final YamlConfiguration config;
-    protected final File file;
-
-    public Configuration(YamlConfiguration config, File file)
-    {
-        this.config = config;
-        this.file = file;
-    }
+    protected YamlConfiguration config;
+    protected File file;
 
     /**
      * Returns the loaded Configuration
@@ -39,11 +32,12 @@ public abstract class Configuration
     {
         try
         {
-            YamlConfiguration configuration = new YamlConfiguration();
-            T newInstance = (clazz.getConstructor(YamlConfiguration.class, File.class)).newInstance(configuration, file);
-            newInstance.reload();
-            newInstance.loadConfiguration(); //Load in config and/or set default values
-            return newInstance;
+            T config = clazz.newInstance();
+            config.file = file;
+            config.config = new YamlConfiguration();
+            config.reload();
+            config.loadConfiguration(); //Load in config and/or set default values
+            return config;
         }
         catch (Throwable t)
         {
@@ -60,8 +54,7 @@ public abstract class Configuration
      */
     public static <T extends Configuration> T load(Module module, Class<T> clazz)
     {
-        File file = CubeCore.getInstance().getFileManager().getModuleConfigFile(module);
-        return load(file, clazz);
+        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + ".yml"), clazz);
     }
 
     /**

@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.persistence.database;
 
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
+import de.cubeisland.cubeengine.core.persistence.filesystem.DatabaseConfiguration;
 import gnu.trove.map.hash.THashMap;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,9 +30,9 @@ public class Database
 
     private final Connection connection;
 
-    public Database(String user, String pass, String name, String tablePrefix)
+    public Database(DatabaseConfiguration config)
     {
-        this("localhost", (short)3306, user, pass, name, tablePrefix);
+        this(config.host, config.port, config.user, config.pass, config.database, config.tableprefix);
     }
 
     public Database(String host, short port, String user, String pass, String name, String tablePrefix)

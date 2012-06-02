@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.CoreConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import java.io.File;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -46,19 +47,12 @@ public class CubeCore extends JavaPlugin
     {
         this.moduleManager = new ModuleManager(this);
         this.fileManager = new FileManager(this);
-        final CoreConfiguration coreConfig = Configuration.load(this.fileManager.getCoreConfigDir(), CoreConfiguration.class);
-
-        final DatabaseConfiguration databaseConfig = Configuration.load(this.fileManager.getDatabaseConfigDir(), DatabaseConfiguration.class);
+        CoreConfiguration coreConfig = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
+        DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
 
         this.pm = getServer().getPluginManager();
 
-        this.database = new Database(
-                databaseConfig.mysql_host,
-                databaseConfig.mysql_port,
-                databaseConfig.mysql_user,
-                databaseConfig.mysql_pass,
-                databaseConfig.mysql_database,
-                databaseConfig.mysql_tableprefix);
+        this.database = new Database(databaseConfig);
 
         this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(this.pm);
@@ -142,5 +136,11 @@ public class CubeCore extends JavaPlugin
     public ModuleManager getModuleManager()
     {
         return this.moduleManager;
+    }
+
+    @Override
+    public File getDataFolder()
+    {
+        return this.fileManager.getDataFolder();
     }
 }

@@ -22,7 +22,6 @@ public class FileManager
     private File dataFolder;
     private File configDir;
     private File languageDir;
-    private static final String FILE_EXTENTION = ".yml";
 
     public FileManager(CubeCore core)
     {
@@ -48,28 +47,6 @@ public class FileManager
     public File getLanguageDir()
     {
         return this.languageDir;
-    }
-
-    public File getDatabaseConfigDir()
-    {
-        return new File(this.dataFolder, "database" + FILE_EXTENTION);
-    }
-
-    public File getCoreConfigDir()
-    {
-        return new File(this.dataFolder, "core" + FILE_EXTENTION);
-    }
-
-    public File getModuleConfigFile(Module module)
-    {
-        File file = this.configsDirs.get(module);
-        if (file == null)
-        {
-            file = new File(this.configDir, module.getModuleName() + FILE_EXTENTION);
-            this.configsDirs.put(module, file);
-        }
-
-        return file;
     }
 
     public File getResourceFile(Resource resource)
