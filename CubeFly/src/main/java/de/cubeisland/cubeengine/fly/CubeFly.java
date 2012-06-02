@@ -36,7 +36,7 @@ public class CubeFly extends ModuleBase
 
         this.dataFolder.mkdirs();
 
-        this.config = Configuration.load(this.getCore().getFileManager().getModuleConfigDir(this), FlyConfiguration.class);
+        this.config = Configuration.load(this, FlyConfiguration.class);
 
         debugMode = this.config.debugMode;
 
@@ -46,7 +46,7 @@ public class CubeFly extends ModuleBase
 
         this.pm.registerEvents(new FlyListener(CubeCore.getInstance().getUserManager(), this), this);
 
-        CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
+        this.getCore().registerPermissions(Perm.values());
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
