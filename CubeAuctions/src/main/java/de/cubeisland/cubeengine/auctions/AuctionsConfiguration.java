@@ -19,7 +19,7 @@ public class AuctionsConfiguration extends Configuration
     @Option("auction.comission")
     public int comission = 3;//in percent
     @Option("auction.punish")
-    public double punish = 0.3;
+    public int punish = 30;
     @Option("auction.undo-time")
     public int undotime = 30; //in sec
     @Option("auction.item-box-length")

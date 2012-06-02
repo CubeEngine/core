@@ -25,6 +25,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import static de.cubeisland.cubeengine.CubeEngine._;
 
 /**
  *
@@ -120,6 +121,7 @@ public class CubeAuctionListener implements Listener
         if (event.getLine(0).equalsIgnoreCase("[CubeAuctions]") || event.getLine(0).equalsIgnoreCase("[ca]"))
         {
             Player player = event.getPlayer();
+            User user = cuManager.getUser(player);
             if (event.getLine(1).equalsIgnoreCase("AuctionBox") || event.getLine(1).equalsIgnoreCase("box"))
             {
                 //TODO perm & cancel
@@ -158,13 +160,13 @@ public class CubeAuctionListener implements Listener
                     }
                     else
                     {
-                        //TODO player.sendMessage(t("event_sign_fail"));
+                        user.sendMessage(_(user, "auctions", "&cCubeAuctions sign could not be created!"));
                         event.setCancelled(true);
                         return;
                     }
                 }
             }
-            //TODO player.sendMessage(t("event_sign_create"));            
+            user.sendMessage(_(user, "auctions", "&cCubeAuctions sign created succesfully!")); 
             event.setLine(0, "[CubeAuctions]");
         }
     }
@@ -250,7 +252,7 @@ public class CubeAuctionListener implements Listener
                     {
                         if (player.getItemInHand().getType().equals(Material.AIR))
                         {
-                            //TODO msg player.sendMessage(t("pro")+" "+t("add_sell_hand"));
+                            user.sendMessage(_(user, "auctions", "&6ProTip: You can NOT sell your hands!")); 
                             return;
                         }
                         //AuktionBox Start Auktion
@@ -276,12 +278,12 @@ public class CubeAuctionListener implements Listener
 
                         if (config.blacklist.contains(player.getItemInHand().getType()))
                         {
-                            //TODO msg  player.sendMessage(t("e") + " " + t("add_blacklist"));
+                            user.sendMessage(_(user, "auctions", "&cThis item is blacklisted!")); 
                             return;
                         }
                         if (!auctionManager.startAuction(this.getBidderOfPlayer(player), player.getItemInHand(), length, startbid))
                         {
-                            //TODO msg auction could not start
+                            user.sendMessage(_(user, "auctions", "&cCould not start auction!")); 
                             return;
                         }
                         player.getInventory().removeItem(player.getItemInHand());
@@ -292,7 +294,6 @@ public class CubeAuctionListener implements Listener
                     if ((sign).getLine(1).equals("AuctionSearch"))
                     {
                         //TODO perm if (!Perm.sign_list.check(player))  return;
-
                         List<Auction> auctions;
                         if ((sign).getLine(2).equals("# All #"))
                         {
@@ -313,7 +314,7 @@ public class CubeAuctionListener implements Listener
                         }
                         if (auctions.isEmpty())
                         {
-                            //TODO msg  player.sendMessage(t("no_detect"));
+                            user.sendMessage(_(user, "auctions", "&cNo Auctions detected!")); 
                             return;
                         }
                         Collections.reverse(auctions);

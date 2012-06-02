@@ -1,9 +1,11 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
+import static de.cubeisland.cubeengine.CubeEngine._;
 import de.cubeisland.cubeengine.auctions.AuctionsConfiguration;
 import de.cubeisland.cubeengine.auctions.CubeAuctions;
 import de.cubeisland.cubeengine.auctions.Sorter;
 import de.cubeisland.cubeengine.auctions.auction.timer.AuctionTimer;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,28 +93,28 @@ public class AuctionManager
 
     public boolean undobid(Auction auction, Bidder bidder)
     {
-        //TODO msgs
+        User user = bidder.getUser();
         if (auction.isOwner(bidder))
         {
-            //undo_pro2
+            user.sendMessage(_(user, "auctions", "&6This is your auction!")); 
             return false;
         }
         if (!auction.isTopBidder(bidder))
         {
-            // undo_bidder
+            user.sendMessage(_(user, "auctions", "&6You are not the highest Bidder!")); 
             return false;
         }
         if (config.undotime > 0)
         {
             if (System.currentTimeMillis() - auction.getTopBid().getTimestamp() > config.undotime * 1000)
             {
-                // undo_time
+                user.sendMessage(_(user, "auctions", "&6You can not undo your bid that late!")); 
                 return false;
             }
         }
         auction.popBid();
         //TODO update DB
-        //undo_bid_n
+        user.sendMessage(_(user, "auctions", "&aBid on Auction #%d redeemed!", auction.getKey())); 
         return true;
 
     }
@@ -123,7 +125,8 @@ public class AuctionManager
         {
             double comission = auction.getTopBid().getAmount() * config.comission / 100;
             //TODO charge comission to User
-            //TODO t("time_pun4
+            User user = auction.getOwner().getUser();
+            user.sendMessage(_(user, "auctions", "&6You have been charged &c%d%% &6of your startbid", config.comission));
             this.abortAuction(auction);
             return;
         }
@@ -153,21 +156,25 @@ public class AuctionManager
             {
                 punished = new HashSet<Bidder>();
             }
-            double punish = bid.getAmount() * config.punish;
+            double punish = bid.getAmount() * config.punish / 100;
+            Bidder bidder = bid.getBidder();
+            User user = bidder.getUser();
+            user.sendMessage(_(user, "auctions", "&6Not enough money to pay what you bid for!"));
+            user.sendMessage(_(user, "auctions", "&6You have been charged %d%% of your Bid.", config.punish));
+            user.sendMessage(_(user, "auctions", "&6Next time do not bid if you know you can not spare the money!"));
             //TODO punish player
-            //TODO msgs...
-            //time_pun1 - 3
             auction.popBid();
-            punished.add(bid.getBidder());
+            punished.add(bidder);
             //get next Winner
             this.finishAuction(auction, punished);
             return;
         }
         //TODO take money
         Bidder bidder = bid.getBidder();
-        // t("time_sold" (msg to owner)
-        this.notify(bidder, Bidder.NOTIFY_WIN);
-        this.notify(bidder, Bidder.NOTIFY_ITEMS);
+        User seller = auction.getOwner().getUser();
+        seller.sendMessage(_(seller, "auctions", "&aCongratulations! &6You just sold: %s for %s excluding %s"));//TODO params
+        this.notify(bidder, Bidder.NOTIFY_WIN, auction);
+        this.notify(bidder, Bidder.NOTIFY_ITEMS, auction);
         //TODO notify or set notifyState
         //TODO adjust av. Price
         this.activeAuctions.remove(auction.getKey());
@@ -177,15 +184,17 @@ public class AuctionManager
         CubeAuctions.debug("END auction");
     }
 
-    public void notify(Bidder bidder, byte notifyState)
+    public void notify(Bidder bidder, byte notifyState, Auction auction)
     {
         if (bidder.getUser().isOnline())
         {
             switch (notifyState)
             {
-                case Bidder.NOTIFY_CANCEL://TODO msg 
+                case Bidder.NOTIFY_CANCEL:
+                    bidder.getUser().sendMessage(_(bidder.getUser(), "auctions", "&6Your auction was not successful!"));
                     return;
-                case Bidder.NOTIFY_WIN://TODO msg time_won
+                case Bidder.NOTIFY_WIN:
+                    bidder.getUser().sendMessage(_(bidder.getUser(), "auctions", "Congratulations! You just bought: %s for %s")); //TODO params
                     return;
             }
             return;
@@ -205,8 +214,7 @@ public class AuctionManager
         auction.getOwner().addToBox(auction);
         //TODO move auction to other storage in db
         //TODO retain only last Bid and move to other auction database
-        //TODO msg _(auction was not succesful
-        this.notify(bid.getBidder(), Bidder.NOTIFY_CANCEL);
+        this.notify(bid.getBidder(), Bidder.NOTIFY_CANCEL, auction);
         CubeAuctions.debug("ABORT auction");
     }
 
