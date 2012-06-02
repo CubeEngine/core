@@ -10,13 +10,11 @@ import org.bukkit.permissions.PermissionDefault;
  */
 public enum Perm implements Permission
 {
-    BYPASS_BID("bypass.bid",PermissionDefault.OP),
-    
-    ;
+    BYPASS_BID("bypass.bid", PermissionDefault.OP),;
     private String BASE = "cubeengine.auctions.";
     private String permission;
     private PermissionDefault permissionDefault;
-    
+
     private Perm(String permission, PermissionDefault permissionDefault)
     {
         this.permission = BASE + permission;

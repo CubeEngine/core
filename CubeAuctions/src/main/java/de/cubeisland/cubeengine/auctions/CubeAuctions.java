@@ -33,7 +33,7 @@ public class CubeAuctions extends ModuleBase
 
         this.dataFolder.mkdirs();
 
-        this.config = Configuration.load(this.getCore().getFileManager().getModuleConfigDir(this), AuctionsConfiguration.class);
+        this.config = Configuration.load(this, AuctionsConfiguration.class);
         this.config.convert(); // StringList -> MaterialList
 
         debugMode = this.config.debugMode;

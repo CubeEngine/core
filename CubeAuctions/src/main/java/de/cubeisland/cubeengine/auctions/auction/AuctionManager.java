@@ -49,7 +49,7 @@ public class AuctionManager
     {
         Auction auction = new Auction(bidder, item, duration + System.currentTimeMillis());
         //TODO check if auction can be started
-        
+
         //TODO store auction in db
         this.pushbid(auction, bidder, startbid);
         this.registerAuction(auction);

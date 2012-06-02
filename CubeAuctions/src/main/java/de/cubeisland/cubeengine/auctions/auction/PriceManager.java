@@ -13,6 +13,7 @@ public class PriceManager
 {
     private Map<ItemStack, ItemPrice> prices;
 //TODO use the prices
+
     public PriceManager()
     {
         this.prices = new HashMap<ItemStack, ItemPrice>();
