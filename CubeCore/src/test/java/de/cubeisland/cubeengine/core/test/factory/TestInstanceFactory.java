@@ -43,7 +43,7 @@ public class TestInstanceFactory
         core = PowerMockito.spy(new CubeCore());
         when(core.getDataFolder()).thenReturn(pluginDirectory);
         
-        FileManager fileManager = PowerMockito.spy(new FileManager(core));
+      //  FileManager fileManager = PowerMockito.spy(new FileManager(core));
         
         FileConfiguration fileconfig = mock(FileConfiguration.class);
 

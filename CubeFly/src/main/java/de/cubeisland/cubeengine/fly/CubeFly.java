@@ -46,7 +46,7 @@ public class CubeFly extends ModuleBase
 
         this.pm.registerEvents(new FlyListener(CubeCore.getInstance().getUserManager(), this), this);
 
-        CubeCore.getInstance().getPermissionRegistration().registerPermissions(Perm.values());
+        this.getCore().registerPermissions(Perm.values());
 
         log("Version " + this.getDescription().getVersion() + " enabled");
     }
