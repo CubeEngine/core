@@ -47,7 +47,7 @@ public class FlyListener implements Listener
         {
             if (!Perm.FLY_FEAHTER.isAuthorized(player))
             {
-                user.sendMessage("core", "&cYou dont have permission to use this!");
+                user.sendTMessage("&cYou dont have permission to use this!");
                 //TODO Translation: 
                 //&cDu bist nicht berechtigt dies zu nutzen!
                 player.setAllowFlight(false); //Disable when player is flying
@@ -61,7 +61,7 @@ public class FlyListener implements Listener
             FlyStartEvent flyStartEvent = new FlyStartEvent(CubeCore.getInstance(), user);
             if (flyStartEvent.isCancelled())
             {
-                user.sendMessage("fly", "&cYou are not allowed to fly now!");
+                user.sendTMessage("&cYou are not allowed to fly now!");
                 //&cDu darfst jetzt nicht fliegen!
                 player.setAllowFlight(false); //Disable when player is flying
                 return;
@@ -73,7 +73,7 @@ public class FlyListener implements Listener
         {
             final ItemStack feather = new ItemStack(Material.FEATHER, 1);
             player.getInventory().removeItem(feather);
-            user.sendMessage("fly", "&6You can now fly!");
+            user.sendTMessage("&6You can now fly!");
             //&6Du kannst jetzt fliegen!
             Task flymore = new Task(plugin)
             {
@@ -110,7 +110,7 @@ public class FlyListener implements Listener
         }
         else
         {//or not
-            user.sendMessage("fly", "&6You cannot fly anymore!");
+            user.sendTMessage("&6You cannot fly anymore!");
             //&6Du kannst jetzt nicht mehr fliegen!
         }
     }

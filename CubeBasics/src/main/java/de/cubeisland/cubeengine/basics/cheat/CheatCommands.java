@@ -28,7 +28,7 @@ public class CheatCommands
     //TODO constructor & register Cmds
     //TODO language stuff
     //TODO command stuff
-    
+
     //@Flag({"unsafe","u"})
     //@Param(type=String.class)
     //@Param(type=Integer.class)
@@ -41,22 +41,22 @@ public class CheatCommands
         User user = cuManager.getUser(sender);
         if (user == null)
         {
-            sender.sendMessage(_("core","&cThis command can only be used ingame!"));
+            user.sendTMessage("&cThis command can only be used ingame!");
             return;
         }
-        if (args.size()>0)
+        if (args.size() > 0)
         {
-            
+
             ItemStack item = user.getItemInHand();
             if (item.getType().equals(Material.AIR))
             {
-                sender.sendMessage(_(user,"basics","&6ProTip: You cannot enchant your fists!"));
+                user.sendTMessage("&6ProTip: You cannot enchant your fists!");
                 //"&6Protipp: Du kannst deine Fäuste nicht verzaubern!"
                 return;
             }
             Enchantment ench = EnchantMatcher.match(args.getString(1));
             int level = ench.getMaxLevel();
-            if (args.size()>1)
+            if (args.size() > 1)
             {
                 level = args.getInt(2);
             }
@@ -64,16 +64,16 @@ public class CheatCommands
             {
                 if (!Perm.COMMAND_ENCHANT_UNSAFE.isAuthorized(user))
                 {
-                    sender.sendMessage(_(user,"basics","&cYou are not allowed to use this command!"));
+                    user.sendTMessage("&cYou are not allowed to use this command!");
                     return;
                 }
                 cheat.unsafeEnchantItemInHand(user, ench, level);
-                sender.sendMessage(_(user,"&aAdded unsafe Enchantment: &6%s&a to your item!",ench.toString()));
+                user.sendTMessage("&aAdded unsafe Enchantment: &6%s&a to your item!", ench.toString());
                 //"&6Unsichere Verzauberung: &6%s&a zu deinem Item hinzugefügt!"
                 return;
             }
             cheat.enchantItemInHand(user, ench, level);
-            sender.sendMessage(_(user,"&aAdded Enchantment: &6%s&a to your item!",ench.toString()));
+            user.sendTMessage("&aAdded Enchantment: &6%s&a to your item!", ench.toString());
             //"&Verzauberung: &6%s&a zu deinem Item hinzugefügt!"
         }
         else
@@ -104,7 +104,7 @@ public class CheatCommands
             sender.sendMessage("WATER_WORKER: waterworker, aquaaffinity");
         }
     }
-    
+
     //@Param(type=User.class)
     @RequiresPermission
     //@Usage("[Player]")
@@ -113,25 +113,25 @@ public class CheatCommands
     public void feed(CommandSender sender, CommandArgs args)
     {
         User send = cuManager.getUser(sender);
-        if (args.size()>0)
+        if (args.size() > 0)
         {
             User user = args.getUser(1);
             if (user == null)
             {
-                sender.sendMessage(_(send,"core","&cThe User %s does not exist!",args.getString(1)));
+                send.sendTMessage("&cThe User %s does not exist!", args.getString(1));
                 return;
             }
             cheat.feed(user);
-            sender.sendMessage(_(send,"basics","&6Feeded %s",user.getName()));
-            user.sendMessage(_(user,"basics","&6You got fed by %s",sender.getName()));
+            send.sendTMessage("&6Feeded %s", user.getName());
+            user.sendTMessage("&6You got fed by %s", sender.getName());
         }
         else
         {
             cheat.feed(send);
-            sender.sendMessage(_(send,"basics","&6You are now fed!"));
+            send.sendTMessage("&6You are now fed!");
         }
     }
-    
+
     //@Param(type=User.class)
     @RequiresPermission
     //@Usage("[Player]")
@@ -140,40 +140,40 @@ public class CheatCommands
     public void gamemode(CommandSender sender, CommandArgs args)
     {
         User send = cuManager.getUser(sender);
-        if (args.size()>0)
+        if (args.size() > 0)
         {
             User user = args.getUser(1);
             if (user == null)
             {
-                sender.sendMessage(_(send,"core","&cThe User %s does not exist!",args.getString(1)));
+                send.sendTMessage("&cThe User %s does not exist!", args.getString(1));
                 return;
             }
-            cheat.gamemode(user, user.getGameMode()!=GameMode.CREATIVE);
+            cheat.gamemode(user, user.getGameMode() != GameMode.CREATIVE);
             if (user.getGameMode() == GameMode.CREATIVE)
             {
-                sender.sendMessage(_(send,"basics","&6%s is now in Creative-Mode!",user.getName()));
-                user.sendMessage(_(user,"basics","&6Your gamemode was changed to: Creative"));
+                send.sendTMessage("&6%s is now in Creative-Mode!", user.getName());
+                user.sendTMessage("&6Your gamemode was changed to: Creative");
             }
             else
             {
-                sender.sendMessage(_(send,"basics","&6%s is now in Survival-Mode!",user.getName()));
-                user.sendMessage(_(user,"basics","&6Your gamemode was changed to: Survival"));
+                send.sendTMessage("&6%s is now in Survival-Mode!", user.getName());
+                user.sendTMessage("&6Your gamemode was changed to: Survival");
             }
         }
         else
         {
-            cheat.gamemode(send, send.getGameMode()!=GameMode.CREATIVE);
+            cheat.gamemode(send, send.getGameMode() != GameMode.CREATIVE);
             if (send.getGameMode() == GameMode.CREATIVE)
             {
-                send.sendMessage(_(send,"basics","&6Your gamemode was changed to: Creative"));
+                send.sendTMessage("&6Your gamemode was changed to: Creative");
             }
             else
             {
-                send.sendMessage(_(send,"basics","&6Your gamemode was changed to: Survival"));
+                send.sendTMessage("&6Your gamemode was changed to: Survival");
             }
         }
     }
-    
+
     //@Param(type=User.class)
     //@Param(type=ItemStack.class)
     //@Param(type=Integer.class)
@@ -188,29 +188,31 @@ public class CheatCommands
         User send = cuManager.getUser(sender);
         ItemStack item = args.getItemStack(2);
         int amount = item.getMaxStackSize();
-        if (args.size()>2)
+        if (args.size() > 2)
+        {
             amount = args.getInt(3);
+        }
         item.setAmount(amount);
-        if (1==1)//TODO item is blacklisted
+        if (1 == 1)//TODO item is blacklisted
         {
             if (args.hasFlag("blacklist"))
             {
                 if (Perm.COMMAND_GIVE_BLACKLIST.isAuthorized(user))
                 {
-                    sender.sendMessage(_(send,"basics","You gave %s %s x&d",user.getName(),item.toString(),amount));
-                    sender.sendMessage(_(user,"basics","%s just gave you %s x&d",send.getName(),item.toString(),amount));
+                    send.sendTMessage("You gave %s %s x&d", user.getName(), item.toString(), amount);
+                    user.sendTMessage("%s just gave you %s x&d", send.getName(), item.toString(), amount);
                     cheat.item(user, item);
                     return;
                 }
             }
-            sender.sendMessage(_(send,"basics","This item is blacklisted!"));
+            send.sendTMessage("This item is blacklisted!");
             return;
         }
         cheat.item(user, item);
-        sender.sendMessage(_(send,"basics","You gave %s %s x&d",user.getName(),item.toString(),amount));
-        sender.sendMessage(_(user,"basics","%s just gave you %s x&d",send.getName(),item.toString(),amount));
+        send.sendTMessage("You gave %s %s x&d", user.getName(), item.toString(), amount);
+        user.sendTMessage("%s just gave you %s x&d", send.getName(), item.toString(), amount);
     }
-    
+
     //@Param(type=User.class)
     @RequiresPermission
     //@Usage("[Player]")
@@ -219,25 +221,25 @@ public class CheatCommands
     public void heal(CommandSender sender, CommandArgs args)
     {
         User send = cuManager.getUser(sender);
-        if (args.size()>0)
+        if (args.size() > 0)
         {
             User user = args.getUser(1);
             if (user == null)
             {
-                sender.sendMessage(_(send,"core","&cThe User %s does not exist!",args.getString(1)));
+                send.sendTMessage("&cThe User %s does not exist!", args.getString(1));
                 return;
             }
             cheat.heal(user);
-            sender.sendMessage(_(send,"basics","&Healed %s",user.getName()));
-            user.sendMessage(_(user,"basics","&6You got healed by %s",sender.getName()));
+            send.sendTMessage("&Healed %s", user.getName());
+            user.sendTMessage("&6You got healed by %s", sender.getName());
         }
         else
         {
             cheat.heal(send);
-            sender.sendMessage(_(send,"basics","&6You are now healed!"));
+            send.sendTMessage("&6You are now healed!");
         }
     }
-    
+
     //@Param(type=User.class)
     //@Param(type=ItemStack.class)
     //@Param(type=Integer.class)
@@ -251,27 +253,29 @@ public class CheatCommands
         User user = cuManager.getUser(sender);
         ItemStack item = args.getItemStack(2);
         int amount = item.getMaxStackSize();
-        if (args.size()>2)
+        if (args.size() > 2)
+        {
             amount = args.getInt(3);
+        }
         item.setAmount(amount);
-        if (1==1)//TODO item is blacklisted
+        if (1 == 1)//TODO item is blacklisted
         {
             if (args.hasFlag("blacklist"))
             {
                 if (Perm.COMMAND_ITEM_BLACKLIST.isAuthorized(user))
                 {
-                    sender.sendMessage(_(user,"basics","Received: %s x&d",item.toString(),amount));
+                    user.sendTMessage("Received: %s x&d", item.toString(), amount);
                     cheat.item(user, item);
                     return;
                 }
             }
-            sender.sendMessage(_(user,"basics","This item is blacklisted!"));
+            user.sendTMessage("This item is blacklisted!");
             return;
         }
         cheat.item(user, item);
-        sender.sendMessage(_(user,"basics","Received: %s x&d",item.toString(),amount));
+        user.sendTMessage("Received: %s x&d", item.toString(), amount);
     }
-    
+
     @RequiresPermission
     //@Description("Refills the Stack in hand")
     @Command()//min=0,//max=0
@@ -279,9 +283,9 @@ public class CheatCommands
     {
         User user = cuManager.getUser(sender);
         cheat.more(user);
-        sender.sendMessage(_(user,"basics","Refilled Stack in Hand!"));
+        user.sendTMessage("Refilled Stack in Hand!");
     }
-    
+
     @RequiresPermission
     //@Param(type=String.class)
     //@Param(type=User.class)
@@ -291,28 +295,39 @@ public class CheatCommands
     public void ptime(CommandSender sender, CommandArgs args)
     {
         long time = 0;
-             if (args.getString(1).equalsIgnoreCase("day")) time = 12*1000;
-        else if (args.getString(1).equalsIgnoreCase("night")) time = 0;
-        else if (args.getString(1).equalsIgnoreCase("dawn")) time = 6*1000;
-        else if (args.getString(1).equalsIgnoreCase("even")) time = 18*1000;
+        if (args.getString(1).equalsIgnoreCase("day"))
+        {
+            time = 12 * 1000;
+        }
+        else if (args.getString(1).equalsIgnoreCase("night"))
+        {
+            time = 0;
+        }
+        else if (args.getString(1).equalsIgnoreCase("dawn"))
+        {
+            time = 6 * 1000;
+        }
+        else if (args.getString(1).equalsIgnoreCase("even"))
+        {
+            time = 18 * 1000;
+        }
         User user;
-        if (args.size()>1)
+        if (args.size() > 1)
         {
             user = args.getUser(2);
         }
         else
         {
-             user = cuManager.getUser(sender);
+            user = cuManager.getUser(sender);
         }
         if (user == null)
         {
-            sender.sendMessage(_(user,"core","&cThe User %s does not exist!",args.getString(1)));
+            user.sendTMessage("&cThe User %s does not exist!", args.getString(1));
             return;
         }
         cheat.ptime(user, time);
     }
-    
-    
+
     @RequiresPermission
     //@Flag({"all","a"})
     //@Usage("[-all]")
@@ -327,7 +342,7 @@ public class CheatCommands
         }
         else
         {
-            sender.sendMessage(_("core","&cThis command can only be used ingame!"));
+            sender.sendMessage(_("core", "&cThis command can only be used ingame!"));
             return;
         }
         if (args.hasFlag("a"))
@@ -335,27 +350,31 @@ public class CheatCommands
             List<ItemStack> list = cheat.repairAll(user);
             if (list.isEmpty())
             {
-                sender.sendMessage(_(user,"basics","No items to repair!"));
+                user.sendTMessage("No items to repair!");
             }
             else
             {
                 String items = "";
                 for (ItemStack item : list)
                 {
-                    items += " "+item.toString();
+                    items += " " + item.toString();
                 }
-                sender.sendMessage(_(user,"basics","Repaired %d items:%s!",list.size(),items));
+                user.sendTMessage("Repaired %d items:%s!", list.size(), items);
             }
         }
         else
         {
             if (cheat.repairInHand(user))
-                sender.sendMessage(_(user,"basics","Item repaired!"));
+            {
+                user.sendTMessage("Item repaired!");
+            }
             else
-                sender.sendMessage(_(user,"basics","Item cannot be repaired!"));
+            {
+                user.sendTMessage("Item cannot be repaired!");
+            }
         }
     }
-   
+
     @RequiresPermission
     //@Param(type=String.class)
     //@Param(type=World.class)
@@ -366,19 +385,31 @@ public class CheatCommands
     public void time(CommandSender sender, CommandArgs args)
     {
         long time = 0;
-             if (args.getString(1).equalsIgnoreCase("day")) time = 12*1000;
-        else if (args.getString(1).equalsIgnoreCase("night")) time = 0;
-        else if (args.getString(1).equalsIgnoreCase("dawn")) time = 6*1000;
-        else if (args.getString(1).equalsIgnoreCase("even")) time = 18*1000;
+        if (args.getString(1).equalsIgnoreCase("day"))
+        {
+            time = 12 * 1000;
+        }
+        else if (args.getString(1).equalsIgnoreCase("night"))
+        {
+            time = 0;
+        }
+        else if (args.getString(1).equalsIgnoreCase("dawn"))
+        {
+            time = 6 * 1000;
+        }
+        else if (args.getString(1).equalsIgnoreCase("even"))
+        {
+            time = 18 * 1000;
+        }
         User user = cuManager.getUser(sender);
         World world = user.getWorld();
-        if (args.size()>1)
+        if (args.size() > 1)
         {
             world = sender.getServer().getWorld(args.getString(2));//TODO getWorld() in cmdargs
         }
         if (world == null)
         {
-            sender.sendMessage(_(user,"core","&cThe World %s does not exist!",args.getString(2)));
+            user.sendTMessage("&cThe World %s does not exist!", args.getString(2));
             return;
         }
         if (args.hasFlag("all"))
@@ -391,10 +422,8 @@ public class CheatCommands
         }
         cheat.settime(world, time);
     }
-    
+
     public void unlimited(CommandSender sender, CommandArgs args)
     {
-        
     }
-    
 }
