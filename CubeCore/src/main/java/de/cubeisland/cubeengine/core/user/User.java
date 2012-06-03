@@ -1,9 +1,8 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.persistence.Model;
 import static de.cubeisland.cubeengine.CubeEngine._;
+import de.cubeisland.cubeengine.core.persistence.Model;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 /**
  *
@@ -57,13 +56,11 @@ public class User extends UserBase implements Model<Integer>
         this.key = key;
     }
 
-    public void sendMessage(String category, String string, Object... params)
+    public void sendMessage(String string, Object... params)
     {
+        final String className = Thread.currentThread().getStackTrace()[2].getClassName();
+        String category = className.substring(25, className.indexOf(".", 26));
         String translated = _(this, category, string, params);
-        Player receiver = this.offlinePlayer.getPlayer();
-        if (receiver != null)
-        {
-            receiver.sendMessage(translated);
-        }
+        this.sendMessage(translated);
     }
 }
