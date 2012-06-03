@@ -96,25 +96,25 @@ public class AuctionManager
         User user = bidder.getUser();
         if (auction.isOwner(bidder))
         {
-            user.sendMessage(_(user, "auctions", "&6This is your auction!")); 
+            user.sendMessage("auctions", "&6This is your auction!");
             return false;
         }
         if (!auction.isTopBidder(bidder))
         {
-            user.sendMessage(_(user, "auctions", "&6You are not the highest Bidder!")); 
+            user.sendMessage("auctions", "&6You are not the highest Bidder!");
             return false;
         }
         if (config.undotime > 0)
         {
             if (System.currentTimeMillis() - auction.getTopBid().getTimestamp() > config.undotime * 1000)
             {
-                user.sendMessage(_(user, "auctions", "&6You can not undo your bid that late!")); 
+                user.sendMessage("auctions", "&6You can not undo your bid that late!");
                 return false;
             }
         }
         auction.popBid();
         //TODO update DB
-        user.sendMessage(_(user, "auctions", "&aBid on Auction #%d redeemed!", auction.getKey())); 
+        user.sendMessage("auctions", "&aBid on Auction #%d redeemed!", auction.getKey());
         return true;
 
     }
@@ -126,7 +126,7 @@ public class AuctionManager
             double comission = auction.getTopBid().getAmount() * config.comission / 100;
             //TODO charge comission to User
             User user = auction.getOwner().getUser();
-            user.sendMessage(_(user, "auctions", "&6You have been charged &c%d%% &6of your startbid", config.comission));
+            user.sendMessage("auctions", "&6You have been charged &c%d%% &6of your startbid", config.comission);
             this.abortAuction(auction);
             return;
         }
@@ -159,9 +159,9 @@ public class AuctionManager
             double punish = bid.getAmount() * config.punish / 100;
             Bidder bidder = bid.getBidder();
             User user = bidder.getUser();
-            user.sendMessage(_(user, "auctions", "&6Not enough money to pay what you bid for!"));
-            user.sendMessage(_(user, "auctions", "&6You have been charged %d%% of your Bid.", config.punish));
-            user.sendMessage(_(user, "auctions", "&6Next time do not bid if you know you can not spare the money!"));
+            user.sendMessage("auctions", "&6Not enough money to pay what you bid for!");
+            user.sendMessage("auctions", "&6You have been charged %d%% of your Bid.", config.punish);
+            user.sendMessage("auctions", "&6Next time do not bid if you know you can not spare the money!");
             //TODO punish player
             auction.popBid();
             punished.add(bidder);
@@ -172,7 +172,7 @@ public class AuctionManager
         //TODO take money
         Bidder bidder = bid.getBidder();
         User seller = auction.getOwner().getUser();
-        seller.sendMessage(_(seller, "auctions", "&aCongratulations! &6You just sold: %s for %s excluding %s"));//TODO params
+        seller.sendMessage("auctions", "&aCongratulations! &6You just sold: %s for %s excluding %s");//TODO params
         this.notify(bidder, Bidder.NOTIFY_WIN, auction);
         this.notify(bidder, Bidder.NOTIFY_ITEMS, auction);
         //TODO notify or set notifyState
@@ -191,10 +191,10 @@ public class AuctionManager
             switch (notifyState)
             {
                 case Bidder.NOTIFY_CANCEL:
-                    bidder.getUser().sendMessage(_(bidder.getUser(), "auctions", "&6Your auction was not successful!"));
+                    bidder.getUser().sendMessage("auctions", "&6Your auction was not successful!");
                     return;
                 case Bidder.NOTIFY_WIN:
-                    bidder.getUser().sendMessage(_(bidder.getUser(), "auctions", "Congratulations! You just bought: %s for %s")); //TODO params
+                    bidder.getUser().sendMessage("auctions", "Congratulations! You just bought: %s for %s"); //TODO params
                     return;
             }
             return;

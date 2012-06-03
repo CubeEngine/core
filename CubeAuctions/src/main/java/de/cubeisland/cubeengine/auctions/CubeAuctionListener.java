@@ -160,13 +160,13 @@ public class CubeAuctionListener implements Listener
                     }
                     else
                     {
-                        user.sendMessage(_(user, "auctions", "&cCubeAuctions sign could not be created!"));
+                        user.sendMessage("auctions", "&cCubeAuctions sign could not be created!");
                         event.setCancelled(true);
                         return;
                     }
                 }
             }
-            user.sendMessage(_(user, "auctions", "&cCubeAuctions sign created succesfully!")); 
+            user.sendMessage("auctions", "&cCubeAuctions sign created succesfully!");
             event.setLine(0, "[CubeAuctions]");
         }
     }
@@ -252,7 +252,7 @@ public class CubeAuctionListener implements Listener
                     {
                         if (player.getItemInHand().getType().equals(Material.AIR))
                         {
-                            user.sendMessage(_(user, "auctions", "&6ProTip: You can NOT sell your hands!")); 
+                            user.sendMessage("auctions", "&6ProTip: You can NOT sell your hands!");
                             return;
                         }
                         //AuktionBox Start Auktion
@@ -278,12 +278,12 @@ public class CubeAuctionListener implements Listener
 
                         if (config.blacklist.contains(player.getItemInHand().getType()))
                         {
-                            user.sendMessage(_(user, "auctions", "&cThis item is blacklisted!")); 
+                            user.sendMessage("auctions", "&cThis item is blacklisted!");
                             return;
                         }
                         if (!auctionManager.startAuction(this.getBidderOfPlayer(player), player.getItemInHand(), length, startbid))
                         {
-                            user.sendMessage(_(user, "auctions", "&cCould not start auction!")); 
+                            user.sendMessage("auctions", "&cCould not start auction!");
                             return;
                         }
                         player.getInventory().removeItem(player.getItemInHand());
@@ -314,7 +314,7 @@ public class CubeAuctionListener implements Listener
                         }
                         if (auctions.isEmpty())
                         {
-                            user.sendMessage(_(user, "auctions", "&cNo Auctions detected!")); 
+                            user.sendMessage("auctions", "&cNo Auctions detected!");
                             return;
                         }
                         Collections.reverse(auctions);
