@@ -40,10 +40,7 @@ public abstract class Configuration
         catch (Throwable t)
         {
             System.out.println("Error while loading a Configuration!");
-            if (CubeCore.debugMode)
-            {
-                t.printStackTrace();
-            }
+            t.printStackTrace();
             return null;
         }
     }
@@ -72,10 +69,7 @@ public abstract class Configuration
         catch (Throwable t)
         {
             System.out.println("Error while loading a Configuration-File!");
-            if (CubeCore.debugMode)
-            {
-                t.printStackTrace();
-            }
+            t.printStackTrace();
         }
     }
 
@@ -91,10 +85,7 @@ public abstract class Configuration
         catch (IOException ex)
         {
             System.out.println("Error while saving a Configuration-File!");
-            if (CubeCore.debugMode)
-            {
-                ex.printStackTrace();
-            }
+            ex.printStackTrace();
         }
     }
 
@@ -160,10 +151,7 @@ public abstract class Configuration
         catch (IllegalAccessException ex)
         {
             System.out.println("Error while loading a Configuration-Element!");
-            if (CubeCore.debugMode)
-            {
-                ex.printStackTrace();
-            }
+            ex.printStackTrace();
         }
     }
 
@@ -211,10 +199,7 @@ public abstract class Configuration
         catch (IllegalAccessException ex)
         {
             System.out.println("Error while loading a Configuration-Section!");
-            if (CubeCore.debugMode)
-            {
-                ex.printStackTrace();
-            }
+            ex.printStackTrace();
         }
     }
 
@@ -273,10 +258,7 @@ public abstract class Configuration
         catch (IllegalAccessException ex)
         {
             System.out.println("Error while saving a Configuration-Element!");
-            if (CubeCore.debugMode)
-            {
-                ex.printStackTrace();
-            }
+            ex.printStackTrace();
         }
     }
 
@@ -300,10 +282,7 @@ public abstract class Configuration
         catch (IllegalAccessException ex)
         {
             System.out.println("Error while saving a Configuration-Section!");
-            if (CubeCore.debugMode)
-            {
-                ex.printStackTrace();
-            }
+            ex.printStackTrace();
         }
     }
 }
