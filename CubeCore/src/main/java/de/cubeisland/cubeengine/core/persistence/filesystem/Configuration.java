@@ -1,13 +1,12 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,11 +40,15 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            t.printStackTrace();
+            System.out.println("Error while loading a Configuration!");
+            if (CubeCore.debugMode)
+            {
+                t.printStackTrace();
+            }
             return null;
         }
     }
-    
+
     /**
      * Returns the loaded Configuration
      *
@@ -60,18 +63,21 @@ public abstract class Configuration
 
     /**
      * Loads in the config from File
-     * 
-     * @throws InvalidConfigurationException
-     * @throws IOException 
      */
-    public void reload() throws InvalidConfigurationException, IOException
+    public void reload()
     {
         try
         {
             this.config.load(file);
         }
         catch (Throwable t)
-        {}
+        {
+            System.out.println("Error while loading a Configuration-File!");
+            if (CubeCore.debugMode)
+            {
+                t.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -85,7 +91,11 @@ public abstract class Configuration
         }
         catch (IOException ex)
         {
-            Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error while saving a Configuration-File!");
+            if (CubeCore.debugMode)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -132,14 +142,14 @@ public abstract class Configuration
                     }
                     //Set new Field Value
                     if ((Short.class == field.getType())
-                      || short.class == field.getType())
+                            || short.class == field.getType())
                     {
-                        field.set(this, ((Integer)configElem).shortValue());
+                        field.set(this, ((Integer) configElem).shortValue());
                     }
                     else if ((Byte.class == field.getType())
-                           || byte.class == field.getType())
+                            || byte.class == field.getType())
                     {
-                        field.set(this, ((Integer)configElem).byteValue());
+                        field.set(this, ((Integer) configElem).byteValue());
                     }
                     else
                     {
@@ -150,6 +160,11 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
+            System.out.println("Error while loading a Configuration-Element!");
+            if (CubeCore.debugMode)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -196,12 +211,17 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
+            System.out.println("Error while loading a Configuration-Section!");
+            if (CubeCore.debugMode)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 
     /**
      * Loads in a Section (and its SubSections)
-     * 
+     *
      * @param configSection the Section to load
      * @return the loaded Section
      */
@@ -253,6 +273,11 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
+            System.out.println("Error while saving a Configuration-Element!");
+            if (CubeCore.debugMode)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -275,6 +300,11 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
+            System.out.println("Error while saving a Configuration-Section!");
+            if (CubeCore.debugMode)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 }

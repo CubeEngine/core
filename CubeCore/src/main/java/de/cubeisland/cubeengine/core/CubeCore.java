@@ -26,6 +26,8 @@ public class CubeCore extends JavaPlugin
     private PluginManager pm;
     private ModuleManager moduleManager;
     private I18n i18n;
+    
+    public static boolean debugMode;
 
     public CubeCore()
     {
@@ -49,7 +51,7 @@ public class CubeCore extends JavaPlugin
         this.fileManager = new FileManager(this, super.getDataFolder().getParentFile());
         CoreConfiguration coreConfig = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
-
+        debugMode = coreConfig.debugMode;
         this.pm = getServer().getPluginManager();
 
         this.database = new Database(databaseConfig);
