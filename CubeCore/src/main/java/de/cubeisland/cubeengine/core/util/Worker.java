@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.util;
 
 import java.lang.Runnable;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -25,7 +24,7 @@ public class Worker implements Runnable
     }
     
     @Override
-    public synchronized void run()
+    public void run()
     {
         this.running = true;
         while(this.jobs.isEmpty())
@@ -35,7 +34,7 @@ public class Worker implements Runnable
         this.running = false;
     }
     
-    public synchronized void addJob(Runnable job, boolean autoStart)
+    public void addJob(Runnable job, boolean autoStart)
     {
         this.jobs.add(job);
         if(!running && autoStart)
@@ -44,7 +43,23 @@ public class Worker implements Runnable
         }
     }
     
-    public synchronized boolean pause()
+    public void start()
+    {
+        if(!running)
+        {
+            this.runner.start();
+            this.paused = false;
+        }
+    }
+    
+    public void stop()
+    {
+        this.running = false;
+        this.paused = false;
+        this.jobs.clear();
+    }
+    
+    public boolean pause()
     {
         try
         {
@@ -59,7 +74,7 @@ public class Worker implements Runnable
         }
     }
     
-    public synchronized void resume()
+    public void resume()
     {
         this.runner.notify();
         this.paused = false;
