@@ -1,14 +1,11 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  *
@@ -175,7 +172,7 @@ public abstract class Configuration
                 //if section is not yet created: Create it
                 configSection = this.config.createSection(path);
             }
-            Map<String, Object> loadedSection = configSection.getValues(false);
+            Map<String, Object> loadedSection = configSection.getValues();
             for (String s : loadedSection.keySet())
             {
                 if (loadedSection.get(s) instanceof ConfigurationSection)
@@ -212,7 +209,7 @@ public abstract class Configuration
     private Map<String, Object> getSection(ConfigurationSection configSection)
     {
         Map<String, Object> section = new HashMap<String, Object>();
-        for (String key : configSection.getKeys(false))
+        for (String key : configSection.getKeys())
         {
             Object value = configSection.get(key);
             if (value instanceof ConfigurationSection)
