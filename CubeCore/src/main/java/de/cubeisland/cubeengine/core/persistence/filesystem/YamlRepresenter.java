@@ -15,7 +15,7 @@ public class YamlRepresenter extends Representer
         @Override
         public Node representData(Object data)
         {
-            ConfigurationSection section = (ConfigurationSection)data;
+            ConfigurationSection section = (ConfigurationSection) data;
             return super.representData(section.getValues());
         }
     }
