@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -10,10 +11,12 @@ import java.util.Map;
 public class ConfigurationSection
 {
     private Map<String, Object> values;
+    private Map<String, String> comments;
 
     public ConfigurationSection()
     {
-        this.values = new HashMap<String, Object>();
+        this.values = new LinkedHashMap<String, Object>();
+        this.comments = new HashMap<String, String>();
     }
 
     public void set(String key, Object value)
@@ -54,13 +57,21 @@ public class ConfigurationSection
     public ConfigurationSection createSection(String path)
     {
 
-        ConfigurationSection section = this.getConfigurationSection(path);
-        if (section == null)
+        if (path.contains("."))
         {
-            section = new ConfigurationSection();
-            this.values.put(path, section);
+            ConfigurationSection section = this.createSection(path.substring(0, path.indexOf(".")));
+            return section.createSection(path.substring(path.indexOf(".") + 1));
         }
-        return section;
+        else
+        {
+            ConfigurationSection section = this.getConfigurationSection(path);
+            if (section == null)
+            {
+                section = new ConfigurationSection();
+                this.values.put(path, section);
+            }
+            return section;
+        }
     }
 
     public Map<String, Object> getValues()
@@ -71,5 +82,80 @@ public class ConfigurationSection
     public Iterable<String> getKeys()
     {
         return this.values.keySet();
+    }
+
+    private String toString(int offset)
+    {
+        String out = "";
+        for (String key : this.getKeys())
+        {
+            Object value = this.get(key);
+            out += this.getComment(key);
+            if (value == null)
+            {
+                System.out.println("Error while saving Key: \"" + key + "\" was null");
+            }
+            else if (value instanceof ConfigurationSection)
+            {
+                out += this.offset(offset) + key + ":\n";
+                out += ((ConfigurationSection) value).toString(offset + 1);
+            }
+            else
+            {
+                out += this.offset(offset) + key + ": ";
+                if (value instanceof String)
+                {
+                    out += "'" + value.toString() + "'";
+                }
+                else
+                {
+                    out += value.toString();
+                }
+                out += "\n";
+            }
+        }
+        return out;
+    }
+
+    private String offset(int offset)
+    {
+        String off = "";
+        for (int i = 0; i < offset; ++i)
+        {
+            off += "  ";
+        }
+        return off;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.toString(0);
+    }
+
+    public String getComment(String path)
+    {
+        String comment = this.comments.get(path);
+        if (comment == null)
+        {
+            return "";
+        }
+        else
+        {
+            comment = comment.replace("\n", "\n# ");
+            return "# " + comment + "\n";
+        }
+    }
+
+    public void addComment(String path, String value)
+    {
+        if (path.contains("."))
+        {
+            this.createSection(path.substring(0, path.indexOf("."))).addComment(path.substring(path.indexOf(".") + 1), value);
+        }
+        else
+        {
+            this.comments.put(path, value);
+        }
     }
 }

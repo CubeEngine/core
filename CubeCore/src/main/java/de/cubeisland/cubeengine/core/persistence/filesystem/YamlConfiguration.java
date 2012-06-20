@@ -27,7 +27,7 @@ public class YamlConfiguration extends ConfigurationSection
     private final Yaml yaml;
     private final DumperOptions yamlOptions;
     private final Representer yamlRepresenter;
-    
+
     public YamlConfiguration()
     {
         super();
@@ -40,7 +40,7 @@ public class YamlConfiguration extends ConfigurationSection
     {
         Validate.notNull(file, "File cannot be null");
         Files.createParentDirs(file);
-        String data = saveToString();
+        String data = this.toString();
         FileWriter writer = new FileWriter(file);
         try
         {
@@ -52,20 +52,6 @@ public class YamlConfiguration extends ConfigurationSection
         }
     }
 
-    private String saveToString()
-    {
-        yamlOptions.setIndent(2);
-        yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        
-        String dump = yaml.dump(this.getValues());
-        if (dump.equals(BLANK_CONFIG))
-        {
-            dump = "";
-        }
-        return dump;
-    }
-
     public void load(File file) throws FileNotFoundException, IOException
     {
         Validate.notNull(file, "File cannot be null");
@@ -73,12 +59,12 @@ public class YamlConfiguration extends ConfigurationSection
         {
             load(new FileInputStream(file));
         }
-        catch(FileNotFoundException ex)
+        catch (FileNotFoundException ex)
         {
-            System.out.println(file.getName() +" not found! Creating new config...");
+            System.out.println(file.getName() + " not found! Creating new config...");
             //TODO msg no config found create new from default
         }
-        
+
     }
 
     public void load(InputStream stream) throws IOException

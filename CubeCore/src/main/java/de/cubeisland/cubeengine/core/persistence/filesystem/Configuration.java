@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.persistence.filesystem.Option;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -126,23 +125,34 @@ public abstract class Configuration
                     {
                         //Set defaultValue if no value saved
                         this.config.set(path, field.get(this));
-                        return; //Field Value is already set to default
-                    }
-                    //Set new Field Value
-                    if ((Short.class == field.getType())
-                            || short.class == field.getType())
-                    {
-                        field.set(this, ((Integer) configElem).shortValue());
-                    }
-                    else if ((Byte.class == field.getType())
-                            || byte.class == field.getType())
-                    {
-                        field.set(this, ((Integer) configElem).byteValue());
                     }
                     else
                     {
-                        field.set(this, configElem);
+                        //Set new Field Value
+                        if ((Short.class == field.getType())
+                                || short.class == field.getType())
+                        {
+                            field.set(this, ((Integer) configElem).shortValue());
+                        }
+                        else if ((Byte.class == field.getType())
+                                || byte.class == field.getType())
+                        {
+                            field.set(this, ((Integer) configElem).byteValue());
+                        }
+                        else
+                        {
+                            field.set(this, configElem);
+                        }
                     }
+                }
+                if (field.isAnnotationPresent(Comment.class))
+                {
+                    this.config.addComment(path, field.getAnnotation(Comment.class).value());
+                }
+                if (field.isAnnotationPresent(SComment.class))
+                {
+                    SComment comment = field.getAnnotation(SComment.class);
+                    this.config.addComment(comment.path(), comment.text());
                 }
             }
         }
