@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import org.apache.commons.lang.Validate;
-import org.bukkit.configuration.file.YamlConstructor;
-import org.bukkit.configuration.file.YamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;
@@ -34,7 +32,7 @@ public class YamlConfiguration extends ConfigurationSection
     {
         super();
         this.yamlOptions = new DumperOptions();
-        this.yamlRepresenter = new YamlRepresenter();//TODO bukkit hier rausschaffen
+        this.yamlRepresenter = new YamlRepresenter();
         this.yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions);
     }
 

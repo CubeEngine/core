@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.persistence.filesystem.Option;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
