@@ -22,7 +22,6 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public class YamlConfiguration extends ConfigurationSection
 {
-    protected static final String COMMENT_PREFIX = "# ";
     protected static final String BLANK_CONFIG = "{}\n";
     private final Yaml yaml;
     private final DumperOptions yamlOptions;

@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public class ConfigurationSection
 {
+    protected static final String COMMENT_PREFIX = "# ";
+    
     private Map<String, Object> values;
     private Map<String, String> comments;
 
@@ -142,8 +144,8 @@ public class ConfigurationSection
         }
         else
         {
-            comment = comment.replace("\n", "\n# ");
-            return "# " + comment + "\n";
+            comment = comment.replace("\n", "\n"+COMMENT_PREFIX);
+            return COMMENT_PREFIX + comment + "\n";
         }
     }
 
