@@ -124,7 +124,7 @@ public abstract class Configuration
                     if (configElem == null)
                     {
                         //Set defaultValue if no value saved
-                        this.config.set(path, field.get(this));
+                        this.config.set(path, Converter.convertFrom(field.get(this)));
                     }
                     else
                     {

@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.Pla
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.ShortConverter;
 import java.lang.reflect.Field;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 /**
  *
@@ -27,7 +27,7 @@ public class Converter
         {
             converter = new ByteConverter();
         }
-        else if (clazz.equals(Player.class))
+        else if (clazz.equals(OfflinePlayer.class))
         {
             converter = new PlayerConverter();
         }
@@ -42,33 +42,31 @@ public class Converter
         }
         return converter.to(configElem);
     }
-    
-    public static Object convertFrom(Object configElem)
+
+    public static Object convertFrom(Object object)
     {
         IConverter converter = null;
-        if (configElem instanceof Short)
+        if (object instanceof Short)
         {
             converter = new ShortConverter();
         }
-        else if (configElem instanceof Byte)
+        else if (object instanceof Byte)
         {
             converter = new ByteConverter();
         }
-        else if (configElem instanceof Player)
+        else if (object instanceof OfflinePlayer)
         {
             converter = new PlayerConverter();
         }
-        else if (configElem instanceof Location)
+        else if (object instanceof Location)
         {
             converter = new LocationConverter();
         }
 
         if (converter == null)
         {
-            return configElem;
+            return object;
         }
-        return converter.to(configElem);
+        return converter.from(object);
     }
-    
-    
 }
