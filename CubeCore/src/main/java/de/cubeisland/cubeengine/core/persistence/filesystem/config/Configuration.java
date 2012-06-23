@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Comment;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.SComment;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.YamlConfiguration;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.io.IOException;
@@ -133,20 +129,7 @@ public abstract class Configuration
                     else
                     {
                         //Set new Field Value
-                        if ((Short.class == field.getType())
-                                || short.class == field.getType())
-                        {
-                            field.set(this, ((Integer) configElem).shortValue());
-                        }
-                        else if ((Byte.class == field.getType())
-                                || byte.class == field.getType())
-                        {
-                            field.set(this, ((Integer) configElem).byteValue());
-                        }
-                        else
-                        {
-                            field.set(this, configElem);
-                        }
+                        field.set(this, Converter.convertTo(field, configElem));
                     }
                 }
                 if (field.isAnnotationPresent(Comment.class))

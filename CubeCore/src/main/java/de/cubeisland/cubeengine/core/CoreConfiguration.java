@@ -10,11 +10,11 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.Option;
  */
 public class CoreConfiguration extends Configuration
 {
-    @Comment("If enabled shows debug-messages")
     @Option("debug")
+    @Comment("If enabled shows debug-messages")
     public boolean debugMode = false;
     
-    @Comment("Sets the language to choose by default")
     @Option("defaultLanguage")
+    @Comment("Sets the language to choose by default")
     public String defaultLanguage = "en_US";
 }

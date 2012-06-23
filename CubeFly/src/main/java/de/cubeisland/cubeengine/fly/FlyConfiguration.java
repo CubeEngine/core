@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
-import de.cubeisland.cubeengine.core.persistence.filesystem.Option;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.Option;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
