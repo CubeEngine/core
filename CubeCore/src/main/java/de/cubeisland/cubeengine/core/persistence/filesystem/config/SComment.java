@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,7 +11,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Option
+public @interface SComment
 {
-    public abstract String value();
+    public abstract String path();
+    public abstract String text();
 }

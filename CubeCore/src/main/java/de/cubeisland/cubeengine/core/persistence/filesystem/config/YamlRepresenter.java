@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;

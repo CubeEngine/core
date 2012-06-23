@@ -1,4 +1,7 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem;
+package de.cubeisland.cubeengine.core;
+
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.Option;
 
 /**
  *
