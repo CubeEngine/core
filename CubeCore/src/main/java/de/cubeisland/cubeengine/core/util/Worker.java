@@ -17,7 +17,7 @@ public class Worker implements Runnable
     
     public void worker()
     {
-        this.jobs = new  ConcurrentLinkedQueue<Runnable>();
+        this.jobs = new ConcurrentLinkedQueue<Runnable>();
         this.running = false;
         this.paused = false;
         this.runner = new Thread(this);
