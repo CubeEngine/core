@@ -10,7 +10,9 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.Logger;
+import de.cubeisland.cubeengine.core.util.log.ConsoleLogWriter;
+import de.cubeisland.cubeengine.core.util.log.LogType;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,7 +28,7 @@ public class CubeCore extends JavaPlugin
     private ModuleManager moduleManager;
     private I18n i18n;
     private CoreConfiguration config;
-    private Logger coreLogger;
+    private CubeLogger coreLogger;
 
     public CubeCore()
     {
@@ -51,7 +53,7 @@ public class CubeCore extends JavaPlugin
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
         
-        this.i18n = new I18n(this);
+        //this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
 
@@ -61,7 +63,9 @@ public class CubeCore extends JavaPlugin
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
         
-        this.coreLogger = new Logger();
+        this.coreLogger = new CubeLogger(this);
+        this.coreLogger.addLogWriter(new ConsoleLogWriter());
+        this.coreLogger.log("cookie not found 404", LogType.WARNING);
 
         CubeEngine.initialize(this);
     }
@@ -151,7 +155,7 @@ public class CubeCore extends JavaPlugin
         return this.i18n;
     }
     
-    public Logger getCoreLogger()
+    public CubeLogger getCoreLogger()
     {
         return this.coreLogger;
     }

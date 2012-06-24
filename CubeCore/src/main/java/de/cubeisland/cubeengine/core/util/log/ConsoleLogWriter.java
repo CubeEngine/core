@@ -1,8 +1,5 @@
 package de.cubeisland.cubeengine.core.util.log;
 
-import java.io.File;
-import java.io.FileWriter;
-
 /**
  *
  * @author Robin Bechtel-Ostmann

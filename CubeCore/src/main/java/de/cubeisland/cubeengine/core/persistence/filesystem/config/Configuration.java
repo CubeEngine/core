@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.util.log.LogType;
-import de.cubeisland.cubeengine.core.util.log.Logger;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,7 +24,7 @@ public abstract class Configuration
     protected YamlConfiguration config;
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
-    private static Logger logger;
+    private static CubeLogger logger;
 
     static
     {
