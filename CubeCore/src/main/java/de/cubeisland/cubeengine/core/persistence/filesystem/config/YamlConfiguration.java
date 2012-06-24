@@ -1,14 +1,5 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
-import com.google.common.io.Files;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.DumperOptions;
@@ -20,7 +11,7 @@ import org.yaml.snakeyaml.representer.Representer;
  *
  * @author Faithcaio
  */
-public class YamlConfiguration extends ConfigurationSection
+public class YamlConfiguration extends AbstractConfiguration
 {
     protected static final String BLANK_CONFIG = "{}\n";
     private final Yaml yaml;
@@ -33,62 +24,11 @@ public class YamlConfiguration extends ConfigurationSection
         this.yamlOptions = new DumperOptions();
         this.yamlRepresenter = new YamlRepresenter();
         this.yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions);
-    }
 
-    public void save(File file) throws IOException
-    {
-        Validate.notNull(file, "File cannot be null");
-        Files.createParentDirs(file);
-        String data = this.toString();
-        FileWriter writer = new FileWriter(file);
-        try
-        {
-            writer.write(data);
-        }
-        finally
-        {
-            writer.close();
-        }
-    }
-
-    public void load(File file) throws FileNotFoundException, IOException
-    {
-        Validate.notNull(file, "File cannot be null");
-        try
-        {
-            load(new FileInputStream(file));
-        }
-        catch (FileNotFoundException ex)
-        {
-            System.out.println(file.getName() + " not found! Creating new config...");
-            //TODO msg no config found create new from default
-        }
-
-    }
-
-    public void load(InputStream stream) throws IOException
-    {
-        Validate.notNull(stream, "Stream cannot be null");
-
-        InputStreamReader reader = new InputStreamReader(stream);
-        StringBuilder builder = new StringBuilder();
-        BufferedReader input = new BufferedReader(reader);
-        try
-        {
-            String line;
-
-            while ((line = input.readLine()) != null)
-            {
-                builder.append(line);
-                builder.append('\n');
-            }
-        }
-        finally
-        {
-            input.close();
-        }
-
-        loadFromString(builder.toString());
+        COMMENT_PREFIX = "# ";
+        SPACES = "  ";
+        LINEBREAK = "\n";
+        QUOTE = "'";
     }
 
     public void loadFromString(String contents)
@@ -103,21 +43,58 @@ public class YamlConfiguration extends ConfigurationSection
         }
     }
 
-    protected void convertMapsToSections(Map<?, ?> input, ConfigurationSection section)
+    public String convertSection(ConfigurationSection section, int offset, boolean first)
     {
-        for (Map.Entry<?, ?> entry : input.entrySet())
+        StringBuilder out = new StringBuilder();
+        for (String key : section.getKeys())
         {
-            String key = entry.getKey().toString();
-            Object value = entry.getValue();
-
-            if (value instanceof Map)
+            Object value = section.get(key);
+            out.append(this.buildComment(section, key, offset, first));
+            if (first && out.toString().length() != 0)
             {
-                convertMapsToSections((Map<?, ?>) value, section.createSection(key));
+                first = false;
+            }
+            if (value == null)
+            {
+                System.out.println("Error while saving Key: \"" + key + "\" was null");
+            }
+            else if (value instanceof ConfigurationSection)
+            {
+                out.append(this.offset(offset)).append(key).append(":").append(LINEBREAK);
+                out.append(this.convertSection((ConfigurationSection) value, offset + 1, false));
             }
             else
             {
-                section.set(key, value);
+                out.append(this.offset(offset)).append(key).append(": ");
+                if (value instanceof String)
+                {
+                    out.append(QUOTE).append(value.toString()).append(QUOTE);
+                }
+                else
+                {
+                    out.append(value.toString());
+                }
+                out.append(LINEBREAK);
             }
+        }
+        return out.toString();
+    }
+
+    public String buildComment(ConfigurationSection section, String path, int offset, boolean first)
+    {
+        String comment = section.comments.get(path);
+        if (comment == null)
+        {
+            return "";
+        }
+        else
+        {
+            comment = comment.replace(LINEBREAK, LINEBREAK + this.offset(offset) + COMMENT_PREFIX);
+            if (first)
+            {
+                return this.offset(offset) + COMMENT_PREFIX + comment + LINEBREAK;
+            }
+            return LINEBREAK + this.offset(offset) + COMMENT_PREFIX + comment + LINEBREAK;
         }
     }
 }
