@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
+import de.cubeisland.cubeengine.core.util.log.LogType;
+import de.cubeisland.cubeengine.core.util.log.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -21,6 +24,7 @@ public abstract class Configuration
     protected YamlConfiguration config;
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
+    private static Logger logger;
 
     static
     {
@@ -32,6 +36,8 @@ public abstract class Configuration
         registerConverter(byte.class, converter);
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
+        
+        logger = CubeCore.getInstance().getCoreLogger();
     }
 
     public static void registerConverter(Class<?> clazz, Converter converter)
@@ -160,8 +166,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            System.out.println("Error while loading a Configuration!");
-            t.printStackTrace();
+            logger.log("Error while loading a Configuration!", LogType.ERROR);
             return null;
         }
     }
@@ -189,8 +194,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            System.out.println("Error while loading a Configuration-File!");
-            t.printStackTrace();
+            logger.log("Error while loading a Configuration-File!", LogType.ERROR);
         }
     }
 
@@ -205,8 +209,7 @@ public abstract class Configuration
         }
         catch (IOException ex)
         {
-            System.out.println("Error while saving a Configuration-File!");
-            ex.printStackTrace();
+            logger.log("Error while saving a Configuration-File!", LogType.ERROR);
         }
     }
 
@@ -269,8 +272,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            System.out.println("Error while loading a Configuration-Element!");
-            ex.printStackTrace();
+            logger.log("Error while loading a Configuration-Element!", LogType.ERROR);
         }
     }
 
@@ -317,8 +319,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            System.out.println("Error while loading a Configuration-Section!");
-            ex.printStackTrace();
+            logger.log("Error while loading a Configuration-Section!", LogType.ERROR);
         }
     }
 
@@ -376,8 +377,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            System.out.println("Error while saving a Configuration-Element!");
-            ex.printStackTrace();
+            logger.log("Error while saving a Configuration-Element!", LogType.ERROR);
         }
     }
 
@@ -400,8 +400,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            System.out.println("Error while saving a Configuration-Section!");
-            ex.printStackTrace();
+            logger.log("Error while saving a Configuration-Section!", LogType.ERROR);
         }
     }
 }

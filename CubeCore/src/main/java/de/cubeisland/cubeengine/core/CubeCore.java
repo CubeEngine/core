@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.log.Logger;
 import java.io.File;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,6 +26,7 @@ public class CubeCore extends JavaPlugin
     private ModuleManager moduleManager;
     private I18n i18n;
     private CoreConfiguration config;
+    private Logger coreLogger;
 
     public CubeCore()
     {
@@ -58,6 +60,8 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
+        
+        this.coreLogger = new Logger();
 
         CubeEngine.initialize(this);
     }
@@ -145,6 +149,11 @@ public class CubeCore extends JavaPlugin
     public I18n getI18n()
     {
         return this.i18n;
+    }
+    
+    public Logger getCoreLogger()
+    {
+        return this.coreLogger;
     }
 
     @Override
