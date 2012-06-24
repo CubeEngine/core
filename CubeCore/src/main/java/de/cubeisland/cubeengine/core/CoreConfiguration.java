@@ -45,6 +45,7 @@ public class CoreConfiguration extends Configuration
     @Option("regions.sql.password")
     public String sql_password = "worldguard";
     @Option("regions.max-region-count-per-player")
+    @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
         

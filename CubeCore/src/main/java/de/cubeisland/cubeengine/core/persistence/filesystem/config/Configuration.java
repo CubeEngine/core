@@ -22,10 +22,12 @@ public abstract class Configuration
 
     static
     {
-        registerConverter(short.class, new ShortConverter());
-        registerConverter(Short.class, new ShortConverter());
-        registerConverter(byte.class, new ByteConverter());
-        registerConverter(Byte.class, new ByteConverter());
+        Converter converter = new ShortConverter();
+        registerConverter(Short.class, converter);
+        registerConverter(short.class, converter);
+        converter = new ByteConverter();
+        registerConverter(Byte.class, converter);
+        registerConverter(byte.class, converter);
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
     }

@@ -11,7 +11,9 @@ import java.util.Map;
 public class ConfigurationSection
 {
     protected static final String COMMENT_PREFIX = "# ";
-    
+    protected static final String SPACES = "  ";
+    protected static final String LINEBREAK = "\n";
+    protected static final String QUOTE = "'";
     private Map<String, Object> values;
     private Map<String, String> comments;
 
@@ -86,56 +88,60 @@ public class ConfigurationSection
         return this.values.keySet();
     }
 
-    private String toString(int offset)
+    private String toString(int offset, boolean first)
     {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         for (String key : this.getKeys())
         {
             Object value = this.get(key);
-            out += this.getComment(key, offset);
+            out.append(this.buildComment(key, offset, first));
+            if (first && out.toString().length() != 0)
+            {
+                first = false;
+            }
             if (value == null)
             {
                 System.out.println("Error while saving Key: \"" + key + "\" was null");
             }
             else if (value instanceof ConfigurationSection)
             {
-                out += this.offset(offset) + key + ":\n";
-                out += ((ConfigurationSection) value).toString(offset + 1);
+                out.append(this.offset(offset)).append(key).append(":").append(LINEBREAK);
+                out.append(((ConfigurationSection) value).toString(offset + 1, false));
             }
             else
             {
-                out += this.offset(offset) + key + ": ";
+                out.append(this.offset(offset)).append(key).append(": ");
                 if (value instanceof String)
                 {
-                    out += "'" + value.toString() + "'";
+                    out.append(QUOTE).append(value.toString()).append(QUOTE);
                 }
                 else
                 {
-                    out += value.toString();
+                    out.append(value.toString());
                 }
-                out += "\n";
+                out.append(LINEBREAK);
             }
         }
-        return out;
+        return out.toString();
     }
 
     private String offset(int offset)
     {
-        String off = "";
+        StringBuilder off = new StringBuilder("");
         for (int i = 0; i < offset; ++i)
         {
-            off += "  ";
+            off.append(SPACES);
         }
-        return off;
+        return off.toString();
     }
 
     @Override
     public String toString()
     {
-        return this.toString(0);
+        return this.toString(0, true);
     }
 
-    public String getComment(String path, int offset)
+    public String buildComment(String path, int offset, boolean first)
     {
         String comment = this.comments.get(path);
         if (comment == null)
@@ -144,8 +150,12 @@ public class ConfigurationSection
         }
         else
         {
-            comment = comment.replace("\n", "\n"+COMMENT_PREFIX);
-            return "\n" + this.offset(offset) + COMMENT_PREFIX + comment + "\n";
+            comment = comment.replace(LINEBREAK, LINEBREAK + this.offset(offset) + COMMENT_PREFIX);
+            if (first)
+            {
+                return this.offset(offset) + COMMENT_PREFIX + comment + LINEBREAK;
+            }
+            return LINEBREAK + this.offset(offset) + COMMENT_PREFIX + comment + LINEBREAK;
         }
     }
 
