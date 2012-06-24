@@ -24,6 +24,7 @@ public class CubeCore extends JavaPlugin
     private PluginManager pm;
     private ModuleManager moduleManager;
     private I18n i18n;
+    private CoreConfiguration config;
 
     public CubeCore()
     {
@@ -45,8 +46,10 @@ public class CubeCore extends JavaPlugin
     {
         this.moduleManager = new ModuleManager(this);
         this.fileManager = new FileManager(this, super.getDataFolder().getParentFile());
-        CoreConfiguration coreConfig = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
+        this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
+        
+        this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
 
@@ -74,6 +77,9 @@ public class CubeCore extends JavaPlugin
         this.userManager = null;
 
         this.permissionRegistration = null;
+        
+        this.i18n.clean();
+        this.i18n = null;
     }
 
     /**
@@ -134,6 +140,11 @@ public class CubeCore extends JavaPlugin
     public ModuleManager getModuleManager()
     {
         return this.moduleManager;
+    }
+
+    public I18n getI18n()
+    {
+        return this.i18n;
     }
 
     @Override

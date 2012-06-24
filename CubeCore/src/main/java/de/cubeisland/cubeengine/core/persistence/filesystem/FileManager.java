@@ -22,6 +22,7 @@ public class FileManager
     private File dataFolder;
     private File configDir;
     private File languageDir;
+    private File logDir;
 
     public FileManager(CubeCore core, File pluginsFolder)
     {
@@ -32,6 +33,9 @@ public class FileManager
 
         this.configDir = new File(this.dataFolder, "config");
         this.configDir.mkdirs();
+
+        this.logDir = new File(this.dataFolder, "log");
+        this.logDir.mkdirs();
     }
 
     public File getDataFolder()
@@ -47,6 +51,11 @@ public class FileManager
     public File getLanguageDir()
     {
         return this.languageDir;
+    }
+    
+    public File getLogDir()
+    {
+        return this.logDir;
     }
 
     public File getResourceFile(Resource resource)
