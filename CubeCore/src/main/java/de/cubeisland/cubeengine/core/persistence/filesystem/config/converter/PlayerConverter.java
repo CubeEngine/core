@@ -7,7 +7,7 @@ import org.bukkit.OfflinePlayer;
  *
  * @author Faithcaio
  */
-public class PlayerConverter implements IConverter<OfflinePlayer>
+public class PlayerConverter implements Converter<OfflinePlayer>
 {
     public Object from(OfflinePlayer object)
     {

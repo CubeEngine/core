@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
  *
  * @author Faithcaio
  */
-public class ShortConverter implements IConverter<Short>
+public class ShortConverter implements Converter<Short>
 {
     public Object from(Short object)
     {

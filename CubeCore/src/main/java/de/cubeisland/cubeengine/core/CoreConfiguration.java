@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.SComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.SectionComment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +32,7 @@ public class CoreConfiguration extends Configuration
     @Comment("PlayerTest")
     public OfflinePlayer player = CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio");
     
-    @SComment(path="regions",text="more RandomTests:")
+    @SectionComment(path="regions",text="more RandomTests:")
     @Option("regions.use-scheduler")
     public boolean use_scheduler = true;
     @Option("regions.sql.use")

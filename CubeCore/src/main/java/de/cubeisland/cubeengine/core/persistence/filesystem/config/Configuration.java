@@ -1,11 +1,14 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 
 /**
  *
@@ -15,7 +18,93 @@ public abstract class Configuration
 {
     protected YamlConfiguration config;
     protected File file;
+    private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
 
+    public Configuration()
+    {
+        registerConverter(short.class, new ShortConverter());
+        registerConverter(Short.class, new ShortConverter());
+        registerConverter(byte.class, new ByteConverter());
+        registerConverter(Byte.class, new ByteConverter());
+        registerConverter(OfflinePlayer.class, new PlayerConverter());
+        registerConverter(Location.class, new LocationConverter());
+    }
+
+    public static void registerConverter(Class<?> clazz, Converter converter)
+    {
+        if (clazz == null || converter == null)
+        {
+            return;
+        }
+        converters.put(clazz, converter);
+    }
+
+    public Object convertTo(Field field, Object object)
+    {
+        Class<?> fieldClass = field.getType();
+        Converter converter = converters.get(fieldClass);
+        if (converter == null)
+        {
+            for (Class<?> clazz : converters.keySet())
+            {
+                if (clazz.isAssignableFrom(fieldClass))
+                {
+                    converter = converters.get(fieldClass);
+                    registerConverter(fieldClass, converter);
+                    break;
+                }
+            }
+        }
+        if (converter == null)
+        {
+            return object;
+        }
+        return converter.to(object);
+    }
+
+    public Object convertFrom(Object object)
+    {
+        Class<?> objectClass = object.getClass();
+        Converter converter = converters.get(objectClass);
+        if (converter == null)
+        {
+            for (Class<?> clazz : converters.keySet())
+            {
+                if (clazz.isAssignableFrom(objectClass))
+                {
+                    converter = converters.get(clazz);
+                    registerConverter(objectClass, converter);
+                    break;
+                }
+            }
+        }
+        if (converter == null)
+        {
+            return object;
+        }
+        return converter.from(object);
+    }
+
+    /*
+     *
+     * if (clazz.equals(Short.class) || clazz.equals(short.class)) { converter =
+     * new ShortConverter(); } else if (clazz.equals(Byte.class) ||
+     * clazz.equals(byte.class)) { converter = new ByteConverter(); } else if
+     * (clazz.equals(OfflinePlayer.class)) { converter = new PlayerConverter();
+     * } else if (clazz.equals(Location.class)) { converter = new
+     * LocationConverter(); }
+     *
+     * if (converter == null) { return configElem; } return
+     * converter.to(configElem); }
+     *
+     * public static Object convertFrom(Object object) { Converter converter =
+     * null; if (object instanceof Short) { converter = new ShortConverter(); }
+     * else if (object instanceof Byte) { converter = new ByteConverter(); }
+     * else if (object instanceof OfflinePlayer) { converter = new
+     * PlayerConverter(); } else if (object instanceof Location) { converter =
+     * new LocationConverter(); }
+     *
+     */
     /**
      * Returns the loaded Configuration
      *
@@ -124,21 +213,21 @@ public abstract class Configuration
                     if (configElem == null)
                     {
                         //Set defaultValue if no value saved
-                        this.config.set(path, Converter.convertFrom(field.get(this)));
+                        this.config.set(path, this.convertFrom(field.get(this)));
                     }
                     else
                     {
                         //Set new Field Value
-                        field.set(this, Converter.convertTo(field, configElem));
+                        field.set(this, this.convertTo(field, configElem));
                     }
                 }
                 if (field.isAnnotationPresent(Comment.class))
                 {
                     this.config.addComment(path, field.getAnnotation(Comment.class).value());
                 }
-                if (field.isAnnotationPresent(SComment.class))
+                if (field.isAnnotationPresent(SectionComment.class))
                 {
-                    SComment comment = field.getAnnotation(SComment.class);
+                    SectionComment comment = field.getAnnotation(SectionComment.class);
                     this.config.addComment(comment.path(), comment.text());
                 }
             }

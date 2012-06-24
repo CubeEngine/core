@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
  *
  * @author Faithcaio
  */
-public class ByteConverter implements IConverter<Byte>
+public class ByteConverter implements Converter<Byte>
 {
     public Object from(Byte object)
     {

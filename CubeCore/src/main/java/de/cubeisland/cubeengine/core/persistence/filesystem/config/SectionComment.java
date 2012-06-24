@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface SComment
+public @interface SectionComment
 {
     public abstract String path();
     public abstract String text();

@@ -12,7 +12,7 @@ import org.bukkit.World;
  *
  * @author Faithcaio
  */
-public class LocationConverter implements IConverter<Location>
+public class LocationConverter implements Converter<Location>
 {
     public Object from(Location location)
     {
