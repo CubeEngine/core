@@ -92,7 +92,7 @@ public class ConfigurationSection
         for (String key : this.getKeys())
         {
             Object value = this.get(key);
-            out += this.getComment(key);
+            out += this.getComment(key, offset);
             if (value == null)
             {
                 System.out.println("Error while saving Key: \"" + key + "\" was null");
@@ -135,7 +135,7 @@ public class ConfigurationSection
         return this.toString(0);
     }
 
-    public String getComment(String path)
+    public String getComment(String path, int offset)
     {
         String comment = this.comments.get(path);
         if (comment == null)
@@ -145,7 +145,7 @@ public class ConfigurationSection
         else
         {
             comment = comment.replace("\n", "\n"+COMMENT_PREFIX);
-            return COMMENT_PREFIX + comment + "\n";
+            return "\n" + this.offset(offset) + COMMENT_PREFIX + comment + "\n";
         }
     }
 
