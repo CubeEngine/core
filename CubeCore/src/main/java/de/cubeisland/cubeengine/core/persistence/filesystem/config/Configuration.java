@@ -20,7 +20,7 @@ public abstract class Configuration
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
 
-    public Configuration()
+    static
     {
         registerConverter(short.class, new ShortConverter());
         registerConverter(Short.class, new ShortConverter());

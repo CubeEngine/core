@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 
 /**
  *
@@ -9,6 +10,13 @@ import org.bukkit.OfflinePlayer;
  */
 public class PlayerConverter implements Converter<OfflinePlayer>
 {
+    private Server server;
+    
+    public PlayerConverter()
+    {
+        this.server = CubeCore.getInstance().getServer();
+    }
+    
     public Object from(OfflinePlayer object)
     {
         return object.getName();
@@ -16,6 +24,6 @@ public class PlayerConverter implements Converter<OfflinePlayer>
 
     public OfflinePlayer to(Object object)
     {
-        return CubeCore.getInstance().getServer().getOfflinePlayer((String) object);
+        return server.getOfflinePlayer((String) object);
     }
 }

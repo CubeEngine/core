@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationSection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -14,6 +13,13 @@ import org.bukkit.World;
  */
 public class LocationConverter implements Converter<Location>
 {
+    private Server server;
+    
+    public LocationConverter()
+    {
+        this.server = CubeCore.getInstance().getServer();
+    }
+    
     public Object from(Location location)
     {
         ConfigurationSection loc = new ConfigurationSection();
@@ -28,7 +34,6 @@ public class LocationConverter implements Converter<Location>
 
     public Location to(Object object)
     {
-        Server server = CubeCore.getInstance().getServer();
         Map<String, Object> input = ((ConfigurationSection) object).getValues();
         World world = server.getWorld((String) input.get("world"));
         double x = (Double) input.get("x");

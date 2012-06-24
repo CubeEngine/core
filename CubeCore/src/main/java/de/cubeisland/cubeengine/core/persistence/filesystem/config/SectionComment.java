@@ -13,6 +13,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface SectionComment
 {
-    public abstract String path();
-    public abstract String text();
+    public String path();
+    public String text();
 }
