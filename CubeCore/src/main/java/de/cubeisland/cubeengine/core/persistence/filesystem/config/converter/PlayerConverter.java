@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 

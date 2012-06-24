@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 
 /**
  *
