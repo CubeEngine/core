@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationSection;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.Server;

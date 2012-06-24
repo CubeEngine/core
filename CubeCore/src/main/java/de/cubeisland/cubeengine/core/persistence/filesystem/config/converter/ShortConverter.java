@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
+import java.util.List;
+
 /**
  *
  * @author Faithcaio

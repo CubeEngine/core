@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
-import com.google.common.io.Files;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
-import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -25,7 +23,10 @@ public abstract class AbstractConfiguration extends ConfigurationSection
 
     public void load(File file) throws FileNotFoundException, IOException
     {
-        Validate.notNull(file, "File cannot be null");
+        if (file == null)
+        {
+            return;
+        }
         try
         {
             load(new FileInputStream(file));
@@ -39,8 +40,10 @@ public abstract class AbstractConfiguration extends ConfigurationSection
 
     public void load(InputStream stream) throws IOException
     {
-        Validate.notNull(stream, "Stream cannot be null");
-
+        if (stream == null)
+        {
+            return;
+        }
         InputStreamReader reader = new InputStreamReader(stream);
         StringBuilder builder = new StringBuilder();
         BufferedReader input = new BufferedReader(reader);
@@ -64,8 +67,10 @@ public abstract class AbstractConfiguration extends ConfigurationSection
 
     public void save(File file) throws IOException
     {
-        Validate.notNull(file, "File cannot be null");
-        Files.createParentDirs(file);
+        if (file == null)
+        {
+            return;
+        }
         String data = this.convertConfig();
         FileWriter writer = new FileWriter(file);
         try
@@ -110,7 +115,7 @@ public abstract class AbstractConfiguration extends ConfigurationSection
         }
         return off.toString();
     }
-    
+
     public abstract void loadFromString(String contents);
 
     public abstract String convertSection(ConfigurationSection section, int offset, boolean first);

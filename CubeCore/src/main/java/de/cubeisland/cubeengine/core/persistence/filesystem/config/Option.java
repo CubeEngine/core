@@ -14,4 +14,5 @@ import java.lang.annotation.Target;
 public @interface Option
 {
     public String value();
+    public Class<?> genericType() default Object.class;
 }

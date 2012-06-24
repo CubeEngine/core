@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
+import java.util.Collection;
 import java.util.Map;
-import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;
@@ -33,7 +33,10 @@ public class YamlConfiguration extends AbstractConfiguration
 
     public void loadFromString(String contents)
     {
-        Validate.notNull(contents, "Contents cannot be null");
+        if (contents == null)
+        {
+            return;
+        }
 
         Map<?, ?> input;
         input = (Map<?, ?>) yaml.load(contents);
@@ -69,6 +72,23 @@ public class YamlConfiguration extends AbstractConfiguration
                 if (value instanceof String)
                 {
                     out.append(QUOTE).append(value.toString()).append(QUOTE);
+                }
+                else if (value instanceof Collection<?>)
+                {
+                    for (Object o : (Collection) value)
+                    {
+                        out.append(LINEBREAK);
+                        out.append(this.offset(offset));
+                        out.append("- ");
+                        if (o instanceof String)
+                        {
+                            out.append(QUOTE).append(o.toString()).append(QUOTE);
+                        }
+                        else
+                        {
+                            out.append(o.toString());
+                        }
+                    }
                 }
                 else
                 {

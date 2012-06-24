@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Location;
@@ -47,13 +49,38 @@ public abstract class Configuration
         Converter converter = converters.get(fieldClass);
         if (converter == null)
         {
-            for (Class<?> clazz : converters.keySet())
+            converter = this.matchConverter(fieldClass);
+            if (converter == null)
             {
-                if (clazz.isAssignableFrom(fieldClass))
+                if (Collection.class.isAssignableFrom(fieldClass))
                 {
-                    converter = converters.get(fieldClass);
-                    registerConverter(fieldClass, converter);
-                    break;
+                    Collection<?> list = (Collection<?>) object;
+                    if (list.isEmpty())
+                    {
+                        return object;
+                    }
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = this.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Collection<Object> result;
+                        try
+                        {
+                            result = (Collection) field.get(this);
+                            result.clear();
+                        }
+                        catch (Exception ex)
+                        {
+                            System.out.println("ERROR while converting to " + genType.toString());
+                            return null;
+                        }
+                        for (Object o : list)
+                        {
+                            result.add(converter.to(o));
+                        }
+                        System.out.println("TO: "+result.toString());
+                        return result;
+                    }
                 }
             }
         }
@@ -64,21 +91,48 @@ public abstract class Configuration
         return converter.to(object);
     }
 
-    public Object convertFrom(Object object)
+    public Converter matchConverter(Class<?> objectClass)
+    {
+        Converter converter;
+        for (Class<?> clazz : converters.keySet())
+        {
+            if (clazz.isAssignableFrom(objectClass))
+            {
+                converter = converters.get(clazz);
+                registerConverter(objectClass, converter);
+                return converter;
+            }
+        }
+        return null;
+    }
+
+    public Object convertFrom(Field field, Object object)
     {
         Class<?> objectClass = object.getClass();
         Converter converter = converters.get(objectClass);
         if (converter == null)
         {
-            for (Class<?> clazz : converters.keySet())
+            converter = this.matchConverter(objectClass);
+            if (converter == null)
             {
-                if (clazz.isAssignableFrom(objectClass))
+                if (Collection.class.isAssignableFrom(objectClass))
                 {
-                    converter = converters.get(clazz);
-                    registerConverter(objectClass, converter);
-                    break;
+                    Collection<?> collection = (Collection<?>) object;
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = this.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Collection<Object> result = new ArrayList<Object>();
+                        for (Object o : collection)
+                        {
+                            result.add(converter.from(o));
+                        }
+                        System.out.println("FROM: "+result.toString());
+                        return result;
+                    }
                 }
             }
+
         }
         if (converter == null)
         {
@@ -87,26 +141,6 @@ public abstract class Configuration
         return converter.from(object);
     }
 
-    /*
-     *
-     * if (clazz.equals(Short.class) || clazz.equals(short.class)) { converter =
-     * new ShortConverter(); } else if (clazz.equals(Byte.class) ||
-     * clazz.equals(byte.class)) { converter = new ByteConverter(); } else if
-     * (clazz.equals(OfflinePlayer.class)) { converter = new PlayerConverter();
-     * } else if (clazz.equals(Location.class)) { converter = new
-     * LocationConverter(); }
-     *
-     * if (converter == null) { return configElem; } return
-     * converter.to(configElem); }
-     *
-     * public static Object convertFrom(Object object) { Converter converter =
-     * null; if (object instanceof Short) { converter = new ShortConverter(); }
-     * else if (object instanceof Byte) { converter = new ByteConverter(); }
-     * else if (object instanceof OfflinePlayer) { converter = new
-     * PlayerConverter(); } else if (object instanceof Location) { converter =
-     * new LocationConverter(); }
-     *
-     */
     /**
      * Returns the loaded Configuration
      *
@@ -215,7 +249,7 @@ public abstract class Configuration
                     if (configElem == null)
                     {
                         //Set defaultValue if no value saved
-                        this.config.set(path, this.convertFrom(field.get(this)));
+                        this.config.set(path, this.convertFrom(field, field.get(this)));
                     }
                     else
                     {

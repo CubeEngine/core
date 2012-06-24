@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 
 /**
  *
@@ -16,35 +17,35 @@ import org.bukkit.OfflinePlayer;
  */
 public class CoreConfiguration extends Configuration
 {
-    @Option("debug")
+    @Option(value="debug")
     @Comment("If enabled shows debug-messages")
     public boolean debugMode = false;
     
-    @Option("defaultLanguage")
+    @Option(value="defaultLanguage")
     @Comment("Sets the language to choose by default")
     public String defaultLanguage = "en_US";
 
     //TODO remove this test
-    @Option("location")
+    @Option(value="location")
     @Comment("LocationTest")
     public Location location = new Location(CubeCore.getInstance().getServer().getWorld("world"), 1, 2, 3, 0, 0);
-    @Option("offlineplayer")
+    @Option(value="offlineplayer")
     @Comment("PlayerTest")
     public OfflinePlayer player = CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio");
     
     @SectionComment(path="regions",text="more RandomTests:")
-    @Option("regions.use-scheduler")
+    @Option(value="regions.use-scheduler")
     public boolean use_scheduler = true;
-    @Option("regions.sql.use")
+    @Option(value="regions.sql.use")
     public boolean sql_use = false;
-    @Option("regions.sql.dsn")
+    @Option(value="regions.sql.dsn")
     public String sql_dsn = "jdbc:mysql://localhost/worldguard";
     @Comment("RandomComment")
-    @Option("regions.sql.username")
+    @Option(value="regions.sql.username")
     public String sql_username = "worldguard";
-    @Option("regions.sql.password")
+    @Option(value="regions.sql.password")
     public String sql_password = "worldguard";
-    @Option("regions.max-region-count-per-player")
+    @Option(value="regions.max-region-count-per-player")
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
@@ -53,12 +54,49 @@ public class CoreConfiguration extends Configuration
             put("default", 7);
         }
     };
-    @Option("fire.disable-lava-fire-spread")
-    public boolean disable_lava_fire_spread = false;
-    @Option("fire.disable-all-fire-spread")
-    public boolean disable_all_fire_spread = false;
-    @Option("fire.disable-fire-spread-blocks")
-    public List<String> disable_fire_spread_blocks = new ArrayList<String>();
-    @Option("fire.lava-spread-blocks")
-    public List<String> lava_spread_blocks = new ArrayList<String>();
+    @SectionComment(path="list",text="ListTests:")
+    @Option(value="list.stringlist")
+    public List<String> stringlist = new ArrayList<String>()
+    {
+        {
+            add("quark");
+            add("kekse");
+        }
+    };
+    @Option(value="list.playerlist",genericType=OfflinePlayer.class)
+    public List<OfflinePlayer> playerlist = new ArrayList<OfflinePlayer>()
+    {
+        {
+            add(CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio"));
+            add(CubeCore.getInstance().getServer().getOfflinePlayer("KekseSpieler"));
+        }
+    };
+    
+    @Option(value="list.shortlist",genericType=Short.class)
+    public List<Short> shortlist = new ArrayList<Short>()
+    {
+        {
+            short s = 123;
+            add(s);
+            s = 124;
+            add(s);
+        }
+    };
+    
+    @Option(value="list.listinmaps",genericType=Integer.class)
+    @Comment("list in maps ftw")
+    @SectionComment(path="list.listinmaps.list1",text="comment in submap")
+    public HashMap<String, List<Integer>> pointlessmap = new HashMap<String, List<Integer>>()
+    {
+        {
+            List<Integer> list1 = new ArrayList<Integer>();
+            list1.add(123);
+            list1.add(312);
+            List<Integer> list2 = new ArrayList<Integer>();
+            list2.add(124124);
+            list2.add(414141);
+            put("list1", list1);
+            put("list2", list2);
+        }
+    };
 }
