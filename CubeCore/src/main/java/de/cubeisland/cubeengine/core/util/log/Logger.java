@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * @author Robin Bechtel-Ostmann
  */
 
-public class Logger 
+public class Logger
 {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.S");   //[datum] [module] [type] message
     private ArrayList<LogWriter> writerList;
@@ -28,7 +28,7 @@ public class Logger
        
     public void log(String msg, LogType type)
     {
-        String logEntry = "[" + dateFormat.format(this.date) + "] [" + type.getType() + "] - " + msg;
+        String logEntry = "[" + dateFormat.format(this.date) + type + " - " + msg;
         try
         {
             for(LogWriter writer: writerList)

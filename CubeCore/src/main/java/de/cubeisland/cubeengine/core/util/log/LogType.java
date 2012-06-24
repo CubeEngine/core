@@ -7,20 +7,25 @@ package de.cubeisland.cubeengine.core.util.log;
 
 public enum LogType
 {
-    MESSAGE("MSG"),
-    NOTIFICATION("NOTICE"),
-    WARNING("WARNING"),
-    ERROR("ERR");
+    MESSAGE("[MESSAGE]"),
+    NOTIFICATION("[NOTICE]"),
+    INFORMATION("[INFO]"),
+    WARNING("[WARNING]"),
+    ERROR("[ERROR]"),
+    DEBUG("[DEBUG]");
     
-    private String type;
+    private String name;
     
-    private LogType(String type)
+    private LogType(String name)
     {
-        this.type = type;
+        this.name = name;
     }
     
-    public String getType()
+    @Override
+    public String toString()
     {
-        return this.type;
+        return this.name;
     }
+    
+    
 }
