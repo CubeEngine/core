@@ -132,7 +132,6 @@ public abstract class Configuration
                     }
                 }
             }
-
         }
         if (converter == null)
         {

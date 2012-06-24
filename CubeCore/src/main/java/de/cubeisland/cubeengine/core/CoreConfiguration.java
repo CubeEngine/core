@@ -16,35 +16,35 @@ import org.bukkit.OfflinePlayer;
  */
 public class CoreConfiguration extends Configuration
 {
-    @Option(value="debug")
+    @Option("debug")
     @Comment("If enabled shows debug-messages")
     public boolean debugMode = false;
     
-    @Option(value="defaultLanguage")
+    @Option("defaultLanguage")
     @Comment("Sets the language to choose by default")
     public String defaultLanguage = "en_US";
 
     //TODO remove this test
-    @Option(value="location")
+    @Option("location")
     @Comment("LocationTest")
     public Location location = new Location(CubeCore.getInstance().getServer().getWorld("world"), 1, 2, 3, 0, 0);
-    @Option(value="offlineplayer")
+    @Option("offlineplayer")
     @Comment("PlayerTest")
     public OfflinePlayer player = CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio");
     
     @SectionComment(path="regions",text="more RandomTests:")
-    @Option(value="regions.use-scheduler")
+    @Option("regions.use-scheduler")
     public boolean use_scheduler = true;
-    @Option(value="regions.sql.use")
+    @Option("regions.sql.use")
     public boolean sql_use = false;
-    @Option(value="regions.sql.dsn")
+    @Option("regions.sql.dsn")
     public String sql_dsn = "jdbc:mysql://localhost/worldguard";
     @Comment("RandomComment")
-    @Option(value="regions.sql.username")
+    @Option("regions.sql.username")
     public String sql_username = "worldguard";
-    @Option(value="regions.sql.password")
+    @Option("regions.sql.password")
     public String sql_password = "worldguard";
-    @Option(value="regions.max-region-count-per-player")
+    @Option("regions.max-region-count-per-player")
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
@@ -54,7 +54,7 @@ public class CoreConfiguration extends Configuration
         }
     };
     @SectionComment(path="list",text="ListTests:")
-    @Option(value="list.stringlist")
+    @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
     {
         {
