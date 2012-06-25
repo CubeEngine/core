@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class contains some utillities to work with Strings
@@ -27,7 +29,7 @@ public final class StringUtils
     {
         return explode(delim, string, true);
     }
-    
+
     /**
      * This method splits a string without RegExes
      *
@@ -60,7 +62,6 @@ public final class StringUtils
         return tokens.toArray(new String[tokens.size()]);
     }
 
-
     /**
      * This method merges an array of strings to a single string
      *
@@ -72,10 +73,10 @@ public final class StringUtils
     {
         return implode(delim, Arrays.asList(strings));
     }
-    
+
     /**
      * This method merges an array of strings to a single string
-     * 
+     *
      * @param delim the delimiter
      * @param strings the strings to implode
      * @return the imploded string
@@ -95,7 +96,7 @@ public final class StringUtils
             {
                 sb.append(delim).append(iterator.next());
             }
-            
+
             return sb.toString();
         }
     }
@@ -135,8 +136,7 @@ public final class StringUtils
     /**
      * Decodes the percent encoding scheme.
      *
-     * For example:
-     * "an+example%20string" -> "an example string"
+     * For example: "an+example%20string" -> "an example string"
      */
     public static String urlDecode(String string)
     {
@@ -152,5 +152,51 @@ public final class StringUtils
         {
             return string;
         }
+    }
+
+    /**
+     * Converts Time in d | h | m | s to Milliseconds
+     */
+    public static long convertTimeToMillis(String str)
+    {
+        Pattern pattern = Pattern.compile("^(\\d+)([smhd])?$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(str);
+        matcher.find();
+
+        long time;
+        try
+        {
+            time = Integer.parseInt(String.valueOf(matcher.group(1)));
+        }
+        catch (IllegalStateException ex)
+        {
+            return -1;
+        }
+        catch (Throwable t)
+        {
+            //TODO Throw exception Or Show ErrorLog
+            return -1;
+        }
+        if (time < 0)
+        {
+            return -1;
+        }
+        String unitSuffix = matcher.group(2);
+        if (unitSuffix == null)
+        {
+            unitSuffix = "m";
+        }
+        switch (unitSuffix.toLowerCase().charAt(0))
+        {
+            case 'd':
+                time *= 24;
+            case 'h':
+                time *= 60;
+            case 'm':
+                time *= 60;
+            case 's':
+                time *= 1000;
+        }
+        return time;
     }
 }

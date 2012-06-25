@@ -1,10 +1,10 @@
-package de.cubeisland.cubeengine.auctions.commands;
+package de.cubeisland.cubeengine.auctions_old.commands;
 
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.Manager;
-import de.cubeisland.cubeengine.auctions.auction.Auction;
-import de.cubeisland.cubeengine.auctions.auction.Bidder;
+import de.cubeisland.cubeengine.auctions_old.CubeAuctions;
+import static de.cubeisland.cubeengine.auctions_old.CubeAuctions.t;
+import de.cubeisland.cubeengine.auctions_old.Manager;
+import de.cubeisland.cubeengine.auctions_old.auction.Auction;
+import de.cubeisland.cubeengine.auctions_old.auction.Bidder;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import java.util.ArrayList;

@@ -1,11 +1,11 @@
-package de.cubeisland.cubeengine.auctions.commands;
+package de.cubeisland.cubeengine.auctions_old.commands;
 
 
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import static de.cubeisland.cubeengine.auctions.CubeAuctions.t;
-import de.cubeisland.cubeengine.auctions.CubeAuctionsConfiguration;
-import de.cubeisland.cubeengine.auctions.Manager;
-import de.cubeisland.cubeengine.auctions.Util;
+import de.cubeisland.cubeengine.auctions_old.CubeAuctions;
+import static de.cubeisland.cubeengine.auctions_old.CubeAuctions.t;
+import de.cubeisland.cubeengine.auctions_old.CubeAuctionsConfiguration;
+import de.cubeisland.cubeengine.auctions_old.Manager;
+import de.cubeisland.cubeengine.auctions_old.Util;
 import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import net.milkbowl.vault.economy.Economy;

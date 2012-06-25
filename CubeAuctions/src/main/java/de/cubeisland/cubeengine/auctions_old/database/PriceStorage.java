@@ -1,8 +1,8 @@
-package de.cubeisland.cubeengine.auctions.database;
+package de.cubeisland.cubeengine.auctions_old.database;
 
-import de.cubeisland.cubeengine.auctions.CubeAuctions;
-import de.cubeisland.cubeengine.auctions.Util;
-import de.cubeisland.cubeengine.auctions.auction.PricedItemStack;
+import de.cubeisland.cubeengine.auctions_old.CubeAuctions;
+import de.cubeisland.cubeengine.auctions_old.Util;
+import de.cubeisland.cubeengine.auctions_old.auction.PricedItemStack;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;

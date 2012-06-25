@@ -10,8 +10,8 @@ import java.util.List;
  * @author Faithcaio
  */
 public enum Sorter
-{ID,PRICE,DATE,QUANTITY;
-    
+{
+    ID, PRICE, DATE, QUANTITY;
     private static final Comparator compareId;
     private static final Comparator comparePrice;
     private static final Comparator compareDate;
@@ -59,7 +59,7 @@ public enum Sorter
         {
             public int compare(Object a1, Object a2)
             {
-                if (((Auction) a1).getItemAmount() <= ((Auction) a2).getItemAmount())
+                if (((Auction) a1).getItem().getAmount() <= ((Auction) a2).getItem().getAmount())
                 {
                     return 1;
                 }
@@ -69,11 +69,12 @@ public enum Sorter
         };
     }
 
-/**
- * Sorts auctionlist
- * @param auctionlist
- * @param type: id | price | date | quantity
- */    
+    /**
+     * Sorts auctionlist
+     *
+     * @param auctionlist
+     * @param type: id | price | date | quantity
+     */
     public void sortAuction(List<Auction> auctionlist)
     {
         if (this == Sorter.ID)
@@ -94,12 +95,13 @@ public enum Sorter
         }
     }
 
-/**
- * Sorts auctionlist
- * @param type: id | price | date | quantity
- * @param quantity: filter low quantity
- */
-    public List<Auction> sortAuction(List<Auction> auctionlist, int quantity)
+    /**
+     * Sorts auctionlist
+     *
+     * @param type: id | price | date | quantity
+     * @param quantity: filter low quantity
+     */
+    public void sortAuction(List<Auction> auctionlist, int quantity)
     {
         this.sortAuction(auctionlist);
 
@@ -107,17 +109,16 @@ public enum Sorter
         {
             if (auctionlist.isEmpty())
             {
-                return null;
+                return;
             }
-            while (auctionlist.get(auctionlist.size() - 1).getItemAmount() < quantity)
+            while (auctionlist.get(auctionlist.size() - 1).getItem().getAmount() < quantity)
             {
                 auctionlist.remove(auctionlist.size() - 1);
                 if (auctionlist.isEmpty())
                 {
-                    return null;
+                    return;
                 }
             }
         }
-        return auctionlist;
     }
 }

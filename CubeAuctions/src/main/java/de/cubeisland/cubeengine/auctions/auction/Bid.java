@@ -1,115 +1,74 @@
 package de.cubeisland.cubeengine.auctions.auction;
 
-import de.cubeisland.cubeengine.auctions.database.BidStorage;
 import de.cubeisland.cubeengine.core.persistence.Model;
-import java.sql.Timestamp;
 
 /**
- * Represents a bid by a player
  *
  * @author Faithcaio
  */
 public class Bid implements Model<Integer>
 {
-    private int id;
-    private int auctionId;
-
+    private Integer key;
+    private final Auction auction;
     private final double amount;
-    private Bidder bidder;
+    private final Bidder bidder;
     private final long timestamp;
-    
-    private BidStorage bidDB = new BidStorage ();
 
-/**
- * creates a bid and add it to DataBase
- */   
-    public Bid(Bidder bidder, double amount, Auction auction)
+    public Bid(Bidder bidder, Auction auction, double amount)
     {
-        this.auctionId = auction.getKey();
-        this.amount = amount;
         this.bidder = bidder;
-        this.timestamp = System.currentTimeMillis();
-        this.id = -1;
-    }
-/**
- *  @return TableName in Database
- */ 
-    public String getTable()
-    {
-        return "bids";
-    }
-    
-/**
- *  load in Bid from Database
- */ 
-    public Bid(int id,int UserId, int auctionId, double amount, Timestamp timestamp)
-    {
-        this.bidder = Bidder.getInstance(UserId);
-        this.auctionId = auctionId;
+        this.auction = auction;
         this.amount = amount;
-        this.timestamp = timestamp.getTime();
-        this.id = id;
-    }
-    
-/**
- *  @return Bid amount
- */ 
-    public double getAmount()
-    {
-        return this.amount;
+        this.timestamp = System.currentTimeMillis();
     }
 
-/**
- *  @return Bidder belonging to this bid
- */ 
-    public Bidder getBidder()
+    public Bid(Integer key, Bidder bidder, Auction auction, double amount, long timestamp)
     {
-        return this.bidder;
+        this.bidder = bidder;
+        this.auction = auction;
+        this.amount = amount;
+        this.timestamp = timestamp;
     }
-/**
- *  @return timestamp as long
- */ 
-    public long getTime()
-    {
-        return this.timestamp;
-    }
- 
-    public Timestamp getTimestamp()
-    {
-        return new Timestamp(this.timestamp);
-    }
-    
+
     public Integer getKey()
     {
-        return this.id;
+        return this.key;
     }
-    
-    public void setKey(Integer id)
+
+    public void setKey(Integer key)
     {
-        this.id = id;
-    }
-/**
- *  give this bid to the Server + update Database
- */     
-    public void giveServer()
-    {
-        this.bidder = Bidder.getInstance(1);
-        bidDB.update(this);
-    }
-    
-/**
- *  @return TableName for Database
- */ 
-    public String getDBTable()
-    {
-        return "`"+this.getTable()+"`";
+        this.key = key;
     }
 
     /**
-     * @return the auctionId
+     * @return the auction
      */
-    public int getAuctionId()
+    public Auction getAuction()
     {
-        return auctionId;
+        return auction;
+    }
+
+    /**
+     * @return the amount
+     */
+    public double getAmount()
+    {
+        return amount;
+    }
+
+    /**
+     * @return the bidder
+     */
+    public Bidder getBidder()
+    {
+        return bidder;
+    }
+
+    /**
+     * @return the timestamp
+     */
+    public long getTimestamp()
+    {
+        return timestamp;
     }
 }
