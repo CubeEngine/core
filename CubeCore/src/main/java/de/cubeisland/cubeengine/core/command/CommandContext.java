@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Phillip Schichtel
  */
-public class CommandArgs
+public class CommandContext
 {
     private final BaseCommand baseCommand;
     private final String baseLabel;
@@ -29,7 +30,7 @@ public class CommandArgs
     private final int size;
 
     /**
-     * Initializes the CommandArgs object with an array of arguments
+     * Initializes the CommandContext object with an array of arguments
      *
      * @param baseCommand the base command
      * @param baseLabel  the base label
@@ -37,7 +38,7 @@ public class CommandArgs
      * @param args the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
-    public CommandArgs(BaseCommand baseCommand, String baseLabel, SubCommand subCommand, String[] args)
+    public CommandContext(CommandSender sender, BaseCommand baseCommand, String baseLabel, SubCommand subCommand, String[] args)
     {
         this.baseCommand = baseCommand;
         this.baseLabel = baseLabel;
