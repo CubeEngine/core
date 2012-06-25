@@ -1,6 +1,5 @@
-package de.cubeisland.cubeengine.core.util;
+package de.cubeisland.cubeengine.core.util.worker;
 
-import java.lang.Runnable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;

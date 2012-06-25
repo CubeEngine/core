@@ -1,6 +1,5 @@
-package de.cubeisland.cubeengine.core.util;
+package de.cubeisland.cubeengine.core.util.worker;
 
-import java.lang.Runnable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -37,7 +36,7 @@ public class Worker implements Runnable
     public void addJob(Runnable job, boolean autoStart)
     {
         this.jobs.add(job);
-        if(!running && autoStart)
+        if(autoStart)
         {
             this.runner.start();
         }
