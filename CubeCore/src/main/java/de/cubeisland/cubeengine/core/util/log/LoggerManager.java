@@ -1,29 +1,23 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import java.util.HashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Robin Bechtel-Ostmann
- * @author Faithcaio
- */
-public class CubeLogger
+public class LoggerManager
 {
-    private static HashMap<String, Logger> loggers = new HashMap<String, Logger>();
     private static final CubeCore core;
-
+    
+    /**
+     * initialize the CoreLogger
+     */
     static
     {
         core = CubeCore.getInstance();
-        
         //Init CubeCoreLogger
-        Logger coreLogger = addLogger(core.getName());
+        Logger coreLogger = getLogger(core.getName());
         //Console logs INFO and higher
         addConsoleHandler(coreLogger, Level.INFO);
         //own LogFile logs WARNING and higher
@@ -34,11 +28,13 @@ public class CubeLogger
         coreLogger.setUseParentHandlers(false);
     }
     
-    public static void addHandler(String plugin, Handler newHandler)
-    {
-        loggers.get(plugin).addHandler(newHandler);
-    }
-            
+    /**
+     * Adds a DatabaseHandler to the specified Logger
+     * 
+     * @param logger the logger to add the Handler to
+     * @param tablename the tablename to log into
+     * @param level the minimum loglvl needed to log
+     */    
     public static void addDatabaseHandler(Logger logger, String tablename, Level level)
     {
         try
@@ -55,6 +51,12 @@ public class CubeLogger
         }
     }
     
+    /**
+     * Adds a ConsoleHandler to the specified Logger
+     * 
+     * @param logger the logger to add the Handler to
+     * @param level the minimum loglvl needed to log
+     */ 
     public static void addConsoleHandler(Logger logger, Level level)
     {
         try
@@ -69,7 +71,14 @@ public class CubeLogger
             logger.log(Level.SEVERE, "Could not add FileHandler to Logger");
         }
     }
-           
+   
+    /**
+     * Adds a DataBaseHandler to the specified Logger
+     * 
+     * @param logger the logger to add the Handler to
+     * @param filename the name of the file to log into
+     * @param level the minimum loglvl needed to log
+     */ 
     public static void addFileHandler(Logger logger, String filename, Level level)
     {
         try
@@ -86,36 +95,49 @@ public class CubeLogger
         }
     }
 
-    public static void addConsoleHandler(String plugin, Handler newHandler)
-    {
-        loggers.get(plugin).addHandler(newHandler);
-    }
-
-    public static Logger addLogger(String plugin)
-    {
-        Logger logger = Logger.getLogger(plugin);
-        loggers.put(plugin, logger);
-        return logger;
-    }
-
+    /**
+     * logs a message
+     * 
+     * @param plugin the plugin/logger name
+     * @param msg the message to log
+     * @param loglevel the Level of this log
+     */
     public void log(String plugin, String msg, Level loglevel)
     {
         
-        loggers.get(plugin).log(loglevel, msg, plugin);
+        getLogger(plugin).log(loglevel, msg, plugin);
     }
 
+    /**
+     * logs a message with the default CubeCore-Logger
+     * 
+     * @param msg the message to log
+     * @param loglevel the Level of this log
+     */
     public void log(String msg, Level loglevel)
     {
-        loggers.get("CubeCore").log(loglevel, msg, "CubeEngine");
+        getLogger("CubeCore").log(loglevel, msg, "CubeCore");
     }
 
+    /**
+     * logs a message with the default CubeCore-Logger on INFO level
+     * 
+     * @param msg the message to log
+     */
     public void log(String msg)
     {
-        loggers.get("CubeCore").log(Level.INFO, msg, "CubeEngine");
+        getLogger("CubeCore").log(Level.INFO, msg, "CubeCore");
     }
 
+    /**
+     * Proxy-Method 
+     * gets a Logger
+     * 
+     * @param plugin the LoggerName
+     * @return the Logger
+     */
     public static Logger getLogger(String plugin)
     {
-        return loggers.get(plugin);
+        return Logger.getLogger(plugin);
     }
 }

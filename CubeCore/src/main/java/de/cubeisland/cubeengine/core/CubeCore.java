@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.LoggerManager;
 import java.io.File;
 import java.util.logging.Level;
 import org.bukkit.plugin.PluginManager;
@@ -27,7 +27,7 @@ public class CubeCore extends JavaPlugin
     private ModuleManager moduleManager;
     private I18n i18n;
     private CoreConfiguration config;
-    private CubeLogger coreLogger;
+    private LoggerManager coreLogger;
 
     public CubeCore()
     {
@@ -62,7 +62,7 @@ public class CubeCore extends JavaPlugin
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
         //TODO loggertests here:
-        this.coreLogger = new CubeLogger();
+        this.coreLogger = new LoggerManager();
         this.coreLogger.log("CubeCore", "cookie not found 404", Level.WARNING);
         this.coreLogger.log("CubeCore", "cookie got eaten 403", Level.SEVERE);
         this.coreLogger.log("CubeCore", "cookie are too many 1337", Level.INFO);
@@ -154,7 +154,7 @@ public class CubeCore extends JavaPlugin
         return this.i18n;
     }
 
-    public CubeLogger getCoreLogger()
+    public LoggerManager getCoreLogger()
     {
         return this.coreLogger;
     }
