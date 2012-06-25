@@ -1,7 +1,8 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.persistence.database.Database;
-import java.util.Formatter;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
@@ -12,17 +13,23 @@ import java.util.logging.LogRecord;
 public class DatabaseHandler extends Handler
 {
     private Database db;
-    private String trigger;
+    private final String TABLE;
 
-    public DatabaseHandler(Database db, String trigger)
+    public DatabaseHandler(Database db, String table)
     {
-        Formatter dbFormatter = new Formatter();
-
         this.db = db;
-        this.trigger = trigger;
+        this.TABLE = table;
         try
         {
-            this.db.query("CREATE TABLE IF NOT EXISTS {{log}}");
+            this.db.exec("CREATE TABLE IF NOT EXISTS {{" + TABLE + "}} ("
+                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
+                + "`timestamp` timestamp NOT NULL,"
+                + "`level` varchar(20) NOT NULL,"
+                + "`message` text NOT NULL,"
+                + "PRIMARY KEY (`id`)"
+                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+            this.db.prepareStatement("insertLog", "INSERT INTO {{" + TABLE + "}} (timestamp, level, message) VALUES (?,?,?)");
+            this.db.prepareStatement("clearLog", "TRUNCATE {{" + TABLE + "}}");
         }
         catch (Exception ex)
         {
@@ -34,42 +41,40 @@ public class DatabaseHandler extends Handler
     {
         try
         {
-            this.db.query("DROPTABLE {{log}}");
-            this.db.query("CREATE TABLE {{log}}");
+            this.db.preparedExec("clearLog");
         }
-        catch (Exception ex)
+        catch (SQLException ex)
         {
-            ex.printStackTrace(System.err);
-        }
-    }
-
-    public void write(String text)
-    {
-        try
-        {
-            this.db.query("INSERT INTO {{log}} (date, trigger, message) VALUES(NOW(), " + this.trigger + ", " + text + ")");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace(System.err);
         }
     }
 
     @Override
     public void publish(LogRecord record)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Timestamp time = new Timestamp(record.getMillis());
+        String level = record.getLevel().getLocalizedName();
+        String msg = record.getMessage();
+        try
+        {
+            this.db.preparedExec("insertLog", time, level, msg);
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     @Override
     public void flush()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //nicht nötig da direkt alles geschrieben wird
     }
 
     @Override
     public void close() throws SecurityException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //hier nicht nötig DB wird woanders geclosed
     }
+
+
 }

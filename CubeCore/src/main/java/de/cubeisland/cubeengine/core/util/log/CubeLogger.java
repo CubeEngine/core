@@ -15,18 +15,35 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CubeLogger
 {
     private static HashMap<String, Logger> loggers = new HashMap<String, Logger>();
-
+    private static CubeCore core;
+    
     public CubeLogger()
     {
+        core = CubeCore.getInstance();
         Logger coreLogger = addLogger(CubeCore.getInstance());
         addFileHandler(coreLogger, "CubeEngineLogs.log");
+        addDatabaseHandler(coreLogger, "log");
     }
 
     public static void addHandler(String plugin, Handler newHandler)
     {
         loggers.get(plugin).addHandler(newHandler);
     }
-
+            
+    public static void addDatabaseHandler(Logger logger, String tablename)
+    {
+        try
+        {
+            Handler dbHandler = new DatabaseHandler(core.getDB(), tablename);
+            dbHandler.setLevel(Level.INFO);
+            logger.addHandler(dbHandler);
+        }
+        catch (Exception ex)
+        {
+            logger.log(Level.SEVERE, "Could not add FileHandler to Logger");
+        }
+    }
+                
     public static void addFileHandler(Logger logger, String filename)
     {
         try

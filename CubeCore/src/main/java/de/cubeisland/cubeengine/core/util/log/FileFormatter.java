@@ -21,7 +21,7 @@ public class FileFormatter extends Formatter
         StringBuilder sb = new StringBuilder();
         sb.append(sdf.format(new Date(record.getMillis())));
         sb.append(" [");
-        sb.append(record.getLevel());
+        sb.append(record.getLevel().getLocalizedName().toUpperCase());
         sb.append("] ");
         sb.append(record.getMessage());
         sb.append(LINEBREAK);

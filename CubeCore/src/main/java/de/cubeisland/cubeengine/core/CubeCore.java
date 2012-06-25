@@ -65,6 +65,7 @@ public class CubeCore extends JavaPlugin
         this.coreLogger = new CubeLogger();
         this.coreLogger.log("CubeCore", "cookie not found 404", Level.WARNING);
         this.coreLogger.log("CubeCore", "cookie got eaten 403", Level.SEVERE);
+        this.coreLogger.log("CubeCore", "cookie are too many 1337", Level.INFO);
         CubeEngine.initialize(this);
     }
 
