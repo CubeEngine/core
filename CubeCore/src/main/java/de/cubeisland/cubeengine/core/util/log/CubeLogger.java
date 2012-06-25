@@ -11,22 +11,29 @@ import java.util.logging.Logger;
 /**
  *
  * @author Robin Bechtel-Ostmann
+ * @author Faithcaio
  */
 public class CubeLogger
 {
     private static HashMap<String, Logger> loggers = new HashMap<String, Logger>();
-    private static CubeCore core;
-    
-    public CubeLogger()
+    private static final CubeCore core;
+
+    static
     {
         core = CubeCore.getInstance();
-        Logger coreLogger = addLogger(CubeCore.getInstance().getName());
-        addFileHandler(coreLogger, "CubeEngineLogs.log", Level.WARNING);
-        addDatabaseHandler(coreLogger, "log", Level.INFO);
+        
+        //Init CubeCoreLogger
+        Logger coreLogger = addLogger(core.getName());
+        //Console logs INFO and higher
         addConsoleHandler(coreLogger, Level.INFO);
+        //own LogFile logs WARNING and higher
+        addFileHandler(coreLogger, "CubeEngineLogs.log", Level.WARNING);
+        //Database logs logs SEVERE and higher
+        addDatabaseHandler(coreLogger, "log", Level.SEVERE);
+        //Logger does NOT use Parent Logger
         coreLogger.setUseParentHandlers(false);
     }
-
+    
     public static void addHandler(String plugin, Handler newHandler)
     {
         loggers.get(plugin).addHandler(newHandler);
@@ -36,9 +43,11 @@ public class CubeLogger
     {
         try
         {
-            Handler dbHandler = new DatabaseHandler(core.getDB(), tablename);
+            DatabaseHandler dbHandler = new DatabaseHandler(core.getDB(), tablename);
             dbHandler.setLevel(level);
             logger.addHandler(dbHandler);
+            //TODO remove:
+            dbHandler.clearLog();
         }
         catch (Exception ex)
         {
@@ -50,7 +59,7 @@ public class CubeLogger
     {
         try
         {
-            Handler consoleHandler = new ConsoleHandler();
+            ConsoleHandler consoleHandler = new ConsoleHandler();
             consoleHandler.setLevel(level);
             consoleHandler.setFormatter(new ConsoleFormatter());
             logger.addHandler(consoleHandler);
@@ -60,18 +69,16 @@ public class CubeLogger
             logger.log(Level.SEVERE, "Could not add FileHandler to Logger");
         }
     }
-    
-                
-            
-                
+           
     public static void addFileHandler(Logger logger, String filename, Level level)
     {
         try
         {
-            Handler fileHandler = new FileHandler(filename);
+            FileHandler fileHandler = new FileHandler(filename, true);
             fileHandler.setLevel(level);
             fileHandler.setFormatter(new FileFormatter());
             logger.addHandler(fileHandler);
+            
         }
         catch (Exception ex)
         {

@@ -12,7 +12,7 @@ import java.util.logging.LogRecord;
 public class FileFormatter extends Formatter
 {
     private static final String LINEBREAK = "\n";
-
+    
     @Override
     public String format(LogRecord record)
     {

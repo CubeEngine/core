@@ -51,6 +51,10 @@ public class DatabaseHandler extends Handler
     @Override
     public void publish(LogRecord record)
     {
+        if (!isLoggable(record))
+        {
+            return;
+        }
         Timestamp time = new Timestamp(record.getMillis());
         String level = record.getLevel().getLocalizedName();
         String msg = record.getMessage();
@@ -75,6 +79,4 @@ public class DatabaseHandler extends Handler
     {
         //hier nicht nötig DB wird woanders geclosed
     }
-
-
 }
