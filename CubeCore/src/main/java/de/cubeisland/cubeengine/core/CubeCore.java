@@ -10,10 +10,9 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.ConsoleLogWriter;
-import de.cubeisland.cubeengine.core.util.log.LogType;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
+import java.util.logging.Level;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -52,7 +51,7 @@ public class CubeCore extends JavaPlugin
         this.fileManager = new FileManager(this, super.getDataFolder().getParentFile());
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
-        
+
         //this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
@@ -62,11 +61,10 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
-        
-        this.coreLogger = new CubeLogger(this);
-        this.coreLogger.addLogWriter(new ConsoleLogWriter());
-        this.coreLogger.log("cookie not found 404", LogType.WARNING);
-
+        //TODO loggertests here:
+        this.coreLogger = new CubeLogger();
+        this.coreLogger.log("CubeCore", "cookie not found 404", Level.WARNING);
+        this.coreLogger.log("CubeCore", "cookie got eaten 403", Level.SEVERE);
         CubeEngine.initialize(this);
     }
 
@@ -85,7 +83,7 @@ public class CubeCore extends JavaPlugin
         this.userManager = null;
 
         this.permissionRegistration = null;
-        
+
         this.i18n.clean();
         this.i18n = null;
     }
@@ -154,7 +152,7 @@ public class CubeCore extends JavaPlugin
     {
         return this.i18n;
     }
-    
+
     public CubeLogger getCoreLogger()
     {
         return this.coreLogger;

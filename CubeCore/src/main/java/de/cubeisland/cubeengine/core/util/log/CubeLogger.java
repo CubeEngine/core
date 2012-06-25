@@ -1,8 +1,10 @@
 package de.cubeisland.cubeengine.core.util.log;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import de.cubeisland.cubeengine.core.CubeCore;
+import java.util.HashMap;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,42 +12,65 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author Robin Bechtel-Ostmann
  */
-
 public class CubeLogger
 {
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.S");   //[datum] [module] [type] message
-    private ArrayList<LogWriter> writerList;
-    private Date date;
-    
-    private static Logger logger;
-    
-    public CubeLogger(JavaPlugin plugin)
+    private static HashMap<String, Logger> loggers = new HashMap<String, Logger>();
+
+    public CubeLogger()
     {
-        this.date = new Date();
-        this.writerList = new ArrayList<LogWriter>();
-        
-        logger = plugin.getLogger();
+        Logger coreLogger = addLogger(CubeCore.getInstance());
+        addFileHandler(coreLogger, "CubeEngineLogs.log");
     }
-    
-    public void addLogWriter(LogWriter writer)
+
+    public static void addHandler(String plugin, Handler newHandler)
     {
-        this.writerList.add(writer);
+        loggers.get(plugin).addHandler(newHandler);
     }
-       
-    public void log(String msg, LogType type)
+
+    public static void addFileHandler(Logger logger, String filename)
     {
-        String logEntry = type + " - " + msg; // [Type] - message
-        //ConsoleLogWriter always writes TIME [INFOMRATION] ...
         try
         {
-            for(LogWriter writer: writerList)
-            {
-                writer.write(logEntry);
-            }
+            Handler fileHandler = new FileHandler(filename);
+            fileHandler.setLevel(Level.WARNING);
+            fileHandler.setFormatter(new FileFormatter());
+            logger.addHandler(fileHandler);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-             ex.printStackTrace(System.err);
+            logger.log(Level.SEVERE, "Could not add FileHandler to Logger");
         }
+    }
+
+    public static void addConsoleHandler(String plugin, Handler newHandler)
+    {
+        loggers.get(plugin).addHandler(newHandler);
+    }
+
+    public static Logger addLogger(JavaPlugin plugin)
+    {
+        Logger logger = plugin.getLogger();
+        loggers.put(plugin.getName(), logger);
+        return logger;
+    }
+
+    public void log(String plugin, String msg, Level loglevel)
+    {
+        loggers.get(plugin).log(loglevel, msg, plugin);
+    }
+
+    public void log(String msg, Level loglevel)
+    {
+        loggers.get("CubeCore").log(loglevel, msg, "CubeEngine");
+    }
+
+    public void log(String msg)
+    {
+        loggers.get("CubeCore").log(Level.INFO, msg, "CubeEngine");
+    }
+
+    public static Logger getLogger(String plugin)
+    {
+        return loggers.get(plugin);
     }
 }

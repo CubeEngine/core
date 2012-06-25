@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
-import de.cubeisland.cubeengine.core.util.log.LogType;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -166,7 +166,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            logger.log("Error while loading a Configuration!", LogType.ERROR);
+            logger.log("Error while loading a Configuration!", Level.SEVERE);
             return null;
         }
     }
@@ -194,7 +194,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            logger.log("Error while loading a Configuration-File!", LogType.ERROR);
+            logger.log("Error while loading a Configuration-File!", Level.SEVERE);
         }
     }
 
@@ -209,7 +209,7 @@ public abstract class Configuration
         }
         catch (IOException ex)
         {
-            logger.log("Error while saving a Configuration-File!", LogType.ERROR);
+            logger.log("Error while saving a Configuration-File!", Level.SEVERE);
         }
     }
 
@@ -272,7 +272,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while loading a Configuration-Element!", LogType.ERROR);
+            logger.log("Error while loading a Configuration-Element!", Level.SEVERE);
         }
     }
 
@@ -319,7 +319,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while loading a Configuration-Section!", LogType.ERROR);
+            logger.log("Error while loading a Configuration-Section!", Level.SEVERE);
         }
     }
 
@@ -377,7 +377,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while saving a Configuration-Element!", LogType.ERROR);
+            logger.log("Error while saving a Configuration-Element!", Level.SEVERE);
         }
     }
 
@@ -400,7 +400,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while saving a Configuration-Section!", LogType.ERROR);
+            logger.log("Error while saving a Configuration-Section!", Level.SEVERE);
         }
     }
 }
