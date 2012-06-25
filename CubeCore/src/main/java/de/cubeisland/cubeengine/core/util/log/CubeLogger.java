@@ -2,11 +2,11 @@ package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import java.util.HashMap;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  *
@@ -20,9 +20,11 @@ public class CubeLogger
     public CubeLogger()
     {
         core = CubeCore.getInstance();
-        Logger coreLogger = addLogger(CubeCore.getInstance());
-        addFileHandler(coreLogger, "CubeEngineLogs.log", Level.INFO);
+        Logger coreLogger = addLogger(CubeCore.getInstance().getName());
+        addFileHandler(coreLogger, "CubeEngineLogs.log", Level.WARNING);
         addDatabaseHandler(coreLogger, "log", Level.INFO);
+        addConsoleHandler(coreLogger, Level.INFO);
+        coreLogger.setUseParentHandlers(false);
     }
 
     public static void addHandler(String plugin, Handler newHandler)
@@ -43,13 +45,31 @@ public class CubeLogger
             logger.log(Level.SEVERE, "Could not add FileHandler to Logger");
         }
     }
+    
+    public static void addConsoleHandler(Logger logger, Level level)
+    {
+        try
+        {
+            Handler consoleHandler = new ConsoleHandler();
+            consoleHandler.setLevel(level);
+            consoleHandler.setFormatter(new ConsoleFormatter());
+            logger.addHandler(consoleHandler);
+        }
+        catch (Exception ex)
+        {
+            logger.log(Level.SEVERE, "Could not add FileHandler to Logger");
+        }
+    }
+    
+                
+            
                 
     public static void addFileHandler(Logger logger, String filename, Level level)
     {
         try
         {
             Handler fileHandler = new FileHandler(filename);
-            fileHandler.setLevel(Level.WARNING);
+            fileHandler.setLevel(level);
             fileHandler.setFormatter(new FileFormatter());
             logger.addHandler(fileHandler);
         }
@@ -64,17 +84,17 @@ public class CubeLogger
         loggers.get(plugin).addHandler(newHandler);
     }
 
-    public static Logger addLogger(JavaPlugin plugin)
+    public static Logger addLogger(String plugin)
     {
-        Logger logger = plugin.getLogger();
-        loggers.put(plugin.getName(), logger);
+        Logger logger = Logger.getLogger(plugin);
+        loggers.put(plugin, logger);
         return logger;
     }
 
     public void log(String plugin, String msg, Level loglevel)
     {
         
-        loggers.get(plugin).log(loglevel, msg);
+        loggers.get(plugin).log(loglevel, msg, plugin);
     }
 
     public void log(String msg, Level loglevel)

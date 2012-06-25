@@ -85,7 +85,7 @@ public class CubeCore extends JavaPlugin
 
         this.permissionRegistration = null;
 
-        this.i18n.clean();
+        //this.i18n.clean();
         this.i18n = null;
     }
 
