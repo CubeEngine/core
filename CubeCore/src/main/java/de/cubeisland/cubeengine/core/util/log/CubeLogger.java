@@ -21,8 +21,8 @@ public class CubeLogger
     {
         core = CubeCore.getInstance();
         Logger coreLogger = addLogger(CubeCore.getInstance());
-        addFileHandler(coreLogger, "CubeEngineLogs.log");
-        addDatabaseHandler(coreLogger, "log");
+        addFileHandler(coreLogger, "CubeEngineLogs.log", Level.INFO);
+        addDatabaseHandler(coreLogger, "log", Level.INFO);
     }
 
     public static void addHandler(String plugin, Handler newHandler)
@@ -30,12 +30,12 @@ public class CubeLogger
         loggers.get(plugin).addHandler(newHandler);
     }
             
-    public static void addDatabaseHandler(Logger logger, String tablename)
+    public static void addDatabaseHandler(Logger logger, String tablename, Level level)
     {
         try
         {
             Handler dbHandler = new DatabaseHandler(core.getDB(), tablename);
-            dbHandler.setLevel(Level.INFO);
+            dbHandler.setLevel(level);
             logger.addHandler(dbHandler);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class CubeLogger
         }
     }
                 
-    public static void addFileHandler(Logger logger, String filename)
+    public static void addFileHandler(Logger logger, String filename, Level level)
     {
         try
         {
@@ -73,7 +73,8 @@ public class CubeLogger
 
     public void log(String plugin, String msg, Level loglevel)
     {
-        loggers.get(plugin).log(loglevel, msg, plugin);
+        
+        loggers.get(plugin).log(loglevel, msg);
     }
 
     public void log(String msg, Level loglevel)
