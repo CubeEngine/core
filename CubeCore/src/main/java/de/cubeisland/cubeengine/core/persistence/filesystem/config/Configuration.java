@@ -1,16 +1,19 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
+import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 
 /**
  *
@@ -20,6 +23,128 @@ public abstract class Configuration
 {
     protected YamlConfiguration config;
     protected File file;
+    private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
+    private static CubeLogger logger;
+
+    static
+    {
+        Converter converter = new ShortConverter();
+        registerConverter(Short.class, converter);
+        registerConverter(short.class, converter);
+        converter = new ByteConverter();
+        registerConverter(Byte.class, converter);
+        registerConverter(byte.class, converter);
+        registerConverter(OfflinePlayer.class, new PlayerConverter());
+        registerConverter(Location.class, new LocationConverter());
+        
+        logger = CubeCore.getInstance().getCoreLogger();
+    }
+
+    public static void registerConverter(Class<?> clazz, Converter converter)
+    {
+        if (clazz == null || converter == null)
+        {
+            return;
+        }
+        converters.put(clazz, converter);
+    }
+
+    public Object convertTo(Field field, Object object)
+    {
+        Class<?> fieldClass = field.getType();
+        Converter converter = converters.get(fieldClass);
+        if (converter == null)
+        {
+            converter = this.matchConverter(fieldClass);
+            if (converter == null)
+            {
+                if (Collection.class.isAssignableFrom(fieldClass))
+                {
+                    Collection<?> list = (Collection<?>) object;
+                    if (list.isEmpty())
+                    {
+                        return object;
+                    }
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = this.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Collection<Object> result;
+                        try
+                        {
+                            result = (Collection) field.get(this);
+                            result.clear();
+                        }
+                        catch (Exception ex)
+                        {
+                            System.out.println("ERROR while converting to " + genType.toString());
+                            return null;
+                        }
+                        for (Object o : list)
+                        {
+                            result.add(converter.to(o));
+                        }
+                        System.out.println("TO: "+result.toString());
+                        return result;
+                    }
+                }
+            }
+        }
+        if (converter == null)
+        {
+            return object;
+        }
+        return converter.to(object);
+    }
+
+    public Converter matchConverter(Class<?> objectClass)
+    {
+        Converter converter;
+        for (Class<?> clazz : converters.keySet())
+        {
+            if (clazz.isAssignableFrom(objectClass))
+            {
+                converter = converters.get(clazz);
+                registerConverter(objectClass, converter);
+                return converter;
+            }
+        }
+        return null;
+    }
+
+    public Object convertFrom(Field field, Object object)
+    {
+        Class<?> objectClass = object.getClass();
+        Converter converter = converters.get(objectClass);
+        if (converter == null)
+        {
+            converter = this.matchConverter(objectClass);
+            if (converter == null)
+            {
+                if (Collection.class.isAssignableFrom(objectClass))
+                {
+                    Collection<?> collection = (Collection<?>) object;
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = this.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Collection<Object> result = new ArrayList<Object>();
+                        for (Object o : collection)
+                        {
+                            result.add(converter.from(o));
+                        }
+                        System.out.println("FROM: "+result.toString());
+                        return result;
+                    }
+                }
+            }
+        }
+        if (converter == null)
+        {
+            return object;
+        }
+        return converter.from(object);
+    }
 
     /**
      * Returns the loaded Configuration
@@ -41,11 +166,11 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            t.printStackTrace();
+            logger.log("Error while loading a Configuration!", Level.SEVERE);
             return null;
         }
     }
-    
+
     /**
      * Returns the loaded Configuration
      *
@@ -60,18 +185,17 @@ public abstract class Configuration
 
     /**
      * Loads in the config from File
-     * 
-     * @throws InvalidConfigurationException
-     * @throws IOException 
      */
-    public void reload() throws InvalidConfigurationException, IOException
+    public void reload()
     {
         try
         {
             this.config.load(file);
         }
         catch (Throwable t)
-        {}
+        {
+            logger.log("Error while loading a Configuration-File!", Level.SEVERE);
+        }
     }
 
     /**
@@ -85,7 +209,7 @@ public abstract class Configuration
         }
         catch (IOException ex)
         {
-            Logger.getLogger(Configuration.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log("Error while saving a Configuration-File!", Level.SEVERE);
         }
     }
 
@@ -127,29 +251,28 @@ public abstract class Configuration
                     if (configElem == null)
                     {
                         //Set defaultValue if no value saved
-                        this.config.set(path, field.get(this));
-                        return; //Field Value is already set to default
-                    }
-                    //Set new Field Value
-                    if ((Short.class == field.getType())
-                      || short.class == field.getType())
-                    {
-                        field.set(this, ((Integer)configElem).shortValue());
-                    }
-                    else if ((Byte.class == field.getType())
-                           || byte.class == field.getType())
-                    {
-                        field.set(this, ((Integer)configElem).byteValue());
+                        this.config.set(path, this.convertFrom(field, field.get(this)));
                     }
                     else
                     {
-                        field.set(this, configElem);
+                        //Set new Field Value
+                        field.set(this, this.convertTo(field, configElem));
                     }
+                }
+                if (field.isAnnotationPresent(Comment.class))
+                {
+                    this.config.addComment(path, field.getAnnotation(Comment.class).value());
+                }
+                if (field.isAnnotationPresent(SectionComment.class))
+                {
+                    SectionComment comment = field.getAnnotation(SectionComment.class);
+                    this.config.addComment(comment.path(), comment.text());
                 }
             }
         }
         catch (IllegalAccessException ex)
         {
+            logger.log("Error while loading a Configuration-Element!", Level.SEVERE);
         }
     }
 
@@ -173,7 +296,7 @@ public abstract class Configuration
                 //if section is not yet created: Create it
                 configSection = this.config.createSection(path);
             }
-            Map<String, Object> loadedSection = configSection.getValues(false);
+            Map<String, Object> loadedSection = configSection.getValues();
             for (String s : loadedSection.keySet())
             {
                 if (loadedSection.get(s) instanceof ConfigurationSection)
@@ -196,19 +319,20 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
+            logger.log("Error while loading a Configuration-Section!", Level.SEVERE);
         }
     }
 
     /**
      * Loads in a Section (and its SubSections)
-     * 
+     *
      * @param configSection the Section to load
      * @return the loaded Section
      */
     private Map<String, Object> getSection(ConfigurationSection configSection)
     {
         Map<String, Object> section = new HashMap<String, Object>();
-        for (String key : configSection.getKeys(false))
+        for (String key : configSection.getKeys())
         {
             Object value = configSection.get(key);
             if (value instanceof ConfigurationSection)
@@ -253,6 +377,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
+            logger.log("Error while saving a Configuration-Element!", Level.SEVERE);
         }
     }
 
@@ -275,6 +400,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
+            logger.log("Error while saving a Configuration-Section!", Level.SEVERE);
         }
     }
 }

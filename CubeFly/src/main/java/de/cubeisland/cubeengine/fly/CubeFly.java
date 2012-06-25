@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.fly;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.command.BaseCommand;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
-import de.cubeisland.cubeengine.core.persistence.filesystem.Configuration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
