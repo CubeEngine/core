@@ -51,7 +51,7 @@ public class CubeCore extends JavaPlugin
         this.fileManager = new FileManager(this, super.getDataFolder().getParentFile());
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
-        //TODO geoip database fails to load
+        //TODO GeoIP.dat existiert nicht / wird nicht erstellt !
         //this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
@@ -84,8 +84,7 @@ public class CubeCore extends JavaPlugin
         this.userManager = null;
 
         this.permissionRegistration = null;
-        //TODO geoip database fails to load
-        //this.i18n.clean();
+        this.i18n.clean();
         this.i18n = null;
     }
 
