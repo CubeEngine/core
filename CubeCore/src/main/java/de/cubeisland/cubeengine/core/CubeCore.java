@@ -48,11 +48,10 @@ public class CubeCore extends JavaPlugin
     public void onEnable()
     {
         this.moduleManager = new ModuleManager(this);
-        this.fileManager = new FileManager(this, super.getDataFolder().getParentFile());
+        this.fileManager = new FileManager(super.getDataFolder().getParentFile());
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
-        //TODO GeoIP.dat existiert nicht / wird nicht erstellt !
-        //this.i18n = new I18n(this);
+        this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
 
@@ -61,6 +60,7 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
+        
         //TODO loggertests here:
         this.coreLogger = new LoggerManager();
         this.coreLogger.log("CubeCore", "cookie not found 404", Level.WARNING);
@@ -77,7 +77,6 @@ public class CubeCore extends JavaPlugin
 
         CubeEngine.clean();
 
-        this.fileManager.clean();
         this.fileManager = null;
 
         this.getUserManager().clean();

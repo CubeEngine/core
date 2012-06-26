@@ -1,14 +1,11 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.module.Module;
-import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 
 /**
  * Manages all the configurations of the CubeEngine
@@ -17,22 +14,21 @@ import java.util.Map;
  */
 public class FileManager
 {
-    private CubeCore core;
-    private Map<Module, File> configsDirs;
     private File dataFolder;
     private File configDir;
     private File languageDir;
     private File logDir;
 
-    public FileManager(CubeCore core, File pluginsFolder)
+    public FileManager(File pluginsFolder)
     {
-        this.core = core;
-        this.configsDirs = new THashMap<Module, File>();
         this.dataFolder = new File(pluginsFolder, "CubeEngine");
         this.dataFolder.mkdirs();
 
         this.configDir = new File(this.dataFolder, "config");
         this.configDir.mkdirs();
+
+        this.languageDir = new File(this.dataFolder, "language");
+        this.languageDir.mkdirs();
 
         this.logDir = new File(this.dataFolder, "log");
         this.logDir.mkdirs();
@@ -136,10 +132,5 @@ public class FileManager
                 e.printStackTrace(System.err);
             }
         }
-    }
-
-    public void clean()
-    {
-        //TODO noch nötig??
     }
 }
