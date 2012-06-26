@@ -23,7 +23,7 @@ public class ConfigurationSection
     {
         if (key.contains("."))
         {
-            this.createSection(key.substring(0, key.indexOf("."))).set(key.substring(key.indexOf(".") + 1), value);
+            this.createSection(this.getBaseKey(key)).set(this.getSubKey(key), value);
         }
         else
         {
@@ -35,32 +35,40 @@ public class ConfigurationSection
     {
         if (key.contains("."))
         {
-            String subkey = key.substring(key.indexOf(".") + 1);
-            ConfigurationSection section = (ConfigurationSection) this.get(key.substring(0, key.indexOf(".")));
+            ConfigurationSection section = (ConfigurationSection)this.get(this.getBaseKey(key));
             if (section == null)
             {
                 return null;
             }
-            return section.get(subkey);
+            return section.get(this.getSubKey(key));
         }
         else
         {
             return this.values.get(key);
         }
     }
+    
+    public String getBaseKey(String key)
+    {
+        return key.substring(0, key.indexOf("."));
+    }
+    
+    public String getSubKey(String key)
+    {
+        return key.substring(key.indexOf(".") + 1);
+    }
 
     public ConfigurationSection getConfigurationSection(String path)
     {
-        return (ConfigurationSection) this.get(path);
+        return (ConfigurationSection)this.get(path);
     }
 
     public ConfigurationSection createSection(String path)
     {
-
         if (path.contains("."))
         {
-            ConfigurationSection section = this.createSection(path.substring(0, path.indexOf(".")));
-            return section.createSection(path.substring(path.indexOf(".") + 1));
+            ConfigurationSection section = this.createSection(this.getBaseKey(path));
+            return section.createSection(this.getSubKey(path));
         }
         else
         {
@@ -88,7 +96,7 @@ public class ConfigurationSection
     {
         if (path.contains("."))
         {
-            this.createSection(path.substring(0, path.indexOf("."))).addComment(path.substring(path.indexOf(".") + 1), value);
+            this.createSection(this.getBaseKey(path)).addComment(this.getSubKey(path), value);
         }
         else
         {

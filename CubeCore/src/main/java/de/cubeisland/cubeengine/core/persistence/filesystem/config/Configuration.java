@@ -84,7 +84,6 @@ public abstract class Configuration
                         {
                             result.add(converter.to(o));
                         }
-                        System.out.println("TO: "+result.toString());
                         return result;
                     }
                 }
@@ -133,7 +132,6 @@ public abstract class Configuration
                         {
                             result.add(converter.from(o));
                         }
-                        System.out.println("FROM: "+result.toString());
                         return result;
                     }
                 }

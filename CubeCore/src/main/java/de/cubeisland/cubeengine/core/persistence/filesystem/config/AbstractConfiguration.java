@@ -54,14 +54,13 @@ public abstract class AbstractConfiguration extends ConfigurationSection
             while ((line = input.readLine()) != null)
             {
                 builder.append(line);
-                builder.append('\n');
+                builder.append(LINEBREAK);
             }
         }
         finally
         {
             input.close();
         }
-
         loadFromString(builder.toString());
     }
 
@@ -89,15 +88,12 @@ public abstract class AbstractConfiguration extends ConfigurationSection
         {
             String key = entry.getKey().toString();
             Object value = entry.getValue();
-
             if (value instanceof Map)
             {
-                convertMapsToSections((Map<?, ?>) value, section.createSection(key));
+                convertMapsToSections((Map<?, ?>)value, section.createSection(key));
+                return;
             }
-            else
-            {
-                section.set(key, value);
-            }
+            section.set(key, value);
         }
     }
 
