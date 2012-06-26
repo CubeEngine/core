@@ -1,0 +1,9 @@
+{
+    "name": "English",
+    "localName": "English",
+    "formatstrings": {
+        "number": "%mayor.%minor",
+        "date": "dd. MM. YYYY", //change me
+        "time": "hh:mm" //change me
+    }
+}

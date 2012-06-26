@@ -25,7 +25,7 @@ public class Language
     private final File messageDir;
     private final JsonParser parser;
 
-    public Language(String code, File languageDir) throws FileNotFoundException, IllegalStateException
+    public Language(String code, File languageDir) throws FileNotFoundException
     {
         this.code = code;
         this.messageDir = new File(languageDir, code);
@@ -36,11 +36,19 @@ public class Language
         JsonObject root;
         root = parser.parse(new FileReader(new File(languageDir, code + ".json"))).getAsJsonObject();
 
+        if (!root.has("name") || !root.has("localName"))
+        {
+            throw new IllegalStateException("The language " + code + " has no valid meta file!");
+        }
         this.name = root.get("name").getAsString();
         this.localName = root.get("localName").getAsString();
 
         if (!this.code.equalsIgnoreCase(I18n.SOURCE_LANGUAGE))
         {
+            if (!root.has("countries"))
+            {
+                throw new IllegalStateException("Every language must have a list of counties where the language is spoken!");
+            }
             for (JsonElement elem : root.getAsJsonArray("countries"))
             {
                 if (elem.isJsonPrimitive())

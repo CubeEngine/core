@@ -48,18 +48,31 @@ public class CubeCore extends JavaPlugin
     public void onEnable()
     {
         this.moduleManager = new ModuleManager(this);
+        
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
+        this.fileManager.dropResources(CoreResource.values());
+
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
-        DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
         this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
-
-        this.database = new Database(databaseConfig);
-
-        this.userManager = new UserManager(this.database, this.getServer());
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
+
+        try
+        {
+            DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
+            this.database = new Database(databaseConfig);
+        }
+        catch (Throwable e)
+        {
+            // TODO log exception
+            e.printStackTrace(System.err);
+            this.pm.disablePlugin(this);
+            return;
+        }
+
+        this.userManager = new UserManager(this.database, this.getServer());
         
         //TODO loggertests here:
         this.coreLogger = new LoggerManager();
@@ -79,8 +92,11 @@ public class CubeCore extends JavaPlugin
 
         this.fileManager = null;
 
-        this.getUserManager().clean();
-        this.userManager = null;
+        if (this.userManager != null)
+        {
+            this.userManager.clean();
+            this.userManager = null;
+        }
 
         this.permissionRegistration = null;
         this.i18n.clean();

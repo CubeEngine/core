@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem;
 
-import de.cubeisland.cubeengine.core.CubeCore;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -61,38 +60,47 @@ public class FileManager
             throw new IllegalArgumentException("The resource must not be null!");
         }
         String source = resource.getSource();
-        String target = resource.getTarget();
 
-        if (source.startsWith("/"))
+        // we only accept absolute paths!
+        if (!source.startsWith("/"))
         {
-            source = source.substring(1);
-        }
-        if (target.startsWith("/"))
-        {
-            target = target.substring(1);
+            source = "/" + source;
         }
 
-        File targetFile = new File(this.dataFolder, target);
-        this.dropResource(resource.getClass(), source, targetFile, false);
-
-        return targetFile;
+        return this.dropResource(resource.getClass(), source, resource.getTarget(), false);
     }
 
-    public void dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
+    public void dropResources(Resource[] resources)
+    {
+        if (resources == null)
+        {
+            throw new IllegalArgumentException("The resources must not be null!");
+        }
+        for (Resource resource : resources)
+        {
+            this.getResourceFile(resource);
+        }
+    }
+
+    public File dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
     {
         if (filePath == null)
         {
             throw new IllegalArgumentException("The file path must not be null!");
+        }
+        if (resPath == null)
+        {
+            throw new IllegalArgumentException("The resource path must not be null!");
         }
 
         if (filePath.startsWith("/"))
         {
             filePath = filePath.substring(1);
         }
-        this.dropResource(clazz, resPath, new File(this.dataFolder, filePath), overwrite);
+        return this.dropResource(clazz, resPath, new File(this.dataFolder, filePath.replace('\\', File.separatorChar).replace('/', File.separatorChar)), overwrite);
     }
 
-    public void dropResource(Class clazz, String resPath, File file, boolean overwrite)
+    public File dropResource(Class clazz, String resPath, File file, boolean overwrite)
     {
         if (clazz == null)
         {
@@ -106,9 +114,13 @@ public class FileManager
         {
             throw new IllegalArgumentException("The file must not be null!");
         }
+        if (file.exists() && !file.isFile())
+        {
+            throw new IllegalArgumentException("The given file exists, but is no file!");
+        }
         if (file.exists() && !overwrite)
         {
-            return;
+            return file;
         }
 
         InputStream reader = this.getClass().getResourceAsStream(resPath);
@@ -116,8 +128,9 @@ public class FileManager
         {
             try
             {
+                file.getParentFile().mkdirs();
                 OutputStream writer = new FileOutputStream(file);
-                byte[] buffer = new byte[4096];
+                final byte[] buffer = new byte[4096];
                 int bytesRead;
                 while ((bytesRead = reader.read(buffer)) > 0)
                 {
@@ -132,5 +145,11 @@ public class FileManager
                 e.printStackTrace(System.err);
             }
         }
+        else
+        {
+            throw new RuntimeException("Could not find the resource '" + resPath + "'!");
+        }
+
+        return file;
     }
 }

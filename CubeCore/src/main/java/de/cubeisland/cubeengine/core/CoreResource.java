@@ -9,14 +9,14 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.Resource;
  */
 public enum CoreResource implements Resource
 {
-    GEOIP_DATABASE("GeoIP.dat", "GeoIP.dat"),
-    ENGLISH_META("language/en_US.json", "language/en_US.json"),
-    GERMAN_META("language/de_DE.json", "language/de_DE.json"),
-    GERMAN_MESSAGES("language/messages/de_DE.json", "language/de_DE/core.json");
+    GEOIP_DATABASE("resources/GeoIP.dat", "GeoIP.dat"),
+    ENGLISH_META("resources/language/en_US.json", "language/en_US.json"),
+    GERMAN_META("resources/language/de_DE.json", "language/de_DE.json"),
+    GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/core.json");
 
     private final String target;
     private final String source;
-    
+
     private CoreResource(String source, String target)
     {
         this.source = source;
