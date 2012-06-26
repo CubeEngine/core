@@ -1,5 +1,7 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml;
 
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.AbstractConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationSection;
 import java.util.Collection;
 import java.util.Map;
 import org.yaml.snakeyaml.DumperOptions;
@@ -102,7 +104,7 @@ public class YamlConfiguration extends AbstractConfiguration
 
     public String buildComment(ConfigurationSection section, String path, int offset, boolean first)
     {
-        String comment = section.comments.get(path);
+        String comment = section.getComments().get(path);
         if (comment == null)
         {
             return "";

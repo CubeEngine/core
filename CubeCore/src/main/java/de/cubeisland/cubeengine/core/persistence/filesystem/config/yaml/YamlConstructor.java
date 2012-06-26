@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

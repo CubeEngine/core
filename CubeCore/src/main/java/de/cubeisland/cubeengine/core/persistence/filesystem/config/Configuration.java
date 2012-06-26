@@ -1,8 +1,13 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml.YamlConfiguration;
 import de.cubeisland.cubeengine.core.util.log.LoggerManager;
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +22,7 @@ import org.bukkit.OfflinePlayer;
 
 /**
  *
+ * @author Phillip Schichtel
  * @author Faithcaio
  */
 public abstract class Configuration
@@ -24,20 +30,20 @@ public abstract class Configuration
     protected YamlConfiguration config;
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
-    private static LoggerManager logger;
+    private LoggerManager logger = CubeCore.getInstance().getCoreLogger();
 
     static
     {
         Converter converter = new ShortConverter();
         registerConverter(Short.class, converter);
         registerConverter(short.class, converter);
+        
         converter = new ByteConverter();
         registerConverter(Byte.class, converter);
         registerConverter(byte.class, converter);
+        
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
-        
-        logger = CubeCore.getInstance().getCoreLogger();
     }
 
     public static void registerConverter(Class<?> clazz, Converter converter)
@@ -164,7 +170,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            logger.log("Error while loading a Configuration!", Level.SEVERE);
+            CubeEngine.getLogger().severe("Error while loading a Configuration!");
             return null;
         }
     }
@@ -192,7 +198,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            logger.log("Error while loading a Configuration-File!", Level.SEVERE);
+            this.logger.log("Error while loading a Configuration-File!", Level.SEVERE);
         }
     }
 
@@ -207,7 +213,7 @@ public abstract class Configuration
         }
         catch (IOException ex)
         {
-            logger.log("Error while saving a Configuration-File!", Level.SEVERE);
+            this.logger.log("Error while saving a Configuration-File!", Level.SEVERE);
         }
     }
 
@@ -270,7 +276,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while loading a Configuration-Element!", Level.SEVERE);
+            this.logger.log("Error while loading a Configuration-Element!", Level.SEVERE);
         }
     }
 
@@ -317,7 +323,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while loading a Configuration-Section!", Level.SEVERE);
+            this.logger.log("Error while loading a Configuration-Section!", Level.SEVERE);
         }
     }
 
@@ -375,7 +381,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while saving a Configuration-Element!", Level.SEVERE);
+            this.logger.log("Error while saving a Configuration-Element!", Level.SEVERE);
         }
     }
 
@@ -398,7 +404,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            logger.log("Error while saving a Configuration-Section!", Level.SEVERE);
+            this.logger.log("Error while saving a Configuration-Section!", Level.SEVERE);
         }
     }
 }

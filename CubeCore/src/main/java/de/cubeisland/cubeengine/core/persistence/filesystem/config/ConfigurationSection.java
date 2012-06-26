@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
-import java.util.HashMap;
+import gnu.trove.map.hash.THashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -10,13 +10,13 @@ import java.util.Map;
  */
 public class ConfigurationSection
 {
-    protected Map<String, Object> values;
-    protected Map<String, String> comments;
+    private Map<String, Object> values;
+    private Map<String, String> comments;
 
     public ConfigurationSection()
     {
         this.values = new LinkedHashMap<String, Object>();
-        this.comments = new HashMap<String, String>();
+        this.comments = new THashMap<String, String>();
     }
 
     public void set(String key, Object value)
@@ -102,5 +102,10 @@ public class ConfigurationSection
         {
             this.comments.put(path, value);
         }
+    }
+
+    public Map<String, String> getComments()
+    {
+        return this.comments;
     }
 }

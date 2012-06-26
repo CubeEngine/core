@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Comment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.SectionComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import java.util.logging.Logger;
 
 /**
  *
@@ -65,6 +66,11 @@ public final class CubeEngine
     public static FileManager getFileManager()
     {
         return core.getFileManager();
+    }
+
+    public static Logger getLogger()
+    {
+        return core.getLogger();
     }
 
     public static String _(User user, String category, String text, Object... params)
