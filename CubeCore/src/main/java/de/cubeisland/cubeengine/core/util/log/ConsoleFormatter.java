@@ -14,7 +14,8 @@ class ConsoleFormatter extends Formatter
     {
         StringBuilder sb = new StringBuilder();
         Object[] params = record.getParameters();
-        if (params.length > 0)
+        
+        if (params != null && params.length > 0)
         {
             sb.append("[");
             sb.append(params[0]);

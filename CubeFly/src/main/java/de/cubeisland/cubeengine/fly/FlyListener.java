@@ -90,7 +90,6 @@ public class FlyListener implements Listener
                     {
                         if (player.getInventory().contains(Material.FEATHER))
                         {
-                            //CubeFly.debug("FlyTime extended!"); TODO replace me
                             player.getInventory().removeItem(feather);
                         }
                         else

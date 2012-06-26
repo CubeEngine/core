@@ -1,14 +1,14 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml.YamlConfiguration;
-import de.cubeisland.cubeengine.core.util.log.LoggerManager;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -30,18 +30,18 @@ public abstract class Configuration
     protected YamlConfiguration config;
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
-    private LoggerManager logger = CubeCore.getInstance().getCoreLogger();
+    private CubeLogger logger = CubeCore.getInstance().getCoreLogger();
 
     static
     {
         Converter converter = new ShortConverter();
         registerConverter(Short.class, converter);
         registerConverter(short.class, converter);
-        
+
         converter = new ByteConverter();
         registerConverter(Byte.class, converter);
         registerConverter(byte.class, converter);
-        
+
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
     }
@@ -66,7 +66,7 @@ public abstract class Configuration
             {
                 if (Collection.class.isAssignableFrom(fieldClass))
                 {
-                    Collection<?> list = (Collection<?>) object;
+                    Collection<?> list = (Collection<?>)object;
                     if (list.isEmpty())
                     {
                         return object;
@@ -78,7 +78,7 @@ public abstract class Configuration
                         Collection<Object> result;
                         try
                         {
-                            result = (Collection) field.get(this);
+                            result = (Collection)field.get(this);
                             result.clear();
                         }
                         catch (Exception ex)
@@ -128,7 +128,7 @@ public abstract class Configuration
             {
                 if (Collection.class.isAssignableFrom(objectClass))
                 {
-                    Collection<?> collection = (Collection<?>) object;
+                    Collection<?> collection = (Collection<?>)object;
                     Class<?> genType = field.getAnnotation(Option.class).genericType();
                     converter = this.matchConverter(genType);
                     if (converter != null)
@@ -198,7 +198,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            this.logger.log("Error while loading a Configuration-File!", Level.SEVERE);
+            this.logger.log(Level.SEVERE, "Error while loading a Configuration-File!");
         }
     }
 
@@ -213,7 +213,7 @@ public abstract class Configuration
         }
         catch (IOException ex)
         {
-            this.logger.log("Error while saving a Configuration-File!", Level.SEVERE);
+            this.logger.log(Level.SEVERE, "Error while saving a Configuration-File!");
         }
     }
 
@@ -276,7 +276,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log("Error while loading a Configuration-Element!", Level.SEVERE);
+            this.logger.log(Level.SEVERE, "Error while loading a Configuration-Element!");
         }
     }
 
@@ -292,7 +292,7 @@ public abstract class Configuration
         {
             String path = field.getAnnotation(Option.class).value();
             //get Default Keys
-            Map<String, Object> section = (Map<String, Object>) field.get(this);
+            Map<String, Object> section = (Map<String, Object>)field.get(this);
             //get saved Values from ConfigFile
             ConfigurationSection configSection = config.getConfigurationSection(path);
             if (configSection == null)
@@ -305,7 +305,7 @@ public abstract class Configuration
             {
                 if (loadedSection.get(s) instanceof ConfigurationSection)
                 {
-                    ConfigurationSection subsection = (ConfigurationSection) loadedSection.get(s);
+                    ConfigurationSection subsection = (ConfigurationSection)loadedSection.get(s);
                     loadedSection.put(s, this.getSection(subsection));
                 }
             }
@@ -323,7 +323,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log("Error while loading a Configuration-Section!", Level.SEVERE);
+            this.logger.log(Level.SEVERE, "Error while loading a Configuration-Section!");
         }
     }
 
@@ -341,7 +341,7 @@ public abstract class Configuration
             Object value = configSection.get(key);
             if (value instanceof ConfigurationSection)
             {
-                value = this.getSection((ConfigurationSection) value);
+                value = this.getSection((ConfigurationSection)value);
             }
             section.put(key, value);
         }
@@ -381,7 +381,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log("Error while saving a Configuration-Element!", Level.SEVERE);
+            this.logger.log(Level.SEVERE, "Error while saving a Configuration-Element!");
         }
     }
 
@@ -395,7 +395,7 @@ public abstract class Configuration
         try
         {
             String path = field.getAnnotation(Option.class).value();
-            Map<String, Object> section = (Map<String, Object>) field.get(this);
+            Map<String, Object> section = (Map<String, Object>)field.get(this);
             ConfigurationSection configSection = config.getConfigurationSection(path);
             for (String key : section.keySet())
             {
@@ -404,7 +404,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log("Error while saving a Configuration-Section!", Level.SEVERE);
+            this.logger.log(Level.SEVERE, "Error while saving a Configuration-Section!");
         }
     }
 }

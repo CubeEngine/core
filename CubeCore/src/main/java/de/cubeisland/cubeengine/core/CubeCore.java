@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.LoggerManager;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.util.logging.Level;
 import org.bukkit.plugin.PluginManager;
@@ -27,7 +27,7 @@ public class CubeCore extends JavaPlugin
     private ModuleManager moduleManager;
     private I18n i18n;
     private CoreConfiguration config;
-    private LoggerManager coreLogger;
+    private CubeLogger coreLogger;
 
     public CubeCore()
     {
@@ -74,11 +74,15 @@ public class CubeCore extends JavaPlugin
 
         this.userManager = new UserManager(this.database, this.getServer());
         
+        //TODO get Loglvl from config?
+        this.coreLogger = new CubeLogger("CubeCore");
+        this.coreLogger.addConsoleHandler(Level.INFO)
+                       .addFileHandler("CubeCore_TestLogs.log", Level.WARNING)
+                       .addDatabaseHandler(database, "corelog", Level.SEVERE);
         //TODO loggertests here:
-        this.coreLogger = new LoggerManager();
-        this.coreLogger.log("CubeCore", "cookie not found 404", Level.WARNING);
-        this.coreLogger.log("CubeCore", "cookie got eaten 403", Level.SEVERE);
-        this.coreLogger.log("CubeCore", "cookie are too many 1337", Level.INFO);
+        this.coreLogger.log(Level.WARNING, "cookie not found 404");
+        this.coreLogger.log(Level.SEVERE, "cookie got eaten 403");
+        this.coreLogger.log(Level.INFO, "cookie are too many 1337");
         CubeEngine.initialize(this);
     }
 
@@ -168,7 +172,7 @@ public class CubeCore extends JavaPlugin
         return this.i18n;
     }
 
-    public LoggerManager getCoreLogger()
+    public CubeLogger getCoreLogger()
     {
         return this.coreLogger;
     }

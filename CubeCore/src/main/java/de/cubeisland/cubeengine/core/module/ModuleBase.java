@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import gnu.trove.set.hash.THashSet;
 import java.util.Collections;
 import java.util.Set;
@@ -16,12 +17,14 @@ public abstract class ModuleBase extends JavaPlugin implements Module
     private final String name;
     private final Set<String> dependingModules;
     private final CubeCore core;
+    protected final CubeLogger logger;
 
     public ModuleBase(String name)
     {
         this.name = name;
         this.dependingModules = new THashSet<String>();
         this.core = CubeCore.getInstance();
+        this.logger = new CubeLogger(name);
     }
 
     @Override
@@ -58,5 +61,11 @@ public abstract class ModuleBase extends JavaPlugin implements Module
     public ModuleManager getModuleManager()
     {
         return this.core.getModuleManager();
+    }
+    
+    @Override
+    public CubeLogger getLogger()
+    {
+        return this.logger;
     }
 }

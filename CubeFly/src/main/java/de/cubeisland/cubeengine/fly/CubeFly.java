@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.command.BaseCommand;
 import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import java.io.File;
+import java.util.logging.Level;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 
@@ -40,5 +41,12 @@ public class CubeFly extends ModuleBase
         this.pm.registerEvents(new FlyListener(CubeCore.getInstance().getUserManager(), this), this);
 
         CubeEngine.registerPermissions(Perm.values());
+        
+        //TODO Test später löschen:
+        this.getLogger().addConsoleHandler(Level.INFO)
+                        .addFileHandler("FlyTestLog.log", Level.WARNING);
+        this.logger.info("No Information at all");
+        this.logger.warning("No Warning at all");
+        this.logger.info("Version " + this.getDescription().getVersion() + " enabled");
     }
 }
