@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
@@ -71,6 +73,16 @@ public final class CubeEngine
     public static Logger getLogger()
     {
         return core.getLogger();
+    }
+
+    public static ModuleManager getModuleManager()
+    {
+        return core.getModuleManager();
+    }
+
+    public static void registerModule(Module module)
+    {
+        getModuleManager().registerModule(module);
     }
 
     public static String _(User user, String category, String text, Object... params)
