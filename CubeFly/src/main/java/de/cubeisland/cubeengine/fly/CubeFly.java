@@ -22,7 +22,7 @@ public class CubeFly extends ModuleBase
 
     public CubeFly()
     {
-        super("fly");
+        super("CubeFly");
     }
 
     @Override
@@ -49,4 +49,12 @@ public class CubeFly extends ModuleBase
         this.logger.warning("No Warning at all");
         this.logger.info("Version " + this.getDescription().getVersion() + " enabled");
     }
+
+    @Override
+    public void onDisable() 
+    {
+        this.logger.info("Disabling "+this.getModuleName()+" "+this.getDescription().getVersion());
+    }
+    
+    
 }
