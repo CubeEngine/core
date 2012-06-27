@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,6 +33,7 @@ public class CubeCore extends JavaPlugin
     public CubeCore()
     {
         instance = this;
+        this.coreLogger = new CubeLogger("CubeCore");
     }
 
     public Database getDB()
@@ -47,6 +49,7 @@ public class CubeCore extends JavaPlugin
     @Override
     public void onEnable()
     {
+        CubeEngine.initialize(this);
         this.moduleManager = new ModuleManager(this);
         
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
@@ -75,15 +78,14 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
         
         //TODO get Loglvl from config?
-        this.coreLogger = new CubeLogger("CubeCore");
+        
         this.coreLogger.addConsoleHandler(Level.INFO)
                        .addFileHandler("CubeCore_TestLogs.log", Level.WARNING)
                        .addDatabaseHandler(database, "corelog", Level.SEVERE);
         //TODO loggertests here:
-        this.coreLogger.log(Level.WARNING, "cookie not found 404");
-        this.coreLogger.log(Level.SEVERE, "cookie got eaten 403");
-        this.coreLogger.log(Level.INFO, "cookie are too many 1337");
-        CubeEngine.initialize(this);
+        this.coreLogger.warning("cookie not found 404");
+        this.coreLogger.severe("cookie got eaten 403");
+        this.coreLogger.info("cookie are too many 1337");
     }
 
     @Override

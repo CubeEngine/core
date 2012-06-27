@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.util.logging.Logger;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 
 /**
  *
@@ -70,9 +70,9 @@ public final class CubeEngine
         return core.getFileManager();
     }
 
-    public static Logger getLogger()
+    public static CubeLogger getLogger()
     {
-        return core.getLogger();
+        return core.getCoreLogger();
     }
 
     public static ModuleManager getModuleManager()

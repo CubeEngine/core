@@ -21,6 +21,13 @@ public abstract class AbstractConfiguration extends ConfigurationSection
     public static String LINEBREAK;
     public static String QUOTE;
 
+    /**
+     * Loads the Configuration from a File
+     *
+     * @param file the file to load
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public void load(File file) throws FileNotFoundException, IOException
     {
         if (file == null)
@@ -38,6 +45,12 @@ public abstract class AbstractConfiguration extends ConfigurationSection
         }
     }
 
+    /**
+     * Loads the Configuration from a InputStream
+     *
+     * @param stream the InputStream
+     * @throws IOException
+     */
     public void load(InputStream stream) throws IOException
     {
         if (stream == null)
@@ -64,6 +77,12 @@ public abstract class AbstractConfiguration extends ConfigurationSection
         loadFromString(builder.toString());
     }
 
+    /**
+     * Saves the configuration to a File
+     *
+     * @param file the File
+     * @throws IOException
+     */
     public void save(File file) throws IOException
     {
         if (file == null)
@@ -82,7 +101,7 @@ public abstract class AbstractConfiguration extends ConfigurationSection
         }
     }
 
-    protected void convertMapsToSections(Map<?, ?> input, ConfigurationSection section)
+    public void convertMapsToSections(Map<?, ?> input, ConfigurationSection section)
     {
         for (Map.Entry<?, ?> entry : input.entrySet())
         {
@@ -97,11 +116,22 @@ public abstract class AbstractConfiguration extends ConfigurationSection
         }
     }
 
+    /**
+     * Converts the Configuration into a String
+     *
+     * @return the config as String
+     */
     public String convertConfig()
     {
         return this.convertSection(this, 0, true);
     }
 
+    /**
+     * Gets the offset as String
+     *
+     * @param offset the offset
+     * @return the offset as String
+     */
     public String offset(int offset)
     {
         StringBuilder off = new StringBuilder("");
@@ -114,7 +144,24 @@ public abstract class AbstractConfiguration extends ConfigurationSection
 
     public abstract void loadFromString(String contents);
 
+    /**
+     * Converts a Section into a String
+     *
+     * @param section the section to convert
+     * @param offset the offset
+     * @param first whether this is the first section
+     * @return
+     */
     public abstract String convertSection(ConfigurationSection section, int offset, boolean first);
 
+    /**
+     * Builds a Comment
+     *
+     * @param section
+     * @param path
+     * @param offset
+     * @param first
+     * @return
+     */
     public abstract String buildComment(ConfigurationSection section, String path, int offset, boolean first);
 }

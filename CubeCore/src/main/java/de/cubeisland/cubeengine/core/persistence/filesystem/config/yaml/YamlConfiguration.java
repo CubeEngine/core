@@ -4,9 +4,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.AbstractConfi
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationSection;
 import java.util.Collection;
 import java.util.Map;
-import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.representer.Representer;
 
 /**
  * A YamlConfiguration without bukkit
@@ -15,17 +13,12 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public class YamlConfiguration extends AbstractConfiguration
 {
-    protected static final String BLANK_CONFIG = "{}\n";
     private final Yaml yaml;
-    private final DumperOptions yamlOptions;
-    private final Representer yamlRepresenter;
 
     public YamlConfiguration()
     {
         super();
-        this.yamlOptions = new DumperOptions();
-        this.yamlRepresenter = new YamlRepresenter();
-        this.yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions);
+        this.yaml = new Yaml();
 
         COMMENT_PREFIX = "# ";
         SPACES = "  ";
@@ -39,9 +32,8 @@ public class YamlConfiguration extends AbstractConfiguration
         {
             return;
         }
-
         Map<?, ?> input;
-        input = (Map<?, ?>) yaml.load(contents);
+        input = (Map<?, ?>)yaml.load(contents);
         if (input != null)
         {
             convertMapsToSections(input, this);
@@ -59,25 +51,21 @@ public class YamlConfiguration extends AbstractConfiguration
             {
                 first = false;
             }
-            if (value == null)
-            {
-                System.out.println("Error while saving Key: \"" + key + "\" was null");
-            }
-            else if (value instanceof ConfigurationSection)
+            if (value instanceof ConfigurationSection)
             {
                 out.append(this.offset(offset)).append(key).append(":").append(LINEBREAK);
-                out.append(this.convertSection((ConfigurationSection) value, offset + 1, false));
+                out.append(this.convertSection((ConfigurationSection)value, offset + 1, false));
             }
             else
             {
                 out.append(this.offset(offset)).append(key).append(": ");
                 if (value instanceof String)
                 {
-                    out.append(QUOTE).append(value.toString()).append(QUOTE);
+                    out.append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
                 }
                 else if (value instanceof Collection<?>)
                 {
-                    for (Object o : (Collection) value)
+                    for (Object o : (Collection)value) //Convert Collection
                     {
                         out.append(LINEBREAK);
                         out.append(this.offset(offset));
@@ -94,7 +82,7 @@ public class YamlConfiguration extends AbstractConfiguration
                 }
                 else
                 {
-                    out.append(value.toString());
+                    out.append(value.toString()); //else toString()
                 }
                 out.append(LINEBREAK);
             }
@@ -107,14 +95,14 @@ public class YamlConfiguration extends AbstractConfiguration
         String comment = section.getComments().get(path);
         if (comment == null)
         {
-            return "";
+            return ""; //No Comment
         }
         else
         {
-            comment = comment.replace(LINEBREAK, LINEBREAK + this.offset(offset) + COMMENT_PREFIX);
+            comment = comment.replace(LINEBREAK, LINEBREAK + this.offset(offset) + COMMENT_PREFIX); //Multiline
             if (first)
             {
-                return this.offset(offset) + COMMENT_PREFIX + comment + LINEBREAK;
+                return this.offset(offset) + COMMENT_PREFIX + comment + LINEBREAK; //First Comment
             }
             return LINEBREAK + this.offset(offset) + COMMENT_PREFIX + comment + LINEBREAK;
         }

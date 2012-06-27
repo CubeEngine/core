@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
 import de.cubeisland.cubeengine.CubeEngine;
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -30,7 +28,7 @@ public abstract class Configuration
     protected YamlConfiguration config;
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
-    private CubeLogger logger = CubeCore.getInstance().getCoreLogger();
+    private CubeLogger logger = CubeEngine.getLogger();
 
     static
     {
@@ -83,7 +81,7 @@ public abstract class Configuration
                         }
                         catch (Exception ex)
                         {
-                            System.out.println("ERROR while converting to " + genType.toString());
+                            this.logger.severe("Error while converting to " + genType.toString());
                             return null;
                         }
                         for (Object o : list)
@@ -198,7 +196,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            this.logger.log(Level.SEVERE, "Error while loading a Configuration-File!");
+            this.logger.severe("Error while loading a Configuration-File!");
         }
     }
 
@@ -213,7 +211,7 @@ public abstract class Configuration
         }
         catch (IOException ex)
         {
-            this.logger.log(Level.SEVERE, "Error while saving a Configuration-File!");
+            this.logger.severe("Error while saving a Configuration-File!");
         }
     }
 
@@ -276,7 +274,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log(Level.SEVERE, "Error while loading a Configuration-Element!");
+            this.logger.severe("Error while loading a Configuration-Element!");
         }
     }
 
@@ -294,7 +292,7 @@ public abstract class Configuration
             //get Default Keys
             Map<String, Object> section = (Map<String, Object>)field.get(this);
             //get saved Values from ConfigFile
-            ConfigurationSection configSection = config.getConfigurationSection(path);
+            ConfigurationSection configSection = config.getSection(path);
             if (configSection == null)
             {
                 //if section is not yet created: Create it
@@ -323,7 +321,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log(Level.SEVERE, "Error while loading a Configuration-Section!");
+            this.logger.severe("Error while loading a Configuration-Section!");
         }
     }
 
@@ -381,7 +379,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log(Level.SEVERE, "Error while saving a Configuration-Element!");
+            this.logger.severe("Error while saving a Configuration-Element!");
         }
     }
 
@@ -396,7 +394,7 @@ public abstract class Configuration
         {
             String path = field.getAnnotation(Option.class).value();
             Map<String, Object> section = (Map<String, Object>)field.get(this);
-            ConfigurationSection configSection = config.getConfigurationSection(path);
+            ConfigurationSection configSection = config.getSection(path);
             for (String key : section.keySet())
             {
                 configSection.set(key, section.get(key));
@@ -404,7 +402,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.log(Level.SEVERE, "Error while saving a Configuration-Section!");
+            this.logger.severe("Error while saving a Configuration-Section!");
         }
     }
 }

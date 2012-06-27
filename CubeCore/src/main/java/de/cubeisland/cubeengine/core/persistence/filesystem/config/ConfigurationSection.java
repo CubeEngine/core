@@ -19,6 +19,12 @@ public class ConfigurationSection
         this.comments = new THashMap<String, String>();
     }
 
+    /**
+     * Sets a value for the specified Key
+     *
+     * @param key the key
+     * @param value the value to set
+     */
     public void set(String key, Object value)
     {
         if (key.contains("."))
@@ -31,6 +37,12 @@ public class ConfigurationSection
         }
     }
 
+    /**
+     * Gets the value saved under the key
+     *
+     * @param key the key
+     * @return the value or null if no value saved
+     */
     public Object get(String key)
     {
         if (key.contains("."))
@@ -47,22 +59,46 @@ public class ConfigurationSection
             return this.values.get(key);
         }
     }
-    
+
+    /**
+     * Splits up the Key and returns the BaseKey
+     *
+     * @param key the key
+     * @return the BaseKey
+     */
     public String getBaseKey(String key)
     {
         return key.substring(0, key.indexOf("."));
     }
-    
+
+    /**
+     * Splits up the Key and returns the SubKey
+     *
+     * @param key the key
+     * @return the SubKey
+     */
     public String getSubKey(String key)
     {
         return key.substring(key.indexOf(".") + 1);
     }
 
-    public ConfigurationSection getConfigurationSection(String path)
+    /**
+     * Gets the section at path
+     *
+     * @param path the path of the section
+     * @return the section
+     */
+    public ConfigurationSection getSection(String path)
     {
         return (ConfigurationSection)this.get(path);
     }
 
+    /**
+     * Gets or create the section at path
+     *
+     * @param path the path of the section
+     * @return the section
+     */
     public ConfigurationSection createSection(String path)
     {
         if (path.contains("."))
@@ -72,7 +108,7 @@ public class ConfigurationSection
         }
         else
         {
-            ConfigurationSection section = this.getConfigurationSection(path);
+            ConfigurationSection section = this.getSection(path);
             if (section == null)
             {
                 section = new ConfigurationSection();
@@ -82,28 +118,49 @@ public class ConfigurationSection
         }
     }
 
+    /**
+     * Gets all values saved in this Section
+     *
+     * @return the values
+     */
     public Map<String, Object> getValues()
     {
         return this.values;
     }
 
+    /**
+     * Gets all the keys used in this Section
+     *
+     * @return the keys
+     */
     public Iterable<String> getKeys()
     {
         return this.values.keySet();
     }
 
-    public void addComment(String path, String value)
+    /**
+     * Adds a Comment to the specified key
+     *
+     * @param key the key
+     * @param comment the comment
+     */
+    public void addComment(String key, String comment)
     {
-        if (path.contains("."))
+        if (key.contains("."))
         {
-            this.createSection(this.getBaseKey(path)).addComment(this.getSubKey(path), value);
+            this.createSection(this.getBaseKey(key)).addComment(this.getSubKey(key), comment);
         }
         else
         {
-            this.comments.put(path, value);
+            this.comments.put(key, comment);
         }
     }
 
+    /**
+     * Gets all the Comments saved in this Section
+     *
+     * @return the comments
+     */
     public Map<String, String> getComments()
     {
         return this.comments;
