@@ -20,12 +20,11 @@ import org.bukkit.OfflinePlayer;
 
 /**
  *
- * @author Phillip Schichtel
  * @author Faithcaio
  */
 public abstract class Configuration
 {
-    protected YamlConfiguration config;
+    protected AbstractConfiguration config;
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
     private CubeLogger logger = CubeEngine.getLogger();
@@ -169,6 +168,7 @@ public abstract class Configuration
         catch (Throwable t)
         {
             CubeEngine.getLogger().severe("Error while loading a Configuration!");
+            t.printStackTrace();
             return null;
         }
     }
@@ -213,6 +213,7 @@ public abstract class Configuration
         {
             this.logger.severe("Error while saving a Configuration-File!");
         }
+        this.config.finish(); //clears saved comments/values
     }
 
     /**
@@ -225,7 +226,8 @@ public abstract class Configuration
             //set all declared Fields & if needed set default values
             this.loadElement(field);
         }
-        this.save();
+        this.config.finish();
+        this.saveConfiguration();
     }
 
     /**
@@ -292,58 +294,18 @@ public abstract class Configuration
             //get Default Keys
             Map<String, Object> section = (Map<String, Object>)field.get(this);
             //get saved Values from ConfigFile
-            ConfigurationSection configSection = config.getSection(path);
-            if (configSection == null)
+            Map<String, Object> loadedSection = (Map<String, Object>)config.get(path);
+            if (loadedSection == null || loadedSection.keySet().isEmpty())
             {
-                //if section is not yet created: Create it
-                configSection = this.config.createSection(path);
+                this.config.set(path, section);//Set default values
+                return; //Nothing loaded! Default value is already set!
             }
-            Map<String, Object> loadedSection = configSection.getValues();
-            for (String s : loadedSection.keySet())
-            {
-                if (loadedSection.get(s) instanceof ConfigurationSection)
-                {
-                    ConfigurationSection subsection = (ConfigurationSection)loadedSection.get(s);
-                    loadedSection.put(s, this.getSection(subsection));
-                }
-            }
-            for (String key : section.keySet())
-            {
-                //Check if all Keys were loaded | If not: set to Default Key
-                if (!loadedSection.containsKey(key))
-                {
-                    configSection.set(key, section.get(key));
-                    loadedSection.put(key, section.get(key));
-                }
-            }
-            //Set Field with loaded Values
-            field.set(this, loadedSection);
+            field.set(this, loadedSection);//Set Field with loaded Values
         }
         catch (IllegalAccessException ex)
         {
             this.logger.severe("Error while loading a Configuration-Section!");
         }
-    }
-
-    /**
-     * Loads in a Section (and its SubSections)
-     *
-     * @param configSection the Section to load
-     * @return the loaded Section
-     */
-    private Map<String, Object> getSection(ConfigurationSection configSection)
-    {
-        Map<String, Object> section = new HashMap<String, Object>();
-        for (String key : configSection.getKeys())
-        {
-            Object value = configSection.get(key);
-            if (value instanceof ConfigurationSection)
-            {
-                value = this.getSection((ConfigurationSection)value);
-            }
-            section.put(key, value);
-        }
-        return section;
     }
 
     /**
@@ -369,40 +331,22 @@ public abstract class Configuration
         {
             if (field.isAnnotationPresent(Option.class))
             {
-                if (Map.class.isAssignableFrom(field.getType()))
-                {
-                    this.saveSection(field);
-                }
                 String path = field.getAnnotation(Option.class).value();
-                config.set(path, field.get(this));
+                if (field.isAnnotationPresent(Comment.class))
+                {
+                    this.config.addComment(path, field.getAnnotation(Comment.class).value());
+                }
+                if (field.isAnnotationPresent(SectionComment.class))
+                {
+                    SectionComment scomment = field.getAnnotation(SectionComment.class);
+                    this.config.addComment(scomment.path(), scomment.text());
+                }
+                this.config.set(path, this.convertFrom(field, field.get(this)));
             }
         }
         catch (IllegalAccessException ex)
         {
             this.logger.severe("Error while saving a Configuration-Element!");
-        }
-    }
-
-    /**
-     * Saves a field(Map) into the config
-     *
-     * @param field the field to save
-     */
-    private void saveSection(Field field)
-    {
-        try
-        {
-            String path = field.getAnnotation(Option.class).value();
-            Map<String, Object> section = (Map<String, Object>)field.get(this);
-            ConfigurationSection configSection = config.getSection(path);
-            for (String key : section.keySet())
-            {
-                configSection.set(key, section.get(key));
-            }
-        }
-        catch (IllegalAccessException ex)
-        {
-            this.logger.severe("Error while saving a Configuration-Section!");
         }
     }
 }

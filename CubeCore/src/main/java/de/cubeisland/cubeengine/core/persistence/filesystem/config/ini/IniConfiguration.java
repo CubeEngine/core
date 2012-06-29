@@ -1,29 +1,25 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.ini;
 
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.AbstractConfiguration;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.yaml.snakeyaml.Yaml;
 
 /**
- * A YamlConfiguration without bukkit
  *
  * @author Faithcaio
  */
-public class YamlConfiguration extends AbstractConfiguration
+public class IniConfiguration extends AbstractConfiguration
 {
-    private final Yaml yaml;
-
-    public YamlConfiguration()
+    //TODO hier läuft noch alles schief ...
+    public IniConfiguration()
     {
         super();
-        this.yaml = new Yaml();
-
-        COMMENT_PREFIX = "# ";
+        
+        COMMENT_PREFIX = "; ";
         SPACES = "  ";
         LINEBREAK = "\n";
-        QUOTE = "'";
+        QUOTE = "\"";
     }
 
     public void loadFromString(String contents)
@@ -32,7 +28,7 @@ public class YamlConfiguration extends AbstractConfiguration
         {
             return;
         }
-        this.values = (LinkedHashMap<String, Object>)yaml.load(contents);
+        //this.values = (LinkedHashMap<String, Object>)yaml.load(contents); //TODO find an ini parser
         if (this.values == null)
         {
             this.values = new LinkedHashMap<String, Object>();
@@ -41,28 +37,30 @@ public class YamlConfiguration extends AbstractConfiguration
 
     public String convertValue(String path, Object value, int off)
     {
+        //TODO convertValues correct
         StringBuilder sb = new StringBuilder();
 
-        sb.append(this.buildComment(path, off));
+        sb.append(this.buildComment(path, 0));
 
-        String offset = this.offset(off);
-        String key = this.getLastSubKey(path);
-        sb.append(offset).append(key).append(":");//{_OFFSET_Key:}
         if (value instanceof Map)
         {
+            sb.append(LINEBREAK);
+            sb.append("[").append(this.getLastSubKey(path)).append("]");
             sb.append(LINEBREAK);
             sb.append(this.convertSection(path, (Map<String, Object>)value, off + 1));
             return sb.toString();
         }
         else if (value instanceof String)
         {
-            sb.append(" ").append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
+            sb.append(path).append(" = ");
+            sb.append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
         }
         else if (value instanceof Collection<?>)
         {
+            sb.append(path).append(" = ");
+            sb.append("[");
             for (Object o : (Collection)value) //Convert Collection
             {
-                sb.append(LINEBREAK).append(offset).append("- ");
                 if (o instanceof String)
                 {
                     sb.append(QUOTE).append(o.toString()).append(QUOTE);
@@ -71,11 +69,14 @@ public class YamlConfiguration extends AbstractConfiguration
                 {
                     sb.append(o.toString());
                 }
+                sb.append(",");
             }
+            sb.deleteCharAt(sb.lastIndexOf(","));
+            sb.append("]");
         }
         else
         {
-            sb.append(" ").append(value.toString());
+            sb.append(value.toString());
         }
         sb.append(LINEBREAK);
         this.first = false;
@@ -102,9 +103,8 @@ public class YamlConfiguration extends AbstractConfiguration
         }
         else
         {
-            String offset = this.offset(off);
-            comment = comment.replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
-            comment = offset + COMMENT_PREFIX + comment + LINEBREAK;
+            comment = comment.replace(LINEBREAK, LINEBREAK + COMMENT_PREFIX); //Multiline
+            comment = COMMENT_PREFIX + comment + LINEBREAK;
             if (this.first)
             {
                 this.first = false;

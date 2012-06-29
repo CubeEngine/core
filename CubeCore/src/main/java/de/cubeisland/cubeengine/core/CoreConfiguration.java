@@ -1,12 +1,14 @@
 package de.cubeisland.cubeengine.core;
 
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -84,8 +86,8 @@ public class CoreConfiguration extends Configuration
     
     @Option(value="list.listinmaps",genericType=Integer.class)
     @Comment("list in maps ftw")
-    @SectionComment(path="list.listinmaps.list1",text="comment in submap")
-    public HashMap<String, List<Integer>> pointlessmap = new HashMap<String, List<Integer>>()
+    @SectionComment(path="list.listinmaps.list2",text="comment in submap")
+    public Map<String, List<Integer>> pointlessmap = new LinkedHashMap<String, List<Integer>>()
     {
         {
             List<Integer> list1 = new ArrayList<Integer>();

@@ -13,7 +13,6 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -55,6 +54,8 @@ public class CubeCore extends JavaPlugin
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
         this.fileManager.dropResources(CoreResource.values());
 
+        this.coreLogger.addConsoleHandler(Level.INFO);
+
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         this.i18n = new I18n(this);
 
@@ -74,13 +75,9 @@ public class CubeCore extends JavaPlugin
             this.pm.disablePlugin(this);
             return;
         }
-
         this.userManager = new UserManager(this.database, this.getServer());
         
-        //TODO get Loglvl from config?
-        
-        this.coreLogger.addConsoleHandler(Level.INFO)
-                       .addFileHandler("CubeCore_TestLogs.log", Level.WARNING)
+        this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING)
                        .addDatabaseHandler(database, "corelog", Level.SEVERE);
         //TODO loggertests here:
         this.coreLogger.warning("cookie not found 404");
