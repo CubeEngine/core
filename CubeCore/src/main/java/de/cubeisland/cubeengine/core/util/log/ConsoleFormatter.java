@@ -13,14 +13,8 @@ class ConsoleFormatter extends Formatter
     public String format(LogRecord record)
     {
         StringBuilder sb = new StringBuilder();
-        Object[] params = record.getParameters();
-        
-        if (params != null && params.length > 0)
-        {
-            sb.append("[");
-            sb.append(params[0]);
-            sb.append("] - ");
-        }
+        sb.append(record.getLoggerName());
+        sb.append(" - ");
         sb.append(record.getMessage());
         return sb.toString();
     }

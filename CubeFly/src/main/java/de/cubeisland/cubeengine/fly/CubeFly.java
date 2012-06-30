@@ -29,7 +29,7 @@ public class CubeFly extends ModuleBase
     public void onEnable()
     {
         CubeEngine.registerModule(this);
-        
+
         this.pm = this.getServer().getPluginManager();
 
         this.config = Configuration.load(this, FlyConfiguration.class);
@@ -41,20 +41,17 @@ public class CubeFly extends ModuleBase
         this.pm.registerEvents(new FlyListener(CubeCore.getInstance().getUserManager(), this), this);
 
         CubeEngine.registerPermissions(Perm.values());
-        
+
         //TODO Test später löschen:
-        this.getLogger().addConsoleHandler(Level.INFO)
-                        .addFileHandler("FlyTestLog.log", Level.WARNING);
+        this.getLogger().addFileHandler("FlyTestLog.log", Level.WARNING);
         this.logger.info("No Information at all");
         this.logger.warning("No Warning at all");
         this.logger.info("Version " + this.getDescription().getVersion() + " enabled");
     }
 
     @Override
-    public void onDisable() 
+    public void onDisable()
     {
-        this.logger.info("Disabling "+this.getModuleName()+" "+this.getDescription().getVersion());
+        this.logger.info("Disabling " + this.getModuleName() + " " + this.getDescription().getVersion());
     }
-    
-    
 }

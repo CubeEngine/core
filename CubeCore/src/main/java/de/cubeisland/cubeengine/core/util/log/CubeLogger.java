@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.util.log;
 
-import de.cubeisland.cubeengine.core.module.ModuleBase;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -21,17 +20,10 @@ public class CubeLogger extends Logger
      */
     public CubeLogger(String name)
     {
-        super(name, null);
-    }
-
-    /**
-     * Creates a new Logger for this Module
-     *
-     * @param plugin the CubeEngine Module
-     */
-    public CubeLogger(ModuleBase plugin)
-    {
-        this(plugin.getName());
+        super("[" + name + "]", null);
+        Logger bukkitlogger = Logger.getLogger(name);
+        this.setParent(bukkitlogger);
+        this.setUseParentHandlers(false);
     }
 
     /**
@@ -57,12 +49,14 @@ public class CubeLogger extends Logger
     }
 
     /**
-     * Adds a ConsoleHandler to the specified Logger
+     * Adds a ConsoleHandler to the specified Logger (Does not work with along
+     * with Bukkit-Logger!)
      *
      * @param level the minimum loglvl needed to log
      */
     public CubeLogger addConsoleHandler(Level level)
     {
+        //Do not use this Handler yet!
         try
         {
             this.setUseParentHandlers(false);
@@ -124,9 +118,12 @@ public class CubeLogger extends Logger
         }
     }
 
+    //Pass ConsoleLogging to BukkitLogger
     @Override
     public void log(Level level, String msg)
     {
-        log(level, msg, this.getName());
+        String consoleLog = this.getName() + " " + msg;
+        this.getParent().log(level, consoleLog);
+        super.log(level, msg);
     }
 }

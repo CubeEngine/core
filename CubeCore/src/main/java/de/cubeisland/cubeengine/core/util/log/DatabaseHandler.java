@@ -58,6 +58,7 @@ public class DatabaseHandler extends Handler
         Timestamp time = new Timestamp(record.getMillis());
         String level = record.getLevel().getLocalizedName();
         String msg = record.getMessage();
+        //TODO loggername
         try
         {
             this.db.preparedExec("insertLog", time, level, msg);

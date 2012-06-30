@@ -12,7 +12,7 @@ import java.util.logging.LogRecord;
 public class FileFormatter extends Formatter
 {
     private static final String LINEBREAK = "\n";
-    
+
     @Override
     public String format(LogRecord record)
     {
@@ -23,6 +23,8 @@ public class FileFormatter extends Formatter
         sb.append(" [");
         sb.append(record.getLevel().getLocalizedName().toUpperCase());
         sb.append("] ");
+        sb.append(record.getLoggerName());
+        sb.append(" - ");
         sb.append(record.getMessage());
         sb.append(LINEBREAK);
         return sb.toString();
