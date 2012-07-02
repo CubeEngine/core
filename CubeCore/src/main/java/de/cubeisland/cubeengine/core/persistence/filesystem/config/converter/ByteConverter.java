@@ -11,8 +11,9 @@ public class ByteConverter implements Converter<Byte>
         return object;
     }
 
-    public Byte to(Object configElem)
+    public Byte to(Object object)
     {
-        return ((Integer) configElem).byteValue();
+        Double t = Double.parseDouble(object.toString());
+        return t.byteValue();
     }
 }

@@ -121,10 +121,9 @@ public abstract class AbstractConfiguration
     {
         StringBuilder sb = new StringBuilder();
         first = true;
-        for (String key : this.values.keySet())
-        {
-            sb.append(this.convertValue(key, this.values.get(key), 0));
-        }
+        sb.append(this.head());
+        sb.append(this.convertSection("", this.values, 0));
+        sb.append(this.tail());
         return sb.toString();
     }
 
@@ -328,5 +327,15 @@ public abstract class AbstractConfiguration
     {
         this.comments.clear();
         this.values.clear();
+    }
+    
+    public String head()
+    {
+        return "";
+    }
+    
+    public String tail()
+    {
+        return "";
     }
 }

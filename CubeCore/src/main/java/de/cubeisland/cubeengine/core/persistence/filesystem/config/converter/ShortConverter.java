@@ -13,6 +13,7 @@ public class ShortConverter implements Converter<Short>
 
     public Short to(Object object)
     {
-        return ((Integer) object).shortValue();
+       Double t = Double.parseDouble(object.toString());
+       return t.shortValue();
     }
 }

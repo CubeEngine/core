@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.C
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.json.JsonConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml.YamlConfiguration;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
@@ -41,6 +42,7 @@ public abstract class Configuration
 
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
+        registerConverter(Integer.class, new IntegerConverter());
     }
 
     public static void registerConverter(Class<?> clazz, Converter converter)
@@ -160,7 +162,7 @@ public abstract class Configuration
         {
             T config = clazz.newInstance();
             config.file = file;
-            config.config = new YamlConfiguration();
+            config.config = new JsonConfiguration();
             config.reload();
             config.loadConfiguration(); //Load in config and/or set default values
             return config;
@@ -197,6 +199,7 @@ public abstract class Configuration
         catch (Throwable t)
         {
             this.logger.severe("Error while loading a Configuration-File!");
+            t.printStackTrace();
         }
     }
 

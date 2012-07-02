@@ -88,7 +88,14 @@ public class YamlConfiguration extends AbstractConfiguration
         for (String key : values.keySet())
         {
             Object value = values.get(key);
-            sb.append(this.convertValue(path + "." + key, value, off));
+            if (off == 0)
+            {
+                sb.append(this.convertValue(key, value, off));
+            }
+            else
+            {
+                sb.append(this.convertValue(path + "." + key, value, off));
+            }
         }
         return sb.toString();
     }
