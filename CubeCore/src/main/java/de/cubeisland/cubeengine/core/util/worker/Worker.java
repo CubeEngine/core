@@ -14,7 +14,7 @@ public class Worker implements Runnable
     private boolean paused;
     private Thread runner;
     
-    public void worker()
+    public Worker()
     {
         this.jobs = new ConcurrentLinkedQueue<Runnable>();
         this.running = false;

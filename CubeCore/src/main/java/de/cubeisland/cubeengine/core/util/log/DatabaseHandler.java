@@ -12,7 +12,7 @@ import java.util.logging.LogRecord;
  */
 public class DatabaseHandler extends Handler
 {
-    private Database db;
+    private final Database db;
     private final String TABLE;
 
     public DatabaseHandler(Database db, String table)
@@ -55,13 +55,13 @@ public class DatabaseHandler extends Handler
         {
             return;
         }
-        Timestamp time = new Timestamp(record.getMillis());
-        String level = record.getLevel().getLocalizedName();
-        String msg = record.getMessage();
+        final Timestamp time = new Timestamp(record.getMillis());
+        final String level = record.getLevel().getLocalizedName();
+        final String msg = record.getMessage();
         //TODO loggername
         try
         {
-            this.db.preparedExec("insertLog", time, level, msg);
+            db.preparedExec("insertLog", time, level, msg);
         }
         catch (SQLException ex)
         {
