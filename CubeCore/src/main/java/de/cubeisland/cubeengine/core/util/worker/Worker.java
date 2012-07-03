@@ -83,4 +83,9 @@ public class Worker implements Runnable
     {
         this.jobs.clear();
     }
+    
+    public int getJobCount()
+    {
+        return this.jobs.size();
+    }
 }
