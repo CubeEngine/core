@@ -14,7 +14,7 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlConfiguration extends AbstractConfiguration
 {
     private final Yaml yaml;
-
+    
     public YamlConfiguration()
     {
         super();

@@ -36,11 +36,11 @@ public class LocationConverter implements Converter<Location>
     {
         Map<String, Object> input = (Map<String, Object>)object;
         World world = server.getWorld((String) input.get("world"));
-        double x = (Double) input.get("x");
-        double y = (Double) input.get("y");
-        double z = (Double) input.get("z");
-        double yaw = (Double) input.get("yaw");
-        double pitch = (Double) input.get("pitch");
+        double x = Double.valueOf(input.get("x").toString());
+        double y = Double.valueOf(input.get("y").toString());
+        double z = Double.valueOf(input.get("z").toString());
+        double yaw = Double.valueOf(input.get("yaw").toString());
+        double pitch = Double.valueOf(input.get("pitch").toString());
 
         return new Location(world, x, y, z, (float) yaw, (float) pitch);
     }

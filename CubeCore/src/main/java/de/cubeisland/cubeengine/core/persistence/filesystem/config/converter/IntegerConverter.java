@@ -8,8 +8,7 @@ public class IntegerConverter implements Converter<Integer>
 {
     public Object from(Integer object)
     {
-        Double t = Double.parseDouble(object.toString());
-        return t.intValue();
+        return object;
     }
 
     public Integer to(Object object)

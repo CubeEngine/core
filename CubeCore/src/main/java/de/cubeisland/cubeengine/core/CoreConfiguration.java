@@ -46,7 +46,7 @@ public class CoreConfiguration extends Configuration
     public String sql_username = "worldguard";
     @Option("regions.sql.password")
     public String sql_password = "worldguard";
-    @Option("regions.max-region-count-per-player")
+    @Option(value="regions.max-region-count-per-player",genericType=Integer.class)
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
@@ -57,6 +57,8 @@ public class CoreConfiguration extends Configuration
     };
     @Option("regions.the42")
     public Integer the42 = 42;
+    @Option("regions.the21")
+    public int the21 = 21;
     @SectionComment(path="list",text="ListTests:")
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
@@ -86,7 +88,7 @@ public class CoreConfiguration extends Configuration
         }
     };
     
-    @Option(value="list.listinmaps",genericType=Integer.class)
+    @Option(value="list.listinmaps",genericType=List.class)
     @Comment("list in maps ftw")
     @SectionComment(path="list.listinmaps.list2",text="comment in submap")
     public Map<String, List<Integer>> pointlessmap = new LinkedHashMap<String, List<Integer>>()

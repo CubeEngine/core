@@ -328,12 +328,12 @@ public abstract class AbstractConfiguration
         this.comments.clear();
         this.values.clear();
     }
-    
+
     public String head()
     {
         return "";
     }
-    
+
     public String tail()
     {
         return "";

@@ -1,12 +1,10 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.json;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.json;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.AbstractConfiguration;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,7 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  *
@@ -201,7 +198,15 @@ public class JsonConfiguration extends AbstractConfiguration
         }
         else
         {
-            return jsonprim.getAsDouble();
+            BigDecimal bigDec = jsonprim.getAsBigDecimal();
+            try
+            {
+                return bigDec.intValueExact();
+            }
+            catch (Exception e)
+            {
+            }
+            return bigDec.doubleValue();
         }
     }
 

@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.C
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.json.JsonConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.json.JsonConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml.YamlConfiguration;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
@@ -29,6 +29,8 @@ public abstract class Configuration
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
     private CubeLogger logger = CubeEngine.getLogger();
+    
+    private static final HashMap<String,Class<? extends AbstractConfiguration>> configtypes= new HashMap<String, Class<? extends AbstractConfiguration>>();
 
     static
     {
@@ -40,9 +42,20 @@ public abstract class Configuration
         registerConverter(Byte.class, converter);
         registerConverter(byte.class, converter);
 
+        converter = new IntegerConverter();
+        registerConverter(Integer.class, converter);
+        registerConverter(int.class, converter);
+
+        converter = new DoubleConverter();
+        registerConverter(Double.class, converter);
+        registerConverter(double.class, converter);
+
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
-        registerConverter(Integer.class, new IntegerConverter());
+        
+        configtypes.put("yml", YamlConfiguration.class);
+        configtypes.put("json", JsonConfiguration.class);
+        //configtypes.put(".ini", IniConfiguration.class);
     }
 
     public static void registerConverter(Class<?> clazz, Converter converter)
@@ -88,6 +101,35 @@ public abstract class Configuration
                         for (Object o : list)
                         {
                             result.add(converter.to(o));
+                        }
+                        return result;
+                    }
+                }
+                if (Map.class.isAssignableFrom(fieldClass))
+                {
+                    Map<String, ?> map = (Map<String, ?>)object;
+                    if (map.isEmpty())
+                    {
+                        return object;
+                    }
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = this.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Map<String, Object> result;
+                        try
+                        {
+                            result = (Map<String, Object>)field.get(this);
+                            result.clear();
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.severe("Error while converting to " + genType.toString());
+                            return null;
+                        }
+                        for (String key : map.keySet())
+                        {
+                            result.put(key, converter.to(map.get(key)));
                         }
                         return result;
                     }
@@ -162,7 +204,15 @@ public abstract class Configuration
         {
             T config = clazz.newInstance();
             config.file = file;
-            config.config = new JsonConfiguration();
+            String fileName = file.getName();
+            fileName = fileName.substring(fileName.lastIndexOf(".")+1);
+            Class<? extends AbstractConfiguration> configclass = configtypes.get(fileName);
+            if (configclass == null)
+            {
+                CubeEngine.getLogger().severe("FileExtension ."+fileName+" cannot be used for Configurations!");
+                return null;
+            }
+            config.config = configclass.newInstance();
             config.reload();
             config.loadConfiguration(); //Load in config and/or set default values
             return config;
@@ -246,26 +296,20 @@ public abstract class Configuration
             if (field.isAnnotationPresent(Option.class))
             {
                 String path = field.getAnnotation(Option.class).value();
-                if (Map.class.isAssignableFrom(field.getType()))
+
+                //Get savedValue or default
+                Object configElem = config.get(path);
+                if (configElem == null)
                 {
-                    //Field is a Map
-                    this.loadSection(field);
+                    //Set defaultValue if no value saved
+                    this.config.set(path, this.convertFrom(field, field.get(this)));
                 }
                 else
                 {
-                    //Get savedValue or default
-                    Object configElem = config.get(path);
-                    if (configElem == null)
-                    {
-                        //Set defaultValue if no value saved
-                        this.config.set(path, this.convertFrom(field, field.get(this)));
-                    }
-                    else
-                    {
-                        //Set new Field Value
-                        field.set(this, this.convertTo(field, configElem));
-                    }
+                    //Set new Field Value
+                    field.set(this, this.convertTo(field, configElem));
                 }
+
                 if (field.isAnnotationPresent(Comment.class))
                 {
                     this.config.addComment(path, field.getAnnotation(Comment.class).value());
@@ -280,34 +324,6 @@ public abstract class Configuration
         catch (IllegalAccessException ex)
         {
             this.logger.severe("Error while loading a Configuration-Element!");
-        }
-    }
-
-    /**
-     * Loads in a ConfigurationSection from the ConfigurationFile into a
-     * Map(String->Object)
-     *
-     * @param field the field to load
-     */
-    private void loadSection(Field field)
-    {
-        try
-        {
-            String path = field.getAnnotation(Option.class).value();
-            //get Default Keys
-            Map<String, Object> section = (Map<String, Object>)field.get(this);
-            //get saved Values from ConfigFile
-            Map<String, Object> loadedSection = (Map<String, Object>)config.get(path);
-            if (loadedSection == null || loadedSection.keySet().isEmpty())
-            {
-                this.config.set(path, section);//Set default values
-                return; //Nothing loaded! Default value is already set!
-            }
-            field.set(this, loadedSection);//Set Field with loaded Values
-        }
-        catch (IllegalAccessException ex)
-        {
-            this.logger.severe("Error while loading a Configuration-Section!");
         }
     }
 
