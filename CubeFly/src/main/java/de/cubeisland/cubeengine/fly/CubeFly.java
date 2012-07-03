@@ -32,7 +32,7 @@ public class CubeFly extends ModuleBase
 
         this.pm = this.getServer().getPluginManager();
 
-        this.config = Configuration.load(this, FlyConfiguration.class);
+        this.config = Configuration.loadYaml(this, FlyConfiguration.class);
 
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");
@@ -46,12 +46,12 @@ public class CubeFly extends ModuleBase
         this.getLogger().addFileHandler("FlyTestLog.log", Level.WARNING);
         this.logger.info("No Information at all");
         this.logger.warning("No Warning at all");
-        this.logger.info("Version " + this.getDescription().getVersion() + " enabled");
+        this.logger.log(Level.INFO, "Version {0} enabled", this.getDescription().getVersion());
     }
 
     @Override
     public void onDisable()
     {
-        this.logger.info("Disabling " + this.getModuleName() + " " + this.getDescription().getVersion());
+        this.logger.log(Level.INFO, "Disabling {0} {1}", new Object[]{this.getModuleName(), this.getDescription().getVersion()});
     }
 }

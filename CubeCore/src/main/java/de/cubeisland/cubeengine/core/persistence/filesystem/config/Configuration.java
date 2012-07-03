@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -29,8 +30,7 @@ public abstract class Configuration
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
     private CubeLogger logger = CubeEngine.getLogger();
-    
-    private static final HashMap<String,Class<? extends AbstractConfiguration>> configtypes= new HashMap<String, Class<? extends AbstractConfiguration>>();
+    private static final HashMap<String, Class<? extends AbstractConfiguration>> configtypes = new HashMap<String, Class<? extends AbstractConfiguration>>();
 
     static
     {
@@ -52,12 +52,18 @@ public abstract class Configuration
 
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
-        
+
         configtypes.put("yml", YamlConfiguration.class);
         configtypes.put("json", JsonConfiguration.class);
         //configtypes.put(".ini", IniConfiguration.class);
     }
 
+    /**
+     * Registers given Converter for clazz
+     *
+     * @param clazz the class
+     * @param converter the converter
+     */
     public static void registerConverter(Class<?> clazz, Converter converter)
     {
         if (clazz == null || converter == null)
@@ -67,6 +73,34 @@ public abstract class Configuration
         converters.put(clazz, converter);
     }
 
+    /**
+     * Searches matching Converter
+     *
+     * @param objectClass the class to search for
+     * @return a matching converter or null if not found
+     */
+    public Converter matchConverter(Class<?> objectClass)
+    {
+        Converter converter;
+        for (Class<?> clazz : converters.keySet())
+        {
+            if (clazz.isAssignableFrom(objectClass))
+            {
+                converter = converters.get(clazz);
+                registerConverter(objectClass, converter);
+                return converter;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Converts the object to fit into the field
+     *
+     * @param field the field
+     * @param object the object to deserialize
+     * @return the deserialized object
+     */
     public Object convertTo(Field field, Object object)
     {
         Class<?> fieldClass = field.getType();
@@ -95,7 +129,7 @@ public abstract class Configuration
                         }
                         catch (Exception ex)
                         {
-                            this.logger.severe("Error while converting to " + genType.toString());
+                            this.logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
                             return null;
                         }
                         for (Object o : list)
@@ -124,7 +158,7 @@ public abstract class Configuration
                         }
                         catch (Exception ex)
                         {
-                            this.logger.severe("Error while converting to " + genType.toString());
+                            this.logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
                             return null;
                         }
                         for (String key : map.keySet())
@@ -143,21 +177,13 @@ public abstract class Configuration
         return converter.to(object);
     }
 
-    public Converter matchConverter(Class<?> objectClass)
-    {
-        Converter converter;
-        for (Class<?> clazz : converters.keySet())
-        {
-            if (clazz.isAssignableFrom(objectClass))
-            {
-                converter = converters.get(clazz);
-                registerConverter(objectClass, converter);
-                return converter;
-            }
-        }
-        return null;
-    }
-
+    /**
+     * Converts the field to fit into the object
+     *
+     * @param field the field to serialize
+     * @param object the object
+     * @return the serialized fieldvalue
+     */
     public Object convertFrom(Field field, Object object)
     {
         Class<?> objectClass = object.getClass();
@@ -192,55 +218,23 @@ public abstract class Configuration
     }
 
     /**
-     * Returns the loaded Configuration
-     *
-     * @param file the configurationfile
-     * @param clazz the configuration
-     * @return the loaded configuration
+     * Loads the Configuration | if needed set default Values and save
      */
-    public static <T extends Configuration> T load(File file, Class<T> clazz)
+    public void loadConfiguration()
     {
-        try
+        this.loadFromFile();
+        for (Field field : this.getClass().getFields())
         {
-            T config = clazz.newInstance();
-            config.file = file;
-            String fileName = file.getName();
-            fileName = fileName.substring(fileName.lastIndexOf(".")+1);
-            Class<? extends AbstractConfiguration> configclass = configtypes.get(fileName);
-            if (configclass == null)
-            {
-                CubeEngine.getLogger().severe("FileExtension ."+fileName+" cannot be used for Configurations!");
-                return null;
-            }
-            config.config = configclass.newInstance();
-            config.reload();
-            config.loadConfiguration(); //Load in config and/or set default values
-            return config;
+            this.loadElement(field);
         }
-        catch (Throwable t)
-        {
-            CubeEngine.getLogger().severe("Error while loading a Configuration!");
-            t.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Returns the loaded Configuration
-     *
-     * @param module the module to load the configuration from
-     * @param clazz the configuration
-     * @return the loaded configuration
-     */
-    public static <T extends Configuration> T load(Module module, Class<T> clazz)
-    {
-        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + ".yml"), clazz);
+        this.config.clear(); //Clear loaded Maps
+        this.saveConfiguration();
     }
 
     /**
      * Loads in the config from File
      */
-    public void reload()
+    public void loadFromFile()
     {
         try
         {
@@ -248,39 +242,8 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            this.logger.severe("Error while loading a Configuration-File!");
-            t.printStackTrace();
+            this.logger.log(Level.SEVERE, "Error while loading a Configuration-File!", t);
         }
-    }
-
-    /**
-     * Saves the Configuration to the File
-     */
-    public void save()
-    {
-        try
-        {
-            this.config.save(this.file);
-        }
-        catch (IOException ex)
-        {
-            this.logger.severe("Error while saving a Configuration-File!");
-        }
-        this.config.finish(); //clears saved comments/values
-    }
-
-    /**
-     * Loads the Configuration | if needed set default Values and save
-     */
-    public void loadConfiguration()
-    {
-        for (Field field : this.getClass().getFields())
-        {
-            //set all declared Fields & if needed set default values
-            this.loadElement(field);
-        }
-        this.config.finish();
-        this.saveConfiguration();
     }
 
     /**
@@ -336,7 +299,23 @@ public abstract class Configuration
         {
             this.saveElement(field);
         }
-        this.save();
+        this.saveToFile();
+    }
+
+    /**
+     * Saves the Configuration to the File
+     */
+    public void saveToFile()
+    {
+        try
+        {
+            this.config.save(this.file);
+        }
+        catch (IOException ex)
+        {
+            this.logger.severe("Error while saving a Configuration-File!");
+        }
+        this.config.clear(); //clears saved comments/values
     }
 
     /**
@@ -367,5 +346,61 @@ public abstract class Configuration
         {
             this.logger.severe("Error while saving a Configuration-Element!");
         }
+    }
+
+    /**
+     * Returns the loaded Configuration
+     *
+     * @param file the configurationfile
+     * @param clazz the configuration
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T load(File file, Class<T> clazz)
+    {
+        try
+        {
+            T config = clazz.newInstance();
+            config.file = file;
+            String fileName = file.getName();
+            fileName = fileName.substring(fileName.lastIndexOf(".") + 1);
+            Class<? extends AbstractConfiguration> configclass = configtypes.get(fileName);
+            if (configclass == null)
+            {
+                CubeEngine.getLogger().log(Level.SEVERE, "FileExtension .{0} cannot be used for Configurations!", fileName);
+                return null;
+            }
+            config.config = configclass.newInstance();
+            config.loadConfiguration(); //Load in config and/or set default values
+            return config;
+        }
+        catch (Throwable t)
+        {
+            CubeEngine.getLogger().log(Level.SEVERE, "Error while loading a Configuration!", t);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the loaded Yaml-Configuration
+     *
+     * @param module the module to load the configuration from
+     * @param clazz the configuration
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T loadYaml(Module module, Class<T> clazz)
+    {
+        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + ".yml"), clazz);
+    }
+
+    /**
+     * Returns the loaded Json-Configuration
+     *
+     * @param module the module to load the configuration from
+     * @param clazz the configuration
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T loadJson(Module module, Class<T> clazz)
+    {
+        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + ".json"), clazz);
     }
 }

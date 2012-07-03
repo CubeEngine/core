@@ -13,6 +13,16 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Option
 {
+    /**
+     * The path to save this Field in a config
+     * 
+     * @return the path
+     */
     public String value();
+    /**
+     * Needed to deserialize Objects in Collections or Maps correctly
+     * 
+     * @return the genericType
+     */
     public Class<?> genericType() default Object.class;
 }

@@ -46,12 +46,12 @@ public class YamlConfiguration extends AbstractConfiguration
         sb.append(this.buildComment(path, off));
 
         String offset = this.offset(off);
-        String key = this.getLastSubKey(path);
+        String key = this.getSubKey(path);
         sb.append(offset).append(key).append(":");//{_OFFSET_Key:}
         if (value instanceof Map)
         {
             sb.append(LINEBREAK);
-            sb.append(this.convertSection(path, (Map<String, Object>)value, off + 1));
+            sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
             return sb.toString();
         }
         else if (value instanceof String)
@@ -82,7 +82,7 @@ public class YamlConfiguration extends AbstractConfiguration
         return sb.toString();
     }
 
-    public String convertSection(String path, Map<String, Object> values, int off)
+    public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
         for (String key : values.keySet())

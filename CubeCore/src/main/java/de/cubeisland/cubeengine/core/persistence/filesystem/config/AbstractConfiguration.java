@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
+import de.cubeisland.cubeengine.CubeEngine;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  *
@@ -51,24 +53,23 @@ public abstract class AbstractConfiguration
         }
         catch (FileNotFoundException ex)
         {
-            System.out.println(file.getName() + " not found! Creating new config...");
-            //TODO msg no config found create new from default
+            CubeEngine.getLogger().log(Level.INFO, "{0} not found! Creating new config...", file.getName());
         }
     }
 
     /**
      * Loads the Configuration from a InputStream
      *
-     * @param stream the InputStream
+     * @param is the InputStream
      * @throws IOException
      */
-    public void load(InputStream stream) throws IOException
+    public void load(InputStream is) throws IOException
     {
-        if (stream == null)
+        if (is == null)
         {
             return;
         }
-        InputStreamReader reader = new InputStreamReader(stream);
+        InputStreamReader reader = new InputStreamReader(is);
         StringBuilder builder = new StringBuilder();
         BufferedReader input = new BufferedReader(reader);
         try
@@ -87,6 +88,13 @@ public abstract class AbstractConfiguration
         }
         loadFromString(builder.toString());
     }
+
+    /**
+     * Converts the inputString into ConfigurationMaps
+     *
+     * @param contents
+     */
+    public abstract void loadFromString(String contents);
 
     /**
      * Saves the configuration to a File
@@ -113,7 +121,7 @@ public abstract class AbstractConfiguration
     }
 
     /**
-     * Converts the Configuration into a String
+     * Converts the Configuration into a String for saving
      *
      * @return the config as String
      */
@@ -122,38 +130,23 @@ public abstract class AbstractConfiguration
         StringBuilder sb = new StringBuilder();
         first = true;
         sb.append(this.head());
-        sb.append(this.convertSection("", this.values, 0));
+        sb.append(this.convertMap("", this.values, 0));
         sb.append(this.tail());
         return sb.toString();
     }
 
     /**
-     * Gets the offset as String
-     *
-     * @param offset the offset
-     * @return the offset as String
-     */
-    public String offset(int offset)
-    {
-        StringBuilder off = new StringBuilder("");
-        for (int i = 0; i < offset; ++i)
-        {
-            off.append(SPACES);
-        }
-        return off.toString();
-    }
-
-    /**
-     * Converts a whole Section/Map into String
+     * Converts a whole Section/Map into String for saving
      *
      * @param path the current path
      * @param values the values saved in the Section/Map
      * @param off the offset
      * @return the Section/Map as String
      */
-    public abstract String convertSection(String path, Map<String, Object> values, int off);
+    public abstract String convertMap(String path, Map<String, Object> values, int off);
 
     /**
+     * Converts a Value into String for saving
      *
      * @param path the current path
      * @param value the value saved at given path
@@ -161,13 +154,6 @@ public abstract class AbstractConfiguration
      * @return the Value as String
      */
     public abstract String convertValue(String path, Object value, int off);
-
-    /**
-     * Converts the inputString into ConfigurationMaps
-     *
-     * @param contents
-     */
-    public abstract void loadFromString(String contents);
 
     /**
      * Builds a Comment for the given path
@@ -178,16 +164,32 @@ public abstract class AbstractConfiguration
     public abstract String buildComment(String path, int off);
 
     /**
-     * Gets the value saved under the key
+     * Gets the offset as String
      *
-     * @param path the key
+     * @param offset the offset
+     * @return the offset as String
+     */
+    protected String offset(int offset)
+    {
+        StringBuilder off = new StringBuilder("");
+        for (int i = 0; i < offset; ++i)
+        {
+            off.append(SPACES);
+        }
+        return off.toString();
+    }
+
+    /**
+     * Gets the value saved under the path
+     *
+     * @param path the path
      * @return the value or null if no value saved
      */
     public Object get(String path)
     {
         if (path.contains("."))
         {
-            return this.get(this.getSubKey(path), (Map<String, Object>)this.values.get(this.getBaseKey(path)));
+            return this.get(this.getSubPath(path), (Map<String, Object>)this.values.get(this.getBasePath(path)));
         }
         else
         {
@@ -196,117 +198,116 @@ public abstract class AbstractConfiguration
     }
 
     /**
-     * Gets the value saved under this key in given section
+     * Gets the value saved under this path in given section
      *
-     * @param key the key
+     * @param path the path
      * @param section the section
-     * @return the value
+     * @return the value saved under path in section
      */
-    public Object get(String key, Map<String, Object> section)
+    private Object get(String path, Map<String, Object> section)
     {
         if (section == null)
         {
             return null;
         }
-        if (key.contains("."))
+        if (path.contains("."))
         {
-            return this.get(this.getSubKey(key), (Map<String, Object>)section.get(this.getBaseKey(key)));
+            return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.getBasePath(path)));
         }
         else
         {
-            return section.get(key);
+            return section.get(path);
         }
     }
 
     /**
-     * Sets a value for the specified Key
+     * Sets a value at a specified path
      *
-     * @param key the key
+     * @param path the path
      * @param value the value to set
      */
-    public void set(String key, Object value)
+    public void set(String path, Object value)
     {
-        if (key.contains("."))
+        if (path.contains("."))
         {
-            Map<String, Object> subsection = this.createSection(this.values, this.getBaseKey(key));
-            this.set(subsection, this.getSubKey(key), value);
+            Map<String, Object> subsection = this.createSection(this.values, this.getBasePath(path));
+            this.set(subsection, this.getSubPath(path), value);
         }
         else
         {
-            values.put(key, value);
+            values.put(path, value);
         }
     }
 
     /**
-     * Sets the value for the key in the specified section
+     * Sets the value at the path in the specified section
      *
      * @param section the section
-     * @param key the key
+     * @param path the path
      * @param value the value to set
      */
-    public void set(Map<String, Object> section, String key, Object value)
+    private void set(Map<String, Object> section, String path, Object value)
     {
-        if (key.contains("."))
+        if (path.contains("."))
         {
-            Map<String, Object> subsection = this.createSection(section, this.getBaseKey(key));
-            this.set(subsection, this.getSubKey(key), value);
+            Map<String, Object> subsection = this.createSection(section, this.getBasePath(path));
+            this.set(subsection, this.getSubPath(path), value);
         }
         else
         {
-            section.put(key, value);
+            section.put(path, value);
         }
     }
 
     /**
-     * Gets or create the section with the key in the basesection
+     * Gets or create the section with the path in the basesection
      *
      * @param basesection the basesection
-     * @param key the key of the section
+     * @param path the path of the section
      * @return the section
      */
-    public Map<String, Object> createSection(Map<String, Object> basesection, String key)
+    private Map<String, Object> createSection(Map<String, Object> basesection, String path)
     {
-        Map<String, Object> subsection = (Map<String, Object>)basesection.get(key);
+        Map<String, Object> subsection = (Map<String, Object>)basesection.get(path);
         if (subsection == null)
         {
             subsection = new LinkedHashMap<String, Object>();
-            basesection.put(key, subsection);
+            basesection.put(path, subsection);
         }
         return subsection;
-
     }
 
     /**
-     * Splits up the Key and returns the BaseKey
+     * Splits up the path and returns the basepath
      *
-     * @param key the key
-     * @return the BaseKey
+     * @param path the path
+     * @return the basepath
      */
-    public String getBaseKey(String key)
+    public String getBasePath(String path)
     {
-        return key.substring(0, key.indexOf("."));
+        return path.substring(0, path.indexOf("."));
     }
 
     /**
-     * Splits up the Key and returns the last SubKey
+     * Splits up the path and returns the subpath
      *
-     * @param key the key
-     * @return the last SubKey
+     * @param path the path
+     * @return the subpath
      */
-    public String getLastSubKey(String key)
+    public String getSubPath(String path)
     {
-        return key.substring(key.lastIndexOf(".") + 1);
+        return path.substring(path.indexOf(".") + 1);
     }
 
     /**
-     * Splits up the Key and returns the SubKey
+     * Splits up the path and returns the key
      *
-     * @param key the key
-     * @return the SubKey
+     * @param path the path
+     * @return the key
      */
-    public String getSubKey(String key)
+    public String getSubKey(String path)
     {
-        return key.substring(key.indexOf(".") + 1);
+        return path.substring(path.lastIndexOf(".") + 1);
     }
 
     /**
@@ -321,19 +322,29 @@ public abstract class AbstractConfiguration
     }
 
     /**
-     * Resets the Maps
+     * Resets the value & comments Map
      */
-    public void finish()
+    public void clear()
     {
         this.comments.clear();
         this.values.clear();
     }
 
+    /**
+     * This is inserted in front of the String to safe
+     *
+     * @return the head
+     */
     public String head()
     {
         return "";
     }
 
+    /**
+     * This is appended to the String to safe
+     *
+     * @return the tail
+     */
     public String tail()
     {
         return "";

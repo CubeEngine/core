@@ -13,5 +13,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Comment
 {
+    /**
+     * Adds a Comment to this field
+     * This Annotation does nothing without the Option Annotation
+     * 
+     * @return the comment
+     */
     public String value();
 }

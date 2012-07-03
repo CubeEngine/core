@@ -33,7 +33,7 @@ public class JsonConfiguration extends AbstractConfiguration
     }
 
     @Override
-    public String convertSection(String path, Map<String, Object> values, int off)
+    public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
         Iterator<String> iterator = values.keySet().iterator();
@@ -68,15 +68,14 @@ public class JsonConfiguration extends AbstractConfiguration
     public String convertValue(String path, Object value, int off)
     {
         StringBuilder sb = new StringBuilder();
-
         String offset = this.offset(off);
-        String key = this.getLastSubKey(path);
-        //sb.append(this.buildComment(path, off));
+        String key = this.getSubKey(path);
+        //sb.append(this.buildComment(path, off)); //TODO comments in Json dont work?
         sb.append(offset).append(QUOTE).append(key).append(QUOTE).append(":");//{_OFFSET_Key:}
         if (value instanceof Map)
         {
             sb.append(" {").append(LINEBREAK);
-            sb.append(this.convertSection(path, (Map<String, Object>)value, off + 1));
+            sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
             sb.append(LINEBREAK).append(this.offset(off + 1)).append("}");
             return sb.toString();
         }
@@ -107,6 +106,13 @@ public class JsonConfiguration extends AbstractConfiguration
         return sb.toString();
     }
 
+    /**
+     * Converts a Collection into a String for save
+     *
+     * @param value the Collection
+     * @param off the offset
+     * @return the converted Collection
+     */
     public String convertElementofCollection(Object value, int off)
     {
         StringBuilder sb = new StringBuilder();
@@ -139,7 +145,6 @@ public class JsonConfiguration extends AbstractConfiguration
 
     private LinkedHashMap<String, Object> loadFromJsonObject(JsonObject jsonObject)
     {
-        //TODO Integer in Maps/Lists wird als Double abgespeichert warum???
         LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
         Iterator<Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
         while (iterator.hasNext())
@@ -186,7 +191,7 @@ public class JsonConfiguration extends AbstractConfiguration
         return map;
     }
 
-    public Object deserializeJsonPrimitives(JsonPrimitive jsonprim)
+    private Object deserializeJsonPrimitives(JsonPrimitive jsonprim)
     {
         if (jsonprim.isBoolean())
         {
@@ -213,6 +218,7 @@ public class JsonConfiguration extends AbstractConfiguration
     @Override
     public String buildComment(String path, int off)
     {
+        //TODO no need for Comments?
         String comment = this.comments.get(path);
         if (comment == null)
         {

@@ -45,9 +45,9 @@ public class IniConfiguration extends AbstractConfiguration
         if (value instanceof Map)
         {
             sb.append(LINEBREAK);
-            sb.append("[").append(this.getLastSubKey(path)).append("]");
+            sb.append("[").append(this.getSubKey(path)).append("]");
             sb.append(LINEBREAK);
-            sb.append(this.convertSection(path, (Map<String, Object>)value, off + 1));
+            sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
             return sb.toString();
         }
         else if (value instanceof String)
@@ -83,7 +83,7 @@ public class IniConfiguration extends AbstractConfiguration
         return sb.toString();
     }
 
-    public String convertSection(String path, Map<String, Object> values, int off)
+    public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
         for (String key : values.keySet())
