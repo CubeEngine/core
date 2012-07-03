@@ -17,7 +17,7 @@ import org.bukkit.OfflinePlayer;
  *
  * @author Faithcaio
  */
-//@Type("yml")
+@Type("yml")
 public class CoreConfiguration extends Configuration
 {
     @Option("debug")

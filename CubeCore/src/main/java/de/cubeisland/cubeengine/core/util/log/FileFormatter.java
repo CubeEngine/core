@@ -27,6 +27,12 @@ public class FileFormatter extends Formatter
         sb.append(" - ");
         sb.append(record.getMessage());
         sb.append(LINEBREAK);
+        Throwable throwIt = record.getThrown();
+        if (throwIt != null)
+        {
+            sb.append("  ").append(throwIt.toString());
+            sb.append(LINEBREAK);
+        }
         return sb.toString();
     }
 }

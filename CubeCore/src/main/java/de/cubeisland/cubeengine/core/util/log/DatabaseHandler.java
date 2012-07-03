@@ -25,10 +25,11 @@ public class DatabaseHandler extends Handler
                 + "`id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "`timestamp` timestamp NOT NULL,"
                 + "`level` varchar(20) NOT NULL,"
+                + "`logger` varchar(50) NOT NULL,"
                 + "`message` text NOT NULL,"
                 + "PRIMARY KEY (`id`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
-            this.db.prepareStatement("insertLog", "INSERT INTO {{" + TABLE + "}} (timestamp, level, message) VALUES (?,?,?)");
+            this.db.prepareStatement("insertLog", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
             this.db.prepareStatement("clearLog", "TRUNCATE {{" + TABLE + "}}");
         }
         catch (Exception ex)
@@ -58,10 +59,10 @@ public class DatabaseHandler extends Handler
         final Timestamp time = new Timestamp(record.getMillis());
         final String level = record.getLevel().getLocalizedName();
         final String msg = record.getMessage();
-        //TODO loggername
+        final String logger = record.getLoggerName();
         try
         {
-            db.preparedExec("insertLog", time, level, msg);
+            db.preparedExec("insertLog", time, level, logger, msg);
         }
         catch (SQLException ex)
         {

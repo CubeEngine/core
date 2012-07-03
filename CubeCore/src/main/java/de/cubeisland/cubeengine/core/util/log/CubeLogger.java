@@ -5,6 +5,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
@@ -120,10 +121,12 @@ public class CubeLogger extends Logger
 
     //Pass ConsoleLogging to BukkitLogger
     @Override
-    public void log(Level level, String msg)
+    public void log(LogRecord record)
     {
-        String consoleLog = this.getName() + " " + msg;
-        this.getParent().log(level, consoleLog);
-        super.log(level, msg);
+        String msg = record.getMessage();
+        record.setMessage(this.getName() + " " + msg);
+        this.getParent().log(record);
+        record.setMessage(msg);
+        super.log(record);
     }
 }

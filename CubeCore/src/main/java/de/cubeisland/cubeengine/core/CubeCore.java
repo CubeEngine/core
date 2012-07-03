@@ -54,6 +54,8 @@ public class CubeCore extends JavaPlugin
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
         this.fileManager.dropResources(CoreResource.values());
 
+        this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING);
+         
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         this.i18n = new I18n(this);
 
@@ -75,7 +77,7 @@ public class CubeCore extends JavaPlugin
         }
         this.userManager = new UserManager(this.database, this.getServer());
 
-        this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING).addDatabaseHandler(database, "corelog", Level.SEVERE);
+        this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);
         //TODO loggertests here:
         this.coreLogger.warning("cookie not found 404");
         this.coreLogger.severe("cookie got eaten 403");
