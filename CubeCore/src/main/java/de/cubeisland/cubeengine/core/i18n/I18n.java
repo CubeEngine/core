@@ -20,7 +20,6 @@ import java.util.Map;
 public class I18n
 {
     public static final String SOURCE_LANGUAGE = "en_US";
-    public static final FileFilter JSON_FILTER = new FileExtentionFilter("json");
     private final LookupService lookupService;
     private final Map<String, String> countryMap;
     private final Map<String, Language> languageMap;
@@ -46,7 +45,7 @@ public class I18n
     private void loadLanguages(File languageDir)
     {
         Language language;
-        for (File file : languageDir.listFiles(I18n.JSON_FILTER))
+        for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.JSON))
         {
             try
             {

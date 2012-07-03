@@ -24,31 +24,31 @@ public class ModuleManager
         this.pm = core.getServer().getPluginManager();
     }
 
-    public ModuleManager registerModule(Module module)
-    {
-        if (module == null)
-        {
-            throw new IllegalArgumentException("The module must not be null!");
-        }
-        String moduleName = module.getModuleName();
-        this.modules.put(moduleName, module);
-
-        Set<String> dependencies = module.getDependencies();
-        if (dependencies != null)
-        {
-            Module dependency;
-            for (String dependencyName : dependencies)
-            {
-                dependency = this.getModule(dependencyName);
-                if (dependency != null)
-                {
-                    dependency.addDependingModule(moduleName);
-                }
-            }
-        }
-
-        return this;
-    }
+//    public ModuleManager registerModule(Module module)
+//    {
+//        if (module == null)
+//        {
+//            throw new IllegalArgumentException("The module must not be null!");
+//        }
+//        String moduleName = module.getModuleName();
+//        this.modules.put(moduleName, module);
+//
+//        Set<String> dependencies = module.getDependencies();
+//        if (dependencies != null)
+//        {
+//            Module dependency;
+//            for (String dependencyName : dependencies)
+//            {
+//                dependency = this.getModule(dependencyName);
+//                if (dependency != null)
+//                {
+//                    dependency.addDependingModule(moduleName);
+//                }
+//            }
+//        }
+//
+//        return this;
+//    }
 
     public Module getModule(String name)
     {
@@ -65,37 +65,37 @@ public class ModuleManager
         return this.modules.values();
     }
 
-    public ModuleManager disableModule(String name)
-    {
-        Module module = this.getModule(name);
-        if (module != null)
-        {
-            Set<String> dependingModules = module.getDependingModules();
-            for (String moduleName : dependingModules)
-            {
-                if (!name.equals(moduleName))
-                {
-                    this.disableModule(name);
-                }
-            }
-            this.pm.disablePlugin(module);
-            this.modules.remove(name);
-        }
-        return this;
-    }
+//    public ModuleManager disableModule(String name)
+//    {
+//        Module module = this.getModule(name);
+//        if (module != null)
+//        {
+//            Set<String> dependingModules = module.getDependingModules();
+//            for (String moduleName : dependingModules)
+//            {
+//                if (!name.equals(moduleName))
+//                {
+//                    this.disableModule(name);
+//                }
+//            }
+//            this.pm.disablePlugin(module);
+//            this.modules.remove(name);
+//        }
+//        return this;
+//    }
 
-    public ModuleManager disableModules()
-    {
-        for (String module : this.modules.keySet())
-        {
-            this.disableModule(module);
-        }
-        return this;
-    }
+//    public ModuleManager disableModules()
+//    {
+//        for (String module : this.modules.keySet())
+//        {
+//            this.disableModule(module);
+//        }
+//        return this;
+//    }
 
     public void clean()
     {
-        this.disableModules();
+//        this.disableModules();
         this.modules.clear();
     }
 }

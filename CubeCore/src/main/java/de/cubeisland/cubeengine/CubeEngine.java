@@ -80,11 +80,6 @@ public final class CubeEngine
         return core.getModuleManager();
     }
 
-    public static void registerModule(Module module)
-    {
-        getModuleManager().registerModule(module);
-    }
-
     public static String _(User user, String category, String text, Object... params)
     {
         return _(user.getLanguage(), category, text, params);

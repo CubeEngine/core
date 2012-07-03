@@ -425,7 +425,7 @@ public abstract class Configuration
         {
             throw new IllegalStateException("Configuration Type undefined!");
         }
-        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + "." + type.value()), clazz);
+        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
     }
 
     /**
