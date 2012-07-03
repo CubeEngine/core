@@ -9,7 +9,7 @@ import org.bukkit.plugin.PluginManager;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class ModuleManager
 {
