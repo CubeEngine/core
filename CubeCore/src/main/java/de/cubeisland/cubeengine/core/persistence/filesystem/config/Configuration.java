@@ -7,8 +7,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.M
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.JsonRepresenter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.YamlRepresenter;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.*;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.IOException;
@@ -26,27 +25,30 @@ import org.bukkit.OfflinePlayer;
 /**
  *
  * @author Faithcaio
+ * @author Phillip Schichtel
  */
 public abstract class Configuration
 {
-    private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
-    private static final HashMap<String, ConfigurationRepresenter> configtypes = new HashMap<String, ConfigurationRepresenter>();
+    private static final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
+    private static final Map<String, ConfigurationRepresenter> representers = new HashMap<String, ConfigurationRepresenter>();
 
     private static final Logger logger = CubeEngine.getLogger();
 
-    protected ConfigurationRepresenter config;
+    protected ConfigurationRepresenter representer;
     protected File file;
     protected boolean readOnly = false;
 
     static
     {
-        Converter converter = new ShortConverter();
-        registerConverter(Short.class, converter);
-        registerConverter(short.class, converter);
+        Converter converter;
 
         converter = new ByteConverter();
         registerConverter(Byte.class, converter);
         registerConverter(byte.class, converter);
+
+        converter = new ShortConverter();
+        registerConverter(Short.class, converter);
+        registerConverter(short.class, converter);
 
         converter = new IntegerConverter();
         registerConverter(Integer.class, converter);
@@ -59,8 +61,8 @@ public abstract class Configuration
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
 
-        registerConfigType("yml", new YamlRepresenter());
-        registerConfigType("json", new JsonRepresenter());
+        registerType("yml", new YamlRepresenter());
+        registerType("json", new JsonRepresenter());
     }
 
     /**
@@ -82,15 +84,17 @@ public abstract class Configuration
      * Registers a Configuration for given extension
      *
      * @param extension the extension
-     * @param config the config
+     * @param representer the representer
      */
-    public static void registerConfigType(String extension, ConfigurationRepresenter config)
+    public static void registerType(String extension, ConfigurationRepresenter config)
     {
-        configtypes.put(extension, config);
+        representers.put(extension, config);
     }
 
     /**
      * Searches matching Converter
+     *
+     * TODO public -> private ?
      *
      * @param objectClass the class to search for
      * @return a matching converter or null if not found
@@ -113,6 +117,8 @@ public abstract class Configuration
     /**
      * Converts the object to fit into the field
      *
+     * TODO public -> private ?
+     *
      * @param field the field
      * @param object the object to deserialize
      * @return the deserialized object
@@ -128,6 +134,7 @@ public abstract class Configuration
             {
                 if (Collection.class.isAssignableFrom(fieldClass))
                 {
+                    // TODO instanceof check for safety
                     Collection<?> list = (Collection<?>)object;
                     if (list.isEmpty())
                     {
@@ -157,6 +164,7 @@ public abstract class Configuration
                 }
                 if (Map.class.isAssignableFrom(fieldClass))
                 {
+                    // TODO instanceof check for safety
                     Map<String, ?> map = (Map<String, ?>)object;
                     if (map.isEmpty())
                     {
@@ -196,6 +204,8 @@ public abstract class Configuration
     /**
      * Converts the field to fit into the object
      *
+     * TODO public -> private ?
+     *
      * @param field the field to serialize
      * @param object the object
      * @return the serialized fieldvalue
@@ -211,6 +221,7 @@ public abstract class Configuration
             {
                 if (Collection.class.isAssignableFrom(objectClass))
                 {
+                    // TODO instanceof check for safety
                     Collection<?> collection = (Collection<?>)object;
                     Class<?> genType = field.getAnnotation(Option.class).genericType();
                     converter = this.matchConverter(genType);
@@ -242,7 +253,7 @@ public abstract class Configuration
         {
             this.loadElement(field);
         }
-        this.config.clear(); //Clear loaded Maps
+        this.representer.clear(); //Clear loaded Maps
         
         // TODO move to load(File, Class, boolean) ?
         if (!this.readOnly)
@@ -252,13 +263,13 @@ public abstract class Configuration
     }
 
     /**
-     * Loads in the config from File
+     * Loads in the representer from File
      */
     public void loadFromFile()
     {
         try
         {
-            this.config.load(file);
+            this.representer.load(this.file);
         }
         catch (Throwable t)
         {
@@ -281,11 +292,11 @@ public abstract class Configuration
                 String path = field.getAnnotation(Option.class).value();
 
                 //Get savedValue or default
-                Object configElem = config.get(path);
+                Object configElem = representer.get(path);
                 if (configElem == null)
                 {
                     //Set defaultValue if no value saved
-                    this.config.set(path, this.convertFrom(field, field.get(this)));
+                    this.representer.set(path, this.convertFrom(field, field.get(this)));
                 }
                 else
                 {
@@ -295,12 +306,12 @@ public abstract class Configuration
 
                 if (field.isAnnotationPresent(Comment.class))
                 {
-                    this.config.addComment(path, field.getAnnotation(Comment.class).value());
+                    this.representer.addComment(path, field.getAnnotation(Comment.class).value());
                 }
                 if (field.isAnnotationPresent(MapComment.class))
                 {
                     MapComment comment = field.getAnnotation(MapComment.class);
-                    this.config.addComment(comment.path(), comment.text());
+                    this.representer.addComment(comment.path(), comment.text());
                 }
             }
         }
@@ -337,17 +348,17 @@ public abstract class Configuration
         }
         try
         {
-            this.config.save(this.file);
+            this.representer.save(this.file);
         }
         catch (IOException e)
         {
             this.logger.severe("Error while saving a Configuration-File!");
         }
-        this.config.clear(); //clears saved comments/values
+        this.representer.clear(); //clears saved comments/values
     }
 
     /**
-     * Saves a field(Object) into the config
+     * Saves a field(Object) into the representer
      *
      * @param field the field to save
      */
@@ -360,14 +371,14 @@ public abstract class Configuration
                 String path = field.getAnnotation(Option.class).value();
                 if (field.isAnnotationPresent(Comment.class))
                 {
-                    this.config.addComment(path, field.getAnnotation(Comment.class).value());
+                    this.representer.addComment(path, field.getAnnotation(Comment.class).value());
                 }
                 if (field.isAnnotationPresent(MapComment.class))
                 {
                     MapComment mcomment = field.getAnnotation(MapComment.class);
-                    this.config.addComment(mcomment.path(), mcomment.text());
+                    this.representer.addComment(mcomment.path(), mcomment.text());
                 }
-                this.config.set(path, this.convertFrom(field, field.get(this)));
+                this.representer.set(path, this.convertFrom(field, field.get(this)));
             }
         }
         catch (IllegalAccessException ex)
@@ -376,14 +387,14 @@ public abstract class Configuration
         }
     }
 
-    private static ConfigurationRepresenter getConfigurationType(String fileExtension)
+    public static ConfigurationRepresenter resolveRepresenter(String fileExtension)
     {
-        ConfigurationRepresenter configuration = configtypes.get(fileExtension);
-        if (configuration == null)
+        ConfigurationRepresenter representer = representers.get(fileExtension);
+        if (representer == null)
         {
             throw new IllegalStateException("FileExtension ." + fileExtension + " cannot be used for Configurations!");
         }
-        return configuration;
+        return representer;
     }
 
     public static <T extends Configuration> T load(File file, Class<T> clazz)
@@ -400,6 +411,7 @@ public abstract class Configuration
      */
     public static <T extends Configuration> T load(File file, Class<T> clazz, boolean readOnly)
     {
+        Validate.notNull(file, "The file must not be null!");
         try
         {
             T config = clazz.newInstance();
@@ -411,9 +423,9 @@ public abstract class Configuration
                 throw new IllegalStateException("Configuration Type undefined!");
             }
             config.file = file;
-            config.config = getConfigurationType(type.value());
+            config.setRepresenter(type.value());
             config.loadFromFile();
-            config.loadConfiguration(); //Load in config and/or set default values
+            config.loadConfiguration(); //Load in representer and/or set default values
             return config;
         }
         catch (Throwable t)
@@ -454,7 +466,7 @@ public abstract class Configuration
      * Returns the loaded Configuration
      * 
      * 
-     * @param is the Inputstream to load the config from
+     * @param is the Inputstream to load the representer from
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
@@ -468,8 +480,8 @@ public abstract class Configuration
                 throw new IllegalStateException("Configuration Type undefined!");
             }
             T config = clazz.newInstance();
-            config.config = getConfigurationType(type.value());
-            config.config.load(is);
+            config.setRepresenter(type.value());
+            config.representer.load(is);
             config.readOnly = readOnly;
             config.loadConfiguration(); //set values loaded from inputStream
             config.onLoaded();
@@ -482,15 +494,14 @@ public abstract class Configuration
         }
     }
 
-    public void setType(String fileExtension)
+    public ConfigurationRepresenter getRepresenter()
     {
-        ConfigurationRepresenter newconfig = configtypes.get(fileExtension);
-        if (newconfig == null)
-        {
-            CubeEngine.getLogger().log(Level.SEVERE, "FileExtension .{0} cannot be used for Configurations!", fileExtension);
-            return;
-        }
-        this.config = newconfig;
+        return this.representer;
+    }
+
+    public void setRepresenter(String fileExtension)
+    {
+        this.representer = resolveRepresenter(fileExtension);
     }
 
     /**
@@ -502,6 +513,11 @@ public abstract class Configuration
     {
         Validate.notNull(file, "The file must not be null!");
         this.file = file;
+    }
+
+    public File getFile()
+    {
+        return this.file;
     }
 
     /**
