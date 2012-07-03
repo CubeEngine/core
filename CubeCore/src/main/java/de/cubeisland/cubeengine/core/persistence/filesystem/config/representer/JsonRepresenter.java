@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.json;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.representer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -18,11 +18,11 @@ import java.util.Map.Entry;
  *
  * @author Faithcaio
  */
-public class JsonConfiguration extends ConfigurationRepresenter
+public class JsonRepresenter extends ConfigurationRepresenter
 {
     private JsonParser json;
 
-    public JsonConfiguration()
+    public JsonRepresenter()
     {
         super();
         this.json = new JsonParser();

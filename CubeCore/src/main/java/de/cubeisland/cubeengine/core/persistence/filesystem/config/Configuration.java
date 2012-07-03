@@ -7,8 +7,8 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.M
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.json.JsonConfiguration;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml.YamlConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.JsonRepresenter;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.YamlRepresenter;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +56,8 @@ public abstract class Configuration
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
 
-        registerConfigType("yml", new YamlConfiguration());
-        registerConfigType("json", new JsonConfiguration());
+        registerConfigType("yml", new YamlRepresenter());
+        registerConfigType("json", new JsonRepresenter());
     }
 
     /**

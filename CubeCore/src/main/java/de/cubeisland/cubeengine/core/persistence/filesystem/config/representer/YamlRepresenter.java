@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.representer;
 
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationRepresenter;
 import java.util.Collection;
@@ -11,11 +11,11 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author Faithcaio
  */
-public class YamlConfiguration extends ConfigurationRepresenter
+public class YamlRepresenter extends ConfigurationRepresenter
 {
     private final Yaml yaml;
     
-    public YamlConfiguration()
+    public YamlRepresenter()
     {
         super();
         this.yaml = new Yaml();

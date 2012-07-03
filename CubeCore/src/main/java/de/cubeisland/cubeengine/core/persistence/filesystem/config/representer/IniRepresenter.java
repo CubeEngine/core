@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.ini;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.representer;
 
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationRepresenter;
 import java.util.Collection;
@@ -9,10 +9,10 @@ import java.util.Map;
  *
  * @author Faithcaio
  */
-public class IniConfiguration extends ConfigurationRepresenter
+public class IniRepresenter extends ConfigurationRepresenter
 {
     //TODO hier läuft noch alles schief ...
-    public IniConfiguration()
+    public IniRepresenter()
     {
         super();
         
