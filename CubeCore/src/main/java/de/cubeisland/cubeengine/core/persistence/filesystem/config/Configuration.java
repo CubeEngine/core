@@ -9,7 +9,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.T
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.JsonRepresenter;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.YamlRepresenter;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -28,12 +29,14 @@ import org.bukkit.OfflinePlayer;
  */
 public abstract class Configuration
 {
+    private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
+    private static final HashMap<String, ConfigurationRepresenter> configtypes = new HashMap<String, ConfigurationRepresenter>();
+
+    private static final Logger logger = CubeEngine.getLogger();
+
     protected ConfigurationRepresenter config;
     protected File file;
-    private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
-    private CubeLogger logger = CubeEngine.getLogger();
-    private static final HashMap<String, ConfigurationRepresenter> configtypes = new HashMap<String, ConfigurationRepresenter>();
-    protected boolean readonly = false;
+    protected boolean readOnly = false;
 
     static
     {
@@ -240,7 +243,9 @@ public abstract class Configuration
             this.loadElement(field);
         }
         this.config.clear(); //Clear loaded Maps
-        if (!readonly)
+        
+        // TODO move to load(File, Class, boolean) ?
+        if (!this.readOnly)
         {
             this.saveConfiguration();
         }
@@ -310,9 +315,9 @@ public abstract class Configuration
      */
     public void saveConfiguration()
     {
-        if (readonly)
+        if (this.readOnly)
         {
-            throw new IllegalStateException("Tried to save Readonly-Configuration");
+            throw new IllegalStateException("Tried to save a readOnly-Configuration");
         }
         for (Field field : this.getClass().getFields())
         {
@@ -326,15 +331,15 @@ public abstract class Configuration
      */
     public void saveToFile()
     {
-        if (readonly)
+        if (this.readOnly)
         {
-            throw new IllegalStateException("Tried to save Readonly-Configuration");
+            throw new IllegalStateException("Tried to save a readOnly-Configuration");
         }
         try
         {
             this.config.save(this.file);
         }
-        catch (IOException ex)
+        catch (IOException e)
         {
             this.logger.severe("Error while saving a Configuration-File!");
         }
@@ -376,9 +381,14 @@ public abstract class Configuration
         ConfigurationRepresenter configuration = configtypes.get(fileExtension);
         if (configuration == null)
         {
-            throw new IllegalStateException("FileExtension ." + fileExtension + "+ cannot be used for Configurations!");
+            throw new IllegalStateException("FileExtension ." + fileExtension + " cannot be used for Configurations!");
         }
         return configuration;
+    }
+
+    public static <T extends Configuration> T load(File file, Class<T> clazz)
+    {
+        return load(file, clazz, false);
     }
 
     /**
@@ -388,12 +398,14 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(File file, Class<T> clazz)
+    public static <T extends Configuration> T load(File file, Class<T> clazz, boolean readOnly)
     {
         try
         {
             T config = clazz.newInstance();
             Type type = clazz.getAnnotation(Type.class);
+
+            // TODO here is a file available, so why don't you get the type from the extention if no annotation was specified?
             if (type == null)
             {
                 throw new IllegalStateException("Configuration Type undefined!");
@@ -411,6 +423,11 @@ public abstract class Configuration
         }
     }
 
+    public static <T extends Configuration> T load(Module module, Class<T> clazz)
+    {
+        return load(module, clazz, false);
+    }
+
     /**
      * Returns the loaded Configuration
      *
@@ -418,7 +435,7 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Module module, Class<T> clazz)
+    public static <T extends Configuration> T load(Module module, Class<T> clazz, boolean readOnly)
     {
         Type type = clazz.getAnnotation(Type.class);
         if (type == null)
@@ -426,6 +443,11 @@ public abstract class Configuration
             throw new IllegalStateException("Configuration Type undefined!");
         }
         return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
+    }
+
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
+    {
+        return load(is, clazz, false);
     }
 
     /**
@@ -436,7 +458,7 @@ public abstract class Configuration
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz, boolean readOnly)
     {
         try
         {
@@ -448,9 +470,9 @@ public abstract class Configuration
             T config = clazz.newInstance();
             config.config = getConfigurationType(type.value());
             config.config.load(is);
-            config.readonly = true;
+            config.readOnly = readOnly;
             config.loadConfiguration(); //set values loaded from inputStream
-            config.readonly = false;
+            config.onLoaded();
             return config;
         }
         catch (Throwable t)
@@ -460,7 +482,7 @@ public abstract class Configuration
         }
     }
 
-    public void setConfigurationType(String fileExtension)
+    public void setType(String fileExtension)
     {
         ConfigurationRepresenter newconfig = configtypes.get(fileExtension);
         if (newconfig == null)
@@ -478,18 +500,18 @@ public abstract class Configuration
      */
     public void setFile(File file)
     {
+        Validate.notNull(file, "The file must not be null!");
         this.file = file;
     }
 
     /**
-     * Sets the Configuration to readonly!
+     * Sets the Configuration to readOnly!
      */
-    public void setReadOnly()
+    public boolean isReadOnly()
     {
-        this.readonly = true;
+        return this.readOnly;
     }
 
     public void onLoaded()
-    {
-    }
+    {}
 }

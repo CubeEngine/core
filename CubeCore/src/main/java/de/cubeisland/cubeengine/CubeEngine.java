@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine;
 
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
@@ -10,7 +9,7 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import java.util.logging.Logger;
 
 /**
  *
@@ -70,7 +69,7 @@ public final class CubeEngine
         return core.getFileManager();
     }
 
-    public static CubeLogger getLogger()
+    public static Logger getLogger()
     {
         return core.getCoreLogger();
     }
