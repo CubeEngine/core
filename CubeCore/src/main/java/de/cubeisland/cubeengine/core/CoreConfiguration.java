@@ -55,6 +55,8 @@ public class CoreConfiguration extends Configuration
             put("default", 7);
         }
     };
+    @Option("regions.the42")
+    public Integer the42 = 42;
     @SectionComment(path="list",text="ListTests:")
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
