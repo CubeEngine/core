@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface SectionComment
+public @interface MapComment
 {
     /**
      * Needed to add a Comment at given path

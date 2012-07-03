@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.AbstractConfiguration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationRepresenter;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author Faithcaio
  */
-public class YamlConfiguration extends AbstractConfiguration
+public class YamlConfiguration extends ConfigurationRepresenter
 {
     private final Yaml yaml;
     

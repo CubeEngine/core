@@ -2,8 +2,9 @@ package de.cubeisland.cubeengine.core;
 
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,6 +17,7 @@ import org.bukkit.OfflinePlayer;
  *
  * @author Faithcaio
  */
+//@Type("yml")
 public class CoreConfiguration extends Configuration
 {
     @Option("debug")
@@ -34,7 +36,7 @@ public class CoreConfiguration extends Configuration
     @Comment("PlayerTest")
     public OfflinePlayer player = CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio");
     
-    @SectionComment(path="regions",text="more RandomTests:")
+    @MapComment(path="regions",text="more RandomTests:")
     @Option("regions.use-scheduler")
     public boolean use_scheduler = true;
     @Option("regions.sql.use")
@@ -59,7 +61,7 @@ public class CoreConfiguration extends Configuration
     public Integer the42 = 42;
     @Option("regions.the21")
     public int the21 = 21;
-    @SectionComment(path="list",text="ListTests:")
+    @MapComment(path="list",text="ListTests:")
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
     {
@@ -90,7 +92,7 @@ public class CoreConfiguration extends Configuration
     
     @Option(value="list.listinmaps",genericType=List.class)
     @Comment("list in maps ftw")
-    @SectionComment(path="list.listinmaps.list2",text="comment in submap")
+    @MapComment(path="list.listinmaps.list2",text="comment in submap")
     public Map<String, List<Integer>> pointlessmap = new LinkedHashMap<String, List<Integer>>()
     {
         {

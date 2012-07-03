@@ -3,14 +3,16 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.SectionComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.json.JsonConfiguration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.yaml.YamlConfiguration;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,11 +28,12 @@ import org.bukkit.OfflinePlayer;
  */
 public abstract class Configuration
 {
-    protected AbstractConfiguration config;
+    protected ConfigurationRepresenter config;
     protected File file;
     private static final HashMap<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
     private CubeLogger logger = CubeEngine.getLogger();
-    private static final HashMap<String, Class<? extends AbstractConfiguration>> configtypes = new HashMap<String, Class<? extends AbstractConfiguration>>();
+    private static final HashMap<String, ConfigurationRepresenter> configtypes = new HashMap<String, ConfigurationRepresenter>();
+    protected boolean readonly = false;
 
     static
     {
@@ -53,9 +56,8 @@ public abstract class Configuration
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
 
-        configtypes.put("yml", YamlConfiguration.class);
-        configtypes.put("json", JsonConfiguration.class);
-        //configtypes.put(".ini", IniConfiguration.class);
+        registerConfigType("yml", new YamlConfiguration());
+        registerConfigType("json", new JsonConfiguration());
     }
 
     /**
@@ -71,6 +73,17 @@ public abstract class Configuration
             return;
         }
         converters.put(clazz, converter);
+    }
+
+    /**
+     * Registers a Configuration for given extension
+     *
+     * @param extension the extension
+     * @param config the config
+     */
+    public static void registerConfigType(String extension, ConfigurationRepresenter config)
+    {
+        configtypes.put(extension, config);
     }
 
     /**
@@ -222,13 +235,15 @@ public abstract class Configuration
      */
     public void loadConfiguration()
     {
-        this.loadFromFile();
         for (Field field : this.getClass().getFields())
         {
             this.loadElement(field);
         }
         this.config.clear(); //Clear loaded Maps
-        this.saveConfiguration();
+        if (!readonly)
+        {
+            this.saveConfiguration();
+        }
     }
 
     /**
@@ -277,9 +292,9 @@ public abstract class Configuration
                 {
                     this.config.addComment(path, field.getAnnotation(Comment.class).value());
                 }
-                if (field.isAnnotationPresent(SectionComment.class))
+                if (field.isAnnotationPresent(MapComment.class))
                 {
-                    SectionComment comment = field.getAnnotation(SectionComment.class);
+                    MapComment comment = field.getAnnotation(MapComment.class);
                     this.config.addComment(comment.path(), comment.text());
                 }
             }
@@ -295,6 +310,10 @@ public abstract class Configuration
      */
     public void saveConfiguration()
     {
+        if (readonly)
+        {
+            throw new IllegalStateException("Tried to save Readonly-Configuration");
+        }
         for (Field field : this.getClass().getFields())
         {
             this.saveElement(field);
@@ -307,6 +326,10 @@ public abstract class Configuration
      */
     public void saveToFile()
     {
+        if (readonly)
+        {
+            throw new IllegalStateException("Tried to save Readonly-Configuration");
+        }
         try
         {
             this.config.save(this.file);
@@ -334,10 +357,10 @@ public abstract class Configuration
                 {
                     this.config.addComment(path, field.getAnnotation(Comment.class).value());
                 }
-                if (field.isAnnotationPresent(SectionComment.class))
+                if (field.isAnnotationPresent(MapComment.class))
                 {
-                    SectionComment scomment = field.getAnnotation(SectionComment.class);
-                    this.config.addComment(scomment.path(), scomment.text());
+                    MapComment mcomment = field.getAnnotation(MapComment.class);
+                    this.config.addComment(mcomment.path(), mcomment.text());
                 }
                 this.config.set(path, this.convertFrom(field, field.get(this)));
             }
@@ -346,6 +369,16 @@ public abstract class Configuration
         {
             this.logger.severe("Error while saving a Configuration-Element!");
         }
+    }
+
+    private static ConfigurationRepresenter getConfigurationType(String fileExtension)
+    {
+        ConfigurationRepresenter configuration = configtypes.get(fileExtension);
+        if (configuration == null)
+        {
+            throw new IllegalStateException("FileExtension ." + fileExtension + "+ cannot be used for Configurations!");
+        }
+        return configuration;
     }
 
     /**
@@ -360,16 +393,14 @@ public abstract class Configuration
         try
         {
             T config = clazz.newInstance();
-            config.file = file;
-            String fileName = file.getName();
-            fileName = fileName.substring(fileName.lastIndexOf(".") + 1);
-            Class<? extends AbstractConfiguration> configclass = configtypes.get(fileName);
-            if (configclass == null)
+            Type type = clazz.getAnnotation(Type.class);
+            if (type == null)
             {
-                CubeEngine.getLogger().log(Level.SEVERE, "FileExtension .{0} cannot be used for Configurations!", fileName);
-                return null;
+                throw new IllegalStateException("Configuration Type undefined!");
             }
-            config.config = configclass.newInstance();
+            config.file = file;
+            config.config = getConfigurationType(type.value());
+            config.loadFromFile();
             config.loadConfiguration(); //Load in config and/or set default values
             return config;
         }
@@ -381,26 +412,84 @@ public abstract class Configuration
     }
 
     /**
-     * Returns the loaded Yaml-Configuration
+     * Returns the loaded Configuration
      *
      * @param module the module to load the configuration from
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T loadYaml(Module module, Class<T> clazz)
+    public static <T extends Configuration> T load(Module module, Class<T> clazz)
     {
-        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + ".yml"), clazz);
+        Type type = clazz.getAnnotation(Type.class);
+        if (type == null)
+        {
+            throw new IllegalStateException("Configuration Type undefined!");
+        }
+        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + "." + type.value()), clazz);
     }
 
     /**
-     * Returns the loaded Json-Configuration
-     *
-     * @param module the module to load the configuration from
-     * @param clazz the configuration
-     * @return the loaded configuration
+     * Returns the loaded Configuration
+     * 
+     * 
+     * @param is the Inputstream to load the config from
+     * @param clazz the Configuration to use
+     * @return the loaded Configuration
      */
-    public static <T extends Configuration> T loadJson(Module module, Class<T> clazz)
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
     {
-        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getModuleName() + ".json"), clazz);
+        try
+        {
+            Type type = clazz.getAnnotation(Type.class);
+            if (type == null)
+            {
+                throw new IllegalStateException("Configuration Type undefined!");
+            }
+            T config = clazz.newInstance();
+            config.config = getConfigurationType(type.value());
+            config.config.load(is);
+            config.readonly = true;
+            config.loadConfiguration(); //set values loaded from inputStream
+            config.readonly = false;
+            return config;
+        }
+        catch (Throwable t)
+        {
+            CubeEngine.getLogger().log(Level.SEVERE, "Error while loading a Configuration!", t);
+            return null;
+        }
+    }
+
+    public void setConfigurationType(String fileExtension)
+    {
+        ConfigurationRepresenter newconfig = configtypes.get(fileExtension);
+        if (newconfig == null)
+        {
+            CubeEngine.getLogger().log(Level.SEVERE, "FileExtension .{0} cannot be used for Configurations!", fileExtension);
+            return;
+        }
+        this.config = newconfig;
+    }
+
+    /**
+     * Sets the file to load from
+     *
+     * @param file
+     */
+    public void setFile(File file)
+    {
+        this.file = file;
+    }
+
+    /**
+     * Sets the Configuration to readonly!
+     */
+    public void setReadOnly()
+    {
+        this.readonly = true;
+    }
+
+    public void onLoaded()
+    {
     }
 }

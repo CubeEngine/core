@@ -18,17 +18,17 @@ import java.util.logging.Level;
  *
  * @author Faithcaio
  */
-public abstract class AbstractConfiguration
+public abstract class ConfigurationRepresenter
 {
-    public static String COMMENT_PREFIX;
-    public static String SPACES;
-    public static String LINEBREAK;
-    public static String QUOTE;
+    public String COMMENT_PREFIX;
+    public String SPACES;
+    public String LINEBREAK;
+    public String QUOTE;
     protected LinkedHashMap<String, Object> values;
     protected HashMap<String, String> comments;
     protected boolean first;
 
-    public AbstractConfiguration()
+    public ConfigurationRepresenter()
     {
         this.comments = new HashMap<String, String>();
         this.values = new LinkedHashMap<String, Object>();

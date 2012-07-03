@@ -32,7 +32,7 @@ public class CubeFly extends ModuleBase
 
         this.pm = this.getServer().getPluginManager();
 
-        this.config = Configuration.loadYaml(this, FlyConfiguration.class);
+        this.config = Configuration.load(this, FlyConfiguration.class);
 
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");
