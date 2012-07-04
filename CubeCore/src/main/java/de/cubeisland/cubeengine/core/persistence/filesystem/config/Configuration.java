@@ -31,10 +31,8 @@ public abstract class Configuration
 {
     private static final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
     private static final Map<String, ConfigurationRepresenter> representers = new HashMap<String, ConfigurationRepresenter>();
-
     private static final Logger logger = CubeEngine.getLogger();
-
-    protected ConfigurationRepresenter representer;
+    protected ConfigurationRepresenter representer = null;
     protected File file;
     protected boolean readOnly = false;
 
@@ -94,12 +92,10 @@ public abstract class Configuration
     /**
      * Searches matching Converter
      *
-     * TODO public -> private ?
-     *
      * @param objectClass the class to search for
      * @return a matching converter or null if not found
      */
-    public Converter matchConverter(Class<?> objectClass)
+    private Converter matchConverter(Class<?> objectClass)
     {
         Converter converter;
         for (Class<?> clazz : converters.keySet())
@@ -117,13 +113,11 @@ public abstract class Configuration
     /**
      * Converts the object to fit into the field
      *
-     * TODO public -> private ?
-     *
      * @param field the field
      * @param object the object to deserialize
      * @return the deserialized object
      */
-    public Object convertTo(Field field, Object object)
+    private Object convertTo(Field field, Object object)
     {
         Class<?> fieldClass = field.getType();
         Converter converter = converters.get(fieldClass);
@@ -134,62 +128,74 @@ public abstract class Configuration
             {
                 if (Collection.class.isAssignableFrom(fieldClass))
                 {
-                    // TODO instanceof check for safety
-                    Collection<?> list = (Collection<?>)object;
-                    if (list.isEmpty())
+                    if (object instanceof Collection)
                     {
-                        return object;
+                        Collection<?> list = (Collection<?>)object;
+                        if (list.isEmpty())
+                        {
+                            return object;
+                        }
+                        Class<?> genType = field.getAnnotation(Option.class).genericType();
+                        converter = this.matchConverter(genType);
+                        if (converter != null)
+                        {
+                            Collection<Object> result;
+                            try
+                            {
+                                result = (Collection)field.get(this);
+                                result.clear();
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
+                                return null;
+                            }
+                            for (Object o : list)
+                            {
+                                result.add(converter.to(o));
+                            }
+                            return result;
+                        }
                     }
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = this.matchConverter(genType);
-                    if (converter != null)
+                    else
                     {
-                        Collection<Object> result;
-                        try
-                        {
-                            result = (Collection)field.get(this);
-                            result.clear();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
-                            return null;
-                        }
-                        for (Object o : list)
-                        {
-                            result.add(converter.to(o));
-                        }
-                        return result;
+                        logger.log(Level.WARNING, "Could not apply Collection for {0}", field.getName());
                     }
                 }
                 if (Map.class.isAssignableFrom(fieldClass))
                 {
-                    // TODO instanceof check for safety
-                    Map<String, ?> map = (Map<String, ?>)object;
-                    if (map.isEmpty())
+                    if (object instanceof Map)
                     {
-                        return object;
+                        Map<String, ?> map = (Map<String, ?>)object;
+                        if (map.isEmpty())
+                        {
+                            return object;
+                        }
+                        Class<?> genType = field.getAnnotation(Option.class).genericType();
+                        converter = this.matchConverter(genType);
+                        if (converter != null)
+                        {
+                            Map<String, Object> result;
+                            try
+                            {
+                                result = (Map<String, Object>)field.get(this);
+                                result.clear();
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
+                                return null;
+                            }
+                            for (String key : map.keySet())
+                            {
+                                result.put(key, converter.to(map.get(key)));
+                            }
+                            return result;
+                        }
                     }
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = this.matchConverter(genType);
-                    if (converter != null)
+                    else
                     {
-                        Map<String, Object> result;
-                        try
-                        {
-                            result = (Map<String, Object>)field.get(this);
-                            result.clear();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
-                            return null;
-                        }
-                        for (String key : map.keySet())
-                        {
-                            result.put(key, converter.to(map.get(key)));
-                        }
-                        return result;
+                        logger.log(Level.WARNING, "Could not apply Map for {0}", field.getName());
                     }
                 }
             }
@@ -204,13 +210,11 @@ public abstract class Configuration
     /**
      * Converts the field to fit into the object
      *
-     * TODO public -> private ?
-     *
      * @param field the field to serialize
      * @param object the object
      * @return the serialized fieldvalue
      */
-    public Object convertFrom(Field field, Object object)
+    private Object convertFrom(Field field, Object object)
     {
         Class<?> objectClass = object.getClass();
         Converter converter = converters.get(objectClass);
@@ -221,18 +225,24 @@ public abstract class Configuration
             {
                 if (Collection.class.isAssignableFrom(objectClass))
                 {
-                    // TODO instanceof check for safety
-                    Collection<?> collection = (Collection<?>)object;
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = this.matchConverter(genType);
-                    if (converter != null)
+                    if (object instanceof Collection)
                     {
-                        Collection<Object> result = new ArrayList<Object>();
-                        for (Object o : collection)
+                        Collection<?> collection = (Collection<?>)object;
+                        Class<?> genType = field.getAnnotation(Option.class).genericType();
+                        converter = this.matchConverter(genType);
+                        if (converter != null)
                         {
-                            result.add(converter.from(o));
+                            Collection<Object> result = new ArrayList<Object>();
+                            for (Object o : collection)
+                            {
+                                result.add(converter.from(o));
+                            }
+                            return result;
                         }
-                        return result;
+                    }
+                    else
+                    {
+                        logger.log(Level.WARNING, "Could not apply Collection to {0}", field.getName());
                     }
                 }
             }
@@ -254,12 +264,6 @@ public abstract class Configuration
             this.loadElement(field);
         }
         this.representer.clear(); //Clear loaded Maps
-        
-        // TODO move to load(File, Class, boolean) ?
-        if (!this.readOnly)
-        {
-            this.saveConfiguration();
-        }
     }
 
     /**
@@ -273,7 +277,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            this.logger.log(Level.SEVERE, "Error while loading a Configuration-File!", t);
+            logger.log(Level.SEVERE, "Error while loading a Configuration-File!", t);
         }
     }
 
@@ -317,7 +321,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.severe("Error while loading a Configuration-Element!");
+            logger.severe("Error while loading a Configuration-Element!");
         }
     }
 
@@ -352,7 +356,7 @@ public abstract class Configuration
         }
         catch (IOException e)
         {
-            this.logger.severe("Error while saving a Configuration-File!");
+            logger.severe("Error while saving a Configuration-File!");
         }
         this.representer.clear(); //clears saved comments/values
     }
@@ -383,7 +387,7 @@ public abstract class Configuration
         }
         catch (IllegalAccessException ex)
         {
-            this.logger.severe("Error while saving a Configuration-Element!");
+            logger.severe("Error while saving a Configuration-Element!");
         }
     }
 
@@ -416,21 +420,32 @@ public abstract class Configuration
         {
             T config = clazz.newInstance();
             Type type = clazz.getAnnotation(Type.class);
-
-            // TODO here is a file available, so why don't you get the type from the extention if no annotation was specified?
             if (type == null)
             {
-                throw new IllegalStateException("Configuration Type undefined!");
+                String extension = file.getName();
+                extension = extension.substring(extension.lastIndexOf(".") + 1);
+                config.setRepresenter(extension);
+                if (config.representer == null)
+                {
+                    throw new IllegalStateException("Invalid/Unknown Configuration Type!");
+                }
+            }
+            else
+            {
+                config.setRepresenter(type.value());
             }
             config.file = file;
-            config.setRepresenter(type.value());
             config.loadFromFile();
             config.loadConfiguration(); //Load in representer and/or set default values
+            if (!readOnly)
+            {
+                config.saveConfiguration();
+            }
             return config;
         }
         catch (Throwable t)
         {
-            CubeEngine.getLogger().log(Level.SEVERE, "Error while loading a Configuration!", t);
+            logger.log(Level.SEVERE, "Error while loading a Configuration!", t);
             return null;
         }
     }
@@ -464,8 +479,8 @@ public abstract class Configuration
 
     /**
      * Returns the loaded Configuration
-     * 
-     * 
+     *
+     *
      * @param is the Inputstream to load the representer from
      * @param clazz the Configuration to use
      * @return the loaded Configuration
@@ -529,5 +544,6 @@ public abstract class Configuration
     }
 
     public void onLoaded()
-    {}
+    {
+    }
 }
