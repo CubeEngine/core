@@ -87,7 +87,6 @@ public class CubeCore extends JavaPlugin
     @Override
     public void onDisable()
     {
-        //TODO resolve ConcurrentModificationException
         this.moduleManager.clean();
         this.moduleManager = null;
 

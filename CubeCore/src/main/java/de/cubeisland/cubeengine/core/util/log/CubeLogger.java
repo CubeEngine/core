@@ -129,4 +129,9 @@ public class CubeLogger extends Logger
         record.setMessage(msg);
         super.log(record);
     }
+    
+    public void exception(String msg, Throwable t)
+    {
+        this.log(Level.SEVERE, msg, t);
+    }
 }
