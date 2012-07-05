@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
@@ -12,8 +13,12 @@ import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -198,6 +203,38 @@ public abstract class Configuration
                         logger.log(Level.WARNING, "Could not apply Map for {0}", field.getName());
                     }
                 }
+                if (fieldClass.isArray())
+                {
+                    if (object instanceof Collection)
+                    {
+                        Collection<Object> coll = (Collection)object;
+                        Object tmparray = coll.toArray();
+                        Class<?> genType = field.getAnnotation(Option.class).genericType();
+                        converter = this.matchConverter(genType);
+                        if (converter != null)
+                        {
+                            Object o = Array.newInstance(genType, coll.size());
+                            for (int i = 0; i < coll.size(); ++i)
+                            {
+                                Array.set(o, i, converter.to(Array.get(tmparray, i)));
+                            }
+                            return fieldClass.cast(o);
+                        }
+                        else
+                        {
+                            Object o = Array.newInstance(genType, coll.size());
+                            for (int i = 0; i < coll.size(); ++i)
+                            {
+                                Array.set(o, i, Array.get(tmparray, i));
+                            }
+                            return fieldClass.cast(o);
+                        }
+                    }
+                    else
+                    {
+                        logger.log(Level.WARNING, "Could not apply Array for {0}", field.getName());
+                    }
+                }
             }
         }
         if (converter == null)
@@ -243,6 +280,27 @@ public abstract class Configuration
                     else
                     {
                         logger.log(Level.WARNING, "Could not apply Collection to {0}", field.getName());
+                    }
+                }
+                if (objectClass.isArray())
+                {
+                    Object[] array = (Object[])object;
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = this.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Collection<Object> result = new ArrayList<Object>();
+                        for (Object o : array)
+                        {
+                            result.add(converter.from(o));
+                        }
+                        return result;
+                    }
+                    else
+                    {
+                        Collection<Object> result = new ArrayList<Object>();
+                        result.addAll(Arrays.asList(array));
+                        return result;
                     }
                 }
             }
@@ -294,7 +352,6 @@ public abstract class Configuration
             if (field.isAnnotationPresent(Option.class))
             {
                 String path = field.getAnnotation(Option.class).value();
-
                 //Get savedValue or default
                 Object configElem = representer.get(path);
                 if (configElem == null)
@@ -312,11 +369,6 @@ public abstract class Configuration
                 {
                     this.representer.addComment(path, field.getAnnotation(Comment.class).value());
                 }
-                if (field.isAnnotationPresent(MapComment.class))
-                {
-                    MapComment comment = field.getAnnotation(MapComment.class);
-                    this.representer.addComment(comment.path(), comment.text());
-                }
             }
         }
         catch (IllegalAccessException ex)
@@ -333,6 +385,15 @@ public abstract class Configuration
         if (this.readOnly)
         {
             throw new IllegalStateException("Tried to save a readOnly-Configuration");
+        }
+        Class<?> clazz = this.getClass();
+        if (clazz.isAnnotationPresent(MapComments.class))
+        {
+            MapComment[] comments = clazz.getAnnotation(MapComments.class).value();
+            for (MapComment comment : comments)
+            {
+                this.representer.addComment(comment.path(), comment.text());
+            }
         }
         for (Field field : this.getClass().getFields())
         {
@@ -377,11 +438,6 @@ public abstract class Configuration
                 {
                     this.representer.addComment(path, field.getAnnotation(Comment.class).value());
                 }
-                if (field.isAnnotationPresent(MapComment.class))
-                {
-                    MapComment mcomment = field.getAnnotation(MapComment.class);
-                    this.representer.addComment(mcomment.path(), mcomment.text());
-                }
                 this.representer.set(path, this.convertFrom(field, field.get(this)));
             }
         }
@@ -401,7 +457,7 @@ public abstract class Configuration
         return representer;
     }
 
-    public static <T extends Configuration> T load(File file, Class<T> clazz)
+    public static <T extends Configuration> T load(File file, Class<T> clazz) throws InvalidConfigurationException
     {
         return load(file, clazz, false);
     }
@@ -413,7 +469,7 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(File file, Class<T> clazz, boolean readOnly)
+    public static <T extends Configuration> T load(File file, Class<T> clazz, boolean readOnly) throws InvalidConfigurationException
     {
         Validate.notNull(file, "The file must not be null!");
         try
@@ -446,11 +502,11 @@ public abstract class Configuration
         catch (Throwable t)
         {
             logger.log(Level.SEVERE, "Error while loading a Configuration!", t);
-            return null;
+            throw new InvalidConfigurationException("Error while loading a Configuration!", t);
         }
     }
 
-    public static <T extends Configuration> T load(Module module, Class<T> clazz)
+    public static <T extends Configuration> T load(Module module, Class<T> clazz) throws InvalidConfigurationException
     {
         return load(module, clazz, false);
     }
@@ -462,7 +518,7 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Module module, Class<T> clazz, boolean readOnly)
+    public static <T extends Configuration> T load(Module module, Class<T> clazz, boolean readOnly) throws InvalidConfigurationException
     {
         Type type = clazz.getAnnotation(Type.class);
         if (type == null)
@@ -472,7 +528,7 @@ public abstract class Configuration
         return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
     }
 
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz) throws InvalidConfigurationException
     {
         return load(is, clazz, false);
     }
@@ -485,7 +541,7 @@ public abstract class Configuration
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz, boolean readOnly)
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz, boolean readOnly) throws InvalidConfigurationException
     {
         try
         {
@@ -505,7 +561,7 @@ public abstract class Configuration
         catch (Throwable t)
         {
             CubeEngine.getLogger().log(Level.SEVERE, "Error while loading a Configuration!", t);
-            return null;
+            throw new InvalidConfigurationException("Error while loading a Configuration!", t);
         }
     }
 

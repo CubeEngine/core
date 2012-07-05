@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import java.util.ArrayList;
@@ -18,16 +19,21 @@ import org.bukkit.OfflinePlayer;
  * @author Faithcaio
  */
 @Type("yml")
+@MapComments(
+{
+    @MapComment(path = "regions", text = "more RandomTests:"),
+    @MapComment(path = "list", text = "ListTests:"),
+    @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
+    @MapComment(path = "list.stringlist", text = "comment for my list :)")
+})
 public class CoreConfiguration extends Configuration
 {
     @Option("debug")
     @Comment("If enabled shows debug-messages")
     public boolean debugMode = false;
-    
     @Option("defaultLanguage")
     @Comment("Sets the language to choose by default")
     public String defaultLanguage = "en_US";
-
     //TODO remove this test
     @Option("location")
     @Comment("LocationTest")
@@ -35,8 +41,6 @@ public class CoreConfiguration extends Configuration
     @Option("offlineplayer")
     @Comment("PlayerTest")
     public OfflinePlayer player = CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio");
-    
-    @MapComment(path="regions",text="more RandomTests:")
     @Option("regions.use-scheduler")
     public boolean use_scheduler = true;
     @Option("regions.sql.use")
@@ -48,7 +52,7 @@ public class CoreConfiguration extends Configuration
     public String sql_username = "worldguard";
     @Option("regions.sql.password")
     public String sql_password = "worldguard";
-    @Option(value="regions.max-region-count-per-player",genericType=Integer.class)
+    @Option(value = "regions.max-region-count-per-player", genericType = Integer.class)
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
@@ -61,27 +65,38 @@ public class CoreConfiguration extends Configuration
     public Integer the42 = 42;
     @Option("regions.the21")
     public int the21 = 21;
-    @MapComment(path="list",text="ListTests:")
+    @Option(value = "arrays.stringtest", genericType = String.class)
+    public String[] stringarray =
+    {
+        "text1", "text2"
+    };
+    @Option(value = "arrays.playertest", genericType = OfflinePlayer.class)
+    public OfflinePlayer[] playerarray =
+    {
+        CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio"), CubeCore.getInstance().getServer().getOfflinePlayer("Niemand")
+    };
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
     {
+        
         {
             add("quark");
             add("kekse");
         }
     };
-    @Option(value="list.playerlist",genericType=OfflinePlayer.class)
+    @Option(value = "list.playerlist", genericType = OfflinePlayer.class)
     public List<OfflinePlayer> playerlist = new ArrayList<OfflinePlayer>()
     {
+        
         {
             add(CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio"));
             add(CubeCore.getInstance().getServer().getOfflinePlayer("KekseSpieler"));
         }
     };
-    
-    @Option(value="list.shortlist",genericType=Short.class)
+    @Option(value = "list.shortlist", genericType = Short.class)
     public List<Short> shortlist = new ArrayList<Short>()
     {
+        
         {
             short s = 123;
             add(s);
@@ -89,12 +104,11 @@ public class CoreConfiguration extends Configuration
             add(s);
         }
     };
-    
-    @Option(value="list.listinmaps",genericType=List.class)
+    @Option(value = "list.listinmaps", genericType = List.class)
     @Comment("list in maps ftw")
-    @MapComment(path="list.listinmaps.list2",text="comment in submap")
     public Map<String, List<Integer>> pointlessmap = new LinkedHashMap<String, List<Integer>>()
     {
+        
         {
             List<Integer> list1 = new ArrayList<Integer>();
             list1.add(123);

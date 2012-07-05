@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
@@ -55,8 +56,12 @@ public class CubeCore extends JavaPlugin
         this.fileManager.dropResources(CoreResource.values());
 
         this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING);
-         
-        this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
+        try
+        {
+            this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
+        }
+        catch (InvalidConfigurationException ex)
+        {}
         this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
