@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
+import java.io.File;
 import java.util.Collections;
 import java.util.Set;
 
@@ -9,26 +8,52 @@ import java.util.Set;
  *
  * @author Phillip Schichtel
  */
-public class ModuleInfo extends Configuration
+public final class ModuleInfo
 {
-    @Option("name")
-    public String name;
-
-    @Option("revision")
-    public int revision;
-
-    @Option("description")
-    public String desciprtion;
-
-    @Option(value = "dependencies", genericType = String.class)
-    public Set<String> dependencies;
-
-    @Option(value = "soft-dependencies", genericType = String.class)
-    public Set<String> softDependencies;
-
-    public void onLoaded()
+    private final File file;
+    private final String name;
+    private final int revision;
+    private final String description;
+    private final Set<String> dependencies;
+    private final Set<String> softDependencies;
+    
+    public ModuleInfo(File file, ModuleConfiguration config)
     {
-        this.dependencies       = Collections.unmodifiableSet(this.dependencies);
-        this.softDependencies   = Collections.unmodifiableSet(this.softDependencies);
+        this.file               = file;
+        this.name               = config.name;
+        this.revision           = config.revision;
+        this.description        = config.desciprtion;
+        this.dependencies       = Collections.unmodifiableSet(config.dependencies);
+        this.softDependencies   = Collections.unmodifiableSet(config.softDependencies);
+    }
+
+    public File getFile()
+    {
+        return this.file;
+    }
+
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public int getRevision()
+    {
+        return this.revision;
+    }
+
+    public String getDescription()
+    {
+        return this.description;
+    }
+
+    public Set<String> getDependencies()
+    {
+        return this.dependencies;
+    }
+
+    public Set<String> getSoftDependencies()
+    {
+        return this.softDependencies;
     }
 }

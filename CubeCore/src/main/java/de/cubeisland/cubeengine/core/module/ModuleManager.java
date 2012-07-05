@@ -1,10 +1,17 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
+import java.io.File;
+import java.io.FileFilter;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -16,39 +23,15 @@ public class ModuleManager
     private final Map<String, Module> modules;
     private final CubeCore core;
     private final PluginManager pm;
+    private final ModuleLoader loader;
 
     public ModuleManager(CubeCore core)
     {
         this.modules = new THashMap<String, Module>();
         this.core = core;
         this.pm = core.getServer().getPluginManager();
+        this.loader = new ModuleLoader(core);
     }
-
-//    public ModuleManager registerModule(Module module)
-//    {
-//        if (module == null)
-//        {
-//            throw new IllegalArgumentException("The module must not be null!");
-//        }
-//        String moduleName = module.getModuleName();
-//        this.modules.put(moduleName, module);
-//
-//        Set<String> dependencies = module.getDependencies();
-//        if (dependencies != null)
-//        {
-//            Module dependency;
-//            for (String dependencyName : dependencies)
-//            {
-//                dependency = this.getModule(dependencyName);
-//                if (dependency != null)
-//                {
-//                    dependency.addDependingModule(moduleName);
-//                }
-//            }
-//        }
-//
-//        return this;
-//    }
 
     public Module getModule(String name)
     {
@@ -63,6 +46,98 @@ public class ModuleManager
     public Collection<Module> getModules()
     {
         return this.modules.values();
+    }
+
+    public void loadModules(File directory)
+    {
+        Validate.isDir(directory, "The give dir is no dir!");
+        Logger logger = this.core.getLogger();
+
+        Module module;
+        ModuleInfo info;
+        HashMap<String, ModuleInfo> moduleInfos = new HashMap<String, ModuleInfo>();
+        for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
+        {
+            try
+            {
+                info = this.loader.loadModuleInfo(file);
+                module = this.getModule(info.getName());
+                if (module != null)
+                {
+                    if (module.getInfo().getRevision() >= info.getRevision())
+                    {
+                        logger.warning(new StringBuilder("A with a newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        continue;
+                    }
+                    else
+                    {
+                        logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
+                    }
+                }
+                moduleInfos.put(info.getName(), info);
+            }
+            catch (InvalidModuleException e)
+            {
+                logger.log(Level.SEVERE, null, e);
+            }
+        }
+
+        Stack<String> moduleStack = new Stack<String>();
+        for (String moduleName : moduleInfos.keySet())
+        {
+            try
+            {
+                this.loadModule(moduleName, moduleInfos, moduleStack);
+                info = moduleInfos.get(moduleName);
+            }
+            catch (InvalidModuleException ex)
+            {
+                Logger.getLogger(ModuleManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (CircularDependencyException ex)
+            {
+            }
+            catch (MissingDependencyException ex)
+            {
+            }
+        }
+    }
+
+    private void loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    {
+        this.loadModule(name, moduleInfos, moduleStack, false);
+    }
+
+    private void loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    {
+        if (this.modules.containsKey(name))
+        {
+            return;
+        }
+        if (!moduleInfos.containsKey(name))
+        {
+            if (soft)
+            {
+                return;
+            }
+            throw new MissingDependencyException();
+        }
+        if (moduleStack.contains(name))
+        {
+            throw new CircularDependencyException();
+        }
+        moduleStack.push(name);
+        ModuleInfo info = moduleInfos.get(name);
+        for (String dep : info.getSoftDependencies())
+        {
+            loadModule(dep, moduleInfos, moduleStack, true);
+        }
+        for (String dep : info.getDependencies())
+        {
+            loadModule(dep, moduleInfos, moduleStack);
+        }
+        this.loader.loadModule(info);
+        moduleStack.pop();
     }
 
 //    public ModuleManager disableModule(String name)

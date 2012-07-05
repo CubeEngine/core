@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -13,31 +14,19 @@ public class ModuleClassLoader extends URLClassLoader
 {
     private final ModuleLoader moduleLoader;
     private final Map<String, Class<?>> classMap;
-    private Module module;
+    private ModuleInfo moduleInfo;
 
-    public ModuleClassLoader(ModuleLoader moduleLoader, URL url, ClassLoader parent)
+    public ModuleClassLoader(ModuleLoader moduleLoader, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {
-        super(new URL[] {url}, parent);
+        super(new URL[] {info.getFile().toURI().toURL()}, parent);
         this.moduleLoader = moduleLoader;
         this.classMap = new HashMap<String, Class<?>>();
-        this.module = null;
+        this.moduleInfo = null;
     }
 
-    public void setModule(Module module)
+    public ModuleInfo getModuleInfo()
     {
-        if (this.module == null)
-        {
-            this.module = module;
-        }
-        else
-        {
-            throw new IllegalStateException("The module was already set!");
-        }
-    }
-
-    public Module getModule()
-    {
-        return this.module;
+        return this.moduleInfo;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -17,14 +18,18 @@ public abstract class Module
     private ModuleInfo info;
     private Logger logger;
     private Set<Module> dependingModules = new HashSet<Module>();
+    private ModuleClassLoader classLoader;
+    private File folder;
 
-    public final void initialize(CubeCore core, ModuleInfo info, Logger logger)
+    public final void initialize(CubeCore core, ModuleInfo info, Logger logger, File folder, ModuleClassLoader classLoader)
     {
         if (!initialized)
         {
             this.core = core;
             this.info = info;
             this.logger = logger;
+            this.classLoader = classLoader;
+            this.folder = folder;
         }
     }
 
@@ -35,7 +40,7 @@ public abstract class Module
      */
     public String getName()
     {
-        return this.info.name;
+        return this.info.getName();
     }
 
     public ModuleInfo getInfo()
@@ -88,6 +93,16 @@ public abstract class Module
         return this.core.getModuleManager();
     }
 
+    public ModuleClassLoader getClassLoader()
+    {
+        return this.classLoader;
+    }
+
+    public File getFolder()
+    {
+        return this.folder;
+    }
+
     public void onEnable()
     {}
 
@@ -100,7 +115,7 @@ public abstract class Module
     @Override
     public int hashCode()
     {
-        return this.info.name.hashCode();
+        return this.getName().hashCode();
     }
 
     @Override
@@ -112,7 +127,7 @@ public abstract class Module
         }
         if (obj instanceof Module)
         {
-            return this.info.name.equals(((Module)obj).info.name);
+            return this.getName().equals(((Module)obj).getName());
         }
         return false;
     }
