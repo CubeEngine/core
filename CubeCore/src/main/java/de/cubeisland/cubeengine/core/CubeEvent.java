@@ -7,7 +7,7 @@ import org.bukkit.event.Event;
  *
  * @author CubeIsland-Dev
  */
-public abstract class CubeEvent extends Event implements Cancellable
+public abstract class CubeEvent extends Event
 {
     private final CubeCore core;
     private boolean cancelled;
