@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Server;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 
 public class CubeConomy extends Module
