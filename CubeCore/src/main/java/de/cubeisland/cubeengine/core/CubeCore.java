@@ -57,9 +57,6 @@ public class CubeCore extends JavaPlugin
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
         this.fileManager.dropResources(CoreResource.values());
 
-        this.moduleManager = new ModuleManager(this);
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());
-
         this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING);
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         this.i18n = new I18n(this);
@@ -78,6 +75,9 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
 
         this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);
+        
+        this.moduleManager = new ModuleManager(this);
+        this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 
     @Override

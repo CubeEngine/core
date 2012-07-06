@@ -20,13 +20,11 @@ import org.bukkit.inventory.ItemStack;
 public class FlyListener implements Listener
 {
     UserManager cuManager;
-    CubeFly plugin;
     HashMap<Player, Task> tasks = new HashMap<Player, Task>();
 
-    public FlyListener(UserManager cuManager, CubeFly plugin)
+    public FlyListener(UserManager cuManager)
     {
         this.cuManager = cuManager;
-        this.plugin = plugin;
     }
 
     @EventHandler
@@ -56,12 +54,12 @@ public class FlyListener implements Listener
             if (user == null)
             {
                 //User does not exist -> No Permissions for using any CubeModule
-                return;
+                //TODO return;
             }
             FlyStartEvent flyStartEvent = new FlyStartEvent(CubeCore.getInstance(), user);
             if (flyStartEvent.isCancelled())
             {
-                user.sendTMessage("&cYou are not allowed to fly now!");
+                //TODO user.sendTMessage("&cYou are not allowed to fly now!");
                 //&cDu darfst jetzt nicht fliegen!
                 player.setAllowFlight(false); //Disable when player is flying
                 return;
@@ -73,7 +71,7 @@ public class FlyListener implements Listener
         {
             final ItemStack feather = new ItemStack(Material.FEATHER, 1);
             player.getInventory().removeItem(feather);
-            user.sendTMessage("&6You can now fly!");
+            //TODO user.sendTMessage("&6You can now fly!");
             //&6Du kannst jetzt fliegen!
             Task flymore = new Task()  
             {
@@ -109,7 +107,7 @@ public class FlyListener implements Listener
         }
         else
         {//or not
-            user.sendTMessage("&6You cannot fly anymore!");
+            //TODO user.sendTMessage("&6You cannot fly anymore!");
             //&6Du kannst jetzt nicht mehr fliegen!
         }
     }
