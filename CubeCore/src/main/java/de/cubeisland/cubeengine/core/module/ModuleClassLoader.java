@@ -45,7 +45,7 @@ public class ModuleClassLoader extends URLClassLoader
 
             if (clazz == null)
             {
-                clazz = this.moduleLoader.getClazz(this, name);
+                clazz = this.moduleLoader.getClazz(this.moduleInfo, name);
             }
 
             if (clazz == null)

@@ -26,4 +26,11 @@ public class ModuleConfiguration extends Configuration
 
     @Option(value = "soft-dependencies", genericType = String.class)
     public Set<String> softDependencies;
+
+    @Override
+    public void onLoaded()
+    {
+        this.dependencies.remove(this.name);
+        this.softDependencies.remove(this.name);
+    }
 }

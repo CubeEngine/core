@@ -114,8 +114,12 @@ public class ModuleLoader
         return info;
     }
 
-    public Class<?> getClazz(ModuleClassLoader classLoader, String name)
+    public Class<?> getClazz(ModuleInfo info, String name)
     {
+        if (name == null)
+        {
+            return null;
+        }
         Class<?> clazz = null;
         try
         {
@@ -129,7 +133,6 @@ public class ModuleLoader
             return clazz;
         }
         
-        ModuleInfo info = classLoader.getModuleInfo();
         Set<String> alreadyChecked = new HashSet<String>();
 
         for (String deb : info.getSoftDependencies())
@@ -148,6 +151,14 @@ public class ModuleLoader
 
         for (String deb : info.getDependencies())
         {
+            if (alreadyChecked.contains(deb))
+            {
+                continue;
+            }
+            else
+            {
+                alreadyChecked.add(deb);
+            }
             try
             {
                 clazz = this.classLoaders.get(deb).findClass(name);
@@ -158,6 +169,23 @@ public class ModuleLoader
             }
             catch (ClassNotFoundException e)
             {}
+        }
+
+        for (String module : this.classLoaders.keySet())
+        {
+            if (!alreadyChecked.contains(module))
+            {
+                try
+                {
+                    clazz = this.classLoaders.get(module).findClass(name);
+                    if (clazz != null)
+                    {
+                        return clazz;
+                    }
+                }
+                catch (ClassNotFoundException e)
+                {}
+            }
         }
         
         return null;
