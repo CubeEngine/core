@@ -6,14 +6,18 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.C
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.*;
 import de.cubeisland.cubeengine.core.util.Validate;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -323,21 +327,6 @@ public abstract class Configuration
     }
 
     /**
-     * Loads in the representer from File
-     */
-    public void loadFromFile()
-    {
-        try
-        {
-            this.representer.load(this.file);
-        }
-        catch (Throwable t)
-        {
-            logger.log(Level.SEVERE, "Error while loading a Configuration-File!", t);
-        }
-    }
-
-    /**
      * Loads in a ConfigurationElement from the ConfigurationFile into an Object
      * (or a Map(String->Object))
      *
@@ -464,8 +453,20 @@ public abstract class Configuration
         Validate.notNull(file, "The file must not be null!");
         try
         {
-            InputStream is = new FileInputStream(file);
-            T config = load(is, clazz);
+            if (file == null)
+            {
+                return null;
+            }
+            InputStream is = null;
+            try
+            {
+                is = new FileInputStream(file);
+            }
+            catch (FileNotFoundException ex)
+            {
+                logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
+            }
+            T config = load(is, clazz); //loading config from InputSream or Default
             config.file = file;
             config.saveConfiguration();
             return config;
@@ -476,7 +477,7 @@ public abstract class Configuration
             return null;
         }
     }
-    
+
     /**
      * Loads and returns the loaded Configuration
      *
@@ -488,6 +489,19 @@ public abstract class Configuration
     {
         try
         {
+            Revision revis = clazz.getAnnotation(Revision.class);
+            if (revis == null)
+            {
+                //No Revision do nothing...
+            }
+            else
+            {
+                //Check Revision of InputStream
+                InputStreamReader reader = new InputStreamReader(is);
+                BufferedReader input = new BufferedReader(reader);
+                String firstline = input.readLine();
+                //TODO interpretiere 1.Zeile ... oder letzte ka wie ich das mache bei verschiedenen configtypen ohne Fehler beim einles später
+            }
             Type type = clazz.getAnnotation(Type.class);
             if (type == null)
             {
@@ -495,7 +509,10 @@ public abstract class Configuration
             }
             T config = clazz.newInstance();
             config.setRepresenter(type.value());
-            config.representer.load(is);
+            if (is != null)
+            {
+                config.representer.load(is);
+            }
             config.loadConfiguration(); //set values loaded from inputStream
             config.onLoaded();
             return config;
@@ -524,7 +541,6 @@ public abstract class Configuration
         }
         return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
     }
-
 
     public ConfigurationRepresenter getRepresenter()
     {

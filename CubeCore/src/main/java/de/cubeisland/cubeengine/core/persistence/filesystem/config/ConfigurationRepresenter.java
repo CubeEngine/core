@@ -1,10 +1,7 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
-import de.cubeisland.cubeengine.CubeEngine;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +9,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  *
@@ -35,29 +31,6 @@ public abstract class ConfigurationRepresenter
     }
 
     /**
-     * Loads the Configuration from a File
-     *
-     * @param file the file to load
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public void load(File file) throws FileNotFoundException, IOException
-    {
-        if (file == null)
-        {
-            return;
-        }
-        try
-        {
-            load(new FileInputStream(file));
-        }
-        catch (FileNotFoundException ex)
-        {
-            CubeEngine.getLogger().info(file.getName() + " not found! Creating new config...");
-        }
-    }
-
-    /**
      * Loads the Configuration from a InputStream
      *
      * @param is the InputStream
@@ -75,7 +48,6 @@ public abstract class ConfigurationRepresenter
         try
         {
             String line;
-
             while ((line = input.readLine()) != null)
             {
                 builder.append(line);

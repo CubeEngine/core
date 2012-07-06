@@ -1,12 +1,14 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import java.text.MessageFormat;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -124,12 +126,19 @@ public class CubeLogger extends Logger
     public void log(LogRecord record)
     {
         String msg = record.getMessage();
+        Object[] params = record.getParameters();
+        if (!(params == null || params.length == 0))
+        {
+            Pattern.compile("\\{\\d").matcher(msg).find();
+            msg = MessageFormat.format(msg, record.getParameters());
+        }
+        record.setParameters(null);
         record.setMessage(this.getName() + " " + msg);
         this.getParent().log(record);
         record.setMessage(msg);
         super.log(record);
     }
-    
+
     public void exception(String msg, Throwable t)
     {
         this.log(Level.SEVERE, msg, t);

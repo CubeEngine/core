@@ -68,7 +68,7 @@ public class CubeCore extends JavaPlugin
         }
         catch (Throwable e)
         {
-            this.coreLogger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+            this.coreLogger.log(Level.SEVERE, "Error while initializing database", e);
             this.pm.disablePlugin(this);
             return;
         }
