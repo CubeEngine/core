@@ -50,10 +50,12 @@ public class CubeCore extends JavaPlugin
     public void onEnable()
     {
         CubeEngine.initialize(this);
-        this.moduleManager = new ModuleManager(this);
 
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
         this.fileManager.dropResources(CoreResource.values());
+
+        this.moduleManager = new ModuleManager(this);
+        this.moduleManager.loadModules(this.fileManager.getModulesDir());
 
         this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING);
         try
@@ -83,10 +85,6 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
 
         this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);
-        //TODO loggertests here:
-        this.coreLogger.warning("cookie not found 404");
-        this.coreLogger.severe("cookie got eaten 403");
-        this.coreLogger.info("cookie are too many 1337");
     }
 
     @Override

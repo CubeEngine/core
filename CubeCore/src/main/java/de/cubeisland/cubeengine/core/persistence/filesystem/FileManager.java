@@ -13,10 +13,11 @@ import java.io.OutputStream;
  */
 public class FileManager
 {
-    private File dataFolder;
-    private File configDir;
-    private File languageDir;
-    private File logDir;
+    private final File dataFolder;
+    private final File configDir;
+    private final File languageDir;
+    private final File logDir;
+    private final File modulesDir;
 
     public FileManager(File pluginsFolder)
     {
@@ -31,6 +32,9 @@ public class FileManager
 
         this.logDir = new File(this.dataFolder, "log");
         this.logDir.mkdirs();
+
+        this.modulesDir = new File(this.dataFolder, "modules");
+        this.modulesDir.mkdirs();
     }
 
     public File getDataFolder()
@@ -51,6 +55,11 @@ public class FileManager
     public File getLogDir()
     {
         return this.logDir;
+    }
+
+    public File getModulesDir()
+    {
+        return this.modulesDir;
     }
 
     public File getResourceFile(Resource resource)

@@ -1,10 +1,15 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import org.bukkit.Server;
+import org.bukkit.plugin.PluginManager;
 
 /**
  * module for CubeEngine
@@ -20,6 +25,8 @@ public abstract class Module
     private Set<Module> dependingModules = new HashSet<Module>();
     private ModuleClassLoader classLoader;
     private File folder;
+    private boolean enabled;
+    private final BukkitPluginWrapper pluginWrapper = new BukkitPluginWrapper(this);
 
     public final void initialize(CubeCore core, ModuleInfo info, Logger logger, File folder, ModuleClassLoader classLoader)
     {
@@ -30,6 +37,7 @@ public abstract class Module
             this.logger = logger;
             this.classLoader = classLoader;
             this.folder = folder;
+            this.enabled = false;
         }
     }
 
@@ -103,6 +111,19 @@ public abstract class Module
         return this.folder;
     }
 
+    public Database getDatabase()
+    {
+        return this.core.getDB();
+    }
+
+    public PluginManager getPluginManager()
+    {
+        return this.core.getPluginManager();
+    }
+
+    public void onLoad()
+    {}
+
     public void onEnable()
     {}
 
@@ -130,5 +151,26 @@ public abstract class Module
             return this.getName().equals(((Module)obj).getName());
         }
         return false;
+    }
+
+    public InputStream getResource(String path)
+    {
+        Validate.notNull(path, "The path must not be null!");
+        return this.getClass().getResourceAsStream(path);
+    }
+
+    public Server getServer()
+    {
+        return this.core.getServer();
+    }
+
+    public boolean isEnabled()
+    {
+        return this.enabled;
+    }
+
+    public BukkitPluginWrapper getPluginWrapper()
+    {
+        return this.pluginWrapper;
     }
 }
