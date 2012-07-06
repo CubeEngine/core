@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
+import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.util.Collections;
 import java.util.Set;
@@ -19,6 +20,8 @@ public final class ModuleInfo
     
     public ModuleInfo(File file, ModuleConfiguration config)
     {
+        Validate.notNull(config, "The module configuration failed to loaded!");
+        
         this.file               = file;
         this.name               = config.name;
         this.revision           = config.revision;

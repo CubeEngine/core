@@ -95,7 +95,7 @@ public class ModuleLoader
             InputStream configStream = jarFile.getInputStream(entry);
             info = new ModuleInfo(file, Configuration.load(configStream, ModuleConfiguration.class, true));
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             throw new InvalidModuleException(e);
         }

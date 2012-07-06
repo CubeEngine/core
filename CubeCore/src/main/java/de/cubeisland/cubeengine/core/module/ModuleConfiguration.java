@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -22,10 +23,10 @@ public class ModuleConfiguration extends Configuration
     public String desciprtion;
 
     @Option(value = "dependencies", genericType = String.class)
-    public Set<String> dependencies;
+    public Set<String> dependencies = new HashSet<String>();
 
     @Option(value = "soft-dependencies", genericType = String.class)
-    public Set<String> softDependencies;
+    public Set<String> softDependencies = new HashSet<String>();
 
     @Override
     public void onLoaded()

@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.user.User;
 
 /**
  *
- * @author CubeIsland-Dev
+ * @author Faithcaio
  */
 public abstract class UserEvent extends ModelEvent
 {

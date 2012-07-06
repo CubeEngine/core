@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
 
 /**
  *
- * @author CubeIsland-Dev
+ * @author Faithcaio
  */
 public abstract class ModelEvent extends CubeEvent
 {
