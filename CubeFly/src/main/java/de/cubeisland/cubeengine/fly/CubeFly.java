@@ -12,7 +12,6 @@ public class CubeFly extends Module
 {
     public static boolean debugMode = false;
     protected Server server;
-    protected PluginManager pm;
     protected File dataFolder;
     private static final String PERMISSION_BASE = "cubewar.fly";
     private BaseCommand baseCommand;
@@ -21,13 +20,11 @@ public class CubeFly extends Module
     @Override
     public void onEnable()
     {
-        this.pm = this.getCore().getServer().getPluginManager();
         this.config = Configuration.load(this, FlyConfiguration.class);  
         //this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         //this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");
         //this.getCommand("fly").setExecutor(baseCommand);
-        this.pm.registerEvents(new FlyListener(this.getCore().getUserManager()), this.getCore());
-
+        this.getPluginManager().registerEvents(new FlyListener(this.getCore().getUserManager()), this.getCore());
         CubeEngine.registerPermissions(Perm.values());
     }
 
