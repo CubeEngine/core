@@ -15,7 +15,6 @@ public class ModuleLoadedEvent extends ModuleEvent
         super(core, module);
     }
 
-
     private static final HandlerList handlers = new HandlerList();
     @Override
     public HandlerList getHandlers() {

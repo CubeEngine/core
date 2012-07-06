@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.fly;
 import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.event.UserEvent;
+import org.bukkit.event.HandlerList;
 
 /**
  *
@@ -10,8 +11,20 @@ import de.cubeisland.cubeengine.core.user.event.UserEvent;
  */
 public class FlyStartEvent extends UserEvent
 {
+    private static final HandlerList handlers = new HandlerList();
+
     public FlyStartEvent(CubeCore core, User user)
     {
-        super(core,user);
+        super(core, user);
+    }
+
+    public HandlerList getHandlers()
+    {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
     }
 }

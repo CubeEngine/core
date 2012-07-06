@@ -11,16 +11,19 @@ import org.bukkit.event.HandlerList;
 public class UserCreatedEvent extends UserEvent
 {
     private static final HandlerList handlers = new HandlerList();
+
     @Override
-    public HandlerList getHandlers() {
+    public HandlerList getHandlers()
+    {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    public static HandlerList getHandlerList()
+    {
         return handlers;
     }
 
-    public UserCreatedEvent(CubeCore core, User user) 
+    public UserCreatedEvent(CubeCore core, User user)
     {
         super(core, user);
     }
