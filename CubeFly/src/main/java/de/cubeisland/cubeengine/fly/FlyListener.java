@@ -75,7 +75,7 @@ public class FlyListener implements Listener
             player.getInventory().removeItem(feather);
             user.sendTMessage("&6You can now fly!");
             //&6Du kannst jetzt fliegen!
-            Task flymore = new Task(plugin)
+            Task flymore = new Task()  
             {
                 public void run()//2 feather/min
                 {

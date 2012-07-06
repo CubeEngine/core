@@ -457,7 +457,7 @@ public abstract class Configuration
         return representer;
     }
 
-    public static <T extends Configuration> T load(File file, Class<T> clazz) throws InvalidConfigurationException
+    public static <T extends Configuration> T load(File file, Class<T> clazz)
     {
         return load(file, clazz, false);
     }
@@ -469,7 +469,7 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(File file, Class<T> clazz, boolean readOnly) throws InvalidConfigurationException
+    public static <T extends Configuration> T load(File file, Class<T> clazz, boolean readOnly)
     {
         Validate.notNull(file, "The file must not be null!");
         try
@@ -502,11 +502,11 @@ public abstract class Configuration
         catch (Throwable t)
         {
             logger.log(Level.SEVERE, "Error while loading a Configuration!", t);
-            throw new InvalidConfigurationException("Error while loading a Configuration!", t);
+            return null;
         }
     }
 
-    public static <T extends Configuration> T load(Module module, Class<T> clazz) throws InvalidConfigurationException
+    public static <T extends Configuration> T load(Module module, Class<T> clazz)
     {
         return load(module, clazz, false);
     }
@@ -518,17 +518,18 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Module module, Class<T> clazz, boolean readOnly) throws InvalidConfigurationException
+    public static <T extends Configuration> T load(Module module, Class<T> clazz, boolean readOnly)
     {
         Type type = clazz.getAnnotation(Type.class);
         if (type == null)
         {
-            throw new IllegalStateException("Configuration Type undefined!");
+            //ConfigType undefined
+            return null;
         }
         return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
     }
 
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz) throws InvalidConfigurationException
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
     {
         return load(is, clazz, false);
     }
@@ -541,7 +542,7 @@ public abstract class Configuration
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz, boolean readOnly) throws InvalidConfigurationException
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz, boolean readOnly)
     {
         try
         {
@@ -561,7 +562,7 @@ public abstract class Configuration
         catch (Throwable t)
         {
             CubeEngine.getLogger().log(Level.SEVERE, "Error while loading a Configuration!", t);
-            throw new InvalidConfigurationException("Error while loading a Configuration!", t);
+            return null;
         }
     }
 

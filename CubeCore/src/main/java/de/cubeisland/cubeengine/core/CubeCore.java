@@ -58,12 +58,7 @@ public class CubeCore extends JavaPlugin
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
 
         this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING);
-        try
-        {
-            this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
-        }
-        catch (InvalidConfigurationException ex)
-        {}
+        this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         this.i18n = new I18n(this);
 
         this.pm = getServer().getPluginManager();
