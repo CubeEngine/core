@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
+import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
+import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
@@ -28,7 +31,7 @@ public abstract class Module
     private boolean enabled;
     private final BukkitPluginWrapper pluginWrapper = new BukkitPluginWrapper(this);
 
-    public final void initialize(CubeCore core, ModuleInfo info, Logger logger, File folder, ModuleClassLoader classLoader)
+    protected final void initialize(CubeCore core, ModuleInfo info, Logger logger, File folder, ModuleClassLoader classLoader)
     {
         if (!initialized)
         {
@@ -38,6 +41,9 @@ public abstract class Module
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
+
+            this.onLoad();
+            this.core.getPluginManager().callEvent(new ModuleLoadedEvent(core, this));
         }
     }
 
@@ -164,7 +170,7 @@ public abstract class Module
         return this.core.getServer();
     }
 
-    public boolean isEnabled()
+    public final boolean isEnabled()
     {
         return this.enabled;
     }
@@ -172,5 +178,25 @@ public abstract class Module
     public BukkitPluginWrapper getPluginWrapper()
     {
         return this.pluginWrapper;
+    }
+
+    protected final void enable()
+    {
+        if (!this.enabled)
+        {
+            this.onEnable();
+            this.core.getPluginManager().callEvent(new ModuleEnabledEvent(this.core, this));
+            this.enabled = true;
+        }
+    }
+
+    protected final void disable()
+    {
+        if (this.enabled)
+        {
+            this.onDisable();
+            this.core.getPluginManager().callEvent(new ModuleDisabledEvent(this.core, this));
+            this.enabled = false;
+        }
     }
 }

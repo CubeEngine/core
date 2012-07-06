@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -78,7 +79,7 @@ public class ModuleManager
             }
             catch (InvalidModuleException e)
             {
-                logger.log(Level.SEVERE, null, e);
+                logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
 
@@ -88,17 +89,10 @@ public class ModuleManager
             try
             {
                 this.loadModule(moduleName, moduleInfos, moduleStack);
-                info = moduleInfos.get(moduleName);
             }
-            catch (InvalidModuleException ex)
+            catch (Exception e)
             {
-                Logger.getLogger(ModuleManager.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            catch (CircularDependencyException ex)
-            {
-            }
-            catch (MissingDependencyException ex)
-            {
+                logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
     }
@@ -136,41 +130,42 @@ public class ModuleManager
         {
             loadModule(dep, moduleInfos, moduleStack);
         }
-        this.loader.loadModule(info);
+        Module module = this.loader.loadModule(info);
+        module.enable();
+        this.modules.put(module.getName(), module);
         moduleStack.pop();
     }
 
-//    public ModuleManager disableModule(String name)
-//    {
-//        Module module = this.getModule(name);
-//        if (module != null)
+    public ModuleManager disableModule(Module module)
+    {
+        Validate.notNull(module, "The module must not be null!");
+//        Set<String> dependingModules = module.getDependingModules();
+//        for (String moduleName : dependingModules)
 //        {
-//            Set<String> dependingModules = module.getDependingModules();
-//            for (String moduleName : dependingModules)
+//            if (!name.equals(moduleName))
 //            {
-//                if (!name.equals(moduleName))
-//                {
-//                    this.disableModule(name);
-//                }
+//                this.disableModule(name);
 //            }
-//            this.pm.disablePlugin(module);
-//            this.modules.remove(name);
 //        }
-//        return this;
-//    }
+        module.disable();
+        HandlerList.unregisterAll(module.getPluginWrapper());
+//        CommandManager.getInstance().unregisterAll(module);
 
-//    public ModuleManager disableModules()
-//    {
-//        for (String module : this.modules.keySet())
-//        {
-//            this.disableModule(module);
-//        }
-//        return this;
-//    }
+        return this;
+    }
+
+    public ModuleManager disableModules()
+    {
+        for (Module module : this.modules.values())
+        {
+            this.disableModule(module);
+        }
+        return this;
+    }
 
     public void clean()
     {
-//        this.disableModules();
+        this.disableModules();
         this.modules.clear();
     }
 }

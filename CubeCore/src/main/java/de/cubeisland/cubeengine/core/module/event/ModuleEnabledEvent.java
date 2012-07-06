@@ -1,15 +1,21 @@
-package de.cubeisland.cubeengine.core.user.event;
+package de.cubeisland.cubeengine.core.module.event;
 
 import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
 
 /**
  *
- * @author CubeIsland-Dev
+ * @author CodeInfection
  */
-public class UserCreatedEvent extends UserEvent
+public class ModuleEnabledEvent extends ModuleEvent
 {
+    public ModuleEnabledEvent(CubeCore core, Module module)
+    {
+        super(core, module);
+    }
+
+
     private static final HandlerList handlers = new HandlerList();
     @Override
     public HandlerList getHandlers() {
@@ -18,10 +24,5 @@ public class UserCreatedEvent extends UserEvent
 
     public static HandlerList getHandlerList() {
         return handlers;
-    }
-
-    public UserCreatedEvent(CubeCore core, User user) 
-    {
-        super(core, user);
     }
 }
