@@ -63,7 +63,7 @@ public class CubeCore extends JavaPlugin
 
         try
         {
-            DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class, true);
+            DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class, false);
             this.database = new Database(databaseConfig);
         }
         catch (Throwable e)

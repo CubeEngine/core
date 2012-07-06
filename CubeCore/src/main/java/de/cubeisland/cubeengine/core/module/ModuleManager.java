@@ -93,9 +93,9 @@ public class ModuleManager
             }
             catch (Exception e)
             {
-                logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+                logger.log(Level.SEVERE, new StringBuilder("Failed to load Cube").append(moduleName).toString(), e);
             }
-        }
+    }
         logger.info("Finished loading modules!");
     }
 

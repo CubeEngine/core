@@ -53,7 +53,7 @@ public abstract class ConfigurationRepresenter
         }
         catch (FileNotFoundException ex)
         {
-            CubeEngine.getLogger().info(file.getName() + "{0} not found! Creating new config...");
+            CubeEngine.getLogger().info(file.getName() + " not found! Creating new config...");
         }
     }
 
