@@ -94,7 +94,7 @@ public class ModuleLoader
                 throw new InvalidModuleException("The module '" + file.getPath() + "' does not contain a module.yml!");
             }
             InputStream configStream = jarFile.getInputStream(entry);
-            info = new ModuleInfo(file, Configuration.load(configStream, ModuleConfiguration.class, true));
+            info = new ModuleInfo(file, Configuration.load(configStream, ModuleConfiguration.class));
         }
         catch (IOException e)
         {

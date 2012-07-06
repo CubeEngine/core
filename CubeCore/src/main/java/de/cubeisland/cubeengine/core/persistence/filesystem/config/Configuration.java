@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.*;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -37,7 +38,6 @@ public abstract class Configuration
     private static final Logger logger = CubeEngine.getLogger();
     protected ConfigurationRepresenter representer = null;
     protected File file;
-    protected boolean readOnly = false;
 
     static
     {
@@ -380,9 +380,10 @@ public abstract class Configuration
      */
     public void saveConfiguration()
     {
-        if (this.readOnly)
+        if (this.file == null)
         {
-            throw new IllegalStateException("Tried to save a readOnly-Configuration");
+            logger.warning("Tried to save config without File. No Saving...");
+            return;//No File -> No Saving
         }
         Class<?> clazz = this.getClass();
         if (clazz.isAnnotationPresent(MapComments.class))
@@ -405,10 +406,6 @@ public abstract class Configuration
      */
     public void saveToFile()
     {
-        if (this.readOnly)
-        {
-            throw new IllegalStateException("Tried to save a readOnly-Configuration");
-        }
         try
         {
             this.representer.save(this.file);
@@ -455,46 +452,22 @@ public abstract class Configuration
         return representer;
     }
 
-    public static <T extends Configuration> T load(File file, Class<T> clazz)
-    {
-        return load(file, clazz, false);
-    }
-
     /**
-     * Returns the loaded Configuration
+     * Loads and returns the loaded Configuration
      *
      * @param file the configurationfile
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(File file, Class<T> clazz, boolean readOnly)
+    public static <T extends Configuration> T load(File file, Class<T> clazz)
     {
         Validate.notNull(file, "The file must not be null!");
         try
         {
-            T config = clazz.newInstance();
-            Type type = clazz.getAnnotation(Type.class);
-            if (type == null)
-            {
-                String extension = file.getName();
-                extension = extension.substring(extension.lastIndexOf(".") + 1);
-                config.setRepresenter(extension);
-                if (config.representer == null)
-                {
-                    throw new IllegalStateException("Invalid/Unknown Configuration Type!");
-                }
-            }
-            else
-            {
-                config.setRepresenter(type.value());
-            }
+            InputStream is = new FileInputStream(file);
+            T config = load(is, clazz);
             config.file = file;
-            config.loadFromFile();
-            config.loadConfiguration(); //Load in representer and/or set default values
-            if (!readOnly)
-            {
-                config.saveConfiguration();
-            }
+            config.saveConfiguration();
             return config;
         }
         catch (Throwable t)
@@ -503,44 +476,15 @@ public abstract class Configuration
             return null;
         }
     }
-
-    public static <T extends Configuration> T load(Module module, Class<T> clazz)
-    {
-        return load(module, clazz, false);
-    }
-
+    
     /**
-     * Returns the loaded Configuration
-     *
-     * @param module the module to load the configuration from
-     * @param clazz the configuration
-     * @return the loaded configuration
-     */
-    public static <T extends Configuration> T load(Module module, Class<T> clazz, boolean readOnly)
-    {
-        Type type = clazz.getAnnotation(Type.class);
-        if (type == null)
-        {
-            //ConfigType undefined
-            return null;
-        }
-        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
-    }
-
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
-    {
-        return load(is, clazz, false);
-    }
-
-    /**
-     * Returns the loaded Configuration
-     *
+     * Loads and returns the loaded Configuration
      *
      * @param is the Inputstream to load the representer from
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz, boolean readOnly)
+    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
     {
         try
         {
@@ -552,7 +496,6 @@ public abstract class Configuration
             T config = clazz.newInstance();
             config.setRepresenter(type.value());
             config.representer.load(is);
-            config.readOnly = readOnly;
             config.loadConfiguration(); //set values loaded from inputStream
             config.onLoaded();
             return config;
@@ -563,6 +506,25 @@ public abstract class Configuration
             return null;
         }
     }
+
+    /**
+     * Returns the loaded Configuration
+     *
+     * @param module the module to load the configuration from
+     * @param clazz the configuration
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T load(Module module, Class<T> clazz)
+    {
+        Type type = clazz.getAnnotation(Type.class);
+        if (type == null)
+        {
+            //ConfigType undefined
+            return null;
+        }
+        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
+    }
+
 
     public ConfigurationRepresenter getRepresenter()
     {
@@ -588,14 +550,6 @@ public abstract class Configuration
     public File getFile()
     {
         return this.file;
-    }
-
-    /**
-     * Sets the Configuration to readOnly!
-     */
-    public boolean isReadOnly()
-    {
-        return this.readOnly;
     }
 
     public void onLoaded()
