@@ -54,8 +54,8 @@ public class ModuleLoader
                 }
             }
             
-            ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.getClass().getClassLoader());
-            Module module = Class.forName(BASE_FQDN + name.toLowerCase() + "." + CLASS_PREFIX + name).asSubclass(Module.class).getConstructor().newInstance();
+            ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
+            Module module = Class.forName(BASE_FQDN + name.toLowerCase() + "." + CLASS_PREFIX + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
             module.initialize(this.core, info, new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
             this.classLoaders.put(name, classLoader);
             return module;

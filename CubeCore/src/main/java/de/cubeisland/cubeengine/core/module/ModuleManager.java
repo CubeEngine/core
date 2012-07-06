@@ -57,6 +57,7 @@ public class ModuleManager
         Module module;
         ModuleInfo info;
         HashMap<String, ModuleInfo> moduleInfos = new HashMap<String, ModuleInfo>();
+        logger.info("Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
             try
@@ -95,6 +96,7 @@ public class ModuleManager
                 logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
+        logger.info("Finished loading modules!");
     }
 
     private void loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
@@ -132,6 +134,7 @@ public class ModuleManager
         }
         Module module = this.loader.loadModule(info);
         module.enable();
+        this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' Revision ").append(info.getRevision()).append(" successfully loaded!").toString());
         this.modules.put(module.getName(), module);
         moduleStack.pop();
     }

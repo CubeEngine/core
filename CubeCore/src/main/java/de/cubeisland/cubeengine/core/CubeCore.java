@@ -50,6 +50,10 @@ public class CubeCore extends JavaPlugin
     {
         CubeEngine.initialize(this);
 
+        this.pm = getServer().getPluginManager();
+        this.permissionRegistration = new PermissionRegistration(this.pm);
+        this.registerPermissions(Perm.values());
+
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
         this.fileManager.dropResources(CoreResource.values());
 
@@ -60,19 +64,14 @@ public class CubeCore extends JavaPlugin
         this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
         this.i18n = new I18n(this);
 
-        this.pm = getServer().getPluginManager();
-        this.permissionRegistration = new PermissionRegistration(this.pm);
-        this.registerPermissions(Perm.values());
-
         try
         {
-            DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
+            DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class, true);
             this.database = new Database(databaseConfig);
         }
         catch (Throwable e)
         {
-            // TODO log exception
-            e.printStackTrace(System.err);
+            this.coreLogger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             this.pm.disablePlugin(this);
             return;
         }

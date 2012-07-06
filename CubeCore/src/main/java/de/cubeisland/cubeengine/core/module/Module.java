@@ -43,7 +43,7 @@ public abstract class Module
             this.enabled = false;
 
             this.onLoad();
-            this.core.getPluginManager().callEvent(new ModuleLoadedEvent(core, this));
+            core.getPluginManager().callEvent(new ModuleLoadedEvent(core, this));
         }
     }
 
