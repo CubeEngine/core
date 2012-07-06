@@ -6,5 +6,8 @@ package de.cubeisland.cubeengine.core.module;
  */
 public class MissingDependencyException extends Exception
 {
-
+    public MissingDependencyException(String missing)
+    {
+        super("Missing module: " + missing);
+    }
 }

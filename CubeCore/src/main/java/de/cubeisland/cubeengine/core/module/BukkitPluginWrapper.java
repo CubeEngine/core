@@ -123,7 +123,7 @@ public class BukkitPluginWrapper implements Plugin
 
     public String getName()
     {
-        return this.module.getName();
+        return ModuleLoader.CLASS_PREFIX + this.module.getName();
     }
 
     public boolean onCommand(CommandSender cs, Command cmnd, String string, String[] strings)

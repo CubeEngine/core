@@ -24,8 +24,8 @@ public class ModuleLoader
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
     private final CubeCore core;
+    public static final String CLASS_PREFIX = "Cube";
     private static final String BASE_FQDN = "de.cubeisland.cubeengine.";
-    private static final String CLASS_PREFIX = "Cube";
     private static final String INFO_FILE = "module.yml";
 
     public ModuleLoader(CubeCore core)
@@ -46,11 +46,11 @@ public class ModuleLoader
         {
             final String name = info.getName();
 
-            for (String deb : info.getDependencies())
+            for (String dep : info.getDependencies())
             {
-                if (!this.classLoaders.containsKey(deb))
+                if (!this.classLoaders.containsKey(dep))
                 {
-                    throw new MissingDependencyException();
+                    throw new MissingDependencyException(dep);
                 }
             }
             
@@ -66,7 +66,7 @@ public class ModuleLoader
             {
                 throw (MissingDependencyException)e;
             }
-            throw new InvalidModuleException(e);
+            throw new InvalidModuleException("Module: " + info.getName(), e);
         }
     }
 
@@ -98,7 +98,7 @@ public class ModuleLoader
         }
         catch (IOException e)
         {
-            throw new InvalidModuleException(e);
+            throw new InvalidModuleException("File: " + file.getPath(), e);
         }
         finally
         {
@@ -136,11 +136,11 @@ public class ModuleLoader
         
         Set<String> alreadyChecked = new HashSet<String>();
 
-        for (String deb : info.getSoftDependencies())
+        for (String dep : info.getSoftDependencies())
         {
             try
             {
-                clazz = this.classLoaders.get(deb).findClass(name);
+                clazz = this.classLoaders.get(dep).findClass(name);
                 if (clazz != null)
                 {
                     return clazz;
@@ -150,19 +150,19 @@ public class ModuleLoader
             {}
         }
 
-        for (String deb : info.getDependencies())
+        for (String dep : info.getDependencies())
         {
-            if (alreadyChecked.contains(deb))
+            if (alreadyChecked.contains(dep))
             {
                 continue;
             }
             else
             {
-                alreadyChecked.add(deb);
+                alreadyChecked.add(dep);
             }
             try
             {
-                clazz = this.classLoaders.get(deb).findClass(name);
+                clazz = this.classLoaders.get(dep).findClass(name);
                 if (clazz != null)
                 {
                     return clazz;

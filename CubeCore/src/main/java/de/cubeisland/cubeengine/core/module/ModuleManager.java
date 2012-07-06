@@ -76,7 +76,7 @@ public class ModuleManager
                         logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
                     }
                 }
-                moduleInfos.put(info.getName(), info);
+                moduleInfos.put(info.getName().toLowerCase(), info);
             }
             catch (InvalidModuleException e)
             {
@@ -89,55 +89,50 @@ public class ModuleManager
         {
             try
             {
-                this.loadModule(moduleName, moduleInfos, moduleStack);
+                this.loadModule(moduleName, moduleInfos, moduleStack, false);
             }
             catch (Exception e)
             {
-                logger.log(Level.SEVERE, new StringBuilder("Failed to load Cube").append(moduleName).toString(), e);
+                logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
             }
     }
         logger.info("Finished loading modules!");
     }
 
-    private void loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
-    {
-        this.loadModule(name, moduleInfos, moduleStack, false);
-    }
-
-    private void loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
     {
         name = name.toLowerCase();
         if (this.modules.containsKey(name))
         {
-            return;
-        }
-        if (!moduleInfos.containsKey(name))
-        {
-            if (soft)
-            {
-                return;
-            }
-            throw new MissingDependencyException();
+            return true;
         }
         if (moduleStack.contains(name))
         {
             throw new CircularDependencyException();
         }
-        moduleStack.push(name);
         ModuleInfo info = moduleInfos.get(name);
+        if (info == null)
+        {
+            return soft;
+        }
+        moduleStack.push(name);
         for (String dep : info.getSoftDependencies())
         {
             loadModule(dep, moduleInfos, moduleStack, true);
         }
         for (String dep : info.getDependencies())
         {
-            loadModule(dep, moduleInfos, moduleStack);
+            if (!loadModule(dep, moduleInfos, moduleStack, false))
+            {
+                throw new MissingDependencyException(dep);
+            }
         }
         Module module = this.loader.loadModule(info);
         module.enable();
         this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' Revision ").append(info.getRevision()).append(" successfully loaded!").toString());
         this.modules.put(module.getName().toLowerCase(), module);
         moduleStack.pop();
+        return true;
     }
 
     public ModuleManager disableModule(Module module)

@@ -32,14 +32,14 @@ public class ModuleConfiguration extends Configuration
     public void onLoaded()
     {
         this.dependencies.remove(this.name);
-        for (String deb : this.dependencies)
+        for (String dep : this.dependencies)
         {
-            deb = deb.toLowerCase();
+            dep = dep.toLowerCase();
         }
         this.softDependencies.remove(this.name);
-        for (String deb : this.softDependencies)
+        for (String dep : this.softDependencies)
         {
-            deb = deb.toLowerCase();
+            dep = dep.toLowerCase();
         }
     }
 }
