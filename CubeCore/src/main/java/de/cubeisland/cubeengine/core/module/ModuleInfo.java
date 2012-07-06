@@ -23,7 +23,7 @@ public final class ModuleInfo
         Validate.notNull(config, "The module configuration failed to loaded!");
         
         this.file               = file;
-        this.name               = config.name;
+        this.name               = config.name.substring(0, 1).toUpperCase() + config.name.substring(1).toLowerCase();
         this.revision           = config.revision;
         this.description        = config.desciprtion;
         this.dependencies       = Collections.unmodifiableSet(config.dependencies);

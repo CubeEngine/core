@@ -25,6 +25,7 @@ public class ModuleLoader
     private final Map<String, ModuleClassLoader> classLoaders;
     private final CubeCore core;
     private static final String BASE_FQDN = "de.cubeisland.cubeengine.";
+    private static final String CLASS_PREFIX = "Cube";
     private static final String INFO_FILE = "module.yml";
 
     public ModuleLoader(CubeCore core)
@@ -54,7 +55,7 @@ public class ModuleLoader
             }
             
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.getClass().getClassLoader());
-            Module module = Class.forName(BASE_FQDN + name.toLowerCase() + "." + name).asSubclass(Module.class).getConstructor().newInstance();
+            Module module = Class.forName(BASE_FQDN + name.toLowerCase() + "." + CLASS_PREFIX + name).asSubclass(Module.class).getConstructor().newInstance();
             module.initialize(this.core, info, new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
             this.classLoaders.put(name, classLoader);
             return module;
