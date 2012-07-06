@@ -41,7 +41,7 @@ public class ModuleManager
             return null;
         }
 
-        return this.modules.get(name);
+        return this.modules.get(name.toLowerCase());
     }
 
     public Collection<Module> getModules()
@@ -106,6 +106,7 @@ public class ModuleManager
 
     private void loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
     {
+        name = name.toLowerCase();
         if (this.modules.containsKey(name))
         {
             return;
@@ -135,7 +136,7 @@ public class ModuleManager
         Module module = this.loader.loadModule(info);
         module.enable();
         this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' Revision ").append(info.getRevision()).append(" successfully loaded!").toString());
-        this.modules.put(module.getName(), module);
+        this.modules.put(module.getName().toLowerCase(), module);
         moduleStack.pop();
     }
 
