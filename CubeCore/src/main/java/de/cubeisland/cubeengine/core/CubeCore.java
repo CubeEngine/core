@@ -83,8 +83,11 @@ public class CubeCore extends JavaPlugin
     @Override
     public void onDisable()
     {
-        this.moduleManager.clean();
-        this.moduleManager = null;
+        if (this.moduleManager != null)
+        {
+            this.moduleManager.clean();
+            this.moduleManager = null;
+        }
 
         CubeEngine.clean();
 

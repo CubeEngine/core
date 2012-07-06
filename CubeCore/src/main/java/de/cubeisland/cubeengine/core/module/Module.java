@@ -114,6 +114,10 @@ public abstract class Module
 
     public File getFolder()
     {
+        if (!this.folder.exists())
+        {
+            this.folder.mkdirs();
+        }
         return this.folder;
     }
 

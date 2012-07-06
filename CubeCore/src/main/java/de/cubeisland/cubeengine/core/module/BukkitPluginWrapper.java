@@ -15,7 +15,7 @@ import org.bukkit.plugin.PluginLoader;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class BukkitPluginWrapper implements Plugin
 {
