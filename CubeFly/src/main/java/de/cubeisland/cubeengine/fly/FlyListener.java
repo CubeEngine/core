@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
@@ -21,9 +21,11 @@ public class FlyListener implements Listener
 {
     UserManager cuManager;
     HashMap<Player, Task> tasks = new HashMap<Player, Task>();
+    CubeFly flymodule;
 
-    public FlyListener(UserManager cuManager)
+    public FlyListener(CubeFly flymodule, UserManager cuManager)
     {
+        this.flymodule = flymodule;
         this.cuManager = cuManager;
     }
 
@@ -56,7 +58,7 @@ public class FlyListener implements Listener
                 //User does not exist -> No Permissions for using any CubeModule
                 //TODO return;
             }
-            FlyStartEvent flyStartEvent = new FlyStartEvent(CubeCore.getInstance(), user);
+            FlyStartEvent flyStartEvent = new FlyStartEvent(CubeEngine.getCore(), user);
             if (flyStartEvent.isCancelled())
             {
                 //TODO user.sendTMessage("&cYou are not allowed to fly now!");
@@ -73,7 +75,7 @@ public class FlyListener implements Listener
             player.getInventory().removeItem(feather);
             //TODO user.sendTMessage("&6You can now fly!");
             //&6Du kannst jetzt fliegen!
-            Task flymore = new Task()  
+            Task flymore = new Task(flymodule)  
             {
                 public void run()//2 feather/min
                 {

@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.CubeEngine;
 import static de.cubeisland.cubeengine.CubeEngine._;
-import de.cubeisland.cubeengine.core.CubeCore;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.libMinecraft.command.Command;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
  */
 public class FlyCommand
 {
-    UserManager cuManager = CubeCore.getInstance().getUserManager();
+    UserManager cuManager = CubeEngine.getCore().getUserManager();
 
     @Command
     public void fly(CommandSender sender, CommandArgs args)
@@ -36,7 +36,7 @@ public class FlyCommand
                     player.setAllowFlight(false); //Disable when player is flying
                     return;
                 }
-                FlyStartEvent event = new FlyStartEvent(CubeCore.getInstance(), user);
+                FlyStartEvent event = new FlyStartEvent(CubeEngine.getCore(), user);
                 if (event.isCancelled())
                 {
                     user.sendTMessage("&cYou are not allowed to fly now!");
