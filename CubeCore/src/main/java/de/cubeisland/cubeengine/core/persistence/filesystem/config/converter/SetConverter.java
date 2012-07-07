@@ -19,8 +19,7 @@ public class SetConverter implements Converter<Set>
     {
         if (object instanceof Collection)
         {
-            Set set = new HashSet((Collection)object);
-            return set;
+            return new HashSet((Collection)object);
         }
         return null;
     }
