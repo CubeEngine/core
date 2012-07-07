@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.M
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Update;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.*;
 import de.cubeisland.cubeengine.core.util.Validate;
@@ -580,11 +580,11 @@ public abstract class Configuration
 
     protected void updateConfig(int fromRevision)
     {
-        Update annotation = this.getClass().getAnnotation(Update.class);
+        Updater annotation = this.getClass().getAnnotation(Updater.class);
         if (annotation != null)
         {
-            Class<? extends AbstractUpdater> updaterClass = annotation.value();
-            AbstractUpdater updater;
+            Class<? extends ConfigurationUpdater> updaterClass = annotation.value();
+            ConfigurationUpdater updater;
             try
             {
                 updater = updaterClass.newInstance();
