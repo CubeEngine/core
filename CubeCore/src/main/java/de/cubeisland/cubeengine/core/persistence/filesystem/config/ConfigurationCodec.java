@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -428,6 +429,11 @@ public abstract class ConfigurationCodec
             {
                 if (field.isAnnotationPresent(Option.class))
                 {
+                    int mask = field.getModifiers();
+                    if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
+                    {
+                        continue;
+                    }
                     String path = field.getAnnotation(Option.class).value();
                     //Get savedValue or default
                     Object configElem = this.get(path);
@@ -509,6 +515,11 @@ public abstract class ConfigurationCodec
         {
             if (field.isAnnotationPresent(Option.class))
             {
+                int mask = field.getModifiers();
+                if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
+                {
+                    continue;
+                }
                 String path = field.getAnnotation(Option.class).value();
                 if (field.isAnnotationPresent(Comment.class))
                 {
