@@ -371,8 +371,7 @@ public abstract class Configuration
     {
         if (this.file == null)
         {
-            logger.warning("Tried to save config without File. No Saving...");
-            return;//No File -> No Saving
+            throw new IllegalStateException("Tried to save config without File.");
         }
         Class<?> clazz = this.getClass();
         if (clazz.isAnnotationPresent(MapComments.class))
