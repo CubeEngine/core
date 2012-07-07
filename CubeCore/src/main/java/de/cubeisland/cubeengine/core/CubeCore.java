@@ -75,7 +75,7 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
 
         this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);
-        
+
         this.moduleManager = new ModuleManager(this);
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }

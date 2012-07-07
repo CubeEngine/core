@@ -20,7 +20,7 @@ public class ModuleConfiguration extends Configuration
     public int revision;
 
     @Option("description")
-    public String desciprtion;
+    public String description;
 
     @Option(value = "dependencies", genericType = String.class)
     public Set<String> dependencies = new HashSet<String>();

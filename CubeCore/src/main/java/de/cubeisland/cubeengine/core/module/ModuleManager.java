@@ -95,7 +95,7 @@ public class ModuleManager
             {
                 logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
             }
-    }
+        }
         logger.info("Finished loading modules!");
     }
 

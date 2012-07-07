@@ -23,6 +23,7 @@ public abstract class ConfigurationRepresenter
     protected LinkedHashMap<String, Object> values;
     protected HashMap<String, String> comments;
     protected boolean first;
+    protected Integer revision = null;
 
     public ConfigurationRepresenter()
     {
@@ -48,10 +49,29 @@ public abstract class ConfigurationRepresenter
         try
         {
             String line;
-            while ((line = input.readLine()) != null)
+            line = input.readLine();
+            if (line != null)
             {
-                builder.append(line);
-                builder.append(LINEBREAK);
+                if (!line.startsWith("#Revision:"))//Detect Revision
+                {
+                    builder.append(line).append(LINEBREAK);
+                }
+                else
+                {
+                    try
+                    {
+                        int rev = Integer.parseInt(line.substring(line.indexOf(" ")));
+                        this.revision = rev;
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                    }
+                }
+                while ((line = input.readLine()) != null)
+                {
+                    builder.append(line);
+                    builder.append(LINEBREAK);
+                }
             }
         }
         finally
@@ -101,6 +121,7 @@ public abstract class ConfigurationRepresenter
     {
         StringBuilder sb = new StringBuilder();
         first = true;
+        sb.append(this.revision());
         sb.append(this.head());
         sb.append(this.convertMap("", this.values, 0));
         sb.append(this.tail());
@@ -300,6 +321,20 @@ public abstract class ConfigurationRepresenter
     {
         this.comments.clear();
         this.values.clear();
+    }
+
+    public String revision()
+    {
+        if (revision != null)
+        {
+            return "#Revision: " + this.revision;
+        }
+        return "";
+    }
+
+    public void setRevision(int revision)
+    {
+        this.revision = revision;
     }
 
     /**

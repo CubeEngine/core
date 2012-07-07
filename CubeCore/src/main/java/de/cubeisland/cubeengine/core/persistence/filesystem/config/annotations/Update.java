@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations;
 
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.AbstractUpdater;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,13 +11,8 @@ import java.lang.annotation.Target;
  * @author Faithcaio
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Revision
+@Target(ElementType.TYPE)
+public @interface Update
 {
-    /**
-     * The Revision of this Config
-     *
-     * @return the revision
-     */
-    public int value();
+    Class<? extends AbstractUpdater> value();
 }

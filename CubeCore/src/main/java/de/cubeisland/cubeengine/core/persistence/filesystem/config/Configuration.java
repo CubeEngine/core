@@ -8,23 +8,23 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.M
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Update;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.*;
 import de.cubeisland.cubeengine.core.util.Validate;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Location;
@@ -65,6 +65,8 @@ public abstract class Configuration
 
         registerConverter(OfflinePlayer.class, new PlayerConverter());
         registerConverter(Location.class, new LocationConverter());
+
+        registerConverter(Set.class, new SetConverter());
 
         registerType("yml", new YamlRepresenter());
         registerType("json", new JsonRepresenter());
@@ -271,7 +273,7 @@ public abstract class Configuration
                         converter = this.matchConverter(genType);
                         if (converter != null)
                         {
-                            Collection<Object> result = new ArrayList<Object>();
+                            Collection<Object> result = new LinkedList<Object>();
                             for (Object o : collection)
                             {
                                 result.add(converter.from(o));
@@ -291,7 +293,7 @@ public abstract class Configuration
                     converter = this.matchConverter(genType);
                     if (converter != null)
                     {
-                        Collection<Object> result = new ArrayList<Object>();
+                        Collection<Object> result = new LinkedList<Object>();
                         for (Object o : array)
                         {
                             result.add(converter.from(o));
@@ -300,7 +302,7 @@ public abstract class Configuration
                     }
                     else
                     {
-                        Collection<Object> result = new ArrayList<Object>();
+                        Collection<Object> result = new LinkedList<Object>();
                         result.addAll(Arrays.asList(array));
                         return result;
                     }
@@ -340,7 +342,7 @@ public abstract class Configuration
             {
                 String path = field.getAnnotation(Option.class).value();
                 //Get savedValue or default
-                Object configElem = representer.get(path);
+                Object configElem = this.representer.get(path);
                 if (configElem == null)
                 {
                     //Set defaultValue if no value saved
@@ -385,6 +387,11 @@ public abstract class Configuration
         for (Field field : this.getClass().getFields())
         {
             this.saveElement(field);
+        }
+        Revision revision = clazz.getAnnotation(Revision.class);
+        if (revision != null)
+        {
+            this.representer.setRevision(revision.value());
         }
         this.saveToFile();
     }
@@ -489,18 +496,6 @@ public abstract class Configuration
         try
         {
             Revision revis = clazz.getAnnotation(Revision.class);
-            if (revis == null)
-            {
-                //No Revision do nothing...
-            }
-            else
-            {
-                //Check Revision of InputStream
-                InputStreamReader reader = new InputStreamReader(is);
-                BufferedReader input = new BufferedReader(reader);
-                String firstline = input.readLine();
-                //TODO interpretiere 1.Zeile ... oder letzte ka wie ich das mache bei verschiedenen configtypen ohne Fehler beim einles später
-            }
             Type type = clazz.getAnnotation(Type.class);
             if (type == null)
             {
@@ -511,6 +506,18 @@ public abstract class Configuration
             if (is != null)
             {
                 config.representer.load(is);
+            }
+            Integer rev = config.representer.revision;
+            if (revis != null)
+            {
+                if (revis.value() > rev)
+                {
+                    logger.log(Level.INFO, "Updating Configuration from Revision {0} to {1}", new Object[]
+                        {
+                            rev, revis.value()
+                        });
+                    config.updateConfig(rev);
+                }
             }
             config.loadConfiguration(); //set values loaded from inputStream
             config.onLoaded();
@@ -569,5 +576,23 @@ public abstract class Configuration
 
     public void onLoaded()
     {
+    }
+
+    protected void updateConfig(int fromRevision)
+    {
+        Update annotation = this.getClass().getAnnotation(Update.class);
+        if (annotation != null)
+        {
+            Class<? extends AbstractUpdater> updaterClass = annotation.value();
+            AbstractUpdater updater;
+            try
+            {
+                updater = updaterClass.newInstance();
+                this.representer.values = updater.update(this.representer.values, fromRevision);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
     }
 }
