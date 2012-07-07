@@ -18,7 +18,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class CubeCore extends JavaPlugin
 {
-    private static CubeCore instance;
     private Database database;
     private PermissionRegistration permissionRegistration;
     private UserManager userManager;
@@ -27,22 +26,11 @@ public class CubeCore extends JavaPlugin
     private ModuleManager moduleManager;
     private I18n i18n;
     private CoreConfiguration config;
-    private CubeLogger coreLogger;
-
-    public CubeCore()
-    {
-        instance = this;
-        this.coreLogger = new CubeLogger("CubeCore");
-    }
-
+    private CubeLogger coreLogger = new CubeLogger("CubeCore");
+    
     public Database getDB()
     {
         return this.database;
-    }
-
-    public static CubeCore getInstance()
-    {
-        return instance;
     }
 
     @Override

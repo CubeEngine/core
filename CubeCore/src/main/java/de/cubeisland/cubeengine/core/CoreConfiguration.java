@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core;
 
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
@@ -19,8 +20,7 @@ import org.bukkit.OfflinePlayer;
  * @author Faithcaio
  */
 @Type("yml")
-@MapComments(
-{
+@MapComments({
     @MapComment(path = "regions", text = "more RandomTests:"),
     @MapComment(path = "list", text = "ListTests:"),
     @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
@@ -37,10 +37,10 @@ public class CoreConfiguration extends Configuration
     //TODO remove this test
     @Option("location")
     @Comment("LocationTest")
-    public Location location = new Location(CubeCore.getInstance().getServer().getWorld("world"), 1, 2, 3, 0, 0);
+    public Location location = new Location(CubeEngine.getCore().getServer().getWorld("world"), 1, 2, 3, 0, 0);
     @Option("offlineplayer")
     @Comment("PlayerTest")
-    public OfflinePlayer player = CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio");
+    public OfflinePlayer player = CubeEngine.getCore().getServer().getOfflinePlayer("Faithcaio");
     @Option("regions.use-scheduler")
     public boolean use_scheduler = true;
     @Option("regions.sql.use")
@@ -73,12 +73,11 @@ public class CoreConfiguration extends Configuration
     @Option(value = "arrays.playertest", genericType = OfflinePlayer.class)
     public OfflinePlayer[] playerarray =
     {
-        CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio"), CubeCore.getInstance().getServer().getOfflinePlayer("Niemand")
+        CubeEngine.getCore().getServer().getOfflinePlayer("Faithcaio"), CubeEngine.getCore().getServer().getOfflinePlayer("Niemand")
     };
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
     {
-        
         {
             add("quark");
             add("kekse");
@@ -89,8 +88,8 @@ public class CoreConfiguration extends Configuration
     {
         
         {
-            add(CubeCore.getInstance().getServer().getOfflinePlayer("Faithcaio"));
-            add(CubeCore.getInstance().getServer().getOfflinePlayer("KekseSpieler"));
+            add(CubeEngine.getCore().getServer().getOfflinePlayer("Faithcaio"));
+            add(CubeEngine.getCore().getServer().getOfflinePlayer("KekseSpieler"));
         }
     };
     @Option(value = "list.shortlist", genericType = Short.class)

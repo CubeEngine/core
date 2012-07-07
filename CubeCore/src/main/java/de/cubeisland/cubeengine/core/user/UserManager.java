@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import gnu.trove.map.hash.THashMap;
@@ -36,7 +36,7 @@ public class UserManager
     {
         this.storage.store(user);
         this.users.put(user.getName(), user);
-        UserCreatedEvent event = new UserCreatedEvent(CubeCore.getInstance(),user);
+        UserCreatedEvent event = new UserCreatedEvent(CubeEngine.getCore(),user);
         server.getPluginManager().callEvent(event);
         return this;
     }

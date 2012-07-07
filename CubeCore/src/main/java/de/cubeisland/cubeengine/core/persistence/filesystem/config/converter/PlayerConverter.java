@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.CubeEngine;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
@@ -14,7 +14,7 @@ public class PlayerConverter implements Converter<OfflinePlayer>
 
     public PlayerConverter()
     {
-        this.server = CubeCore.getInstance().getServer();
+        this.server = CubeEngine.getCore().getServer();
     }
 
     public Object from(OfflinePlayer object)

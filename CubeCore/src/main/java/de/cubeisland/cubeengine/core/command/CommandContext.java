@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -20,7 +18,6 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CommandContext
 {
-    private final BaseCommand baseCommand;
     private final String baseLabel;
     private final SubCommand subCommand;
     private final String label;
@@ -38,9 +35,8 @@ public class CommandContext
      * @param args the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
-    public CommandContext(CommandSender sender, BaseCommand baseCommand, String baseLabel, SubCommand subCommand, String[] args)
+    public CommandContext(CommandSender sender, String baseLabel, SubCommand subCommand, String[] args)
     {
-        this.baseCommand = baseCommand;
         this.baseLabel = baseLabel;
         this.subCommand = subCommand;
         this.flags = new HashSet<String>();
@@ -167,16 +163,6 @@ public class CommandContext
     public int size()
     {
         return this.size;
-    }
-
-    /**
-     * Returns the base command
-     *
-     * @return the label
-     */
-    public BaseCommand getBaseCommand()
-    {
-        return this.baseCommand;
     }
 
     /**
@@ -339,36 +325,16 @@ public class CommandContext
     }
     
     /**
-     * Returns the requested value as a Player
-     *
-     * @param index the index
-     * @return the value as Player
-     */
-    public Player getPlayer(int index)
-    {
-        return CubeCore.getInstance().getServer().getPlayer(this.getString(index));
-    }
-    
-    /**
-     * Returns the requested value as a Player
-     *
-     * @param index the index
-     * @return the value as Player
-     */
-    public OfflinePlayer getOfflinePlayer(int index)
-    {
-        return CubeCore.getInstance().getServer().getOfflinePlayer(this.getString(index));
-    }
-    
-    /**
      * Returns the requested value as a User
+     *
+     * TODO remove CubeEngine dependency by providing the core
      *
      * @param index the index
      * @return the value as User
      */
     public User getUser(int index)
     {
-        return CubeCore.getInstance().getUserManager().getUser(this.getString(index));
+        return CubeEngine.getCore().getUserManager().getUser(this.getString(index));
     }
     
     /**

@@ -29,9 +29,9 @@ public abstract class Module
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
-    private final BukkitPluginWrapper pluginWrapper = new BukkitPluginWrapper(this);
+    private PluginWrapper pluginWrapper;
 
-    protected final void initialize(CubeCore core, ModuleInfo info, Logger logger, File folder, ModuleClassLoader classLoader)
+    protected final void initialize(CubeCore core, ModuleInfo info, PluginWrapper pluginWrapper, Logger logger, File folder, ModuleClassLoader classLoader)
     {
         if (!initialized)
         {
@@ -179,7 +179,7 @@ public abstract class Module
         return this.enabled;
     }
 
-    public BukkitPluginWrapper getPluginWrapper()
+    public PluginWrapper getPluginWrapper()
     {
         return this.pluginWrapper;
     }

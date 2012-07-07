@@ -1,19 +1,26 @@
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.module.Module;
+import org.bukkit.plugin.Plugin;
 
 /**
  * This Task can be cancelled from the inside
  * 
  * @author Faithcaio
  */
-public abstract class Task implements Runnable {
+public abstract class Task implements Runnable
+{
     private int taskid;
-    private static CubeCore plugin;
+    private static Plugin plugin;
     
-    static
+    public Task(Plugin plugin)
     {
-        plugin = CubeCore.getInstance();
+        this.plugin = plugin;
+    }
+
+    public Task(Module module)
+    {
+        this((Plugin)module.getPluginWrapper());
     }
     
     public void setTaskId(int taskid) 

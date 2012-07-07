@@ -17,7 +17,7 @@ import org.bukkit.plugin.PluginLoader;
  *
  * @author Phillip Schichtel
  */
-public class BukkitPluginWrapper implements Plugin
+public class BukkitPluginWrapper implements PluginWrapper, Plugin
 {
     private final Module module;
 

@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.command.annotation;
  *
  * @author Phillip Schichtel
  */
-public @interface Description
+public @interface Named
 {
-    public String value();
+    public String[] value();
 }

@@ -17,4 +17,8 @@ public @interface Command
     public String[] aliases() default {};
     public int min() default -1;
     public int max() default -1;
+    public String desc();
+    public boolean permission() default false;
+    public String usage() default "auto";
+    public Flag[] flags() default {};
 }
