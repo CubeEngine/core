@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -82,11 +83,11 @@ public class CubeLogger extends Logger
      * @param filename the name of the file to log into
      * @param level the minimum loglvl needed to log
      */
-    public CubeLogger addFileHandler(String filename, Level level)
+    public CubeLogger addFileHandler(File file, Level level)
     {
         try
         {
-            FileHandler fileHandler = new FileHandler(filename, true);
+            FileHandler fileHandler = new FileHandler(file.getPath(), true);
             fileHandler.setLevel(level);
             fileHandler.setFormatter(new FileFormatter());
             this.addHandler(fileHandler);

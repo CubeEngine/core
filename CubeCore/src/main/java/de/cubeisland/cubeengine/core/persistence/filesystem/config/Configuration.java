@@ -145,7 +145,7 @@ public abstract class Configuration
             //ConfigType undefined
             return null;
         }
-        return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
+        return load(new File(module.getFolder(), module.getName() + "." + type.value()), clazz);
     }
 
     public void setCodec(String fileExtension)

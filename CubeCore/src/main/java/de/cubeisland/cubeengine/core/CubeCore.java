@@ -45,13 +45,13 @@ public class CubeCore extends JavaPlugin
         this.fileManager = new FileManager(super.getDataFolder().getParentFile());
         this.fileManager.dropResources(CoreResource.values());
 
-        this.coreLogger.addFileHandler("CubeCore_TestLogs.log", Level.WARNING);
-        this.config = Configuration.load(new File(getDataFolder(), "core.yml"), CoreConfiguration.class);
+        this.coreLogger.addFileHandler(new File(fileManager.getLogDir(),"CubeCore.log"), Level.WARNING);
+        this.config = Configuration.load(new File(fileManager.getConfigDir(), "Core.yml"), CoreConfiguration.class);
         this.i18n = new I18n(this);
 
         try
         {
-            DatabaseConfiguration databaseConfig = Configuration.load(new File(getDataFolder(), "database.yml"), DatabaseConfiguration.class);
+            DatabaseConfiguration databaseConfig = Configuration.load(new File(fileManager.getConfigDir(), "Database.yml"), DatabaseConfiguration.class);
             this.database = new Database(databaseConfig);
         }
         catch (Throwable e)

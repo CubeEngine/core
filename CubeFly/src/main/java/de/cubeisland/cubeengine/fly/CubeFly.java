@@ -11,7 +11,6 @@ public class CubeFly extends Module
     public static boolean debugMode = false;
     protected Server server;
     protected File dataFolder;
-    private static final String PERMISSION_BASE = "cubewar.fly";
     private FlyConfiguration config;
 
     @Override
