@@ -1,14 +1,24 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
+import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComments;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Updater;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -37,8 +47,9 @@ public abstract class ConfigurationCodec
      * @param is the InputStream
      * @throws IOException
      */
-    public void load(InputStream is) throws IOException
+    public void load(Configuration config, InputStream is) throws IOException
     {
+        Logger logger = CubeEngine.getLogger();
         if (is == null)
         {
             return;
@@ -79,6 +90,72 @@ public abstract class ConfigurationCodec
             input.close();
         }
         loadFromString(builder.toString());
+        //Config loaded into Maps...
+        //Check for Updating:
+        Class<? extends Configuration> clazz = config.getClass();
+        Revision revis = clazz.getAnnotation(Revision.class);
+        if (revis != null && this.revision != null)
+        {
+            if (revis.value() > this.revision)
+            {
+                logger.log(Level.INFO, "Updating Configuration from Revision {0} to {1}", new Object[]
+                    {
+                        this.revision, revis.value()
+                    });
+                this.updateConfig(clazz, this.revision);
+            }
+        }
+        //Write loaded maps into Fields
+        for (Field field : clazz.getFields())
+        {
+            try
+            {
+                if (field.isAnnotationPresent(Option.class))
+                {
+                    String path = field.getAnnotation(Option.class).value();
+                    //Get savedValue or default
+                    Object configElem = this.get(path);
+                    if (configElem == null)
+                    {
+                        //Set defaultValue if no value saved
+                        this.set(path, Configuration.convertFrom(field, field.get(config)));
+                    }
+                    else
+                    {
+                        //Set new Field Value
+                        field.set(config, Configuration.convertTo(config, field, configElem));
+                    }
+
+                    if (field.isAnnotationPresent(Comment.class))
+                    {
+                        this.addComment(path, field.getAnnotation(Comment.class).value());
+                    }
+                }
+            }
+            catch (IllegalAccessException ex)
+            {
+                logger.severe("Error while loading a Configuration-Element!");
+            }
+        }
+        this.clear(); //Clear loaded Maps
+    }
+
+    private void updateConfig(Class<? extends Configuration> clazz, int fromRevision)
+    {
+        Updater annotation = clazz.getClass().getAnnotation(Updater.class);
+        if (annotation != null)
+        {
+            Class<? extends ConfigurationUpdater> updaterClass = annotation.value();
+            ConfigurationUpdater updater;
+            try
+            {
+                updater = updaterClass.newInstance();
+                this.values = updater.update(this.values, fromRevision);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
     }
 
     /**
@@ -87,6 +164,59 @@ public abstract class ConfigurationCodec
      * @param contents
      */
     public abstract void loadFromString(String contents);
+
+    public void save(Configuration config, File file)
+    {
+        Logger logger = CubeEngine.getLogger();
+        try
+        {
+            Class<? extends Configuration> clazz = config.getClass();
+            if (file == null)
+            {
+                throw new IllegalStateException("Tried to save config without File.");
+            }
+            if (clazz.isAnnotationPresent(MapComments.class))
+            {
+                MapComment[] mapcomments = clazz.getAnnotation(MapComments.class).value();
+                for (MapComment comment : mapcomments)
+                {
+                    this.addComment(comment.path(), comment.text());
+                }
+            }
+            for (Field field : clazz.getFields())
+            {
+                this.saveField(field, config);
+            }
+            Revision a_revision = clazz.getAnnotation(Revision.class);
+            if (a_revision != null)
+            {
+                this.revision = a_revision.value();
+            }
+            this.save(file);
+            this.clear();
+        }
+        catch (IOException ex)
+        {
+            logger.severe("Error while saving a Configuration-File!");
+        }
+        catch (IllegalAccessException ex)
+        {
+            logger.severe("Error while saving a Configuration-Element!");
+        }
+    }
+
+    public void saveField(Field field, Configuration config) throws IllegalAccessException
+    {
+        if (field.isAnnotationPresent(Option.class))
+        {
+            String path = field.getAnnotation(Option.class).value();
+            if (field.isAnnotationPresent(Comment.class))
+            {
+                this.addComment(path, field.getAnnotation(Comment.class).value());
+            }
+            this.set(path, Configuration.convertFrom(field, field.get(config)));
+        }
+    }
 
     /**
      * Saves the configuration to a File

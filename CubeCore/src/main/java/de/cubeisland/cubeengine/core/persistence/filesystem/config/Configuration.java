@@ -2,13 +2,8 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.codec.JsonCodec;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
@@ -40,7 +35,7 @@ public abstract class Configuration
 {
     private static final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
-    private static final Logger logger = CubeEngine.getLogger();
+    protected static final Logger logger = CubeEngine.getLogger();
     protected ConfigurationCodec codec = null;
     protected File file;
 
@@ -105,7 +100,7 @@ public abstract class Configuration
      * @param objectClass the class to search for
      * @return a matching converter or null if not found
      */
-    private Converter matchConverter(Class<?> objectClass)
+    private static Converter matchConverter(Class<?> objectClass)
     {
         Converter converter;
         for (Class<?> clazz : converters.keySet())
@@ -127,13 +122,13 @@ public abstract class Configuration
      * @param object the object to deserialize
      * @return the deserialized object
      */
-    private Object convertTo(Field field, Object object)
+    public static Object convertTo(Configuration config, Field field, Object object)
     {
         Class<?> fieldClass = field.getType();
         Converter converter = converters.get(fieldClass);
         if (converter == null)
         {
-            converter = this.matchConverter(fieldClass);
+            converter = matchConverter(fieldClass);
             if (converter == null)
             {
                 if (Collection.class.isAssignableFrom(fieldClass))
@@ -146,13 +141,13 @@ public abstract class Configuration
                             return object;
                         }
                         Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = this.matchConverter(genType);
+                        converter = matchConverter(genType);
                         if (converter != null)
                         {
                             Collection<Object> result;
                             try
                             {
-                                result = (Collection)field.get(this);
+                                result = (Collection)field.get(config);
                                 result.clear();
                             }
                             catch (Exception ex)
@@ -182,13 +177,13 @@ public abstract class Configuration
                             return object;
                         }
                         Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = this.matchConverter(genType);
+                        converter = matchConverter(genType);
                         if (converter != null)
                         {
                             Map<String, Object> result;
                             try
                             {
-                                result = (Map<String, Object>)field.get(this);
+                                result = (Map<String, Object>)field.get(config);
                                 result.clear();
                             }
                             catch (Exception ex)
@@ -215,7 +210,7 @@ public abstract class Configuration
                         Collection<Object> coll = (Collection)object;
                         Object tmparray = coll.toArray();
                         Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = this.matchConverter(genType);
+                        converter = matchConverter(genType);
                         if (converter != null)
                         {
                             Object o = Array.newInstance(genType, coll.size());
@@ -256,13 +251,13 @@ public abstract class Configuration
      * @param object the object
      * @return the serialized fieldvalue
      */
-    private Object convertFrom(Field field, Object object)
+    public static Object convertFrom(Field field, Object object)
     {
         Class<?> objectClass = object.getClass();
         Converter converter = converters.get(objectClass);
         if (converter == null)
         {
-            converter = this.matchConverter(objectClass);
+            converter = matchConverter(objectClass);
             if (converter == null)
             {
                 if (Collection.class.isAssignableFrom(objectClass))
@@ -271,7 +266,7 @@ public abstract class Configuration
                     {
                         Collection<?> collection = (Collection<?>)object;
                         Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = this.matchConverter(genType);
+                        converter = matchConverter(genType);
                         if (converter != null)
                         {
                             Collection<Object> result = new LinkedList<Object>();
@@ -291,7 +286,7 @@ public abstract class Configuration
                 {
                     Object[] array = (Object[])object;
                     Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = this.matchConverter(genType);
+                    converter = matchConverter(genType);
                     if (converter != null)
                     {
                         Collection<Object> result = new LinkedList<Object>();
@@ -318,124 +313,11 @@ public abstract class Configuration
     }
 
     /**
-     * Loads the Configuration | if needed set default Values and save
-     */
-    public void loadConfiguration()
-    {
-        for (Field field : this.getClass().getFields())
-        {
-            this.loadElement(field);
-        }
-        this.codec.clear(); //Clear loaded Maps
-    }
-
-    /**
-     * Loads in a ConfigurationElement from the ConfigurationFile into an Object
-     * (or a Map(String->Object))
-     *
-     * @param field the field to load
-     */
-    private void loadElement(Field field)
-    {
-        try
-        {
-            if (field.isAnnotationPresent(Option.class))
-            {
-                String path = field.getAnnotation(Option.class).value();
-                //Get savedValue or default
-                Object configElem = this.codec.get(path);
-                if (configElem == null)
-                {
-                    //Set defaultValue if no value saved
-                    this.codec.set(path, this.convertFrom(field, field.get(this)));
-                }
-                else
-                {
-                    //Set new Field Value
-                    field.set(this, this.convertTo(field, configElem));
-                }
-
-                if (field.isAnnotationPresent(Comment.class))
-                {
-                    this.codec.addComment(path, field.getAnnotation(Comment.class).value());
-                }
-            }
-        }
-        catch (IllegalAccessException ex)
-        {
-            logger.severe("Error while loading a Configuration-Element!");
-        }
-    }
-
-    /**
      * Saves the Configuration
      */
     public void saveConfiguration()
     {
-        if (this.file == null)
-        {
-            throw new IllegalStateException("Tried to save config without File.");
-        }
-        Class<?> clazz = this.getClass();
-        if (clazz.isAnnotationPresent(MapComments.class))
-        {
-            MapComment[] comments = clazz.getAnnotation(MapComments.class).value();
-            for (MapComment comment : comments)
-            {
-                this.codec.addComment(comment.path(), comment.text());
-            }
-        }
-        for (Field field : this.getClass().getFields())
-        {
-            this.saveElement(field);
-        }
-        Revision revision = clazz.getAnnotation(Revision.class);
-        if (revision != null)
-        {
-            this.codec.setRevision(revision.value());
-        }
-        this.saveToFile();
-    }
-
-    /**
-     * Saves the Configuration to the File
-     */
-    public void saveToFile()
-    {
-        try
-        {
-            this.codec.save(this.file);
-        }
-        catch (IOException e)
-        {
-            logger.severe("Error while saving a Configuration-File!");
-        }
-        this.codec.clear(); //clears saved comments/values
-    }
-
-    /**
-     * Saves a field(Object) into the codec
-     *
-     * @param field the field to save
-     */
-    private void saveElement(Field field)
-    {
-        try
-        {
-            if (field.isAnnotationPresent(Option.class))
-            {
-                String path = field.getAnnotation(Option.class).value();
-                if (field.isAnnotationPresent(Comment.class))
-                {
-                    this.codec.addComment(path, field.getAnnotation(Comment.class).value());
-                }
-                this.codec.set(path, this.convertFrom(field, field.get(this)));
-            }
-        }
-        catch (IllegalAccessException ex)
-        {
-            logger.severe("Error while saving a Configuration-Element!");
-        }
+        this.codec.save(this, this.file);
     }
 
     public static ConfigurationCodec resolveCodec(String fileExtension)
@@ -496,31 +378,18 @@ public abstract class Configuration
     {
         try
         {
-            Revision revis = clazz.getAnnotation(Revision.class);
+
             Type type = clazz.getAnnotation(Type.class);
             if (type == null)
             {
                 throw new IllegalStateException("Configuration Type undefined!");
             }
             T config = clazz.newInstance();
-            config.setRepresenter(type.value());
+            config.setCodec(type.value());
             if (is != null)
             {
-                config.codec.load(is);
+                config.codec.load(config, is); //load config in maps -> updates -> sets fields
             }
-            Integer rev = config.codec.revision;
-            if (revis != null)
-            {
-                if (revis.value() > rev)
-                {
-                    logger.log(Level.INFO, "Updating Configuration from Revision {0} to {1}", new Object[]
-                        {
-                            rev, revis.value()
-                        });
-                    config.updateConfig(rev);
-                }
-            }
-            config.loadConfiguration(); //set values loaded from inputStream
             config.onLoaded();
             return config;
         }
@@ -549,12 +418,12 @@ public abstract class Configuration
         return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
     }
 
-    public ConfigurationCodec getRepresenter()
+    public ConfigurationCodec getCodec()
     {
         return this.codec;
     }
 
-    public void setRepresenter(String fileExtension)
+    public void setCodec(String fileExtension)
     {
         this.codec = resolveCodec(fileExtension);
     }
@@ -577,23 +446,5 @@ public abstract class Configuration
 
     public void onLoaded()
     {
-    }
-
-    protected void updateConfig(int fromRevision)
-    {
-        Updater annotation = this.getClass().getAnnotation(Updater.class);
-        if (annotation != null)
-        {
-            Class<? extends ConfigurationUpdater> updaterClass = annotation.value();
-            ConfigurationUpdater updater;
-            try
-            {
-                updater = updaterClass.newInstance();
-                this.codec.values = updater.update(this.codec.values, fromRevision);
-            }
-            catch (Exception ex)
-            {
-            }
-        }
     }
 }
