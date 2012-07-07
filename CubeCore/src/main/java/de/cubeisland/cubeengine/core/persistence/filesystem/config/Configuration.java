@@ -9,8 +9,9 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.O
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Updater;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.codec.JsonCodec;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.*;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.representer.*;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,9 +39,9 @@ import org.bukkit.OfflinePlayer;
 public abstract class Configuration
 {
     private static final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
-    private static final Map<String, ConfigurationRepresenter> representers = new HashMap<String, ConfigurationRepresenter>();
+    private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
     private static final Logger logger = CubeEngine.getLogger();
-    protected ConfigurationRepresenter representer = null;
+    protected ConfigurationCodec codec = null;
     protected File file;
 
     static
@@ -68,8 +69,8 @@ public abstract class Configuration
 
         registerConverter(Set.class, new SetConverter());
 
-        registerType("yml", new YamlRepresenter());
-        registerType("json", new JsonRepresenter());
+        registerCodec("yml", new YamlCodec());
+        registerCodec("json", new JsonCodec());
     }
 
     /**
@@ -91,11 +92,11 @@ public abstract class Configuration
      * Registers a Configuration for given extension
      *
      * @param extension the extension
-     * @param representer the representer
+     * @param codec the codec
      */
-    public static void registerType(String extension, ConfigurationRepresenter config)
+    public static void registerCodec(String extension, ConfigurationCodec codec)
     {
-        representers.put(extension, config);
+        codecs.put(extension, codec);
     }
 
     /**
@@ -325,7 +326,7 @@ public abstract class Configuration
         {
             this.loadElement(field);
         }
-        this.representer.clear(); //Clear loaded Maps
+        this.codec.clear(); //Clear loaded Maps
     }
 
     /**
@@ -342,11 +343,11 @@ public abstract class Configuration
             {
                 String path = field.getAnnotation(Option.class).value();
                 //Get savedValue or default
-                Object configElem = this.representer.get(path);
+                Object configElem = this.codec.get(path);
                 if (configElem == null)
                 {
                     //Set defaultValue if no value saved
-                    this.representer.set(path, this.convertFrom(field, field.get(this)));
+                    this.codec.set(path, this.convertFrom(field, field.get(this)));
                 }
                 else
                 {
@@ -356,7 +357,7 @@ public abstract class Configuration
 
                 if (field.isAnnotationPresent(Comment.class))
                 {
-                    this.representer.addComment(path, field.getAnnotation(Comment.class).value());
+                    this.codec.addComment(path, field.getAnnotation(Comment.class).value());
                 }
             }
         }
@@ -381,7 +382,7 @@ public abstract class Configuration
             MapComment[] comments = clazz.getAnnotation(MapComments.class).value();
             for (MapComment comment : comments)
             {
-                this.representer.addComment(comment.path(), comment.text());
+                this.codec.addComment(comment.path(), comment.text());
             }
         }
         for (Field field : this.getClass().getFields())
@@ -391,7 +392,7 @@ public abstract class Configuration
         Revision revision = clazz.getAnnotation(Revision.class);
         if (revision != null)
         {
-            this.representer.setRevision(revision.value());
+            this.codec.setRevision(revision.value());
         }
         this.saveToFile();
     }
@@ -403,17 +404,17 @@ public abstract class Configuration
     {
         try
         {
-            this.representer.save(this.file);
+            this.codec.save(this.file);
         }
         catch (IOException e)
         {
             logger.severe("Error while saving a Configuration-File!");
         }
-        this.representer.clear(); //clears saved comments/values
+        this.codec.clear(); //clears saved comments/values
     }
 
     /**
-     * Saves a field(Object) into the representer
+     * Saves a field(Object) into the codec
      *
      * @param field the field to save
      */
@@ -426,9 +427,9 @@ public abstract class Configuration
                 String path = field.getAnnotation(Option.class).value();
                 if (field.isAnnotationPresent(Comment.class))
                 {
-                    this.representer.addComment(path, field.getAnnotation(Comment.class).value());
+                    this.codec.addComment(path, field.getAnnotation(Comment.class).value());
                 }
-                this.representer.set(path, this.convertFrom(field, field.get(this)));
+                this.codec.set(path, this.convertFrom(field, field.get(this)));
             }
         }
         catch (IllegalAccessException ex)
@@ -437,14 +438,14 @@ public abstract class Configuration
         }
     }
 
-    public static ConfigurationRepresenter resolveRepresenter(String fileExtension)
+    public static ConfigurationCodec resolveCodec(String fileExtension)
     {
-        ConfigurationRepresenter representer = representers.get(fileExtension);
-        if (representer == null)
+        ConfigurationCodec codec = codecs.get(fileExtension);
+        if (codec == null)
         {
             throw new IllegalStateException("FileExtension ." + fileExtension + " cannot be used for Configurations!");
         }
-        return representer;
+        return codec;
     }
 
     /**
@@ -487,7 +488,7 @@ public abstract class Configuration
     /**
      * Loads and returns the loaded Configuration
      *
-     * @param is the Inputstream to load the representer from
+     * @param is the Inputstream to load the codec from
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
@@ -505,9 +506,9 @@ public abstract class Configuration
             config.setRepresenter(type.value());
             if (is != null)
             {
-                config.representer.load(is);
+                config.codec.load(is);
             }
-            Integer rev = config.representer.revision;
+            Integer rev = config.codec.revision;
             if (revis != null)
             {
                 if (revis.value() > rev)
@@ -548,14 +549,14 @@ public abstract class Configuration
         return load(new File(module.getCore().getFileManager().getConfigDir(), module.getName() + "." + type.value()), clazz);
     }
 
-    public ConfigurationRepresenter getRepresenter()
+    public ConfigurationCodec getRepresenter()
     {
-        return this.representer;
+        return this.codec;
     }
 
     public void setRepresenter(String fileExtension)
     {
-        this.representer = resolveRepresenter(fileExtension);
+        this.codec = resolveCodec(fileExtension);
     }
 
     /**
@@ -588,7 +589,7 @@ public abstract class Configuration
             try
             {
                 updater = updaterClass.newInstance();
-                this.representer.values = updater.update(this.representer.values, fromRevision);
+                this.codec.values = updater.update(this.codec.values, fromRevision);
             }
             catch (Exception ex)
             {

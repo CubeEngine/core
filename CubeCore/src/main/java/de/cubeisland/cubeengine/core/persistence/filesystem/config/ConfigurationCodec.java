@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Faithcaio
  */
-public abstract class ConfigurationRepresenter
+public abstract class ConfigurationCodec
 {
     public String COMMENT_PREFIX;
     public String SPACES;
@@ -25,7 +25,7 @@ public abstract class ConfigurationRepresenter
     protected boolean first;
     protected Integer revision = null;
 
-    public ConfigurationRepresenter()
+    public ConfigurationCodec()
     {
         this.comments = new HashMap<String, String>();
         this.values = new LinkedHashMap<String, Object>();

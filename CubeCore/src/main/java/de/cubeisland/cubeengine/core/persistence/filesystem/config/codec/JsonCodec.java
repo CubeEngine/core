@@ -1,11 +1,11 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.representer;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.codec;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationRepresenter;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationCodec;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,11 +18,11 @@ import java.util.Map.Entry;
  *
  * @author Faithcaio
  */
-public class JsonRepresenter extends ConfigurationRepresenter
+public class JsonCodec extends ConfigurationCodec
 {
     private JsonParser json;
 
-    public JsonRepresenter()
+    public JsonCodec()
     {
         super();
         this.json = new JsonParser();

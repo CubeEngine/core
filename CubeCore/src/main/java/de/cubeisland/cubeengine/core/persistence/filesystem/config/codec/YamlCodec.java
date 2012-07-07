@@ -1,6 +1,6 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.representer;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config.codec;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationRepresenter;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.ConfigurationCodec;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,11 +11,11 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author Faithcaio
  */
-public class YamlRepresenter extends ConfigurationRepresenter
+public class YamlCodec extends ConfigurationCodec
 {
     private final Yaml yaml;
     
-    public YamlRepresenter()
+    public YamlCodec()
     {
         super();
         this.yaml = new Yaml();
