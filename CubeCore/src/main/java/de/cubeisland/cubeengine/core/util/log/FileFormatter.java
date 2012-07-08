@@ -30,7 +30,7 @@ public class FileFormatter extends Formatter
         Throwable throwIt = record.getThrown();
         if (throwIt != null)
         {
-            sb.append("  ").append(throwIt.toString());
+            sb.append("  ").append(throwIt.getMessage());
             sb.append(LINEBREAK);
         }
         return sb.toString();
