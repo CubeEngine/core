@@ -25,6 +25,7 @@ public class ModuleManager
     private final CubeCore core;
     private final PluginManager pm;
     private final ModuleLoader loader;
+    private final Logger logger;
 
     public ModuleManager(CubeCore core)
     {
@@ -32,6 +33,7 @@ public class ModuleManager
         this.core = core;
         this.pm = core.getServer().getPluginManager();
         this.loader = new ModuleLoader(core);
+        this.logger = core.getCoreLogger();
     }
 
     public Module getModule(String name)
@@ -52,7 +54,6 @@ public class ModuleManager
     public void loadModules(File directory)
     {
         Validate.isDir(directory, "The give dir is no dir!");
-        Logger logger = this.core.getLogger();
 
         Module module;
         ModuleInfo info;
@@ -68,12 +69,12 @@ public class ModuleManager
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        logger.warning(new StringBuilder("A with a newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        this.logger.warning(new StringBuilder("A with a newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
                         continue;
                     }
                     else
                     {
-                        logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
+                        this.logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
                     }
                 }
                 moduleInfos.put(info.getName().toLowerCase(), info);
@@ -84,12 +85,11 @@ public class ModuleManager
             }
         }
 
-        Stack<String> moduleStack = new Stack<String>();
         for (String moduleName : moduleInfos.keySet())
         {
             try
             {
-                this.loadModule(moduleName, moduleInfos, moduleStack, false);
+                this.loadModule(moduleName, moduleInfos);
             }
             catch (Exception e)
             {
@@ -99,14 +99,19 @@ public class ModuleManager
         logger.info("Finished loading modules!");
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> moduleStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    {
+        return this.loadModule(name, moduleInfos, new Stack<String>(), false);
+    }
+
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
     {
         name = name.toLowerCase();
         if (this.modules.containsKey(name))
         {
             return true;
         }
-        if (moduleStack.contains(name))
+        if (loadStack.contains(name))
         {
             throw new CircularDependencyException();
         }
@@ -115,23 +120,30 @@ public class ModuleManager
         {
             return soft;
         }
-        moduleStack.push(name);
+        loadStack.push(name);
         for (String dep : info.getSoftDependencies())
         {
-            loadModule(dep, moduleInfos, moduleStack, true);
+            loadModule(dep, moduleInfos, loadStack, true);
         }
         for (String dep : info.getDependencies())
         {
-            if (!loadModule(dep, moduleInfos, moduleStack, false))
+            if (!loadModule(dep, moduleInfos, loadStack, false))
             {
                 throw new MissingDependencyException(dep);
             }
         }
         Module module = this.loader.loadModule(info);
-        module.enable();
+        loadStack.pop();
+        try
+        {
+            module.enable();
+        }
+        catch (Throwable t)
+        {
+            this.logger.log(Level.SEVERE, "An error occurred while enabling the module", t);
+        }
         this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' Revision ").append(info.getRevision()).append(" successfully loaded!").toString());
         this.modules.put(module.getName().toLowerCase(), module);
-        moduleStack.pop();
         return true;
     }
 
