@@ -92,7 +92,7 @@ public abstract class Configuration
         {
             logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
         }
-        T config = load(is, clazz); //loading config from InputSream or Default
+        T config = load(clazz, is); //loading config from InputSream or Default
         config.file = file;
         config.saveConfiguration();
         return config;
@@ -105,7 +105,7 @@ public abstract class Configuration
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(InputStream is, Class<T> clazz)
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
     {
         try
         {

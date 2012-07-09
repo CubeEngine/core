@@ -9,7 +9,7 @@ public class CubeTest extends Module
     public void onEnable()
     {
         this.getLogger().info("Test1 onEnable...");
-        Configuration.load(this, TestConfig.class);
+        Configuration.load(TestConfig.class, this);
     }
 
     @Override

@@ -2,11 +2,11 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,7 +26,7 @@ import org.bukkit.OfflinePlayer;
     @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
     @MapComment(path = "list.stringlist", text = "comment for my list :)")
 })
-@Type("yml")
+@Codec("yml")
 public class TestConfig extends Configuration
 {
     //TODO remove this test
