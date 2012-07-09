@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.persistence.database;
 
+import de.cubeisland.cubeengine.core.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.DatabaseConfiguration;
 import gnu.trove.map.hash.THashMap;
 import java.sql.Connection;
 import java.sql.DriverManager;

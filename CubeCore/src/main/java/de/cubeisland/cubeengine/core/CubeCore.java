@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core;
 
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.event.BukkitEventRegistration;
+import de.cubeisland.cubeengine.core.event.EventRegistration;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
@@ -27,6 +29,7 @@ public class CubeCore extends JavaPlugin
     private I18n i18n;
     private CoreConfiguration config;
     private CubeLogger coreLogger = new CubeLogger("CubeCore");
+    private EventRegistration eventRegistration;
     
     public Database getDB()
     {
@@ -46,12 +49,12 @@ public class CubeCore extends JavaPlugin
         this.fileManager.dropResources(CoreResource.values());
 
         this.coreLogger.addFileHandler(new File(fileManager.getLogDir(),"core.log"), Level.WARNING);
-        this.config = Configuration.load(new File(fileManager.getConfigDir(), "core.yml"), CoreConfiguration.class);
+        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
         this.i18n = new I18n(this);
 
         try
         {
-            DatabaseConfiguration databaseConfig = Configuration.load(new File(fileManager.getConfigDir(), "database.yml"), DatabaseConfiguration.class);
+            DatabaseConfiguration databaseConfig = Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml"));
             this.database = new Database(databaseConfig);
         }
         catch (Throwable e)
@@ -63,6 +66,8 @@ public class CubeCore extends JavaPlugin
         this.userManager = new UserManager(this.database, this.getServer());
 
         this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);
+
+        this.eventRegistration = new BukkitEventRegistration(this.pm);
 
         this.moduleManager = new ModuleManager(this);
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
@@ -166,5 +171,10 @@ public class CubeCore extends JavaPlugin
     public File getDataFolder()
     {
         return this.fileManager.getDataFolder();
+    }
+
+    public EventRegistration getEventRegistration()
+    {
+        return this.eventRegistration;
     }
 }

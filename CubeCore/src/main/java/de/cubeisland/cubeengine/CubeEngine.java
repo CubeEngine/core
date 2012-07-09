@@ -1,7 +1,9 @@
 package de.cubeisland.cubeengine;
 
 import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.event.EventRegistration;
 import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
@@ -13,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author CubeIsland-Dev
+ * @author Phillip Schichtel
  */
 public final class CubeEngine
 {
@@ -98,5 +100,15 @@ public final class CubeEngine
     public static String _(String language, String category, String text, Object... params)
     {
         return core.getI18n().translate(language, category, language, params);
+    }
+
+    public static EventRegistration getEventRegistration()
+    {
+        return core.getEventRegistration();
+    }
+
+    public static void registerEvents(Object listener, Module module)
+    {
+        getEventRegistration().register(listener, module);
     }
 }

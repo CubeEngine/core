@@ -3,13 +3,13 @@ package de.cubeisland.cubeengine.core;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Codec;
 
 /**
  *
  * @author Faithcaio
  */
-@Type("yml")
+@Codec("yml")
 public class DatabaseConfiguration extends Configuration
 {
     @Option("host")

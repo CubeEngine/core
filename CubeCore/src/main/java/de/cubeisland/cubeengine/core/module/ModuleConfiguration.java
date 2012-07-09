@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Codec;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,7 +10,7 @@ import java.util.Set;
  *
  * @author Phillip Schichtel
  */
-@Type("yml")
+@Codec("yml")
 public class ModuleConfiguration extends Configuration
 {
     @Option("name")

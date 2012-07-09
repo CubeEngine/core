@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import java.io.File;
 import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
 
 public class CubeFly extends Module
 {
@@ -17,11 +16,11 @@ public class CubeFly extends Module
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(this, FlyConfiguration.class);  
+        this.config = Configuration.load(FlyConfiguration.class, this);  
         //this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         //this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");
         //this.getCommand("fly").setExecutor(baseCommand);
-        //TODO this.getPluginManager().registerEvents(new FlyListener(this, this.getCore().getUserManager()), (Plugin)this.getPluginWrapper());
+        CubeEngine.registerEvents(new FlyListener(this, this.getCore().getUserManager()), this);
         CubeEngine.registerPermissions(Perm.values());
     }
 

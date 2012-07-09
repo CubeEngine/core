@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Type;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.codec.JsonCodec;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.util.Validate;
@@ -76,7 +76,7 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(File file, Class<T> clazz)
+    public static <T extends Configuration> T load(Class<T> clazz, File file)
     {
         Validate.notNull(file, "The file must not be null!");
         if (file == null)
@@ -109,7 +109,7 @@ public abstract class Configuration
     {
         try
         {
-            Type type = clazz.getAnnotation(Type.class);
+            Codec type = clazz.getAnnotation(Codec.class);
             if (type == null)
             {
                 throw new IllegalStateException("Configuration Type undefined!");
@@ -137,15 +137,15 @@ public abstract class Configuration
      * @param clazz the configuration
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Module module, Class<T> clazz)
+    public static <T extends Configuration> T load(Class<T> clazz, Module module)
     {
-        Type type = clazz.getAnnotation(Type.class);
+        Codec type = clazz.getAnnotation(Codec.class);
         if (type == null)
         {
             //ConfigType undefined
             return null;
         }
-        return load(new File(module.getFolder(), module.getName().toLowerCase() + "." + type.value()), clazz);
+        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase() + "." + type.value()));
     }
 
     public void setCodec(String fileExtension)

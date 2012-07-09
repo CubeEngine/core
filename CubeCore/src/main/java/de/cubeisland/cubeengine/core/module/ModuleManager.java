@@ -69,11 +69,13 @@ public class ModuleManager
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        this.logger.warning(new StringBuilder("A with a newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        this.logger.warning(new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
                         continue;
                     }
                     else
                     {
+                        this.disableModule(module);
+                        this.modules.remove(module.getName());
                         this.logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
                     }
                 }
@@ -81,7 +83,7 @@ public class ModuleManager
             }
             catch (InvalidModuleException e)
             {
-                logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+                this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
 
@@ -93,6 +95,7 @@ public class ModuleManager
             }
             catch (Exception e)
             {
+                moduleInfos.remove(moduleName);
                 logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
             }
         }
@@ -113,7 +116,7 @@ public class ModuleManager
         }
         if (loadStack.contains(name))
         {
-            throw new CircularDependencyException();
+            throw new CircularDependencyException(loadStack.pop(), name);
         }
         ModuleInfo info = moduleInfos.get(name);
         if (info == null)
@@ -141,8 +144,9 @@ public class ModuleManager
         catch (Throwable t)
         {
             this.logger.log(Level.SEVERE, "An error occurred while enabling the module", t);
+            return false;
         }
-        this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' Revision ").append(info.getRevision()).append(" successfully loaded!").toString());
+        this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' r").append(info.getRevision()).append(" successfully loaded!").toString());
         this.modules.put(module.getName().toLowerCase(), module);
         return true;
     }
