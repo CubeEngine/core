@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -96,10 +95,10 @@ public class ModuleManager
             catch (Exception e)
             {
                 moduleInfos.remove(moduleName);
-                logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
+                this.logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
             }
         }
-        logger.info("Finished loading modules!");
+        this.logger.info("Finished loading modules!");
     }
 
     private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
@@ -141,7 +140,7 @@ public class ModuleManager
         {
             return false;
         }
-        this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' r").append(info.getRevision()).append(" successfully loaded!").toString());
+        this.core.getCoreLogger().log(Level.INFO, "Module {0}-r{1} successfully loaded!", new Object[] {info.getName(), info.getRevision()});
         this.modules.put(module.getName().toLowerCase(), module);
         return true;
     }
