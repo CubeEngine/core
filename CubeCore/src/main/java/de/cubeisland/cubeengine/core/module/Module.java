@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
@@ -185,28 +186,37 @@ public abstract class Module
         return this.pluginWrapper;
     }
 
-    protected final void enable()
+    protected final boolean enable()
     {
         if (!this.enabled)
         {
+            this.enabled = true;
             try
             {
-                this.enabled = true;  //Module has to be enabled for bukkit
                 this.onEnable();
                 this.core.getPluginManager().callEvent(new ModuleEnabledEvent(this.core, this));
             }
-            catch (Exception ex)
+            catch (Throwable t)
             {
-                this.enabled = false;
+                this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
             }
+            this.enabled = false;
         }
+        return this.enabled;
     }
 
     protected final void disable()
     {
         if (this.enabled)
         {
-            this.onDisable();
+            try
+            {
+                this.onDisable();
+            }
+            catch (Throwable t)
+            {
+                this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+            }
             this.core.getPluginManager().callEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;
         }

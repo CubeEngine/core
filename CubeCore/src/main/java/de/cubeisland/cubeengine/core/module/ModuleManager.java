@@ -137,13 +137,8 @@ public class ModuleManager
         }
         Module module = this.loader.loadModule(info);
         loadStack.pop();
-        try
+        if (!module.enable())
         {
-            module.enable();
-        }
-        catch (Throwable t)
-        {
-            this.logger.log(Level.SEVERE, "An error occurred while enabling the module", t);
             return false;
         }
         this.core.getCoreLogger().info(new StringBuilder("Module '").append(info.getName()).append("' r").append(info.getRevision()).append(" successfully loaded!").toString());
