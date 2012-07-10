@@ -2,10 +2,9 @@ package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.CubeEngine;
 import static de.cubeisland.cubeengine.CubeEngine._;
+import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.libMinecraft.command.Command;
-import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,8 +16,8 @@ public class FlyCommand
 {
     UserManager cuManager = CubeEngine.getCore().getUserManager();
 
-    @Command
-    public void fly(CommandSender sender, CommandArgs args)
+    @Command(desc="Lets you fly away")
+    public void fly(CommandSender sender, Object[] args)
     {
         if (sender instanceof Player)
         {

@@ -33,12 +33,6 @@
         </dependency>
         <dependency>
             <groupId>de.cubeisland</groupId>
-            <artifactId>libminecraft</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland</groupId>
             <artifactId>cubecore</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <type>jar</type>
@@ -82,27 +76,7 @@
                 <configuration>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>de.cubeisland:libminecraft</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>   
         </plugins>
     </build>
 </project>
