@@ -2,4 +2,4 @@ name: Test
 revision: 1
 description: Test for testing
 dependencies:
-  - Fly
+  - Conomy

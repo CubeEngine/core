@@ -1,3 +1,5 @@
 name: Fly
 revision: 1
 description: Flying without CreativeMode
+dependencies:
+  - Test
