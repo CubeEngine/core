@@ -16,7 +16,7 @@ import org.bukkit.plugin.PluginManager;
 
 /**
  * module for CubeEngine
- * 
+ *
  * @author Phillip Schichtel
  */
 public abstract class Module
@@ -41,6 +41,7 @@ public abstract class Module
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
+            this.pluginWrapper = pluginWrapper;
 
             this.onLoad();
             core.getPluginManager().callEvent(new ModuleLoadedEvent(core, this));
@@ -188,9 +189,16 @@ public abstract class Module
     {
         if (!this.enabled)
         {
-            this.onEnable();
-            this.core.getPluginManager().callEvent(new ModuleEnabledEvent(this.core, this));
-            this.enabled = true;
+            try
+            {
+                this.enabled = true;  //Module has to be enabled for bukkit
+                this.onEnable();
+                this.core.getPluginManager().callEvent(new ModuleEnabledEvent(this.core, this));
+            }
+            catch (Exception ex)
+            {
+                this.enabled = false;
+            }
         }
     }
 
