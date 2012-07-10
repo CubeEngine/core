@@ -158,7 +158,7 @@ public class ModuleManager
 //            }
 //        }
         module.disable();
-        HandlerList.unregisterAll((BukkitPluginWrapper)module.getPluginWrapper()); // TODO abstract this
+        this.core.getEventRegistration().unregister(module);
 //        CommandManager.getInstance().unregisterAll(module);
 
         return this;

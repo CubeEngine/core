@@ -20,7 +20,7 @@ public class CubeFly extends Module
         //this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         //this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");
         //this.getCommand("fly").setExecutor(baseCommand);
-        CubeEngine.registerEvents(new FlyListener(this, this.getCore().getUserManager()), this);
+        this.registerEvents(new FlyListener(this));
         CubeEngine.registerPermissions(Perm.values());
     }
 

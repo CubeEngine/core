@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.InputStream;
@@ -184,6 +186,31 @@ public abstract class Module
     public PluginWrapper getPluginWrapper()
     {
         return this.pluginWrapper;
+    }
+
+    public void registerEvents(Object listener)
+    {
+        this.core.getEventRegistration().register(listener, this);
+    }
+
+    public void unregisterEvents(Object listener)
+    {
+        this.core.getEventRegistration().unregister(listener);
+    }
+
+    public void unregisterEvents()
+    {
+        this.core.getEventRegistration().unregister(this);
+    }
+
+    public FileManager getFileManager()
+    {
+        return this.core.getFileManager();
+    }
+
+    public UserManager getUserManager()
+    {
+        return this.core.getUserManager();
     }
 
     protected final boolean enable()

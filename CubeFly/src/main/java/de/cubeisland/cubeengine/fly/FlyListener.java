@@ -19,14 +19,14 @@ import org.bukkit.inventory.ItemStack;
  */
 public class FlyListener implements Listener
 {
-    UserManager cuManager;
-    HashMap<Player, Task> tasks = new HashMap<Player, Task>();
-    CubeFly flymodule;
+    private UserManager usermanager;
+    private HashMap<Player, Task> tasks = new HashMap<Player, Task>();
+    private CubeFly fly;
 
-    public FlyListener(CubeFly flymodule, UserManager cuManager)
+    public FlyListener(CubeFly fly)
     {
-        this.flymodule = flymodule;
-        this.cuManager = cuManager;
+        this.fly = fly;
+        this.usermanager = fly.getUserManager();
     }
 
     @EventHandler
@@ -42,7 +42,7 @@ public class FlyListener implements Listener
         {
             return;
         }
-        User user = cuManager.getUser(player);
+        User user = usermanager.getUser(player);
         if (Perm.FLY_BYPASS.isAuthorized(player));
         {
             if (!Perm.FLY_FEAHTER.isAuthorized(player))
@@ -75,7 +75,7 @@ public class FlyListener implements Listener
             player.getInventory().removeItem(feather);
             //TODO user.sendTMessage("&6You can now fly!");
             //&6Du kannst jetzt fliegen!
-            Task flymore = new Task(flymodule)  
+            Task flymore = new Task(fly)
             {
                 public void run()//2 feather/min
                 {
