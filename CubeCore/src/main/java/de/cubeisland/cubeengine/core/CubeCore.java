@@ -16,9 +16,8 @@ import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.util.logging.Level;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class CubeCore extends JavaPlugin
+public class CubeCore extends PluginWrapper
 {
     private Database database;
     private PermissionRegistration permissionRegistration;
@@ -31,12 +30,16 @@ public class CubeCore extends JavaPlugin
     private CubeLogger coreLogger = new CubeLogger("CubeCore");
     private EventRegistration eventRegistration;
     
+    public CubeCore(BukkitCore core)
+    {
+        super(core);
+    }
+    
     public Database getDB()
     {
         return this.database;
     }
 
-    @Override
     public void onEnable()
     {
         CubeEngine.initialize(this);
@@ -45,7 +48,7 @@ public class CubeCore extends JavaPlugin
         this.permissionRegistration = new PermissionRegistration(this.pm);
         this.registerPermissions(Perm.values());
 
-        this.fileManager = new FileManager(super.getDataFolder().getParentFile());
+        this.fileManager = new FileManager(this.getBukkitPlugin().getDataFolder().getParentFile());
         this.fileManager.dropResources(CoreResource.values());
 
         this.coreLogger.addFileHandler(new File(fileManager.getLogDir(),"core.log"), Level.WARNING);
@@ -60,7 +63,7 @@ public class CubeCore extends JavaPlugin
         catch (Throwable e)
         {
             this.coreLogger.log(Level.SEVERE, "Error while initializing database", e);
-            this.pm.disablePlugin(this);
+            this.pm.disablePlugin(this.getBukkitPlugin());
             return;
         }
         this.userManager = new UserManager(this.database, this.getServer());
@@ -73,7 +76,6 @@ public class CubeCore extends JavaPlugin
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 
-    @Override
     public void onDisable()
     {
         if (this.moduleManager != null)
@@ -167,7 +169,6 @@ public class CubeCore extends JavaPlugin
         return this.coreLogger;
     }
 
-    @Override
     public File getDataFolder()
     {
         return this.fileManager.getDataFolder();
