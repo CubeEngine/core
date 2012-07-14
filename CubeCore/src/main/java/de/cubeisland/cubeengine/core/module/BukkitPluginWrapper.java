@@ -20,12 +20,12 @@ import org.bukkit.plugin.PluginLoader;
 public class BukkitPluginWrapper implements PluginWrapper, Plugin
 {
     private final Module module;
-    private final Plugin enginePlugin;
+    private final Plugin bukkitPlugin;
 
     public BukkitPluginWrapper(Module module)
     {
         this.module = module;
-        this.enginePlugin = (Plugin)module.getCore().getBootstrapper();
+        this.bukkitPlugin = (Plugin)module.getCore().getBootstrapper();
     }
 
     public File getDataFolder()
@@ -75,7 +75,7 @@ public class BukkitPluginWrapper implements PluginWrapper, Plugin
 
     public Server getServer()
     {
-        return this.enginePlugin.getServer();
+        return this.bukkitPlugin.getServer();
     }
 
     public boolean isEnabled()
@@ -100,17 +100,17 @@ public class BukkitPluginWrapper implements PluginWrapper, Plugin
 
     public boolean isNaggable()
     {
-        return this.enginePlugin.isNaggable();
+        return this.bukkitPlugin.isNaggable();
     }
 
     public void setNaggable(boolean bln)
     {
-        this.enginePlugin.setNaggable(bln);
+        this.bukkitPlugin.setNaggable(bln);
     }
 
     public EbeanServer getDatabase()
     {
-        return this.enginePlugin.getDatabase();
+        return this.bukkitPlugin.getDatabase();
     }
 
     public ChunkGenerator getDefaultWorldGenerator(String string, String string1)

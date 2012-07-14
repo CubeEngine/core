@@ -10,40 +10,40 @@ import org.bukkit.plugin.PluginLoader;
  */
 public class PluginWrapper
 {
-    private BukkitPlugin plugin;
+    private BukkitBootstrapper bootstrapper;
 
-    public PluginWrapper(BukkitPlugin plugin)
+    public PluginWrapper(BukkitBootstrapper bootstrapper)
     {
-        this.plugin = plugin;
+        this.bootstrapper = bootstrapper;
     }
 
-    public BukkitPlugin getBukkitPlugin()
+    public BukkitBootstrapper getBukkitPlugin()
     {
-        return this.plugin;
+        return this.bootstrapper;
     }
 
     public Server getServer()
     {
-        return this.plugin.getServer();
+        return this.bootstrapper.getServer();
     }
 
     public PluginLoader getPluginLoader()
     {
-        return this.plugin.getPluginLoader();
+        return this.bootstrapper.getPluginLoader();
     }
 
     public boolean isNaggable()
     {
-        return this.plugin.isNaggable();
+        return this.bootstrapper.isNaggable();
     }
 
     public void setNaggable(boolean bln)
     {
-        this.plugin.setNaggable(bln);
+        this.bootstrapper.setNaggable(bln);
     }
 
     public EbeanServer getDatabase()
     {
-        return this.plugin.getDatabase();
+        return this.bootstrapper.getDatabase();
     }
 }

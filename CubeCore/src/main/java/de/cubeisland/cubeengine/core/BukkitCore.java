@@ -29,14 +29,14 @@ public final class BukkitCore implements Core
     private CubeLogger coreLogger = new CubeLogger("CubeCore");
     private EventManager eventRegistration;
 
-    public BukkitCore(BukkitPlugin plugin)
+    public BukkitCore(BukkitBootstrapper bootstrapper)
     {
 
-        Server server = plugin.getServer();
+        Server server = bootstrapper.getServer();
         PluginManager pm = server.getPluginManager();
 
         this.permissionRegistration = new PermissionRegistration(pm);
-        this.fileManager = new FileManager(plugin.getDataFolder().getParentFile());
+        this.fileManager = new FileManager(bootstrapper.getDataFolder().getParentFile());
 
         this.coreLogger.addFileHandler(new File(fileManager.getLogDir(),"core.log"), Level.WARNING);
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
@@ -50,11 +50,11 @@ public final class BukkitCore implements Core
         catch (Throwable e)
         {
             this.coreLogger.log(Level.SEVERE, "Error while initializing database", e);
-            pm.disablePlugin(plugin);
+            pm.disablePlugin(bootstrapper);
             return;
         }
         
-        this.userManager = new UserManager(this, plugin.getServer());
+        this.userManager = new UserManager(this, bootstrapper.getServer());
         this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);
         this.eventRegistration = new BukkitEventManager(pm);
         this.moduleManager = new ModuleManager(this);

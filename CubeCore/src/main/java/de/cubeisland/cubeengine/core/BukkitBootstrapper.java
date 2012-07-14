@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author Phillip Schichtel
  */
 
-public class BukkitPlugin extends JavaPlugin implements Bootstrapper
+public class BukkitBootstrapper extends JavaPlugin implements Bootstrapper
 {
     @Override
     public void onEnable()
