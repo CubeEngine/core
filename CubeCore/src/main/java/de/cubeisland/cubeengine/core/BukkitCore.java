@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.logging.Level;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class BukkitCore implements Core
 {
@@ -28,20 +29,29 @@ public final class BukkitCore implements Core
     private CoreConfiguration config;
     private CubeLogger coreLogger = new CubeLogger("CubeCore");
     private EventManager eventRegistration;
+    private Bootstrapper bootstrapper;
+    private Server server;
 
     public BukkitCore(BukkitBootstrapper bootstrapper)
     {
-
-        Server server = bootstrapper.getServer();
-        PluginManager pm = server.getPluginManager();
-
+        this.server = bootstrapper.getServer();
+        PluginManager pm = this.server.getPluginManager();
+        this.bootstrapper = bootstrapper;
         this.permissionRegistration = new PermissionRegistration(pm);
         this.fileManager = new FileManager(bootstrapper.getDataFolder().getParentFile());
-
-        this.coreLogger.addFileHandler(new File(fileManager.getLogDir(),"core.log"), Level.WARNING);
-        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
         this.i18n = new I18n(this);
+        this.eventRegistration = new BukkitEventManager(pm);
+        this.moduleManager = new ModuleManager(this);
+    }
 
+    public Database getDatabase()
+    {
+        return this.database;
+    }
+
+    public void enable()
+    {
+        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
         try
         {
             DatabaseConfiguration databaseConfig = Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml"));
@@ -50,23 +60,13 @@ public final class BukkitCore implements Core
         catch (Throwable e)
         {
             this.coreLogger.log(Level.SEVERE, "Error while initializing database", e);
-            pm.disablePlugin(bootstrapper);
+            this.server.getPluginManager().disablePlugin((JavaPlugin)bootstrapper);
             return;
         }
-        
-        this.userManager = new UserManager(this, bootstrapper.getServer());
-        this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);
-        this.eventRegistration = new BukkitEventManager(pm);
-        this.moduleManager = new ModuleManager(this);
-    }
-    
-    public Database getDatabase()
-    {
-        return this.database;
-    }
+        this.coreLogger.addFileHandler(new File(fileManager.getLogDir(), "core.log"), Level.WARNING);
+        this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);//Needs Database
+        this.userManager = new UserManager(this, this.server);//Needs Database
 
-    public void enable()
-    {
         this.registerPermissions(Perm.values());
         this.fileManager.dropResources(CoreResource.values());
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
@@ -83,7 +83,7 @@ public final class BukkitCore implements Core
         this.userManager = null;
 
         this.permissionRegistration = null;
-        
+
         this.i18n.clean();
         this.i18n = null;
     }
@@ -165,6 +165,6 @@ public final class BukkitCore implements Core
 
     public Bootstrapper getBootstrapper()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.bootstrapper;
     }
 }

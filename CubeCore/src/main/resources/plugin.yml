@@ -1,6 +1,6 @@
 name: CubeCore
 version: ${project.version}
-main: de.cubeisland.cubeengine.core.BukkitCore
+main: de.cubeisland.cubeengine.core.BukkitBootstrapper
 website: http://cubeisland.de
 description: "Core plugin for all the Cube plugins"
 authors:

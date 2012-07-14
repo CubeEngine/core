@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
 import com.avaje.ebean.EbeanServer;
+import de.cubeisland.cubeengine.CubeEngine;
 import java.io.File;
 import java.io.InputStream;
 import java.util.logging.Logger;
@@ -25,7 +26,7 @@ public class BukkitPluginWrapper implements PluginWrapper, Plugin
     public BukkitPluginWrapper(Module module)
     {
         this.module = module;
-        this.bukkitPlugin = (Plugin)module.getCore().getBootstrapper();
+        this.bukkitPlugin = (Plugin)CubeEngine.getCore().getBootstrapper();
     }
 
     public File getDataFolder()
