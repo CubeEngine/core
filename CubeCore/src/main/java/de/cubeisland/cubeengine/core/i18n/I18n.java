@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.i18n;
 
 import de.cubeisland.cubeengine.core.CoreResource;
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.BukkitCore;
 import de.cubeisland.cubeengine.core.i18n.geoip.LookupService;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
@@ -24,7 +24,7 @@ public class I18n
     private final Map<String, String> countryMap;
     private final Map<String, Language> languageMap;
 
-    public I18n(CubeCore core)
+    public I18n(BukkitCore core)
     {
         FileManager fileManager = core.getFileManager();
         try

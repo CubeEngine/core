@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.event;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -10,40 +11,42 @@ import org.bukkit.plugin.PluginManager;
  *
  * @author Phillip Schichtel
  */
-public class BukkitEventRegistration implements EventRegistration
+public class BukkitEventManager implements EventManager
 {
     private final PluginManager pm;
 
-    public BukkitEventRegistration(PluginManager pm)
+    public BukkitEventManager(PluginManager pm)
     {
         this.pm = pm;
     }
 
-    public void register(Object listener, Module module)
+    public void registerListener(EventListener listener, Module module)
     {
-        if (!(listener instanceof Listener))
-        {
-            throw new IllegalArgumentException("The listener must be an instance of Listener!");
-        }
         this.pm.registerEvents((Listener)listener, (Plugin)module.getPluginWrapper());
     }
 
-    public void unregister(Object listener)
+    public void unregisterListener(EventListener listener)
     {
-        if (!(listener instanceof Listener))
-        {
-            throw new IllegalArgumentException("The listener must be an instance of Listener!");
-        }
         HandlerList.unregisterAll((Listener)listener);
     }
 
-    public void unregister(Module module)
+    public void unregisterListener(Module module)
     {
         HandlerList.unregisterAll((Plugin)module.getPluginWrapper());
     }
 
-    public void unregister()
+    public void unregisterListener()
     {
         HandlerList.unregisterAll();
+    }
+
+    public <T> T fireEvent(T event)
+    {
+        if (!(event instanceof Event))
+        {
+            throw new IllegalArgumentException("The event must be a Bukkit event");
+        }
+        this.pm.callEvent((Event)event);
+        return event;
     }
 }

@@ -4,19 +4,19 @@ import org.bukkit.event.Event;
 
 /**
  *
- * @author CubeIsland-Dev
+ * @author Phillip Schichtel
  */
 public abstract class CubeEvent extends Event
 {
-    private final CubeCore core;
+    private final Core core;
     private boolean cancelled;
     
-    public CubeEvent(CubeCore core) 
+    public CubeEvent(Core core)
     {
         this.core = core;
     }
     
-    public CubeCore getCore()
+    public Core getCore()
     {
         return this.core;
     }

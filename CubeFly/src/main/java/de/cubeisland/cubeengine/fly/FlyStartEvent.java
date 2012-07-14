@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.event.UserEvent;
 import org.bukkit.event.Cancellable;
@@ -14,7 +14,7 @@ public class FlyStartEvent extends UserEvent implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
 
-    public FlyStartEvent(CubeCore core, User user)
+    public FlyStartEvent(Core core, User user)
     {
         super(core, user);
     }

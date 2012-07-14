@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
@@ -14,8 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.Server;
-import org.bukkit.plugin.PluginManager;
 
 /**
  * module for CubeEngine
@@ -25,7 +24,7 @@ import org.bukkit.plugin.PluginManager;
 public abstract class Module
 {
     private boolean initialized = false;
-    private CubeCore core;
+    private Core core;
     private ModuleInfo info;
     private Logger logger;
     private Set<Module> dependingModules = new HashSet<Module>();
@@ -34,7 +33,7 @@ public abstract class Module
     private boolean enabled;
     private PluginWrapper pluginWrapper;
 
-    protected final void initialize(CubeCore core, ModuleInfo info, PluginWrapper pluginWrapper, Logger logger, File folder, ModuleClassLoader classLoader)
+    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, Logger logger, File folder, ModuleClassLoader classLoader)
     {
         if (!initialized)
         {
@@ -47,7 +46,7 @@ public abstract class Module
             this.pluginWrapper = pluginWrapper;
 
             this.onLoad();
-            core.getPluginManager().callEvent(new ModuleLoadedEvent(core, this));
+            core.getEventManager().fireEvent(new ModuleLoadedEvent(core, this));
         }
     }
 
@@ -96,7 +95,7 @@ public abstract class Module
      *
      * @return the core
      */
-    public CubeCore getCore()
+    public Core getCore()
     {
         return this.core;
     }
@@ -127,12 +126,7 @@ public abstract class Module
 
     public Database getDatabase()
     {
-        return this.core.getDB();
-    }
-
-    public PluginManager getPluginManager()
-    {
-        return this.core.getPluginManager();
+        return this.core.getDatabase();
     }
 
     public void onLoad()
@@ -173,11 +167,6 @@ public abstract class Module
         return this.getClass().getResourceAsStream(path);
     }
 
-    public Server getServer()
-    {
-        return this.core.getServer();
-    }
-
     public final boolean isEnabled()
     {
         return this.enabled;
@@ -188,19 +177,19 @@ public abstract class Module
         return this.pluginWrapper;
     }
 
-    public void registerEvents(Object listener)
+    public void registerEvents(EventListener listener)
     {
-        this.core.getEventRegistration().register(listener, this);
+        this.core.getEventManager().registerListener(listener, this);
     }
 
-    public void unregisterEvents(Object listener)
+    public void unregisterEvents(EventListener listener)
     {
-        this.core.getEventRegistration().unregister(listener);
+        this.core.getEventManager().unregisterListener(listener);
     }
 
     public void unregisterEvents()
     {
-        this.core.getEventRegistration().unregister(this);
+        this.core.getEventManager().unregisterListener(this);
     }
 
     public FileManager getFileManager()
@@ -221,7 +210,7 @@ public abstract class Module
             try
             {
                 this.onEnable();
-                this.core.getPluginManager().callEvent(new ModuleEnabledEvent(this.core, this));
+                this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, this));
             }
             catch (Throwable t)
             {
@@ -244,7 +233,7 @@ public abstract class Module
             {
                 this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
             }
-            this.core.getPluginManager().callEvent(new ModuleDisabledEvent(this.core, this));
+            this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;
         }
     }

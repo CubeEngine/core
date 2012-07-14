@@ -74,8 +74,8 @@ public abstract class ConfigurationCodec
         registerConverter(Double.class, converter);
         registerConverter(double.class, converter);
 
-        registerConverter(OfflinePlayer.class, new PlayerConverter());
-        registerConverter(Location.class, new LocationConverter());
+        registerConverter(OfflinePlayer.class, new PlayerConverter(CubeEngine.getCore()));
+        registerConverter(Location.class, new LocationConverter(CubeEngine.getCore()));
 
         registerConverter(Set.class, new SetConverter());
     }

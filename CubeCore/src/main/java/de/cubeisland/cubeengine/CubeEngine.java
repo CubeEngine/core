@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine;
 
-import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.event.EventRegistration;
+import de.cubeisland.cubeengine.core.Bootstrapper;
+import de.cubeisland.cubeengine.core.BukkitCore;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.event.EventListener;
+import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
@@ -19,12 +22,12 @@ import java.util.logging.Logger;
  */
 public final class CubeEngine
 {
-    private static CubeCore core = null;
+    private static Core core = null;
 
     private CubeEngine()
     {}
 
-    public static void initialize(CubeCore coreModule)
+    public static void initialize(BukkitCore coreModule)
     {
         if (core == null)
         {
@@ -33,22 +36,24 @@ public final class CubeEngine
                 throw new IllegalArgumentException("The core module must not be null!");
             }
             core = coreModule;
+            core.enable();
         }
     }
 
     public static void clean()
     {
+        core.disable();
         core = null;
     }
 
-    public static CubeCore getCore()
+    public static Core getCore()
     {
         return core;
     }
 
     public static Database getDatabase()
     {
-        return core.getDB();
+        return core.getDatabase();
     }
 
     public static PermissionRegistration getPermissionRegistration()
@@ -73,7 +78,7 @@ public final class CubeEngine
 
     public static Logger getLogger()
     {
-        return core.getCoreLogger();
+        return core.getLogger();
     }
 
     public static ModuleManager getModuleManager()
@@ -102,13 +107,18 @@ public final class CubeEngine
         return core.getI18n().translate(language, category, language, params);
     }
 
-    public static EventRegistration getEventRegistration()
+    public static EventManager getEventManager()
     {
-        return core.getEventRegistration();
+        return core.getEventManager();
     }
 
-    public static void registerEvents(Object listener, Module module)
+    public static void registerEvents(EventListener listener, Module module)
     {
-        getEventRegistration().register(listener, module);
+        getEventManager().registerListener(listener, module);
+    }
+
+    public static Bootstrapper getBootstrapper()
+    {
+        return core.getBootstrapper();
     }
 }

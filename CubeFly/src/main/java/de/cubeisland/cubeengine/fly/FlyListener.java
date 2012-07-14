@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
@@ -17,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Faithcaio
  */
-public class FlyListener implements Listener
+public class FlyListener implements Listener, EventListener
 {
     private UserManager usermanager;
     private HashMap<Player, Task> tasks = new HashMap<Player, Task>();

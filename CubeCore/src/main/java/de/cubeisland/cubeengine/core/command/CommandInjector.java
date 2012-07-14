@@ -1,14 +1,14 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.Core;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public interface CommandInjector
 {
-    public void initialize(CubeCore core);
+    public void initialize(Core core);
     public void inject(CommandWrapper command);
     public void remove(String name);
     public void clear();

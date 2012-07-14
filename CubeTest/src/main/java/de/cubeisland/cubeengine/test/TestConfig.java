@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -29,13 +31,15 @@ import org.bukkit.OfflinePlayer;
 @Codec("yml")
 public class TestConfig extends Configuration
 {
+    private final Server server = ((Plugin)CubeEngine.getBootstrapper()).getServer();
+
     //TODO remove this test
     @Option("location")
     @Comment("LocationTest")
-    public Location location = new Location(CubeEngine.getCore().getServer().getWorld("world"), 1, 2, 3, 0, 0);
+    public Location location = new Location(server.getWorld("world"), 1, 2, 3, 0, 0);
     @Option("offlineplayer")
     @Comment("PlayerTest")
-    public OfflinePlayer player = CubeEngine.getCore().getServer().getOfflinePlayer("Faithcaio");
+    public OfflinePlayer player = server.getOfflinePlayer("Faithcaio");
     @Option("regions.use-scheduler")
     public boolean use_scheduler = true;
     @Option("regions.sql.use")
@@ -68,7 +72,8 @@ public class TestConfig extends Configuration
     @Option(value = "arrays.playertest", genericType = OfflinePlayer.class)
     public OfflinePlayer[] playerarray =
     {
-        CubeEngine.getCore().getServer().getOfflinePlayer("Faithcaio"), CubeEngine.getCore().getServer().getOfflinePlayer("Niemand")
+        server.getOfflinePlayer("Faithcaio"),
+        server.getOfflinePlayer("Niemand")
     };
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
@@ -83,8 +88,8 @@ public class TestConfig extends Configuration
     {
         
         {
-            add(CubeEngine.getCore().getServer().getOfflinePlayer("Faithcaio"));
-            add(CubeEngine.getCore().getServer().getOfflinePlayer("KekseSpieler"));
+            add(server.getOfflinePlayer("Faithcaio"));
+            add(server.getOfflinePlayer("KekseSpieler"));
         }
     };
     @Option(value = "list.shortlist", genericType = Short.class)

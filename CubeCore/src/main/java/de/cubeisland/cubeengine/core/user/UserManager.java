@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.CubeEngine;
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.OfflinePlayer;
@@ -15,13 +14,15 @@ import org.bukkit.entity.Player;
  */
 public class UserManager
 {
+    private final Core core;
     private final THashMap<String, User> users;
     private UserStorage storage;
     private final Server server;
         
-    public UserManager(Database database, Server server)
+    public UserManager(Core core, Server server)
     {
-        this.storage = new UserStorage(database, server);
+        this.core = core;
+        this.storage = new UserStorage(core.getDatabase(), server);
         this.storage.initialize();
         this.server = server;
 
@@ -36,7 +37,7 @@ public class UserManager
     {
         this.storage.store(user);
         this.users.put(user.getName(), user);
-        UserCreatedEvent event = new UserCreatedEvent(CubeEngine.getCore(),user);
+        UserCreatedEvent event = new UserCreatedEvent(this.core, user);
         server.getPluginManager().callEvent(event);
         return this;
     }

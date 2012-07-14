@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.Core;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -15,9 +16,9 @@ public class LocationConverter implements Converter<Location>
 {
     private Server server;
     
-    public LocationConverter()
+    public LocationConverter(Core core)
     {
-        this.server = CubeEngine.getCore().getServer();
+        this.server = ((Plugin)core.getBootstrapper()).getServer();
     }
     
     public Object from(Location location)

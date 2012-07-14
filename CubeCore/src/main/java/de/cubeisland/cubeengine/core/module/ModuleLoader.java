@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.BukkitCore;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.util.Validate;
@@ -23,12 +23,12 @@ public class ModuleLoader
 {
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
-    private final CubeCore core;
+    private final BukkitCore core;
     public static final String CLASS_PREFIX = "Cube";
     private static final String BASE_FQDN = "de.cubeisland.cubeengine.";
     private static final String INFO_FILE = "module.yml";
 
-    public ModuleLoader(CubeCore core)
+    public ModuleLoader(BukkitCore core)
     {
         this.libClassLoader = new LibraryClassLoader(this.getClass().getClassLoader());
         this.classLoaders = new HashMap<String, ModuleClassLoader>();

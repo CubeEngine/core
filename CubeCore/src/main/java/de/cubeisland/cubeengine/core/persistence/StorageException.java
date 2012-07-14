@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.persistence;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class StorageException extends RuntimeException
 {

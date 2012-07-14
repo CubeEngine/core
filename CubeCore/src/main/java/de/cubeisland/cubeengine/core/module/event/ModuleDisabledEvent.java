@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.module.event;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
 
@@ -10,7 +10,7 @@ import org.bukkit.event.HandlerList;
  */
 public class ModuleDisabledEvent extends ModuleEvent
 {
-    public ModuleDisabledEvent(CubeCore core, Module module)
+    public ModuleDisabledEvent(Core core, Module module)
     {
         super(core, module);
     }

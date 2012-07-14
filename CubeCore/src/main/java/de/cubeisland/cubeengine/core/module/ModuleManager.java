@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.BukkitCore;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.plugin.PluginManager;
 
 /**
  *
@@ -21,18 +20,16 @@ import org.bukkit.plugin.PluginManager;
 public class ModuleManager
 {
     private final Map<String, Module> modules;
-    private final CubeCore core;
-    private final PluginManager pm;
+    private final BukkitCore core;
     private final ModuleLoader loader;
     private final Logger logger;
 
-    public ModuleManager(CubeCore core)
+    public ModuleManager(BukkitCore core)
     {
         this.modules = new THashMap<String, Module>();
         this.core = core;
-        this.pm = core.getServer().getPluginManager();
         this.loader = new ModuleLoader(core);
-        this.logger = core.getCoreLogger();
+        this.logger = core.getLogger();
     }
 
     public Module getModule(String name)
@@ -140,7 +137,7 @@ public class ModuleManager
         {
             return false;
         }
-        this.core.getCoreLogger().log(Level.INFO, "Module {0}-r{1} successfully loaded!", new Object[] {info.getName(), info.getRevision()});
+        this.logger.log(Level.INFO, "Module {0}-r{1} successfully loaded!", new Object[] {info.getName(), info.getRevision()});
         this.modules.put(module.getName().toLowerCase(), module);
         return true;
     }
@@ -157,7 +154,7 @@ public class ModuleManager
 //            }
 //        }
         module.disable();
-        this.core.getEventRegistration().unregister(module);
+        this.core.getEventManager().unregisterListener(module);
 //        CommandManager.getInstance().unregisterAll(module);
 
         return this;

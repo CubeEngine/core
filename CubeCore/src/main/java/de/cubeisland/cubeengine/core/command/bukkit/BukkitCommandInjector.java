@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.core.command.bukkit;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandInjector;
 import de.cubeisland.cubeengine.core.command.CommandWrapper;
 import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -17,11 +18,11 @@ public class BukkitCommandInjector implements CommandInjector
     private CommandMap commandMap;
     private Map<String, Command> knownCommands;
     
-    public void initialize(CubeCore core)
+    public void initialize(Core core)
     {
         try
         {
-            PluginManager pm = core.getPluginManager();
+            PluginManager pm = ((Plugin)core.getBootstrapper()).getServer().getPluginManager();
             this.commandMap = (CommandMap)pm.getClass().getField("commandMap").get(pm);
             this.knownCommands = (Map<String, Command>)this.commandMap.getClass().getField("knownCommands").get(this.commandMap);
         }

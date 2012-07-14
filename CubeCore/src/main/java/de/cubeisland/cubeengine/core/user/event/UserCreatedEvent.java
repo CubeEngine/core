@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.user.event;
 
-import de.cubeisland.cubeengine.core.CubeCore;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.event.HandlerList;
 
@@ -23,7 +23,7 @@ public class UserCreatedEvent extends UserEvent
         return handlers;
     }
 
-    public UserCreatedEvent(CubeCore core, User user)
+    public UserCreatedEvent(Core core, User user)
     {
         super(core, user);
     }

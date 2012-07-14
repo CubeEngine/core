@@ -10,14 +10,14 @@ import org.bukkit.plugin.PluginLoader;
  */
 public class PluginWrapper
 {
-    private BukkitCore plugin;
+    private BukkitPlugin plugin;
 
-    public PluginWrapper(BukkitCore plugin)
+    public PluginWrapper(BukkitPlugin plugin)
     {
         this.plugin = plugin;
     }
 
-    public BukkitCore getBukkitPlugin()
+    public BukkitPlugin getBukkitPlugin()
     {
         return this.plugin;
     }
