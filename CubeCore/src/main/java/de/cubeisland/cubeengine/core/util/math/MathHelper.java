@@ -37,7 +37,7 @@ public class MathHelper
 
     public static double pow(double base, int exp)
     {
-        for (int i = 0; i < exp; ++i)
+        for (int i = 1; i < exp; ++i)
         {
             base *= base;
         }
