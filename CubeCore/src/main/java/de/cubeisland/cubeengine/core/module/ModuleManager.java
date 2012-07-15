@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.BukkitCore;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
@@ -20,11 +20,11 @@ import java.util.logging.Logger;
 public class ModuleManager
 {
     private final Map<String, Module> modules;
-    private final BukkitCore core;
+    private final Core core;
     private final ModuleLoader loader;
     private final Logger logger;
 
-    public ModuleManager(BukkitCore core)
+    public ModuleManager(Core core)
     {
         this.modules = new THashMap<String, Module>();
         this.core = core;

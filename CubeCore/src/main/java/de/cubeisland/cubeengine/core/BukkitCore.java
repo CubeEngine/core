@@ -15,8 +15,8 @@ import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
 import java.util.logging.Level;
 import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public final class BukkitCore implements Core
 {
@@ -60,7 +60,7 @@ public final class BukkitCore implements Core
         catch (Throwable e)
         {
             this.coreLogger.log(Level.SEVERE, "Error while initializing database", e);
-            this.server.getPluginManager().disablePlugin((JavaPlugin)bootstrapper);
+            this.server.getPluginManager().disablePlugin((Plugin)bootstrapper);
             return;
         }
         this.coreLogger.addFileHandler(new File(fileManager.getLogDir(), "core.log"), Level.WARNING);

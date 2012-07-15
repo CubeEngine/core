@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine;
 
 import de.cubeisland.cubeengine.core.Bootstrapper;
-import de.cubeisland.cubeengine.core.BukkitCore;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.event.EventManager;
@@ -27,7 +26,7 @@ public final class CubeEngine
     private CubeEngine()
     {}
 
-    public static void initialize(BukkitCore coreModule)
+    public static void initialize(Core coreModule)
     {
         if (core == null)
         {
