@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class PriceStorage implements Storage<Integer, PricedItemStack>
 {

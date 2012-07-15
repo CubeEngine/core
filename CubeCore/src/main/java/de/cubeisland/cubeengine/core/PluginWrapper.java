@@ -6,7 +6,7 @@ import org.bukkit.plugin.PluginLoader;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class PluginWrapper
 {

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Confirms a requested action
  * 
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class ConfirmCommand
 {

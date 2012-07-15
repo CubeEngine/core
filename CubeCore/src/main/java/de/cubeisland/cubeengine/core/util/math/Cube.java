@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.util.math;
 /**
  * Represents a Cube specified by a corner and size
  * 
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class Cube extends Cuboid
 {

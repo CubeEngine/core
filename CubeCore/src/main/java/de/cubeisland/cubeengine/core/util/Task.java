@@ -6,7 +6,7 @@ import org.bukkit.plugin.Plugin;
 /**
  * This Task can be cancelled from the inside
  * 
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public abstract class Task implements Runnable
 {

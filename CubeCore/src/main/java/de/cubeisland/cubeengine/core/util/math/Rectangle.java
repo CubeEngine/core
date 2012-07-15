@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.util.math;
 /**
  * Represents a Rectangle specified by two corners
  * 
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class Rectangle
 {

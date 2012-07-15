@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class FlyListener implements Listener
 {

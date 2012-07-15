@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class LocationConverter implements Converter<Location>
 {

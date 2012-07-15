@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class Rank
 {

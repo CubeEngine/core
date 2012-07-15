@@ -12,7 +12,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 /**
  * Lists all auctions
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class ListCommand
 {

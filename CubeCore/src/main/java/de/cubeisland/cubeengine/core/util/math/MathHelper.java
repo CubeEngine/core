@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.util.math;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class MathHelper
 {

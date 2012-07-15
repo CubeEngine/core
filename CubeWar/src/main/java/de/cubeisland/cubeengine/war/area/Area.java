@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.war.storage.AreaModel;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class Area
 {

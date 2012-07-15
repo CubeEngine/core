@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class ModuleDisabledEvent extends ModuleEvent
 {

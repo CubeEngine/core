@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  * @author Phillip Schichtel
  */
 public abstract class Configuration

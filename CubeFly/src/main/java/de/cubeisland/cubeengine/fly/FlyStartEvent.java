@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class FlyStartEvent extends UserEvent implements Cancellable
 {

@@ -12,7 +12,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class UserAccountStorage implements Storage<Integer, UserAccount>
 {

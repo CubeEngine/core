@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class BasicUser implements Model<User>
 {

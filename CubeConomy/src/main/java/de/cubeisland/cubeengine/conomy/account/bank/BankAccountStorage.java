@@ -11,7 +11,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class BankAccountStorage implements Storage<Integer, BankAccount>
 {

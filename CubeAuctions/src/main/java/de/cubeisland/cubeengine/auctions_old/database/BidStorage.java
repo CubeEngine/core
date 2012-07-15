@@ -15,7 +15,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class BidStorage implements Storage<Integer, Bid>
 {

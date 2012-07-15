@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class Group
 {

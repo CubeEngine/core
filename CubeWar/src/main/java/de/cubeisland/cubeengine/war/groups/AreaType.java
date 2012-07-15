@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.war.groups;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public enum AreaType
 {

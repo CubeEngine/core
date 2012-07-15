@@ -16,7 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class General
 {

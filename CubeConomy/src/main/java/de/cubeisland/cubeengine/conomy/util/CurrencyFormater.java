@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.conomy.account.AccountModel;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class CurrencyFormater
 {

@@ -4,7 +4,7 @@ import java.io.File;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class Validate
 {

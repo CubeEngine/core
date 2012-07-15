@@ -8,7 +8,7 @@ softdepend:
 website: "http://cubeisland.de/"
 description: "War module"
 authors:
-  - Faithcaio
+  - Anselm Brehme
   - Quick_Wango
 
 commands:

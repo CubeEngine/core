@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.user.User;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class UserAccount extends AccountModel
 {

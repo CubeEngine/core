@@ -38,7 +38,7 @@ import org.bukkit.OfflinePlayer;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public abstract class ConfigurationCodec
 {

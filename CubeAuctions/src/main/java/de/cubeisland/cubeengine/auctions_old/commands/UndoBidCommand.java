@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 /**
  * Undoing Bids
  * 
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class UndoBidCommand
 {

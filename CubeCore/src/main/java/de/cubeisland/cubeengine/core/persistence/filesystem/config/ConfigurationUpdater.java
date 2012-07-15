@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public interface ConfigurationUpdater
 {

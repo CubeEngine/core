@@ -13,7 +13,7 @@ import org.bukkit.Location;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class AreaControl
 {

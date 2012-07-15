@@ -9,7 +9,7 @@ import org.yaml.snakeyaml.Yaml;
 /**
  * A YamlConfiguration without bukkit
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class YamlCodec extends ConfigurationCodec
 {

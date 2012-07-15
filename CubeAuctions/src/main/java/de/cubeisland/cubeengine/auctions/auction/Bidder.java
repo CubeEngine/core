@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedTransferQueue;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class Bidder implements Model<Integer>
 {

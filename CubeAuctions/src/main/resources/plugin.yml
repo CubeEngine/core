@@ -14,7 +14,7 @@ database: false
 website: "http://cubeisland.de/"
 description: "Implements an AuctionHouse for your Minecraft-Server"
 authors:
-  - "Faithcaio"
+  - "Anselm Brehme"
   - "Quick_Wango"
 
 permissions:

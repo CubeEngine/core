@@ -16,7 +16,7 @@ import org.bukkit.entity.*;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class WarUser
 {

@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Adds an auction.
  * 
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 
 public class AddCommand

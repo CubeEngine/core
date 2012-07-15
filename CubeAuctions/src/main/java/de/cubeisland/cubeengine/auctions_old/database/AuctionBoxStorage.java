@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 {

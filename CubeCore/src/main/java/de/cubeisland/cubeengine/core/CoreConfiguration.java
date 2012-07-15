@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.C
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 @Codec("yml")
 public class CoreConfiguration extends Configuration

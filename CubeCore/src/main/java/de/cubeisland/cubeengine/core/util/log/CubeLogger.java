@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class CubeLogger extends Logger
 {

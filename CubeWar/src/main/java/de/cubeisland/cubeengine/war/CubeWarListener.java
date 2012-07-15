@@ -24,7 +24,7 @@ import org.bukkit.potion.PotionEffectType;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class CubeWarListener implements Listener
 {

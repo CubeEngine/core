@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class GroupCommands {
 

@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.conomy.account;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public interface IAccount
 {

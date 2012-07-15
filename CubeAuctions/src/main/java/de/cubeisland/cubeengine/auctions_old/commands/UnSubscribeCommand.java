@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Manages your Subscriptions
  * 
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class UnSubscribeCommand
 {

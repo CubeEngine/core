@@ -29,7 +29,7 @@ import static de.cubeisland.cubeengine.CubeEngine._;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class CubeAuctionListener implements Listener
 {

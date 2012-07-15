@@ -7,7 +7,7 @@ import org.bukkit.World;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class AreaModel implements Model<Integer>
 {

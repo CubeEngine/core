@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class JsonCodec extends ConfigurationCodec
 {

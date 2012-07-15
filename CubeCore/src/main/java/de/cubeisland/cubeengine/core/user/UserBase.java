@@ -48,7 +48,7 @@ import org.bukkit.util.Vector;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class UserBase implements Player
 {

@@ -8,7 +8,7 @@ import org.bukkit.Material;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class AuctionsConfiguration extends Configuration
 {

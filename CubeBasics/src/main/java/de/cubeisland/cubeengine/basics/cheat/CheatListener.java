@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class CheatListener implements Listener
 {

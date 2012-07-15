@@ -9,7 +9,7 @@ import org.bukkit.permissions.Permissible;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public enum Perm
 {

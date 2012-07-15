@@ -5,7 +5,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public enum Perm implements Permission
 {

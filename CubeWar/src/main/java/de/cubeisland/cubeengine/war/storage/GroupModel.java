@@ -11,7 +11,7 @@ import org.bukkit.Material;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class GroupModel implements Model<Integer>
 {

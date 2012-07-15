@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public abstract class AccountModel implements IAccount,Model<Integer>
 {

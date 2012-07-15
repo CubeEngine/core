@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public enum Sorter
 {

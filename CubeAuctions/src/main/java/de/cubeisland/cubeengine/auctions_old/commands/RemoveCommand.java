@@ -18,7 +18,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 /**
  * Removes an auction
  * 
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class RemoveCommand
 {

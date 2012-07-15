@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Bids on an auction
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class BidCommand
 {

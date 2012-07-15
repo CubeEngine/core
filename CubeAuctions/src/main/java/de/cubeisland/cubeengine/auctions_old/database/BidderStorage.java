@@ -13,7 +13,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class BidderStorage implements Storage<User, Bidder>
 {

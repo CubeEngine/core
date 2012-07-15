@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class PlayerConverter implements Converter<OfflinePlayer>
 {

@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class BasicUserManager
 {

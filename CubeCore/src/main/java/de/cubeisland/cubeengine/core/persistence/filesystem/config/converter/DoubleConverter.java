@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class DoubleConverter implements Converter<Double>
 {

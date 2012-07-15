@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * This class contains some utillities to work with Strings
  *
  * @author Phillip Schichtel
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public final class StringUtils
 {

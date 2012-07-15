@@ -5,7 +5,7 @@ import java.util.logging.LogRecord;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 class ConsoleFormatter extends Formatter
 {

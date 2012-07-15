@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class ItemPrice implements Model<String>
 {

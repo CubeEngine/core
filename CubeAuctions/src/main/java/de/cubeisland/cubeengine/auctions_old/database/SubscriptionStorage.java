@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class SubscriptionStorage implements Storage<User, Bidder>
 {

@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 /**
  * Changes notification
  * 
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class NotifyCommand
 {

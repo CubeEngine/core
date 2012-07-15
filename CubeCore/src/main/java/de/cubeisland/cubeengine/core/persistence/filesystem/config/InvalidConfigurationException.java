@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class InvalidConfigurationException extends Exception
 {

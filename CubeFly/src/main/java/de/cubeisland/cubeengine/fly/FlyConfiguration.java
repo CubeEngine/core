@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.O
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 @Codec("yml")
 public class FlyConfiguration extends Configuration

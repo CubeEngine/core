@@ -15,7 +15,7 @@ import org.bukkit.Server;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class AreaStorage implements Storage<Integer, AreaModel>
 {

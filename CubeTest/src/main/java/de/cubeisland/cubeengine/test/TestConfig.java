@@ -19,7 +19,7 @@ import org.bukkit.plugin.Plugin;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 
 @MapComments({
@@ -39,7 +39,7 @@ public class TestConfig extends Configuration
     public Location location = new Location(server.getWorld("world"), 1, 2, 3, 0, 0);
     @Option("offlineplayer")
     @Comment("PlayerTest")
-    public OfflinePlayer player = server.getOfflinePlayer("Faithcaio");
+    public OfflinePlayer player = server.getOfflinePlayer("Anselm Brehme");
     @Option("regions.use-scheduler")
     public boolean use_scheduler = true;
     @Option("regions.sql.use")
@@ -72,7 +72,7 @@ public class TestConfig extends Configuration
     @Option(value = "arrays.playertest", genericType = OfflinePlayer.class)
     public OfflinePlayer[] playerarray =
     {
-        server.getOfflinePlayer("Faithcaio"),
+        server.getOfflinePlayer("Anselm Brehme"),
         server.getOfflinePlayer("Niemand")
     };
     @Option("list.stringlist")
@@ -88,7 +88,7 @@ public class TestConfig extends Configuration
     {
         
         {
-            add(server.getOfflinePlayer("Faithcaio"));
+            add(server.getOfflinePlayer("Anselm Brehme"));
             add(server.getOfflinePlayer("KekseSpieler"));
         }
     };

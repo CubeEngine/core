@@ -14,7 +14,7 @@ import org.bukkit.Server;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class UserStorage implements Storage<Integer,User>
 {

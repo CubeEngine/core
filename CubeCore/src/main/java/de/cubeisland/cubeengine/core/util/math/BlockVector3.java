@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.util.math;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class BlockVector3
 {

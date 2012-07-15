@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 /**
  *
- * @author Faithcaio
+ * @author Anselm Brehme
  */
 public class UserModel implements Model<User>
 {
