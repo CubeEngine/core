@@ -29,9 +29,9 @@ public class BukkitCommandManager implements CommandManager
         {}
     }
 
-    public void inject(CommandWrapper commandWrapper)
+    public void inject(BukkitCommandWrapper commandWrapper)
     {
-        Command command = (Command)(CommandWrapper)commandWrapper;
+        Command command = (Command)(BukkitCommandWrapper)commandWrapper;
         this.commandMap.register(command.getLabel(), command);
     }
 

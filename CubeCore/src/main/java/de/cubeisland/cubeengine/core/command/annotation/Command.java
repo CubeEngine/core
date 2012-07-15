@@ -1,4 +1,5 @@
 package de.cubeisland.cubeengine.core.command.annotation;
+import de.cubeisland.cubeengine.core.command.CommandHolder;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,7 +19,8 @@ public @interface Command
     public int min() default -1;
     public int max() default -1;
     public String desc();
-    public boolean permission() default false;
+    public boolean permission() default true;
     public String usage() default "auto";
     public Flag[] flags() default {};
+    public Class<? extends CommandHolder>[] subcommands() default {};
 }

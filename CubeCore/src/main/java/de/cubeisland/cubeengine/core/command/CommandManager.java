@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.bukkit.CommandWrapper;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCommandWrapper;
 
 /**
  *
@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.bukkit.CommandWrapper;
  */
 public interface CommandManager
 {
-    public void inject(CommandWrapper command);
+    public void inject(BukkitCommandWrapper command);
     public void remove(String name);
     public void clear();
 }
