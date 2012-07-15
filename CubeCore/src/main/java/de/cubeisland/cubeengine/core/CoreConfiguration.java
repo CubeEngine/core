@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core;
 
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Codec;
 
 /**
  *

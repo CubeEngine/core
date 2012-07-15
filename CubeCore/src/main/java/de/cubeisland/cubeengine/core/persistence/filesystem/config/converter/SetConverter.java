@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
 
+import de.cubeisland.cubeengine.core.persistence.filesystem.config.Converter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

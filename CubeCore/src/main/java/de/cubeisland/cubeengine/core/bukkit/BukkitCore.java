@@ -44,7 +44,7 @@ public final class BukkitCore implements Core
         this.server = bootstrapper.getServer();
         PluginManager pm = this.server.getPluginManager();
         this.bootstrapper = bootstrapper;
-        this.permissionRegistration = new PermissionRegistration(pm);
+        this.permissionRegistration = new BukkitPermissionRegistration(pm);
         this.fileManager = new FileManager(bootstrapper.getDataFolder().getParentFile());
         this.i18n = new I18n(this);
         this.eventRegistration = new BukkitEventManager(pm);
@@ -97,9 +97,9 @@ public final class BukkitCore implements Core
     }
 
     /**
-     * Returns the PermissionRegistration
+     * Returns the BukkitPermissionRegistration
      *
-     * @return the PermissionRegistration
+     * @return the BukkitPermissionRegistration
      */
     public PermissionRegistration getPermissionRegistration()
     {
@@ -127,9 +127,9 @@ public final class BukkitCore implements Core
     }
 
     /**
-     * This method is a proxy to PermissionRegistration.registerPermissions
+     * This method is a proxy to BukkitPermissionRegistration.registerPermissions
      *
-     * @see de.cubeisland.cubeengine.core.permission.PermissionRegistration
+     * @see de.cubeisland.cubeengine.core.permission.BukkitPermissionRegistration
      */
     public void registerPermissions(Permission... values)
     {

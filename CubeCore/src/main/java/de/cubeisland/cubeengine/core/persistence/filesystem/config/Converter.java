@@ -1,5 +1,9 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
+package de.cubeisland.cubeengine.core.persistence.filesystem.config;
 
+/**
+ *
+ * @author Phillip Schichtel
+ */
 public interface Converter<T>
 {
     /**

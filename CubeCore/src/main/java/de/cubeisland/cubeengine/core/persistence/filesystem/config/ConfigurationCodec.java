@@ -8,7 +8,6 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.O
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.ByteConverter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.Converter;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.DoubleConverter;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.IntegerConverter;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.LocationConverter;

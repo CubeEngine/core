@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.util.math;
 /**
  * Represents a Cuboid specified by two corners
  * 
- * @author CubeIsland Dev
+ * @author Phillip Schichtel
  */
 public class Cuboid
 {

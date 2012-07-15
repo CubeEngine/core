@@ -1,12 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
  *
- * @author Anselm
+ * @author Anselm Brehme
  */
 public class BlockVector2
 {

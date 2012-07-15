@@ -34,4 +34,13 @@ public class MathHelper
     {
         return floor(num + 0.5);
     }
+
+    public static double pow(double base, int exp)
+    {
+        for (int i = 0; i < exp; ++i)
+        {
+            base *= base;
+        }
+        return base;
+    }
 }

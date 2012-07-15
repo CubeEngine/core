@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine;
 
 import de.cubeisland.cubeengine.core.Bootstrapper;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -119,5 +120,10 @@ public final class CubeEngine
     public static Bootstrapper getBootstrapper()
     {
         return core.getBootstrapper();
+    }
+
+    public static CommandManager getCommandManager()
+    {
+        return core.getCommandManager();
     }
 }

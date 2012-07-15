@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations;
 
 import java.lang.annotation.ElementType;
@@ -11,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @author Anselm
+ * @author Anselm Brehme
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
