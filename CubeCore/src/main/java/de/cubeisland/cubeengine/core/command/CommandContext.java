@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +25,8 @@ public class CommandContext
     private final List<String> params;
     private final boolean empty;
     private final int size;
+    
+    private Core core;
 
     /**
      * Initializes the CommandContext object with an array of arguments
@@ -35,8 +37,10 @@ public class CommandContext
      * @param args the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
-    public CommandContext(CommandSender sender, String baseLabel, SubCommand subCommand, String[] args)
+    public CommandContext(CommandSender sender, String baseLabel, SubCommand subCommand, String[] args, Core core)
     {
+        this.core = core;
+        
         this.baseLabel = baseLabel;
         this.subCommand = subCommand;
         this.flags = new HashSet<String>();
@@ -327,14 +331,12 @@ public class CommandContext
     /**
      * Returns the requested value as a User
      *
-     * TODO remove CubeEngine dependency by providing the core
-     *
      * @param index the index
      * @return the value as User
      */
     public User getUser(int index)
     {
-        return CubeEngine.getCore().getUserManager().getUser(this.getString(index));
+        return this.core.getUserManager().getUser(this.getString(index));
     }
     
     /**
