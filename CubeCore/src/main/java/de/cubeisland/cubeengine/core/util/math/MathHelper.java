@@ -35,12 +35,32 @@ public class MathHelper
         return floor(num + 0.5);
     }
 
-    public static double pow(double base, int exp)
+    public static double pow(double x, int n)
     {
-        for (int i = 1; i < exp; ++i)
+        if (n == 0)
         {
-            base *= base;
+            return 1.0;
         }
-        return base;
+        for (int i = 1; i < n; ++i)
+        {
+            x *= x;
+        }
+        return x;
+    }
+
+    public static double pow(int x, int n)
+    {
+        double result = 1.0;
+        while (n != 0)
+        {
+            if ((x & 1) == 1)
+            {
+                result *= x;
+                --n;
+            }
+            x *= x;
+            n /= 2;
+        }
+        return result;
     }
 }
