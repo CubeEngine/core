@@ -1,5 +1,11 @@
-package de.cubeisland.cubeengine.core;
+package de.cubeisland.cubeengine.core.bukkit;
 
+import de.cubeisland.cubeengine.core.Bootstrapper;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CoreConfiguration;
+import de.cubeisland.cubeengine.core.CoreResource;
+import de.cubeisland.cubeengine.core.DatabaseConfiguration;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.event.BukkitEventManager;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -31,6 +37,7 @@ public final class BukkitCore implements Core
     private EventManager eventRegistration;
     private Bootstrapper bootstrapper;
     private Server server;
+    private CommandManager commandManager;
 
     public BukkitCore(BukkitBootstrapper bootstrapper)
     {
@@ -42,6 +49,7 @@ public final class BukkitCore implements Core
         this.i18n = new I18n(this);
         this.eventRegistration = new BukkitEventManager(pm);
         this.moduleManager = new ModuleManager(this);
+        this.commandManager = new BukkitCommandManager(this);
     }
 
     public Database getDatabase()
@@ -166,5 +174,10 @@ public final class BukkitCore implements Core
     public Bootstrapper getBootstrapper()
     {
         return this.bootstrapper;
+    }
+
+    public CommandManager getCommandManager()
+    {
+        return this.commandManager;
     }
 }

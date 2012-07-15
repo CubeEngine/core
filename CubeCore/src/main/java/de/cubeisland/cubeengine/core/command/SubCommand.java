@@ -10,6 +10,8 @@ import org.bukkit.permissions.Permission;
  * This represents an sub command.
  * You usually don't use this class directly.
  *
+ * TODO get rid of this
+ *
  * @author Phillip Schichtel
  */
 public class SubCommand

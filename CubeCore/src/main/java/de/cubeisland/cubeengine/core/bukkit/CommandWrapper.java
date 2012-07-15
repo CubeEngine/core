@@ -1,6 +1,5 @@
-package de.cubeisland.cubeengine.core.command.bukkit;
+package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.command.CommandWrapper;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -8,9 +7,9 @@ import org.bukkit.command.CommandSender;
  *
  * @author Phillip Schichtel
  */
-public class BukkitCommandWrapper extends Command implements CommandWrapper
+public class CommandWrapper extends Command
 {
-    public BukkitCommandWrapper()
+    public CommandWrapper()
     {
         super("");
     }

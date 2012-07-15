@@ -1,14 +1,13 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.CommandWrapper;
 
 /**
  *
  * @author Phillip Schichtel
  */
-public interface CommandInjector
+public interface CommandManager
 {
-    public void initialize(Core core);
     public void inject(CommandWrapper command);
     public void remove(String name);
     public void clear();

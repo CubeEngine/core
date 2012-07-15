@@ -1,6 +1,7 @@
-package de.cubeisland.cubeengine.core;
+package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.Bootstrapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**

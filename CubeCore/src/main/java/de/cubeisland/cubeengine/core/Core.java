@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core;
 
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
@@ -28,4 +29,5 @@ public interface Core
     public I18n getI18n();
     public CoreConfiguration getConfiguration();
     public Bootstrapper getBootstrapper();
+    public CommandManager getCommandManager();
 }
