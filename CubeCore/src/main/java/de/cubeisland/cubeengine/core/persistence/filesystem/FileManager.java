@@ -19,22 +19,37 @@ public class FileManager
     private final File logDir;
     private final File modulesDir;
 
-    public FileManager(File pluginsFolder)
+    public FileManager(File pluginsFolder) throws IOException
     {
         this.dataFolder = new File(pluginsFolder, "CubeEngine");
-        this.dataFolder.mkdirs();
+        if (!this.dataFolder.mkdirs())
+        {
+            throw new IOException("Failed to create the data folder");
+        }
 
         this.configDir = new File(this.dataFolder, "config");
-        this.configDir.mkdirs();
+        if (!this.configDir.mkdirs())
+        {
+            throw new IOException("Failed to create the config folder");
+        }
 
         this.languageDir = new File(this.dataFolder, "language");
-        this.languageDir.mkdirs();
+        if (!this.languageDir.mkdirs())
+        {
+            throw new IOException("Failed to create the language folder");
+        }
 
         this.logDir = new File(this.dataFolder, "log");
-        this.logDir.mkdirs();
+        if (!this.logDir.mkdirs())
+        {
+            throw new IOException("Failed to create the log folder");
+        }
 
         this.modulesDir = new File(this.dataFolder, "modules");
-        this.modulesDir.mkdirs();
+        if (!this.modulesDir.mkdirs())
+        {
+            throw new IOException("Failed to create the modules folder");
+        }
     }
 
     public File getDataFolder()

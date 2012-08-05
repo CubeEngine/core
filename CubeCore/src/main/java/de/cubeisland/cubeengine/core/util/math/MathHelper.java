@@ -8,6 +8,9 @@ public class MathHelper
 {
     private static final double RADIANS_DEGREE_CONVERTER = 180.0 / Math.PI;
 
+    private MathHelper()
+    {}
+    
     public static double radiansToDegree(double radians)
     {
         return radians * RADIANS_DEGREE_CONVERTER;

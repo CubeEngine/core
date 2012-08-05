@@ -45,9 +45,9 @@ public class CubeLogger extends Logger
             this.addHandler(dbHandler);
             return this;
         }
-        catch (Exception ex)
+        catch (SecurityException e)
         {
-            this.log(Level.SEVERE, "Could not add DatabaseHandler to Logger");
+            this.log(Level.SEVERE, "Could not add DatabaseHandler to Logger", e);
             return this;
         }
     }
@@ -70,9 +70,9 @@ public class CubeLogger extends Logger
             this.addHandler(consoleHandler);
             return this;
         }
-        catch (Exception ex)
+        catch (SecurityException e)
         {
-            this.log(Level.SEVERE, "Could not add ConsoleHandler to Logger");
+            this.log(Level.SEVERE, "Could not add ConsoleHandler to Logger", e);
             return this;
         }
     }
@@ -94,9 +94,9 @@ public class CubeLogger extends Logger
             return this;
 
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            this.log(Level.SEVERE, "Could not add FileHandler to Logger");
+            this.log(Level.SEVERE, "Could not add FileHandler to Logger", e);
             return this;
         }
     }
@@ -115,9 +115,9 @@ public class CubeLogger extends Logger
             this.addHandler(remoteHandler);
             return this;
         }
-        catch (Exception ex)
+        catch (SecurityException e)
         {
-            this.log(Level.SEVERE, "Could not add RemoteHandler to Logger");
+            this.log(Level.SEVERE, "Could not add RemoteHandler to Logger", e);
             return this;
         }
     }

@@ -6,8 +6,9 @@ import com.google.gson.JsonParser;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,16 +26,18 @@ public class Language
     private final File messageDir;
     private final JsonParser parser;
 
-    public Language(String code, File languageDir) throws FileNotFoundException
+    public Language(String code, File languageDir) throws IOException
     {
         this.code = code;
         this.messageDir = new File(languageDir, code);
-        this.countries = new THashSet<String>();
+        Set<String> tmpCountries = new THashSet<String>();
         this.messages = new THashMap<String, Map<String, String>>();
         this.parser = new JsonParser();
 
         JsonObject root;
-        root = parser.parse(new FileReader(new File(languageDir, code + ".json"))).getAsJsonObject();
+        FileReader reader = new FileReader(new File(languageDir, code + ".json"));
+        root = parser.parse(reader).getAsJsonObject();
+        reader.close();
 
         if (!root.has("name") || !root.has("localName"))
         {
@@ -53,10 +56,11 @@ public class Language
             {
                 if (elem.isJsonPrimitive())
                 {
-                    this.countries.add(elem.getAsString());
+                    tmpCountries.add(elem.getAsString());
                 }
             }
         }
+        this.countries = Collections.unmodifiableSet(tmpCountries);
     }
 
     public String getCode()
@@ -110,7 +114,9 @@ public class Language
     {
         try
         {
-            JsonElement root = parser.parse(new FileReader(new File(this.messageDir, cat + ".json")));
+            FileReader reader = new FileReader(new File(this.messageDir, cat + ".json"));
+            JsonElement root = parser.parse(reader);
+            reader.close();
             if (root.isJsonObject())
             {
                 Map<String, String> catMessages = new THashMap<String, String>();
@@ -130,9 +136,9 @@ public class Language
                 }
             }
         }
-        catch (Throwable t)
+        catch (IOException e)
         {
-            t.printStackTrace(System.err);
+            e.printStackTrace(System.err);
         }
         return null;
     }

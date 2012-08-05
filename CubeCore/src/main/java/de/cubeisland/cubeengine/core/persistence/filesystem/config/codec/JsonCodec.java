@@ -36,29 +36,28 @@ public class JsonCodec extends ConfigurationCodec
     public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
-        Iterator<String> iterator = values.keySet().iterator();
-        String key = iterator.next();
-        Object value = values.get(key);
+        Iterator<Map.Entry<String, Object>> iterator = values.entrySet().iterator();
+        Map.Entry<String, Object> entry = iterator.next();
+        
         if (off == 0)
         {
-            sb.append(this.convertValue(key, value, off));
+            sb.append(this.convertValue(entry.getKey(), entry.getValue(), off));
         }
         else
         {
-            sb.append(this.convertValue(path + "." + key, value, off));
+            sb.append(this.convertValue(path + "." + entry.getKey(), entry.getValue(), off));
         }
         while (iterator.hasNext())
         {
-            key = iterator.next();
-            value = values.get(key);
+            entry = iterator.next();
             sb.append(" ,").append(LINEBREAK);
             if (off == 0)
             {
-                sb.append(this.convertValue(key, value, off));
+                sb.append(this.convertValue(entry.getKey(), entry.getValue(), off));
             }
             else
             {
-                sb.append(this.convertValue(path + "." + key, value, off));
+                sb.append(this.convertValue(path + "." + entry.getKey(), entry.getValue(), off));
             }
         }
         return sb.toString();
@@ -86,7 +85,7 @@ public class JsonCodec extends ConfigurationCodec
         else if (value instanceof Collection<?>)
         {
             sb.append(" [").append(LINEBREAK);
-            Iterator iterator = ((Collection)value).iterator();
+            Iterator<?> iterator = ((Collection<?>)value).iterator();
             if (iterator.hasNext())
             {
                 sb.append(this.convertElementofCollection(iterator.next(), off));

@@ -31,7 +31,7 @@ import org.bukkit.plugin.Plugin;
 @Codec("yml")
 public class TestConfig extends Configuration
 {
-    private final Server server = ((Plugin)CubeEngine.getBootstrapper()).getServer();
+    private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
 
     //TODO remove this test
     @Option("location")
@@ -55,8 +55,7 @@ public class TestConfig extends Configuration
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
-        
-        {
+		{
             put("default", 7);
         }
     };

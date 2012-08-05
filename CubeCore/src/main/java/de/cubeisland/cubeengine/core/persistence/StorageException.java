@@ -6,7 +6,9 @@ package de.cubeisland.cubeengine.core.persistence;
  */
 public class StorageException extends RuntimeException
 {
-    public StorageException(String message)
+	private static final long serialVersionUID = -3367478236326791833L;
+
+	public StorageException(String message)
     {
         super(message);
     }

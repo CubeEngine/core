@@ -22,7 +22,7 @@ public class UserManager
     public UserManager(Core core, Server server)
     {
         this.core = core;
-        this.storage = new UserStorage(core.getDatabase(), server);
+        this.storage = new UserStorage(core.getDB(), server);
         this.storage.initialize();
         this.server = server;
 

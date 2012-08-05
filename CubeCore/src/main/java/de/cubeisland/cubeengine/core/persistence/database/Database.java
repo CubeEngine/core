@@ -41,9 +41,9 @@ public class Database
         {
             Class.forName("com.mysql.jdbc.Driver");
         }
-        catch (Throwable t)
+        catch (ClassNotFoundException e)
         {
-            throw new IllegalStateException("Couldn't find the MySQL driver!", t);
+            throw new IllegalStateException("Couldn't find the MySQL driver!", e);
         }
         this.host = host;
         this.port = port;
@@ -142,7 +142,7 @@ public class Database
         return statement;
     }
     
-    public void assignId(PreparedStatement ps, Model model)
+    public void assignId(PreparedStatement ps, Model<Integer> model)
     {
         try
         {

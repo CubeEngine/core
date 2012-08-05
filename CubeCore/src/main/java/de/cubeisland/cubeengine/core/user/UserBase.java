@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.BukkitDependend;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,6 +51,7 @@ import org.bukkit.util.Vector;
  *
  * @author Anselm Brehme
  */
+@BukkitDependend("Implementes Bukkit's Player")
 public class UserBase implements Player
 {
     protected OfflinePlayer offlinePlayer;
@@ -1721,5 +1723,35 @@ public class UserBase implements Player
             return player.getListeningPluginChannels();
         }
         return null;
+    }
+
+    public int getExpToLevel()
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return player.getExpToLevel();
+        }
+        return 0;
+    }
+
+    public boolean hasLineOfSight(Entity other)
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return player.hasLineOfSight(other);
+        }
+        return false;
+    }
+
+    public boolean isValid()
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return this.isValid();
+        }
+        return false;
     }
 }

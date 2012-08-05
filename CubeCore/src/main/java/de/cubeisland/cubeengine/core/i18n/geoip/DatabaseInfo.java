@@ -20,9 +20,9 @@
 
 package de.cubeisland.cubeengine.core.i18n.geoip;
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Encapsulates metadata about the GeoIP database. The database has a date, is a premium or
@@ -67,7 +67,7 @@ public class DatabaseInfo {
    public final static int NETSPEED_EDITION_REV1_V6 = 33;
    
 
-private static SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
     private String info;
 
@@ -121,6 +121,7 @@ private static SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         return null;
     }
 
+    @Override
     public String toString() {
         return info;
     }

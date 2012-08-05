@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine;
 
-import de.cubeisland.cubeengine.core.Bootstrapper;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.event.EventListener;
@@ -15,6 +14,7 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.logging.Logger;
+import org.bukkit.command.CommandSender;
 
 /**
  *
@@ -27,22 +27,20 @@ public final class CubeEngine
     private CubeEngine()
     {}
 
-    public static void initialize(Core coreModule)
+    public static void initialize(Core coreInstance)
     {
         if (core == null)
         {
-            if (coreModule == null)
+            if (coreInstance == null)
             {
-                throw new IllegalArgumentException("The core module must not be null!");
+                throw new IllegalArgumentException("The core must not be null!");
             }
-            core = coreModule;
-            core.enable();
+            core = coreInstance;
         }
     }
 
     public static void clean()
     {
-        core.disable();
         core = null;
     }
 
@@ -53,17 +51,12 @@ public final class CubeEngine
 
     public static Database getDatabase()
     {
-        return core.getDatabase();
+        return core.getDB();
     }
 
     public static PermissionRegistration getPermissionRegistration()
     {
         return core.getPermissionRegistration();
-    }
-
-    public static void registerPermissions(Permission[] permissions)
-    {
-        getPermissionRegistration().registerPermissions(permissions);
     }
 
     public static UserManager getUserManager()
@@ -78,12 +71,22 @@ public final class CubeEngine
 
     public static Logger getLogger()
     {
-        return core.getLogger();
+        return core.getCoreLogger();
     }
 
     public static ModuleManager getModuleManager()
     {
         return core.getModuleManager();
+    }
+    
+    @BukkitDependend("Uses Bukkit's CommandSender")
+    public static String _(CommandSender sender, String category, String text, Object... params)
+    {
+        if (sender instanceof User)
+        {
+            return _((User)sender, category, text, params);
+        }
+        return _(category, text, params);
     }
 
     public static String _(User user, String category, String text, Object... params)
@@ -91,15 +94,9 @@ public final class CubeEngine
         return _(user.getLanguage(), category, text, params);
     }
 
-    public static String _(User user, String text, Object... params)
-    {
-        final String className = Thread.currentThread().getStackTrace()[2].getClassName();
-        return _(user.getLanguage(), className.substring(25, className.indexOf(".", 26)), text, params);
-    }
-
     public static String _(String category, String text, Object... params)
     {
-        return _(I18n.SOURCE_LANGUAGE, category, text, params);
+        return _(core.getI18n().getDefaultLanguage(), category, text, params);
     }
 
     public static String _(String language, String category, String text, Object... params)
@@ -110,16 +107,6 @@ public final class CubeEngine
     public static EventManager getEventManager()
     {
         return core.getEventManager();
-    }
-
-    public static void registerEvents(EventListener listener, Module module)
-    {
-        getEventManager().registerListener(listener, module);
-    }
-
-    public static Bootstrapper getBootstrapper()
-    {
-        return core.getBootstrapper();
     }
 
     public static CommandManager getCommandManager()

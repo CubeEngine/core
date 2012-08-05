@@ -60,7 +60,7 @@ public class YamlCodec extends ConfigurationCodec
         }
         else if (value instanceof Collection<?>)
         {
-            for (Object o : (Collection)value) //Convert Collection
+            for (Object o : (Collection<?>)value) //Convert Collection
             {
                 sb.append(LINEBREAK).append(offset).append("- ");
                 if (o instanceof String)
@@ -85,16 +85,15 @@ public class YamlCodec extends ConfigurationCodec
     public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
-        for (String key : values.keySet())
+        for (Map.Entry<String, Object> entry : values.entrySet())
         {
-            Object value = values.get(key);
             if (off == 0)
             {
-                sb.append(this.convertValue(key, value, off));
+                sb.append(this.convertValue(entry.getKey(), entry.getValue(), off));
             }
             else
             {
-                sb.append(this.convertValue(path + "." + key, value, off));
+                sb.append(this.convertValue(path + "." + entry.getKey(), entry.getValue(), off));
             }
         }
         return sb.toString();

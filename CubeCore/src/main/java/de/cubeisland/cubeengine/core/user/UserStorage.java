@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
-import de.cubeisland.cubeengine.core.util.bitmask.LongBitMask;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -89,13 +88,11 @@ public class UserStorage implements Storage<Integer,User>
             Collection<User> users = new ArrayList<User>();
             int id;
             OfflinePlayer player;
-            LongBitMask bitmask;
             String language;
             while (result.next())
             {
                 id = result.getInt("id");
                 player = this.server.getOfflinePlayer(result.getString("name"));
-                bitmask = new LongBitMask(result.getLong("flags"));
                 language = result.getString("language");
                 User user = new User(id, player, language);
                 users.add(user);

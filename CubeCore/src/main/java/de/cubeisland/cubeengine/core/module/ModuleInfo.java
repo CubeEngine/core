@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -23,7 +24,7 @@ public final class ModuleInfo
         Validate.notNull(config, "The module configuration failed to loaded!");
 
         this.file               = file;
-        this.name               = config.name.substring(0, 1).toUpperCase() + config.name.substring(1).toLowerCase();
+        this.name               = config.name.substring(0, 1).toUpperCase(Locale.ENGLISH) + config.name.substring(1).toLowerCase(Locale.ENGLISH);
         this.revision           = config.revision;
         this.description        = config.description;
         this.dependencies       = Collections.unmodifiableSet(config.dependencies);

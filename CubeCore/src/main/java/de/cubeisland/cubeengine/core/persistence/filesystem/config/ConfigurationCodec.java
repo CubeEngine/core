@@ -41,7 +41,7 @@ import org.bukkit.OfflinePlayer;
  */
 public abstract class ConfigurationCodec
 {
-    private static final Map<Class<?>, Converter> converters = new HashMap<Class<?>, Converter>();
+    private static final Map<Class<?>, Converter<?>> converters = new HashMap<Class<?>, Converter<?>>();
     public String COMMENT_PREFIX;
     public String SPACES;
     public String LINEBREAK;
@@ -55,7 +55,7 @@ public abstract class ConfigurationCodec
     static
     {
         logger = CubeEngine.getLogger();
-        Converter converter;
+        Converter<?> converter;
 
         converter = new ByteConverter();
         registerConverter(Byte.class, converter);
@@ -91,7 +91,7 @@ public abstract class ConfigurationCodec
      * @param clazz the class
      * @param converter the converter
      */
-    public static void registerConverter(Class<?> clazz, Converter converter)
+    public static void registerConverter(Class<?> clazz, Converter<?> converter)
     {
         if (clazz == null || converter == null)
         {
@@ -106,9 +106,9 @@ public abstract class ConfigurationCodec
      * @param objectClass the class to search for
      * @return a matching converter or null if not found
      */
-    private static Converter matchConverter(Class<?> objectClass)
+    private static Converter<?> matchConverter(Class<?> objectClass)
     {
-        Converter converter;
+        Converter<?> converter;
         for (Class<?> clazz : converters.keySet())
         {
             if (clazz.isAssignableFrom(objectClass))
@@ -131,7 +131,7 @@ public abstract class ConfigurationCodec
     public static Object convertTo(Configuration config, Field field, Object object)
     {
         Class<?> fieldClass = field.getType();
-        Converter converter = converters.get(fieldClass);
+        Converter<?> converter = converters.get(fieldClass);
         if (converter == null)
         {
             converter = matchConverter(fieldClass);
@@ -153,10 +153,10 @@ public abstract class ConfigurationCodec
                             Collection<Object> result;
                             try
                             {
-                                result = (Collection)field.get(config);
+                                result = (Collection<Object>)field.get(config);
                                 result.clear();
                             }
-                            catch (Exception ex)
+                            catch (Exception e)
                             {
                                 logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
                                 return null;
@@ -197,9 +197,9 @@ public abstract class ConfigurationCodec
                                 logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
                                 return null;
                             }
-                            for (String key : map.keySet())
+                            for (Map.Entry<String, ?> entry : map.entrySet())
                             {
-                                result.put(key, converter.to(map.get(key)));
+                                result.put(entry.getKey(), converter.to(entry.getValue()));
                             }
                             return result;
                         }
@@ -344,7 +344,7 @@ public abstract class ConfigurationCodec
         {
             return;
         }
-        InputStreamReader reader = new InputStreamReader(is);
+        InputStreamReader reader = new InputStreamReader(is, "UTF-8");
         StringBuilder builder = new StringBuilder();
         BufferedReader input = new BufferedReader(reader);
         try
@@ -361,7 +361,7 @@ public abstract class ConfigurationCodec
                 {
                     try
                     {
-                        int rev = Integer.parseInt(line.substring(line.indexOf(" ")));
+                        int rev = Integer.parseInt(line.substring(line.indexOf(' ')));
                         this.revision = rev;
                     }
                     catch (NumberFormatException ex)
@@ -407,7 +407,7 @@ public abstract class ConfigurationCodec
                         updater = updaterClass.newInstance();
                         this.values = updater.update(this.values, this.revision);
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
                     }
                 }
@@ -483,11 +483,11 @@ public abstract class ConfigurationCodec
             this.save(file);
             this.clear();
         }
-        catch (IOException ex)
+        catch (IOException e)
         {
             logger.severe("Error while saving a Configuration-File!");
         }
-        catch (IllegalAccessException ex)
+        catch (IllegalAccessException e)
         {
             logger.severe("Error while saving a Configuration-Element!");
         }
@@ -719,7 +719,7 @@ public abstract class ConfigurationCodec
      */
     public String getBasePath(String path)
     {
-        return path.substring(0, path.indexOf("."));
+        return path.substring(0, path.indexOf('.'));
     }
 
     /**
@@ -730,7 +730,7 @@ public abstract class ConfigurationCodec
      */
     public String getSubPath(String path)
     {
-        return path.substring(path.indexOf(".") + 1);
+        return path.substring(path.indexOf('.') + 1);
     }
 
     /**
@@ -741,7 +741,7 @@ public abstract class ConfigurationCodec
      */
     public String getSubKey(String path)
     {
-        return path.substring(path.lastIndexOf(".") + 1);
+        return path.substring(path.lastIndexOf('.') + 1);
     }
 
     /**

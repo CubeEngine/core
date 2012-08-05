@@ -19,7 +19,7 @@ public class LocationConverter implements Converter<Location>
     
     public LocationConverter(Core core)
     {
-        this.server = ((Plugin)core.getBootstrapper()).getServer();
+        this.server = ((Plugin)core).getServer();
     }
     
     public Object from(Location location)
@@ -34,7 +34,8 @@ public class LocationConverter implements Converter<Location>
         return loc;
     }
 
-    public Location to(Object object)
+    @SuppressWarnings("unchecked")
+	public Location to(Object object)
     {
         Map<String, Object> input = (Map<String, Object>)object;
         World world = server.getWorld((String) input.get("world"));

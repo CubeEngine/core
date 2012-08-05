@@ -60,11 +60,21 @@ public abstract class Module
         return this.info.getName();
     }
 
+    /**
+     * This method return the module info
+     *
+     * @return the module info
+     */
     public ModuleInfo getInfo()
     {
         return this.info;
     }
 
+    /**
+     * This method returns the module logger
+     *
+     * @return the module logger
+     */
     public Logger getLogger()
     {
         return this.logger;
@@ -110,34 +120,64 @@ public abstract class Module
         return this.core.getModuleManager();
     }
 
+    /**
+     * This method returns the classloader which loaded this module
+     *
+     * @return the classloader
+     */
     public ModuleClassLoader getClassLoader()
     {
         return this.classLoader;
     }
 
+    /**
+     * This method returns the module specific folder
+     *
+     * @return the module folder or null if it could not be created
+     */
     public File getFolder()
     {
         if (!this.folder.exists())
         {
-            this.folder.mkdirs();
+            if (!this.folder.mkdirs())
+            {
+                return null;
+            }
         }
         return this.folder;
     }
 
+    /**
+     * This method returns the database of the engine
+     *
+     * @return the database
+     */
     public Database getDatabase()
     {
-        return this.core.getDatabase();
+        return this.core.getDB();
     }
 
+    /**
+     * This method gets called right after the module initialization
+     */
     public void onLoad()
     {}
 
+    /**
+     * This method gets called when the module got enabled
+     */
     public void onEnable()
     {}
 
+    /**
+     * This method gets called when the module got disabled
+     */
     public void onDisable()
     {}
 
+    /**
+     * This method should be overridden to do reloading
+     */
     public void reload()
     {}
 
@@ -161,47 +201,91 @@ public abstract class Module
         return false;
     }
 
+    /**
+     * This method returns a resource from the module jar as an InputStream
+     *
+     * @param path the path to the resource
+     * @return the InputStream for the resource or null if the it wasn't found
+     */
     public InputStream getResource(String path)
     {
         Validate.notNull(path, "The path must not be null!");
         return this.getClass().getResourceAsStream(path);
     }
 
+    /**
+     * This method checks whether this module is currently enabled
+     *
+     * @return true if the module is enabled, otherwise false
+     */
     public final boolean isEnabled()
     {
         return this.enabled;
     }
 
+    /**
+     * This method returns a wrapper to use the module as a plugin for server specific stuff
+     *
+     * @return the PluginWrapper of this module
+     */
     public PluginWrapper getPluginWrapper()
     {
         return this.pluginWrapper;
     }
 
+    /**
+     * This method registeres event listeners
+     *
+     * @param listener the listener
+     */
     public void registerEvents(EventListener listener)
     {
         this.core.getEventManager().registerListener(listener, this);
     }
 
+    /**
+     * This method unregisteres all event listeners of the given listener instance
+     *
+     * @param listener the listener
+     */
     public void unregisterEvents(EventListener listener)
     {
         this.core.getEventManager().unregisterListener(listener);
     }
 
+    /**
+     * This method unregisteres all event listeners
+     */
     public void unregisterEvents()
     {
         this.core.getEventManager().unregisterListener(this);
     }
 
+    /**
+     * This method returns the file manager
+     *
+     * @return the file manager
+     */
     public FileManager getFileManager()
     {
         return this.core.getFileManager();
     }
 
+    /**
+     * This method returns the user manager
+     *
+     * @return the user manager
+     */
     public UserManager getUserManager()
     {
         return this.core.getUserManager();
     }
 
+    /**
+     * This method enables the module
+     *
+     * @return the enabled state of the module
+     */
     protected final boolean enable()
     {
         if (!this.enabled)
@@ -221,6 +305,10 @@ public abstract class Module
         return this.enabled;
     }
 
+
+    /**
+     * This method disables the module
+     */
     protected final void disable()
     {
         if (this.enabled)

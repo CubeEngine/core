@@ -9,18 +9,18 @@ import java.util.Set;
  *
  * @author Anselm
  */
-public class SetConverter implements Converter<Set>
+public class SetConverter implements Converter<Set<?>>
 {
-    public Object from(Set object)
+    public Object from(Set<?> object)
     {
         return object;
     }
 
-    public Set to(Object object)
+    public Set<?> to(Object object)
     {
         if (object instanceof Collection)
         {
-            return new HashSet((Collection)object);
+            return new HashSet((Collection<?>)object);
         }
         return null;
     }

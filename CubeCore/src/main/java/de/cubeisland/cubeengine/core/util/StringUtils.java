@@ -1,10 +1,12 @@
 package de.cubeisland.cubeengine.core.util;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -18,6 +20,10 @@ import java.util.regex.Pattern;
  */
 public final class StringUtils
 {
+
+    private StringUtils()
+    {}
+    
     /**
      * This method splits a string without RegExes
      *
@@ -121,7 +127,7 @@ public final class StringUtils
             while (tokenizer.hasMoreTokens())
             {
                 token = tokenizer.nextToken();
-                if ((offset = token.indexOf("=")) > 0)
+                if ((offset = token.indexOf('=')) > 0)
                 {
                     params.put(urlDecode(token.substring(0, offset)), urlDecode(token.substring(offset + 1)));
                 }
@@ -148,7 +154,7 @@ public final class StringUtils
         {
             return URLDecoder.decode(string, "UTF-8");
         }
-        catch (Exception e)
+        catch (UnsupportedEncodingException e)
         {
             return string;
         }
@@ -168,11 +174,11 @@ public final class StringUtils
         {
             time = Integer.parseInt(String.valueOf(matcher.group(1)));
         }
-        catch (IllegalStateException ex)
+        catch (IllegalStateException e)
         {
             return -1;
         }
-        catch (Throwable t)
+        catch (Exception e)
         {
             //TODO Throw exception Or Show ErrorLog
             return -1;
@@ -186,7 +192,7 @@ public final class StringUtils
         {
             unitSuffix = "m";
         }
-        switch (unitSuffix.toLowerCase().charAt(0))
+        switch (unitSuffix.toLowerCase(Locale.ENGLISH).charAt(0))
         {
             case 'd':
                 time *= 24;

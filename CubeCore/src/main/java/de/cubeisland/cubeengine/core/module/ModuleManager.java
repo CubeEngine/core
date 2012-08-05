@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.util.Validate;
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -22,14 +24,13 @@ public class ModuleManager
     private final Map<String, Module> modules;
     private final Core core;
     private final ModuleLoader loader;
-    private final Logger logger;
+    private static final Logger logger = CubeEngine.getLogger();
 
     public ModuleManager(Core core)
     {
         this.modules = new THashMap<String, Module>();
         this.core = core;
         this.loader = new ModuleLoader(core);
-        this.logger = core.getLogger();
     }
 
     public Module getModule(String name)
@@ -39,7 +40,7 @@ public class ModuleManager
             return null;
         }
 
-        return this.modules.get(name.toLowerCase());
+        return this.modules.get(name.toLowerCase(Locale.ENGLISH));
     }
 
     public Collection<Module> getModules()
@@ -65,21 +66,21 @@ public class ModuleManager
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        this.logger.warning(new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        logger.warning(new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
                         continue;
                     }
                     else
                     {
                         this.disableModule(module);
                         this.modules.remove(module.getName());
-                        this.logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
+                        logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
                     }
                 }
-                moduleInfos.put(info.getName().toLowerCase(), info);
+                moduleInfos.put(info.getName().toLowerCase(Locale.ENGLISH), info);
             }
             catch (InvalidModuleException e)
             {
-                this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+                logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
 
@@ -89,23 +90,23 @@ public class ModuleManager
             {
                 this.loadModule(moduleName, moduleInfos);
             }
-            catch (Exception e)
+            catch (ModuleException e)
             {
                 moduleInfos.remove(moduleName);
-                this.logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
+                logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
             }
         }
-        this.logger.info("Finished loading modules!");
+        logger.info("Finished loading modules!");
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws ModuleException
     {
         return this.loadModule(name, moduleInfos, new Stack<String>(), false);
     }
 
     private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
     {
-        name = name.toLowerCase();
+        name = name.toLowerCase(Locale.ENGLISH);
         if (this.modules.containsKey(name))
         {
             return true;
@@ -137,8 +138,8 @@ public class ModuleManager
         {
             return false;
         }
-        this.logger.log(Level.INFO, "Module {0}-r{1} successfully loaded!", new Object[] {info.getName(), info.getRevision()});
-        this.modules.put(module.getName().toLowerCase(), module);
+        logger.log(Level.INFO, "Module {0}-r{1} successfully loaded!", new Object[] {info.getName(), info.getRevision()});
+        this.modules.put(module.getName().toLowerCase(Locale.ENGLISH), module);
         return true;
     }
 

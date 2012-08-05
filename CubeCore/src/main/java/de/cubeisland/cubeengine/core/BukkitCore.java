@@ -1,12 +1,8 @@
-package de.cubeisland.cubeengine.core.bukkit;
+package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.Bootstrapper;
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CoreConfiguration;
-import de.cubeisland.cubeengine.core.CoreResource;
-import de.cubeisland.cubeengine.core.DatabaseConfiguration;
+import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
-import de.cubeisland.cubeengine.core.event.BukkitEventManager;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
@@ -19,12 +15,18 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public final class BukkitCore implements Core
+/**
+ *
+ * @author Phillip Schichtel
+ */
+@BukkitDependend("This is the bukkit plugin")
+public class BukkitCore extends JavaPlugin implements Core
 {
     private Database database;
     private PermissionRegistration permissionRegistration;
@@ -35,40 +37,39 @@ public final class BukkitCore implements Core
     private CoreConfiguration config;
     private CubeLogger coreLogger = new CubeLogger("CubeCore");
     private EventManager eventRegistration;
-    private Bootstrapper bootstrapper;
     private Server server;
     private CommandManager commandManager;
 
-    public BukkitCore(BukkitBootstrapper bootstrapper)
+    @Override
+    public void onEnable()
     {
-        this.server = bootstrapper.getServer();
+        CubeEngine.initialize(this);
+        
+        this.server = this.getServer();
         PluginManager pm = this.server.getPluginManager();
-        this.bootstrapper = bootstrapper;
-        this.permissionRegistration = new BukkitPermissionRegistration(pm);
-        this.fileManager = new FileManager(bootstrapper.getDataFolder().getParentFile());
-        this.i18n = new I18n(this);
-        this.eventRegistration = new BukkitEventManager(pm);
+        this.permissionRegistration = new PermissionRegistration(pm);
+        try
+        {
+            this.fileManager = new FileManager(this.getDataFolder().getParentFile());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace(System.err);
+        }
+        this.eventRegistration = new EventManager(pm);
         this.moduleManager = new ModuleManager(this);
-        this.commandManager = new BukkitCommandManager(this);
-    }
-
-    public Database getDatabase()
-    {
-        return this.database;
-    }
-
-    public void enable()
-    {
+        this.commandManager = new CommandManager(this);
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
+        this.i18n = new I18n(this, this.config.defaultLanguage);
         try
         {
             DatabaseConfiguration databaseConfig = Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml"));
             this.database = new Database(databaseConfig);
         }
-        catch (Throwable e)
+        catch (Exception e)
         {
             this.coreLogger.log(Level.SEVERE, "Error while initializing database", e);
-            this.server.getPluginManager().disablePlugin((Plugin)bootstrapper);
+            this.server.getPluginManager().disablePlugin(this);
             return;
         }
         this.coreLogger.addFileHandler(new File(fileManager.getLogDir(), "core.log"), Level.WARNING);
@@ -80,8 +81,11 @@ public final class BukkitCore implements Core
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 
-    public void disable()
+    @Override
+    public void onDisable()
     {
+        CubeEngine.clean();
+        
         this.moduleManager.clean();
         this.moduleManager = null;
 
@@ -95,52 +99,32 @@ public final class BukkitCore implements Core
         this.i18n.clean();
         this.i18n = null;
     }
+    
+    public Database getDB()
+    {
+        return this.database;
+    }
 
-    /**
-     * Returns the BukkitPermissionRegistration
-     *
-     * @return the BukkitPermissionRegistration
-     */
     public PermissionRegistration getPermissionRegistration()
     {
         return this.permissionRegistration;
     }
 
-    /**
-     * Returns the UserManager
-     *
-     * @return the UserManager
-     */
     public UserManager getUserManager()
     {
         return userManager;
     }
 
-    /**
-     * Returns the FileManager
-     *
-     * @return the FileManager
-     */
     public FileManager getFileManager()
     {
         return this.fileManager;
     }
 
-    /**
-     * This method is a proxy to BukkitPermissionRegistration.registerPermissions
-     *
-     * @see de.cubeisland.cubeengine.core.permission.BukkitPermissionRegistration
-     */
     public void registerPermissions(Permission... values)
     {
         this.permissionRegistration.registerPermissions(values);
     }
 
-    /**
-     * Returns the module manager
-     *
-     * @return the module manager
-     */
     public ModuleManager getModuleManager()
     {
         return this.moduleManager;
@@ -151,14 +135,9 @@ public final class BukkitCore implements Core
         return this.i18n;
     }
 
-    public CubeLogger getLogger()
+    public CubeLogger getCoreLogger()
     {
         return this.coreLogger;
-    }
-
-    public File getDataFolder()
-    {
-        return this.fileManager.getDataFolder();
     }
 
     public EventManager getEventManager()
@@ -169,11 +148,6 @@ public final class BukkitCore implements Core
     public CoreConfiguration getConfiguration()
     {
         return this.config;
-    }
-
-    public Bootstrapper getBootstrapper()
-    {
-        return this.bootstrapper;
     }
 
     public CommandManager getCommandManager()

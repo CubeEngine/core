@@ -21,7 +21,7 @@ public class ModuleClassLoader extends URLClassLoader
         super(new URL[] {info.getFile().toURI().toURL()}, parent);
         this.moduleLoader = moduleLoader;
         this.classMap = new HashMap<String, Class<?>>();
-        this.moduleInfo = null;
+        this.moduleInfo = info;
     }
 
     public ModuleInfo getModuleInfo()
@@ -40,7 +40,7 @@ public class ModuleClassLoader extends URLClassLoader
             {
                 clazz = super.findClass(name);
             }
-            catch (Exception e)
+            catch (ClassNotFoundException e)
             {}
 
             if (clazz == null)

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -55,8 +56,8 @@ public class ModuleLoader
             }
             
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
-            Module module = Class.forName(BASE_FQDN + name.toLowerCase() + "." + CLASS_PREFIX + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
-            module.initialize(this.core, info, new BukkitPluginWrapper(module), new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
+            Module module = Class.forName(BASE_FQDN + name.toLowerCase(Locale.ENGLISH) + "." + CLASS_PREFIX + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
+            module.initialize(this.core, info, new PluginWrapper(module), new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
             this.classLoaders.put(name, classLoader);
             return module;
         }
@@ -134,7 +135,7 @@ public class ModuleLoader
             return clazz;
         }
         
-        Set<String> alreadyChecked = new HashSet<String>();
+        Set<String> alreadyChecked = new HashSet<String>(this.classLoaders.size() / 2);
 
         for (String dep : info.getSoftDependencies())
         {

@@ -16,18 +16,73 @@ import java.util.logging.Logger;
  */
 public interface Core
 {
-    public void enable();
-    public void disable();
+    /**
+     * The method returns the database
+     *
+     * @return the database instance
+     */
+    public Database getDB();
     
-    public Database getDatabase();
+    /**
+     * The method returns the permission registration
+     *
+     * @return an instance of a permission registration
+     */
     public PermissionRegistration getPermissionRegistration();
+    
+    /**
+     * The method returns the event manager
+     *
+     * @return the instance of the event manager
+     */
     public EventManager getEventManager();
+    
+    /**
+     * This method returns the user manager
+     *
+     * @return the instance of the user manager
+     */
     public UserManager getUserManager();
+    
+    /**
+     * This method returns the file manager
+     *
+     * @return the instance of the file manager
+     */
     public FileManager getFileManager();
-    public Logger getLogger();
+    
+    /**
+     * This method returns the engine logger
+     *
+     * @return the engine logger
+     */
+    public Logger getCoreLogger();
+    
+    /**
+     * This method returns the module manager
+     *
+     * @return the instance of the module manager
+     */
     public ModuleManager getModuleManager();
+    
+    /**
+     * This method returns the internationalization API
+     *
+     * @return the I18n API
+     */
     public I18n getI18n();
+    
+    /**
+     * This method returns the engine configuration
+     *
+     * @return the engine configuration
+     */
     public CoreConfiguration getConfiguration();
-    public Bootstrapper getBootstrapper();
+    
+    /**
+     * This method returns the command manager
+     *
+     * @return the instance of the command manager
+     */
     public CommandManager getCommandManager();
 }

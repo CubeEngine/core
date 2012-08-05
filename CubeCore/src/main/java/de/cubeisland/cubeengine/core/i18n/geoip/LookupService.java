@@ -28,6 +28,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
+
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
@@ -124,8 +126,8 @@ public class LookupService {
 
     private final Country UNKNOWN_COUNTRY = new Country("--", "N/A");
 
-    private static final HashMap hashmapcountryCodetoindex = new HashMap(512);
-    private static final HashMap hashmapcountryNametoindex = new HashMap(512);
+    private static final Map<String, Integer> hashmapcountryCodetoindex = new HashMap<String, Integer>(512);
+    private static final Map<String, Integer> hashmapcountryNametoindex = new HashMap<String, Integer>(512);
     private static final String[] countryCode = {
    "--","AP","EU","AD","AE","AF","AG","AI","AL","AM","CW",
 	"AO","AQ","AR","AS","AT","AU","AW","AZ","BA","BB",
@@ -188,7 +190,9 @@ public class LookupService {
     static {
         int i;
         if(countryCode.length!=countryName.length)
+        {
             throw new AssertionError("countryCode.length!=countryName.length");
+        }
               
         // distributed service only
         for (i = 0; i < countryCode.length ;i++){
@@ -585,7 +589,7 @@ public class LookupService {
 
     String getDnsAttributes(String ip) {
         try {
-            Hashtable env = new Hashtable();
+            Hashtable<String, String> env = new Hashtable<String, String>();
             env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
 	    // TODO don't specify ws1, instead use ns servers for s.maxmind.com
             env.put("java.naming.provider.url","dns://ws1.maxmind.com/");

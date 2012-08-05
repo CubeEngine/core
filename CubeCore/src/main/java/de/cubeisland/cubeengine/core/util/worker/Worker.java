@@ -58,19 +58,27 @@ public class Worker implements Runnable
         this.jobs.clear();
     }
     
+    public boolean isPaused()
+    {
+        return this.paused;
+    }
+    
     public boolean pause()
     {
-        try
+        if (!this.isPaused())
         {
-            this.runner.wait();
-            this.paused = true;
-            return true;
+            try
+            {
+                this.runner.wait();
+                this.paused = true;
+                return true;
+            }
+            catch(InterruptedException e)
+            {
+                e.printStackTrace(System.err);
+            }
         }
-        catch(Exception ex)
-        {
-            ex.printStackTrace(System.err);
-            return false;
-        }
+        return false;
     }
     
     public void resume()

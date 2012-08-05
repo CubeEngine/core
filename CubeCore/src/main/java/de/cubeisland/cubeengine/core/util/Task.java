@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 public abstract class Task implements Runnable
 {
     private int taskid;
-    private static Plugin plugin;
+    private Plugin plugin;
     
     public Task(Plugin plugin)
     {

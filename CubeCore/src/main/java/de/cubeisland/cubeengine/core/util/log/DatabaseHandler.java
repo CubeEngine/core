@@ -32,9 +32,9 @@ public class DatabaseHandler extends Handler
             this.db.prepareStatement("insertLog", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
             this.db.prepareStatement("clearLog", "TRUNCATE {{" + TABLE + "}}");
         }
-        catch (Exception ex)
+        catch (SQLException e)
         {
-            ex.printStackTrace(System.err);
+            e.printStackTrace(System.err);
         }
     }
 
@@ -64,9 +64,9 @@ public class DatabaseHandler extends Handler
         {
             db.preparedExec("insertLog", time, level, logger, msg);
         }
-        catch (SQLException ex)
+        catch (SQLException e)
         {
-            ex.printStackTrace();
+            e.printStackTrace();
         }
     }
 

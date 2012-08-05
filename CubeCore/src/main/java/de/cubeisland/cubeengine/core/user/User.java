@@ -65,7 +65,7 @@ public class User extends UserBase implements Model<Integer>
     public void sendTMessage(String string, Object... params)
     {
         final String className = Thread.currentThread().getStackTrace()[2].getClassName();
-        String category = className.substring(25, className.indexOf(".", 26));
+        String category = className.substring(25, className.indexOf('.', 26));
         String translated = _(this, category, string, params);
         this.sendMessage(translated);
     }

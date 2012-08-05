@@ -18,13 +18,15 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CommandContext
 {
+    private final CommandSender sender;
+    private final CubeCommand command;
     private final String baseLabel;
-    private final SubCommand subCommand;
     private final String label;
     private final Set<String> flags;
     private final List<String> params;
     private final boolean empty;
     private final int size;
+    private boolean result;
     
     private Core core;
 
@@ -33,18 +35,19 @@ public class CommandContext
      *
      * @param baseCommand the base command
      * @param baseLabel  the base label
-     * @param subCommand the sub command
      * @param args the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
-    public CommandContext(CommandSender sender, String baseLabel, SubCommand subCommand, String[] args, Core core)
+    public CommandContext(CubeCommand command, CommandSender sender, String baseLabel, String[] args, Core core)
     {
         this.core = core;
+        this.sender = sender;
+        this.command = command;
         
         this.baseLabel = baseLabel;
-        this.subCommand = subCommand;
         this.flags = new HashSet<String>();
         this.params = new ArrayList<String>();
+        this.result = true;
 
         if (args.length > 0)
         {
@@ -167,16 +170,6 @@ public class CommandContext
     public int size()
     {
         return this.size;
-    }
-
-    /**
-     * Returns the executed sub command object
-     *
-     * @return the label
-     */
-    public SubCommand getSubCommand()
-    {
-        return this.subCommand;
     }
 
     /**
@@ -385,5 +378,25 @@ public class CommandContext
     public List<String> getParams()
     {
         return Collections.unmodifiableList(this.params);
+    }
+    
+    public boolean getResult()
+    {
+        return this.result;
+    }
+    
+    public void setResult(boolean result)
+    {
+        this.result = result;
+    }
+
+    public CommandSender getSender()
+    {
+        return this.sender;
+    }
+    
+    public CubeCommand getCommand()
+    {
+        return this.command;
     }
 }

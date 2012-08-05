@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import java.io.File;
@@ -21,7 +20,7 @@ public class CubeFly extends Module
         //this.baseCommand.registerCommands(new FlyCommand()).setDefaultCommand("fly").unregisterCommand("reload");
         //this.getCommand("fly").setExecutor(baseCommand);
         this.registerEvents(new FlyListener(this));
-        CubeEngine.registerPermissions(Perm.values());
+        this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
     }
 
     @Override

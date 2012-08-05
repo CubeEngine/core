@@ -16,7 +16,7 @@ public class PlayerConverter implements Converter<OfflinePlayer>
 
     public PlayerConverter(Core core)
     {
-        this.server = ((Plugin)core.getBootstrapper()).getServer();
+        this.server = ((Plugin)core).getServer();
     }
 
     public Object from(OfflinePlayer object)

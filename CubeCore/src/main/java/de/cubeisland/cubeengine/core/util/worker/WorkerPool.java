@@ -15,7 +15,7 @@ public class WorkerPool
     public WorkerPool(int maxWorkerCount)
     {
         this.maxWorkerCount = maxWorkerCount;
-        this.workers = new ArrayList();
+        this.workers = new ArrayList<Worker>();
     }
     
     public void addJob(Runnable job)
@@ -48,7 +48,7 @@ public class WorkerPool
         int smallestIndex = 0;
         int next;
         
-        for(int i = 1; i < workersCount || !jobDelivered; i++)
+        for(int i = 1; i < workersCount || !jobDelivered; ++i) // TODO check this!
         {
             next = this.workers.get(i).getJobCount();
             if(smallest > next)

@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util.log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
@@ -21,7 +22,7 @@ public class FileFormatter extends Formatter
         StringBuilder sb = new StringBuilder();
         sb.append(sdf.format(new Date(record.getMillis())));
         sb.append(" [");
-        sb.append(record.getLevel().getLocalizedName().toUpperCase());
+        sb.append(record.getLevel().getLocalizedName().toUpperCase(Locale.ENGLISH));
         sb.append("] ");
         sb.append(record.getLoggerName());
         sb.append(" - ");

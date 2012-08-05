@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,7 +89,7 @@ public abstract class Configuration
         {
             is = new FileInputStream(file);
         }
-        catch (FileNotFoundException ex)
+        catch (FileNotFoundException e)
         {
             logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
         }
@@ -145,7 +146,7 @@ public abstract class Configuration
             //ConfigType undefined
             return null;
         }
-        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase() + "." + type.value()));
+        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + type.value()));
     }
 
     public void setCodec(String fileExtension)
@@ -165,9 +166,8 @@ public abstract class Configuration
     }
 
     /**
-     * Is used after config is loaded
+     * This method is called right after the configuration got loaded
      */
     public void onLoaded()
-    {
-    }
+    {}
 }
