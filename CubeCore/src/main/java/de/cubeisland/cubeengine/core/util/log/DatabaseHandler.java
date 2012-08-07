@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
@@ -15,8 +16,9 @@ public class DatabaseHandler extends Handler
     private final Database db;
     private final String TABLE;
 
-    public DatabaseHandler(Database db, String table)
+    public DatabaseHandler(Level level, Database db, String table)
     {
+        this.setLevel(level);
         this.db = db;
         this.TABLE = table;
         try

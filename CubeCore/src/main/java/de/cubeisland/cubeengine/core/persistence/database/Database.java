@@ -3,12 +3,13 @@ package de.cubeisland.cubeengine.core.persistence.database;
 import de.cubeisland.cubeengine.core.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import gnu.trove.map.hash.THashMap;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
 /**
@@ -26,7 +27,7 @@ public class Database
     private final String pass;
     private final String name;
     private String tablePrefix;
-    private final THashMap<String, PreparedStatement> preparedStatements;
+    private final ConcurrentMap<String, PreparedStatement> preparedStatements;
 
     private final Connection connection;
 
@@ -60,7 +61,7 @@ public class Database
         {
             throw new IllegalStateException("Failed to connect to the database server!", e);
         }
-        this.preparedStatements = new THashMap<String, PreparedStatement>();
+        this.preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     }
 
     public String getTablePrefix()
@@ -80,32 +81,32 @@ public class Database
 
     public ResultSet query(String query, Object... params) throws SQLException
     {
-        return createStatement(query, params).executeQuery();
+        return this.createStatement(query, params).executeQuery();
     }
 
     public ResultSet preparedQuery(String name, Object... params) throws SQLException
     {
-        return createStatement(getStatement(name), params).executeQuery();
+        return this.createStatement(getStatement(name), params).executeQuery();
     }
 
     public int update(String query, Object... params) throws SQLException
     {
-        return createStatement(query, params).executeUpdate();
+        return this.createStatement(query, params).executeUpdate();
     }
 
     public int preparedUpdate(String name, Object... params) throws SQLException
     {
-        return createStatement(getStatement(name), params).executeUpdate();
+        return this.createStatement(getStatement(name), params).executeUpdate();
     }
 
     public boolean exec(String query, Object... params) throws SQLException
     {
-        return createStatement(query, params).execute();
+        return this.createStatement(query, params).execute();
     }
 
     public boolean preparedExec(String name, Object... params) throws SQLException
     {
-        return createStatement(getStatement(name), params).execute();
+        return this.createStatement(getStatement(name), params).execute();
     }
 
     public PreparedStatement createStatement(String query, Object... params) throws SQLException
@@ -142,6 +143,7 @@ public class Database
         return statement;
     }
     
+    // TODO remove this
     public void assignId(PreparedStatement ps, Model<Integer> model)
     {
         try

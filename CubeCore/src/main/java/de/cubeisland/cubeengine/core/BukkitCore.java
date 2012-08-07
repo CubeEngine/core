@@ -13,9 +13,13 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.log.ConsoleHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
+import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
@@ -35,7 +39,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private ModuleManager moduleManager;
     private I18n i18n;
     private CoreConfiguration config;
-    private CubeLogger coreLogger = new CubeLogger("CubeCore");
+    private CubeLogger logger;
     private EventManager eventRegistration;
     private Server server;
     private CommandManager commandManager;
@@ -44,6 +48,10 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         CubeEngine.initialize(this);
+        
+        this.logger = new CubeLogger("Core");
+        this.logger.addHandler(new ConsoleHandler(Level.ALL, "[{1}] {3}"));
+        this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
         
         this.server = this.getServer();
         PluginManager pm = this.server.getPluginManager();
@@ -55,6 +63,14 @@ public class BukkitCore extends JavaPlugin implements Core
         catch (IOException e)
         {
             e.printStackTrace(System.err);
+        }
+        try
+        {
+            this.logger.addHandler(new FileHandler(new File(this.fileManager.getLogDir(), "core.log").toString()));
+        }
+        catch (IOException e)
+        {
+            this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
         this.eventRegistration = new EventManager(pm);
         this.moduleManager = new ModuleManager(this);
@@ -68,12 +84,11 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         catch (Exception e)
         {
-            this.coreLogger.log(Level.SEVERE, "Error while initializing database", e);
+            this.logger.log(Level.SEVERE, "Error while initializing database", e);
             this.server.getPluginManager().disablePlugin(this);
             return;
         }
-        this.coreLogger.addFileHandler(new File(fileManager.getLogDir(), "core.log"), Level.WARNING);
-        this.coreLogger.addDatabaseHandler(database, "corelog", Level.SEVERE);//Needs Database
+        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "log"));
         this.userManager = new UserManager(this, this.server);//Needs Database
 
         this.registerPermissions(Perm.values());
@@ -137,7 +152,7 @@ public class BukkitCore extends JavaPlugin implements Core
 
     public CubeLogger getCoreLogger()
     {
-        return this.coreLogger;
+        return this.logger;
     }
 
     public EventManager getEventManager()
