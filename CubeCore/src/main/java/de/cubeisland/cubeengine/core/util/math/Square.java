@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.util.math;
 
 /**
  * Represents a Square specified by a corner and size
- * 
+ *
  * @author Phillip Schichtel
  */
 public class Square extends Rectangle

@@ -16,19 +16,19 @@ public abstract class CubeCommand extends Command
 {
     private final Module module;
     private Map<String, CubeCommand> subCommands;
-    
+
     public CubeCommand(Module module, String name)
     {
         super(name);
         this.module = module;
     }
-    
+
     public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases)
     {
         super(name, description, usageMessage, aliases);
         this.module = module;
     }
-    
+
     public CubeCommand getSubCommand(String name)
     {
         if (name != null)
@@ -41,18 +41,18 @@ public abstract class CubeCommand extends Command
         }
         return null;
     }
-    
+
     public void addSubCommand(CubeCommand command)
     {
         Validate.notNull(command, "The command must not be null!");
-        
+
         this.subCommands.put(command.getName(), command);
         for (String alias : command.getAliases())
         {
             this.subCommands.put(alias, command);
         }
     }
-    
+
     public boolean hasSubCommand(String name)
     {
         if (name != null)
@@ -71,9 +71,9 @@ public abstract class CubeCommand extends Command
             System.arraycopy(args, 1, subArgs, 0, args.length - 1);
             return this.getSubCommand(args[0]).execute(sender, label, subArgs);
         }
-        
+
         CommandContext context = new CommandContext(this, sender, label, args, null);
-        
+
         return context.getResult();
     }
 
@@ -81,12 +81,12 @@ public abstract class CubeCommand extends Command
     {
         return new LinkedList<CubeCommand>(this.subCommands.values());
     }
-    
+
     public final Module getModule()
     {
         return this.module;
     }
-    
+
     public void removeSubCommand(String command)
     {
         CubeCommand removedCommand = this.subCommands.remove(command);
@@ -101,6 +101,6 @@ public abstract class CubeCommand extends Command
             }
         }
     }
-    
+
     public abstract void run(CommandContext context);
 }

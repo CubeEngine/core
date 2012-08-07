@@ -9,7 +9,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class ApiServerPipelineFactory implements ChannelPipelineFactory
 {

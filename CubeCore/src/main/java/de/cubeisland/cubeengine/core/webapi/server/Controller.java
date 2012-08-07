@@ -7,17 +7,14 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Controller
 {
     public String name();
-
     public boolean authenticate() default true;
-
     public String serializer() default "plain";
-
     public boolean unknownToDefault() default false;
 }

@@ -28,15 +28,15 @@ public class ReflectedCommand extends CubeCommand
         super(module, name, description, usage, aliases);
         this.commandMethod = method;
         this.commandContainer = commandContainer;
-        
+
         this.flags = annotation.flags();
         this.min = annotation.min();
         this.max = annotation.max();
         this.namedParameters = new THashMap<String[], Class<?>>();
-        
+
         Annotation[][] annotations = method.getParameterAnnotations();
         Class<?>[] paramTypes = method.getParameterTypes();
-        
+
         Annotation[] paramAnnotations;
         Named namedAnnotation;
         for (int i = 1; i < paramTypes.length; ++i)
@@ -61,10 +61,10 @@ public class ReflectedCommand extends CubeCommand
     @Override
     public void run(CommandContext context)
     {
-        try 
+        try
         {
             // TODO permission check -> throw exception
-            
+
             this.commandMethod.invoke(this.commandContainer, context);
         }
         catch (Exception e)

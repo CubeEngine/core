@@ -5,14 +5,14 @@ import org.bukkit.plugin.Plugin;
 
 /**
  * This Task can be cancelled from the inside
- * 
+ *
  * @author Anselm Brehme
  */
 public abstract class Task implements Runnable
 {
     private int taskid;
     private Plugin plugin;
-    
+
     public Task(Plugin plugin)
     {
         this.plugin = plugin;
@@ -22,25 +22,24 @@ public abstract class Task implements Runnable
     {
         this((Plugin)module.getPluginWrapper());
     }
-    
-    public void setTaskId(int taskid) 
+
+    public void setTaskId(int taskid)
     {
         this.taskid = taskid;
     }
-    
-    public void cancelTask() 
+
+    public void cancelTask()
     {
         plugin.getServer().getScheduler().cancelTask(taskid);
     }
-    
+
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
     {
         taskid = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, delay, repeat);
     }
-    
+
     public void scheduleAsyncTask(int delay)
     {
         taskid = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, delay);
     }
-    
 }

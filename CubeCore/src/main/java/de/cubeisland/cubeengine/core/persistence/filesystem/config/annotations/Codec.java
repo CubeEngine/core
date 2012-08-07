@@ -15,7 +15,7 @@ public @interface Codec
 {
     /**
      * The fileExtension to use for this Config
-     * 
+     *
      * @return the fileExtension
      */
     public String value();

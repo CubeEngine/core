@@ -20,7 +20,6 @@ public enum ApiError
     ACTION_NOT_FOUND(203, HttpResponseStatus.NOT_FOUND, "The requested action was not found"),
     METHOD_NOT_ALLOWED(204, HttpResponseStatus.METHOD_NOT_ALLOWED, "The method you used is not allowed here"),
     MISSING_PARAMETERS(204, HttpResponseStatus.BAD_REQUEST, "Not all needed parameters where given");
-    
     private final int errorCode;
     private final HttpResponseStatus responseStatus;
     private final String description;

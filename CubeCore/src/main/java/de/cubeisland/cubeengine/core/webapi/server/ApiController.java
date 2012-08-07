@@ -11,6 +11,7 @@ import org.bukkit.plugin.PluginManager;
  * The ApiController is the base class for all controllers The extending class
  * must at least call the super contructor with a Plugin instance. To be able to
  * register the controller, the class also needs to be annotated with the
+ *
  * @Controller annotation
  *
  * @author Phillip Schichtel
@@ -199,9 +200,11 @@ public abstract class ApiController
     }
 
     /**
-     * Returns whether this controller allows to route unknown actions to the default action
+     * Returns whether this controller allows to route unknown actions to the
+     * default action
      *
-     * @return true if this controller allows to route unknown actions to the default action
+     * @return true if this controller allows to route unknown actions to the
+     * default action
      */
     public boolean isUnknownToDefaultRoutingAllowed()
     {

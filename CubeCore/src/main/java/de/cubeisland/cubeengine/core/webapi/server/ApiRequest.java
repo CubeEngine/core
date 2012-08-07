@@ -18,7 +18,6 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 public final class ApiRequest
 {
     private static final String AUTHKEY_PARAM_NAME = "authkey";
-
     private final InetSocketAddress remoteAddress;
     private final RequestMethod method;
     private final String uri;
@@ -30,7 +29,6 @@ public final class ApiRequest
     private final String action;
     private final String userAgent;
     private final boolean ignoreResponseStatus;
-
     public final Parameters params;
     public final Map<String, String> headers;
 
@@ -102,7 +100,7 @@ public final class ApiRequest
 
         this.headers = Collections.unmodifiableMap(tempHeaders);
         this.userAgent = this.headers.get("user-agent");
-        
+
         String route = this.path.substring(1);
         String[] routeSegments = StringUtils.explode("/", route, false);
         if (routeSegments.length >= 2)

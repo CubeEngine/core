@@ -15,12 +15,12 @@ import org.bukkit.OfflinePlayer;
 public class Convert
 {
     private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
-    
+
     static
     {
         Core core = CubeEngine.getCore();
         Converter<?> converter;
-        
+
         registerConverter(OfflinePlayer.class, new PlayerConverter(core));
         registerConverter(Location.class, new LocationConverter(core));
         registerConverter(Set.class, new SetConverter());
@@ -33,7 +33,7 @@ public class Convert
         registerConverter(Double.class, converter = new DoubleConverter());
         registerConverter(double.class, converter);
     }
-    
+
     public static void registerConverter(Class<?> clazz, Converter<?> converter)
     {
         if (clazz == null || converter == null)
@@ -61,17 +61,17 @@ public class Convert
         }
         return null;
     }
-    
+
     public static <T> Object toObject(T object) throws ConversionException
     {
-        Converter<T>  converter = (Converter<T>)matchConverter(object.getClass());
+        Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
         if (converter != null)
         {
             return converter.toObject(object);
         }
         return null;
     }
-    
+
     public static <T> T fromObject(Class<T> type, Object object) throws ConversionException
     {
         Converter<T> converter = matchConverter(type);
@@ -81,7 +81,7 @@ public class Convert
         }
         return null;
     }
-    
+
     public static <T> String toString(T object) throws ConversionException
     {
         Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
@@ -91,7 +91,7 @@ public class Convert
         }
         return null;
     }
-    
+
     public static <T> T fromString(Class<T> type, String string) throws ConversionException
     {
         Converter<T> converter = matchConverter(type);

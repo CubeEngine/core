@@ -11,16 +11,15 @@ import de.cubeisland.cubeengine.core.user.User;
 public abstract class UserEvent extends ModelEvent
 {
     private final User user;
-    
+
     public UserEvent(Core core, User user)
     {
         super(core, user);
         this.user = user;
     }
-    
+
     public User getUser()
     {
         return this.user;
     }
-
 }

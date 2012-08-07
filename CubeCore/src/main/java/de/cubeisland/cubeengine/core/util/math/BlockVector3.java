@@ -12,9 +12,9 @@ public class BlockVector3
 
     /**
      * Creates a new Vektor3 with a triple of int
-     * 
+     *
      * @param x
-     * @param y 
+     * @param y
      * @param z
      */
     public BlockVector3(final int x, final int y, final int z)
@@ -26,7 +26,7 @@ public class BlockVector3
 
     /**
      * Checks whether an other BlockVector ist orthogonal to this one
-     * 
+     *
      * @param other the other BlockVector
      * @return whether the other BlockVector is orthogonal to this one
      */
@@ -37,7 +37,7 @@ public class BlockVector3
 
     /**
      * Checks whether an other BlockVector ist parallel to this one
-     * 
+     *
      * @param other the other BlockVector
      * @return whether the other BlockVector is parallel to this one
      */
@@ -48,7 +48,7 @@ public class BlockVector3
 
     /**
      * Returns the scalar product of this Vektor and the other
-     * 
+     *
      * @param other the second vector to multiply with
      * @return the scalar product
      */
@@ -59,7 +59,7 @@ public class BlockVector3
 
     /**
      * Returns the cross product of this Vektor and the other
-     * 
+     *
      * @param other
      * @return the cross product
      */
@@ -68,13 +68,12 @@ public class BlockVector3
         return new BlockVector3(
             this.y * other.z - this.z * other.y,
             this.z * other.x - this.x * other.z,
-            this.x * other.y - this.y * other.x
-        );
+            this.x * other.y - this.y * other.x);
     }
 
     /**
      * Returns the sum of an other BlockVector and this one as a BlockVector
-     * 
+     *
      * @param other the BlockVector to add
      * @return the new Vector
      */
@@ -84,8 +83,9 @@ public class BlockVector3
     }
 
     /**
-     * Returns the difference between an other BlockVector and this one as a BlockVector
-     * 
+     * Returns the difference between an other BlockVector and this one as a
+     * BlockVector
+     *
      * @param other the BlockVector to substract
      * @return the new Vector
      */
@@ -96,7 +96,7 @@ public class BlockVector3
 
     /**
      * Returns this vector multiplied with the factor n
-     * 
+     *
      * @param other the factor to multiply with
      * @return the new Vector
      */
@@ -104,10 +104,10 @@ public class BlockVector3
     {
         return new BlockVector3(this.x * n, this.y * n, this.z * n);
     }
-    
+
     /**
      * Returns this vector multiplied with the factor n
-     * 
+     *
      * @param other the factor to multiply with
      * @return the new Vector
      */
@@ -118,7 +118,7 @@ public class BlockVector3
 
     /**
      * Returns this vector divided by the quotient n
-     * 
+     *
      * @param other the quotient to divide with
      * @return the new Vector
      */
@@ -129,7 +129,7 @@ public class BlockVector3
 
     /**
      * Returns this vector divided by the quotient n
-     * 
+     *
      * @param other the quotient to divide with
      * @return the new Vector
      */
@@ -140,7 +140,7 @@ public class BlockVector3
 
     /**
      * Returns the squared length
-     * 
+     *
      * @return the length²
      */
     public double squaredLength()
@@ -150,17 +150,18 @@ public class BlockVector3
 
     /**
      * Returns the length
-     * 
+     *
      * @return the length
      */
     public double length()
     {
         return Math.sqrt(this.squaredLength());
     }
-    
+
     /**
-     * Returns the distance between an other BlockVector and this one as a BlockVector
-     * 
+     * Returns the distance between an other BlockVector and this one as a
+     * BlockVector
+     *
      * @param other the BlockVector to substract from
      * @return the new Vector
      */
@@ -171,7 +172,7 @@ public class BlockVector3
 
     /**
      * Returns the squared distance between an other BlockVector and this one
-     * 
+     *
      * @param other the BlockVector to get the distance from
      * @return the squared distance
      */
@@ -182,7 +183,7 @@ public class BlockVector3
 
     /**
      * Returns the distance between an other BlockVector and this one
-     * 
+     *
      * @param other the BlockVector to get the distance from
      * @return the distance
      */
@@ -193,7 +194,7 @@ public class BlockVector3
 
     /**
      * Returns the angle of the other Vector to this one
-     * 
+     *
      * @param other the other BlockVector to calculate the angle to
      * @return the angle between the vectors
      */
@@ -204,7 +205,7 @@ public class BlockVector3
 
     /**
      * Returns the normalized Vector
-     * 
+     *
      * @return the normalized BlockVector
      */
     public BlockVector3 normalize()
@@ -214,7 +215,7 @@ public class BlockVector3
 
     /**
      * Returns a BlockVector to the midpoint between this Vector and the other
-     * 
+     *
      * @param other the other BlockVector
      * @return the midpoint
      */
@@ -225,17 +226,17 @@ public class BlockVector3
 
     /**
      * Projection into horizontal 2D Vector
-     * 
+     *
      * @return the projection
      */
     public BlockVector2 project2D()
     {
         return new BlockVector2(this.x, this.z);
     }
-    
+
     /**
      * Returns whether the Object o equals this Vector
-     * 
+     *
      * @param other an Object
      * @return whether o is the same Vector as this one
      */
@@ -258,27 +259,27 @@ public class BlockVector3
 
     /**
      * Returns a HashCode representing this Vector
-     * 
+     *
      * @return the HashCode of this BlockVector
      */
     @Override
     public int hashCode()
     {
         int hash = 7;
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
+        hash = 59 * hash + (int)(Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 59 * hash + (int)(Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+        hash = 59 * hash + (int)(Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
         return hash;
     }
 
     /**
      * Returns a String representing this Vector
-     * 
+     *
      * @return the String representing this BlockVector
      */
     @Override
     public String toString()
     {
-        return "(" + this.x + "|" + this.y  + "|" + this.z + ")";
+        return "(" + this.x + "|" + this.y + "|" + this.z + ")";
     }
 }

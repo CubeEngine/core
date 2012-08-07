@@ -10,18 +10,21 @@ import org.bukkit.event.HandlerList;
  */
 public class ModuleLoadedEvent extends ModuleEvent
 {
+    private static final HandlerList handlers = new HandlerList();
+
     public ModuleLoadedEvent(Core core, Module module)
     {
         super(core, module);
     }
 
-    private static final HandlerList handlers = new HandlerList();
     @Override
-    public HandlerList getHandlers() {
+    public HandlerList getHandlers()
+    {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    public static HandlerList getHandlerList()
+    {
         return handlers;
     }
 }

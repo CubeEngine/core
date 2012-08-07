@@ -6,5 +6,5 @@ package de.cubeisland.cubeengine.core.command;
  */
 public interface CommandWrapper
 {
-    
+    //TODO Fill me!
 }

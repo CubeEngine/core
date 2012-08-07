@@ -9,7 +9,7 @@ public class DoubleConverter extends BasicConverter<Double>
     public Double fromString(String string) throws ConversionException
     {
         try
-        { 
+        {
             return Double.parseDouble(string);
         }
         catch (NumberFormatException e)

@@ -48,11 +48,11 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         CubeEngine.initialize(this);
-        
+
         this.logger = new CubeLogger("Core");
         this.logger.addHandler(new ConsoleHandler(Level.ALL, "[{1}] {3}"));
         this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
-        
+
         this.server = this.getServer();
         PluginManager pm = this.server.getPluginManager();
         this.permissionRegistration = new PermissionRegistration(pm);
@@ -84,6 +84,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         catch (Exception e)
         {
+            //TODO no Exception to catch here! Why?
             this.logger.log(Level.SEVERE, "Error while initializing database", e);
             this.server.getPluginManager().disablePlugin(this);
             return;
@@ -100,7 +101,7 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onDisable()
     {
         CubeEngine.clean();
-        
+
         this.moduleManager.clean();
         this.moduleManager = null;
 
@@ -114,7 +115,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.i18n.clean();
         this.i18n = null;
     }
-    
+
     public Database getDB()
     {
         return this.database;

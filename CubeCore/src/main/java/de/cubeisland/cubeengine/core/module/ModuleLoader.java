@@ -54,7 +54,7 @@ public class ModuleLoader
                     throw new MissingDependencyException(dep);
                 }
             }
-            
+
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
             Module module = Class.forName(BASE_FQDN + name.toLowerCase(Locale.ENGLISH) + "." + CLASS_PREFIX + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
             module.initialize(this.core, info, new PluginWrapper(module), new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
@@ -134,7 +134,7 @@ public class ModuleLoader
         {
             return clazz;
         }
-        
+
         Set<String> alreadyChecked = new HashSet<String>(this.classLoaders.size() / 2);
 
         for (String dep : info.getSoftDependencies())
@@ -189,7 +189,7 @@ public class ModuleLoader
                 {}
             }
         }
-        
+
         return null;
     }
 

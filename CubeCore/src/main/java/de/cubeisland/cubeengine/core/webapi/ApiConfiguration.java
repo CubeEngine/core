@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class ApiConfiguration
 {

@@ -6,9 +6,9 @@ package de.cubeisland.cubeengine.core.module;
  */
 public class MissingDependencyException extends ModuleException
 {
-	private static final long serialVersionUID = 3174710484793092922L;
+    private static final long serialVersionUID = 3174710484793092922L;
 
-	public MissingDependencyException(String missing)
+    public MissingDependencyException(String missing)
     {
         super("Missing module: " + missing);
     }

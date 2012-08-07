@@ -11,7 +11,7 @@ public class LongBitMask
 
     /**
      * Creates a new BitMask
-     * 
+     *
      */
     public LongBitMask()
     {
@@ -20,7 +20,7 @@ public class LongBitMask
 
     /**
      * Creates a new BitMask and set its value to mask
-     * 
+     *
      * @param mask the value to set the BitMask at the beginning
      */
     public LongBitMask(long mask)
@@ -30,7 +30,7 @@ public class LongBitMask
 
     /**
      * Gets the value of this BitMask
-     * 
+     *
      * @return the value saved by this BitMask
      */
     public long get()
@@ -40,7 +40,7 @@ public class LongBitMask
 
     /**
      * Sets the specified Bits
-     * 
+     *
      * @param bits The bits to set
      * @return the new value of this BitMask
      */
@@ -51,7 +51,7 @@ public class LongBitMask
 
     /**
      * Resets this BitMask to 0
-     * 
+     *
      * @return 0
      */
     public long reset()
@@ -61,7 +61,7 @@ public class LongBitMask
 
     /**
      * Resets this BitMask to mask
-     * 
+     *
      * @param mask The value to reset the BitMask to
      * @return the new value of this BitMask
      */
@@ -72,7 +72,7 @@ public class LongBitMask
 
     /**
      * Unsets the specified Bits
-     * 
+     *
      * @param bits The bits to unset
      * @return the new value of this BitMask
      */
@@ -83,7 +83,7 @@ public class LongBitMask
 
     /**
      * Toggles the specified Bits
-     * 
+     *
      * @param bits The bits to toggle
      * @return the new value of this BitMask
      */
@@ -94,7 +94,7 @@ public class LongBitMask
 
     /**
      * Checks whether the specified Bits are set.
-     * 
+     *
      * @param bits The bits to check.
      * @return whether the specified Bit are set or not
      */

@@ -20,10 +20,9 @@ import java.util.regex.Pattern;
  */
 public final class StringUtils
 {
-
     private StringUtils()
     {}
-    
+
     /**
      * This method splits a string without RegExes
      *

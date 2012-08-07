@@ -33,7 +33,7 @@ public class ModuleClassLoader extends URLClassLoader
     protected Class<?> findClass(String name) throws ClassNotFoundException
     {
         Class<?> clazz = this.classMap.get(name);
-        
+
         if (clazz == null)
         {
             try
@@ -54,7 +54,7 @@ public class ModuleClassLoader extends URLClassLoader
             }
             this.classMap.put(name, clazz);
         }
-        
+
         return clazz;
     }
 }

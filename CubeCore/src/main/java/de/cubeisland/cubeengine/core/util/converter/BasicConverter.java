@@ -10,12 +10,12 @@ public abstract class BasicConverter<T> implements Converter<T>
     {
         return object;
     }
-    
+
     public T fromObject(Object object) throws ConversionException
     {
         return this.fromString(object.toString());
     }
-    
+
     public String toString(T object)
     {
         return String.valueOf(object);

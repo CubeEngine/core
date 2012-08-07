@@ -48,7 +48,7 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
             message.getChannel().close();
             return;
         }
-        
+
         message.getFuture().addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
         request = new ApiRequest(remoteAddress, (HttpRequest)message.getMessage());
         HttpResponse response = this.processRequest(request);
@@ -60,15 +60,15 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
 
     private HttpResponse processRequest(ApiRequest request)
     {
-            // ApiBukkit.log(String.format("'%s' requested '%s'", request.getRemoteAddress().getAddress().getHostAddress(), request.getPath()), ApiLogLevel.INFO); -- TODO fix logging
-            String useragent = request.headers.get("user-agent");
-            if (useragent != null)
-            {
-                // ApiBukkit.log("Useragent: " + useragent, ApiLogLevel.INFO); -- TODO fix logging
-            }
+        // ApiBukkit.log(String.format("'%s' requested '%s'", request.getRemoteAddress().getAddress().getHostAddress(), request.getPath()), ApiLogLevel.INFO); -- TODO fix logging
+        String useragent = request.headers.get("user-agent");
+        if (useragent != null)
+        {
+            // ApiBukkit.log("Useragent: " + useragent, ApiLogLevel.INFO); -- TODO fix logging
+        }
 
-            String controllerName = request.getController();
-            String actionName = request.getAction();
+        String controllerName = request.getController();
+        String actionName = request.getAction();
 
 //            if (actionName != null)
 //            {
@@ -79,90 +79,90 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
 //                debug("Action: " + actionName);
 //            }
 
-            ApiController controller = manager.getController(controllerName);
-            ApiResponse response = new ApiResponse(manager.getDefaultSerializer());
-            if (controller != null)
+        ApiController controller = manager.getController(controllerName);
+        ApiResponse response = new ApiResponse(manager.getDefaultSerializer());
+        if (controller != null)
+        {
+            // debug("Controller found: " + controller.getClass().getName()); -- TODO fix logging
+
+            try
             {
-                // debug("Controller found: " + controller.getClass().getName()); -- TODO fix logging
-
-                try
+                if (actionName != null)
                 {
-                    if (actionName != null)
+                    ApiAction action = controller.getAction(actionName);
+                    if (manager.isActionDisabled(controllerName, actionName))
                     {
-                        ApiAction action = controller.getAction(actionName);
-                        if (manager.isActionDisabled(controllerName, actionName))
-                        {
-                            // ApiBukkit.error("Requested action is disabled!"); -- TODO fix logging
-                            return toResponse(ApiError.ACTION_DISABLED);
-                        }
-                        if (action != null)
-                        {
-                            authorized(request, action);
-
-                            for (String param : action.getParameters())
-                            {
-                                if (!request.params.containsKey(param))
-                                {
-                                    // ApiBukkit.error("Request had to few arguments!"); -- TODO fix logging
-                                    return toResponse(ApiError.MISSING_PARAMETERS);
-                                }
-                            }
-
-                            response.setSerializer(getSerializer(request, action.getSerializer()));
-                            // ApiBukkit.debug("Action found: " + actionName); -- TODO fix logging
-                            action.execute(request, response);
-                        }
-                        else if (controller.isUnknownToDefaultRoutingAllowed())
-                        {
-                            authorized(request, controller);
-
-                            response.setSerializer(getSerializer(request, controller.getSerializer()));
-                            // ApiBukkit.debug("action not found, routing to default action"); -- TODO fix logging
-                            controller.defaultAction(request, response);
-                        }
-                        else
-                        {
-                            // ApiBukkit.log("Action not found"); -- TODO fix logging
-                            return toResponse(ApiError.ACTION_NOT_FOUND);
-                        }
+                        // ApiBukkit.error("Requested action is disabled!"); -- TODO fix logging
+                        return toResponse(ApiError.ACTION_DISABLED);
                     }
-                    else
+                    if (action != null)
+                    {
+                        authorized(request, action);
+
+                        for (String param : action.getParameters())
+                        {
+                            if (!request.params.containsKey(param))
+                            {
+                                // ApiBukkit.error("Request had to few arguments!"); -- TODO fix logging
+                                return toResponse(ApiError.MISSING_PARAMETERS);
+                            }
+                        }
+
+                        response.setSerializer(getSerializer(request, action.getSerializer()));
+                        // ApiBukkit.debug("Action found: " + actionName); -- TODO fix logging
+                        action.execute(request, response);
+                    }
+                    else if (controller.isUnknownToDefaultRoutingAllowed())
                     {
                         authorized(request, controller);
 
                         response.setSerializer(getSerializer(request, controller.getSerializer()));
-                        // ApiBukkit.debug("Runnung default action"); -- TODO fix logging
+                        // ApiBukkit.debug("action not found, routing to default action"); -- TODO fix logging
                         controller.defaultAction(request, response);
                     }
+                    else
+                    {
+                        // ApiBukkit.log("Action not found"); -- TODO fix logging
+                        return toResponse(ApiError.ACTION_NOT_FOUND);
+                    }
                 }
-                catch (UnauthorizedRequestException e)
+                else
                 {
-                    // ApiBukkit.error("Wrong authentication key!"); -- TODO fix logging
-                    return toResponse(ApiError.AUTHENTICATION_FAILURE);
-                }
-                catch (ApiRequestException e)
-                {
-                    // ApiBukkit.error("ControllerException: " + e.getMessage()); -- TODO fix logging
-                    return toResponse(ApiError.REQUEST_EXCEPTION, e);
-                }
-                catch (ApiNotImplementedException e)
-                {
-                    // ApiBukkit.error("action not implemented"); -- TODO fix logging
-                    return toResponse(ApiError.ACTION_NOT_IMPLEMENTED);
-                }
-                catch (Throwable t)
-                {
-                    // ApiBukkit.logException(t); -- TODO fix logging
-                    return toResponse(ApiError.UNKNOWN_ERROR);
-                }
-            }
-            else
-            {
-                // ApiBukkit.log("Controller not found!"); -- TODO fix logging
-                return toResponse(ApiError.CONTROLLER_NOT_FOUND);
-            }
+                    authorized(request, controller);
 
-            return toResponse(response);
+                    response.setSerializer(getSerializer(request, controller.getSerializer()));
+                    // ApiBukkit.debug("Runnung default action"); -- TODO fix logging
+                    controller.defaultAction(request, response);
+                }
+            }
+            catch (UnauthorizedRequestException e)
+            {
+                // ApiBukkit.error("Wrong authentication key!"); -- TODO fix logging
+                return toResponse(ApiError.AUTHENTICATION_FAILURE);
+            }
+            catch (ApiRequestException e)
+            {
+                // ApiBukkit.error("ControllerException: " + e.getMessage()); -- TODO fix logging
+                return toResponse(ApiError.REQUEST_EXCEPTION, e);
+            }
+            catch (ApiNotImplementedException e)
+            {
+                // ApiBukkit.error("action not implemented"); -- TODO fix logging
+                return toResponse(ApiError.ACTION_NOT_IMPLEMENTED);
+            }
+            catch (Throwable t)
+            {
+                // ApiBukkit.logException(t); -- TODO fix logging
+                return toResponse(ApiError.UNKNOWN_ERROR);
+            }
+        }
+        else
+        {
+            // ApiBukkit.log("Controller not found!"); -- TODO fix logging
+            return toResponse(ApiError.CONTROLLER_NOT_FOUND);
+        }
+
+        return toResponse(response);
     }
 
     private static void authorized(ApiRequest request, ApiController controller)
@@ -217,10 +217,10 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
             if (request.ignoreResponseStatus())
             {
                 Map<String, Object> data = new HashMap<String, Object>(1);
-                
+
                 data.put("status", HttpResponseStatus.NO_CONTENT.getCode());
                 data.put("description", "The request was successful, but there was nothing to return");
-                
+
                 content = data;
             }
             else

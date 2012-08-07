@@ -17,16 +17,16 @@ public class ConsoleHandler extends java.util.logging.ConsoleHandler
         this.setFormatter(new ConsoleFormatter(format));
         this.setLevel(level);
     }
-    
+
     public class ConsoleFormatter extends Formatter
     {
         private final String format;
-        
+
         public ConsoleFormatter(String format)
         {
             this.format = format;
         }
-        
+
         @Override
         public String format(LogRecord record)
         {

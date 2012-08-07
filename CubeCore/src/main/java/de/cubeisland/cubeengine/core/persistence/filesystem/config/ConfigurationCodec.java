@@ -63,131 +63,131 @@ public abstract class ConfigurationCodec
         Converter converter = Convert.matchConverter(fieldClass);
         if (converter == null)
         {
-                if (Collection.class.isAssignableFrom(fieldClass))
+            if (Collection.class.isAssignableFrom(fieldClass))
+            {
+                if (object instanceof Collection)
                 {
-                    if (object instanceof Collection)
+                    Collection<?> list = (Collection<?>)object;
+                    if (list.isEmpty())
                     {
-                        Collection<?> list = (Collection<?>)object;
-                        if (list.isEmpty())
+                        return object;
+                    }
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = Convert.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Collection<Object> result;
+                        try
                         {
-                            return object;
+                            result = (Collection<Object>)field.get(config);
+                            result.clear();
                         }
-                        Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = Convert.matchConverter(genType);
-                        if (converter != null)
+                        catch (Exception e)
                         {
-                            Collection<Object> result;
+                            logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
+                            return null;
+                        }
+                        for (Object o : list)
+                        {
                             try
                             {
-                                result = (Collection<Object>)field.get(config);
-                                result.clear();
+                                result.add(converter.fromObject(o));
                             }
-                            catch (Exception e)
+                            catch (ConversionException e)
                             {
-                                logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
-                                return null;
+                                // TODO handle me!
                             }
-                            for (Object o : list)
-                            {
-                                try
-                                {
-                                    result.add(converter.fromObject(o));
-                                }
-                                catch (ConversionException e)
-                                {
-                                    // TODO handle me!
-                                }
-                            }
-                            return result;
                         }
-                    }
-                    else
-                    {
-                        logger.log(Level.WARNING, "Could not apply Collection for {0}", field.getName());
+                        return result;
                     }
                 }
-                if (Map.class.isAssignableFrom(fieldClass))
+                else
                 {
-                    if (object instanceof Map)
+                    logger.log(Level.WARNING, "Could not apply Collection for {0}", field.getName());
+                }
+            }
+            if (Map.class.isAssignableFrom(fieldClass))
+            {
+                if (object instanceof Map)
+                {
+                    Map<String, ?> map = (Map<String, ?>)object;
+                    if (map.isEmpty())
                     {
-                        Map<String, ?> map = (Map<String, ?>)object;
-                        if (map.isEmpty())
+                        return object;
+                    }
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = Convert.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Map<String, Object> result;
+                        try
                         {
-                            return object;
+                            result = (Map<String, Object>)field.get(config);
+                            result.clear();
                         }
-                        Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = Convert.matchConverter(genType);
-                        if (converter != null)
+                        catch (Exception ex)
                         {
-                            Map<String, Object> result;
+                            logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
+                            return null;
+                        }
+                        for (Map.Entry<String, ?> entry : map.entrySet())
+                        {
                             try
                             {
-                                result = (Map<String, Object>)field.get(config);
-                                result.clear();
+                                result.put(entry.getKey(), converter.fromObject(entry.getValue()));
                             }
-                            catch (Exception ex)
+                            catch (ConversionException e)
                             {
-                                logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
-                                return null;
+                                // TODO handle me!
                             }
-                            for (Map.Entry<String, ?> entry : map.entrySet())
-                            {
-                                try
-                                {
-                                    result.put(entry.getKey(), converter.fromObject(entry.getValue()));
-                                }
-                                catch (ConversionException e)
-                                {
-                                    // TODO handle me!
-                                }
-                            }
-                            return result;
                         }
-                    }
-                    else
-                    {
-                        logger.log(Level.WARNING, "Could not apply Map for {0}", field.getName());
+                        return result;
                     }
                 }
-                if (fieldClass.isArray())
+                else
                 {
-                    if (object instanceof Collection)
+                    logger.log(Level.WARNING, "Could not apply Map for {0}", field.getName());
+                }
+            }
+            if (fieldClass.isArray())
+            {
+                if (object instanceof Collection)
+                {
+                    Collection<Object> coll = (Collection)object;
+                    Object tmparray = coll.toArray();
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = Convert.matchConverter(genType);
+                    if (converter != null)
                     {
-                        Collection<Object> coll = (Collection)object;
-                        Object tmparray = coll.toArray();
-                        Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = Convert.matchConverter(genType);
-                        if (converter != null)
+                        Object o = Array.newInstance(genType, coll.size());
+                        for (int i = 0; i < coll.size(); ++i)
                         {
-                            Object o = Array.newInstance(genType, coll.size());
-                            for (int i = 0; i < coll.size(); ++i)
+                            try
                             {
-                                try
-                                {
-                                    Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
-                                }
-                                catch (ConversionException e)
-                                {
-                                    // TODO handle me!
-                                }
+                                Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
                             }
-                            return fieldClass.cast(o);
-                        }
-                        else
-                        {
-                            Object o = Array.newInstance(genType, coll.size());
-                            for (int i = 0; i < coll.size(); ++i)
+                            catch (ConversionException e)
                             {
-                                Array.set(o, i, Array.get(tmparray, i));
+                                // TODO handle me!
                             }
-                            return fieldClass.cast(o);
                         }
+                        return fieldClass.cast(o);
                     }
                     else
                     {
-                        logger.log(Level.WARNING, "Could not apply Array for {0}", field.getName());
+                        Object o = Array.newInstance(genType, coll.size());
+                        for (int i = 0; i < coll.size(); ++i)
+                        {
+                            Array.set(o, i, Array.get(tmparray, i));
+                        }
+                        return fieldClass.cast(o);
                     }
                 }
+                else
+                {
+                    logger.log(Level.WARNING, "Could not apply Array for {0}", field.getName());
+                }
+            }
         }
         if (converter != null)
         {
@@ -214,7 +214,7 @@ public abstract class ConfigurationCodec
     {
         Class<?> objectClass = object.getClass();
         Converter converter = Convert.matchConverter(objectClass);
-        
+
         if (converter == null)
         {
             if (Collection.class.isAssignableFrom(objectClass))

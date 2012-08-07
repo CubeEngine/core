@@ -12,7 +12,7 @@ import java.util.logging.LogRecord;
 public class RemoteHandler extends Handler
 {
     private final Core core;
-    
+
     public RemoteHandler(Level level, Core core)
     {
         this.core = core;
@@ -26,7 +26,6 @@ public class RemoteHandler extends Handler
         {
             return;
         }
-        
         //TODO API
     }
 
@@ -37,7 +36,5 @@ public class RemoteHandler extends Handler
 
     @Override
     public void close() throws SecurityException
-    {
-    }
-    
+    {}
 }

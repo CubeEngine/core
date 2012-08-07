@@ -9,7 +9,7 @@ import java.util.List;
 public class AliasCommand extends CubeCommand
 {
     private final CubeCommand command;
-    
+
     public AliasCommand(String name, List<String> aliases, CubeCommand command)
     {
         super(command.getModule(), name, command.getDescription(), command.getUsage(), aliases);

@@ -15,13 +15,14 @@ public @interface MapComment
 {
     /**
      * Needed to add a Comment at given path
-     * 
+     *
      * @return the path
      */
     public String path();
+
     /**
      * Needed to add a Comment at given path
-     * 
+     *
      * @return the comment
      */
     public String text();

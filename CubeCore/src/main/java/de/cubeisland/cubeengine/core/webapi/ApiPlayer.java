@@ -45,7 +45,7 @@ import org.bukkit.util.Vector;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class ApiPlayer extends ApiCommandSender implements Player
 {

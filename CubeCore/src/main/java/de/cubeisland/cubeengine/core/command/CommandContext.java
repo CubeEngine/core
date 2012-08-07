@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.User;
 import gnu.trove.set.hash.THashSet;
@@ -27,14 +28,13 @@ public class CommandContext
     private final boolean empty;
     private final int size;
     private boolean result;
-    
     private Core core;
 
     /**
      * Initializes the CommandContext object with an array of arguments
      *
      * @param baseCommand the base command
-     * @param baseLabel  the base label
+     * @param baseLabel the base label
      * @param args the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
@@ -43,7 +43,7 @@ public class CommandContext
         this.core = core;
         this.sender = sender;
         this.command = command;
-        
+
         this.baseLabel = baseLabel;
         this.flags = new THashSet<String>();
         this.params = new ArrayList<String>();
@@ -57,7 +57,7 @@ public class CommandContext
             char quoteChar = '\0';
             int length;
             StringBuilder quotedArgBuilder = null;
-            
+
             for (int i = 1; i < args.length; ++i)
             {
                 firstChar = args[i].charAt(0);
@@ -102,42 +102,35 @@ public class CommandContext
                         }
                         else
                         {
-                            if (quotedArgBuilder == null)
+                            int quoteOffset = args[i].indexOf(quoteChar);
+                            if (quoteOffset >= 0)
                             {
-                                this.params.add(args[i]);
+                                String before = args[i].substring(0, quoteOffset);
+                                String after = "";
+                                if (quoteOffset + 1 < length)
+                                {
+                                    after = args[i].substring(quoteOffset + 1);
+                                }
+
+                                if (before.length() > 0)
+                                {
+                                    quotedArgBuilder.append(' ').append(before);
+                                }
+                                this.params.add(quotedArgBuilder.toString());
+                                quotedArgBuilder = null;
+
+                                if (after.length() > 0)
+                                {
+                                    this.params.add(after);
+                                }
                             }
                             else
                             {
-                                int quoteOffset = args[i].indexOf(quoteChar);
-                                if (quoteOffset >= 0)
+                                quotedArgBuilder.append(' ').append(args[i]);
+                                if (i + 1 >= args.length)
                                 {
-                                    String before = args[i].substring(0, quoteOffset);
-                                    String after = "";
-                                    if (quoteOffset + 1 < length)
-                                    {
-                                        after = args[i].substring(quoteOffset + 1);
-                                    }
-                                    
-                                    if (before.length() > 0)
-                                    {
-                                        quotedArgBuilder.append(' ').append(before);
-                                    }
                                     this.params.add(quotedArgBuilder.toString());
                                     quotedArgBuilder = null;
-
-                                    if (after.length() > 0)
-                                    {
-                                        this.params.add(after);
-                                    }
-                                }
-                                else
-                                {
-                                    quotedArgBuilder.append(' ').append(args[i]);
-                                    if (i + 1 >= args.length)
-                                    {
-                                        this.params.add(quotedArgBuilder.toString());
-                                        quotedArgBuilder = null;
-                                    }
                                 }
                             }
                         }
@@ -285,11 +278,7 @@ public class CommandContext
     /**
      * Returns the requested value as a boolean
      *
-     * enable --> true
-     * true --> true
-     * yes --> true
-     * on --> true
-     * 1 --> true
+     * enable --> true true --> true yes --> true on --> true 1 --> true
      *
      * everything else --> false
      *
@@ -302,7 +291,8 @@ public class CommandContext
     }
 
     /**
-     * Returns the value as true, when it equals (case insensitive) any of the given words.
+     * Returns the value as true, when it equals (case insensitive) any of the
+     * given words.
      *
      * @param index the index
      * @param trueWords the words that indicate true
@@ -320,7 +310,7 @@ public class CommandContext
         }
         return false;
     }
-    
+
     /**
      * Returns the requested value as a User
      *
@@ -331,7 +321,7 @@ public class CommandContext
     {
         return this.core.getUserManager().getUser(this.getString(index));
     }
-    
+
     /**
      * Returns the requested value as a Material
      *
@@ -343,7 +333,7 @@ public class CommandContext
         //TODO eigene items.csv pder ähnlich
         return Material.matchMaterial(this.getString(index));
     }
-    
+
     /**
      * Returns the requested value as a ItemStack
      *
@@ -355,51 +345,84 @@ public class CommandContext
         String value = this.getString(index);
         String[] values = value.split(":");
         //TODO eigene items.csv pder ähnlich
-        Material material = Material.matchMaterial(values[0]); 
+        Material material = Material.matchMaterial(values[0]);
         short data = 0;
         if (values.length > 1)
         {
             try
             {
-               data = Short.parseShort(values[1]); 
+                data = Short.parseShort(values[1]);
             }
             catch (NumberFormatException ex)
-            {}            
+            {
+                //TODO do something?
+            }
         }
         ItemStack item = new ItemStack(material, 1, data);
         return item;
     }
 
+    /**
+     * Returns a Set of the Flags
+     * 
+     * @return the Flags as Set of String
+     */
     public Set<String> getFlags()
     {
         return Collections.unmodifiableSet(this.flags);
     }
 
+    /**
+     * Returns the list of Params
+     * 
+     * @return the Params in a List of Strings
+     */
     public List<String> getParams()
     {
         return Collections.unmodifiableList(this.params);
     }
-    
+
+    /**
+     * Returns the result
+     * 
+     * @return the result
+     */
     public boolean getResult()
     {
         return this.result;
     }
-    
+
+    /**
+     * Sets the result
+     * 
+     * @param result the result to set
+     */
     public void setResult(boolean result)
     {
         this.result = result;
     }
 
+    /**
+     * Returns the CommandSender
+     * 
+     * @return the CommandSender
+     */
+    @BukkitDependend("This returns the CommandSender")
     public CommandSender getSender()
     {
         return this.sender;
     }
-    
+
+    /**
+     * Returns the Command
+     * 
+     * @return the CubeCommand
+     */
     public CubeCommand getCommand()
     {
         return this.command;
     }
-    
+
     public <T> T getParam(String name, Class<T> type)
     {
         return type.cast(name);

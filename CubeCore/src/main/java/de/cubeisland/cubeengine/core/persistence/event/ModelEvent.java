@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
 public abstract class ModelEvent extends CubeEvent
 {
     private final Model<?> model;
-    
+
     public ModelEvent(Core core, Model<?> model)
     {
         super(core);

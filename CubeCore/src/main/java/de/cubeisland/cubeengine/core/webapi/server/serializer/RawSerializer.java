@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.webapi.server.MimeType;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class RawSerializer implements ApiResponseSerializer
 {

@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class Parameters extends HashMap<String, String>
 {

@@ -50,7 +50,7 @@ public class ApibukkitController extends ApiController
         {
             throw new ApiRequestException("The given routes-parameter was no JSON object!", 4);
         }
-        
+
         HashMap<String, Object> responses = new HashMap<String, Object>();
 
         ApiResponse apiResponse = new ApiResponse(this.manager.getDefaultSerializer());

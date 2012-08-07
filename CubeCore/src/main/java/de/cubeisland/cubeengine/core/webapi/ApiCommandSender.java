@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public class ApiCommandSender implements CommandSender
 {

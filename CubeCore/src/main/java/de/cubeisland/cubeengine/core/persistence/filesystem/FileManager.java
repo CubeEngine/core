@@ -66,7 +66,7 @@ public class FileManager
     {
         return this.languageDir;
     }
-    
+
     public File getLogDir()
     {
         return this.logDir;

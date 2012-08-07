@@ -11,7 +11,7 @@ public class BlockVector2
 
     /**
      * Creates a new Vektor2 with a pair of int
-     * 
+     *
      * @param x
      * @param z
      */
@@ -23,7 +23,7 @@ public class BlockVector2
 
     /**
      * Checks whether an other BlockVector ist orthogonal to this one
-     * 
+     *
      * @param other the other BlockVector
      * @return whether the other BlockVector is orthogonal to this one
      */
@@ -34,7 +34,7 @@ public class BlockVector2
 
     /**
      * Checks whether an other BlockVector ist parallel to this one
-     * 
+     *
      * @param other the other BlockVector
      * @return whether the other BlockVector is parallel to this one
      */
@@ -45,7 +45,7 @@ public class BlockVector2
 
     /**
      * Returns the scalar product of this Vektor and the other
-     * 
+     *
      * @param other the second vector to multiply with
      * @return the scalar product
      */
@@ -56,7 +56,7 @@ public class BlockVector2
 
     /**
      * Returns the sum of an other BlockVector and this one as a BlockVector
-     * 
+     *
      * @param other the BlockVector to add
      * @return the new Vector
      */
@@ -66,8 +66,9 @@ public class BlockVector2
     }
 
     /**
-     * Returns the difference between an other BlockVector and this one as a BlockVector
-     * 
+     * Returns the difference between an other BlockVector and this one as a
+     * BlockVector
+     *
      * @param other the BlockVector to substract
      * @return the new Vector
      */
@@ -78,7 +79,7 @@ public class BlockVector2
 
     /**
      * Returns this vector multiplied with the factor n
-     * 
+     *
      * @param other the factor to multiply with
      * @return the new Vector
      */
@@ -86,10 +87,10 @@ public class BlockVector2
     {
         return new BlockVector2(this.x * n, this.z * n);
     }
-    
+
     /**
      * Returns this vector multiplied with the factor n
-     * 
+     *
      * @param other the factor to multiply with
      * @return the new Vector
      */
@@ -100,7 +101,7 @@ public class BlockVector2
 
     /**
      * Returns this vector divided by the quotient n
-     * 
+     *
      * @param other the quotient to divide with
      * @return the new Vector
      */
@@ -111,7 +112,7 @@ public class BlockVector2
 
     /**
      * Returns this vector divided by the quotient n
-     * 
+     *
      * @param other the quotient to divide with
      * @return the new Vector
      */
@@ -122,7 +123,7 @@ public class BlockVector2
 
     /**
      * Returns the squared length
-     * 
+     *
      * @return the length²
      */
     public double squaredLength()
@@ -132,17 +133,18 @@ public class BlockVector2
 
     /**
      * Returns the length
-     * 
+     *
      * @return the length
      */
     public double length()
     {
         return Math.sqrt(this.squaredLength());
     }
-    
+
     /**
-     * Returns the distance between an other BlockVector and this one as a BlockVector
-     * 
+     * Returns the distance between an other BlockVector and this one as a
+     * BlockVector
+     *
      * @param other the BlockVector to substract from
      * @return the new Vector
      */
@@ -153,7 +155,7 @@ public class BlockVector2
 
     /**
      * Returns the squared distance between an other BlockVector and this one
-     * 
+     *
      * @param other the BlockVector to get the distance from
      * @return the squared distance
      */
@@ -164,7 +166,7 @@ public class BlockVector2
 
     /**
      * Returns the distance between an other BlockVector and this one
-     * 
+     *
      * @param other the BlockVector to get the distance from
      * @return the distance
      */
@@ -175,7 +177,7 @@ public class BlockVector2
 
     /**
      * Returns the angle of the other Vector to this one
-     * 
+     *
      * @param other the other BlockVector to calculate the angle to
      * @return the angle between the vectors
      */
@@ -186,7 +188,7 @@ public class BlockVector2
 
     /**
      * Returns the normalized Vector
-     * 
+     *
      * @return the normalized BlockVector
      */
     public BlockVector2 normalize()
@@ -196,7 +198,7 @@ public class BlockVector2
 
     /**
      * Returns a BlockVector to the midpoint between this Vector and the other
-     * 
+     *
      * @param other the other BlockVector
      * @return the midpoint
      */
@@ -207,17 +209,17 @@ public class BlockVector2
 
     /**
      * Projection into horizontal 2D Vector
-     * 
+     *
      * @return the projection
      */
     public Vector2 project2D()
     {
         return new Vector2(this.x, this.z);
     }
-    
+
     /**
      * Returns whether the Object o equals this Vector
-     * 
+     *
      * @param other an Object
      * @return whether o is the same Vector as this one
      */
@@ -240,21 +242,21 @@ public class BlockVector2
 
     /**
      * Returns a HashCode representing this Vector
-     * 
+     *
      * @return the HashCode of this BlockVector
      */
     @Override
     public int hashCode()
     {
         int hash = 7;
-        hash = 53 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 53 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
+        hash = 53 * hash + (int)(Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 53 * hash + (int)(Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
         return hash;
     }
 
     /**
      * Returns a String representing this Vector
-     * 
+     *
      * @return the String representing this BlockVector
      */
     @Override

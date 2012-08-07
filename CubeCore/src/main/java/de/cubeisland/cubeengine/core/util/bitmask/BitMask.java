@@ -11,7 +11,7 @@ public class BitMask
 
     /**
      * Creates a new BitMask
-     * 
+     *
      */
     public BitMask()
     {
@@ -20,7 +20,7 @@ public class BitMask
 
     /**
      * Creates a new BitMask and set its value to mask
-     * 
+     *
      * @param mask the value to set the BitMask at the beginning
      */
     public BitMask(int mask)
@@ -30,7 +30,7 @@ public class BitMask
 
     /**
      * Gets the value of this BitMask
-     * 
+     *
      * @return the value saved by this BitMask
      */
     public int get()
@@ -40,7 +40,7 @@ public class BitMask
 
     /**
      * Sets the specified Bits
-     * 
+     *
      * @param bits The bits to set
      * @return the new value of this BitMask
      */
@@ -51,7 +51,7 @@ public class BitMask
 
     /**
      * Resets this BitMask to 0
-     * 
+     *
      * @return 0
      */
     public int reset()
@@ -61,7 +61,7 @@ public class BitMask
 
     /**
      * Resets this BitMask to mask
-     * 
+     *
      * @param mask The value to reset the BitMask to
      * @return the new value of this BitMask
      */
@@ -72,7 +72,7 @@ public class BitMask
 
     /**
      * Unsets the specified Bits
-     * 
+     *
      * @param bits The bits to unset
      * @return the new value of this BitMask
      */
@@ -83,7 +83,7 @@ public class BitMask
 
     /**
      * Toggles the specified Bits
-     * 
+     *
      * @param bits The bits to toggle
      * @return the new value of this BitMask
      */
@@ -94,7 +94,7 @@ public class BitMask
 
     /**
      * Checks whether the specified bits are set.
-     * 
+     *
      * @param bits The bits to check.
      * @return whether the specified bits are set or not
      */

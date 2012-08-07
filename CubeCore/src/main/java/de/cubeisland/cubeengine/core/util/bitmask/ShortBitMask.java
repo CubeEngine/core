@@ -11,7 +11,7 @@ public class ShortBitMask
 
     /**
      * Creates a new ByteBitMask
-     * 
+     *
      */
     public ShortBitMask()
     {
@@ -20,7 +20,7 @@ public class ShortBitMask
 
     /**
      * Creates a new BitMask and set its value to mask
-     * 
+     *
      * @param mask the value to set the BitMask at the beginning
      */
     public ShortBitMask(short mask)
@@ -30,7 +30,7 @@ public class ShortBitMask
 
     /**
      * Gets the value of this BitMask
-     * 
+     *
      * @return the value saved by this BitMask
      */
     public short get()
@@ -40,7 +40,7 @@ public class ShortBitMask
 
     /**
      * Sets the specified Bits
-     * 
+     *
      * @param bits The bits to set
      * @return the new value of this BitMask
      */
@@ -51,7 +51,7 @@ public class ShortBitMask
 
     /**
      * Resets this BitMask to 0
-     * 
+     *
      * @return 0
      */
     public short reset()
@@ -61,7 +61,7 @@ public class ShortBitMask
 
     /**
      * Resets this BitMask to mask
-     * 
+     *
      * @param mask The value to reset the BitMask to
      * @return the new value of this BitMask
      */
@@ -72,7 +72,7 @@ public class ShortBitMask
 
     /**
      * Unsets the specified Bits
-     * 
+     *
      * @param bits The bits to unset
      * @return the new value of this BitMask
      */
@@ -83,7 +83,7 @@ public class ShortBitMask
 
     /**
      * Toggles the specified Bits
-     * 
+     *
      * @param bits The bits to toggle
      * @return the new value of this BitMask
      */
@@ -94,7 +94,7 @@ public class ShortBitMask
 
     /**
      * Checks whether the specified Bits are set.
-     * 
+     *
      * @param bits The bits to check.
      * @return whether the specified Bits are set or not
      */

@@ -23,7 +23,9 @@ public class CommandManager
 {
     private CommandMap commandMap;
     private Map<String, Command> knownCommands;
-    private static final String[] NO_PARENTS = {};
+    private static final String[] NO_PARENTS =
+    {
+    };
 
     public CommandManager(Core core)
     {
@@ -48,7 +50,8 @@ public class CommandManager
             }
         }
         catch (Exception e)
-        {}
+        {
+        }
     }
 
     private void inject(Command command)
@@ -69,12 +72,12 @@ public class CommandManager
     {
         this.commandMap.clearCommands();
     }
-    
+
     public void registerCommand(CubeCommand command)
     {
         this.registerCommand(command, NO_PARENTS);
     }
-    
+
     public void registerCommand(CubeCommand command, String... parents)
     {
         CubeCommand parentCommand = null;
@@ -96,12 +99,12 @@ public class CommandManager
             parentCommand.addSubCommand(command);
         }
     }
-    
+
     public void registerCommands(Module module, Object commandHolder)
     {
         this.registerCommands(module, commandHolder, NO_PARENTS);
     }
-    
+
     public void registerCommands(Module module, Object commandHolder, String... parents)
     {
         Method[] methods = commandHolder.getClass().getDeclaredMethods();
@@ -117,19 +120,19 @@ public class CommandManager
             {
                 continue;
             }
-            
+
             commandAnnotation = method.getAnnotation(de.cubeisland.cubeengine.core.command.annotation.Command.class);
             if (commandAnnotation == null)
             {
                 continue;
             }
-            
+
             String name = commandAnnotation.name().trim().toLowerCase(Locale.ENGLISH);
             if ("".equals(name))
             {
                 name = method.getName();
             }
-            
+
             this.registerCommand(new ReflectedCommand(
                 module,
                 commandHolder,
@@ -138,11 +141,10 @@ public class CommandManager
                 name,
                 commandAnnotation.desc(),
                 commandAnnotation.usage(),
-                Arrays.asList(commandAnnotation.aliases())
-            ));
+                Arrays.asList(commandAnnotation.aliases())));
         }
     }
-    
+
     public void removeCommand(String... names)
     {
         for (String name : names)
@@ -150,7 +152,7 @@ public class CommandManager
             this.knownCommands.remove(name);
         }
     }
-    
+
     public CubeCommand getCommand(String name)
     {
         Command command = this.knownCommands.get(name);

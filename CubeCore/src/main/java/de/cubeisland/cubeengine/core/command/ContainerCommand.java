@@ -1,4 +1,4 @@
- package de.cubeisland.cubeengine.core.command;
+package de.cubeisland.cubeengine.core.command;
 
 import static de.cubeisland.cubeengine.CubeEngine._;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
  */
 public class ContainerCommand extends CubeCommand
 {
-
     public ContainerCommand(Module module, String name, String description, List<String> aliases)
     {
         super(module, name, description, "[command]", aliases);
@@ -23,8 +22,8 @@ public class ContainerCommand extends CubeCommand
         CommandSender sender = context.getSender();
         sender.sendMessage("The Following commands are available:");
         sender.sendMessage(" ");
-        
-        
+
+
         for (CubeCommand command : context.getCommand().getSubCommands())
         {
             sender.sendMessage(command.getName() + _(sender, command.getModule().getName(), command.getDescription()));

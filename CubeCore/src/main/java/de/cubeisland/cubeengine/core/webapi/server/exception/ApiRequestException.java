@@ -16,8 +16,8 @@ public class ApiRequestException extends RuntimeException implements ApiSerializ
     private int code;
 
     /**
-     * Initializes the exception with a message and a reason. The given
-     * message won't be send to the client, it's just used to inform the console
+     * Initializes the exception with a message and a reason. The given message
+     * won't be send to the client, it's just used to inform the console
      *
      * @param msg the message
      * @param code the reason for this error
@@ -29,9 +29,9 @@ public class ApiRequestException extends RuntimeException implements ApiSerializ
     }
 
     /**
-     * Initializes the exception with a message, a reason and the cause
-     * of the error The given message won't be send to the client, it's just
-     * used to inform the console
+     * Initializes the exception with a message, a reason and the cause of the
+     * error The given message won't be send to the client, it's just used to
+     * inform the console
      *
      * @param message the message
      * @param code the reason for this error

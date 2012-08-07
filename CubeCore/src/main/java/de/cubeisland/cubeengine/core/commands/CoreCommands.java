@@ -16,7 +16,7 @@ public class CoreCommands
         flags = {
             @Flag(name = "a", longName = "all"),
             @Flag(name = "f", longName = "force")
-        },
+                },
         usage = "[-a|--all] [-f|--force]",
         permission = false
     )

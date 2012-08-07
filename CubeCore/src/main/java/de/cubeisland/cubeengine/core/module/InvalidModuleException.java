@@ -6,9 +6,9 @@ package de.cubeisland.cubeengine.core.module;
  */
 public class InvalidModuleException extends ModuleException
 {
-	private static final long serialVersionUID = 1530095056412810634L;
+    private static final long serialVersionUID = 1530095056412810634L;
 
-	public InvalidModuleException(String message)
+    public InvalidModuleException(String message)
     {
         super(message);
     }

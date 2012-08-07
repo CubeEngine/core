@@ -55,17 +55,17 @@ import org.bukkit.util.Vector;
 public class UserBase implements Player
 {
     protected OfflinePlayer offlinePlayer;
-    
+
     public UserBase(OfflinePlayer offlinePlayer)
     {
         this.offlinePlayer = offlinePlayer;
     }
-    
+
     public UserBase(Player player)
     {
         this.offlinePlayer = player;
     }
-    
+
     public String getDisplayName()
     {
         Player player = this.offlinePlayer.getPlayer();
@@ -229,18 +229,18 @@ public class UserBase implements Player
     public void setSleepingIgnored(boolean bln)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setSleepingIgnored(bln);
+            player.setSleepingIgnored(bln);
         }
     }
 
     public boolean isSleepingIgnored()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .isSleepingIgnored();
+            return player.isSleepingIgnored();
         }
         return false;
     }
@@ -248,54 +248,54 @@ public class UserBase implements Player
     public void playNote(Location lctn, byte b, byte b1)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .playNote(lctn, b, b1);
+            player.playNote(lctn, b, b1);
         }
     }
 
     public void playNote(Location lctn, Instrument i, Note note)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .playNote(lctn, i, note);
+            player.playNote(lctn, i, note);
         }
     }
 
     public void playEffect(Location lctn, Effect effect, int i)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .playEffect(lctn, effect, i);
+            player.playEffect(lctn, effect, i);
         }
     }
 
     public <T> void playEffect(Location lctn, Effect effect, T t)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .playEffect(lctn, effect, t);
+            player.playEffect(lctn, effect, t);
         }
     }
 
     public void sendBlockChange(Location lctn, Material mtrl, byte b)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .sendBlockChange(lctn, mtrl, b);
+            player.sendBlockChange(lctn, mtrl, b);
         }
     }
 
     public boolean sendChunkChange(Location lctn, int i, int i1, int i2, byte[] bytes)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .sendChunkChange(lctn, i, i1, i2, bytes);
+            return player.sendChunkChange(lctn, i, i1, i2, bytes);
         }
         return false;
     }
@@ -303,18 +303,18 @@ public class UserBase implements Player
     public void sendBlockChange(Location lctn, int i, byte b)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .sendBlockChange(lctn, i, b);
+            player.sendBlockChange(lctn, i, b);
         }
     }
 
     public void sendMap(MapView mv)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .sendMap(mv);
+            player.sendMap(mv);
         }
     }
 
@@ -322,72 +322,72 @@ public class UserBase implements Player
     public void updateInventory()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .updateInventory();
+            player.updateInventory();
         }
     }
 
     public void awardAchievement(Achievement a)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .awardAchievement(a);
+            player.awardAchievement(a);
         }
     }
 
     public void incrementStatistic(Statistic ststc)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .incrementStatistic(ststc);
+            player.incrementStatistic(ststc);
         }
     }
 
     public void incrementStatistic(Statistic ststc, int i)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .incrementStatistic(ststc, i);
+            player.incrementStatistic(ststc, i);
         }
     }
 
     public void incrementStatistic(Statistic ststc, Material mtrl)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .incrementStatistic(ststc, mtrl);
+            player.incrementStatistic(ststc, mtrl);
         }
     }
 
     public void incrementStatistic(Statistic ststc, Material mtrl, int i)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .incrementStatistic(ststc, mtrl, i);
+            player.incrementStatistic(ststc, mtrl, i);
         }
     }
 
     public void setPlayerTime(long l, boolean bln)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setPlayerTime(l, bln);
+            player.setPlayerTime(l, bln);
         }
     }
 
     public long getPlayerTime()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getPlayerTime();
+            return player.getPlayerTime();
         }
         return 0;
     }
@@ -395,9 +395,9 @@ public class UserBase implements Player
     public long getPlayerTimeOffset()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getPlayerTimeOffset();
+            return player.getPlayerTimeOffset();
         }
         return 0;
     }
@@ -405,9 +405,9 @@ public class UserBase implements Player
     public boolean isPlayerTimeRelative()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .isPlayerTimeRelative();
+            return player.isPlayerTimeRelative();
         }
         return false;
     }
@@ -415,27 +415,27 @@ public class UserBase implements Player
     public void resetPlayerTime()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .resetPlayerTime();
+            player.resetPlayerTime();
         }
     }
 
     public void giveExp(int i)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .giveExp(i);
+            player.giveExp(i);
         }
     }
 
     public float getExp()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getExp();
+            return player.getExp();
         }
         return 0;
     }
@@ -443,18 +443,18 @@ public class UserBase implements Player
     public void setExp(float f)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setExp(f);
+            player.setExp(f);
         }
     }
 
     public int getLevel()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getLevel();
+            return player.getLevel();
         }
         return 0;
     }
@@ -462,18 +462,18 @@ public class UserBase implements Player
     public void setLevel(int i)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setLevel(i);
+            player.setLevel(i);
         }
     }
 
     public int getTotalExperience()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getTotalExperience();
+            return player.getTotalExperience();
         }
         return 0;
     }
@@ -481,18 +481,18 @@ public class UserBase implements Player
     public void setTotalExperience(int i)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setTotalExperience(i);
+            player.setTotalExperience(i);
         }
     }
 
     public float getExhaustion()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getExhaustion();
+            return player.getExhaustion();
         }
         return 0;
     }
@@ -500,18 +500,18 @@ public class UserBase implements Player
     public void setExhaustion(float f)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setExhaustion(f);
+            player.setExhaustion(f);
         }
     }
 
     public float getSaturation()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getSaturation();
+            return player.getSaturation();
         }
         return 0;
     }
@@ -519,18 +519,18 @@ public class UserBase implements Player
     public void setSaturation(float f)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setSaturation(f);
+            player.setSaturation(f);
         }
     }
 
     public int getFoodLevel()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getFoodLevel();
+            return player.getFoodLevel();
         }
         return 0;
     }
@@ -538,18 +538,18 @@ public class UserBase implements Player
     public void setFoodLevel(int i)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setFoodLevel(i);
+            player.setFoodLevel(i);
         }
     }
 
     public Location getBedSpawnLocation()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            return player .getBedSpawnLocation();
+            return player.getBedSpawnLocation();
         }
         return null;
     }
@@ -557,16 +557,16 @@ public class UserBase implements Player
     public void setBedSpawnLocation(Location lctn)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
-            player .setBedSpawnLocation(lctn);
+            player.setBedSpawnLocation(lctn);
         }
     }
 
     public boolean getAllowFlight()
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
             return player.getAllowFlight();
         }
@@ -576,7 +576,7 @@ public class UserBase implements Player
     public void setAllowFlight(boolean bln)
     {
         Player player = this.offlinePlayer.getPlayer();
-        if (player  != null)
+        if (player != null)
         {
             player.setAllowFlight(bln);
         }
@@ -1634,7 +1634,7 @@ public class UserBase implements Player
         Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            player.abandonConversation(c,cae);
+            player.abandonConversation(c, cae);
         }
     }
 

@@ -58,7 +58,7 @@ public class User extends UserBase implements Model<Integer>
 
     /**
      * Sends a translated Message to this User
-     * 
+     *
      * @param string the message to translate
      * @param params optional parameter
      */

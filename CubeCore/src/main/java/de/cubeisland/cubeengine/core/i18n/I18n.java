@@ -43,16 +43,16 @@ public class I18n
 
         this.loadLanguages(fileManager.getLanguageDir());
     }
-    
+
     public String getDefaultLanguage()
     {
         return this.defaultLanguage;
     }
-    
+
     public void setDefaultLanguage(String language)
     {
         Validate.notNull(language, "The language must not be null!");
-        
+
         language = normalizeLanguage(language);
         if (this.languageMap.containsKey(language))
         {
@@ -122,7 +122,7 @@ public class I18n
         }
         this.languageMap.clear();
     }
-    
+
     public static String normalizeLanguage(String name)
     {
         if (name == null)

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -17,7 +17,7 @@ public @interface Action
 
     public boolean authenticate() default true;
 
-    public String[] parameters() default
+    public String[] parameters() default 
     {
     };
 

@@ -4,7 +4,7 @@ import org.bukkit.plugin.Plugin;
 
 /**
  *
- * @author CodeInfection
+ * @author Phillip Schichtel
  */
 public interface ApiPlugin extends Plugin
 {

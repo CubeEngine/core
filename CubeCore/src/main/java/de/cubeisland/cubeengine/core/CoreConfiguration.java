@@ -18,5 +18,4 @@ public class CoreConfiguration extends Configuration
     @Option("defaultLanguage")
     @Comment("Sets the language to choose by default")
     public String defaultLanguage = "en_US";
-    
 }

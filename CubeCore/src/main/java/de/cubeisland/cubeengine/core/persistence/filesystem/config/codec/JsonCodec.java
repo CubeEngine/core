@@ -38,7 +38,7 @@ public class JsonCodec extends ConfigurationCodec
         StringBuilder sb = new StringBuilder();
         Iterator<Map.Entry<String, Object>> iterator = values.entrySet().iterator();
         Map.Entry<String, Object> entry = iterator.next();
-        
+
         if (off == 0)
         {
             sb.append(this.convertValue(entry.getKey(), entry.getValue(), off));

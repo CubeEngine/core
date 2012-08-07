@@ -9,7 +9,6 @@ import java.net.URLClassLoader;
  */
 public class LibraryClassLoader extends URLClassLoader
 {
-
     public LibraryClassLoader(ClassLoader parent)
     {
         super(new URL[0], parent);

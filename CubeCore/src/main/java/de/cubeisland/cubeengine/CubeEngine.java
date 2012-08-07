@@ -2,12 +2,8 @@ package de.cubeisland.cubeengine;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandManager;
-import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.event.EventManager;
-import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
@@ -24,9 +20,18 @@ public final class CubeEngine
 {
     private static Core core = null;
 
+    /**
+     * Standard Constructor
+     */
     private CubeEngine()
-    {}
+    {
+    }
 
+    /**
+     * Initializes CubeEngine
+     *
+     * @param coreInstance the Core
+     */
     public static void initialize(Core coreInstance)
     {
         if (core == null)
@@ -39,46 +44,104 @@ public final class CubeEngine
         }
     }
 
+    /**
+     * Nulls the Core
+     */
     public static void clean()
     {
         core = null;
     }
 
+    /**
+     * Returns the Core
+     *
+     * @return the Core
+     */
     public static Core getCore()
     {
         return core;
     }
 
+    /**
+     * Returns the Database
+     *
+     * @return the Database
+     */
     public static Database getDatabase()
     {
         return core.getDB();
     }
 
+    /**
+     * Returns the PermissionRegistration
+     *
+     * @return the PermissionRegistration
+     */
     public static PermissionRegistration getPermissionRegistration()
     {
         return core.getPermissionRegistration();
     }
 
+    /**
+     * Returns the UserManager
+     *
+     * @return the UserManager
+     */
     public static UserManager getUserManager()
     {
         return core.getUserManager();
     }
 
+    /**
+     * Returns the FileManager
+     *
+     * @return the FileManager
+     */
     public static FileManager getFileManager()
     {
         return core.getFileManager();
     }
 
+    /**
+     * Returns the Logger
+     *
+     * @return the Logger
+     */
     public static Logger getLogger()
     {
         return core.getCoreLogger();
     }
 
+    /**
+     * Returns the ModuleManager
+     *
+     * @return the ModuleManager
+     */
     public static ModuleManager getModuleManager()
     {
         return core.getModuleManager();
     }
-    
+
+    /**
+     * Returns the EventManager
+     *
+     * @return the EventManager
+     */
+    public static EventManager getEventManager()
+    {
+        return core.getEventManager();
+    }
+
+    /**
+     * Returns the CommandManager
+     *
+     * @return the CommandManager
+     */
+    public static CommandManager getCommandManager()
+    {
+        return core.getCommandManager();
+    }
+
     @BukkitDependend("Uses Bukkit's CommandSender")
     public static String _(CommandSender sender, String category, String text, Object... params)
     {
@@ -102,15 +165,5 @@ public final class CubeEngine
     public static String _(String language, String category, String text, Object... params)
     {
         return core.getI18n().translate(language, category, language, params);
-    }
-
-    public static EventManager getEventManager()
-    {
-        return core.getEventManager();
-    }
-
-    public static CommandManager getCommandManager()
-    {
-        return core.getCommandManager();
     }
 }

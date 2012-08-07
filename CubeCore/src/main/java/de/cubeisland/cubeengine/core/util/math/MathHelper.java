@@ -10,7 +10,7 @@ public class MathHelper
 
     private MathHelper()
     {}
-    
+
     public static double radiansToDegree(double radians)
     {
         return radians * RADIANS_DEGREE_CONVERTER;
@@ -30,7 +30,7 @@ public class MathHelper
     public static int ceil(double num)
     {
         final int floored = (int)num;
-        return (floored == num ? floored : floored +(int)(Double.doubleToRawLongBits(num) >>> 63));
+        return (floored == num ? floored : floored + (int)(Double.doubleToRawLongBits(num) >>> 63));
     }
 
     public static int round(double num)

@@ -36,11 +36,10 @@ public class FileHandler extends java.util.logging.FileHandler
         this.setEncoding("UTF-8");
         this.setLevel(level);
     }
-    
+
     public class FileFormatter extends Formatter
     {
         private static final String LINEBREAK = "\n";
-
         private final SimpleDateFormat dateFormat;
 
         public FileFormatter()

@@ -12,9 +12,9 @@ public class Vector2
 
     /**
      * Creates a new Vektor2 with a pair of int
-     * 
+     *
      * @param x
-     * @param y 
+     * @param y
      */
     public Vector2(int x, int y)
     {
@@ -23,9 +23,9 @@ public class Vector2
 
     /**
      * Creates a new Vektor2 with a pair of double
-     * 
-     * @param x 
-     * @param y 
+     *
+     * @param x
+     * @param y
      */
     public Vector2(double x, double y)
     {
@@ -33,10 +33,9 @@ public class Vector2
         this.y = y;
     }
 
-    
     /**
      * Checks whether an other Vector2 ist orthogonal to this one
-     * 
+     *
      * @param other the other Vector2
      * @return whether the other Vector2 is orthogonal to this one
      */
@@ -47,7 +46,7 @@ public class Vector2
 
     /**
      * Checks whether an other Vector2 ist parallel to this one
-     * 
+     *
      * @param other the other Vector2
      * @return whether the other Vector2 is parallel to this one
      */
@@ -58,7 +57,7 @@ public class Vector2
 
     /**
      * Returns the scalar product of this Vektor and the other
-     * 
+     *
      * @param other the second vector to multiply with
      * @return the scalar product
      */
@@ -69,7 +68,7 @@ public class Vector2
 
     /**
      * Returns the sum of an other Vector2 and this one as a Vector2
-     * 
+     *
      * @param other the Vector2 to add
      * @return the new Vector
      */
@@ -80,7 +79,7 @@ public class Vector2
 
     /**
      * Returns the difference between an other Vector2 and this one as a Vector2
-     * 
+     *
      * @param other the Vector2 to substract
      * @return the new Vector
      */
@@ -91,7 +90,7 @@ public class Vector2
 
     /**
      * Returns this vector multiplied with the factor n
-     * 
+     *
      * @param other the factor to multiply with
      * @return the new Vector
      */
@@ -102,7 +101,7 @@ public class Vector2
 
     /**
      * Returns this vector multiplied with the factor n
-     * 
+     *
      * @param other the factor to multiply with
      * @return the new Vector
      */
@@ -113,7 +112,7 @@ public class Vector2
 
     /**
      * Returns this vector divided by the quotient n
-     * 
+     *
      * @param other the quotient to divide with
      * @return the new Vector
      */
@@ -124,7 +123,7 @@ public class Vector2
 
     /**
      * Returns this vector divided by the quotient n
-     * 
+     *
      * @param other the quotient to divide with
      * @return the new Vector
      */
@@ -135,7 +134,7 @@ public class Vector2
 
     /**
      * Returns the squared length
-     * 
+     *
      * @return the length²
      */
     public double squaredLength()
@@ -145,7 +144,7 @@ public class Vector2
 
     /**
      * Returns the length
-     * 
+     *
      * @return the length
      */
     public double length()
@@ -155,7 +154,7 @@ public class Vector2
 
     /**
      * Returns the distance between an other Vector2 and this one as a Vector2
-     * 
+     *
      * @param other the Vector2 to substract from
      * @return the new Vector
      */
@@ -166,7 +165,7 @@ public class Vector2
 
     /**
      * Returns the squared distance between an other Vector2 and this one
-     * 
+     *
      * @param other the Vector2 to get the distance from
      * @return the squared distance
      */
@@ -177,7 +176,7 @@ public class Vector2
 
     /**
      * Returns the distance between an other Vector2 and this one
-     * 
+     *
      * @param other the Vector2 to get the distance from
      * @return the distance
      */
@@ -188,7 +187,7 @@ public class Vector2
 
     /**
      * Returns the angle of the other Vector to this one
-     * 
+     *
      * @param other the other Vector2 to calculate the angle to
      * @param degree whether to return the angle in degree or not
      * @return the angle between the vectors
@@ -200,7 +199,7 @@ public class Vector2
 
     /**
      * Returns the normalized Vector
-     * 
+     *
      * @return the normalized Vector2
      */
     public Vector2 normalize()
@@ -210,7 +209,7 @@ public class Vector2
 
     /**
      * Returns a Vector2 to the midpoint between this Vector and the other
-     * 
+     *
      * @param other the other Vector2
      * @return the midpoint
      */
@@ -221,7 +220,7 @@ public class Vector2
 
     /**
      * Returns whether the Object o equals this Vector
-     * 
+     *
      * @param other an Object
      * @return whether o is the same Vector as this one
      */
@@ -242,24 +241,23 @@ public class Vector2
         return (this.x == other.x && this.y == other.y);
     }
 
-    
     /**
      * Returns a HashCode representing this Vector
-     * 
+     *
      * @return the HashCode of this Vector2
      */
     @Override
     public int hashCode()
     {
         int hash = 7;
-        hash = 53 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
-        hash = 53 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+        hash = 53 * hash + (int)(Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 53 * hash + (int)(Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
         return hash;
     }
 
     /**
      * Returns a String representing this Vector
-     * 
+     *
      * @return the String representing this Vector2
      */
     @Override

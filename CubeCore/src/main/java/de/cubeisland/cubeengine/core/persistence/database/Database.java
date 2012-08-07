@@ -20,7 +20,6 @@ public class Database
 {
     private static final Pattern PREFIX_PATTERN = Pattern.compile("\\{\\{(\\w+)\\}\\}", Pattern.CASE_INSENSITIVE);
     private String replacement;
-
     private final String host;
     private final short port;
     private final String user;
@@ -28,7 +27,6 @@ public class Database
     private final String name;
     private String tablePrefix;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements;
-
     private final Connection connection;
 
     public Database(DatabaseConfiguration config)
@@ -130,7 +128,7 @@ public class Database
 
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        return this.connection.prepareStatement(PREFIX_PATTERN.matcher(statement).replaceAll(this.replacement),PreparedStatement.RETURN_GENERATED_KEYS);
+        return this.connection.prepareStatement(PREFIX_PATTERN.matcher(statement).replaceAll(this.replacement), PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
     public PreparedStatement getStatement(String name)
@@ -142,13 +140,13 @@ public class Database
         }
         return statement;
     }
-    
+
     // TODO remove this
     public void assignId(PreparedStatement ps, Model<Integer> model)
     {
         try
         {
-            if (ps.executeUpdate() > 0) 
+            if (ps.executeUpdate() > 0)
             {
                 final ResultSet result = ps.getGeneratedKeys();
                 if (result.next())
@@ -161,6 +159,5 @@ public class Database
         {
             throw new StorageException("Failed to store the user!", e);
         }
-        
     }
 }

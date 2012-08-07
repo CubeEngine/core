@@ -161,25 +161,29 @@ public abstract class Module
      * This method gets called right after the module initialization
      */
     public void onLoad()
-    {}
+    {
+    }
 
     /**
      * This method gets called when the module got enabled
      */
     public void onEnable()
-    {}
+    {
+    }
 
     /**
      * This method gets called when the module got disabled
      */
     public void onDisable()
-    {}
+    {
+    }
 
     /**
      * This method should be overridden to do reloading
      */
     public void reload()
-    {}
+    {
+    }
 
     @Override
     public int hashCode()
@@ -224,7 +228,8 @@ public abstract class Module
     }
 
     /**
-     * This method returns a wrapper to use the module as a plugin for server specific stuff
+     * This method returns a wrapper to use the module as a plugin for server
+     * specific stuff
      *
      * @return the PluginWrapper of this module
      */
@@ -244,7 +249,8 @@ public abstract class Module
     }
 
     /**
-     * This method unregisteres all event listeners of the given listener instance
+     * This method unregisteres all event listeners of the given listener
+     * instance
      *
      * @param listener the listener
      */
@@ -304,7 +310,6 @@ public abstract class Module
         }
         return this.enabled;
     }
-
 
     /**
      * This method disables the module

@@ -13,7 +13,6 @@ public enum CoreResource implements Resource
     ENGLISH_META("resources/language/en_US.json", "language/en_US.json"),
     GERMAN_META("resources/language/de_DE.json", "language/de_DE.json"),
     GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/core.json");
-
     private final String target;
     private final String source;
 

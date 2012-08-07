@@ -15,7 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.plugin.Plugin;
 
 /**
- * The class manages all the registered API controllers, serializers, white-/blacklisting and action disabling
+ * The class manages all the registered API controllers, serializers,
+ * white-/blacklisting and action disabling
  *
  * @author Phillip Schichtel
  */
@@ -43,7 +44,7 @@ public final class ApiManager
         this.blacklistEnabled = false;
 
         this.defaultSerializer = new JsonSerializer();
-        
+
         this.registerSerializer(new JsonSerializer())
             .registerSerializer(new XmlSerializer())
             .registerSerializer(new RawSerializer())

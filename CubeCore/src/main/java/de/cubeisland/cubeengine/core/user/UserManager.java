@@ -18,7 +18,7 @@ public class UserManager
     private final THashMap<String, User> users;
     private UserStorage storage;
     private final Server server;
-        
+
     public UserManager(Core core, Server server)
     {
         this.core = core;
@@ -32,7 +32,7 @@ public class UserManager
             this.users.put(user.getName(), user);
         }
     }
-    
+
     public UserManager addUser(User user)
     {
         this.storage.store(user);
@@ -41,7 +41,7 @@ public class UserManager
         server.getPluginManager().callEvent(event);
         return this;
     }
-    
+
     public UserManager removeUser(User user)
     {
         this.storage.delete(user);
@@ -49,27 +49,27 @@ public class UserManager
 
         return this;
     }
-    
+
     public User getUser(String name)
     {
         return this.users.get(name);
     }
-    
+
     public User getUser(OfflinePlayer player)
     {
         return this.getUser(player.getName());
     }
-    
+
     public User getUser(Player player)
     {
         return this.getUser(player.getName());
     }
-    
+
     public User getUser(CommandSender sender)
     {
         return this.getUser(sender.getName());
     }
-    
+
     public User getUser(int id)
     {
         throw new UnsupportedOperationException("Not supported yet.");

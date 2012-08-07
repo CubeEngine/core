@@ -8,10 +8,9 @@ import java.io.File;
  */
 public class Validate
 {
-
     private Validate()
     {}
-    
+
     public static void notNull(Object object, String message)
     {
         if (object == null)
