@@ -7,13 +7,9 @@ import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.M
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Updater;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.ByteConverter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.DoubleConverter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.IntegerConverter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.LocationConverter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.PlayerConverter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.SetConverter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.converter.ShortConverter;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.converter.Converter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,11 +25,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 
 /**
  *
@@ -41,7 +34,6 @@ import org.bukkit.OfflinePlayer;
  */
 public abstract class ConfigurationCodec
 {
-    private static final Map<Class<?>, Converter<?>> converters = new HashMap<Class<?>, Converter<?>>();
     public String COMMENT_PREFIX;
     public String SPACES;
     public String LINEBREAK;
@@ -50,75 +42,12 @@ public abstract class ConfigurationCodec
     protected HashMap<String, String> comments;
     protected boolean first;
     protected Integer revision = null;
-    private static final Logger logger;
-
-    static
-    {
-        logger = CubeEngine.getLogger();
-        Converter<?> converter;
-
-        converter = new ByteConverter();
-        registerConverter(Byte.class, converter);
-        registerConverter(byte.class, converter);
-
-        converter = new ShortConverter();
-        registerConverter(Short.class, converter);
-        registerConverter(short.class, converter);
-
-        converter = new IntegerConverter();
-        registerConverter(Integer.class, converter);
-        registerConverter(int.class, converter);
-
-        converter = new DoubleConverter();
-        registerConverter(Double.class, converter);
-        registerConverter(double.class, converter);
-
-        registerConverter(OfflinePlayer.class, new PlayerConverter(CubeEngine.getCore()));
-        registerConverter(Location.class, new LocationConverter(CubeEngine.getCore()));
-
-        registerConverter(Set.class, new SetConverter());
-    }
+    private static final Logger logger = CubeEngine.getLogger();
 
     public ConfigurationCodec()
     {
         this.comments = new HashMap<String, String>();
         this.values = new LinkedHashMap<String, Object>();
-    }
-
-    /**
-     * Registers given Converter for clazz
-     *
-     * @param clazz the class
-     * @param converter the converter
-     */
-    public static void registerConverter(Class<?> clazz, Converter<?> converter)
-    {
-        if (clazz == null || converter == null)
-        {
-            return;
-        }
-        converters.put(clazz, converter);
-    }
-
-    /**
-     * Searches matching Converter
-     *
-     * @param objectClass the class to search for
-     * @return a matching converter or null if not found
-     */
-    private static Converter<?> matchConverter(Class<?> objectClass)
-    {
-        Converter<?> converter;
-        for (Class<?> clazz : converters.keySet())
-        {
-            if (clazz.isAssignableFrom(objectClass))
-            {
-                converter = converters.get(clazz);
-                registerConverter(objectClass, converter);
-                return converter;
-            }
-        }
-        return null;
     }
 
     /**
@@ -131,12 +60,9 @@ public abstract class ConfigurationCodec
     public static Object convertTo(Configuration config, Field field, Object object)
     {
         Class<?> fieldClass = field.getType();
-        Converter<?> converter = converters.get(fieldClass);
+        Converter converter = Convert.matchConverter(fieldClass);
         if (converter == null)
         {
-            converter = matchConverter(fieldClass);
-            if (converter == null)
-            {
                 if (Collection.class.isAssignableFrom(fieldClass))
                 {
                     if (object instanceof Collection)
@@ -147,7 +73,7 @@ public abstract class ConfigurationCodec
                             return object;
                         }
                         Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = matchConverter(genType);
+                        converter = Convert.matchConverter(genType);
                         if (converter != null)
                         {
                             Collection<Object> result;
@@ -163,7 +89,14 @@ public abstract class ConfigurationCodec
                             }
                             for (Object o : list)
                             {
-                                result.add(converter.to(o));
+                                try
+                                {
+                                    result.add(converter.fromObject(o));
+                                }
+                                catch (ConversionException e)
+                                {
+                                    // TODO handle me!
+                                }
                             }
                             return result;
                         }
@@ -183,7 +116,7 @@ public abstract class ConfigurationCodec
                             return object;
                         }
                         Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = matchConverter(genType);
+                        converter = Convert.matchConverter(genType);
                         if (converter != null)
                         {
                             Map<String, Object> result;
@@ -199,7 +132,14 @@ public abstract class ConfigurationCodec
                             }
                             for (Map.Entry<String, ?> entry : map.entrySet())
                             {
-                                result.put(entry.getKey(), converter.to(entry.getValue()));
+                                try
+                                {
+                                    result.put(entry.getKey(), converter.fromObject(entry.getValue()));
+                                }
+                                catch (ConversionException e)
+                                {
+                                    // TODO handle me!
+                                }
                             }
                             return result;
                         }
@@ -216,13 +156,20 @@ public abstract class ConfigurationCodec
                         Collection<Object> coll = (Collection)object;
                         Object tmparray = coll.toArray();
                         Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = matchConverter(genType);
+                        converter = Convert.matchConverter(genType);
                         if (converter != null)
                         {
                             Object o = Array.newInstance(genType, coll.size());
                             for (int i = 0; i < coll.size(); ++i)
                             {
-                                Array.set(o, i, converter.to(Array.get(tmparray, i)));
+                                try
+                                {
+                                    Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
+                                }
+                                catch (ConversionException e)
+                                {
+                                    // TODO handle me!
+                                }
                             }
                             return fieldClass.cast(o);
                         }
@@ -241,13 +188,19 @@ public abstract class ConfigurationCodec
                         logger.log(Level.WARNING, "Could not apply Array for {0}", field.getName());
                     }
                 }
+        }
+        if (converter != null)
+        {
+            try
+            {
+                return converter.toObject(object);
+            }
+            catch (ConversionException e)
+            {
+                // TODO handle me!
             }
         }
-        if (converter == null)
-        {
-            return object;
-        }
-        return converter.to(object);
+        return object;
     }
 
     /**
@@ -260,62 +213,80 @@ public abstract class ConfigurationCodec
     public static Object convertFrom(Field field, Object object)
     {
         Class<?> objectClass = object.getClass();
-        Converter converter = converters.get(objectClass);
+        Converter converter = Convert.matchConverter(objectClass);
+        
         if (converter == null)
         {
-            converter = matchConverter(objectClass);
-            if (converter == null)
+            if (Collection.class.isAssignableFrom(objectClass))
             {
-                if (Collection.class.isAssignableFrom(objectClass))
+                if (object instanceof Collection)
                 {
-                    if (object instanceof Collection)
-                    {
-                        Collection<?> collection = (Collection<?>)object;
-                        Class<?> genType = field.getAnnotation(Option.class).genericType();
-                        converter = matchConverter(genType);
-                        if (converter != null)
-                        {
-                            Collection<Object> result = new LinkedList<Object>();
-                            for (Object o : collection)
-                            {
-                                result.add(converter.from(o));
-                            }
-                            return result;
-                        }
-                    }
-                    else
-                    {
-                        logger.log(Level.WARNING, "Could not apply Collection to {0}", field.getName());
-                    }
-                }
-                if (objectClass.isArray())
-                {
-                    Object[] array = (Object[])object;
+                    Collection<?> collection = (Collection<?>)object;
                     Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = matchConverter(genType);
+                    converter = Convert.matchConverter(genType);
                     if (converter != null)
                     {
                         Collection<Object> result = new LinkedList<Object>();
-                        for (Object o : array)
+                        for (Object o : collection)
                         {
-                            result.add(converter.from(o));
+                            try
+                            {
+                                result.add(converter.toObject(o));
+                            }
+                            catch (ConversionException e)
+                            {
+                                // TODO handle me!
+                            }
                         }
                         return result;
                     }
-                    else
+                }
+                else
+                {
+                    logger.log(Level.WARNING, "Could not apply Collection to {0}", field.getName());
+                }
+            }
+            if (objectClass.isArray())
+            {
+                Object[] array = (Object[])object;
+                Class<?> genType = field.getAnnotation(Option.class).genericType();
+                converter = Convert.matchConverter(genType);
+                if (converter != null)
+                {
+                    Collection<Object> result = new LinkedList<Object>();
+                    for (Object o : array)
                     {
-                        Collection<Object> result = new LinkedList<Object>();
-                        result.addAll(Arrays.asList(array));
-                        return result;
+                        try
+                        {
+                            result.add(converter.toObject(o));
+                        }
+                        catch (ConversionException e)
+                        {
+                            // TODO handle me!
+                        }
                     }
+                    return result;
+                }
+                else
+                {
+                    Collection<Object> result = new LinkedList<Object>();
+                    result.addAll(Arrays.asList(array));
+                    return result;
                 }
             }
         }
-        if (converter == null)
+        if (converter != null)
         {
-            return object;
+            try
+            {
+                return converter.toObject(object);
+            }
+            catch (ConversionException e)
+            {
+                // TODO handle me!
+            }
         }
-        return converter.from(object);
+        return object;
     }
 
     /**

@@ -42,12 +42,15 @@ public abstract class CubeCommand extends Command
         return null;
     }
     
-    public void addSubCommand(String name, CubeCommand command)
+    public void addSubCommand(CubeCommand command)
     {
-        Validate.notNull(name, "The name must not be null!");
         Validate.notNull(command, "The command must not be null!");
         
-        this.subCommands.put(name.toLowerCase(), command);
+        this.subCommands.put(command.getName(), command);
+        for (String alias : command.getAliases())
+        {
+            this.subCommands.put(alias, command);
+        }
     }
     
     public boolean hasSubCommand(String name)
@@ -82,6 +85,21 @@ public abstract class CubeCommand extends Command
     public final Module getModule()
     {
         return this.module;
+    }
+    
+    public void removeSubCommand(String command)
+    {
+        CubeCommand removedCommand = this.subCommands.remove(command);
+        if (removedCommand != null)
+        {
+            for (Map.Entry<String, CubeCommand> entry : this.subCommands.entrySet())
+            {
+                if (entry.getValue() == removedCommand)
+                {
+                    this.subCommands.remove(entry.getKey());
+                }
+            }
+        }
     }
     
     public abstract void run(CommandContext context);

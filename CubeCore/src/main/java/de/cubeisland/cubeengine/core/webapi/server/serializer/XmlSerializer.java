@@ -22,32 +22,27 @@ public class XmlSerializer implements ApiResponseSerializer
 
     public String serialize(Object o)
     {
-        StringBuilder buffer = new StringBuilder();
-        this.serialize(buffer, o, "response", true);
+        StringBuilder buffer = new StringBuilder(XMLDeclaration);
+        this.serialize(buffer, o, "response");
         return buffer.toString();
     }
 
     @SuppressWarnings("unchecked")
-    private void serialize(StringBuilder buffer, Object o, String nodeName, boolean firstLevel)
+    private void serialize(StringBuilder buffer, Object o, String nodeName)
     {
-        if (firstLevel)
-        {
-            buffer.append(XMLDeclaration);
-        }
         buffer.append('<').append(nodeName).append('>');
         if (o == null)
-        {
-        } // null -> do nothing
+        {} // null -> do nothing
         else if (o instanceof ApiSerializable)
         {
-            this.serialize(buffer, ((ApiSerializable)o).serialize(), nodeName, false);
+            this.serialize(buffer, ((ApiSerializable)o).serialize(), nodeName);
         }
         else if (o instanceof Map)
         {
             Map<String, Object> data = (Map<String, Object>)o;
             for (Map.Entry entry : data.entrySet())
             {
-                this.serialize(buffer, entry.getValue(), entry.getKey().toString(), false);
+                this.serialize(buffer, entry.getValue(), entry.getKey().toString());
             }
         }
         else if (o instanceof Iterable)
@@ -57,7 +52,7 @@ public class XmlSerializer implements ApiResponseSerializer
             while (iter.hasNext())
             {
                 Object value = iter.next();
-                this.serialize(buffer, value, nodeName, false);
+                this.serialize(buffer, value, nodeName);
             }
         }
         else if (o.getClass().isArray())
@@ -65,7 +60,7 @@ public class XmlSerializer implements ApiResponseSerializer
             Object[] data = (Object[])o;
             for (int i = 0; i < data.length; i++)
             {
-                this.serialize(buffer, data[i], nodeName, false);
+                this.serialize(buffer, data[i], nodeName);
             }
         }
         else
@@ -78,6 +73,6 @@ public class XmlSerializer implements ApiResponseSerializer
 
     private static String escape(String string)
     {
-        return string.replaceAll("&", "&amp;").replaceAll("\"", "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        return string.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
     }
 }

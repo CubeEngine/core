@@ -20,17 +20,16 @@ public class PlainSerializer implements ApiResponseSerializer
 
     public String serialize(Object o)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         this.serialize(buffer, o);
         return buffer.toString();
     }
 
     @SuppressWarnings("unchecked")
-    private void serialize(StringBuffer buffer, Object o)
+    private void serialize(StringBuilder buffer, Object o)
     {
         if (o == null)
-        {
-        } // null => nothing
+        {} // null => nothing
         else if (o instanceof ApiSerializable)
         {
             this.serialize(buffer, ((ApiSerializable)o).serialize());
@@ -86,6 +85,6 @@ public class PlainSerializer implements ApiResponseSerializer
 
     private static String encode(String string)
     {
-        return string.replaceAll("%", "%25").replaceAll(",", "%2C");
+        return string.replace("%", "%25").replace(",", "%2C");
     }
 }

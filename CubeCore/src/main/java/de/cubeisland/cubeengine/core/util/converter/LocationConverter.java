@@ -1,7 +1,6 @@
-package de.cubeisland.cubeengine.core.persistence.filesystem.config.converter;
+package de.cubeisland.cubeengine.core.util.converter;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Converter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.Location;
@@ -22,7 +21,7 @@ public class LocationConverter implements Converter<Location>
         this.server = ((Plugin)core).getServer();
     }
     
-    public Object from(Location location)
+    public Object toObject(Location location)
     {
         Map<String,Object> loc = new LinkedHashMap<String, Object>();
         loc.put("world", location.getWorld().getName());
@@ -35,7 +34,7 @@ public class LocationConverter implements Converter<Location>
     }
 
     @SuppressWarnings("unchecked")
-	public Location to(Object object)
+	public Location fromObject(Object object)
     {
         Map<String, Object> input = (Map<String, Object>)object;
         World world = server.getWorld((String) input.get("world"));
@@ -46,5 +45,15 @@ public class LocationConverter implements Converter<Location>
         double pitch = Double.valueOf(input.get("pitch").toString());
 
         return new Location(world, x, y, z, (float) yaw, (float) pitch);
+    }
+
+    public Location fromString(String string)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String toString(Location object)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

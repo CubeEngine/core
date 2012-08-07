@@ -2,9 +2,9 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.User;
+import gnu.trove.set.hash.THashSet;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.bukkit.Material;
@@ -45,7 +45,7 @@ public class CommandContext
         this.command = command;
         
         this.baseLabel = baseLabel;
-        this.flags = new HashSet<String>();
+        this.flags = new THashSet<String>();
         this.params = new ArrayList<String>();
         this.result = true;
 
@@ -398,5 +398,10 @@ public class CommandContext
     public CubeCommand getCommand()
     {
         return this.command;
+    }
+    
+    public <T> T getParam(String name, Class<T> type)
+    {
+        return type.cast(name);
     }
 }

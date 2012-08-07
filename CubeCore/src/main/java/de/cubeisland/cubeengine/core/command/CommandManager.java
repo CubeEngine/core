@@ -3,8 +3,11 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -27,8 +30,22 @@ public class CommandManager
         try
         {
             PluginManager pm = ((Plugin)core).getServer().getPluginManager();
-            this.commandMap = (CommandMap)pm.getClass().getField("commandMap").get(pm);
-            this.knownCommands = (Map<String, Command>)this.commandMap.getClass().getField("knownCommands").get(this.commandMap);
+            for (Field field : pm.getClass().getDeclaredFields())
+            {
+                if (CommandMap.class.isAssignableFrom(field.getType()))
+                {
+                    this.commandMap = (CommandMap)field.get(pm);
+                    break;
+                }
+            }
+            for (Field field : this.commandMap.getClass().getDeclaredFields())
+            {
+                if (Map.class.isAssignableFrom(field.getType()))
+                {
+                    this.knownCommands = (Map<String, Command>)field.get(this.commandMap);
+                    break;
+                }
+            }
         }
         catch (Exception e)
         {}
@@ -53,6 +70,33 @@ public class CommandManager
         this.commandMap.clearCommands();
     }
     
+    public void registerCommand(CubeCommand command)
+    {
+        this.registerCommand(command, NO_PARENTS);
+    }
+    
+    public void registerCommand(CubeCommand command, String... parents)
+    {
+        CubeCommand parentCommand = null;
+        for (String parent : parents)
+        {
+            parentCommand = this.getCommand(parent);
+            if (parentCommand == null)
+            {
+                throw new IllegalArgumentException("Parent command '" + parent + "' is not registered!");
+            }
+        }
+
+        if (parentCommand == null)
+        {
+            this.inject(command);
+        }
+        else
+        {
+            parentCommand.addSubCommand(command);
+        }
+    }
+    
     public void registerCommands(Module module, Object commandHolder)
     {
         this.registerCommands(module, commandHolder, NO_PARENTS);
@@ -68,13 +112,34 @@ public class CommandManager
             {
                 continue;
             }
+            Class<?>[] params = method.getParameterTypes();
+            if (params.length >= 1 && params[0] == CommandContext.class)
+            {
+                continue;
+            }
+            
             commandAnnotation = method.getAnnotation(de.cubeisland.cubeengine.core.command.annotation.Command.class);
             if (commandAnnotation == null)
             {
                 continue;
             }
             
-            this.inject(new ReflectedCommand(module, method, commandAnnotation));
+            String name = commandAnnotation.name().trim().toLowerCase(Locale.ENGLISH);
+            if ("".equals(name))
+            {
+                name = method.getName();
+            }
+            
+            this.registerCommand(new ReflectedCommand(
+                module,
+                commandHolder,
+                method,
+                commandAnnotation,
+                name,
+                commandAnnotation.desc(),
+                commandAnnotation.usage(),
+                Arrays.asList(commandAnnotation.aliases())
+            ));
         }
     }
     
