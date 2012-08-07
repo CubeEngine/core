@@ -29,12 +29,12 @@ public class Database
     private final ConcurrentMap<String, PreparedStatement> preparedStatements;
     private final Connection connection;
 
-    public Database(DatabaseConfiguration config)
+    public Database(DatabaseConfiguration config) throws SQLException
     {
         this(config.host, config.port, config.user, config.pass, config.database, config.tableprefix);
     }
 
-    public Database(String host, short port, String user, String pass, String name, String tablePrefix)
+    public Database(String host, short port, String user, String pass, String name, String tablePrefix) throws SQLException
     {
         try
         {
@@ -51,14 +51,7 @@ public class Database
         this.name = name;
         this.tablePrefix = tablePrefix;
         this.replacement = this.tablePrefix + "$1";
-        try
-        {
-            this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.name, this.user, this.pass);
-        }
-        catch (SQLException e)
-        {
-            throw new IllegalStateException("Failed to connect to the database server!", e);
-        }
+        this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.name, this.user, this.pass);
         this.preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     }
 

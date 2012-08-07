@@ -19,6 +19,7 @@ import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import org.bukkit.Server;
@@ -82,9 +83,8 @@ public class BukkitCore extends JavaPlugin implements Core
             DatabaseConfiguration databaseConfig = Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml"));
             this.database = new Database(databaseConfig);
         }
-        catch (Exception e)
+        catch (SQLException e)
         {
-            //TODO no Exception to catch here! Why?
             this.logger.log(Level.SEVERE, "Error while initializing database", e);
             this.server.getPluginManager().disablePlugin(this);
             return;
