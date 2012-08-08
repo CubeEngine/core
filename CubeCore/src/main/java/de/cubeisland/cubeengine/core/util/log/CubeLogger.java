@@ -20,7 +20,7 @@ public class CubeLogger extends Logger
      */
     public CubeLogger(String name)
     {
-        super("[" + name + "]", null);
+        super(name, null);
         Logger bukkitlogger = Logger.getLogger(name);
         this.setParent(bukkitlogger);
         this.setUseParentHandlers(false);

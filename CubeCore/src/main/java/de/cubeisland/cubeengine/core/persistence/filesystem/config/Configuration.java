@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
@@ -84,16 +85,25 @@ public abstract class Configuration
         {
             return null;
         }
-        InputStream is = null;
+        InputStream inputStream = null;
         try
         {
-            is = new FileInputStream(file);
+            inputStream = new FileInputStream(file);
         }
         catch (FileNotFoundException e)
         {
             logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
         }
-        T config = load(clazz, is); //loading config from InputSream or Default
+        T config = load(clazz, inputStream); //loading config from InputSream or Default
+        if (inputStream != null)
+        {
+            try
+            {
+                inputStream.close();
+            }
+            catch (IOException ex)
+            {}
+        }
         config.file = file;
         config.saveConfiguration();
         return config;

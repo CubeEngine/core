@@ -193,7 +193,7 @@ public abstract class ConfigurationCodec
         {
             try
             {
-                return converter.toObject(object);
+                return converter.fromObject(object);
             }
             catch (ConversionException e)
             {

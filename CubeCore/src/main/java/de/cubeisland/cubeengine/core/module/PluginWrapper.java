@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import com.avaje.ebean.EbeanServer;
 import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.core.Core;
 import java.io.File;
 import java.io.InputStream;
 import java.util.logging.Logger;
@@ -24,10 +25,10 @@ public class PluginWrapper implements Plugin
     private final Module module;
     private final Plugin bukkitPlugin;
 
-    public PluginWrapper(Module module)
+    public PluginWrapper(Core core, Module module)
     {
         this.module = module;
-        this.bukkitPlugin = (Plugin)module.getCore();
+        this.bukkitPlugin = (Plugin)core;
     }
 
     public File getDataFolder()

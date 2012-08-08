@@ -22,31 +22,31 @@ public class FileManager
     public FileManager(File pluginsFolder) throws IOException
     {
         this.dataFolder = new File(pluginsFolder, "CubeEngine");
-        if (!this.dataFolder.mkdirs())
+        if (!this.dataFolder.isDirectory() && !this.dataFolder.mkdirs())
         {
             throw new IOException("Failed to create the data folder");
         }
 
         this.configDir = new File(this.dataFolder, "config");
-        if (!this.configDir.mkdirs())
+        if (!this.configDir.isDirectory() && !this.configDir.mkdirs())
         {
             throw new IOException("Failed to create the config folder");
         }
 
         this.languageDir = new File(this.dataFolder, "language");
-        if (!this.languageDir.mkdirs())
+        if (!this.languageDir.isDirectory() && !this.languageDir.mkdirs())
         {
             throw new IOException("Failed to create the language folder");
         }
 
         this.logDir = new File(this.dataFolder, "log");
-        if (!this.logDir.mkdirs())
+        if (!this.logDir.isDirectory() && !this.logDir.mkdirs())
         {
             throw new IOException("Failed to create the log folder");
         }
 
         this.modulesDir = new File(this.dataFolder, "modules");
-        if (!this.modulesDir.mkdirs())
+        if (!this.modulesDir.isDirectory() && !this.modulesDir.mkdirs())
         {
             throw new IOException("Failed to create the modules folder");
         }

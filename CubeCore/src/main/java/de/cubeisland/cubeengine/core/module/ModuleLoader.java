@@ -57,7 +57,7 @@ public class ModuleLoader
 
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
             Module module = Class.forName(BASE_FQDN + name.toLowerCase(Locale.ENGLISH) + "." + CLASS_PREFIX + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
-            module.initialize(this.core, info, new PluginWrapper(module), new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
+            module.initialize(this.core, info, new PluginWrapper(this.core, module), new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
             this.classLoaders.put(name, classLoader);
             return module;
         }

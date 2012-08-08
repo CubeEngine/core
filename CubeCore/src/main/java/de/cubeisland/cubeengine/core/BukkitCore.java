@@ -51,7 +51,7 @@ public class BukkitCore extends JavaPlugin implements Core
         CubeEngine.initialize(this);
 
         this.logger = new CubeLogger("Core");
-        this.logger.addHandler(new ConsoleHandler(Level.ALL, "[{1}] {3}"));
+        this.logger.addHandler(new ConsoleHandler(Level.ALL, "[{0}] {2}"));
         this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
 
         this.server = this.getServer();
@@ -63,7 +63,9 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         catch (IOException e)
         {
-            e.printStackTrace(System.err);
+            this.logger.log(Level.SEVERE, "Failed to initialize the FileManager", e);
+            pm.disablePlugin(this);
+            return;
         }
         try
         {
@@ -102,18 +104,27 @@ public class BukkitCore extends JavaPlugin implements Core
     {
         CubeEngine.clean();
 
-        this.moduleManager.clean();
-        this.moduleManager = null;
+        if (this.moduleManager != null)
+        {
+            this.moduleManager.clean();
+            this.moduleManager = null;
+        }
 
         this.fileManager = null;
 
-        this.userManager.clean();
-        this.userManager = null;
+        if (this.userManager != null)
+        {
+            this.userManager.clean();
+            this.userManager = null;
+        }
 
         this.permissionRegistration = null;
 
-        this.i18n.clean();
-        this.i18n = null;
+        if (this.i18n != null)
+        {
+            this.i18n.clean();
+            this.i18n = null;
+        }
     }
 
     public Database getDB()
