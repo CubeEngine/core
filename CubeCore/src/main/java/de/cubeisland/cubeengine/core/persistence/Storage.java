@@ -12,7 +12,7 @@ public interface Storage<K, V extends Model<K>>
      * Initializes the DataBase
      */
     public void initialize();
-
+    
     /**
      * Returns the model by key
      *
