@@ -24,9 +24,10 @@ public class PermissionRegistration
      * @param permission the permission
      * @return fluent interface
      */
-    public void registerPermission(Permission permission)
+    public PermissionRegistration registerPermission(Permission permission)
     {
         this.pm.addPermission(new org.bukkit.permissions.Permission(permission.getPermission(), permission.getPermissionDefault()));
+        return this;
     }
 
     /**
@@ -35,11 +36,12 @@ public class PermissionRegistration
      * @param permissions the array of permissions
      * @return fluent interface
      */
-    public void registerPermissions(Permission[] permissions)
+    public PermissionRegistration registerPermissions(Permission[] permissions)
     {
         for (Permission permission : permissions)
         {
             this.registerPermission(permission);
         }
+        return this;
     }
 }
