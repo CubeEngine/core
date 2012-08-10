@@ -23,7 +23,7 @@ public class DatabaseHandler extends Handler
         this.TABLE = table;
         try
         {
-            this.db.exec("CREATE TABLE IF NOT EXISTS {{" + TABLE + "}} ("
+            this.db.execute("CREATE TABLE IF NOT EXISTS {{" + TABLE + "}} ("
                 + "`id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "`timestamp` timestamp NOT NULL,"
                 + "`level` varchar(20) NOT NULL,"
@@ -31,8 +31,8 @@ public class DatabaseHandler extends Handler
                 + "`message` text NOT NULL,"
                 + "PRIMARY KEY (`id`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
-            this.db.prepareStatement("insertLog", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
-            this.db.prepareStatement("clearLog", "TRUNCATE {{" + TABLE + "}}");
+            this.db.prepareAndStoreStatement("insertLog", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
+            this.db.prepareAndStoreStatement("clearLog", "TRUNCATE {{" + TABLE + "}}");
         }
         catch (SQLException e)
         {
@@ -44,7 +44,7 @@ public class DatabaseHandler extends Handler
     {
         try
         {
-            this.db.preparedExec("clearLog");
+            this.db.preparedExecute("clearLog");
         }
         catch (SQLException ex)
         {
@@ -64,7 +64,7 @@ public class DatabaseHandler extends Handler
         final String logger = record.getLoggerName();
         try
         {
-            db.preparedExec("insertLog", time, level, logger, msg);
+            db.preparedExecute("insertLog", time, level, logger, msg);
         }
         catch (SQLException e)
         {

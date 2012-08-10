@@ -13,8 +13,6 @@ public @interface Attribute
     public AttrType type();
     public int length() default -1;
     public boolean notnull() default true;
-    public boolean autoinc() default false;
+    public boolean ai() default false;
     public boolean unsigned() default false;
-    public String customtype() default "";
-    
 }

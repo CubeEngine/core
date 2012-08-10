@@ -26,13 +26,13 @@ public class UserStorage implements Storage<Integer,User>
         this.server = server;
         try
         {
-            this.database.prepareStatement("user_get",      "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("user_getall",   "SELECT id,name,language FROM {{users}}");
-            this.database.prepareStatement("user_store",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
-            this.database.prepareStatement("user_update",   "UPDATE {{users}} SET language=? WHERE id=?");
-            this.database.prepareStatement("user_merge",    "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
-            this.database.prepareStatement("user_delete",   "DELETE FROM {{users}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("user_clear",    "DELETE FROM {{users}}");
+            this.database.prepareAndStoreStatement("user_get",      "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement("user_getall",   "SELECT id,name,language FROM {{users}}");
+            this.database.prepareAndStoreStatement("user_store",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
+            this.database.prepareAndStoreStatement("user_update",   "UPDATE {{users}} SET language=? WHERE id=?");
+            this.database.prepareAndStoreStatement("user_merge",    "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
+            this.database.prepareAndStoreStatement("user_delete",   "DELETE FROM {{users}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement("user_clear",    "DELETE FROM {{users}}");
         }
         catch (SQLException e)
         {
@@ -44,7 +44,7 @@ public class UserStorage implements Storage<Integer,User>
     {
         try
         {
-            this.database.exec(
+            this.database.execute(
                 "CREATE TABLE IF NOT EXISTS `{{users}}` (" +
                 "  `id` int(11) unsigned NOT NULL AUTO_INCREMENT," +
                 "  `name` varchar(16) NOT NULL," +
@@ -63,7 +63,7 @@ public class UserStorage implements Storage<Integer,User>
     {
         try
         {
-            PreparedStatement ps = this.database.getStatement("user_store");
+            PreparedStatement ps = this.database.getStoredStatement("user_store");
             ps.setString(1, user.getName());
             ps.setString(2, user.getLanguage());
             this.database.assignId(ps,user);
@@ -169,7 +169,7 @@ public class UserStorage implements Storage<Integer,User>
     {
         try
         {
-            this.database.preparedExec("user_clear");
+            this.database.preparedExecute("user_clear");
         }
         catch (SQLException e)
         {

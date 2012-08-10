@@ -2,6 +2,7 @@
 package de.cubeisland.cubeengine.core.persistence.testingdbstuff;
 
 import de.cubeisland.cubeengine.core.persistence.BasicStorage;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import java.util.Collection;
 
 /**
@@ -11,9 +12,9 @@ import java.util.Collection;
 public class RandomStorage extends BasicStorage<Integer, RandomModel>
 {
 
-    public RandomStorage()
+    public RandomStorage(Database database)
     {
-        super(RandomModel.class);
+        super(database, RandomModel.class);
     }
 
     

@@ -47,15 +47,17 @@ public enum AttrType
     LONGBLOB("LONGBLOB"),
     
     ENUM("ENUM"),
-    SET("SET"),
+    SET("SET");
     
-    CUSTOM(""),
-    ;
+    private final String type;
     
-    public String type;
-    
-    private AttrType(String s)
+    private AttrType(String type)
     {
-        this.type = s;
+        this.type = type;
+    }
+    
+    public String getType()
+    {
+        return this.type;
     }
 }

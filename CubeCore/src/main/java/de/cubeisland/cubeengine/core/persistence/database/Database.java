@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -18,8 +17,6 @@ import java.util.regex.Pattern;
  */
 public class Database
 {
-    private static final Pattern PREFIX_PATTERN = Pattern.compile("\\{\\{(\\w+)\\}\\}", Pattern.CASE_INSENSITIVE);
-    private String replacement;
     private final String host;
     private final short port;
     private final String user;
@@ -50,7 +47,6 @@ public class Database
         this.pass = pass;
         this.name = name;
         this.tablePrefix = tablePrefix;
-        this.replacement = this.tablePrefix + "$1";
         this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.name, this.user, this.pass);
         this.preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     }
@@ -59,53 +55,65 @@ public class Database
     {
         return this.tablePrefix;
     }
+    
+    public String prefix(String tableName)
+    {
+        return this.prefix(tableName, true);
+    }
+    
+    public String prefix(String tableName, boolean addQuotes)
+    {
+        if (addQuotes)
+        {
+            return "`" + this.tablePrefix + tableName + "`";
+        }
+        return this.tablePrefix + tableName;
+    }
 
-    public Database setTablePrefix(String prefix)
+    public void setTablePrefix(String prefix)
     {
         if (prefix != null)
         {
             this.tablePrefix = prefix;
-            this.replacement = prefix + "$1";
         }
-        return this;
     }
 
     public ResultSet query(String query, Object... params) throws SQLException
     {
-        return this.createStatement(query, params).executeQuery();
+        return this.createAndBindValues(query, params).executeQuery();
     }
 
     public ResultSet preparedQuery(String name, Object... params) throws SQLException
     {
-        return this.createStatement(getStatement(name), params).executeQuery();
+        return this.bindValues(getStoredStatement(name), params).executeQuery();
     }
 
     public int update(String query, Object... params) throws SQLException
     {
-        return this.createStatement(query, params).executeUpdate();
+        return this.createAndBindValues(query, params).executeUpdate();
     }
 
     public int preparedUpdate(String name, Object... params) throws SQLException
     {
-        return this.createStatement(getStatement(name), params).executeUpdate();
+        return this.bindValues(getStoredStatement(name), params).executeUpdate();
     }
 
-    public boolean exec(String query, Object... params) throws SQLException
+    public boolean execute(String query, Object... params) throws SQLException
     {
-        return this.createStatement(query, params).execute();
+        return this.createAndBindValues(query, params).execute();
     }
 
-    public boolean preparedExec(String name, Object... params) throws SQLException
+    public boolean preparedExecute(String name, Object... params) throws SQLException
     {
-        return this.createStatement(getStatement(name), params).execute();
+        return this.bindValues(getStoredStatement(name), params).execute();
     }
 
-    public PreparedStatement createStatement(String query, Object... params) throws SQLException
+    public PreparedStatement createAndBindValues(String query, Object... params) throws SQLException
     {
-        return this.createStatement(this.prepareStatement(query), params);
+        return this.bindValues(this.prepareStatement(query), params);
     }
 
-    public PreparedStatement createStatement(PreparedStatement statement, Object... params) throws SQLException
+    public PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException
     {
         for (int i = 0; i < params.length; ++i)
         {
@@ -114,17 +122,17 @@ public class Database
         return statement;
     }
 
-    public void prepareStatement(String name, String statement) throws SQLException
+    public void prepareAndStoreStatement(String name, String statement) throws SQLException
     {
         this.preparedStatements.put(name, this.prepareStatement(statement));
     }
 
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        return this.connection.prepareStatement(PREFIX_PATTERN.matcher(statement).replaceAll(this.replacement), PreparedStatement.RETURN_GENERATED_KEYS);
+        return this.connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
-    public PreparedStatement getStatement(String name)
+    public PreparedStatement getStoredStatement(String name)
     {
         PreparedStatement statement = this.preparedStatements.get(name);
         if (statement == null)

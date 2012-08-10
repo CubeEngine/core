@@ -1,7 +1,8 @@
 package de.cubeisland.cubeengine.core.persistence;
 
-import de.cubeisland.cubeengine.core.persistence.testingdbstuff.RandomStorage;
+import de.cubeisland.cubeengine.core.persistence.database.Database;
 import java.lang.reflect.Field;
+import java.util.Locale;
 
 /**
  *
@@ -9,18 +10,19 @@ import java.lang.reflect.Field;
  */
 public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, V>
 {
-    private String QUOTE = "`";
-    protected Class<V> model;
+    private final Database database;
+    private final Class<V> model;
 
-    public BasicStorage(Class<V> model)
+    public BasicStorage(Database database, Class<V> model)
     {
+        this.database = database;
         this.model = model;
     }
 
     public void initialize()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE IF NOT EXISTS `{{").append(model.getName()).append("}}` (");
+        sb.append("CREATE TABLE IF NOT EXISTS ").append(this.database.prefix(this.model.getSimpleName().toLowerCase(Locale.ENGLISH))).append(" (");
         for (Field field : this.model.getFields())
         {
             if (field.isAnnotationPresent(Attribute.class))
@@ -32,10 +34,10 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                 {
                     name = attribute.name();
                 }
-                sb.append(QUOTE).append(name).append(QUOTE).append(" ");
+                sb.append("`").append(name).append("`").append(" ");
 
                 AttrType type = attribute.type();
-                sb.append(type.type);
+                sb.append(type.getType());
                 switch (type)
                 {
                     case INT:
@@ -50,10 +52,6 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                         length = attribute.length();
                         sb.append("(").append(length).append(")");
                         break;
-                    case CUSTOM:
-                        sb.append(attribute.customtype());
-                        //TODO length etc..
-                        break;
                 }
                 if (attribute.notnull())
                 {
@@ -63,7 +61,7 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                 {
                     sb.append(" NULL");
                 }
-                if (attribute.autoinc())
+                if (attribute.ai())
                 {
                     sb.append(" AUTO_INCREMENT");
                 }
