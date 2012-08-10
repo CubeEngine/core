@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.persistence.testingdbstuff;
 
-import de.cubeisland.cubeengine.core.persistence.*;
+import de.cubeisland.cubeengine.core.persistence.AttrType;
+import de.cubeisland.cubeengine.core.persistence.Attribute;
+import de.cubeisland.cubeengine.core.persistence.Key;
 import de.cubeisland.cubeengine.core.persistence.Model;
 
 /**
@@ -9,18 +11,21 @@ import de.cubeisland.cubeengine.core.persistence.Model;
  */
 public class RandomModel implements Model<Integer>
 {
-
-    @Attribute(name="testname",type=AttrType.VARCHAR)
-    private String stringvalue = "Cookies";
+    @Key
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public int id = -1;
+    
+    @Attribute(name = "testname", type = AttrType.VARCHAR)
+    public String stringvalue = "Cookies";
     
     
     public Integer getKey()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.id;
     }
 
     public void setKey(Integer key)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.id = key;
     }
 }

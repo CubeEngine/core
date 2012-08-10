@@ -24,13 +24,13 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
         
         try
         {
-            this.database.prepareStatement("bankacc_get",      "SELECT id,name,amount FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("bankacc_getall",   "SELECT id,name,amount FROM {{"+ TABLE +"}}");
-            this.database.prepareStatement("bankacc_store",    "INSERT INTO {{"+ TABLE +"}} (name,amount) VALUES (?,?)");
-            this.database.prepareStatement("bankacc_update",   "UPDATE {{"+ TABLE +"}} SET amount=? WHERE id=?");
-            this.database.prepareStatement("bankacc_merge",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?) ON DUPLICATE KEY UPDATE amount=values(amount)");
-            this.database.prepareStatement("bankacc_delete",   "DELETE FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("bankacc_clear",    "DELETE FROM {{"+ TABLE +"}}");
+            this.database.prepareAndStoreStatement("bankacc_get",      "SELECT id,name,amount FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement("bankacc_getall",   "SELECT id,name,amount FROM {{"+ TABLE +"}}");
+            this.database.prepareAndStoreStatement("bankacc_store",    "INSERT INTO {{"+ TABLE +"}} (name,amount) VALUES (?,?)");
+            this.database.prepareAndStoreStatement("bankacc_update",   "UPDATE {{"+ TABLE +"}} SET amount=? WHERE id=?");
+            this.database.prepareAndStoreStatement("bankacc_merge",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?) ON DUPLICATE KEY UPDATE amount=values(amount)");
+            this.database.prepareAndStoreStatement("bankacc_delete",   "DELETE FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement("bankacc_clear",    "DELETE FROM {{"+ TABLE +"}}");
         }
         catch (SQLException e)
         {
@@ -42,7 +42,7 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            this.database.exec(
+            this.database.execute(
                 "CREATE TABLE IF NOT EXISTS `{{"+ TABLE +"}}` (" +
                 "  `id` int(11) unsigned NOT NULL," +
                 "  `name` varchar(20) unsigned NOT NULL," +//TODO limit length
@@ -110,7 +110,8 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            PreparedStatement ps = this.database.getStatement("bankacc_store");
+            // TODO WTF?
+            PreparedStatement ps = this.database.getStoredStatement("bankacc_store");
             ps.setString(1, account.getName());
             ps.setDouble(2, account.balance());
             this.database.assignId(ps,account);
@@ -166,7 +167,7 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            this.database.preparedExec("bankacc_clear");
+            this.database.preparedExecute("bankacc_clear");
         }
         catch (SQLException e)
         {

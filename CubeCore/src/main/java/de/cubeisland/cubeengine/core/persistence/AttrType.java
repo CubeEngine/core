@@ -6,58 +6,73 @@ package de.cubeisland.cubeengine.core.persistence;
  */
 public enum AttrType
 {
-    INT("INT"),
-    VARCHAR("VARCHAR"),
-    TEXT("TEXT"),
-    DATE("DATE"),
-    //NUMERIC:
-    TINYINT("TINYINT"),
-    SMALLINT("SMALLINT"),
-    MEDIUMINT("MEDIUMINT"),
-    BIGINT("BIGINT"),
+    // Numbers
+    INT("INT", false, true),
+    TINYINT("TINYINT", false, true),
+    SMALLINT("SMALLINT", false, true),
+    MEDIUMINT("MEDIUMINT", false, true),
+    BIGINT("BIGINT", false, true),
     
-    DECIMAL("DECIMAL"),
-    FLOAT("FLOAT"),
-    DOUBLE("DOUBLE"),
-    REAL("REAL"),
+    DECIMAL("DECIMAL", false, true),
+    FLOAT("FLOAT", false, true),
+    DOUBLE("DOUBLE", false, true),
+    REAL("REAL", false, true),
     
-    BIT("BIT"),
-    BOOLEAN("BOOLEAN"),
-    SERIAL("SERIAL"),
+    BIT("BIT", false, true),
+    BOOLEAN("BOOLEAN", false, false),
+    SERIAL("SERIAL", true, true),
     
-    //DATE & TIME:
-    DATETIME("DATETIME"),
-    TIMESTAMP("TIMESTAMP"),
-    TIME("TIME"),
-    YEAR("YEAR"),
+    // Date/Time:
+    DATE("DATE", false, false),
+    TIME("TIME", false, false),
+    DATETIME("DATETIME", false, false),
+    TIMESTAMP("TIMESTAMP", false, false),
+    YEAR("YEAR", false, false),
     
-    //STRING:
-    CHAR("CHAR"),
+    // Strings
+    CHAR("CHAR", false, true),
+    VARCHAR("VARCHAR", true, false),
     
-    TINYTEXT("TINYTEXT"),
-    MEDIUMTEXT("MEDIUMTEXT"),
-    LONGTEXT("LONGTEXT"),
+    TEXT("TEXT", false, false),
+    TINYTEXT("TINYTEXT", true, false),
+    MEDIUMTEXT("MEDIUMTEXT", true, false),
+    LONGTEXT("LONGTEXT", true, false),
     
-    BINARY("BINARY"),
-    VARBINARY("VARBINARY"),
+    // Binary
+    BINARY("BINARY", false, false),
+    VARBINARY("VARBINARY", true, false),
     
-    TINYBLOB("TINYBLOB"),
-    MEDIUMBLOB("MEDIUMBLOB"),
-    BLOB("BLOB"),
-    LONGBLOB("LONGBLOB"),
+    TINYBLOB("TINYBLOB", false, false),
+    MEDIUMBLOB("MEDIUMBLOB", false, false),
+    BLOB("BLOB", false, false),
+    LONGBLOB("LONGBLOB", false, false),
     
-    ENUM("ENUM"),
-    SET("SET");
+    ENUM("ENUM", true, false),
+    SET("SET", true, false);
     
     private final String type;
+    private final boolean length;
+    private final boolean signed;
     
-    private AttrType(String type)
+    private AttrType(String type, boolean length, boolean signed)
     {
         this.type = type;
+        this.length = length;
+        this.signed = signed;
     }
     
     public String getType()
     {
         return this.type;
+    }
+    
+    public boolean hasLength()
+    {
+        return this.length;
+    }
+    
+    public boolean canBeSigned()
+    {
+        return this.signed;
     }
 }

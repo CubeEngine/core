@@ -121,10 +121,15 @@ public class Database
         }
         return statement;
     }
+    
+    public void storePreparedStatement(String name, PreparedStatement statement)
+    {
+        this.preparedStatements.put(name, statement);
+    }
 
     public void prepareAndStoreStatement(String name, String statement) throws SQLException
     {
-        this.preparedStatements.put(name, this.prepareStatement(statement));
+        this.storePreparedStatement(name, this.prepareStatement(statement));
     }
 
     public PreparedStatement prepareStatement(String statement) throws SQLException

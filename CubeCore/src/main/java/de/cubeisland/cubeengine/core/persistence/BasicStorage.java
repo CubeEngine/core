@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.core.persistence;
 
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.Locale;
 
 /**
@@ -19,56 +22,65 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
         this.model = model;
     }
 
-    public void initialize()
+    public void initialize() throws SQLException
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE IF NOT EXISTS ").append(this.database.prefix(this.model.getSimpleName().toLowerCase(Locale.ENGLISH))).append(" (");
+        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+            .append(this.database.prefix(this.model.getSimpleName().toLowerCase(Locale.ENGLISH)))
+            .append(" (");
+        
+        final LinkedList<CharSequence> keys = new LinkedList<CharSequence>();
+        Attribute attribute;
         for (Field field : this.model.getFields())
         {
-            if (field.isAnnotationPresent(Attribute.class))
+            attribute = field.getAnnotation(Attribute.class);
+            if (attribute != null)
             {
-                Attribute attribute = field.getAnnotation(Attribute.class);
-                Integer length;
                 String name = field.getName();
                 if (!"".equals(attribute.name()))
                 {
                     name = attribute.name();
                 }
-                sb.append("`").append(name).append("`").append(" ");
+                query.append("`").append(name).append("`").append(" ");
 
                 AttrType type = attribute.type();
-                sb.append(type.getType());
-                switch (type)
+                query.append(type.getType());
+                if (type.hasLength())
                 {
-                    case INT:
-                        length = attribute.length();
-                        sb.append("(").append(length).append(")");
-                        if (attribute.unsigned())
-                        {
-                            sb.append(" unsigned");
-                        }
-                        break;
-                    case VARCHAR:
-                        length = attribute.length();
-                        sb.append("(").append(length).append(")");
-                        break;
+                    query.append("(").append(attribute.length()).append(")");
+                }
+                if (type.canBeSigned() && attribute.unsigned())
+                {
+                    query.append(" UNSIGNED");
                 }
                 if (attribute.notnull())
                 {
-                    sb.append(" NOT_NULL");
+                    query.append(" NOT_NULL"); // is there really an underscore?
                 }
                 else
                 {
-                    sb.append(" NULL");
+                    query.append(" NULL");
                 }
                 if (attribute.ai())
                 {
-                    sb.append(" AUTO_INCREMENT");
+                    query.append(" AUTO_INCREMENT");
                 }
-                sb.append(",");
+                query.append(",");
+                
+                if (field.isAnnotationPresent(Key.class))
+                {
+                    keys.add(name);
+                }
             }
         }
-        sb.append("PRIMARY KEY (`id`)").append(") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+        query.append("PRIMARY KEY (`")
+            .append(StringUtils.implode("`,`", keys))
+            .append("`) ENGINE=")
+            .append("MyISAM") // make me configurable
+            .append("DEFAULT CHARSET=")
+            .append("latin1") // make me configurable
+            .append(" AUTO_INCREMENT=1;");
+        
+        this.database.execute(query.toString());
     }
     //TODO this.exec ...
 }

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.persistence;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -11,7 +12,7 @@ public interface Storage<K, V extends Model<K>>
     /**
      * Initializes the DataBase
      */
-    public void initialize();
+    public void initialize() throws SQLException;
     
     /**
      * Returns the model by key

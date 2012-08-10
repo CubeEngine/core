@@ -27,13 +27,13 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
         
         try
         {
-            this.database.prepareStatement("useracc_get",      "SELECT id,amount FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("useracc_getall",   "SELECT id,amount FROM {{"+ TABLE +"}}");
-            this.database.prepareStatement("useracc_store",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?)");
-            this.database.prepareStatement("useracc_update",   "UPDATE {{"+ TABLE +"}} SET amount=? WHERE id=?");
-            this.database.prepareStatement("useracc_merge",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?) ON DUPLICATE KEY UPDATE amount=values(amount)");
-            this.database.prepareStatement("useracc_delete",   "DELETE FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareStatement("useracc_clear",    "DELETE FROM {{"+ TABLE +"}}");
+            this.database.prepareAndStoreStatement("useracc_get",      "SELECT id,amount FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement("useracc_getall",   "SELECT id,amount FROM {{"+ TABLE +"}}");
+            this.database.prepareAndStoreStatement("useracc_store",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?)");
+            this.database.prepareAndStoreStatement("useracc_update",   "UPDATE {{"+ TABLE +"}} SET amount=? WHERE id=?");
+            this.database.prepareAndStoreStatement("useracc_merge",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?) ON DUPLICATE KEY UPDATE amount=values(amount)");
+            this.database.prepareAndStoreStatement("useracc_delete",   "DELETE FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement("useracc_clear",    "DELETE FROM {{"+ TABLE +"}}");
         }
         catch (SQLException e)
         {
@@ -45,7 +45,7 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
     {
         try
         {
-            this.database.exec(
+            this.database.execute(
                 "CREATE TABLE IF NOT EXISTS `{{"+ TABLE +"}}` (" +
                 "  `id` int(11) unsigned NOT NULL," +
                 "  `amount` decimal(11,2) NOT NULL," +
@@ -112,7 +112,7 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
     {
         try
         {
-            this.database.preparedExec("useracc_store",account.getKey(),account.balance());
+            this.database.preparedExecute("useracc_store",account.getKey(),account.balance());
         }
         catch (SQLException e)
         {
@@ -165,7 +165,7 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
     {
         try
         {
-            this.database.preparedExec("useracc_clear");
+            this.database.preparedExecute("useracc_clear");
         }
         catch (SQLException e)
         {
