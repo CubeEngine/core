@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class Database
 {
+    private static final char QUOTE = '`';
     private final String host;
     private final short port;
     private final String user;
@@ -56,6 +57,11 @@ public class Database
         return this.tablePrefix;
     }
     
+    public String quote(String name)
+    {
+        return QUOTE + name + QUOTE;
+    }
+    
     public String prefix(String tableName)
     {
         return this.prefix(tableName, true);
@@ -65,7 +71,7 @@ public class Database
     {
         if (addQuotes)
         {
-            return "`" + this.tablePrefix + tableName + "`";
+            return this.quote(this.tablePrefix + tableName);
         }
         return this.tablePrefix + tableName;
     }

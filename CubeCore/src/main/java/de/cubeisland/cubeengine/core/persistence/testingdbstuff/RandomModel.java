@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.persistence.testingdbstuff;
 
 import de.cubeisland.cubeengine.core.persistence.AttrType;
 import de.cubeisland.cubeengine.core.persistence.Attribute;
+import de.cubeisland.cubeengine.core.persistence.Entity;
 import de.cubeisland.cubeengine.core.persistence.Key;
 import de.cubeisland.cubeengine.core.persistence.Model;
 
@@ -9,6 +10,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
  *
  * @author Anselm Brehme
  */
+@Entity
 public class RandomModel implements Model<Integer>
 {
     @Key

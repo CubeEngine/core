@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core.persistence;
 
 import de.cubeisland.cubeengine.core.persistence.database.Database;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -20,6 +20,10 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
     {
         this.database = database;
         this.model = model;
+        if (!model.isAnnotationPresent(Entity.class))
+        {
+            throw new IllegalArgumentException("Every model needs the Entity annotation!");
+        }
     }
 
     public void initialize() throws SQLException
@@ -28,7 +32,7 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
             .append(this.database.prefix(this.model.getSimpleName().toLowerCase(Locale.ENGLISH)))
             .append(" (");
         
-        final LinkedList<CharSequence> keys = new LinkedList<CharSequence>();
+        final LinkedList<String> keys = new LinkedList<String>();
         Attribute attribute;
         for (Field field : this.model.getFields())
         {
@@ -40,7 +44,7 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                 {
                     name = attribute.name();
                 }
-                query.append("`").append(name).append("`").append(" ");
+                query.append(this.database.quote(name)).append(" ");
 
                 AttrType type = attribute.type();
                 query.append(type.getType());
@@ -54,7 +58,7 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                 }
                 if (attribute.notnull())
                 {
-                    query.append(" NOT_NULL"); // is there really an underscore?
+                    query.append(" NOT NULL");
                 }
                 else
                 {
@@ -72,15 +76,27 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                 }
             }
         }
-        query.append("PRIMARY KEY (`")
-            .append(StringUtils.implode("`,`", keys))
-            .append("`) ENGINE=")
-            .append("MyISAM") // make me configurable
-            .append("DEFAULT CHARSET=")
-            .append("latin1") // make me configurable
+        
+        if (keys.isEmpty())
+        {
+            throw new IllegalArgumentException("The given model does not declare any keys!");
+        }
+        
+        query.append("PRIMARY KEY (");
+        Iterator<String> keyIter = keys.iterator();
+        query.append(this.database.quote(keyIter.next()));
+        while (keyIter.hasNext())
+        {
+            query.append(this.database.quote(keyIter.next()));
+        }
+        
+        Entity entity = this.model.getAnnotation(Entity.class);
+        query.append(") ENGINE=")
+            .append(entity.engine())
+            .append(" DEFAULT CHARSET=")
+            .append(entity.charset())
             .append(" AUTO_INCREMENT=1;");
         
         this.database.execute(query.toString());
     }
-    //TODO this.exec ...
 }
