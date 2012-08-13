@@ -35,7 +35,7 @@ public abstract class Module
 
     protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, Logger logger, File folder, ModuleClassLoader classLoader)
     {
-        if (!initialized)
+        if (!this.initialized)
         {
             this.core = core;
             this.info = info;

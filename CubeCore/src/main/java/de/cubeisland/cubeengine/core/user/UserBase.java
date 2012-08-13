@@ -1754,4 +1754,42 @@ public class UserBase implements Player
         }
         return false;
     }
+
+    public void setFlySpeed(float value) throws IllegalArgumentException
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            this.setFlySpeed(value);
+        }
+    }
+
+    public void setWalkSpeed(float value) throws IllegalArgumentException
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            this.setWalkSpeed(value);
+        }
+    }
+
+    public float getFlySpeed()
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return this.getFlySpeed();
+        }
+        return 0;
+    }
+
+    public float getWalkSpeed()
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return this.getWalkSpeed();
+        }
+        return 0;
+    }
 }

@@ -30,7 +30,7 @@ public class Language
     {
         this.code = code;
         this.messageDir = new File(languageDir, code);
-        Set<String> tmpCountries = new THashSet<String>();
+        this.countries = new THashSet<String>();
         this.messages = new THashMap<String, Map<String, String>>();
         this.parser = new JsonParser();
 
@@ -56,11 +56,10 @@ public class Language
             {
                 if (elem.isJsonPrimitive())
                 {
-                    tmpCountries.add(elem.getAsString());
+                    this.countries.add(elem.getAsString());
                 }
             }
         }
-        this.countries = Collections.unmodifiableSet(tmpCountries);
     }
 
     public String getCode()
@@ -80,7 +79,7 @@ public class Language
 
     public Set<String> getCountries()
     {
-        return this.countries;
+        return Collections.unmodifiableSet(this.countries);
     }
 
     public void addMessages(String cat, Map<String, String> messages)
