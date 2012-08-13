@@ -30,7 +30,8 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
 
     public void initialize() throws SQLException
     {
-        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(this.database.prefix(this.model.getSimpleName().toLowerCase(Locale.ENGLISH))).append(" (");
+        Entity entity = this.model.getAnnotation(Entity.class);
+        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(this.database.prefix(entity.name())).append(" (");
 
         final LinkedList<String> keys = new LinkedList<String>();
         Attribute attribute;
@@ -90,11 +91,9 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
             query.append(this.database.quote(keyIter.next()));
         }
 
-        Entity entity = this.model.getAnnotation(Entity.class);
         query.append(") ENGINE=").append(entity.engine()).append(" DEFAULT CHARSET=").append(entity.charset()).append(" AUTO_INCREMENT=1;");
 
         this.database.execute(query.toString());
-
         this.prepareStatements();
     }
 
@@ -104,6 +103,7 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
         ArrayList<String> fields = new ArrayList<String>();
         String[] attributes;
 
+        // TODO all the reflection again? NO
         for (Field field : model.getFields())
         {
             if (field.isAnnotationPresent(Attribute.class))
@@ -128,6 +128,9 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
         {
             String pre = this.model.getSimpleName().toLowerCase(Locale.ENGLISH);
 
+            // TODO I'll change the prepare methods to take a Class as the owner which
+            // the queries are then stored in either Map<Class, Map<String, PreparedStatement>>
+            // or Map<String, PreparedStatement>, where the key is prefixed by the class'es FQDN
             this.database.prepareAndStoreStatement(pre + "_get",
                 this.getSELECT(attributes, pre, 1, primaryKey));
             this.database.prepareAndStoreStatement(pre + "getall",

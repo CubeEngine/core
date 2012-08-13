@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Entity
 {
+    public String name();
     public String engine() default "InnoDB";
     public String charset() default "utf8_general_ci";
 }

@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
  *
  * @author Anselm Brehme
  */
-@Entity
+@Entity(name = "test")
 public class TestModel implements Model<Integer>
 {
     @Key
