@@ -32,6 +32,7 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
     {
         Entity entity = this.model.getAnnotation(Entity.class);
         StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(this.database.prefix(entity.name())).append(" (");
+        ArrayList<Field> foreignKey = new ArrayList<Field>();
 
         final LinkedList<String> keys = new LinkedList<String>();
         Attribute attribute;
@@ -75,6 +76,10 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                 {
                     keys.add(name);
                 }
+                if (field.isAnnotationPresent(Relation.class))
+                {
+                    foreignKey.add(field);
+                }
             }
         }
 
@@ -90,7 +95,17 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
         {
             query.append(this.database.quote(keyIter.next()));
         }
-
+        query.append(")");
+        if (!foreignKey.isEmpty())
+        {
+            for (Field field : foreignKey)
+            {
+                Relation relat = field.getAnnotation(Relation.class);
+                query.append(", FOREIGN KEY (").append(this.database.quote(field.getName()));
+                query.append(") REFERENCES ").append(this.database.prefix(relat.model().getAnnotation(Entity.class).name()));
+                query.append("(").append(relat.field()).append(")");
+            }
+        }
         query.append(") ENGINE=").append(entity.engine()).append(" DEFAULT CHARSET=").append(entity.charset()).append(" AUTO_INCREMENT=1;");
 
         this.database.execute(query.toString());
@@ -208,7 +223,7 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
         return "";
     }
 
-    enum QueryTypes
+     enum QueryTypes
     {
         SELECT, INSERT, UPDATE, DELETE
     }
