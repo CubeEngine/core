@@ -17,8 +17,11 @@ public class TestModel implements Model<Integer>
     @Attribute(type = AttrType.INT, unsigned = true)
     public int id = -1;
     
-    @Attribute(name = "testname", type = AttrType.VARCHAR)
+    @Attribute(name = "teststring", type = AttrType.VARCHAR)
     public String stringvalue = "Cookies";
+    
+    @Attribute(name= "testbool", type = AttrType.BOOLEAN)
+    public boolean boolvalue = true;
     
     public Integer getKey()
     {

@@ -1,8 +1,10 @@
 package de.cubeisland.cubeengine.core.persistence;
 
 import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -28,10 +30,8 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
 
     public void initialize() throws SQLException
     {
-        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
-            .append(this.database.prefix(this.model.getSimpleName().toLowerCase(Locale.ENGLISH)))
-            .append(" (");
-        
+        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(this.database.prefix(this.model.getSimpleName().toLowerCase(Locale.ENGLISH))).append(" (");
+
         final LinkedList<String> keys = new LinkedList<String>();
         Attribute attribute;
         for (Field field : this.model.getFields())
@@ -69,19 +69,19 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                     query.append(" AUTO_INCREMENT");
                 }
                 query.append(",");
-                
+
                 if (field.isAnnotationPresent(Key.class))
                 {
                     keys.add(name);
                 }
             }
         }
-        
+
         if (keys.isEmpty())
         {
             throw new IllegalArgumentException("The given model does not declare any keys!");
         }
-        
+
         query.append("PRIMARY KEY (");
         Iterator<String> keyIter = keys.iterator();
         query.append(this.database.quote(keyIter.next()));
@@ -89,14 +89,124 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
         {
             query.append(this.database.quote(keyIter.next()));
         }
-        
+
         Entity entity = this.model.getAnnotation(Entity.class);
-        query.append(") ENGINE=")
-            .append(entity.engine())
-            .append(" DEFAULT CHARSET=")
-            .append(entity.charset())
-            .append(" AUTO_INCREMENT=1;");
-        
+        query.append(") ENGINE=").append(entity.engine()).append(" DEFAULT CHARSET=").append(entity.charset()).append(" AUTO_INCREMENT=1;");
+
         this.database.execute(query.toString());
+
+        this.prepareStatements();
+    }
+
+    private void prepareStatements()
+    {
+        String primaryKey = "";
+        ArrayList<String> fields = new ArrayList<String>();
+        String[] attributes;
+
+        for (Field field : model.getFields())
+        {
+            if (field.isAnnotationPresent(Attribute.class))
+            {
+                if (field.isAnnotationPresent(Key.class))
+                {
+                    Key key = field.getAnnotation(Key.class);
+                    if (key.primary())
+                    {
+                        primaryKey = field.getName(); //TODO handle if no primary Key found (or multiple)
+                    }
+                }
+                else
+                {
+                    fields.add(field.getName());
+                }
+            }
+        }
+        attributes = (String[])fields.toArray();
+
+        try
+        {
+            String pre = this.model.getSimpleName().toLowerCase(Locale.ENGLISH);
+
+            this.database.prepareAndStoreStatement(pre + "_get",
+                this.getSELECT(attributes, pre, 1, primaryKey));
+            this.database.prepareAndStoreStatement(pre + "getall",
+                this.getSELECT(attributes, pre, null, (String)null));
+            this.database.prepareAndStoreStatement(pre + "store",
+                this.getINSERT_INTO(pre, attributes));//TODO remove first (id)
+            this.database.prepareAndStoreStatement(pre + "update",
+                this.getUPDATE(pre, attributes, primaryKey));
+
+            this.database.prepareAndStoreStatement(pre + "delete",
+                this.getDELETE(pre, 1, primaryKey));
+            this.database.prepareAndStoreStatement(pre + "clear",
+                this.getCLEAR(pre));
+            //TODO convert
+
+            this.database.prepareAndStoreStatement(pre + "merge", "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
+
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public String getSELECT(String[] select, String table, Integer limit, String... where)
+    {
+        //(pre + "get", "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ");
+        sb.append(StringUtils.implode(",", select));
+        sb.append(" FROM ").append(table);
+        if (where.length != 0)
+        {
+            sb.append(" WHERE ");
+            for (int i = 0; i < where.length; ++i)
+            {
+                where[i] += "=?";
+            }
+            sb.append(StringUtils.implode(",", where));
+        }
+        if (limit != null)
+        {
+            sb.append(" LIMIT ").append(limit);
+        }
+        return sb.toString();
+    }
+
+    public String getINSERT_INTO(String table, String[] insert)
+    {
+        //"INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
+        return "";
+    }
+
+    public String getUPDATE(String table, String[] set, String... where)
+    {
+        //"UPDATE {{users}} SET language=? WHERE id=?"
+        return "";
+    }
+
+    public String getMERGE()//TODO on duplicate Key update
+    {
+        //"INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)"
+        return "";
+    }
+
+    public String getDELETE(String table, Integer limit, String... where)
+    {
+        //"DELETE FROM {{users}} WHERE id=? LIMIT 1"
+        return "";
+    }
+
+    public String getCLEAR(String table)
+    {
+        //"DELETE FROM {{users}}"
+        return "";
+    }
+
+    enum QueryTypes
+    {
+        SELECT, INSERT, UPDATE, DELETE
     }
 }

@@ -16,7 +16,6 @@ public class TestStorage extends BasicStorage<Integer, TestModel>
     {
         super(database, TestModel.class);
     }
-
     
     public TestModel get(Integer key)
     {
