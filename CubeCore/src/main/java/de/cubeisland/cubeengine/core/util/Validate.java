@@ -6,18 +6,10 @@ import java.io.File;
  *
  * @author Phillip Schichtel
  */
-public class Validate
+public class Validate extends org.apache.commons.lang.Validate
 {
     private Validate()
     {}
-
-    public static void notNull(Object object, String message)
-    {
-        if (object == null)
-        {
-            throw new IllegalArgumentException(message);
-        }
-    }
 
     public static void fileExists(File file, String message)
     {

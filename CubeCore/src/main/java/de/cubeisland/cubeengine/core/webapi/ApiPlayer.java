@@ -892,4 +892,24 @@ public class ApiPlayer extends ApiCommandSender implements Player
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    public void setFlySpeed(float value) throws IllegalArgumentException
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setWalkSpeed(float value) throws IllegalArgumentException
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public float getFlySpeed()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public float getWalkSpeed()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

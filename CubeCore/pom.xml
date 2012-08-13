@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.3.1-R0.1-SNAPSHOT</version>
+            <version>1.3.1-R1.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -78,6 +78,13 @@
             <groupId>io.netty</groupId>
             <artifactId>netty</artifactId>
             <version>3.5.2.Final</version>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
@@ -131,6 +138,8 @@
                                 <includes>
                                     <include>net.sf.trove4j:trove4j</include>
                                     <include>com.google.code.gson:gson</include>
+                                    <include>commons-lang:commons-lang</include>
+                                    <include>io.netty:netty</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
