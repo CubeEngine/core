@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence.testingdbstuff;
+package de.cubeisland.cubeengine.test.database;
 
 import de.cubeisland.cubeengine.core.persistence.AttrType;
 import de.cubeisland.cubeengine.core.persistence.Attribute;
@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.persistence.Model;
  * @author Anselm Brehme
  */
 @Entity
-public class RandomModel implements Model<Integer>
+public class TestModel implements Model<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -19,7 +19,6 @@ public class RandomModel implements Model<Integer>
     
     @Attribute(name = "testname", type = AttrType.VARCHAR)
     public String stringvalue = "Cookies";
-    
     
     public Integer getKey()
     {

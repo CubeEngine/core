@@ -1,5 +1,5 @@
 
-package de.cubeisland.cubeengine.core.persistence.testingdbstuff;
+package de.cubeisland.cubeengine.test.database;
 
 import de.cubeisland.cubeengine.core.persistence.BasicStorage;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
@@ -9,41 +9,41 @@ import java.util.Collection;
  *
  * @author Anselm Brehme
  */
-public class RandomStorage extends BasicStorage<Integer, RandomModel>
+public class TestStorage extends BasicStorage<Integer, TestModel>
 {
 
-    public RandomStorage(Database database)
+    public TestStorage(Database database)
     {
-        super(database, RandomModel.class);
+        super(database, TestModel.class);
     }
 
     
-    public RandomModel get(Integer key)
+    public TestModel get(Integer key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Collection<RandomModel> getAll()
+    public Collection<TestModel> getAll()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void store(RandomModel model)
+    public void store(TestModel model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void update(RandomModel model)
+    public void update(TestModel model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void merge(RandomModel model)
+    public void merge(TestModel model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean delete(RandomModel model)
+    public boolean delete(TestModel model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
