@@ -1,13 +1,12 @@
 package de.cubeisland.cubeengine.core.persistence.database;
 
 import de.cubeisland.cubeengine.core.DatabaseConfiguration;
-import de.cubeisland.cubeengine.core.persistence.Model;
-import de.cubeisland.cubeengine.core.persistence.StorageException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -89,9 +88,9 @@ public class Database
         return this.createAndBindValues(query, params).executeQuery();
     }
 
-    public ResultSet preparedQuery(String name, Object... params) throws SQLException
+    public ResultSet preparedQuery(Class owner, String name, Object... params) throws SQLException
     {
-        return this.bindValues(getStoredStatement(name), params).executeQuery();
+        return this.bindValues(getStoredStatement(owner, name), params).executeQuery();
     }
 
     public int update(String query, Object... params) throws SQLException
@@ -99,9 +98,9 @@ public class Database
         return this.createAndBindValues(query, params).executeUpdate();
     }
 
-    public int preparedUpdate(String name, Object... params) throws SQLException
+    public int preparedUpdate(Class owner, String name, Object... params) throws SQLException
     {
-        return this.bindValues(getStoredStatement(name), params).executeUpdate();
+        return this.bindValues(getStoredStatement(owner, name), params).executeUpdate();
     }
 
     public boolean execute(String query, Object... params) throws SQLException
@@ -109,9 +108,9 @@ public class Database
         return this.createAndBindValues(query, params).execute();
     }
 
-    public boolean preparedExecute(String name, Object... params) throws SQLException
+    public boolean preparedExecute(Class owner, String name, Object... params) throws SQLException
     {
-        return this.bindValues(getStoredStatement(name), params).execute();
+        return this.bindValues(getStoredStatement(owner, name), params).execute();
     }
 
     public PreparedStatement createAndBindValues(String query, Object... params) throws SQLException
@@ -128,14 +127,14 @@ public class Database
         return statement;
     }
     
-    public void storePreparedStatement(String name, PreparedStatement statement)
+    public void storePreparedStatement(Class owner, String name, PreparedStatement statement)
     {
-        this.preparedStatements.put(name, statement);
+        this.preparedStatements.put(owner.getName() + "_" + name, statement);
     }
 
-    public void prepareAndStoreStatement(String name, String statement) throws SQLException
+    public void prepareAndStoreStatement(Class owner, String name, String statement) throws SQLException
     {
-        this.storePreparedStatement(name, this.prepareStatement(statement));
+        this.storePreparedStatement(owner, name, this.prepareStatement(statement));
     }
 
     public PreparedStatement prepareStatement(String statement) throws SQLException
@@ -143,33 +142,23 @@ public class Database
         return this.connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
-    public PreparedStatement getStoredStatement(String name)
+    public PreparedStatement getStoredStatement(Class owner, String name)
     {
-        PreparedStatement statement = this.preparedStatements.get(name);
+        PreparedStatement statement = this.preparedStatements.get(owner.getName() + "_" + name);
         if (statement == null)
         {
             throw new IllegalArgumentException("Statement not found!");
         }
         return statement;
     }
-
-    // TODO remove this
-    public void assignId(PreparedStatement ps, Model<Integer> model)
+    
+    public int getLastInsertedId(Statement statement) throws SQLException
     {
-        try
+        final ResultSet result = statement.getGeneratedKeys();
+        if (result.next())
         {
-            if (ps.executeUpdate() > 0)
-            {
-                final ResultSet result = ps.getGeneratedKeys();
-                if (result.next())
-                {
-                    model.setKey(result.getInt("GENERATED_KEY"));
-                }
-            }
+            return result.getInt("GENERATED_KEY");
         }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to store the user!", e);
-        }
+        throw new SQLException("Failed to retrieve the last inserted ID!");
     }
 }

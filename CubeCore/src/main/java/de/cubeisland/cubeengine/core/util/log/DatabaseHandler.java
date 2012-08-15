@@ -31,8 +31,8 @@ public class DatabaseHandler extends Handler
                 + "`message` text NOT NULL,"
                 + "PRIMARY KEY (`id`)"
                 + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
-            this.db.prepareAndStoreStatement("insertLog", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
-            this.db.prepareAndStoreStatement("clearLog", "TRUNCATE {{" + TABLE + "}}");
+            this.db.prepareAndStoreStatement(this.getClass(), "insert", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
+            this.db.prepareAndStoreStatement(this.getClass(), "clear", "TRUNCATE {{" + TABLE + "}}");
         }
         catch (SQLException e)
         {
@@ -44,7 +44,7 @@ public class DatabaseHandler extends Handler
     {
         try
         {
-            this.db.preparedExecute("clearLog");
+            this.db.preparedExecute(this.getClass(), "clear");
         }
         catch (SQLException ex)
         {
@@ -64,7 +64,7 @@ public class DatabaseHandler extends Handler
         final String logger = record.getLoggerName();
         try
         {
-            db.preparedExecute("insertLog", time, level, logger, msg);
+            db.preparedExecute(this.getClass(), "insert", time, level, logger, msg);
         }
         catch (SQLException e)
         {

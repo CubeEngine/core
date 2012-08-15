@@ -15,7 +15,7 @@ import org.bukkit.Server;
  *
  * @author Phillip Schichtel
  */
-public class UserStorage implements Storage<Integer,User>
+public class UserStorage implements Storage<User>
 {
     private final Database database;
     private final Server server;
@@ -26,13 +26,13 @@ public class UserStorage implements Storage<Integer,User>
         this.server = server;
         try
         {
-            this.database.prepareAndStoreStatement("user_get",      "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement("user_getall",   "SELECT id,name,language FROM {{users}}");
-            this.database.prepareAndStoreStatement("user_store",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
-            this.database.prepareAndStoreStatement("user_update",   "UPDATE {{users}} SET language=? WHERE id=?");
-            this.database.prepareAndStoreStatement("user_merge",    "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
-            this.database.prepareAndStoreStatement("user_delete",   "DELETE FROM {{users}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement("user_clear",    "DELETE FROM {{users}}");
+            this.database.prepareAndStoreStatement(User.class, "get",      "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement(User.class, "getall",   "SELECT id,name,language FROM {{users}}");
+            this.database.prepareAndStoreStatement(User.class, "store",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
+            this.database.prepareAndStoreStatement(User.class, "update",   "UPDATE {{users}} SET language=? WHERE id=?");
+            this.database.prepareAndStoreStatement(User.class, "merge",    "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
+            this.database.prepareAndStoreStatement(User.class, "delete",   "DELETE FROM {{users}} WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement(User.class, "clear",    "DELETE FROM {{users}}");
         }
         catch (SQLException e)
         {
@@ -63,10 +63,10 @@ public class UserStorage implements Storage<Integer,User>
     {
         try
         {
-            PreparedStatement ps = this.database.getStoredStatement("user_store");
+            PreparedStatement ps = this.database.getStoredStatement(User.class, "store");
             ps.setString(1, user.getName());
             ps.setString(2, user.getLanguage());
-            this.database.assignId(ps,user);
+            user.setId(this.database.getLastInsertedId(ps));
         }
         catch (SQLException e)
         {
@@ -76,14 +76,14 @@ public class UserStorage implements Storage<Integer,User>
 
     public boolean delete(User object)
     {
-        return delete(object.getKey());
+        return this.deleteByKey(object.getId());
     }
 
     public Collection<User> getAll()
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("user_getall");
+            ResultSet result = this.database.preparedQuery(User.class, "getall");
 
             Collection<User> users = new ArrayList<User>();
             int id;
@@ -106,11 +106,11 @@ public class UserStorage implements Storage<Integer,User>
         }
     }
 
-    public User get(Integer key)
+    public User get(Object key)
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("user_get", key);
+            ResultSet result = this.database.preparedQuery(User.class, "get", key);
 
             if (!result.next())
             {
@@ -129,11 +129,11 @@ public class UserStorage implements Storage<Integer,User>
         }
     }
 
-    public boolean delete(Integer id)
+    public boolean deleteByKey(Object id)
     {
         try
         {
-            return this.database.preparedUpdate("user_delete", id) > 0;
+            return this.database.preparedUpdate(User.class, "delete", id) > 0;
         }
         catch (SQLException e)
         {
@@ -145,7 +145,7 @@ public class UserStorage implements Storage<Integer,User>
     {
         try
         {
-            this.database.preparedUpdate("user_update", object.getLanguage(), object.getKey());
+            this.database.preparedUpdate(User.class, "update", object.getLanguage(), object.getId());
         }
         catch (SQLException e)
         {
@@ -157,7 +157,7 @@ public class UserStorage implements Storage<Integer,User>
     {
         try
         {
-            this.database.preparedUpdate("user_merge", user.getName(), user.getLanguage());
+            this.database.preparedUpdate(User.class, "merge", user.getName(), user.getLanguage());
         }
         catch (SQLException e)
         {
@@ -169,7 +169,7 @@ public class UserStorage implements Storage<Integer,User>
     {
         try
         {
-            this.database.preparedExecute("user_clear");
+            this.database.preparedExecute(User.class, "clear");
         }
         catch (SQLException e)
         {

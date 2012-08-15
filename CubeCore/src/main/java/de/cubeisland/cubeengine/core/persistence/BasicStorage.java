@@ -13,7 +13,7 @@ import java.util.Locale;
  *
  * @author Anselm Brehme
  */
-public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, V>
+public abstract class BasicStorage<V> implements Storage<V>
 {
     private final Database database;
     private final Class<V> model;
@@ -31,7 +31,9 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
     public void initialize() throws SQLException
     {
         Entity entity = this.model.getAnnotation(Entity.class);
-        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(this.database.prefix(entity.name())).append(" (");
+        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+            .append(this.database.prefix(entity.name()))
+            .append(" (");
 
         final LinkedList<String> keys = new LinkedList<String>();
         Attribute attribute;
@@ -45,7 +47,8 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
                 {
                     name = attribute.name();
                 }
-                query.append(this.database.quote(name)).append(" ");
+                query.append(this.database.quote(name))
+                    .append(" ");
 
                 AttrType type = attribute.type();
                 query.append(type.getType());
@@ -91,7 +94,11 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
             query.append(this.database.quote(keyIter.next()));
         }
 
-        query.append(") ENGINE=").append(entity.engine()).append(" DEFAULT CHARSET=").append(entity.charset()).append(" AUTO_INCREMENT=1;");
+        query.append(") ENGINE=")
+            .append(entity.engine())
+            .append(" DEFAULT CHARSET=")
+            .append(entity.charset())
+            .append(" AUTO_INCREMENT=1;");
 
         this.database.execute(query.toString());
         this.prepareStatements();
@@ -131,22 +138,16 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
             // TODO I'll change the prepare methods to take a Class as the owner which
             // the queries are then stored in either Map<Class, Map<String, PreparedStatement>>
             // or Map<String, PreparedStatement>, where the key is prefixed by the class'es FQDN
-            this.database.prepareAndStoreStatement(pre + "_get",
-                this.getSELECT(attributes, pre, 1, primaryKey));
-            this.database.prepareAndStoreStatement(pre + "getall",
-                this.getSELECT(attributes, pre, null, (String)null));
-            this.database.prepareAndStoreStatement(pre + "store",
-                this.getINSERT_INTO(pre, attributes));//TODO remove first (id)
-            this.database.prepareAndStoreStatement(pre + "update",
-                this.getUPDATE(pre, attributes, primaryKey));
+            this.database.prepareAndStoreStatement(model, "get", "");
+            this.database.prepareAndStoreStatement(model, "getall", "");
+            this.database.prepareAndStoreStatement(model, "store", "");//TODO remove first (id)
+            this.database.prepareAndStoreStatement(model, "update", "");
 
-            this.database.prepareAndStoreStatement(pre + "delete",
-                this.getDELETE(pre, 1, primaryKey));
-            this.database.prepareAndStoreStatement(pre + "clear",
-                this.getCLEAR(pre));
+            this.database.prepareAndStoreStatement(model, "delete", "");
+            this.database.prepareAndStoreStatement(model, "clear", "");
             //TODO convert
 
-            this.database.prepareAndStoreStatement(pre + "merge", "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
+            this.database.prepareAndStoreStatement(model, "merge", "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
 
         }
         catch (SQLException ex)
@@ -176,40 +177,5 @@ public abstract class BasicStorage<K, V extends Model<K>> implements Storage<K, 
             sb.append(" LIMIT ").append(limit);
         }
         return sb.toString();
-    }
-
-    public String getINSERT_INTO(String table, String[] insert)
-    {
-        //"INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
-        return "";
-    }
-
-    public String getUPDATE(String table, String[] set, String... where)
-    {
-        //"UPDATE {{users}} SET language=? WHERE id=?"
-        return "";
-    }
-
-    public String getMERGE()//TODO on duplicate Key update
-    {
-        //"INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)"
-        return "";
-    }
-
-    public String getDELETE(String table, Integer limit, String... where)
-    {
-        //"DELETE FROM {{users}} WHERE id=? LIMIT 1"
-        return "";
-    }
-
-    public String getCLEAR(String table)
-    {
-        //"DELETE FROM {{users}}"
-        return "";
-    }
-
-    enum QueryTypes
-    {
-        SELECT, INSERT, UPDATE, DELETE
     }
 }

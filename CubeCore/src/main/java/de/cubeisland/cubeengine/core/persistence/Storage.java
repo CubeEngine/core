@@ -7,7 +7,7 @@ import java.util.Collection;
  *
  * @author Phillip Schichtel
  */
-public interface Storage<K, V extends Model<K>>
+public interface Storage<V>
 {
     /**
      * Initializes the DataBase
@@ -20,7 +20,7 @@ public interface Storage<K, V extends Model<K>>
      * @param key the key
      * @return the model
      */
-    public V get(K key);
+    public V get(Object key);
 
     /**
      * Returns all the models
@@ -64,7 +64,7 @@ public interface Storage<K, V extends Model<K>>
      * @param id the id to delete
      * @return whether the model got deleted
      */
-    public boolean delete(K key);
+    public boolean deleteByKey(Object key);
 
     /**
      * Clears the Table

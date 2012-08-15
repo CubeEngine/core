@@ -1,24 +1,23 @@
 package de.cubeisland.cubeengine.core.user;
 
 import static de.cubeisland.cubeengine.CubeEngine._;
-import de.cubeisland.cubeengine.core.persistence.Model;
 import org.bukkit.OfflinePlayer;
 
 /**
  *
  * @author Phillip Schichtel
  */
-public class User extends UserBase implements Model<Integer>
+public class User extends UserBase
 {
     private final OfflinePlayer player;
-    private int key;
+    private int id;
     private String language;
     public static final int BLOCK_FLY = 1;
 
     public User(int key, OfflinePlayer player, String language)
     {
         super(player);
-        this.key = key;
+        this.id = key;
         this.player = player;
         this.language = language;
     }
@@ -46,14 +45,14 @@ public class User extends UserBase implements Model<Integer>
         return this.language;
     }
 
-    public Integer getKey()
+    public Integer getId()
     {
-        return this.key;
+        return this.id;
     }
 
-    public void setKey(Integer key)
+    public void setId(int id)
     {
-        this.key = key;
+        this.id = id;
     }
 
     /**
