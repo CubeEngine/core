@@ -135,9 +135,14 @@ public abstract class BasicStorage<V> implements Storage<V>
             this.database.prepareAndStoreStatement(model, "delete", "DELETE FROM " + tablename + " WHERE " + keys[0] + "=? LIMIT 1");
             this.database.prepareAndStoreStatement(model, "clear", "DELETE FROM " + tablename);
             
-            //TODO convert merge
-            this.database.prepareAndStoreStatement(model, "merge", "INSERT INTO "+tablename+" ("+attr+")"
-                +" VALUES (?" + StringUtils.repeat(",?", attributes.length - 1) + ")"+" ON DUPLICATE KEY UPDATE language=values(language)");
+            StringBuilder mergevalues = new StringBuilder();
+            for (String attribute : attributes)
+            {
+                mergevalues.append(",").append(attribute).append("=values(").append(attribute).append(")");
+            }
+            this.database.prepareAndStoreStatement(model, "merge", "INSERT INTO " + tablename + " (" + keys[0] + "," + attr + ")"
+                + " VALUES (?" + StringUtils.repeat(",?", attributes.length - 1) + ")"
+                + " ON DUPLICATE KEY UPDATE " + keys[0] + "=values(" + keys[0] + ")" + mergevalues);
         }
         catch (SQLException ex)
         {
