@@ -13,6 +13,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Relation
 {
-    public Class<? extends Model> model();
+    public Class model();
     public String field() default "id";
 }
