@@ -20,8 +20,20 @@ import java.util.regex.Pattern;
  */
 public final class StringUtils
 {
+    public static String repeat(String string, int i)
+    {
+        StringBuilder sb = new StringBuilder();
+        while (i > 0)
+        {
+            --i;
+            sb.append(string);
+        }
+        return sb.toString();
+    }
+
     private StringUtils()
-    {}
+    {
+    }
 
     /**
      * This method splits a string without RegExes

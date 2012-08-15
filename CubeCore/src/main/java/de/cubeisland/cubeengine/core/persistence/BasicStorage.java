@@ -4,9 +4,9 @@ import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -31,11 +31,11 @@ public abstract class BasicStorage<V> implements Storage<V>
     public void initialize() throws SQLException
     {
         Entity entity = this.model.getAnnotation(Entity.class);
+        String tablename = this.database.prefix(entity.name());
         StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
-            .append(this.database.prefix(entity.name()));
-        ArrayList<Field> foreignKey = new ArrayList<Field>();
-
+            .append(tablename);
         final LinkedList<String> keys = new LinkedList<String>();
+        final LinkedList<String> attributes = new LinkedList<String>();
         Attribute attribute;
         for (Field field : this.model.getFields())
         {
@@ -78,9 +78,9 @@ public abstract class BasicStorage<V> implements Storage<V>
                 {
                     keys.add(name);
                 }
-                if (field.isAnnotationPresent(Relation.class))
+                else
                 {
-                    foreignKey.add(field);
+                    attributes.add(name);
                 }
             }
         }
@@ -88,6 +88,10 @@ public abstract class BasicStorage<V> implements Storage<V>
         if (keys.isEmpty())
         {
             throw new IllegalArgumentException("The given model does not declare any keys!");
+        }
+        else if (keys.size() > 1)
+        {
+            throw new IllegalArgumentException("The given model has declared too much keys! Use MultiKeyStorage");//TODO implement the MultiKeyStorage
         }
 
         query.append("PRIMARY KEY (");
@@ -111,54 +115,29 @@ public abstract class BasicStorage<V> implements Storage<V>
         query.append(") ENGINE=").append(entity.engine()).append(" DEFAULT CHARSET=").append(entity.charset()).append(" AUTO_INCREMENT=1;");
 
         this.database.execute(query.toString());
-        this.prepareStatements();
+        this.prepareStatements((String[])keys.toArray(),(String[])attributes.toArray(),tablename);
     }
 
-    private void prepareStatements()
+    private void prepareStatements(String[] keys, String[] attributes, String tablename)
     {
-        String primaryKey = "";
-        ArrayList<String> fields = new ArrayList<String>();
-        String[] attributes;
-
-        // TODO all the reflection again? NO
-        for (Field field : model.getFields())
-        {
-            if (field.isAnnotationPresent(Attribute.class))
-            {
-                if (field.isAnnotationPresent(Key.class))
-                {
-                    Key key = field.getAnnotation(Key.class);
-                    if (key.primary())
-                    {
-                        primaryKey = field.getName(); //TODO handle if no primary Key found (or multiple)
-                    }
-                }
-                else
-                {
-                    fields.add(field.getName());
-                }
-            }
-        }
-        attributes = (String[])fields.toArray();
-
         try
         {
-            String pre = this.model.getSimpleName().toLowerCase(Locale.ENGLISH);
-
-            // TODO I'll change the prepare methods to take a Class as the owner which
-            // the queries are then stored in either Map<Class, Map<String, PreparedStatement>>
-            // or Map<String, PreparedStatement>, where the key is prefixed by the class'es FQDN
-            this.database.prepareAndStoreStatement(model, "get", "");
-            this.database.prepareAndStoreStatement(model, "getall", "");
-            this.database.prepareAndStoreStatement(model, "store", "");//TODO remove first (id)
-            this.database.prepareAndStoreStatement(model, "update", "");
-
-            this.database.prepareAndStoreStatement(model, "delete", "");
-            this.database.prepareAndStoreStatement(model, "clear", "");
-            //TODO convert
-
-            this.database.prepareAndStoreStatement(model, "merge", "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
-
+            String attr = StringUtils.implode(",", attributes);
+            //this.database.prepareAndStoreStatement(model, "get", this.prepareSELECT(attributes, tablename, 1 , keys[0]));
+            this.database.prepareAndStoreStatement(model, "get", "SELECT " + keys[0] + "," + attr
+                + " FROM " + tablename + " WHERE " + keys[0] + "=?");
+            this.database.prepareAndStoreStatement(model, "getall", "SELECT " + keys[0] + "," + attr
+                + " FROM " + tablename);
+            this.database.prepareAndStoreStatement(model, "store", "INSERT INTO " + tablename + " (" + attr + ") "
+                + "VALUES (?" + StringUtils.repeat(",?", attributes.length - 1) + ")");
+            this.database.prepareAndStoreStatement(model, "update", "UPDATE " + tablename + " SET " + StringUtils.implode("=?,", attributes)
+                + "=? WHERE " + keys[0] + "=?");
+            this.database.prepareAndStoreStatement(model, "delete", "DELETE FROM " + tablename + " WHERE " + keys[0] + "=? LIMIT 1");
+            this.database.prepareAndStoreStatement(model, "clear", "DELETE FROM " + tablename);
+            
+            //TODO convert merge
+            this.database.prepareAndStoreStatement(model, "merge", "INSERT INTO "+tablename+" ("+attr+")"
+                +" VALUES (?" + StringUtils.repeat(",?", attributes.length - 1) + ")"+" ON DUPLICATE KEY UPDATE language=values(language)");
         }
         catch (SQLException ex)
         {
@@ -166,6 +145,12 @@ public abstract class BasicStorage<V> implements Storage<V>
         }
     }
 
+    private String prepareSELECT(String[] select, String table, Integer limit, String... where)
+    {
+        StringBuilder sb = new StringBuilder();
+        return sb.toString();
+    }
+    
     public String getSELECT(String[] select, String table, Integer limit, String... where)
     {
         //(pre + "get", "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
