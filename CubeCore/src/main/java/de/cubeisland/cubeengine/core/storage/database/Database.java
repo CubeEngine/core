@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.storage.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
@@ -47,4 +48,6 @@ public interface Database
     public void storePreparedStatement(Class owner, String name, PreparedStatement statement);
 
     public int update(String query, Object... params) throws SQLException;
+    
+    public int getLastInsertedId(Statement statement) throws SQLException;
 }

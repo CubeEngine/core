@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.conomy.account.bank;
 
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
-import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import java.sql.PreparedStatement;
@@ -74,11 +73,10 @@ public class BankAccountStorage extends BasicStorage<BankAccount>
     {
         try
         {
-            // TODO WTF?
             PreparedStatement ps = this.database.getStoredStatement(model,"store");
             ps.setString(1, account.getName());
             ps.setDouble(2, account.balance());
-            //TODO give id  this.database.assignId(ps,account);
+            account.setKey(this.database.getLastInsertedId(ps));
         }
         catch (SQLException e)
         {

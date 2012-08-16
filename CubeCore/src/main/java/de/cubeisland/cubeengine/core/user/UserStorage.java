@@ -1,9 +1,8 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.storage.Storage;
+import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,59 +15,21 @@ import org.bukkit.Server;
  *
  * @author Phillip Schichtel
  */
-public class UserStorage implements Storage<User>
+public class UserStorage extends BasicStorage<User>
 {
-    private final MySQLDatabase database;
     private final Server server;
 
-    public UserStorage(MySQLDatabase database, Server server)
+    public UserStorage(Database database, Server server)
     {
-        this.database = database;
+        super(database, User.class);
         this.server = server;
-        try
-        {
-            this.database.prepareAndStoreStatement(User.class, "get",      "SELECT id,name,language FROM users WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement(User.class, "getall",   "SELECT id,name,language FROM users");
-            this.database.prepareAndStoreStatement(User.class, "store",    "INSERT INTO users (name,flags,language) VALUES (?,?,?)");
-            this.database.prepareAndStoreStatement(User.class, "update",   "UPDATE users SET language=? WHERE id=?");
-            this.database.prepareAndStoreStatement(User.class, "merge",    "INSERT INTO users (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
-            this.database.prepareAndStoreStatement(User.class, "delete",   "DELETE FROM users WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement(User.class, "clear",    "DELETE FROM users");
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to prepare the statements!", e);
-        }
-    }
-
-    public void initialize()
-    {
-        try
-        {
-            this.database.execute(
-                this.database.buildQuery().initialize()
-                .createTable("users", true)
-                .startFields()
-                .field("id", AttrType.INT, 0, true, true, true)
-                .field("name", AttrType.VARCHAR,16,true)
-                .field("language", AttrType.VARCHAR,10,true)
-                .primaryKey("id")
-                .endFields()
-                .engine("MyISAM").defaultcharset("latin1").autoIncrement(1)
-                .endCreateTable().end()
-            );
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Failed to initialize the UserTable !", ex);
-        }
     }
     
     public void store(User user)
     {
         try
         {
-            PreparedStatement ps = this.database.getStoredStatement(User.class, "store");
+            PreparedStatement ps = this.database.getStoredStatement(model, "store");
             ps.setString(1, user.getName());
             ps.setString(2, user.getLanguage());
             user.setId(this.database.getLastInsertedId(ps));
@@ -88,7 +49,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery(User.class, "getall");
+            ResultSet result = this.database.preparedQuery(model, "getall");
 
             Collection<User> users = new ArrayList<User>();
             int id;
@@ -115,7 +76,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery(User.class, "get", key);
+            ResultSet result = this.database.preparedQuery(model, "get", key);
 
             if (!result.next())
             {
@@ -138,7 +99,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            return this.database.preparedUpdate(User.class, "delete", id) > 0;
+            return this.database.preparedUpdate(model, "delete", id) > 0;
         }
         catch (SQLException e)
         {
@@ -150,7 +111,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.preparedUpdate(User.class, "update", object.getLanguage(), object.getId());
+            this.database.preparedUpdate(model, "update", object.getLanguage(), object.getId());
         }
         catch (SQLException e)
         {
@@ -162,7 +123,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.preparedUpdate(User.class, "merge", user.getName(), user.getLanguage());
+            this.database.preparedUpdate(model, "merge", user.getName(), user.getLanguage());
         }
         catch (SQLException e)
         {
@@ -174,7 +135,7 @@ public class UserStorage implements Storage<User>
     {
         try
         {
-            this.database.preparedExecute(User.class, "clear");
+            this.database.preparedExecute(model, "clear");
         }
         catch (SQLException e)
         {

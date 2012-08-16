@@ -39,4 +39,9 @@ public class CubeTest extends Module
     {
         this.getDatabase().buildQuery().initialize();//TODO test here
     }
+    
+    public void testl18n()
+    {
+        //TODO
+    }
 }

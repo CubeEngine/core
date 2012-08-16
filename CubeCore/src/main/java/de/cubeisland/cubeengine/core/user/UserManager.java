@@ -1,8 +1,12 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import gnu.trove.map.hash.THashMap;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -23,7 +27,14 @@ public class UserManager
     {
         this.core = core;
         this.storage = new UserStorage(core.getDB(), server);
-        this.storage.initialize();
+        try
+        {
+            this.storage.initialize();
+        }
+        catch (SQLException ex)
+        {
+            CubeEngine.getLogger().log(Level.SEVERE, "Failed to initialize UserStorage", ex);
+        }
         this.server = server;
 
         this.users = new THashMap<String, User>();
