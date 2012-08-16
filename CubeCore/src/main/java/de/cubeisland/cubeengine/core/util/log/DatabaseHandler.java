@@ -25,7 +25,7 @@ public class DatabaseHandler extends Handler
         try
         {
             this.db.execute(this.db.buildQuery().initialize()
-                .createTable(TABLE, true)
+                .createTable(this.db.prefix(TABLE), true)
                 .startFields()
                 .field("id", AttrType.INT, 11, true, true, true)
                 .field("timestamp", AttrType.TIMESTAMP, true)
@@ -34,20 +34,15 @@ public class DatabaseHandler extends Handler
                 .field("message", AttrType.TEXT, true)
                 .primaryKey("id")
                 .endFields()
-                .engine("MyISAM").defaultcharset("latin1").autoIncrement(1)
+                .engine("MyISAM").defaultcharset("utf8").autoIncrement(1)
                 .endCreateTable().end()
                 );
-            //TODO remove old
-            /*
-            this.db.execute("CREATE TABLE IF NOT EXISTS {{" + TABLE + "}} ("
-                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
-                + "`timestamp` timestamp NOT NULL,"
-                + "`level` varchar(20) NOT NULL,"
-                + "`logger` varchar(50) NOT NULL,"
-                + "`message` text NOT NULL,"
-                + "PRIMARY KEY (`id`)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");*/
-            this.db.prepareAndStoreStatement(this.getClass(), "insert", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
+            
+            this.db.prepareAndStoreStatement(this.getClass(), "insert", 
+                this.db.buildQuery().initialize()
+                                    .insert().into(this.db.prefix(TABLE))
+                                    .cols("timestamp","level","logger","message").values(4)
+                                    .end().end());
             this.db.prepareAndStoreStatement(this.getClass(), "clear", "TRUNCATE {{" + TABLE + "}}");
         }
         catch (SQLException e)
