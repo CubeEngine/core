@@ -57,7 +57,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     
     public UpdateBuilder onDuplicateUpdate()
     {
-        query.append("ON DUPLICATE KEY ");
+        this.query.append("ON DUPLICATE KEY ");
         return new MySQLUpdateBuilder(this);
     }
 
@@ -68,7 +68,7 @@ public class MySQLQueryBuilder implements QueryBuilder
 
     public QueryBuilder dropTable(String table)
     {
-        query.append("DROP TABLE ").append(database.quote(table));
+        this.query.append("DROP TABLE ").append(this.database.quote(table));
         return this;
     }
 

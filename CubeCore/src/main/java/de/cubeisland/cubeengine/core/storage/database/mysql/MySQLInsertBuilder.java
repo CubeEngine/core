@@ -23,26 +23,26 @@ class MySQLInsertBuilder implements InsertBuilder
 
     public InsertBuilder into(String... tables)
     {
-        query.append("INTO ").append(StringUtils.implode(",", database.quote(tables))).append(" ");
+        this.query.append("INTO ").append(StringUtils.implode(",", database.quote(tables))).append(" ");
         return this;
     }
 
     public InsertBuilder cols(String... cols)
     {
-        query.append("(").append(StringUtils.implode(",", database.quote(cols))).append(") ");
+        this.query.append("(").append(StringUtils.implode(",", database.quote(cols))).append(") ");
         return this;
     }
 
     public InsertBuilder values(int n)
     {
-        query.append("VALUES").append("(?").append(StringUtils.repeat(",?", n - 1)).append(") ");
+        this.query.append("VALUES").append("(?").append(StringUtils.repeat(",?", n - 1)).append(") ");
         return this;
     }
 
     @Override
     public MySQLQueryBuilder end()
     {
-        queryBuilder.query.append(query.toString());
-        return queryBuilder;
+        this.queryBuilder.query.append(query.toString());
+        return this.queryBuilder;
     }
 }

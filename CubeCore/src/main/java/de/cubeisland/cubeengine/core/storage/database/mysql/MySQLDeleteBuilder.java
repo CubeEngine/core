@@ -13,14 +13,13 @@ public class MySQLDeleteBuilder extends MySQLOrderedBuilder<DeleteBuilder> imple
     {
         this.queryBuilder = querybuilder;
         this.database = querybuilder.database;
-        this.builder = this;
         this.query = new StringBuilder();
-        query.append("DELETE ");
+        this.query.append("DELETE ");
     }
 
     public DeleteBuilder from(String... tables)
     {
-        query.append("FROM ").append(StringUtils.implode(",", database.quote(tables))).append(" ");
+        this.query.append("FROM ").append(StringUtils.implode(",", this.database.quote(tables))).append(" ");
         return this;
     }
 }

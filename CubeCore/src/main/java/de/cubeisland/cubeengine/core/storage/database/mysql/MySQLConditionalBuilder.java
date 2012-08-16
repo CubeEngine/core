@@ -7,29 +7,30 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
  *
  * @author Anselm Brehme
  */
-public class MySQLConditionalBuilder<T> implements ConditionalBuilder<T>
+public abstract class MySQLConditionalBuilder<T> implements ConditionalBuilder<T>
 {
     protected Database database;
-    protected T builder;
     protected StringBuilder query;
     protected MySQLQueryBuilder queryBuilder;
+    
+    private int subDepth = 0;
 
     public T beginWhere()
     {
-        query.append("WHERE ");
-        return builder;
+        this.query.append("WHERE ");
+        return (T)this;
     }
 
     public T col(String col)
     {
-        query.append(database.quote(col));
-        return builder;
+        this.query.append(database.quote(col));
+        return (T)this;
     }
 
     public T value()
     {
-        query.append("? ");
-        return builder;
+        this.query.append("? ");
+        return (T)this;
     }
 
     public T op(int operation)
@@ -37,60 +38,71 @@ public class MySQLConditionalBuilder<T> implements ConditionalBuilder<T>
         switch (operation)
         {
             case 1:
-                query.append("=");
-                return builder;
+                this.query.append("=");
+                break;
             case 2:
-                query.append("<>");
-                return builder;
+                this.query.append("!=");
+                break;
             case 3:
-                query.append("<");
-                return builder;
+                this.query.append("<");
+                break;
             case 4:
-                query.append("<=");
-                return builder;
+                this.query.append("<=");
+                break;
             case 5:
-                query.append(">");
-                return builder;
+                this.query.append(">");
+                break;
             case 6:
-                query.append(">=");
-                return builder;
+                this.query.append(">=");
+                break;
             default:
                 throw new IllegalStateException("Invalid Operation");
         }
+        return (T)this;
     }
 
     public T not()
     {
-        query.append("NOT ");
-        return builder;
+        this.query.append("NOT ");
+        return (T)this;
     }
 
     public T and()
     {
-        query.append("AND ");
-        return builder;
+        this.query.append("AND ");
+        return (T)this;
     }
 
     public T or()
     {
-        query.append("OR ");
-        return builder;
+        this.query.append("OR ");
+        return (T)this;
     }
 
     public T beginSub()
     {
-        query.append("(");
-        return builder;
+        this.query.append("(");
+        ++this.subDepth;
+        
+        return (T)this;
     }
 
     public T endSub()
     {
-        query.append(")");
-        return builder;
+        if (this.subDepth > 0)
+        {
+            this.query.append(")");
+            --this.subDepth;
+        }
+        return (T)this;
     }
 
     public T endWhere()
     {
-        return builder;
+        while (this.subDepth > 0)
+        {
+            this.endSub();
+        }
+        return (T)this;
     }
 }

@@ -13,20 +13,19 @@ public class MySQLSelectBuilder extends MySQLOrderedBuilder<SelectBuilder> imple
     {
         this.queryBuilder = querybuilder;
         this.database = querybuilder.database;
-        this.builder = this;
         this.query = new StringBuilder();
-        query.append("SELECT ");
+        this.query.append("SELECT ");
     }
 
     public SelectBuilder cols(String... cols)
     {
-        query.append(StringUtils.implode(",", database.quote(cols))).append(" ");
+        this.query.append(StringUtils.implode(",", this.database.quote(cols))).append(" ");
         return this;
     }
 
     public SelectBuilder from(String... tables)
     {
-        query.append("FROM ").append(StringUtils.implode(",", database.quote(tables))).append(" ");
+        this.query.append("FROM ").append(StringUtils.implode(",", this.database.quote(tables))).append(" ");
         return this;
     }
 }

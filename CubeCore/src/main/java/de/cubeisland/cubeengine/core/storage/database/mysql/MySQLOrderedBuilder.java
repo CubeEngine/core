@@ -8,24 +8,24 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
  *
  * @author Anselm Brehme
  */
-public class MySQLOrderedBuilder<T> extends MySQLConditionalBuilder<T> implements OrderedBuilder<T>
+public abstract class MySQLOrderedBuilder<T> extends MySQLConditionalBuilder<T> implements OrderedBuilder<T>
 {
     public T orderBy(String... cols)
     {
         query.append("ORDER BY ").append(StringUtils.implode(",", database.quote(cols))).append(" ");
-        return builder;
+        return (T)this;
     }
 
     public T limit(int n)
     {
         query.append("LIMIT ").append(n).append(" ");
-        return builder;
+        return (T)this;
     }
 
     public T offset(int n)
     {
         query.append("OFFSET ").append(n).append(" ");
-        return builder;
+        return (T)this;
     }
 
     public QueryBuilder end()
