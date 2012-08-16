@@ -3,7 +3,9 @@ package de.cubeisland.cubeengine.core;
 import de.cubeisland.cubeengine.BukkitDependend;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.event.EventManager;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
@@ -11,8 +13,6 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
-import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.ConsoleHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
@@ -105,14 +105,14 @@ public class BukkitCore extends JavaPlugin implements Core
                 .endFields()
                 .engine("MyISAM")
                 .defaultcharset("latin1")
-                .autoincrement(1)
+                .autoIncrement(1)
             .toString();
         
         System.out.println("#########################################################");
         System.out.println(query);
         
         System.out.println(
-            this.database.buildQuery().select("id","item").from("users").where("id").limit(1)
+            this.database.buildQuery().select("id","item").from("users").beginWhere().col("id").endWhere().limit(1)
                 );
         //TODO remove this
         

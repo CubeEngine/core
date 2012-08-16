@@ -12,7 +12,7 @@ public interface QueryBuilder
     
     public UpdateBuilder update(String ... tables);
 
-    public DeleteBuilder delete(String table);
+    public DeleteBuilder delete(String... tables);
 
     public TableBuilder createTable(String name, boolean ifNoExist);
     

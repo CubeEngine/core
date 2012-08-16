@@ -6,9 +6,9 @@ package de.cubeisland.cubeengine.core.storage.database;
  */
 public interface OrderedBuilder<T> extends ConditionalBuilder<T>
 {   
-    public T orderBy();
-    public T limit();
-    public T offset();
+    public T orderBy(String... cols);
+    public T limit(int n);
+    public T offset(int n);
     
     public QueryBuilder end();
 }

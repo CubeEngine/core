@@ -33,7 +33,7 @@ public interface TableBuilder
 
     public TableBuilder defaultcharset(String charset);
 
-    public TableBuilder autoincrement(int n);
+    public TableBuilder autoIncrement(int n);
     
     public QueryBuilder endCreateTable();
 }

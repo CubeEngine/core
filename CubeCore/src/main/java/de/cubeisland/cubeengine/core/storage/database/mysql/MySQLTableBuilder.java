@@ -126,7 +126,7 @@ public class MySQLTableBuilder implements TableBuilder
         return this;
     }
 
-    public TableBuilder autoincrement(int n)
+    public TableBuilder autoIncrement(int n)
     {
         this.query.append(" AUTO_INCREMENT=").append(n);
         return this;

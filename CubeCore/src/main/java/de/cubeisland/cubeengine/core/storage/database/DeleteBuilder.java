@@ -6,5 +6,5 @@ package de.cubeisland.cubeengine.core.storage.database;
  */
 public interface DeleteBuilder extends OrderedBuilder<DeleteBuilder>
 {
-    public DeleteBuilder from(String table);
+    public DeleteBuilder from(String... tables);
 }

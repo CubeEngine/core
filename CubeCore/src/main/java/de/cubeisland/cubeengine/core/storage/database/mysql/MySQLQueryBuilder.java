@@ -140,7 +140,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public DeleteBuilder delete(String table)
+    public DeleteBuilder delete(String... tables)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
