@@ -2,11 +2,11 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.event.EventListener;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
-import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;

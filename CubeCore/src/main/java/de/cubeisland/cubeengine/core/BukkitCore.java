@@ -11,8 +11,6 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.ConsoleHandler;

@@ -2,9 +2,9 @@ package de.cubeisland.cubeengine.core.i18n;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CoreResource;
-import de.cubeisland.cubeengine.core.i18n.geoip.LookupService;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.i18n.geoip.LookupService;
 import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;

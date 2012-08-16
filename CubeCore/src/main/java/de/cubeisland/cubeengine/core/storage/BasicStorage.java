@@ -185,33 +185,4 @@ public abstract class BasicStorage<V> implements Storage<V>
             ex.printStackTrace();
         }
     }
-
-    private String prepareSELECT(String[] select, String table, Integer limit, String... where)
-    {
-        StringBuilder sb = new StringBuilder();
-        return sb.toString();
-    }
-    
-    public String getSELECT(String[] select, String table, Integer limit, String... where)
-    {
-        //(pre + "get", "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ");
-        sb.append(StringUtils.implode(",", select));
-        sb.append(" FROM ").append(table);
-        if (where.length != 0)
-        {
-            sb.append(" WHERE ");
-            for (int i = 0; i < where.length; ++i)
-            {
-                where[i] += "=?";
-            }
-            sb.append(StringUtils.implode(",", where));
-        }
-        if (limit != null)
-        {
-            sb.append(" LIMIT ").append(limit);
-        }
-        return sb.toString();
-    }
 }

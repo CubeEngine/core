@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.core.config;
 
 import de.cubeisland.cubeengine.CubeEngine;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.JsonCodec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.FileInputStream;
