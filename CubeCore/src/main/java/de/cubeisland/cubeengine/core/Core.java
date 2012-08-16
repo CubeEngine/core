@@ -87,5 +87,10 @@ public interface Core
      */
     public CommandManager getCommandManager();
     
+    /**
+     * This method returns the Worker/ExecutorService
+     * 
+     * @return the ExecutorService
+     */
     public ExecutorService getExecutor();
 }

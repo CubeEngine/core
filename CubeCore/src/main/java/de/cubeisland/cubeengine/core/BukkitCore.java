@@ -139,8 +139,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         catch (InterruptedException ex)
         {
-            //TODO
-            Logger.getLogger(BukkitCore.class.getName()).log(Level.SEVERE, null, ex);
+            this.logger.log(Level.SEVERE, "Could not execute all pending tasks", ex);
         }
     }
 
