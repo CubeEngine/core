@@ -49,4 +49,13 @@ public class MySQLDatabase extends AbstractDatabase
     {
         return QUOTE + name + QUOTE;
     }
+    
+    public String[] quote(String... names)
+    {
+        for (int i = 0 ; i < names.length; ++i)
+        {
+            names[i] = this.quote(names[i]);
+        }
+        return names;    
+    }
 }

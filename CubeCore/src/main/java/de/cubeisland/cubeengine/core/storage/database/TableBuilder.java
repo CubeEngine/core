@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
-
 /**
  *
  * @author Anselm Brehme

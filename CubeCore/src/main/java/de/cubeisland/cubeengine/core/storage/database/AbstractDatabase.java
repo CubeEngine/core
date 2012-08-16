@@ -18,9 +18,6 @@ public abstract class AbstractDatabase implements Database
     private String tablePrefix = "";
     protected QueryBuilder queryBuilder = null;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    
-    public AbstractDatabase()
-    {}
 
     public QueryBuilder buildQuery()
     {

@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.SelectBuilder;
 import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
 import de.cubeisland.cubeengine.core.storage.database.UpdateBuilder;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
  *
@@ -24,129 +22,53 @@ public class MySQLQueryBuilder implements QueryBuilder
         this.database = database;
     }
 
-//    public QueryBuilder select(String... cols)
-//    {
-//        this.query = new StringBuilder("SELECT ");
-//        if (cols.length == 0)
-//        {
-//            this.query.append('*');
-//        }
-//        else
-//        {
-//            this.query.append(this.database.quote(cols[0]));
-//            if (cols.length > 1)
-//            {
-//                for (int i = 0; i < cols.length; ++i)
-//                {
-//                    this.query.append(',').append(this.database.quote(cols[i]));
-//                }
-//            }
-//        }
-//        
-//        return this;
-//    }
-
-    public QueryBuilder from(String... tables)
-    {
-        Validate.isTrue(tables.length > 0, "You need to specify at least one table!");
-        
-        this.query.append(" FROM ").append(this.database.quote(tables[0]));
-        if (tables.length > 1)
-        {
-            for (int i = 0; i < tables.length; ++i)
-            {
-                this.query.append(',').append(this.database.quote(tables[i]));
-            }
-        }
-        return this;
-    }
-
-    public QueryBuilder delete()
-    {
-        query.append("DELETE");
-        return this;
-    }
-
-    public QueryBuilder insertInto(String table, String... col) // TODO multitable support
-    {
-        query.append(" INSERT INTO ").append(this.database.quote(table)).append(" (").append(StringUtils.implode(",", col)).append(")");
-        return this;
-    }
-
-    public QueryBuilder values(int n)
-    {
-        if (n < 1)
-        {
-            throw new IllegalStateException("Need at least 1 value");
-        }
-        query.append(" VALUES ").append("?").append(StringUtils.repeat(",?", n - 1));
-        return this;
-    }
-
-    public QueryBuilder orderBy(String col)
-    {
-        query.append(" ORDER BY ").append(this.database.quote(col));
-        return this;
-    }
-
-    public QueryBuilder offset(int n)
-    {
-        query.append(" OFFSET ").append(n);
-        return this;
-    }
-
-    public QueryBuilder where(String... conditions)
-    {
-        query.append(" WHERE ").append(StringUtils.implode("=? AND ", conditions)).append("=?"); // TODO what if we want to link via OR ?
-        return this;
-    }
-
-    public QueryBuilder limit(int n)
-    {
-        query.append(" LIMIT ").append(n);
-        return this;
-    }
-
     public TableBuilder createTable(String name, boolean ifNoExist)
     {
         return new MySQLTableBuilder(this, name, ifNoExist ? 1 : 2);
     }
 
-    @Override
     public String end()
     {
-        return this.query.toString();
+        String res = this.query.toString();
+        this.query = null;
+        return res;
     }
-    
+
     public QueryBuilder clear()
     {
-        this.query = null;
-        
+        this.query = new StringBuilder();
         return this;
     }
 
-    public InsertBuilder insert(String... cols)
+    public InsertBuilder insert()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new MySQLInsertBuilder(this);
     }
 
-    public SelectBuilder select(String... col)
+    public SelectBuilder select()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new MySQLSelectBuilder(this);
     }
 
-    public UpdateBuilder update(String... tables)
+    public UpdateBuilder update()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new MySQLUpdateBuilder(this);
     }
 
-    public DeleteBuilder delete(String... tables)
+    public DeleteBuilder delete()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new MySQLDeleteBuilder(this);
     }
 
-    public QueryBuilder dropTable()
+    public QueryBuilder dropTable(String table)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        query.append("DROP TABLE ").append(database.quote(table));
+        return this;
+    }
+
+    public QueryBuilder initialize()
+    {
+        this.query = new StringBuilder();
+        return this;
     }
 }

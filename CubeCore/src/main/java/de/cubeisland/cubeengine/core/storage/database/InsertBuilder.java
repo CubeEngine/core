@@ -9,4 +9,6 @@ public interface InsertBuilder
     public InsertBuilder into(String... tables);
     public InsertBuilder cols(String... cols);
     public InsertBuilder values(int n);
+    
+    public QueryBuilder end();
 }

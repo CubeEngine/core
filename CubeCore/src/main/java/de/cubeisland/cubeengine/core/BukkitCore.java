@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.ConsoleHandler;
@@ -95,7 +96,10 @@ public class BukkitCore extends JavaPlugin implements Core
         
         
         //TODO remove this
-        String query = this.database.buildQuery()
+        System.out.println("######################################################");
+        System.out.println("######################################################");
+        System.out.println("######################################################");
+        String query = this.database.buildQuery().initialize()
             .createTable("users", true)
                 .startFields()
                     .field("id", AttrType.INT, 11, true, true, true)
@@ -106,14 +110,23 @@ public class BukkitCore extends JavaPlugin implements Core
                 .engine("MyISAM")
                 .defaultcharset("latin1")
                 .autoIncrement(1)
-            .toString();
+            .endCreateTable()
+         .end();
+        System.out.println("\n"+query);
         
-        System.out.println("#########################################################");
-        System.out.println(query);
+        query = this.database.buildQuery().initialize()
+            .select().cols("id","item").from("users")
+            .beginWhere().col("id").endWhere()
+            .limit(1).end().end();
+        System.out.println("\n"+query);
         
-        System.out.println(
-            this.database.buildQuery().select("id","item").from("users").beginWhere().col("id").endWhere().limit(1)
-                );
+        query = this.database.buildQuery().initialize()
+            .insert().into("users").cols("name","lang").values(2).end().end();
+        System.out.println("\n"+query);
+        query = this.database.buildQuery().initialize()
+            .select().cols("id","name","lang").from("users")
+            .beginWhere().col("id").op(ConditionalBuilder.EQUAL).value().end().end();
+        System.out.println("\n"+query);
         //TODO remove this
         
         

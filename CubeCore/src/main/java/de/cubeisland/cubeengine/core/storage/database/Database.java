@@ -11,7 +11,9 @@ import java.sql.SQLException;
 public interface Database
 {
     public String quote(String name);
-    
+
+    public String[] quote(String[] names);
+
     public QueryBuilder buildQuery();
 
     public PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException;

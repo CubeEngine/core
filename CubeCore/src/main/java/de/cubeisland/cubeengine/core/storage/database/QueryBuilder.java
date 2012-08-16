@@ -6,19 +6,21 @@ package de.cubeisland.cubeengine.core.storage.database;
  */
 public interface QueryBuilder
 {
-    public InsertBuilder insert(String... cols);
+    public InsertBuilder insert();
 
-    public SelectBuilder select(String... col);
+    public SelectBuilder select();
     
-    public UpdateBuilder update(String ... tables);
+    public UpdateBuilder update();
 
-    public DeleteBuilder delete(String... tables);
+    public DeleteBuilder delete();
 
     public TableBuilder createTable(String name, boolean ifNoExist);
     
-    public QueryBuilder dropTable();
+    public QueryBuilder dropTable(String table);
     
     public String end();
     
     public QueryBuilder clear();
+    
+    public QueryBuilder initialize();
 }
