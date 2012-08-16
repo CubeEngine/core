@@ -22,8 +22,12 @@ import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,6 +50,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private EventManager eventRegistration;
     private Server server;
     private CommandManager commandManager;
+    private ExecutorService executor;
 
     @Override
     public void onEnable()
@@ -93,49 +98,14 @@ public class BukkitCore extends JavaPlugin implements Core
             this.server.getPluginManager().disablePlugin(this);
             return;
         }
-        
-        
-        //TODO remove this
-        System.out.println("######################################################");
-        System.out.println("######################################################");
-        System.out.println("######################################################");
-        String query = this.database.buildQuery().initialize()
-            .createTable("users", true)
-                .startFields()
-                    .field("id", AttrType.INT, 11, true, true, true)
-                    .field("name", AttrType.VARCHAR, 16)
-                    .field("lang", AttrType.VARCHAR, 10)
-                    .primaryKey("id")
-                .endFields()
-                .engine("MyISAM")
-                .defaultcharset("latin1")
-                .autoIncrement(1)
-            .endCreateTable()
-         .end();
-        System.out.println("\n"+query);
-        
-        query = this.database.buildQuery().initialize()
-            .select().cols("id","item").from("users")
-            .beginWhere().col("id").endWhere()
-            .limit(1).end().end();
-        System.out.println("\n"+query);
-        
-        query = this.database.buildQuery().initialize()
-            .insert().into("users").cols("name","lang").values(2).end().end();
-        System.out.println("\n"+query);
-        query = this.database.buildQuery().initialize()
-            .select().cols("id","name","lang").from("users")
-            .beginWhere().col("id").op(ConditionalBuilder.EQUAL).value().end().end();
-        System.out.println("\n"+query);
-        //TODO remove this
-        
-        
         this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "log"));
         this.userManager = new UserManager(this, this.server);//Needs Database
 
         this.registerPermissions(Perm.values());
         this.fileManager.dropResources(CoreResource.values());
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
+        
+        this.executor = Executors.newFixedThreadPool(config.executorThreads);
     }
 
     @Override
@@ -163,6 +133,16 @@ public class BukkitCore extends JavaPlugin implements Core
         {
             this.i18n.clean();
             this.i18n = null;
+        }
+        this.executor.shutdown();
+        try
+        {
+            this.executor.awaitTermination(config.executorTermination, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException ex)
+        {
+            //TODO
+            Logger.getLogger(BukkitCore.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -219,5 +199,10 @@ public class BukkitCore extends JavaPlugin implements Core
     public CommandManager getCommandManager()
     {
         return this.commandManager;
+    }
+
+    public ExecutorService getExecutor()
+    {
+        return executor;
     }
 }

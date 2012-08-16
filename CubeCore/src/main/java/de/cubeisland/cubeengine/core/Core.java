@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
 /**
@@ -85,4 +86,6 @@ public interface Core
      * @return the instance of the command manager
      */
     public CommandManager getCommandManager();
+    
+    public ExecutorService getExecutor();
 }

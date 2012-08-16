@@ -19,4 +19,12 @@ public class CoreConfiguration extends Configuration
     @Option("defaultLanguage")
     @Comment("Sets the language to choose by default")
     public String defaultLanguage = "en_US";
+    
+    @Option("executor.threads")
+    @Comment("The maximum amount of threads used by the executor at one time")
+    public Integer executorThreads = 2;
+    
+    @Option("executor.terminate")
+    @Comment("The time in seconds until timeout after shutdown")
+    public Integer executorTermination = 10;
 }
