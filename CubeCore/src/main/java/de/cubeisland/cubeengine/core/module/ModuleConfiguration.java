@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.annotations.Option;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.annotations.Codec;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
 import java.util.HashSet;
 import java.util.Set;
 

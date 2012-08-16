@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;

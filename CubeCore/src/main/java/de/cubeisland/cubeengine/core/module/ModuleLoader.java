@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.persistence.filesystem.FileExtentionFilter;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
+import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import java.io.File;

@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.util.log;
 
-import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Handler;

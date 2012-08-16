@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.persistence.filesystem.Resource;
+import de.cubeisland.cubeengine.core.filesystem.Resource;
 
 /**
  * Holds all the resource of the core
