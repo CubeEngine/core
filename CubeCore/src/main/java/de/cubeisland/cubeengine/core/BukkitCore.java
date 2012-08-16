@@ -10,7 +10,8 @@ import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.persistence.AttrType;
-import de.cubeisland.cubeengine.core.persistence.SQLBuilder;
+import de.cubeisland.cubeengine.core.persistence.MySQLBuilder;
+import de.cubeisland.cubeengine.core.persistence.MySQLTableBuilder;
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
@@ -96,16 +97,16 @@ public class BukkitCore extends JavaPlugin implements Core
         
         
         //TODO remove this
-        SQLBuilder sqlb = new SQLBuilder(this.database);
+        MySQLBuilder sqlb = new MySQLBuilder(this.database);
         System.out.println("#########################################################");
         System.out.println(
-            sqlb.createTableINE("users")
-                .attribute("id", AttrType.INT, 11).unsigned().notNull().autoincrement().next()
-                .attribute("name", AttrType.VARCHAR, 16).notNull().next()
-                .attribute("lang", AttrType.VARCHAR, 10).notNull().next()
-                .primaryKey("id")
-                .engine("MyISAM").defaultcharset("latin1").autoincrement(1)
-                );
+            sqlb.createTable(
+            new MySQLTableBuilder(database, "users")
+            .attribute("id", AttrType.INT, 11).unsigned().notNull().autoincrement().next()
+            .attribute("name", AttrType.VARCHAR, 16).notNull().next()
+            .attribute("lang", AttrType.VARCHAR, 10).notNull().next()
+            .primaryKey("id"), true)
+            .engine("MyISAM").defaultcharset("latin1").autoincrement(1));
         
         System.out.println(
             sqlb.select("id","item").from("users").where("id").limit(1)
