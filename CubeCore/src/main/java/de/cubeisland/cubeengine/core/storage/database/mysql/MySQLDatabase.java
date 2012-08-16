@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -47,7 +48,7 @@ public class MySQLDatabase extends AbstractDatabase
     @Override
     public String quote(String name)
     {
-        return QUOTE + name + QUOTE;
+        return QUOTE + StringUtils.implode(QUOTE + "." + QUOTE, StringUtils.explode(".", name)) + QUOTE;
     }
     
     public String[] quote(String... names)
