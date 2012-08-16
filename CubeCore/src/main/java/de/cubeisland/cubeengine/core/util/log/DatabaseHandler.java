@@ -25,7 +25,7 @@ public class DatabaseHandler extends Handler
         try
         {
             this.db.execute(this.db.buildQuery().initialize()
-                .createTable(this.db.prefix(TABLE), true)
+                .createTable(this.db.prefix(TABLE, false), true)
                 .startFields()
                 .field("id", AttrType.INT, 11, true, true, true)
                 .field("timestamp", AttrType.TIMESTAMP, true)
