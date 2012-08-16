@@ -17,6 +17,7 @@ public class MySQLUpdateBuilder extends MySQLOrderedBuilder<UpdateBuilder> imple
         this.query = new StringBuilder();
         query.append("UPDATE ");
     }
+    
 
     public UpdateBuilder tables(String... tables)
     {
@@ -39,6 +40,17 @@ public class MySQLUpdateBuilder extends MySQLOrderedBuilder<UpdateBuilder> imple
 
     public UpdateBuilder endSets()
     {
+        return this;
+    }
+
+    public UpdateBuilder values(String... cols)
+    {
+        cols = database.quote(cols);
+        for (int i = 0 ; i< cols.length ; ++i)
+        {
+            cols[i]=cols[i]+"=VALUES("+cols[i]+")";
+        }
+        query.append(StringUtils.implode(",", cols));
         return this;
     }
 }

@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.test.database;
 
-import de.cubeisland.cubeengine.core.persistence.AttrType;
-import de.cubeisland.cubeengine.core.persistence.Attribute;
-import de.cubeisland.cubeengine.core.persistence.Entity;
-import de.cubeisland.cubeengine.core.persistence.Key;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.Entity;
+import de.cubeisland.cubeengine.core.storage.database.Key;
+
 
 /**
  *

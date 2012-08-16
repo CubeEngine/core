@@ -1,13 +1,16 @@
 package de.cubeisland.cubeengine.conomy.account;
 
-import de.cubeisland.cubeengine.core.persistence.Model;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
 
 /**
  *
  * @author Anselm Brehme
  */
-public abstract class AccountModel implements IAccount,Model<Integer>
+
+public abstract class AccountModel implements IAccount
 {
+    @Attribute(name="balance",type= AttrType.DOUBLE)
     private double balance;
     
     /**

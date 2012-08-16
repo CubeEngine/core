@@ -1,8 +1,8 @@
 
 package de.cubeisland.cubeengine.test.database;
 
-import de.cubeisland.cubeengine.core.persistence.BasicStorage;
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import java.util.Collection;
 
 /**

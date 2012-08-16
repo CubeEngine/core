@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.util.log;
 
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -23,6 +24,21 @@ public class DatabaseHandler extends Handler
         this.TABLE = table;
         try
         {
+            this.db.execute(this.db.buildQuery().initialize()
+                .createTable(TABLE, true)
+                .startFields()
+                .field("id", AttrType.INT, 11, true, true, true)
+                .field("timestamp", AttrType.TIMESTAMP, true)
+                .field("level", AttrType.VARCHAR,20,true)
+                .field("logger", AttrType.VARCHAR, 50, true)
+                .field("message", AttrType.TEXT, true)
+                .primaryKey("id")
+                .endFields()
+                .engine("MyISAM").defaultcharset("latin1").autoIncrement(1)
+                .endCreateTable().end()
+                );
+            //TODO remove old
+            /*
             this.db.execute("CREATE TABLE IF NOT EXISTS {{" + TABLE + "}} ("
                 + "`id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "`timestamp` timestamp NOT NULL,"
@@ -30,7 +46,7 @@ public class DatabaseHandler extends Handler
                 + "`logger` varchar(50) NOT NULL,"
                 + "`message` text NOT NULL,"
                 + "PRIMARY KEY (`id`)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");*/
             this.db.prepareAndStoreStatement(this.getClass(), "insert", "INSERT INTO {{" + TABLE + "}} (timestamp, level, logger, message) VALUES (?,?,?,?)");
             this.db.prepareAndStoreStatement(this.getClass(), "clear", "TRUNCATE {{" + TABLE + "}}");
         }

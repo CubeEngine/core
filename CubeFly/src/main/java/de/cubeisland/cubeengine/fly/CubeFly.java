@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import java.io.File;
 import org.bukkit.Server;
+
 
 public class CubeFly extends Module
 {

@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.conomy.account.bank;
 
-import de.cubeisland.cubeengine.core.persistence.Storage;
-import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.Storage;
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,55 +14,18 @@ import java.util.Collection;
  *
  * @author Anselm Brehme
  */
-public class BankAccountStorage implements Storage<Integer, BankAccount>
+public class BankAccountStorage extends BasicStorage<BankAccount>
 {
-    private final Database database;
-    private final String TABLE = "auctions";
-
     public BankAccountStorage(Database database)
     {
-        this.database = database;
-        
-        try
-        {
-            this.database.prepareAndStoreStatement("bankacc_get",      "SELECT id,name,amount FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement("bankacc_getall",   "SELECT id,name,amount FROM {{"+ TABLE +"}}");
-            this.database.prepareAndStoreStatement("bankacc_store",    "INSERT INTO {{"+ TABLE +"}} (name,amount) VALUES (?,?)");
-            this.database.prepareAndStoreStatement("bankacc_update",   "UPDATE {{"+ TABLE +"}} SET amount=? WHERE id=?");
-            this.database.prepareAndStoreStatement("bankacc_merge",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?) ON DUPLICATE KEY UPDATE amount=values(amount)");
-            this.database.prepareAndStoreStatement("bankacc_delete",   "DELETE FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement("bankacc_clear",    "DELETE FROM {{"+ TABLE +"}}");
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to prepare the statements!", e);
-        }
-    }
-    
-    public void initialize()
-    {
-        try
-        {
-            this.database.execute(
-                "CREATE TABLE IF NOT EXISTS `{{"+ TABLE +"}}` (" +
-                "  `id` int(11) unsigned NOT NULL," +
-                "  `name` varchar(20) unsigned NOT NULL," +//TODO limit length
-                "  `amount` decimal(11,2) NOT NULL," +
-                "  PRIMARY KEY (`id`)" +
-                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-            );
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Failed to initialize the BankAcc-Table !", ex);
-        }
+        super(database, BankAccount.class);
     }
 
     public BankAccount get(Integer key)
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("bankacc_get", key);
+            ResultSet result = this.database.preparedQuery(model,"get", key);
 
             if (!result.next())
             {
@@ -83,7 +47,7 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("bankacc_getall");
+            ResultSet result = this.database.preparedQuery(model,"getall");
 
             Collection<BankAccount> accs = new ArrayList<BankAccount>();
             
@@ -111,10 +75,10 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
         try
         {
             // TODO WTF?
-            PreparedStatement ps = this.database.getStoredStatement("bankacc_store");
+            PreparedStatement ps = this.database.getStoredStatement(model,"store");
             ps.setString(1, account.getName());
             ps.setDouble(2, account.balance());
-            this.database.assignId(ps,account);
+            //TODO give id  this.database.assignId(ps,account);
         }
         catch (SQLException e)
         {
@@ -126,7 +90,7 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            this.database.preparedUpdate("bankacc_update", account.balance(), account.getKey());
+            this.database.preparedUpdate(model,"update", account.balance(), account.getKey());
         }
         catch (SQLException e)
         {
@@ -138,7 +102,7 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            this.database.preparedUpdate("bankacc_merge", account.getKey(), account.balance());
+            this.database.preparedUpdate(model,"merge", account.getKey(), account.balance());
         }
         catch (SQLException e)
         {
@@ -155,7 +119,7 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            return this.database.preparedUpdate("usercc_delete", id) > 0;
+            return this.database.preparedUpdate(model,"delete", id) > 0;
         }
         catch (SQLException e)
         {
@@ -167,11 +131,21 @@ public class BankAccountStorage implements Storage<Integer, BankAccount>
     {
         try
         {
-            this.database.preparedExecute("bankacc_clear");
+            this.database.preparedExecute(model,"clear");
         }
         catch (SQLException e)
         {
             throw new StorageException("Failed to clear the database!", e);
         }
+    }
+
+    public BankAccount get(Object key)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean deleteByKey(Object key)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

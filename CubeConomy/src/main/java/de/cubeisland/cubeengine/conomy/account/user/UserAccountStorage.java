@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.conomy.account.user;
 
-import de.cubeisland.cubeengine.core.persistence.Storage;
-import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.sql.ResultSet;
@@ -14,65 +14,30 @@ import java.util.Collection;
  *
  * @author Anselm Brehme
  */
-public class UserAccountStorage implements Storage<Integer, UserAccount>
+public class UserAccountStorage extends BasicStorage<UserAccount>
 {
-    private final Database database;
     private final UserManager cuManager;
-    private final String TABLE = "auctions";
 
-    public UserAccountStorage(UserManager cuManager, Database database)
+    public UserAccountStorage(Database database, UserManager cuManager)
     {
-        this.database = database;
+        super(database, UserAccount.class);
         this.cuManager = cuManager;
-        
-        try
-        {
-            this.database.prepareAndStoreStatement("useracc_get",      "SELECT id,amount FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement("useracc_getall",   "SELECT id,amount FROM {{"+ TABLE +"}}");
-            this.database.prepareAndStoreStatement("useracc_store",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?)");
-            this.database.prepareAndStoreStatement("useracc_update",   "UPDATE {{"+ TABLE +"}} SET amount=? WHERE id=?");
-            this.database.prepareAndStoreStatement("useracc_merge",    "INSERT INTO {{"+ TABLE +"}} (id,amount) VALUES (?,?) ON DUPLICATE KEY UPDATE amount=values(amount)");
-            this.database.prepareAndStoreStatement("useracc_delete",   "DELETE FROM {{"+ TABLE +"}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement("useracc_clear",    "DELETE FROM {{"+ TABLE +"}}");
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to prepare the statements!", e);
-        }
     }
-    
-    public void initialize()
+
+    public UserAccount get(Object key)
     {
         try
         {
-            this.database.execute(
-                "CREATE TABLE IF NOT EXISTS `{{"+ TABLE +"}}` (" +
-                "  `id` int(11) unsigned NOT NULL," +
-                "  `amount` decimal(11,2) NOT NULL," +
-                "  PRIMARY KEY (`id`)" +
-                // "FOREIGN KEY (`id`) REFERENCES core_user(id)" +
-                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
-            );
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Failed to initialize the UserAcc-Table !", ex);
-        }
-    }
 
-    public UserAccount get(Integer key)
-    {
-        try
-        {
-            ResultSet result = this.database.preparedQuery("useracc_get", key);
-
+            ResultSet result = this.database.preparedQuery(model, "get", key);
             if (!result.next())
             {
                 return null;
             }
-            User user = this.cuManager.getUser(key);
+            User user = this.cuManager.getUser((Integer) key);
             double amount = result.getDouble("amount");
             return new UserAccount(user, amount);
+
         }
         catch (SQLException e)
         {
@@ -84,10 +49,10 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
     {
         try
         {
-            ResultSet result = this.database.preparedQuery("useracc_getall");
+            ResultSet result = this.database.preparedQuery(model, "getall");
 
             Collection<UserAccount> accs = new ArrayList<UserAccount>();
-            
+
             int key;
             double amount;
             User user;
@@ -112,7 +77,7 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
     {
         try
         {
-            this.database.preparedExecute("useracc_store",account.getKey(),account.balance());
+            this.database.preparedExecute(model, "store", account.getKey(), account.balance());
         }
         catch (SQLException e)
         {
@@ -124,7 +89,7 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
     {
         try
         {
-            this.database.preparedUpdate("useracc_update", account.balance(), account.getKey());
+            this.database.preparedUpdate(model, "update", account.balance(), account.getKey());
         }
         catch (SQLException e)
         {
@@ -136,7 +101,7 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
     {
         try
         {
-            this.database.preparedUpdate("useracc_merge", account.getKey(), account.balance());
+            this.database.preparedUpdate(model, "merge", account.getKey(), account.balance());
         }
         catch (SQLException e)
         {
@@ -144,16 +109,23 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
         }
     }
 
-    public boolean delete(UserAccount account)
-    {
-        return delete(account.getKey());
-    }
-
-    public boolean delete(Integer key)
+    public void clear()
     {
         try
         {
-            return this.database.preparedUpdate("usercc_delete", key) > 0;
+            this.database.preparedExecute(model, "clear");
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Failed to clear the database!", e);
+        }
+    }
+
+    public boolean deleteByKey(Object key)
+    {
+        try
+        {
+            return this.database.preparedUpdate(model, "delete", key) > 0;
         }
         catch (SQLException e)
         {
@@ -161,15 +133,8 @@ public class UserAccountStorage implements Storage<Integer, UserAccount>
         }
     }
 
-    public void clear()
+    public boolean delete(UserAccount account)
     {
-        try
-        {
-            this.database.preparedExecute("useracc_clear");
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to clear the database!", e);
-        }
+        return deleteByKey(account.getKey());
     }
 }

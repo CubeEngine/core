@@ -1,15 +1,25 @@
 package de.cubeisland.cubeengine.conomy.account.bank;
 
 import de.cubeisland.cubeengine.conomy.account.AccountModel;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.Entity;
+import de.cubeisland.cubeengine.core.storage.database.Key;
 
 /**
  *
  * @author Anselm Brehme
  */
+@Entity(name = "bankaccount")
 public class BankAccount extends AccountModel
 {
-    private final String name;
+    
+    @Key
+    @Attribute(type= AttrType.INT)
     private int key;
+    
+    @Attribute(type= AttrType.VARCHAR,length=16)
+    private final String name;
     
     public BankAccount(int key, String name, double start)
     {

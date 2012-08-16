@@ -15,6 +15,8 @@ public interface TableBuilder
     
     public TableBuilder field(String name, AttrType type, int length, boolean notnull);
     
+    public TableBuilder field(String name, AttrType type, boolean notnull);
+    
     public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned);
     
     public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai);

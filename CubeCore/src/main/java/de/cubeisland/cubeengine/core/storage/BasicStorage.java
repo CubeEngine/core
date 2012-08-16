@@ -1,17 +1,17 @@
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.storage.database.OrderedBuilder;
+import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
 
 /**
  *
@@ -19,13 +19,15 @@ import java.util.Locale;
  */
 public abstract class BasicStorage<V> implements Storage<V>
 {
-    private final MySQLDatabase database;
-    private final Class<V> model;
+    protected final Database database;
+    protected final Class<V> model;
+    protected final String TABLE;
 
-    public BasicStorage(MySQLDatabase database, Class<V> model)
+    public BasicStorage(Database database, Class<V> model)
     {
         this.database = database;
         this.model = model;
+        this.TABLE = this.database.prefix(this.model.getAnnotation(Entity.class).name());
         if (!model.isAnnotationPresent(Entity.class))
         {
             throw new IllegalArgumentException("Every model needs the Entity annotation!");
@@ -35,12 +37,12 @@ public abstract class BasicStorage<V> implements Storage<V>
     public void initialize() throws SQLException
     {
         Entity entity = this.model.getAnnotation(Entity.class);
-        String tablename = this.database.prefix(entity.name());
-        StringBuilder query = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
-            .append(tablename);
+        QueryBuilder builder = this.database.buildQuery().initialize();
+
         final LinkedList<String> keys = new LinkedList<String>();
         final LinkedList<String> attributes = new LinkedList<String>();
         Attribute attribute;
+        TableBuilder tbuilder = builder.createTable(TABLE, true).startFields();
         for (Field field : this.model.getFields())
         {
             attribute = field.getAnnotation(Attribute.class);
@@ -51,33 +53,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                 {
                     name = attribute.name();
                 }
-                query.append(this.database.quote(name))
-                    .append(" ");
-
-                AttrType type = attribute.type();
-                query.append(type.getType());
-                if (type.hasLength())
-                {
-                    query.append("(").append(attribute.length()).append(")");
-                }
-                if (type.canBeSigned() && attribute.unsigned())
-                {
-                    query.append(" UNSIGNED");
-                }
-                if (attribute.notnull())
-                {
-                    query.append(" NOT NULL");
-                }
-                else
-                {
-                    query.append(" NULL");
-                }
-                if (attribute.ai())
-                {
-                    query.append(" AUTO_INCREMENT");
-                }
-                query.append(",");
-
+                tbuilder.field(name, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
                 if (field.isAnnotationPresent(Key.class))
                 {
                     keys.add(name);
@@ -97,16 +73,14 @@ public abstract class BasicStorage<V> implements Storage<V>
         {
             throw new IllegalArgumentException("The given model has declared too much keys! Use MultiKeyStorage");//TODO implement the MultiKeyStorage
         }
-
-        query.append("PRIMARY KEY (");
+       
         Iterator<String> keyIter = keys.iterator();
-        query.append(this.database.quote(keyIter.next()));
         while (keyIter.hasNext())
         {
-            query.append(this.database.quote(keyIter.next()));
+            tbuilder.primaryKey(keyIter.next());
         }
-        query.append(")");
-//        if (!foreignKey.isEmpty())
+        //TODO foreign keys
+        //        if (!foreignKey.isEmpty())
 //        {
 //            for (Field field : foreignKey)
 //            {
@@ -116,10 +90,12 @@ public abstract class BasicStorage<V> implements Storage<V>
 //                query.append("(").append(relat.field()).append(")");
 //            }
 //        }
-        query.append(") ENGINE=").append(entity.engine()).append(" DEFAULT CHARSET=").append(entity.charset()).append(" AUTO_INCREMENT=1;");
-
-        this.database.execute(query.toString());
-        this.prepareStatements((String[])keys.toArray(),(String[])attributes.toArray(),tablename);
+        tbuilder.endFields()
+                .engine(entity.engine()).defaultcharset(entity.charset())
+                //TODO AI if no ai
+                .autoIncrement(1);
+        this.database.execute(tbuilder.endCreateTable().end());
+        this.prepareStatements((String[])keys.toArray(),(String[])attributes.toArray(),TABLE);
     }
 
     private void prepareStatements(String[] keys, String[] attributes, String tablename)
@@ -127,7 +103,61 @@ public abstract class BasicStorage<V> implements Storage<V>
         try
         {
             String attr = StringUtils.implode(",", attributes);
-            //this.database.prepareAndStoreStatement(model, "get", this.prepareSELECT(attributes, tablename, 1 , keys[0]));
+            QueryBuilder builder = this.database.buildQuery();
+            this.database.prepareAndStoreStatement(model, "get", 
+                 builder.initialize()
+                        .select().cols(keys[0],attr)
+                        .from(tablename)
+                          .beginWhere()
+                          .col(keys[0]).op(OrderedBuilder.EQUAL).value()
+                          .endWhere()
+                        .end().end());
+            this.database.prepareAndStoreStatement(model, "getall", 
+                 builder.initialize()
+                        .select().cols(keys[0],attr)
+                        .from(tablename)
+                        .end().end());
+            this.database.prepareAndStoreStatement(model, "store", 
+                 builder.initialize()
+                        .insert().into(tablename)
+                        .cols(attr)
+                        .values(attr.length())
+                        .end().end());
+
+            this.database.prepareAndStoreStatement(model, "update", 
+                 builder.initialize()
+                        .update().tables(tablename)
+                        .set(attr)
+                          .beginWhere()
+                          .col(keys[0]).op(OrderedBuilder.EQUAL).value()
+                          .endWhere()
+                        .end().end());
+
+            this.database.prepareAndStoreStatement(model, "delete", 
+                 builder.initialize()
+                        .delete().from(tablename)
+                          .beginWhere()
+                          .col(keys[0]).op(OrderedBuilder.EQUAL).value()
+                          .endWhere()
+                        .limit(1)
+                        .end().end());
+            
+            this.database.prepareAndStoreStatement(model, "clear", 
+                 builder.initialize()
+                        .delete().from(tablename)
+                        .end().end());
+
+            this.database.prepareAndStoreStatement(model, "merge", 
+                 builder.initialize()
+                        .insert().into(tablename)
+                        .cols(keys[0]+attr)
+                        .values(attr.length()+1)
+                        .end()
+                        .onDuplicateUpdate()
+                        .values(attr)
+                        .end().end());
+            /*
+            
             this.database.prepareAndStoreStatement(model, "get", "SELECT " + keys[0] + "," + attr
                 + " FROM " + tablename + " WHERE " + keys[0] + "=?");
             this.database.prepareAndStoreStatement(model, "getall", "SELECT " + keys[0] + "," + attr
@@ -147,6 +177,8 @@ public abstract class BasicStorage<V> implements Storage<V>
             this.database.prepareAndStoreStatement(model, "merge", "INSERT INTO " + tablename + " (" + keys[0] + "," + attr + ")"
                 + " VALUES (?" + StringUtils.repeat(",?", attributes.length - 1) + ")"
                 + " ON DUPLICATE KEY UPDATE " + keys[0] + "=values(" + keys[0] + ")" + mergevalues);
+                
+            */
         }
         catch (SQLException ex)
         {

@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,13 +27,13 @@ public class UserStorage implements Storage<User>
         this.server = server;
         try
         {
-            this.database.prepareAndStoreStatement(User.class, "get",      "SELECT id,name,language FROM {{users}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement(User.class, "getall",   "SELECT id,name,language FROM {{users}}");
-            this.database.prepareAndStoreStatement(User.class, "store",    "INSERT INTO {{users}} (name,flags,language) VALUES (?,?,?)");
-            this.database.prepareAndStoreStatement(User.class, "update",   "UPDATE {{users}} SET language=? WHERE id=?");
-            this.database.prepareAndStoreStatement(User.class, "merge",    "INSERT INTO {{users}} (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
-            this.database.prepareAndStoreStatement(User.class, "delete",   "DELETE FROM {{users}} WHERE id=? LIMIT 1");
-            this.database.prepareAndStoreStatement(User.class, "clear",    "DELETE FROM {{users}}");
+            this.database.prepareAndStoreStatement(User.class, "get",      "SELECT id,name,language FROM users WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement(User.class, "getall",   "SELECT id,name,language FROM users");
+            this.database.prepareAndStoreStatement(User.class, "store",    "INSERT INTO users (name,flags,language) VALUES (?,?,?)");
+            this.database.prepareAndStoreStatement(User.class, "update",   "UPDATE users SET language=? WHERE id=?");
+            this.database.prepareAndStoreStatement(User.class, "merge",    "INSERT INTO users (name,language) VALUES (?,?) ON DUPLICATE KEY UPDATE language=values(language)");
+            this.database.prepareAndStoreStatement(User.class, "delete",   "DELETE FROM users WHERE id=? LIMIT 1");
+            this.database.prepareAndStoreStatement(User.class, "clear",    "DELETE FROM users");
         }
         catch (SQLException e)
         {
@@ -45,12 +46,16 @@ public class UserStorage implements Storage<User>
         try
         {
             this.database.execute(
-                "CREATE TABLE IF NOT EXISTS `{{users}}` (" +
-                "  `id` int(11) unsigned NOT NULL AUTO_INCREMENT," +
-                "  `name` varchar(16) NOT NULL," +
-                "  `language` varchar(10) NOT NULL," +
-                "  PRIMARY KEY (`id`)" +
-                ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;"
+                this.database.buildQuery().initialize()
+                .createTable("users", true)
+                .startFields()
+                .field("id", AttrType.INT, 0, true, true, true)
+                .field("name", AttrType.VARCHAR,16,true)
+                .field("language", AttrType.VARCHAR,10,true)
+                .primaryKey("id")
+                .endFields()
+                .engine("MyISAM").defaultcharset("latin1").autoIncrement(1)
+                .endCreateTable().end()
             );
         }
         catch (SQLException ex)

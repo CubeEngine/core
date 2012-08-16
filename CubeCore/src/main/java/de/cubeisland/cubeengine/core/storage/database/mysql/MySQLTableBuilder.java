@@ -23,22 +23,21 @@ public class MySQLTableBuilder implements TableBuilder
         switch (actionIfExists)
         {
             case 1: // DO NOTHING
-                this.query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(tablename);
+                this.query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(tablename).append(" ");
                 break;
             case 2: // REPLACE
-                this.query = new StringBuilder("DROP TABLE IF EXISTS ").append(tablename).append(";CREATE TABLE ").append(tablename);
+                this.query = new StringBuilder("DROP TABLE IF EXISTS ").append(tablename).append(" ")
+                                                                       .append(";CREATE TABLE ").append(tablename).append(" ");
                 break;
             default:
                 throw new IllegalArgumentException("Unknown action!");
         }
-
-        this.fieldCounter = 0;
     }
 
     public TableBuilder startFields()
     {
         this.query.append("(");
-
+        this.fieldCounter = 0;
         return this;
     }
 
@@ -50,6 +49,11 @@ public class MySQLTableBuilder implements TableBuilder
     public TableBuilder field(String name, AttrType type, int length)
     {
         return this.field(name, type, length, true);
+    }
+    
+    public TableBuilder field(String name, AttrType type, boolean notnull)
+    {
+        return this.field(name, type, 0, true);
     }
 
     public TableBuilder field(String name, AttrType type, int length, boolean notnull)
@@ -64,23 +68,23 @@ public class MySQLTableBuilder implements TableBuilder
 
     public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai)
     {
-        if (this.fieldCounter > this.fieldCounter)
+        if (this.fieldCounter > 0)
         {
             this.query.append(",");
         }
-        this.query.append(this.database.quote(name)).append(" ").append(type.name());
+        this.query.append(this.database.quote(name)).append(" ").append(type.name()).append(" ");
         if (length > 0)
         {
-            this.query.append("(").append(length).append(")");
+            this.query.append("(").append(length).append(") ");
         }
-        this.query.append(notnull ? "NOT NULL" : "NULL");
         if (unsigned)
         {
-            this.query.append(" UNSIGNED");
+            this.query.append("UNSIGNED ");
         }
+        this.query.append(notnull ? "NOT NULL " : "NULL ");
         if (ai)
         {
-            this.query.append(" AUTO_INCREMENT");
+            this.query.append("AUTO_INCREMENT ");
         }
         this.fieldCounter++;
 
@@ -89,25 +93,25 @@ public class MySQLTableBuilder implements TableBuilder
 
     public TableBuilder primaryKey(String key)
     {
-        this.query.append("PRIMARY KEY (").append(this.database.quote(key)).append(")");
+        this.query.append(", PRIMARY KEY (").append(this.database.quote(key)).append(") ");
         return this;
     }
 
     public TableBuilder foreignKey(String key)
     {
-        this.query.append("FOREIGN KEY (").append(this.database.quote(key)).append(")");
+        this.query.append(", FOREIGN KEY (").append(this.database.quote(key)).append(") ");
         return this;
     }
 
     public TableBuilder references(String otherTable, String key)
     {
-        this.query.append("REFERENCES ").append(this.database.quote(otherTable)).append("(").append(this.database.quote(key)).append(")");
+        this.query.append("REFERENCES ").append(this.database.quote(otherTable)).append(" (").append(this.database.quote(key)).append(") ");
         return this;
     }
 
     public TableBuilder endFields()
     {
-        this.query.append(")");
+        this.query.append(") ");
         this.fieldCounter = -1;
 
         return this;
@@ -115,19 +119,19 @@ public class MySQLTableBuilder implements TableBuilder
 
     public TableBuilder engine(String engine)
     {
-        this.query.append(" ENGINE=").append(engine);
+        this.query.append("ENGINE=").append(engine).append(" ");
         return this;
     }
 
     public TableBuilder defaultcharset(String charset)
     {
-        this.query.append(" DEFAULT CHARSET=").append(charset);
+        this.query.append("DEFAULT CHARSET=").append(charset).append(" ");
         return this;
     }
 
     public TableBuilder autoIncrement(int n)
     {
-        this.query.append(" AUTO_INCREMENT=").append(n);
+        this.query.append("AUTO_INCREMENT=").append(n).append(" ");
         return this;
     }
 

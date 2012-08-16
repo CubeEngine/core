@@ -54,6 +54,12 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         return new MySQLUpdateBuilder(this);
     }
+    
+    public UpdateBuilder onDuplicateUpdate()
+    {
+        query.append("ON DUPLICATE KEY ");
+        return new MySQLUpdateBuilder(this);
+    }
 
     public DeleteBuilder delete()
     {

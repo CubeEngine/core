@@ -11,6 +11,8 @@ public interface QueryBuilder
     public SelectBuilder select();
     
     public UpdateBuilder update();
+    
+    public UpdateBuilder onDuplicateUpdate();
 
     public DeleteBuilder delete();
 

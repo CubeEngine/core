@@ -140,7 +140,7 @@ public class ModuleLoader
         for (String dep : info.getSoftDependencies())
         {
             try
-            {
+            {                                     //TODO STACKOVERFLOW
                 clazz = this.classLoaders.get(dep).findClass(name);
                 if (clazz != null)
                 {
