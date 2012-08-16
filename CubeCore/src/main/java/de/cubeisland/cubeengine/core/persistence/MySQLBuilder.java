@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.persistence;
 
 import de.cubeisland.cubeengine.core.persistence.database.Database;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
  *
@@ -9,36 +10,59 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
  */
 public class MySQLBuilder implements QueryBuilder
 {
-    private StringBuilder query;
-    private StringBuilder queryend;
-    private Database database;
+    protected StringBuilder query;
+    protected Database database;
 
     public MySQLBuilder(Database database)
     {
-        this.query = new StringBuilder();
-        this.queryend = new StringBuilder();
+        this.query = null;
         this.database = database;
     }
 
-    public QueryBuilder select(String... col)
+    public QueryBuilder select(String... cols)
     {
-        query.append(" SELECT ").append(StringUtils.implode(",", col));
+        this.query = new StringBuilder("SELECT ");
+        if (cols.length == 0)
+        {
+            this.query.append('*');
+        }
+        else
+        {
+            this.query.append(this.database.quote(cols[0]));
+            if (cols.length > 1)
+            {
+                for (int i = 0; i < cols.length; ++i)
+                {
+                    this.query.append(',').append(this.database.quote(cols[i]));
+                }
+            }
+        }
+        
         return this;
     }
 
-    public QueryBuilder from(String table)
+    public QueryBuilder from(String... tables)
     {
-        query.append(" FROM ").append(this.quote(table));
+        Validate.isTrue(tables.length > 0, "You need to specify at least one table!");
+        
+        this.query.append(" FROM ").append(this.database.quote(tables[0]));
+        if (tables.length > 1)
+        {
+            for (int i = 0; i < tables.length; ++i)
+            {
+                this.query.append(',').append(this.database.quote(tables[i]));
+            }
+        }
         return this;
     }
 
     public QueryBuilder delete()
     {
-        query.append(" DELETE");
+        query.append("DELETE");
         return this;
     }
 
-    public QueryBuilder insertInto(String table, String... col)
+    public QueryBuilder insertInto(String table, String... col) // TODO multitable support
     {
         query.append(" INSERT INTO ").append(this.database.quote(table)).append(" (").append(StringUtils.implode(",", col)).append(")");
         return this;
@@ -56,7 +80,7 @@ public class MySQLBuilder implements QueryBuilder
 
     public QueryBuilder orderBy(String col)
     {
-        query.append(" ORDER BY ").append(col);
+        query.append(" ORDER BY ").append(this.database.quote(col));
         return this;
     }
 
@@ -68,7 +92,7 @@ public class MySQLBuilder implements QueryBuilder
 
     public QueryBuilder where(String... conditions)
     {
-        query.append(" WHERE ").append(StringUtils.implode("=? AND ", conditions)).append("=?");
+        query.append(" WHERE ").append(StringUtils.implode("=? AND ", conditions)).append("=?"); // TODO what if we want to link via OR ?
         return this;
     }
 
@@ -78,45 +102,21 @@ public class MySQLBuilder implements QueryBuilder
         return this;
     }
 
-    public QueryBuilder createTable(TableBuilder tb, boolean ifNoExist)
+    public TableBuilder createTable(String name, boolean ifNoExist)
     {
-        query.append(" CREATE TABLE");
-        if (ifNoExist)
-        {
-            query.append(" IF NOT EXISTS ");
-        }
-        query.append(tb.toString());
-        return this;
+        return new MySQLTableBuilder(this, name, ifNoExist ? 1 : 2);
     }
 
+    @Override
+    public String end()
+    {
+        return this.query.toString();
+    }
     
-
-    public QueryBuilder engine(String engine)
+    public QueryBuilder clear()
     {
-        queryend.append(" ENGINE=").append(engine);
+        this.query = null;
+        
         return this;
     }
-
-    public QueryBuilder defaultcharset(String charset)
-    {
-        queryend.append(" DEFAULT CHARSET=").append(charset);
-        return this;
-    }
-
-    public QueryBuilder autoincrement(int n)
-    {
-        queryend.append(" AUTO_INCREMENT=").append(n);
-        return this;
-    }
-
-    private String quote(String s)
-    {
-        return this.database.quote(s);
-    }
-
-    public String toString()
-    {
-        return query.toString() + queryend.toString();
-    }
-
 }

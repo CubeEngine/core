@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.persistence.database;
 
 import de.cubeisland.cubeengine.core.DatabaseConfiguration;
+import de.cubeisland.cubeengine.core.persistence.MySQLBuilder;
+import de.cubeisland.cubeengine.core.persistence.QueryBuilder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -160,5 +162,10 @@ public class Database
             return result.getInt("GENERATED_KEY");
         }
         throw new SQLException("Failed to retrieve the last inserted ID!");
+    }
+    
+    public QueryBuilder buildQuery()
+    {
+        return new MySQLBuilder(this);
     }
 }
