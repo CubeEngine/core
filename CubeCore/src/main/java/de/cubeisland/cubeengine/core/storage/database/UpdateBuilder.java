@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.storage.database;
  *
  * @author Phillip Schichtel
  */
-public interface UpdateBuilder extends ConditionalBuilder
+public interface UpdateBuilder extends OrderedBuilder<UpdateBuilder>
 {
     public UpdateBuilder tables(String... tables);
     

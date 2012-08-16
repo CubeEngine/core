@@ -26,7 +26,7 @@ public class MySQLDatabase extends AbstractDatabase
     public MySQLDatabase(String host, short port, String user, String pass, String name, String tablePrefix) throws SQLException
     {
         super();
-        this.queryBuilder = new MySQLBuilder(this);
+        this.queryBuilder = new MySQLQueryBuilder(this);
         try
         {
             Class.forName("com.mysql.jdbc.Driver");

@@ -11,12 +11,12 @@ import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
  */
 public class MySQLTableBuilder implements TableBuilder
 {
-    private MySQLBuilder builder;
+    private MySQLQueryBuilder builder;
     private StringBuilder query;
     private MySQLDatabase database;
     private int fieldCounter;
     
-    public MySQLTableBuilder(MySQLBuilder builder, String tablename, int actionIfExists)
+    public MySQLTableBuilder(MySQLQueryBuilder builder, String tablename, int actionIfExists)
     {
         this.builder = builder;
         this.database = builder.database;

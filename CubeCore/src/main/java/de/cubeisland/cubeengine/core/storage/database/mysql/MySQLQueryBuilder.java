@@ -1,8 +1,11 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
+import de.cubeisland.cubeengine.core.storage.database.DeleteBuilder;
+import de.cubeisland.cubeengine.core.storage.database.InsertBuilder;
 import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.SelectBuilder;
 import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.storage.database.UpdateBuilder;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Validate;
 
@@ -10,38 +13,38 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public class MySQLBuilder implements QueryBuilder
+public class MySQLQueryBuilder implements QueryBuilder
 {
     protected StringBuilder query;
     protected MySQLDatabase database;
 
-    public MySQLBuilder(MySQLDatabase database)
+    public MySQLQueryBuilder(MySQLDatabase database)
     {
         this.query = null;
         this.database = database;
     }
 
-    public QueryBuilder select(String... cols)
-    {
-        this.query = new StringBuilder("SELECT ");
-        if (cols.length == 0)
-        {
-            this.query.append('*');
-        }
-        else
-        {
-            this.query.append(this.database.quote(cols[0]));
-            if (cols.length > 1)
-            {
-                for (int i = 0; i < cols.length; ++i)
-                {
-                    this.query.append(',').append(this.database.quote(cols[i]));
-                }
-            }
-        }
-        
-        return this;
-    }
+//    public QueryBuilder select(String... cols)
+//    {
+//        this.query = new StringBuilder("SELECT ");
+//        if (cols.length == 0)
+//        {
+//            this.query.append('*');
+//        }
+//        else
+//        {
+//            this.query.append(this.database.quote(cols[0]));
+//            if (cols.length > 1)
+//            {
+//                for (int i = 0; i < cols.length; ++i)
+//                {
+//                    this.query.append(',').append(this.database.quote(cols[i]));
+//                }
+//            }
+//        }
+//        
+//        return this;
+//    }
 
     public QueryBuilder from(String... tables)
     {
@@ -120,5 +123,30 @@ public class MySQLBuilder implements QueryBuilder
         this.query = null;
         
         return this;
+    }
+
+    public InsertBuilder insert(String... cols)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public SelectBuilder select(String... col)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public UpdateBuilder update(String... tables)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public DeleteBuilder delete(String table)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public QueryBuilder dropTable()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
