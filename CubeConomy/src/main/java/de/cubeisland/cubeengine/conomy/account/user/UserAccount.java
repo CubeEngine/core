@@ -16,7 +16,7 @@ public class UserAccount extends AccountModel
 {
     @Key
     @Attribute(type= AttrType.INT)
-    private final User user;
+    protected final User user;
     
     public UserAccount(User user, double start)
     {

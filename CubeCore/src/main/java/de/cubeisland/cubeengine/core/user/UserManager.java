@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import gnu.trove.map.hash.THashMap;
 import java.sql.SQLException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;

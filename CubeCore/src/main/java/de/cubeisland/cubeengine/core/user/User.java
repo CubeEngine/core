@@ -16,14 +16,13 @@ public class User extends UserBase
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true)
-    private int id;
+    protected int id;
     
-    @Attribute(type = AttrType.VARCHAR, length=16)
-    private final OfflinePlayer player;
+    @Attribute(name = "name", type = AttrType.VARCHAR, length = 16)
+    protected final OfflinePlayer player;
     
-    @Attribute(type = AttrType.VARCHAR, length=5)
-    private String language;
-    
+    @Attribute(name = "language", type = AttrType.VARCHAR, length = 5)
+    protected String language;
     
     public static final int BLOCK_FLY = 1;
 

@@ -51,12 +51,13 @@ public class MySQLDatabase extends AbstractDatabase
         return QUOTE + StringUtils.implode(QUOTE + "." + QUOTE, StringUtils.explode(".", name)) + QUOTE;
     }
     
-    public String[] quote(String... names)
+    public String[] quote(String[] names)
     {
+        String[] quoted = new String[names.length];
         for (int i = 0 ; i < names.length; ++i)
         {
-            names[i] = this.quote(names[i]);
+            quoted[i] = this.quote(names[i]);
         }
-        return names;    
+        return quoted;    
     }
 }

@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 public abstract class AccountModel implements IAccount
 {
     @Attribute(name="balance",type= AttrType.DOUBLE)
-    private double balance;
+    protected double balance;
     
     /**
      * Returns the Name of this Account

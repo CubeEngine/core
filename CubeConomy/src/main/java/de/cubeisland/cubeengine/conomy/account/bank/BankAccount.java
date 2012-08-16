@@ -16,10 +16,10 @@ public class BankAccount extends AccountModel
     
     @Key
     @Attribute(type= AttrType.INT)
-    private int key;
+    protected int key;
     
     @Attribute(type= AttrType.VARCHAR,length=16)
-    private final String name;
+    protected final String name;
     
     public BankAccount(int key, String name, double start)
     {

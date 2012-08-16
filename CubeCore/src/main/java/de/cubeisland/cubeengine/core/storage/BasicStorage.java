@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  *
@@ -43,7 +44,7 @@ public abstract class BasicStorage<V> implements Storage<V>
         final LinkedList<String> attributes = new LinkedList<String>();
         Attribute attribute;
         TableBuilder tbuilder = builder.createTable(TABLE, true).startFields();
-        for (Field field : this.model.getFields())
+        for (Field field : this.model.getDeclaredFields())
         {
             attribute = field.getAnnotation(Attribute.class);
             if (attribute != null)
@@ -102,11 +103,12 @@ public abstract class BasicStorage<V> implements Storage<V>
     {
         try
         {
+            String[] allvalues = (String[])ArrayUtils.addAll(keys, attributes);
             String attr = StringUtils.implode(",", attributes);
             QueryBuilder builder = this.database.buildQuery();
             this.database.prepareAndStoreStatement(model, "get", 
                  builder.initialize()
-                        .select().cols(keys[0],attr)
+                        .select().cols(allvalues)
                         .from(tablename)
                           .beginWhere()
                           .col(keys[0]).op(OrderedBuilder.EQUAL).value()
@@ -114,7 +116,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                         .end().end());
             this.database.prepareAndStoreStatement(model, "getall", 
                  builder.initialize()
-                        .select().cols(keys[0],attr)
+                        .select().cols(allvalues)
                         .from(tablename)
                         .end().end());
             this.database.prepareAndStoreStatement(model, "store", 
