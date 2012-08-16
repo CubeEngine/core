@@ -27,7 +27,7 @@ public abstract class BasicStorage<V> implements Storage<V>
     {
         this.database = database;
         this.model = model;
-        this.TABLE = this.database.prefix(this.model.getAnnotation(Entity.class).name());
+        this.TABLE = this.database.prefix(this.model.getAnnotation(Entity.class).name(), false);
         if (!model.isAnnotationPresent(Entity.class))
         {
             throw new IllegalArgumentException("Every model needs the Entity annotation!");
@@ -95,7 +95,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                 //TODO AI if no ai
                 .autoIncrement(1);
         this.database.execute(tbuilder.endCreateTable().end());
-        this.prepareStatements((String[])keys.toArray(),(String[])attributes.toArray(),TABLE);
+        this.prepareStatements(keys.toArray(new String[keys.size()]),attributes.toArray(new String[keys.size()]),TABLE);
     }
 
     private void prepareStatements(String[] keys, String[] attributes, String tablename)

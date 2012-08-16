@@ -15,5 +15,5 @@ public @interface Entity
 {
     public String name();
     public String engine() default "InnoDB";
-    public String charset() default "utf8_general_ci";
+    public String charset() default "utf8";//utf8_general_ci  <- unknown charset
 }

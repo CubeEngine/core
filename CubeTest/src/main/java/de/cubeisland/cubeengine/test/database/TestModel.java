@@ -17,11 +17,14 @@ public class TestModel
     @Attribute(type = AttrType.INT, unsigned = true)
     public int id = -1;
     
-    @Attribute(name = "teststring", type = AttrType.VARCHAR)
+    @Attribute(name = "string", type = AttrType.VARCHAR, length=16)
     public String stringvalue = "Cookies";
     
-    @Attribute(name= "testbool", type = AttrType.BOOLEAN)
+    @Attribute(name= "bool", type = AttrType.BOOLEAN)
     public boolean boolvalue = true;
+    
+    @Attribute(name= "time", type = AttrType.TIMESTAMP)
+    public long timevalue = 0;
     
     public Integer getKey()
     {
