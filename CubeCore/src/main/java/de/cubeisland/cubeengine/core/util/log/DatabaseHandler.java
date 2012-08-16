@@ -34,7 +34,7 @@ public class DatabaseHandler extends Handler
                 .field("message", AttrType.TEXT, true)
                 .primaryKey("id")
                 .endFields()
-                .engine("MyISAM").defaultcharset("utf8").autoIncrement(1)
+                .engine("InnoDB").defaultcharset("utf8").autoIncrement(1)
                 .endCreateTable().end()
                 );
             
