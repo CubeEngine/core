@@ -4,14 +4,13 @@ import de.cubeisland.cubeengine.core.persistence.AttrType;
 import de.cubeisland.cubeengine.core.persistence.Attribute;
 import de.cubeisland.cubeengine.core.persistence.Entity;
 import de.cubeisland.cubeengine.core.persistence.Key;
-import de.cubeisland.cubeengine.core.persistence.Model;
 
 /**
  *
  * @author Anselm Brehme
  */
 @Entity(name = "test")
-public class TestModel implements Model<Integer>
+public class TestModel
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true)

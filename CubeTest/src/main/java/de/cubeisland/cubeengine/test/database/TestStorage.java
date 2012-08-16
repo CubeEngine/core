@@ -9,15 +9,14 @@ import java.util.Collection;
  *
  * @author Anselm Brehme
  */
-public class TestStorage extends BasicStorage<Integer, TestModel>
+public class TestStorage extends BasicStorage<TestModel>
 {
-
     public TestStorage(Database database)
     {
         super(database, TestModel.class);
     }
-    
-    public TestModel get(Integer key)
+
+    public TestModel get(Object key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -47,7 +46,7 @@ public class TestStorage extends BasicStorage<Integer, TestModel>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean delete(Integer key)
+    public boolean deleteByKey(Object key)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -56,5 +55,4 @@ public class TestStorage extends BasicStorage<Integer, TestModel>
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 }
