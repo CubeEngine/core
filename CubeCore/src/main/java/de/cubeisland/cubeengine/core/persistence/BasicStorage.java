@@ -1,6 +1,10 @@
 package de.cubeisland.cubeengine.core.persistence;
 
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.database.AttrType;
+import de.cubeisland.cubeengine.core.persistence.database.Attribute;
+import de.cubeisland.cubeengine.core.persistence.database.Entity;
+import de.cubeisland.cubeengine.core.persistence.database.Key;
+import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -15,10 +19,10 @@ import java.util.Locale;
  */
 public abstract class BasicStorage<V> implements Storage<V>
 {
-    private final Database database;
+    private final MySQLDatabase database;
     private final Class<V> model;
 
-    public BasicStorage(Database database, Class<V> model)
+    public BasicStorage(MySQLDatabase database, Class<V> model)
     {
         this.database = database;
         this.model = model;

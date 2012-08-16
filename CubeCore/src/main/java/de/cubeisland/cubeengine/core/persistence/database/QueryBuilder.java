@@ -1,4 +1,6 @@
-package de.cubeisland.cubeengine.core.persistence;
+package de.cubeisland.cubeengine.core.persistence.database;
+
+import de.cubeisland.cubeengine.core.persistence.database.TableBuilder;
 
 /**
  *

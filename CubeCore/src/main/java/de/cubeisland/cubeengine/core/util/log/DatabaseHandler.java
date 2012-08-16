@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.util.log;
 
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Handler;
@@ -13,10 +13,10 @@ import java.util.logging.LogRecord;
  */
 public class DatabaseHandler extends Handler
 {
-    private final Database db;
+    private final MySQLDatabase db;
     private final String TABLE;
 
-    public DatabaseHandler(Level level, Database db, String table)
+    public DatabaseHandler(Level level, MySQLDatabase db, String table)
     {
         this.setLevel(level);
         this.db = db;

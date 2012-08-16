@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Validate;
@@ -152,7 +152,7 @@ public abstract class Module
      *
      * @return the database
      */
-    public Database getDatabase()
+    public MySQLDatabase getDatabase()
     {
         return this.core.getDB();
     }

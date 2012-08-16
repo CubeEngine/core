@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.persistence;
+package de.cubeisland.cubeengine.core.persistence.database;
 
 /**
  *

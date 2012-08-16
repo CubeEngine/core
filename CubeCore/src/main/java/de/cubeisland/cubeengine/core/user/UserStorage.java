@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.persistence.Storage;
 import de.cubeisland.cubeengine.core.persistence.StorageException;
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,10 +17,10 @@ import org.bukkit.Server;
  */
 public class UserStorage implements Storage<User>
 {
-    private final Database database;
+    private final MySQLDatabase database;
     private final Server server;
 
-    public UserStorage(Database database, Server server)
+    public UserStorage(MySQLDatabase database, Server server)
     {
         this.database = database;
         this.server = server;

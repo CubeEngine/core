@@ -1,6 +1,8 @@
-package de.cubeisland.cubeengine.core.persistence;
+package de.cubeisland.cubeengine.core.persistence.database.mysql;
 
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.persistence.database.TableBuilder;
+import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Validate;
 
@@ -11,9 +13,9 @@ import de.cubeisland.cubeengine.core.util.Validate;
 public class MySQLBuilder implements QueryBuilder
 {
     protected StringBuilder query;
-    protected Database database;
+    protected MySQLDatabase database;
 
-    public MySQLBuilder(Database database)
+    public MySQLBuilder(MySQLDatabase database)
     {
         this.query = null;
         this.database = database;

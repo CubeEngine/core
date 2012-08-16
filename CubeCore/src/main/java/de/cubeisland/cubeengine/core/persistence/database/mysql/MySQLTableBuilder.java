@@ -1,6 +1,9 @@
-package de.cubeisland.cubeengine.core.persistence;
+package de.cubeisland.cubeengine.core.persistence.database.mysql;
 
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.database.AttrType;
+import de.cubeisland.cubeengine.core.persistence.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.persistence.database.TableBuilder;
+import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
 
 /**
  *
@@ -10,7 +13,7 @@ public class MySQLTableBuilder implements TableBuilder
 {
     private MySQLBuilder builder;
     private StringBuilder query;
-    private Database database;
+    private MySQLDatabase database;
     private int fieldCounter;
     
     public MySQLTableBuilder(MySQLBuilder builder, String tablename, int actionIfExists)

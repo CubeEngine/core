@@ -9,8 +9,8 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
-import de.cubeisland.cubeengine.core.persistence.AttrType;
-import de.cubeisland.cubeengine.core.persistence.database.Database;
+import de.cubeisland.cubeengine.core.persistence.database.AttrType;
+import de.cubeisland.cubeengine.core.persistence.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.persistence.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.persistence.filesystem.config.Configuration;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -34,7 +34,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 @BukkitDependend("This is the bukkit plugin")
 public class BukkitCore extends JavaPlugin implements Core
 {
-    private Database database;
+    private MySQLDatabase database;
     private PermissionRegistration permissionRegistration;
     private UserManager userManager;
     private FileManager fileManager;
@@ -84,7 +84,7 @@ public class BukkitCore extends JavaPlugin implements Core
         try
         {
             DatabaseConfiguration databaseConfig = Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml"));
-            this.database = new Database(databaseConfig);
+            this.database = new MySQLDatabase(databaseConfig);
         }
         catch (SQLException e)
         {
@@ -153,7 +153,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
     }
 
-    public Database getDB()
+    public MySQLDatabase getDB()
     {
         return this.database;
     }
