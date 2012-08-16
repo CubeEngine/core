@@ -40,7 +40,7 @@ public class DatabaseHandler extends Handler
             
             this.db.prepareAndStoreStatement(this.getClass(), "insert", 
                 this.db.buildQuery().initialize()
-                                    .insert().into(this.db.prefix(TABLE))
+                                    .insert().into(this.db.prefix(TABLE, false))
                                     .cols("timestamp","level","logger","message").values(4)
                                     .end().end());
             this.db.prepareAndStoreStatement(this.getClass(), "clear", "TRUNCATE {{" + TABLE + "}}");
