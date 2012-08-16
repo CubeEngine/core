@@ -15,35 +15,36 @@ import java.util.logging.LogRecord;
 public class DatabaseHandler extends Handler
 {
     private final MySQLDatabase db;
-    private final String TABLE;
+    private final String table;
 
     public DatabaseHandler(Level level, MySQLDatabase db, String table)
     {
         this.setLevel(level);
         this.db = db;
-        this.TABLE = table;
+        this.table = table;
         try
         {
-            this.db.execute(this.db.buildQuery().initialize()
-                .createTable(this.db.prefix(TABLE, false), true)
+            this.db.execute(this.db.buildQuery()
+                .createTable(this.db.prefix(table, false), true)
                 .startFields()
-                .field("id", AttrType.INT, 11, true, true, true)
-                .field("timestamp", AttrType.TIMESTAMP, true)
-                .field("level", AttrType.VARCHAR,20,true)
-                .field("logger", AttrType.VARCHAR, 50, true)
-                .field("message", AttrType.TEXT, true)
-                .primaryKey("id")
+                    .field("id", AttrType.INT, 11, true, true, true)
+                    .field("timestamp", AttrType.TIMESTAMP, true)
+                    .field("level", AttrType.VARCHAR,20,true)
+                    .field("logger", AttrType.VARCHAR, 50, true)
+                    .field("message", AttrType.TEXT, true)
+                    .primaryKey("id")
                 .endFields()
                 .engine("InnoDB").defaultcharset("utf8").autoIncrement(1)
-                .endCreateTable().end()
-                );
+                .endCreateTable()
+            .end());
             
-            this.db.prepareAndStoreStatement(this.getClass(), "insert", 
-                this.db.buildQuery().initialize()
-                                    .insert().into(this.db.prefix(TABLE, false))
-                                    .cols("timestamp","level","logger","message").values(4)
-                                    .end().end());
-            this.db.prepareAndStoreStatement(this.getClass(), "clear", "TRUNCATE {{" + TABLE + "}}");
+            this.db.prepareAndStoreStatement(this.getClass(), "insert", this.db.buildQuery()
+                .insert().into(this.db.prefix(table, false))
+                .cols("timestamp","level","logger","message")
+                .values(4)
+                .end()
+            .end());
+            this.db.prepareAndStoreStatement(this.getClass(), "clear", "TRUNCATE {{" + table + "}}");
         }
         catch (SQLException e)
         {

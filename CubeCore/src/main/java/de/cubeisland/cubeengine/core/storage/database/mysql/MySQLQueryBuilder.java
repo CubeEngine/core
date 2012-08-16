@@ -15,16 +15,32 @@ public class MySQLQueryBuilder implements QueryBuilder
 {
     protected StringBuilder query;
     protected MySQLDatabase database;
+    
+    private MySQLInsertBuilder insertBuilder;
+    private MySQLSelectBuilder selectBuilder;
+    private MySQLUpdateBuilder updateBuilder;
+    private MySQLDeleteBuilder deleteBuilder;
+    private MySQLTableBuilder tableBuilder;
 
     public MySQLQueryBuilder(MySQLDatabase database)
     {
-        this.query = null;
         this.database = database;
+        
+        this.query = null;
+        this.insertBuilder = null;
+        this.selectBuilder = null;
+        this.updateBuilder = null;
+        this.deleteBuilder = null;
+        this.tableBuilder = null;
     }
 
     public TableBuilder createTable(String name, boolean ifNoExist)
     {
-        return new MySQLTableBuilder(this, name, ifNoExist ? 1 : 2);
+        if (this.tableBuilder == null)
+        {
+            this.tableBuilder = new MySQLTableBuilder(this);
+        }
+        return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
     }
 
     public String end()
@@ -42,39 +58,66 @@ public class MySQLQueryBuilder implements QueryBuilder
 
     public InsertBuilder insert()
     {
-        return new MySQLInsertBuilder(this);
+        if (this.insertBuilder == null)
+        {
+            this.insertBuilder = new MySQLInsertBuilder(this);
+        }
+        this.init();
+        return this.insertBuilder;
     }
 
-    public SelectBuilder select()
+    public SelectBuilder select(String... cols)
     {
-        return new MySQLSelectBuilder(this);
+        if (this.selectBuilder == null)
+        {
+            this.selectBuilder = new MySQLSelectBuilder(this);
+        }
+        this.init();
+        return selectBuilder.cols(cols);
     }
 
-    public UpdateBuilder update()
+    public UpdateBuilder update(String... tables)
     {
-        return new MySQLUpdateBuilder(this);
+        if (this.updateBuilder == null)
+        {
+            this.updateBuilder = new MySQLUpdateBuilder(this);
+        }
+        this.init();
+        return this.updateBuilder.tables(tables);
     }
     
     public UpdateBuilder onDuplicateUpdate()
     {
         this.query.append("ON DUPLICATE KEY ");
-        return new MySQLUpdateBuilder(this);
+        return this.update();
     }
 
     public DeleteBuilder delete()
     {
-        return new MySQLDeleteBuilder(this);
+        if (this.deleteBuilder == null)
+        {
+            this.deleteBuilder = new MySQLDeleteBuilder(this);
+        }
+        this.init();
+        return this.deleteBuilder;
     }
 
     public QueryBuilder dropTable(String table)
     {
+        this.init();
         this.query.append("DROP TABLE ").append(this.database.quote(table));
         return this;
     }
 
-    public QueryBuilder initialize()
+    public QueryBuilder customSql(String sql)
+    {
+        this.query.append(sql);
+        
+        return this;
+    }
+
+    private void init()
     {
         this.query = new StringBuilder();
-        return this;
     }
 }

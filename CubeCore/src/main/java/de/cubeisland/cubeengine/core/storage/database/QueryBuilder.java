@@ -8,9 +8,9 @@ public interface QueryBuilder
 {
     public InsertBuilder insert();
 
-    public SelectBuilder select();
+    public SelectBuilder select(String... tables);
     
-    public UpdateBuilder update();
+    public UpdateBuilder update(String... tables);
     
     public UpdateBuilder onDuplicateUpdate();
 
@@ -24,5 +24,5 @@ public interface QueryBuilder
     
     public QueryBuilder clear();
     
-    public QueryBuilder initialize();
+    public QueryBuilder customSql(String sql);
 }

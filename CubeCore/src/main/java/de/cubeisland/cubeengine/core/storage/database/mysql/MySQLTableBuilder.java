@@ -15,10 +15,14 @@ public class MySQLTableBuilder implements TableBuilder
     private MySQLDatabase database;
     private int fieldCounter;
 
-    public MySQLTableBuilder(MySQLQueryBuilder builder, String tablename, int actionIfExists)
+    public MySQLTableBuilder(MySQLQueryBuilder builder)
     {
         this.builder = builder;
         this.database = builder.database;
+    }
+    
+    protected TableBuilder create(String tablename, int actionIfExists)
+    {
         tablename = this.database.quote(tablename);
         switch (actionIfExists)
         {
@@ -32,6 +36,7 @@ public class MySQLTableBuilder implements TableBuilder
             default:
                 throw new IllegalArgumentException("Unknown action!");
         }
+        return this;
     }
 
     public TableBuilder startFields()

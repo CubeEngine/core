@@ -9,30 +9,39 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
  */
 public class MySQLUpdateBuilder extends MySQLOrderedBuilder<UpdateBuilder> implements UpdateBuilder
 {
+    private int setCounter;
+    
     public MySQLUpdateBuilder(MySQLQueryBuilder querybuilder)
     {
         this.queryBuilder = querybuilder;
         this.database = querybuilder.database;
         this.query = new StringBuilder();
-        this.query.append("UPDATE ");
     }
     
 
     public UpdateBuilder tables(String... tables)
     {
+        this.setCounter = 0;
+        this.query.append("UPDATE ");
         this.query.append(StringUtils.implode(",", this.database.quote(tables))).append(" ");
         return this;
     }
 
-    public UpdateBuilder beginSets(String col)
+    public UpdateBuilder beginSets()
     {
-        this.query.append("SET ").append(this.database.quote(col)).append("=?");
+        this.query.append("SET ");
         return this;
     }
 
     public UpdateBuilder set(String col)
     {
-        this.query.append(",").append(this.database.quote(col)).append("=?");
+        if (this.setCounter > 0)
+        {
+            this.query.append(",");
+        }
+        ++this.setCounter;
+        
+        this.query.append(this.database.quote(col)).append("=?");
         return this;
     }
 

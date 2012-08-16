@@ -38,7 +38,7 @@ public abstract class BasicStorage<V> implements Storage<V>
     public void initialize() throws SQLException
     {
         Entity entity = this.model.getAnnotation(Entity.class);
-        QueryBuilder builder = this.database.buildQuery().initialize();
+        QueryBuilder builder = this.database.buildQuery();
 
         final LinkedList<String> keys = new LinkedList<String>();
         final LinkedList<String> attributes = new LinkedList<String>();
@@ -106,58 +106,63 @@ public abstract class BasicStorage<V> implements Storage<V>
             String[] allvalues = (String[])ArrayUtils.addAll(keys, attributes);
             String attr = StringUtils.implode(",", attributes);
             QueryBuilder builder = this.database.buildQuery();
-            this.database.prepareAndStoreStatement(model, "get", 
-                 builder.initialize()
-                        .select().cols(allvalues)
-                        .from(tablename)
-                          .beginWhere()
-                          .col(keys[0]).op(OrderedBuilder.EQUAL).value()
-                          .endWhere()
-                        .end().end());
-            this.database.prepareAndStoreStatement(model, "getall", 
-                 builder.initialize()
-                        .select().cols(allvalues)
-                        .from(tablename)
-                        .end().end());
-            this.database.prepareAndStoreStatement(model, "store", 
-                 builder.initialize()
-                        .insert().into(tablename)
-                        .cols(attr)
-                        .values(attr.length())
-                        .end().end());
-
-            this.database.prepareAndStoreStatement(model, "update", 
-                 builder.initialize()
-                        .update().tables(tablename)
-                        .set(attr)
-                          .beginWhere()
-                          .col(keys[0]).op(OrderedBuilder.EQUAL).value()
-                          .endWhere()
-                        .end().end());
-
-            this.database.prepareAndStoreStatement(model, "delete", 
-                 builder.initialize()
-                        .delete().from(tablename)
-                          .beginWhere()
-                          .col(keys[0]).op(OrderedBuilder.EQUAL).value()
-                          .endWhere()
-                        .limit(1)
-                        .end().end());
             
-            this.database.prepareAndStoreStatement(model, "clear", 
-                 builder.initialize()
-                        .delete().from(tablename)
-                        .end().end());
+            this.database.prepareAndStoreStatement(model, "get", builder
+                .select(allvalues)
+                .from(tablename)
+                .beginWhere()
+                    .col(keys[0]).op(OrderedBuilder.EQUAL).value()
+                .endWhere()
+                .end()
+            .end());
+            
+            this.database.prepareAndStoreStatement(model, "getall", builder
+                .select(allvalues)
+                .from(tablename)
+                .end()
+            .end());
+            
+            this.database.prepareAndStoreStatement(model, "store", builder
+                .insert().into(tablename)
+                .cols(attr)
+                .values(attr.length())
+                .end()
+            .end());
 
-            this.database.prepareAndStoreStatement(model, "merge", 
-                 builder.initialize()
-                        .insert().into(tablename)
-                        .cols(keys[0]+attr)
-                        .values(attr.length()+1)
-                        .end()
-                        .onDuplicateUpdate()
-                        .values(attr)
-                        .end().end());
+            this.database.prepareAndStoreStatement(model, "update", builder
+                .update(tablename)
+                .beginSets()
+                    .set(attr)
+                .endSets()
+                .beginWhere()
+                    .col(keys[0]).op(OrderedBuilder.EQUAL).value()
+                .endWhere()
+                .end()
+            .end());
+
+            this.database.prepareAndStoreStatement(model, "delete", builder
+                .delete().from(tablename)
+                .beginWhere()
+                    .col(keys[0]).op(OrderedBuilder.EQUAL).value()
+                .endWhere()
+                .limit(1)
+                .end()
+            .end());
+            
+            this.database.prepareAndStoreStatement(model, "clear", builder
+                .delete().from(tablename)
+                .end()
+            .end());
+
+            this.database.prepareAndStoreStatement(model, "merge", builder
+//                    .insert().into(tablename)
+//                    .cols(keys[0]+attr)
+//                    .values(attr.length()+1)
+//                    .end()
+//                    .onDuplicateUpdate()
+//                    .values(attr)
+//                    .end()
+            .end());
             /*
             
             this.database.prepareAndStoreStatement(model, "get", "SELECT " + keys[0] + "," + attr

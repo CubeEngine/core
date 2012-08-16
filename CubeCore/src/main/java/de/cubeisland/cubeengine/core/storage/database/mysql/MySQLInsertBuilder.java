@@ -18,12 +18,11 @@ class MySQLInsertBuilder implements InsertBuilder
     {
         this.queryBuilder = querybuilder;
         this.database = querybuilder.database;
-        this.query = new StringBuilder("INSERT ");
     }
 
     public InsertBuilder into(String... tables)
     {
-        this.query.append("INTO ").append(StringUtils.implode(",", database.quote(tables))).append(" ");
+        this.query = new StringBuilder("INSERT ").append("INTO ").append(StringUtils.implode(",", database.quote(tables))).append(" ");
         return this;
     }
 
@@ -42,7 +41,8 @@ class MySQLInsertBuilder implements InsertBuilder
     @Override
     public MySQLQueryBuilder end()
     {
-        this.queryBuilder.query.append(query.toString());
+        this.queryBuilder.query.append(this.query);
+        this.query = null;
         return this.queryBuilder;
     }
 }

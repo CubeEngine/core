@@ -12,25 +12,26 @@ public abstract class MySQLOrderedBuilder<T> extends MySQLConditionalBuilder<T> 
 {
     public T orderBy(String... cols)
     {
-        query.append("ORDER BY ").append(StringUtils.implode(",", database.quote(cols))).append(" ");
+        this.query.append("ORDER BY ").append(StringUtils.implode(",", database.quote(cols))).append(" ");
         return (T)this;
     }
 
     public T limit(int n)
     {
-        query.append("LIMIT ").append(n).append(" ");
+        this.query.append("LIMIT ").append(n).append(" ");
         return (T)this;
     }
 
     public T offset(int n)
     {
-        query.append("OFFSET ").append(n).append(" ");
+        this.query.append("OFFSET ").append(n).append(" ");
         return (T)this;
     }
 
     public QueryBuilder end()
     {
-        queryBuilder.query.append(query.toString());
-        return queryBuilder;
+        this.queryBuilder.query.append(this.query);
+        this.query = null;
+        return this.queryBuilder;
     }
 }
