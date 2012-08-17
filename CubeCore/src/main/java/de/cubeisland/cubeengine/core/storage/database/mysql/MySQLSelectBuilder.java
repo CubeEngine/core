@@ -1,29 +1,46 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.SelectBuilder;
-import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class MySQLSelectBuilder extends MySQLOrderedBuilder<SelectBuilder> implements SelectBuilder
+public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> implements SelectBuilder
 {
-    public MySQLSelectBuilder(MySQLQueryBuilder querybuilder)
+    protected MySQLSelectBuilder(MySQLQueryBuilder builder)
     {
-        this.queryBuilder = querybuilder;
-        this.database = querybuilder.database;
+        super(builder);
     }
 
     public SelectBuilder cols(String... cols)
     {
-        this.query = new StringBuilder("SELECT ").append(StringUtils.implode(",", this.database.quote(cols))).append(" ");
+        this.query = new StringBuilder("SELECT ");
+        if (cols.length == 0)
+        {
+            this.query.append('*');
+        }
+        else
+        {
+            this.query.append(this.prepareName(cols[0], false));
+            for (int i = 1; i < cols.length; ++i)
+            {
+                this.query.append(',').append(this.prepareName(cols[i], false));
+            }
+        }
         return this;
     }
 
     public SelectBuilder from(String... tables)
     {
-        this.query.append("FROM ").append(StringUtils.implode(",", this.database.quote(tables))).append(" ");
+        Validate.notEmpty(tables, "No tables specified!");
+        
+        this.query.append(" FROM ").append(this.prepareName(tables[0], true));
+        for (int i = 1; i < tables.length; ++i)
+        {
+            this.query.append(',').append(this.prepareName(tables[i], true));
+        }
         return this;
     }
 }

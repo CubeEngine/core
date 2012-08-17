@@ -1,108 +1,53 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
-import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
+import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
  *
  * @author Anselm Brehme
  */
-public abstract class MySQLConditionalBuilder<T> implements ConditionalBuilder<T>
+public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> extends MySQLBuilderBase implements ConditionalBuilder<T>
 {
-    protected Database database;
-    protected StringBuilder query;
-    protected MySQLQueryBuilder queryBuilder;
+    private WhereBuilder<T> whereBuilder;
+
+    protected MySQLConditionalBuilder(MySQLQueryBuilder builder)
+    {
+        super(builder);
+        this.whereBuilder = null;
+    }
+
+    public WhereBuilder<T> beginWhere()
+    {
+        if (this.whereBuilder == null)
+        {
+            this.whereBuilder = new MySQLWhereBuilder<T>((T)this);
+        }
+        return this.whereBuilder;
+    }
     
-    private int subDepth = 0;
-
-    public T beginWhere()
+    public T orderBy(String... cols)
     {
-        this.query.append("WHERE ");
-        return (T)this;
-    }
-
-    public T col(String col)
-    {
-        this.query.append(database.quote(col));
-        return (T)this;
-    }
-
-    public T value()
-    {
-        this.query.append("? ");
-        return (T)this;
-    }
-
-    public T op(int operation)
-    {
-        switch (operation)
-        {
-            case 1:
-                this.query.append("=");
-                break;
-            case 2:
-                this.query.append("!=");
-                break;
-            case 3:
-                this.query.append("<");
-                break;
-            case 4:
-                this.query.append("<=");
-                break;
-            case 5:
-                this.query.append(">");
-                break;
-            case 6:
-                this.query.append(">=");
-                break;
-            default:
-                throw new IllegalStateException("Invalid Operation");
-        }
-        return (T)this;
-    }
-
-    public T not()
-    {
-        this.query.append("NOT ");
-        return (T)this;
-    }
-
-    public T and()
-    {
-        this.query.append("AND ");
-        return (T)this;
-    }
-
-    public T or()
-    {
-        this.query.append("OR ");
-        return (T)this;
-    }
-
-    public T beginSub()
-    {
-        this.query.append("(");
-        ++this.subDepth;
+        Validate.notEmpty(cols, "No cols specified!");
         
-        return (T)this;
-    }
-
-    public T endSub()
-    {
-        if (this.subDepth > 0)
+        this.query.append(" ORDER BY ").append(this.prepareName(cols[0], false));
+        for (int i = 1; i < cols.length; ++i)
         {
-            this.query.append(")");
-            --this.subDepth;
+            this.query.append(',').append(this.prepareName(cols[i], false));
         }
         return (T)this;
     }
 
-    public T endWhere()
+    public T limit(int n)
     {
-        while (this.subDepth > 0)
-        {
-            this.endSub();
-        }
+        this.query.append(" LIMIT ").append(n);
+        return (T)this;
+    }
+
+    public T offset(int n)
+    {
+        this.query.append(" OFFSET ").append(n);
         return (T)this;
     }
 }

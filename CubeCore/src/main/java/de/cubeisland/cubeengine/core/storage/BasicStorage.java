@@ -4,15 +4,13 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import de.cubeisland.cubeengine.core.storage.database.OrderedBuilder;
 import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
-import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import org.apache.commons.lang.ArrayUtils;
 
 /**
  *
@@ -22,28 +20,29 @@ public abstract class BasicStorage<V> implements Storage<V>
 {
     protected final Database database;
     protected final Class<V> model;
-    protected final String TABLE;
+    protected final String table;
 
     public BasicStorage(Database database, Class<V> model)
     {
-        this.database = database;
-        this.model = model;
-        this.TABLE = this.database.prefix(this.model.getAnnotation(Entity.class).name(), false);
-        if (!model.isAnnotationPresent(Entity.class))
+        Entity entity = model.getAnnotation(Entity.class);
+        if (entity == null)
         {
             throw new IllegalArgumentException("Every model needs the Entity annotation!");
         }
+        this.table = entity.name();
+        this.database = database;
+        this.model = model;
     }
 
     public void initialize() throws SQLException
     {
         Entity entity = this.model.getAnnotation(Entity.class);
-        QueryBuilder builder = this.database.buildQuery();
+        QueryBuilder builder = this.database.getQueryBuilder();
 
         final LinkedList<String> keys = new LinkedList<String>();
         final LinkedList<String> attributes = new LinkedList<String>();
         Attribute attribute;
-        TableBuilder tbuilder = builder.createTable(TABLE, true).startFields();
+        TableBuilder tbuilder = builder.createTable(this.table, true).beginFields();
         for (Field field : this.model.getDeclaredFields())
         {
             attribute = field.getAnnotation(Attribute.class);
@@ -95,74 +94,73 @@ public abstract class BasicStorage<V> implements Storage<V>
                 .engine(entity.engine()).defaultcharset(entity.charset())
                 //TODO AI if no ai
                 .autoIncrement(1);
-        this.database.execute(tbuilder.endCreateTable().end());
-        this.prepareStatements(keys.toArray(new String[keys.size()]),attributes.toArray(new String[keys.size()]),TABLE);
+        this.database.execute(tbuilder.end().end());
+        this.prepareStatements(keys.get(0), attributes.toArray(new String[attributes.size()]));
     }
 
-    private void prepareStatements(String[] keys, String[] attributes, String tablename)
+    private void prepareStatements(String key, String[] fields)
     {
         try
         {
-            String[] allvalues = (String[])ArrayUtils.addAll(keys, attributes);
-            String attr = StringUtils.implode(",", attributes);
-            QueryBuilder builder = this.database.buildQuery();
-            
-            this.database.prepareAndStoreStatement(model, "get", builder
-                .select(allvalues)
-                .from(tablename)
-                .beginWhere()
-                    .col(keys[0]).op(OrderedBuilder.EQUAL).value()
-                .endWhere()
-                .end()
-            .end());
-            
-            this.database.prepareAndStoreStatement(model, "getall", builder
-                .select(allvalues)
-                .from(tablename)
-                .end()
-            .end());
+            String[] allFields = new String[fields.length + 1];
+            allFields[0] = key;
+            System.arraycopy(fields, 0, allFields, 1, fields.length);
+            QueryBuilder builder = this.database.getQueryBuilder();
             
             this.database.prepareAndStoreStatement(model, "store", builder
-                .insert().into(tablename)
-                .cols(attr)
-                .values(attr.length())
-                .end()
-            .end());
-
-            this.database.prepareAndStoreStatement(model, "update", builder
-                .update(tablename)
-                .beginSets()
-                    .set(attr)
-                .endSets()
-                .beginWhere()
-                    .col(keys[0]).op(OrderedBuilder.EQUAL).value()
-                .endWhere()
-                .end()
-            .end());
-
-            this.database.prepareAndStoreStatement(model, "delete", builder
-                .delete().from(tablename)
-                .beginWhere()
-                    .col(keys[0]).op(OrderedBuilder.EQUAL).value()
-                .endWhere()
-                .limit(1)
-                .end()
-            .end());
-            
-            this.database.prepareAndStoreStatement(model, "clear", builder
-                .delete().from(tablename)
+                .insert()
+                    .into(this.table)
+                    .cols(allFields)
                 .end()
             .end());
 
             this.database.prepareAndStoreStatement(model, "merge", builder
-//                    .insert().into(tablename)
-//                    .cols(keys[0]+attr)
-//                    .values(attr.length()+1)
-//                    .end()
-//                    .onDuplicateUpdate()
-//                    .values(attr)
-//                    .end()
+                .merge()
+                    .into(this.table)
+                    .cols(allFields)
+                    .updateCols(fields)
+                .end()
             .end());
+            
+            this.database.prepareAndStoreStatement(model, "get", builder
+                .select(allFields)
+                    .from(this.table)
+                    .beginWhere()
+                        .field(key).is(WhereBuilder.EQUAL).value()
+                    .end()
+                .end()
+            .end());
+            
+            this.database.prepareAndStoreStatement(model, "getall", builder
+                .select(allFields)
+                    .from(this.table)
+                .end()
+            .end());
+
+            this.database.prepareAndStoreStatement(model, "update", builder
+                .update(this.table)
+                    .cols(allFields)
+                    .beginWhere()
+                        .field(key).is(WhereBuilder.EQUAL).value()
+                    .end()
+                .end()
+            .end());
+
+            this.database.prepareAndStoreStatement(model, "delete", builder
+                .delete()
+                    .from(this.table)
+                    .beginWhere()
+                        .field(key).is(WhereBuilder.EQUAL).value()
+                    .end()
+                    .limit(1)
+                .end()
+            .end());
+            
+            this.database.prepareAndStoreStatement(model, "clear", builder
+                .clearTable(this.table)
+            .end());
+            
+            
             /*
             
             this.database.prepareAndStoreStatement(model, "get", "SELECT " + keys[0] + "," + attr

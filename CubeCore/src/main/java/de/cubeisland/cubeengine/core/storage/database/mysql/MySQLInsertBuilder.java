@@ -1,48 +1,44 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.InsertBuilder;
-import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
  *
  * @author Anselm Brehme
  */
-class MySQLInsertBuilder implements InsertBuilder
+class MySQLInsertBuilder extends MySQLBuilderBase implements InsertBuilder
 {
-    private StringBuilder query;
-    private MySQLQueryBuilder queryBuilder;
-    private Database database;
-
-    public MySQLInsertBuilder(MySQLQueryBuilder querybuilder)
+    protected MySQLInsertBuilder(MySQLQueryBuilder parent)
     {
-        this.queryBuilder = querybuilder;
-        this.database = querybuilder.database;
+        super(parent);
     }
 
-    public InsertBuilder into(String... tables)
+    public InsertBuilder into(String table)
     {
-        this.query = new StringBuilder("INSERT ").append("INTO ").append(StringUtils.implode(",", database.quote(tables))).append(" ");
+        Validate.notNull(table, "The table name must not be null!");
+        
+        this.query = new StringBuilder("INSERT INTO ").append(this.prepareName(table, true)).append(' ');
         return this;
     }
 
     public InsertBuilder cols(String... cols)
     {
-        this.query.append("(").append(StringUtils.implode(",", database.quote(cols))).append(") ");
+        Validate.notEmpty(cols, "You have to specify at least one col to insert");
+        Validate.noNullElements(cols, "Column names must not be null!");
+        
+        this.query.append('(').append(this.prepareName(cols[0], false));
+        int i;
+        for (i = 1; i < cols.length; ++i)
+        {
+            this.query.append(',').append(this.prepareName(cols[i], false));
+        }
+        this.query.append(") VALUES (?");
+        for (i = 0; i < cols.length; ++i)
+        {
+            this.query.append(",?");
+        }
+        this.query.append(')');
         return this;
-    }
-
-    public InsertBuilder values(int n)
-    {
-        this.query.append("VALUES").append("(?").append(StringUtils.repeat(",?", n - 1)).append(") ");
-        return this;
-    }
-
-    @Override
-    public MySQLQueryBuilder end()
-    {
-        this.queryBuilder.query.append(this.query);
-        this.query = null;
-        return this.queryBuilder;
     }
 }

@@ -11,11 +11,11 @@ import java.sql.Statement;
  */
 public interface Database
 {
-    public String quote(String name);
+    public String getName();
+    
+    public String prepareName(String name, boolean isTableName);
 
-    public String[] quote(String[] names);
-
-    public QueryBuilder buildQuery();
+    public QueryBuilder getQueryBuilder();
 
     public PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException;
 
@@ -24,12 +24,6 @@ public interface Database
     public boolean execute(String query, Object... params) throws SQLException;
 
     public PreparedStatement getStoredStatement(Class owner, String name);
-
-    public String getTablePrefix();
-
-    public String prefix(String tableName);
-
-    public String prefix(String tableName, boolean addQuotes);
 
     public void prepareAndStoreStatement(Class owner, String name, String statement) throws SQLException;
 
@@ -42,8 +36,6 @@ public interface Database
     public int preparedUpdate(Class owner, String name, Object... params) throws SQLException;
 
     public ResultSet query(String query, Object... params) throws SQLException;
-
-    public void setTablePrefix(String prefix);
 
     public void storePreparedStatement(Class owner, String name, PreparedStatement statement);
 

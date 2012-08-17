@@ -7,6 +7,8 @@ package de.cubeisland.cubeengine.core.storage.database;
 public interface QueryBuilder
 {
     public InsertBuilder insert();
+    
+    public MergeBuilder merge();
 
     public SelectBuilder select(String... tables);
     
@@ -18,11 +20,11 @@ public interface QueryBuilder
 
     public TableBuilder createTable(String name, boolean ifNoExist);
     
-    public QueryBuilder dropTable(String table);
+    public QueryBuilder clearTable(String table);
+    
+    public QueryBuilder dropTable(String... tables);
     
     public String end();
-    
-    public QueryBuilder clear();
     
     public QueryBuilder customSql(String sql);
 }

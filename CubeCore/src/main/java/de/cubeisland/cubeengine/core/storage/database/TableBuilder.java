@@ -7,7 +7,7 @@ package de.cubeisland.cubeengine.core.storage.database;
 public interface TableBuilder
 {
     
-    public TableBuilder startFields();
+    public TableBuilder beginFields();
     
     public TableBuilder field(String name, AttrType type);
     
@@ -21,13 +21,13 @@ public interface TableBuilder
     
     public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai);
     
-    public TableBuilder endFields();
-    
     public TableBuilder primaryKey(String key);
     
     public TableBuilder foreignKey(String key);
 
     public TableBuilder references(String table, String key);
+    
+    public TableBuilder endFields();
 
     public TableBuilder engine(String engine);
 
@@ -35,5 +35,5 @@ public interface TableBuilder
 
     public TableBuilder autoIncrement(int n);
     
-    public QueryBuilder endCreateTable();
+    public QueryBuilder end();
 }

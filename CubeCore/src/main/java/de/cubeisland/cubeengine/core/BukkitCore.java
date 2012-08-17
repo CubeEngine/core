@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
+import de.cubeisland.cubeengine.core.storage.database.DriverNotFoundException;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.ConsoleHandler;
@@ -25,7 +26,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -92,9 +92,19 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         catch (SQLException e)
         {
-            this.logger.log(Level.SEVERE, "Error while initializing database", e);
-            this.server.getPluginManager().disablePlugin(this);
-            return;
+            this.logger.log(Level.SEVERE, "Couldn't establish the database connection: " + e.getLocalizedMessage(), e);
+        }
+        catch (DriverNotFoundException e)
+        {
+            this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+        }
+        finally
+        {
+            if (this.database == null)
+            {
+                this.server.getPluginManager().disablePlugin(this);
+                return;
+            }
         }
         this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "log"));
         this.userManager = new UserManager(this, this.server);//Needs Database
@@ -132,14 +142,21 @@ public class BukkitCore extends JavaPlugin implements Core
             this.i18n.clean();
             this.i18n = null;
         }
-        this.executor.shutdown();
-        try
+        if (this.executor != null)
         {
-            this.executor.awaitTermination(config.executorTermination, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException ex)
-        {
-            this.logger.log(Level.SEVERE, "Could not execute all pending tasks", ex);
+            try
+            {
+                this.executor.shutdown();
+                this.executor.awaitTermination(config.executorTermination, TimeUnit.SECONDS);
+            }
+            catch (InterruptedException ex)
+            {
+                this.logger.log(Level.SEVERE, "Could not execute all pending tasks", ex);
+            }
+            finally
+            {
+                this.executor = null;
+            }
         }
     }
 

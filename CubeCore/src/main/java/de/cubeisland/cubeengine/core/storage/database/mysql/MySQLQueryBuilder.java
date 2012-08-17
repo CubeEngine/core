@@ -2,10 +2,12 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.DeleteBuilder;
 import de.cubeisland.cubeengine.core.storage.database.InsertBuilder;
+import de.cubeisland.cubeengine.core.storage.database.MergeBuilder;
 import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.SelectBuilder;
 import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
 import de.cubeisland.cubeengine.core.storage.database.UpdateBuilder;
+import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
  *
@@ -17,12 +19,13 @@ public class MySQLQueryBuilder implements QueryBuilder
     protected MySQLDatabase database;
     
     private MySQLInsertBuilder insertBuilder;
+    private MySQLMergeBuilder mergeBuilder;
     private MySQLSelectBuilder selectBuilder;
     private MySQLUpdateBuilder updateBuilder;
     private MySQLDeleteBuilder deleteBuilder;
     private MySQLTableBuilder tableBuilder;
 
-    public MySQLQueryBuilder(MySQLDatabase database)
+    protected MySQLQueryBuilder(MySQLDatabase database)
     {
         this.database = database;
         
@@ -34,20 +37,9 @@ public class MySQLQueryBuilder implements QueryBuilder
         this.tableBuilder = null;
     }
 
-    public TableBuilder createTable(String name, boolean ifNoExist)
+    private void init()
     {
-        if (this.tableBuilder == null)
-        {
-            this.tableBuilder = new MySQLTableBuilder(this);
-        }
-        return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
-    }
-
-    public String end()
-    {
-        String res = this.query.toString();
-        this.query = null;
-        return res;
+        this.query = new StringBuilder();
     }
 
     public QueryBuilder clear()
@@ -64,6 +56,16 @@ public class MySQLQueryBuilder implements QueryBuilder
         }
         this.init();
         return this.insertBuilder;
+    }
+
+    public MergeBuilder merge()
+    {
+        if (this.mergeBuilder == null)
+        {
+            this.mergeBuilder = new MySQLMergeBuilder(this);
+        }
+        this.init();
+        return this.mergeBuilder;
     }
 
     public SelectBuilder select(String... cols)
@@ -102,10 +104,37 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.deleteBuilder;
     }
 
-    public QueryBuilder dropTable(String table)
+    public TableBuilder createTable(String name, boolean ifNoExist)
     {
+        if (this.tableBuilder == null)
+        {
+            this.tableBuilder = new MySQLTableBuilder(this);
+        }
         this.init();
-        this.query.append("DROP TABLE ").append(this.database.quote(table));
+        return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
+    }
+    
+    public QueryBuilder clearTable(String table)
+    {
+        Validate.notNull(table, "No table specified!");
+        
+        this.init();
+        this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table, true));
+        
+        return this;
+    }
+
+    public QueryBuilder dropTable(String... tables)
+    {
+        Validate.notEmpty(tables, "No tables specified!");
+        
+        this.init();
+        this.query.append("DROP TABLE ").append(this.database.prepareName(tables[0], true));
+        for (int i = 1; i < tables.length; ++i)
+        {
+            this.query.append(',').append(this.database.prepareName(tables[i], true));
+        }
+
         return this;
     }
 
@@ -116,8 +145,14 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
-    private void init()
+    public String end()
     {
-        this.query = new StringBuilder();
+        if (this.query == null)
+        {
+            return ""; // TODO silently fail or throw IllegalStateException?
+        }
+        String res = this.query.toString();
+        this.query = null;
+        return res;
     }
 }

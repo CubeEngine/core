@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -24,9 +25,10 @@ public class DatabaseHandler extends Handler
         this.table = table;
         try
         {
-            this.db.execute(this.db.buildQuery()
-                .createTable(this.db.prefix(table, false), true)
-                .startFields()
+            QueryBuilder queryBuilder = this.db.getQueryBuilder();
+            this.db.execute(queryBuilder
+                .createTable(table, true)
+                .beginFields()
                     .field("id", AttrType.INT, 11, true, true, true)
                     .field("timestamp", AttrType.TIMESTAMP, true)
                     .field("level", AttrType.VARCHAR,20,true)
@@ -35,16 +37,18 @@ public class DatabaseHandler extends Handler
                     .primaryKey("id")
                 .endFields()
                 .engine("InnoDB").defaultcharset("utf8").autoIncrement(1)
-                .endCreateTable()
-            .end());
-            
-            this.db.prepareAndStoreStatement(this.getClass(), "insert", this.db.buildQuery()
-                .insert().into(this.db.prefix(table, false))
-                .cols("timestamp","level","logger","message")
-                .values(4)
                 .end()
             .end());
-            this.db.prepareAndStoreStatement(this.getClass(), "clear", "TRUNCATE {{" + table + "}}");
+
+            this.db.prepareAndStoreStatement(this.getClass(), "insert", queryBuilder
+                .insert().into(table)
+                .cols("timestamp","level","logger","message")
+                .end()
+            .end());
+
+            this.db.prepareAndStoreStatement(this.getClass(), "clear", queryBuilder
+                .clearTable(table)
+            .end());
         }
         catch (SQLException e)
         {
@@ -80,7 +84,7 @@ public class DatabaseHandler extends Handler
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
