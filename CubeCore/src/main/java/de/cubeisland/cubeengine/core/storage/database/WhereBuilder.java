@@ -15,7 +15,6 @@ public interface WhereBuilder<T>
     
     public WhereBuilder<T> field(String col);
     public WhereBuilder<T> value();
-    public FunctionBuilder<T> beginFunction();
     public WhereBuilder<T> is(int operation);
     
     public WhereBuilder<T> not();

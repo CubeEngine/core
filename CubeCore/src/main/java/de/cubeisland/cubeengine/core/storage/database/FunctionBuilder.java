@@ -6,7 +6,6 @@ package de.cubeisland.cubeengine.core.storage.database;
  */
 public interface FunctionBuilder<T>
 {
-    public FunctionBuilder<T> currentTime();
     public FunctionBuilder<T> now();
     
     public FunctionBuilder<T> avg(String col);

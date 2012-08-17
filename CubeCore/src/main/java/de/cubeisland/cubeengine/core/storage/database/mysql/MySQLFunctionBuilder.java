@@ -15,118 +15,136 @@ public class MySQLFunctionBuilder<T extends ConditionalBuilder> implements Funct
     protected MySQLFunctionBuilder(T parent)
     {
         this.parent = (MySQLConditionalBuilder)parent;
-        this.query = new StringBuilder(" WHERE ");
-    }
-    
-    
-    public FunctionBuilder<T> currentTime()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query = new StringBuilder();
     }
 
     public FunctionBuilder<T> now()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("NOW() ");
+        return this;
     }
 
     public FunctionBuilder<T> avg(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("AVG(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> count(String col, boolean distinct)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("COUNT(");
+        if (distinct)
+        {
+            this.query.append("DISTINCT ");
+        }
+        this.query.append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> count(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.count(col, false);
     }
 
     public FunctionBuilder<T> countall()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("COUNT(*) ");
+        return this;
     }
 
     public FunctionBuilder<T> min(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("MIN(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> max(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("MAX(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> sum(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("SUM(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> first(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("FIRST(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> last(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("LAST(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> ucase(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("UCASE(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> lcase(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("LCASE(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> mid(String col, int start, int length)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("MID(").append(this.parent.prepareName(col, true)).append(",").append(start).append(",").append(length).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> mid(String col, int start)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("MID(").append(this.parent.prepareName(col, true)).append(",").append(start).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> len(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("LEN(").append(this.parent.prepareName(col, true)).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> round(String col, int decimals)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("ROUND(").append(this.parent.prepareName(col, true)).append(",").append(decimals).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> format(String col, String format)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("FORMAT(").append(this.parent.prepareName(col, true)).append(",").append(format).append(") ");
+        return this;
     }
 
     public FunctionBuilder<T> as(String name)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("AS ").append(this.parent.prepareName(name, true)).append(" ");
+        return this;
     }
 
     public FunctionBuilder<T> groupBy(String col)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("GROUP BY ").append(this.parent.prepareName(col, true)).append(" ");
+        return this;
     }
 
     public FunctionBuilder<T> having()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.query.append("HAVING ");
+        return this;
     }
 
     public T end()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.parent.query.append(this.query);
+        return (T)this.parent;
     }
-    
 }

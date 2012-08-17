@@ -21,12 +21,6 @@ public class MySQLWhereBuilder<T extends ConditionalBuilder> implements WhereBui
         this.query = new StringBuilder(" WHERE ");
     }
 
-    public FunctionBuilder<T> beginFunction()
-    {
-        //TODO
-        return new MySQLFunctionBuilder<T>((T)this);
-    }
-    
     public WhereBuilder<T> field(String col)
     {
         this.query.append(this.parent.prepareName(col, false));
@@ -106,7 +100,6 @@ public class MySQLWhereBuilder<T extends ConditionalBuilder> implements WhereBui
     public T end()
     {
         this.parent.query.append(this.query);
-        
         return (T)this.parent;
     }
 }
