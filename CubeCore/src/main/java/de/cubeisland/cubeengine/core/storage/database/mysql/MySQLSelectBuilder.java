@@ -30,6 +30,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
             }
         }
         return this;
+        //TODO Select with Functions
     }
 
     public SelectBuilder from(String... tables)

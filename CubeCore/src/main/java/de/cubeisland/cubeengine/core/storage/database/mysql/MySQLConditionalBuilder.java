@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
+import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
@@ -49,5 +50,10 @@ public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> exte
     {
         this.query.append(" OFFSET ").append(n);
         return (T)this;
+    }
+    
+    public FunctionBuilder<T> beginFunction()
+    {
+        return new MySQLFunctionBuilder<T>((T)this);
     }
 }
