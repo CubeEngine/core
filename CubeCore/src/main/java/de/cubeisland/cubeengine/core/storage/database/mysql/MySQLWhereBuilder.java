@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
+import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
 
 /**
@@ -20,6 +21,12 @@ public class MySQLWhereBuilder<T extends ConditionalBuilder> implements WhereBui
         this.query = new StringBuilder(" WHERE ");
     }
 
+    public FunctionBuilder<T> beginFunction()
+    {
+        //TODO
+        return new MySQLFunctionBuilder<T>((T)this);
+    }
+    
     public WhereBuilder<T> field(String col)
     {
         this.query.append(this.parent.prepareName(col, false));
@@ -102,5 +109,4 @@ public class MySQLWhereBuilder<T extends ConditionalBuilder> implements WhereBui
         
         return (T)this.parent;
     }
-    
 }
