@@ -49,15 +49,15 @@ public class CubeTest extends Module
                     .endFields()
                     .engine("InnoDB").defaultcharset("utf8").autoIncrement(1)
                 .end()
-            .end();
+            .endQuery();
         this.getDatabase().getQueryBuilder()
                 .select()
                     .beginFunction()
                         .avg("OrderPrice").as("OrderAverage")
-                    .end()
+                    .endFunction()
                     .from("Orders")
                 .end()
-            .end();
+            .endQuery();
     }
 
     public void testl18n()

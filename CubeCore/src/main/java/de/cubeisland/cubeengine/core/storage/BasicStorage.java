@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.CompareBuilder;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
@@ -126,7 +127,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                 .select(allFields)
                     .from(this.table)
                     .beginWhere()
-                        .field(key).is(WhereBuilder.EQUAL).value()
+                         .field(key).is(WhereBuilder.EQUAL).value()
                     .endWhere()
                 .end()
             .endQuery());
@@ -141,7 +142,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                 .update(this.table)
                     .cols(allFields)
                     .beginWhere()
-                        .field(key).is(WhereBuilder.EQUAL).value()
+                        .field(key).is(CompareBuilder.EQUAL).value()
                     .endWhere()
                 .end()
             .endQuery());
