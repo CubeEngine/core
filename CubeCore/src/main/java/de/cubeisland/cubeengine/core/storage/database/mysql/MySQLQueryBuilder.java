@@ -139,7 +139,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
-    public String end()
+    public String endQuery()
     {
         if (this.query == null)
         {

@@ -22,7 +22,7 @@ public interface QueryBuilder
     
     public QueryBuilder dropTable(String... tables);
     
-    public String end();
+    public String endQuery();
     
     public QueryBuilder customSql(String sql);
 }

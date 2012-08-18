@@ -1,21 +1,21 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
 import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
+import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class MySQLFunctionBuilder<T extends ConditionalBuilder> implements FunctionBuilder<T>
+public class MySQLFunctionBuilder<T extends MySQLBuilderBase> extends MySQLWhereBuilder<T> implements FunctionBuilder<T>
 {
-    private MySQLConditionalBuilder parent;
-    private final StringBuilder query;
+    private MySQLBuilderBase parent;
 
     protected MySQLFunctionBuilder(T parent)
     {
-        this.parent = (MySQLConditionalBuilder)parent;
-        this.query = new StringBuilder();
+        super(parent);
+        this.parent = (MySQLBuilderBase)parent;
+        this.query = null;
     }
 
     public FunctionBuilder<T> now()
@@ -142,9 +142,15 @@ public class MySQLFunctionBuilder<T extends ConditionalBuilder> implements Funct
         return this;
     }
 
-    public T end()
+    public T endFunction()
     {
         this.parent.query.append(this.query);
         return (T)this.parent;
+    }
+
+    @Override
+    public QueryBuilder end()
+    {
+        throw new IllegalAccessError("Use endFunction() instead");
     }
 }

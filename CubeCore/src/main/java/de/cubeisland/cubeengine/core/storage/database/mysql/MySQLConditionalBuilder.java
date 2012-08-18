@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
-import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
-import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
@@ -11,7 +9,8 @@ import de.cubeisland.cubeengine.core.util.Validate;
  */
 public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> extends MySQLBuilderBase implements ConditionalBuilder<T>
 {
-    private WhereBuilder<T> whereBuilder;
+    private MySQLWhereBuilder whereBuilder;
+    private MySQLFunctionBuilder functionBuilder;
 
     protected MySQLConditionalBuilder(MySQLQueryBuilder builder)
     {
@@ -19,13 +18,24 @@ public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> exte
         this.whereBuilder = null;
     }
 
-    public WhereBuilder<T> beginWhere()
+    public MySQLWhereBuilder beginWhere()
     {
         if (this.whereBuilder == null)
         {
-            this.whereBuilder = new MySQLWhereBuilder<T>((T)this);
+            this.whereBuilder = new MySQLWhereBuilder(this);
         }
+        this.whereBuilder.query = new StringBuilder();
         return this.whereBuilder;
+    }
+    
+    public MySQLFunctionBuilder beginFunction()
+    {
+        if (this.functionBuilder == null)
+        {
+            this.functionBuilder = new MySQLFunctionBuilder(this);
+        }
+        this.functionBuilder.query = new StringBuilder();
+        return this.functionBuilder;
     }
     
     public T orderBy(String... cols)
@@ -52,8 +62,5 @@ public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> exte
         return (T)this;
     }
     
-    public FunctionBuilder<T> beginFunction()
-    {
-        return new MySQLFunctionBuilder<T>((T)this);
-    }
+    
 }

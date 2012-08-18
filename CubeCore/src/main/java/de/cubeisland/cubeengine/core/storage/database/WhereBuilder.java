@@ -24,5 +24,5 @@ public interface WhereBuilder<T>
     public WhereBuilder<T> beginSub();
     public WhereBuilder<T> endSub();
     
-    public T end();
+    public T endWhere();
 }

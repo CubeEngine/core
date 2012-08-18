@@ -1,24 +1,24 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
-import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
+import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
 
 /**
  *
  * @author Phillip Schichtel
  */
-public class MySQLWhereBuilder<T extends ConditionalBuilder> implements WhereBuilder<T>
+public class MySQLWhereBuilder<T extends MySQLBuilderBase> extends MySQLBuilderBase implements WhereBuilder<T> //TODO change name and put WHERE elsewhere
 {
-    private MySQLConditionalBuilder parent;
-    private final StringBuilder query;
+    private MySQLBuilderBase parent;
+    protected StringBuilder query;
     
     private int subDepth = 0;
 
     protected MySQLWhereBuilder(T parent)
     {
-        this.parent = (MySQLConditionalBuilder)parent;
-        this.query = new StringBuilder(" WHERE ");
+        super();
+        this.parent = (MySQLBuilderBase)parent;
+        this.query.append(" WHERE "); //TODO move this
     }
 
     public WhereBuilder<T> field(String col)
@@ -97,9 +97,17 @@ public class MySQLWhereBuilder<T extends ConditionalBuilder> implements WhereBui
         return this;
     }
 
-    public T end()
+    public T endWhere()
     {
         this.parent.query.append(this.query);
         return (T)this.parent;
     }
+
+    @Override
+    public QueryBuilder end()
+    {
+        throw new IllegalAccessError("Use endWhere() instead");
+    }
+    
+    
 }

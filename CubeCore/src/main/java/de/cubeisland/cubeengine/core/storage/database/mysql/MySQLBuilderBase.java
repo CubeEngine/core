@@ -11,6 +11,12 @@ public abstract class MySQLBuilderBase
     protected StringBuilder query;
     protected MySQLQueryBuilder builder;
     
+    protected MySQLBuilderBase()
+    {
+        this.query = null;
+        this.builder = null;
+    }
+    
     protected MySQLBuilderBase(MySQLQueryBuilder builder)
     {
         this.query = null;
