@@ -17,7 +17,11 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     public SelectBuilder cols(String... cols)
     {
         this.query = new StringBuilder("SELECT ");
-        if (cols.length == 0)
+        if (cols == null)
+        {
+            //Nothing after SELECT so i can use functions etc
+        }
+        else if (cols.length == 0)
         {
             this.query.append('*');
         }
@@ -36,7 +40,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     public SelectBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-        
+
         this.query.append(" FROM ").append(this.prepareName(tables[0], true));
         for (int i = 1; i < tables.length; ++i)
         {

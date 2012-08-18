@@ -32,7 +32,7 @@ public interface FunctionBuilder<T>
     public FunctionBuilder<T> groupBy(String col);//TODO group by multiple cols
     public FunctionBuilder<T> having();//needs ops like wherebuilder
     
-    public T end();
+    public T endFunction();
     //TODO DISTINCT in conditional
   
 }
