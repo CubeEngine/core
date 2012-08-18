@@ -6,7 +6,6 @@ package de.cubeisland.cubeengine.core.storage.database;
  */
 public interface ConditionalBuilder<T>
 {   
-    public WhereBuilder<T> beginWhere();
     public FunctionBuilder<T> beginFunction();
     
     public T orderBy(String... cols);

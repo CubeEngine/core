@@ -1,13 +1,12 @@
 package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.CompareBuilder;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
+import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
-import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -126,9 +125,9 @@ public abstract class BasicStorage<V> implements Storage<V>
             this.database.prepareAndStoreStatement(model, "get", builder
                 .select(allFields)
                     .from(this.table)
-                    .beginWhere()
-                         .field(key).is(WhereBuilder.EQUAL).value()
-                    .endWhere()
+                    .beginFunction().where()
+                         .field(key).is(FunctionBuilder.EQUAL).value()
+                    .endFunction()
                 .end()
             .endQuery());
             
@@ -141,18 +140,18 @@ public abstract class BasicStorage<V> implements Storage<V>
             this.database.prepareAndStoreStatement(model, "update", builder
                 .update(this.table)
                     .cols(allFields)
-                    .beginWhere()
-                        .field(key).is(CompareBuilder.EQUAL).value()
-                    .endWhere()
+                    .beginFunction().where()
+                        .field(key).is(FunctionBuilder.EQUAL).value()
+                    .endFunction()
                 .end()
             .endQuery());
 
             this.database.prepareAndStoreStatement(model, "delete", builder
                 .delete()
                     .from(this.table)
-                    .beginWhere()
-                        .field(key).is(WhereBuilder.EQUAL).value()
-                    .endWhere()
+                    .beginFunction().where()
+                        .field(key).is(FunctionBuilder.EQUAL).value()
+                    .endFunction()
                     .limit(1)
                 .end()
             .endQuery());

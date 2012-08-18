@@ -9,30 +9,19 @@ import de.cubeisland.cubeengine.core.util.Validate;
  */
 public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> extends MySQLBuilderBase implements ConditionalBuilder<T>
 {
-    private MySQLWhereBuilder whereBuilder;
     private MySQLFunctionBuilder functionBuilder;
 
     protected MySQLConditionalBuilder(MySQLQueryBuilder builder)
     {
         super(builder);
-        this.whereBuilder = null;
+        this.functionBuilder = null;
     }
 
-    public MySQLWhereBuilder beginWhere()
-    {
-        if (this.whereBuilder == null)
-        {
-            this.whereBuilder = new MySQLWhereBuilder(this);
-        }
-        this.whereBuilder.query = new StringBuilder();
-        return this.whereBuilder;
-    }
-    
     public MySQLFunctionBuilder beginFunction()
     {
         if (this.functionBuilder == null)
         {
-            this.functionBuilder = new MySQLFunctionBuilder(this);
+            this.functionBuilder = new MySQLFunctionBuilder(this, builder);
         }
         this.functionBuilder.query = new StringBuilder();
         return this.functionBuilder;
