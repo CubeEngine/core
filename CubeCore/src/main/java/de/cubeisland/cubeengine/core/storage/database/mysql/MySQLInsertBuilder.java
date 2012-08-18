@@ -34,7 +34,7 @@ class MySQLInsertBuilder extends MySQLBuilderBase implements InsertBuilder
             this.query.append(',').append(this.prepareName(cols[i], false));
         }
         this.query.append(") VALUES (?");
-        for (i = 0; i < cols.length; ++i)
+        for (i = 1; i < cols.length; ++i)
         {
             this.query.append(",?");
         }

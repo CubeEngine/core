@@ -110,7 +110,7 @@ public abstract class BasicStorage<V> implements Storage<V>
             this.database.prepareAndStoreStatement(model, "store", builder
                 .insert()
                     .into(this.table)
-                    .cols(allFields)
+                    .cols(fields)
                 .end()
             .endQuery());
 
@@ -139,7 +139,7 @@ public abstract class BasicStorage<V> implements Storage<V>
 
             this.database.prepareAndStoreStatement(model, "update", builder
                 .update(this.table)
-                    .cols(allFields)
+                    .cols(fields)
                     .beginFunction().where()
                         .field(key).is(FunctionBuilder.EQUAL).value()
                     .endFunction()

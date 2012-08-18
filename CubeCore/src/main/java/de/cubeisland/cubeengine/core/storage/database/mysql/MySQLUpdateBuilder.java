@@ -35,10 +35,10 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
     {
         Validate.notEmpty(cols, "No cols specified!");
         
-        this.query.append("SET ").append(this.prepareName(cols[0], false)).append("=?");
+        this.query.append("SET ").append(this.prepareName(cols[0], false)).append("=? ");
         for (int i = 1; i < cols.length; ++i)
         {
-            this.query.append(',').append(this.prepareName(cols[i], false)).append("=?");
+            this.query.append(',').append(this.prepareName(cols[i], false)).append("=? ");
         }
         
         this.hasCols = true;
