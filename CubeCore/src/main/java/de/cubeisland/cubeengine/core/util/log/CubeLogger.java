@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import java.text.MessageFormat;
+import java.util.logging.Filter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -38,7 +40,7 @@ public class CubeLogger extends Logger
             msg = MessageFormat.format(msg, record.getParameters());
         }
         record.setParameters(null);
-        record.setMessage(this.getName() + " " + msg);
+        record.setMessage("["+this.getName() + "] " + msg);
         this.getParent().log(record);
         record.setMessage(msg);
         super.log(record);
