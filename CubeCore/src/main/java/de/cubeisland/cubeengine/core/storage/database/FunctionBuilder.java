@@ -43,6 +43,7 @@ public interface FunctionBuilder<T>
     
     public FunctionBuilder<T> field(String col);
     public FunctionBuilder<T> value();
+    public FunctionBuilder<T> value(String name);
     public FunctionBuilder<T> is(int operation);
     
     public FunctionBuilder<T> not();
@@ -51,6 +52,8 @@ public interface FunctionBuilder<T>
     
     public FunctionBuilder<T> beginSub();
     public FunctionBuilder<T> endSub();
+    
+    public FunctionBuilder<T> comma();
     
     public T endFunction();
 }
