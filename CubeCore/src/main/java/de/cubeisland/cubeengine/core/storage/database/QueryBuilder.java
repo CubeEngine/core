@@ -13,8 +13,6 @@ public interface QueryBuilder
     public SelectBuilder select(String... tables);
     
     public UpdateBuilder update(String... tables);
-    
-    public UpdateBuilder onDuplicateUpdate();
 
     public DeleteBuilder delete();
 

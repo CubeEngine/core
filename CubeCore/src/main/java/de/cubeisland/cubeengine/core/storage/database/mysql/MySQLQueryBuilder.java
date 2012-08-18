@@ -87,12 +87,6 @@ public class MySQLQueryBuilder implements QueryBuilder
         this.init();
         return this.updateBuilder.tables(tables);
     }
-    
-    public UpdateBuilder onDuplicateUpdate()
-    {
-        this.query.append("ON DUPLICATE KEY ");
-        return this.update();
-    }
 
     public DeleteBuilder delete()
     {
