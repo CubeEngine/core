@@ -85,7 +85,7 @@ public abstract class AbstractDatabase implements Database
 
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        CubeEngine.getLogger().log(Level.INFO, "[SQL] " + statement);//TODO das wird 2x geloggt einmal mit SEVERE Warum????
+        CubeEngine.getLogger().log(Level.INFO, "[SQL] " + statement);
         return this.connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 

@@ -14,7 +14,6 @@ import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.database.DriverNotFoundException;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.ConsoleHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
@@ -56,7 +55,6 @@ public class BukkitCore extends JavaPlugin implements Core
         CubeEngine.initialize(this);
 
         this.logger = new CubeLogger("Core");
-        this.logger.addHandler(new ConsoleHandler(Level.ALL, "[{0}] {2}"));
         this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
 
         this.server = this.getServer();
