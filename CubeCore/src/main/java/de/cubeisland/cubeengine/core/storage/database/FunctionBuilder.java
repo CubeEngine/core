@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.storage.database;
  *
  * @author Anselm Brehme
  */
-public interface FunctionBuilder<T>
+public interface FunctionBuilder<T> extends CompareBuilder<FunctionBuilder>
 {
     public FunctionBuilder<T> now();
     
