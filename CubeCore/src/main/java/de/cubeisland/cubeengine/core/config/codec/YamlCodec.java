@@ -60,6 +60,10 @@ public class YamlCodec extends ConfigurationCodec
         }
         else if (value instanceof Collection<?>)
         {
+            if (((Collection<?>)value).isEmpty())
+            {
+                return sb.append(" []").append(LINEBREAK).toString();
+            }
             for (Object o : (Collection<?>)value) //Convert Collection
             {
                 sb.append(LINEBREAK).append(offset).append("- ");
@@ -85,6 +89,10 @@ public class YamlCodec extends ConfigurationCodec
     public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
+        if (values.isEmpty())
+        {
+            return sb.append(this.offset(off)).append("{}").append(LINEBREAK).toString();
+        }
         for (Map.Entry<String, Object> entry : values.entrySet())
         {
             if (off == 0)

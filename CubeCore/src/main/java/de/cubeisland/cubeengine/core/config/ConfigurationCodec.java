@@ -274,6 +274,35 @@ public abstract class ConfigurationCodec
                     return result;
                 }
             }
+            if (Map.class.isAssignableFrom(objectClass))
+            {
+                if (object instanceof Map)
+                {
+                    Map<String,?> map = (Map<String,?>)object;
+                    Class<?> genType = field.getAnnotation(Option.class).genericType();
+                    converter = Convert.matchConverter(genType);
+                    if (converter != null)
+                    {
+                        Map<String,Object> result = new LinkedHashMap<String, Object>();
+                        for (String key : map.keySet())
+                        {
+                            try
+                            {
+                                result.put(key,converter.toObject(map.get(key)));
+                            }
+                            catch (ConversionException e)
+                            {
+                                // TODO handle me!
+                            }
+                        }
+                        return result;
+                    }
+                }
+                else
+                {
+                    logger.log(Level.WARNING, "Could not apply Map to {0}", field.getName());
+                }
+            }
         }
         if (converter != null)
         {

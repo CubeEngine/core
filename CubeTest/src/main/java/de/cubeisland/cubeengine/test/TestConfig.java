@@ -7,9 +7,11 @@ import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.permission.Role;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Location;
@@ -116,6 +118,36 @@ public class TestConfig extends Configuration
             list2.add(414141);
             put("list1", list1);
             put("list2", list2);
+        }
+    };
+    
+    @Option(value="locationinmap",genericType=Location.class)
+    @Comment("multi location")
+    public LinkedHashMap<String, Location> locs;
+    {
+        {
+            locs = new LinkedHashMap<String, Location>();
+            locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0) );
+            locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+        }
+    };
+    
+    @Option("role.role")
+    @Comment("a single role")
+    public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
+    
+    @Option(value="role.roles",genericType=Role.class)
+    @Comment("multi roles")
+    public LinkedHashMap<String, Role> roles;
+    {
+        {
+            roles = new LinkedHashMap<String, Role>();
+            roles.put("role1", new Role("guest", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+            roles.put("role2", new Role("member", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+            roles.put("role3", new Role("mod", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+            roles.put("role4", new Role("admin", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
         }
     };
 }
