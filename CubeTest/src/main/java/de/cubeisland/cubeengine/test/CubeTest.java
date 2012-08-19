@@ -118,23 +118,54 @@ public class CubeTest extends Module
                             .endFunctions()
                         .endBuilder()
                     .endQuery());
-        
+
+        //SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
         database.getQueryBuilder()
                 .select()
                     .beginFunction("round")
                         .beginFunction("avg")
                             .wildcard()
                         .endFunction()
-                    .endFunction()
+                    .endFunction().endFunctions()
+                    .from("table")
                     .beginFunction("where")
                         .field("dob_year")
                         .is(FunctionBuilder.GREATER)
                         .value("1920")
-                    .endFunction()
-                    .endFunctions()
+                    .endFunction().endFunctions()
                 .endBuilder()
             .endQuery();
-//TODO SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
+
+        //SELECT ProductName, ROUND(UnitPrice,0) as UnitPrice FROM Products
+        database.getQueryBuilder()
+                .select()
+                    .cols("ProductName")
+                    .beginFunctions()
+                        .comma()
+                        .beginFunction("round")
+                            .field("UnitPrice")
+                            .comma().value("0")
+                        .endFunction()
+                        .as("UnitPrice")
+                    .endFunctions()
+                    .from("Products")
+                .endBuilder()
+            .endQuery();
+        
+        //SELECT LCASE(LastName) as LastName,FirstName FROM Persons
+        database.getQueryBuilder()
+                .select()
+                    .beginFunction("lcase")
+                        .field("LastName")
+                    .endFunction()
+                    .as("LastName")
+                    .comma()
+                    .field("FirstName")
+                    .endFunctions()
+                    .from("Persons")
+                .endBuilder()
+            .endQuery();
+        
     }
 
     public void testl18n()
