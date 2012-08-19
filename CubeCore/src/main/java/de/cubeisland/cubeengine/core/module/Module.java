@@ -158,6 +158,27 @@ public abstract class Module
     }
 
     /**
+     * This method will be called if the module was not found in the module registration
+     */
+    public void install()
+    {}
+    
+    /**
+     * This method will be called if a module gets uninstalled
+     */
+    public void uninstall()
+    {}
+    
+    /**
+     * This method will be called if the currently loaded module revision is higher
+     * than the one stored in the registry
+     *
+     * @param oldRevision the old revision form the database
+     */
+    public void update(int oldRevision)
+    {}
+
+    /**
      * This method gets called right after the module initialization
      */
     public void onLoad()
