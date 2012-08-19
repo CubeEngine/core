@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Handler;
@@ -15,10 +15,10 @@ import java.util.logging.LogRecord;
  */
 public class DatabaseHandler extends Handler
 {
-    private final MySQLDatabase db;
+    private final Database db;
     private final String table;
 
-    public DatabaseHandler(Level level, MySQLDatabase db, String table)
+    public DatabaseHandler(Level level, Database db, String table)
     {
         this.setLevel(level);
         this.db = db;

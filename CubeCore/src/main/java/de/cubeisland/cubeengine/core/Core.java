@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -22,7 +22,7 @@ public interface Core
      *
      * @return the database instance
      */
-    public MySQLDatabase getDB();
+    public Database getDB();
 
     /**
      * The method returns the permission registration
