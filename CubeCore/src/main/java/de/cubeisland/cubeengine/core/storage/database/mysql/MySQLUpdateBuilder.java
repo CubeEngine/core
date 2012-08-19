@@ -23,7 +23,7 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
         Validate.notEmpty(tables, "No tables specified!");
         
         this.hasCols = false;
-        this.query = new StringBuilder("UPDATE ").append(this.prepareName(tables[0], true));
+        this.query = this.query.append(this.prepareName(tables[0], true));
         for (int i = 1; i < tables.length; ++i)
         {
             this.query.append(',').append(this.prepareName(tables[i], true));
@@ -35,7 +35,7 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
     {
         Validate.notEmpty(cols, "No cols specified!");
         
-        this.query.append("SET ").append(this.prepareName(cols[0], false)).append("=? ");
+        this.query.append(" SET ").append(this.prepareName(cols[0], false)).append("=? ");
         for (int i = 1; i < cols.length; ++i)
         {
             this.query.append(',').append(this.prepareName(cols[i], false)).append("=? ");

@@ -19,28 +19,28 @@ public class MySQLFunctionBuilder<T extends MySQLConditionalBuilder> extends MyS
 
     public FunctionBuilder where()
     {
-        this.query.append("WHERE ");
+        this.query.append(" WHERE");
         return this;
     }
 
     public MySQLFunctionBuilder<T> now()
     {
-        this.query.append("NOW() ");
+        this.query.append(" NOW()");
         return this;
     }
 
     public MySQLFunctionBuilder<T> avg(String col)
     {
-        this.query.append("AVG(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" AVG(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder<T> count(String col, boolean distinct)
     {
-        this.query.append("COUNT(");
+        this.query.append( "COUNT(");
         if (distinct)
         {
-            this.query.append("DISTINCT ");
+            this.query.append(" DISTINCT ");
         }
         this.query.append(this.prepareName(col, false)).append(") ");
         return this;
@@ -53,97 +53,102 @@ public class MySQLFunctionBuilder<T extends MySQLConditionalBuilder> extends MyS
 
     public MySQLFunctionBuilder countall()
     {
-        this.query.append("COUNT(*) ");
+        this.query.append(" COUNT(*)");
         return this;
     }
 
     public MySQLFunctionBuilder min(String col)
     {
-        this.query.append("MIN(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" MIN(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder max(String col)
     {
-        this.query.append("MAX(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" MAX(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder sum(String col)
     {
-        this.query.append("SUM(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" SUM(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder first(String col)
     {
-        this.query.append("FIRST(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" FIRST(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder last(String col)
     {
-        this.query.append("LAST(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" LAST(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder ucase(String col)
     {
-        this.query.append("UCASE(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" UCASE(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder lcase(String col)
     {
-        this.query.append("LCASE(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" LCASE(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder mid(String col, int start, int length)
     {
-        this.query.append("MID(").append(this.prepareName(col, false)).append(",").append(start).append(",").append(length).append(") ");
+        this.query.append(" MID(").append(this.prepareName(col, false)).append(",").append(start).append(",").append(length).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder mid(String col, int start)
     {
-        this.query.append("MID(").append(this.prepareName(col, false)).append(",").append(start).append(") ");
+        this.query.append(" MID(").append(this.prepareName(col, false)).append(",").append(start).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder len(String col)
     {
-        this.query.append("LEN(").append(this.prepareName(col, false)).append(") ");
+        this.query.append(" LEN(").append(this.prepareName(col, false)).append(")");
         return this;
     }
 
+    public MySQLFunctionBuilder round(String col)
+    {
+        return this.round(col, 0);
+    }
+    
     public MySQLFunctionBuilder round(String col, int decimals)
     {
-        this.query.append("ROUND(").append(this.prepareName(col, false)).append(",").append(decimals).append(") ");
+        this.query.append(" ROUND(").append(this.prepareName(col, false)).append(",").append(decimals).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder format(String col, String format)
     {
-        this.query.append("FORMAT(").append(this.prepareName(col, false)).append(",").append(format).append(") ");
+        this.query.append(" FORMAT(").append(this.prepareName(col, false)).append(",").append(format).append(")");
         return this;
     }
 
     public MySQLFunctionBuilder as(String name)
     {
-        this.query.append("AS ").append(this.prepareName(name, false)).append(" ");
+        this.query.append(" AS ").append(this.prepareName(name, false));
         return this;
     }
 
     public MySQLFunctionBuilder groupBy(String col)
     {
-        this.query.append("GROUP BY ").append(this.prepareName(col, false)).append(" ");
+        this.query.append(" GROUP BY ").append(this.prepareName(col, false));
         return this;
     }
 
     public MySQLFunctionBuilder having()
     {
-        this.query.append("HAVING ");
+        this.query.append(" HAVING ");
         return this;
     }
 

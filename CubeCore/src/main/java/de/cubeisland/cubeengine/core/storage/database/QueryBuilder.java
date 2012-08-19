@@ -10,9 +10,9 @@ public interface QueryBuilder
     
     public MergeBuilder merge();
 
-    public SelectBuilder select(String... tables);
+    public SelectBuilder select();
     
-    public UpdateBuilder update(String... tables);
+    public UpdateBuilder update();
 
     public DeleteBuilder delete();
 

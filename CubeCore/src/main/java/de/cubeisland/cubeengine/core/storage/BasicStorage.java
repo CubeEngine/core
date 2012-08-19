@@ -123,7 +123,7 @@ public abstract class BasicStorage<V> implements Storage<V>
             .endQuery());
             
             this.database.prepareAndStoreStatement(model, "get", builder
-                .select(allFields)
+                .select().cols(allFields)
                     .from(this.table)
                     .beginFunction().where()
                          .field(key).is(FunctionBuilder.EQUAL).value()
@@ -132,13 +132,13 @@ public abstract class BasicStorage<V> implements Storage<V>
             .endQuery());
             
             this.database.prepareAndStoreStatement(model, "getall", builder
-                .select(allFields)
+                .select().cols(allFields)
                     .from(this.table)
                 .end()
             .endQuery());
 
             this.database.prepareAndStoreStatement(model, "update", builder
-                .update(this.table)
+                .update().tables(this.table)
                     .cols(fields)
                     .beginFunction().where()
                         .field(key).is(FunctionBuilder.EQUAL).value()

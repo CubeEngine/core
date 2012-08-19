@@ -87,7 +87,7 @@ public class CubeTest extends Module
         database.preparedExecute(TestModel.class, "update", obj2);
         database.query(
                 database.getQueryBuilder()
-                .select(null)
+                .select()
                 .beginFunction()
                 .avg("OrderPrice").as("OrderAverage")
                 .endFunction()
@@ -97,7 +97,7 @@ public class CubeTest extends Module
         
         database.query(
                 database.getQueryBuilder()
-                .select("id","Customer")
+                .select().cols("id","Customer")
                     .beginFunction()
                         .comma()
                         .sum("OrderPrice").as("OrderAverage")
@@ -113,7 +113,10 @@ public class CubeTest extends Module
                     
                 .end()
                 .endQuery());
-
+        
+        database.getQueryBuilder()
+                .select().beginFunction().round("blahhh");
+//TODO SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
     }
 
     public void testl18n()

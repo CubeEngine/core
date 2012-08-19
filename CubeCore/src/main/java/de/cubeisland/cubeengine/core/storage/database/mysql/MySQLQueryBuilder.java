@@ -68,24 +68,26 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.mergeBuilder;
     }
 
-    public SelectBuilder select(String... cols)
+    public SelectBuilder select()
     {
         if (this.selectBuilder == null)
         {
             this.selectBuilder = new MySQLSelectBuilder(this);
         }
         this.init();
-        return selectBuilder.cols(cols);
+        this.selectBuilder.query = new StringBuilder("SELECT");
+        return selectBuilder;
     }
 
-    public UpdateBuilder update(String... tables)
+    public UpdateBuilder update()
     {
         if (this.updateBuilder == null)
         {
             this.updateBuilder = new MySQLUpdateBuilder(this);
         }
         this.init();
-        return this.updateBuilder.tables(tables);
+        this.updateBuilder.query = new StringBuilder("UPDATE ");
+        return this.updateBuilder;
     }
 
     public DeleteBuilder delete()
@@ -95,6 +97,7 @@ public class MySQLQueryBuilder implements QueryBuilder
             this.deleteBuilder = new MySQLDeleteBuilder(this);
         }
         this.init();
+        this.deleteBuilder.query = new StringBuilder("DELETE");
         return this.deleteBuilder;
     }
 

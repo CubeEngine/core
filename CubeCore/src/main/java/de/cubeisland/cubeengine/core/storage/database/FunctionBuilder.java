@@ -34,6 +34,7 @@ public interface FunctionBuilder<T>
     public FunctionBuilder<T> len(String col);
     
     public FunctionBuilder<T> round(String col,int decimals);
+    public FunctionBuilder<T> round(String col);
     
     public FunctionBuilder<T> format(String col, String format);//z.B.: FORMAT(Now(),'YYYY-MM-DD')
     
