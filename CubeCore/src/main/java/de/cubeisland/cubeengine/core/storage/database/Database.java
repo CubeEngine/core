@@ -13,7 +13,9 @@ public interface Database
 {
     public String getName();
     
-    public String prepareName(String name, boolean isTableName);
+    public String prepareName(String name);
+    
+    public String prepareColName(String name);
 
     public QueryBuilder getQueryBuilder();
 

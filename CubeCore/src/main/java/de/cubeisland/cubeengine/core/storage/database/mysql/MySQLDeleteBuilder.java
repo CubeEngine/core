@@ -18,10 +18,10 @@ public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder> i
     {
         Validate.notEmpty(tables, "No tables specified");
         
-        this.query = new StringBuilder("DELETE FROM ").append(this.prepareName(tables[0], true));
+        this.query = new StringBuilder("DELETE FROM ").append(this.prepareName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.prepareName(tables[i], true));
+            this.query.append(',').append(this.prepareName(tables[i]));
         }
         return this;
     }

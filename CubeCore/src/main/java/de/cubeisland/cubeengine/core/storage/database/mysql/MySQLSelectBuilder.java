@@ -23,10 +23,10 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
         }
         else
         {
-            this.query.append(this.prepareName(cols[0], false));
+            this.query.append(this.prepareColName(cols[0]));
             for (int i = 1; i < cols.length; ++i)
             {
-                this.query.append(',').append(this.prepareName(cols[i], false));
+                this.query.append(',').append(this.prepareColName(cols[i]));
             }
         }
         return this;
@@ -35,11 +35,11 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     public SelectBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-        
-        this.query.append(" FROM ").append(this.prepareName(tables[0], true));
+
+        this.query.append(" FROM ").append(this.prepareName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.prepareName(tables[i], true));
+            this.query.append(',').append(this.prepareName(tables[i]));
         }
         return this;
     }

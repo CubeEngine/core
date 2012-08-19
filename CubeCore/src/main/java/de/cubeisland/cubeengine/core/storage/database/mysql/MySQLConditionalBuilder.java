@@ -31,10 +31,10 @@ public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> exte
     {
         Validate.notEmpty(cols, "No cols specified!");
         
-        this.query.append(" ORDER BY ").append(this.prepareName(cols[0], false));
+        this.query.append(" ORDER BY ").append(this.prepareColName(cols[0]));
         for (int i = 1; i < cols.length; ++i)
         {
-            this.query.append(',').append(this.prepareName(cols[i], false));
+            this.query.append(',').append(this.prepareColName(cols[i]));
         }
         return (T)this;
     }

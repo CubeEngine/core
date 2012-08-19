@@ -20,7 +20,7 @@ public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
     protected TableBuilder create(String name, int actionIfExists)
     {
         this.fieldCounter = 0;
-        name = this.prepareName(name, true);
+        name = this.prepareName(name);
         switch (actionIfExists)
         {
             case 1: // DO NOTHING
@@ -76,7 +76,7 @@ public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
         {
             this.query.append(',');
         }
-        this.query.append(this.prepareName(name, false)).append(' ').append(type.name());
+        this.query.append(this.prepareColName(name)).append(' ').append(type.name());
         if (length > 0)
         {
             this.query.append('(').append(length).append(')');
@@ -97,19 +97,19 @@ public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
 
     public TableBuilder primaryKey(String key)
     {
-        this.query.append(",PRIMARY KEY (").append(this.prepareName(key, false)).append(')');
+        this.query.append(",PRIMARY KEY (").append(this.prepareColName(key)).append(')');
         return this;
     }
 
     public TableBuilder foreignKey(String key)
     {
-        this.query.append(",FOREIGN KEY (").append(this.prepareName(key, false)).append(')');
+        this.query.append(",FOREIGN KEY (").append(this.prepareColName(key)).append(')');
         return this;
     }
 
     public TableBuilder references(String otherTable, String key)
     {
-        this.query.append("REFERENCES ").append(this.prepareName(otherTable, true)).append(" (").append(this.prepareName(key, false)).append(')');
+        this.query.append("REFERENCES ").append(this.prepareName(otherTable)).append(" (").append(this.prepareColName(key)).append(')');
         return this;
     }
 

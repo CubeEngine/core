@@ -17,19 +17,14 @@ public abstract class MySQLBuilderBase
         this.builder = builder;
     }
     
-    public String prepareName(String name, boolean isTableName)
+    public String prepareName(String name)
     {
-        return this.builder.database.prepareName(name, isTableName);
+        return this.builder.database.prepareName(name);
     }
     
-    public String[] prepareNames(String[] names, boolean areTableNames)
+    public String prepareColName(String name)
     {
-        String[] prepared = new String[names.length];
-        for (int i = 0 ; i < names.length; ++i)
-        {
-            prepared[i] = this.prepareName(names[i], areTableNames);
-        }
-        return prepared;    
+        return this.builder.database.prepareColName(name);
     }
 
     public QueryBuilder end()

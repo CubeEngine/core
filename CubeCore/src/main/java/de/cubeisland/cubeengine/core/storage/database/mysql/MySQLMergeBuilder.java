@@ -20,7 +20,7 @@ public class MySQLMergeBuilder extends MySQLBuilderBase implements MergeBuilder
 
     public MergeBuilder into(String table)
     {
-        this.query = new StringBuilder("INSERT INTO ").append(this.prepareName(table, true)).append(" ");
+        this.query = new StringBuilder("INSERT INTO ").append(this.prepareName(table)).append(" ");
         this.updateColsSpecified = false;
         this.insertCols = null;
         return this;
@@ -30,11 +30,11 @@ public class MySQLMergeBuilder extends MySQLBuilderBase implements MergeBuilder
     {
         Validate.notEmpty(cols, "You have to specify at least one col to insert");
         
-        this.query.append('(').append(this.prepareName(cols[0], false));
+        this.query.append('(').append(this.prepareColName(cols[0]));
         int i;
         for (i = 1; i < cols.length; ++i)
         {
-            this.query.append(',').append(this.prepareName(cols[i], false));
+            this.query.append(',').append(this.prepareColName(cols[i]));
         }
         this.query.append(") VALUES (?");
         for (i = 0; i < cols.length; ++i)
@@ -56,11 +56,11 @@ public class MySQLMergeBuilder extends MySQLBuilderBase implements MergeBuilder
         Validate.notEmpty(updateCols, "You have to specify at least one col to update!");
         Validate.isTrue(this.insertCols.length >= updateCols.length, "More update cols than insert cols specified!");
         
-        String col = this.prepareName(updateCols[0], false);
+        String col = this.prepareColName(updateCols[0]);
         this.query.append(" ON DUPLICATE KEY UPDATE ").append(col).append("=VALUES(").append(col).append(')');
         for (int i = 1; i < updateCols.length; ++i)
         {
-            col = this.prepareName(updateCols[i], false);
+            col = this.prepareColName(updateCols[i]);
             this.query.append(',').append(col).append(col).append("=VALUES(").append(col).append(')');
         }
         

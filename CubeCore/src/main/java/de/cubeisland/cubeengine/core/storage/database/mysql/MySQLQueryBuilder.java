@@ -119,7 +119,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         Validate.notNull(table, "No table specified!");
         
         this.init();
-        this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table, true));
+        this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table));
         
         return this;
     }
@@ -129,10 +129,10 @@ public class MySQLQueryBuilder implements QueryBuilder
         Validate.notEmpty(tables, "No tables specified!");
         
         this.init();
-        this.query.append("DROP TABLE ").append(this.database.prepareName(tables[0], true));
+        this.query.append("DROP TABLE ").append(this.database.prepareName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareName(tables[i], true));
+            this.query.append(',').append(this.database.prepareName(tables[i]));
         }
 
         return this;
