@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.logging.Logger;
@@ -67,7 +67,7 @@ public final class CubeEngine
      *
      * @return the Database
      */
-    public static MySQLDatabase getDatabase()
+    public static Database getDatabase()
     {
         return core.getDB();
     }
