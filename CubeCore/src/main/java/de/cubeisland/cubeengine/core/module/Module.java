@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
@@ -152,7 +152,7 @@ public abstract class Module
      *
      * @return the database
      */
-    public MySQLDatabase getDatabase()
+    public Database getDatabase()
     {
         return this.core.getDB();
     }
