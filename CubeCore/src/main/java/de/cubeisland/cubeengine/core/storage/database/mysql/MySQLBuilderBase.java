@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 /**
  *

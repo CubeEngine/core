@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Handler;

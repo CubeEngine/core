@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.MergeBuilder;
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.MergeBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**

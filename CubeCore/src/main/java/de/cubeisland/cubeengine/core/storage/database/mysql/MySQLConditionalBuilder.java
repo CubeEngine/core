@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
-import de.cubeisland.cubeengine.core.storage.database.WhereBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.ConditionalBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.WhereBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**

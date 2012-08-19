@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.DeleteBuilder;
-import de.cubeisland.cubeengine.core.storage.database.InsertBuilder;
-import de.cubeisland.cubeengine.core.storage.database.MergeBuilder;
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
-import de.cubeisland.cubeengine.core.storage.database.SelectBuilder;
-import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
-import de.cubeisland.cubeengine.core.storage.database.UpdateBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.DeleteBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.MergeBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**

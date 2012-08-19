@@ -1,4 +1,6 @@
-package de.cubeisland.cubeengine.core.storage.database;
+package de.cubeisland.cubeengine.core.storage.database.querybuilder;
+
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
 
 /**
  *

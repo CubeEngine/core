@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.storage.database;
+package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
 /**
  *
