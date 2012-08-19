@@ -166,5 +166,17 @@ public class TestConfig extends Configuration
         public double subdoub = 2.3;
         @Option("sub.string")
         public String substri = "nothin";
+        @Option("subsubconfig")
+        public TestSubSubConfig suboptimaleConfig = new TestSubSubConfig();
+
+        public class TestSubSubConfig extends Configuration
+        {
+            @Option("sub.int")
+            public int subInt = 1;
+            @Option("sub.doub")
+            public double subdoub = 2.3;
+            @Option("sub.string")
+            public String substri = "something";
+        }
     }
 }
