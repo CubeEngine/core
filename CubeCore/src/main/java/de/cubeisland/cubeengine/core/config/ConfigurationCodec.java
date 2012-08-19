@@ -38,7 +38,7 @@ public abstract class ConfigurationCodec
     public String SPACES;
     public String LINEBREAK;
     public String QUOTE;
-    protected LinkedHashMap<String, Object> values;
+    //protected LinkedHashMap<String, Object> values;
     protected HashMap<String, String> comments;
     protected boolean first;
     protected Integer revision = null;
@@ -47,7 +47,7 @@ public abstract class ConfigurationCodec
     public ConfigurationCodec()
     {
         this.comments = new HashMap<String, String>();
-        this.values = new LinkedHashMap<String, Object>();
+        //this.values = new LinkedHashMap<String, Object>();
     }
 
     /**
@@ -57,7 +57,7 @@ public abstract class ConfigurationCodec
      * @param object the object to deserialize
      * @return the deserialized object
      */
-    public static Object convertTo(Configuration config, Field field, Object object)
+    public Object convertTo(Configuration config, Field field, Object object)
     {
         Class<?> fieldClass = field.getType();
         Converter converter = Convert.matchConverter(fieldClass);
@@ -210,8 +210,19 @@ public abstract class ConfigurationCodec
      * @param object the object
      * @return the serialized fieldvalue
      */
-    public static Object convertFrom(Field field, Object object)
+    public Object convertFrom(Field field, Object object)
     {
+        if (Configuration.class.isAssignableFrom(field.getType()))
+        {
+            try
+            {
+                return this.saveIntoMap((Configuration)object);
+            }
+            catch (IllegalAccessException ex)
+            {
+                logger.log(Level.SEVERE, "Error while converting SubConfiguration", ex);
+            }
+        }
         Class<?> objectClass = object.getClass();
         Converter converter = Convert.matchConverter(objectClass);
 
@@ -246,7 +257,7 @@ public abstract class ConfigurationCodec
                     logger.log(Level.WARNING, "Could not apply Collection to {0}", field.getName());
                 }
             }
-            if (objectClass.isArray())
+            else if (objectClass.isArray())
             {
                 Object[] array = (Object[])object;
                 Class<?> genType = field.getAnnotation(Option.class).genericType();
@@ -274,21 +285,21 @@ public abstract class ConfigurationCodec
                     return result;
                 }
             }
-            if (Map.class.isAssignableFrom(objectClass))
+            else if (Map.class.isAssignableFrom(objectClass))
             {
                 if (object instanceof Map)
                 {
-                    Map<String,?> map = (Map<String,?>)object;
+                    Map<String, ?> map = (Map<String, ?>)object;
                     Class<?> genType = field.getAnnotation(Option.class).genericType();
                     converter = Convert.matchConverter(genType);
                     if (converter != null)
                     {
-                        Map<String,Object> result = new LinkedHashMap<String, Object>();
+                        Map<String, Object> result = new LinkedHashMap<String, Object>();
                         for (String key : map.keySet())
                         {
                             try
                             {
-                                result.put(key,converter.toObject(map.get(key)));
+                                result.put(key, converter.toObject(map.get(key)));
                             }
                             catch (ConversionException e)
                             {
@@ -326,9 +337,9 @@ public abstract class ConfigurationCodec
      */
     public void load(Configuration config, InputStream is) throws IOException
     {
-        this.loadIntoCodec(is);//load config into Codec
-        this.updateConfig(config.getClass());//update loaded config in Codec if needed
-        this.loadIntoFields(config);//update Fields with loaded values
+        LinkedHashMap<String, Object> values = this.loadIntoMap(is);//load config into Codec
+        values = this.updateConfig(values, config.getClass()); //update loaded config in Codec if needed
+        this.loadIntoFields(config, values);//update Fields with loaded values
         this.clear(); //clear loaded values
     }
 
@@ -338,11 +349,11 @@ public abstract class ConfigurationCodec
      * @param is the InputStream
      * @throws IOException
      */
-    private void loadIntoCodec(InputStream is) throws IOException
+    private LinkedHashMap<String, Object> loadIntoMap(InputStream is) throws IOException
     {
         if (is == null)
         {
-            return;
+            return new LinkedHashMap<String, Object>();
         }
         InputStreamReader reader = new InputStreamReader(is, "UTF-8");
         StringBuilder builder = new StringBuilder();
@@ -379,7 +390,7 @@ public abstract class ConfigurationCodec
         {
             input.close();
         }
-        loadFromString(builder.toString());
+        return loadFromString(builder.toString());
     }
 
     /**
@@ -387,9 +398,9 @@ public abstract class ConfigurationCodec
      *
      * @param contents
      */
-    public abstract void loadFromString(String contents);
+    public abstract LinkedHashMap<String, Object> loadFromString(String contents);
 
-    private void updateConfig(Class<? extends Configuration> clazz)
+    private LinkedHashMap<String, Object> updateConfig(LinkedHashMap<String, Object> values, Class<? extends Configuration> clazz)
     {
         Revision revis = clazz.getAnnotation(Revision.class);
         if (revis != null && this.revision != null)
@@ -405,7 +416,7 @@ public abstract class ConfigurationCodec
                     try
                     {
                         updater = updaterClass.newInstance();
-                        this.values = updater.update(this.values, this.revision);
+                        values = updater.update(values, this.revision);
                     }
                     catch (Exception e)
                     {
@@ -413,6 +424,7 @@ public abstract class ConfigurationCodec
                 }
             }
         }
+        return values;
     }
 
     /**
@@ -420,7 +432,7 @@ public abstract class ConfigurationCodec
      *
      * @param config the Configuration
      */
-    private void loadIntoFields(Configuration config)
+    private void loadIntoFields(Configuration config, LinkedHashMap<String, Object> values)
     {
         for (Field field : config.getClass().getFields())
         {
@@ -429,17 +441,26 @@ public abstract class ConfigurationCodec
                 if (field.isAnnotationPresent(Option.class))
                 {
                     int mask = field.getModifiers();
+
                     if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
                     {
                         continue;
                     }
                     String path = field.getAnnotation(Option.class).value();
                     //Get savedValue or default
-                    Object configElem = this.get(path);
+                    Object configElem = this.get(path, values);
+
                     if (configElem == null)
                     {
                         //Set defaultValue if no value saved
-                        this.set(path, convertFrom(field, field.get(config)));
+                        //No need for this anymore: this.set(path, convertFrom(field, field.get(config)));
+                    }
+                    else if (Configuration.class.isAssignableFrom(field.getType()))
+                    {
+                        Configuration subConfig = (Configuration)field.get(config);
+                        subConfig.setCodec(config.codec);
+                        subConfig.codec.loadIntoFields(subConfig, (LinkedHashMap<String, Object>)configElem);
+                        field.set(config, subConfig);
                     }
                     else
                     {
@@ -474,13 +495,13 @@ public abstract class ConfigurationCodec
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            this.saveIntoCodec(config);//Get Map & Comments
+            LinkedHashMap<String, Object> values = this.saveIntoMap(config);//Get Map & Comments
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
                 this.revision = a_revision.value();
             }
-            this.save(file);
+            this.save(file, values);
             this.clear();
         }
         catch (IOException e)
@@ -499,8 +520,10 @@ public abstract class ConfigurationCodec
      * @param config the Configuration
      * @throws IllegalAccessException
      */
-    private void saveIntoCodec(Configuration config) throws IllegalAccessException
+    private LinkedHashMap<String, Object> saveIntoMap(Configuration config) throws IllegalAccessException
     {
+        LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
+
         Class<? extends Configuration> clazz = config.getClass();
         if (clazz.isAnnotationPresent(MapComments.class))
         {
@@ -524,9 +547,10 @@ public abstract class ConfigurationCodec
                 {
                     this.addComment(path, field.getAnnotation(Comment.class).value());
                 }
-                this.set(path, convertFrom(field, field.get(config)));
+                this.set(path, convertFrom(field, field.get(config)), values);
             }
         }
+        return values;
     }
 
     /**
@@ -535,13 +559,13 @@ public abstract class ConfigurationCodec
      * @param file the File
      * @throws IOException
      */
-    public void save(File file) throws IOException
+    public void save(File file, LinkedHashMap<String, Object> values) throws IOException
     {
         if (file == null)
         {
             return;
         }
-        String data = this.convertConfigToString();
+        String data = this.convertMapToString(values);
         FileWriter writer = new FileWriter(file);
         try
         {
@@ -558,13 +582,13 @@ public abstract class ConfigurationCodec
      *
      * @return the config as String
      */
-    public String convertConfigToString()
+    public String convertMapToString(LinkedHashMap<String, Object> values)
     {
         StringBuilder sb = new StringBuilder();
         first = true;
         sb.append(this.revision());
         sb.append(this.head());
-        sb.append(this.convertMap("", this.values, 0));
+        sb.append(this.convertMap("", values, 0));
         sb.append(this.tail());
         return sb.toString();
     }
@@ -619,15 +643,15 @@ public abstract class ConfigurationCodec
      * @param path the path
      * @return the value or null if no value saved
      */
-    public Object get(String path)
+    public Object get(String path, LinkedHashMap<String, Object> values)
     {
         if (path.contains("."))
         {
-            return this.get(this.getSubPath(path), (Map<String, Object>)this.values.get(this.getBasePath(path)));
+            return this.get(this.getSubPath(path), (Map<String, Object>)values.get(this.getBasePath(path)));
         }
         else
         {
-            return this.values.get(path);
+            return values.get(path);
         }
     }
 
@@ -660,17 +684,18 @@ public abstract class ConfigurationCodec
      * @param path the path
      * @param value the value to set
      */
-    public void set(String path, Object value)
+    public LinkedHashMap<String, Object> set(String path, Object value, LinkedHashMap<String, Object> values)
     {
         if (path.contains("."))
         {
-            Map<String, Object> subsection = this.createSection(this.values, this.getBasePath(path));
+            Map<String, Object> subsection = this.createSection(values, this.getBasePath(path));
             this.set(subsection, this.getSubPath(path), value);
         }
         else
         {
             values.put(path, value);
         }
+        return values;
     }
 
     /**
@@ -761,7 +786,7 @@ public abstract class ConfigurationCodec
     public void clear()
     {
         this.comments.clear();
-        this.values.clear();
+        //this.values.clear();
     }
 
     /**

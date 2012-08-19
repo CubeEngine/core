@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.test.database.TestStorage;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CubeTest extends Module
 {
@@ -18,15 +17,16 @@ public class CubeTest extends Module
     {
         try
         {
-            this.getLogger().info("Test1 onEnable...");
+            this.getLogger().info("enabling TestModule");
             Configuration.load(TestConfig.class, this);
             this.initializeDatabase();
             this.testDatabase();
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            Logger.getLogger(CubeTest.class.getName()).log(Level.SEVERE, null, ex);
+            this.getLogger().log(Level.SEVERE, "Error while Enabling the TestModule", ex);
         }
+        this.getLogger().info("TestModule succesfully enabeled");
 
     }
 

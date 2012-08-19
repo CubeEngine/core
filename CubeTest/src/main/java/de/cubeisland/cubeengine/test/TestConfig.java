@@ -11,7 +11,6 @@ import de.cubeisland.cubeengine.core.permission.Role;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Location;
@@ -23,8 +22,8 @@ import org.bukkit.plugin.Plugin;
  *
  * @author Anselm Brehme
  */
-
-@MapComments({
+@MapComments(
+{
     @MapComment(path = "regions", text = "more RandomTests:"),
     @MapComment(path = "list", text = "ListTests:"),
     @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
@@ -33,8 +32,7 @@ import org.bukkit.plugin.Plugin;
 @Codec("yml")
 public class TestConfig extends Configuration
 {
-    private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
-
+    private final Server server = ((Plugin) CubeEngine.getCore()).getServer();
     //TODO remove this test
     @Option("location")
     @Comment("LocationTest")
@@ -57,7 +55,8 @@ public class TestConfig extends Configuration
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
-		{
+        
+        {
             put("default", 7);
         }
     };
@@ -79,6 +78,7 @@ public class TestConfig extends Configuration
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
     {
+        
         {
             add("quark");
             add("kekse");
@@ -120,27 +120,30 @@ public class TestConfig extends Configuration
             put("list2", list2);
         }
     };
-    
-    @Option(value="locationinmap",genericType=Location.class)
+    @Option(value = "locationinmap", genericType = Location.class)
     @Comment("multi location")
     public LinkedHashMap<String, Location> locs;
+
+    
     {
         {
             locs = new LinkedHashMap<String, Location>();
-            locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0) );
+            locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
             locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
             locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
             locs.put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
         }
-    };
+    }
+    ;
     
     @Option("role.role")
     @Comment("a single role")
     public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
-    
-    @Option(value="role.roles",genericType=Role.class)
+    @Option(value = "role.roles", genericType = Role.class)
     @Comment("multi roles")
     public LinkedHashMap<String, Role> roles;
+
+    
     {
         {
             roles = new LinkedHashMap<String, Role>();
@@ -149,5 +152,19 @@ public class TestConfig extends Configuration
             roles.put("role3", new Role("mod", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
             roles.put("role4", new Role("admin", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
         }
-    };
+    }
+    ;
+    
+    @Option("subconfig")
+    public TestSubConfig subConfig = new TestSubConfig();
+
+    public class TestSubConfig extends Configuration
+    {
+        @Option("sub.int")
+        public int subInt = 1;
+        @Option("sub.doub")
+        public double subdoub = 2.3;
+        @Option("sub.string")
+        public String substri = "nothin";
+    }
 }

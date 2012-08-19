@@ -26,17 +26,18 @@ public class YamlCodec extends ConfigurationCodec
         QUOTE = "'";
     }
 
-    public void loadFromString(String contents)
+    public LinkedHashMap<String,Object> loadFromString(String contents)
     {
         if (contents == null)
         {
-            return;
+            return new LinkedHashMap<String, Object>();
         }
-        this.values = (LinkedHashMap<String, Object>)yaml.load(contents);
-        if (this.values == null)
+        LinkedHashMap<String, Object> values = (LinkedHashMap<String, Object>)yaml.load(contents);
+        if (values == null)
         {
-            this.values = new LinkedHashMap<String, Object>();
+            return new LinkedHashMap<String, Object>();
         }
+        return values;
     }
 
     public String convertValue(String path, Object value, int off)

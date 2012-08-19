@@ -128,18 +128,19 @@ public class JsonCodec extends ConfigurationCodec
     }
 
     @Override
-    public void loadFromString(String contents)
+    public LinkedHashMap<String, Object> loadFromString(String contents)
     {
         if (contents == null)
         {
-            return;
+            return new LinkedHashMap<String, Object>();
         }
         JsonElement elem = json.parse(contents);
-        this.values = loadFromJsonObject(elem.getAsJsonObject());
-        if (this.values == null)
+        LinkedHashMap<String, Object> values = loadFromJsonObject(elem.getAsJsonObject());
+        if (values == null)
         {
-            this.values = new LinkedHashMap<String, Object>();
+            return new LinkedHashMap<String, Object>();
         }
+        return values;
     }
 
     private LinkedHashMap<String, Object> loadFromJsonObject(JsonObject jsonObject)

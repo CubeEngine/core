@@ -163,6 +163,11 @@ public abstract class Configuration
     {
         this.codec = resolveCodec(fileExtension);
     }
+    
+    public void setCodec(ConfigurationCodec codec)
+    {
+        this.codec = codec;
+    }
 
     /**
      * Sets the file to load from
