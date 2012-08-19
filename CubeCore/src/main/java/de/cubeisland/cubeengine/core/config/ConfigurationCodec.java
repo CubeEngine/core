@@ -432,7 +432,7 @@ public abstract class ConfigurationCodec
      *
      * @param config the Configuration
      */
-    private void loadIntoFields(Configuration config, LinkedHashMap<String, Object> values)
+    private void loadIntoFields(Configuration config, Map<String, Object> values)
     {
         for (Field field : config.getClass().getFields())
         {
@@ -459,7 +459,7 @@ public abstract class ConfigurationCodec
                     {
                         Configuration subConfig = (Configuration)field.get(config);
                         subConfig.setCodec(config.codec);
-                        subConfig.codec.loadIntoFields(subConfig, (LinkedHashMap<String, Object>)configElem);
+                        subConfig.codec.loadIntoFields(subConfig, (Map)configElem);
                         field.set(config, subConfig);
                     }
                     else
