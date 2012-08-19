@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.database.TestStorage;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.logging.Level;
 
 public class CubeTest extends Module
@@ -45,45 +46,26 @@ public class CubeTest extends Module
     {
     }
 
+    private Date getDate(int year, int month, int day)
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        return new Date(calendar.getTimeInMillis());
+    }
+
     public void testDatabase() throws SQLException
     {
-
         Database database = this.getDatabase();
-        Object[] obj = new Object[3];
-        obj[0] = new Date(2012, 8, 8);
-        obj[1] = 10;
-        obj[2] = "Heinz";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 6, 8);
-        obj[1] = 30;
-        obj[2] = "Peter";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 8, 6);
-        obj[1] = 20;
-        obj[2] = "Manfred";
-        database.preparedExecute(TestModel.class, "store", obj);
-
-        obj[0] = new Date(2012, 8, 8);
-        obj[1] = 20;
-        obj[2] = "Heinz";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 6, 8);
-        obj[1] = 120;
-        obj[2] = "Peter";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 8, 6);
-        obj[1] = 50;
-        obj[2] = "Manfred";
-        database.preparedExecute(TestModel.class, "store", obj);
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 10, "Heinz");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 6, 8), 30, "Hans");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 6), 20, "Manfred");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 20, "Heinz");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 120, "Hans");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2011, 2, 8), 50, "Manfred");
         
         database.preparedQuery(TestModel.class, "get", 2);
         database.preparedQuery(TestModel.class, "getall");
-        Object[] obj2 = new Object[4];
-        obj2[0] = obj[0];
-        obj2[1] = 100;
-        obj2[2] = obj[2];
-        obj2[3] = 3;
-        database.preparedExecute(TestModel.class, "update", obj2);
+        database.preparedExecute(TestModel.class, "update", this.getDate(111, 2, 2) , 100 , "Paul", 3);
         database.query(
                 database.getQueryBuilder()
                             .select()
