@@ -94,7 +94,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                 .engine(entity.engine()).defaultcharset(entity.charset())
                 //TODO AI if no ai
                 .autoIncrement(1);
-        this.database.execute(tbuilder.end().endQuery());
+        this.database.execute(tbuilder.endBuilder().endQuery());
         this.prepareStatements(keys.get(0), attributes.toArray(new String[attributes.size()]));
     }
 
@@ -111,7 +111,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                 .insert()
                     .into(this.table)
                     .cols(fields)
-                .end()
+                .endBuilder()
             .endQuery());
 
             this.database.prepareAndStoreStatement(model, "merge", builder
@@ -119,41 +119,41 @@ public abstract class BasicStorage<V> implements Storage<V>
                     .into(this.table)
                     .cols(allFields)
                     .updateCols(fields)
-                .end()
+                .endBuilder()
             .endQuery());
             
             this.database.prepareAndStoreStatement(model, "get", builder
                 .select().cols(allFields)
                     .from(this.table)
-                    .beginFunction().where()
+                    .beginFunctions().where()
                          .field(key).is(FunctionBuilder.EQUAL).value()
-                    .endFunction()
-                .end()
+                    .endFunctions()
+                .endBuilder()
             .endQuery());
             
             this.database.prepareAndStoreStatement(model, "getall", builder
                 .select().cols(allFields)
                     .from(this.table)
-                .end()
+                .endBuilder()
             .endQuery());
 
             this.database.prepareAndStoreStatement(model, "update", builder
                 .update().tables(this.table)
                     .cols(fields)
-                    .beginFunction().where()
+                    .beginFunctions().where()
                         .field(key).is(FunctionBuilder.EQUAL).value()
-                    .endFunction()
-                .end()
+                    .endFunctions()
+                .endBuilder()
             .endQuery());
 
             this.database.prepareAndStoreStatement(model, "delete", builder
                 .delete()
                     .from(this.table)
-                    .beginFunction().where()
+                    .beginFunctions().where()
                         .field(key).is(FunctionBuilder.EQUAL).value()
-                    .endFunction()
+                    .endFunctions()
                     .limit(1)
-                .end()
+                .endBuilder()
             .endQuery());
             
             this.database.prepareAndStoreStatement(model, "clear", builder

@@ -69,11 +69,11 @@ public class MySQLMergeBuilder extends MySQLBuilderBase implements MergeBuilder
     }
 
     @Override
-    public QueryBuilder end()
+    public QueryBuilder endBuilder()
     {
         Validate.isTrue(this.updateColsSpecified, "You have tp specify which cols to update!");
         this.insertCols = null;
         
-        return super.end();
+        return super.endBuilder();
     }
 }

@@ -10,5 +10,5 @@ public interface MergeBuilder
     public MergeBuilder cols(String... cols);
     public MergeBuilder updateCols(String... cols);
     
-    public QueryBuilder end();
+    public QueryBuilder endBuilder();
 }

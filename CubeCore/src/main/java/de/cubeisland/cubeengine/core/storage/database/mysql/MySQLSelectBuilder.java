@@ -36,7 +36,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     {
         Validate.notEmpty(tables, "No tables specified!");
 
-        this.query.append(" FROM").append(this.prepareName(tables[0], true));
+        this.query.append(" FROM ").append(this.prepareName(tables[0], true));
         for (int i = 1; i < tables.length; ++i)
         {
             this.query.append(',').append(this.prepareName(tables[i], true));

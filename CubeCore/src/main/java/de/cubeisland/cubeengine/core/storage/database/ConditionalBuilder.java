@@ -6,11 +6,13 @@ package de.cubeisland.cubeengine.core.storage.database;
  */
 public interface ConditionalBuilder<T>
 {   
-    public FunctionBuilder<T> beginFunction();
+    public FunctionBuilder<T> beginFunction(String function);
+    public T function(String function);
+    public FunctionBuilder<T> beginFunctions();
     
     public T orderBy(String... cols);
     public T limit(int n);
     public T offset(int n);
     
-    public QueryBuilder end();
+    public QueryBuilder endBuilder();
 }

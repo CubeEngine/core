@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.test.database.TestModel;
@@ -87,35 +86,54 @@ public class CubeTest extends Module
         database.preparedExecute(TestModel.class, "update", obj2);
         database.query(
                 database.getQueryBuilder()
-                .select()
-                .beginFunction()
-                .avg("OrderPrice").as("OrderAverage")
-                .endFunction()
-                .from("Orders")
-                .end()
-                .endQuery());
+                            .select()
+                                .beginFunction("avg")
+                                    .field("OrderPrice")
+                                .endFunction()
+                                .as("OrderAverage")
+                                .endFunctions()
+                            .from("Orders")
+                            .endBuilder()
+                        .endQuery());
         
         database.query(
                 database.getQueryBuilder()
-                .select().cols("id","Customer")
-                    .beginFunction()
-                        .comma()
-                        .sum("OrderPrice").as("OrderAverage")
-                    .endFunction()
-                .from("Orders")
-                .beginFunction()
-                    .groupBy("Customer")
-                    .having()
-                    .sum("OrderPrice")
-                    .is(FunctionBuilder.GREATER)
-                    .value("100")
-                .endFunction()
-                    
-                .end()
-                .endQuery());
+                        .select().cols("id","Customer")
+                            .beginFunctions()
+                                .comma()
+                                .beginFunction("sum")
+                                    .field("OrderPrice")
+                                .endFunction()
+                                .as("OrderAverage")
+                            .endFunctions()
+                            .from("Orders")
+                            .beginFunctions()
+                                .groupBy("Customer")
+                                .having()
+                                .beginFunction("sum")
+                                    .field("OrderPrice")
+                                .endFunction()
+                                .is(FunctionBuilder.GREATER)
+                                .value("100")
+                            .endFunctions()
+                        .endBuilder()
+                    .endQuery());
         
         database.getQueryBuilder()
-                .select().beginFunction().round("blahhh");
+                .select()
+                    .beginFunction("round")
+                        .beginFunction("avg")
+                            .wildcard()
+                        .endFunction()
+                    .endFunction()
+                    .beginFunction("where")
+                        .field("dob_year")
+                        .is(FunctionBuilder.GREATER)
+                        .value("1920")
+                    .endFunction()
+                    .endFunctions()
+                .endBuilder()
+            .endQuery();
 //TODO SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
     }
 

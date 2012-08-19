@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
+import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
@@ -17,14 +18,28 @@ public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> exte
         this.functionBuilder = null;
     }
 
-    public MySQLFunctionBuilder beginFunction()
+    public MySQLFunctionBuilder beginFunction(String function)
+    {
+        this.beginFunctions();
+        this.functionBuilder.beginFunction(function);
+        return this.functionBuilder;
+    }
+    
+    public FunctionBuilder<T> beginFunctions()
     {
         if (this.functionBuilder == null)
         {
             this.functionBuilder = new MySQLFunctionBuilder(this, builder);
         }
         this.functionBuilder.query = new StringBuilder();
-        return this.functionBuilder;
+        return functionBuilder;
+    }
+    
+    public T function(String function)
+    {
+        this.beginFunctions();
+        this.functionBuilder.function(function);
+        return (T)this.functionBuilder.endFunctions();
     }
     
     public T orderBy(String... cols)
@@ -50,6 +65,8 @@ public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> exte
         this.query.append(" OFFSET ").append(n);
         return (T)this;
     }
+
+    
     
     
 }

@@ -38,7 +38,7 @@ public abstract class MySQLBuilderBase
         return prepared;    
     }
 
-    public QueryBuilder end()
+    public QueryBuilder endBuilder()
     {
         this.builder.query.append(this.query);
         this.query = null;

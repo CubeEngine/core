@@ -17,120 +17,15 @@ public class MySQLFunctionBuilder<T extends MySQLConditionalBuilder> extends MyS
         this.parent = parent;
     }
 
-    public FunctionBuilder where()
+    public FunctionBuilder beginFunction(String function)
     {
-        this.query.append(" WHERE");
+        this.query.append(" ").append(function.toUpperCase()).append("(");
         return this;
     }
 
-    public MySQLFunctionBuilder<T> now()
+    public FunctionBuilder function(String function)
     {
-        this.query.append(" NOW()");
-        return this;
-    }
-
-    public MySQLFunctionBuilder<T> avg(String col)
-    {
-        this.query.append(" AVG(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder<T> count(String col, boolean distinct)
-    {
-        this.query.append( "COUNT(");
-        if (distinct)
-        {
-            this.query.append(" DISTINCT ");
-        }
-        this.query.append(this.prepareName(col, false)).append(") ");
-        return this;
-    }
-
-    public MySQLFunctionBuilder count(String col)
-    {
-        return this.count(col, false);
-    }
-
-    public MySQLFunctionBuilder countall()
-    {
-        this.query.append(" COUNT(*)");
-        return this;
-    }
-
-    public MySQLFunctionBuilder min(String col)
-    {
-        this.query.append(" MIN(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder max(String col)
-    {
-        this.query.append(" MAX(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder sum(String col)
-    {
-        this.query.append(" SUM(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder first(String col)
-    {
-        this.query.append(" FIRST(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder last(String col)
-    {
-        this.query.append(" LAST(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder ucase(String col)
-    {
-        this.query.append(" UCASE(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder lcase(String col)
-    {
-        this.query.append(" LCASE(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder mid(String col, int start, int length)
-    {
-        this.query.append(" MID(").append(this.prepareName(col, false)).append(",").append(start).append(",").append(length).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder mid(String col, int start)
-    {
-        this.query.append(" MID(").append(this.prepareName(col, false)).append(",").append(start).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder len(String col)
-    {
-        this.query.append(" LEN(").append(this.prepareName(col, false)).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder round(String col)
-    {
-        return this.round(col, 0);
-    }
-    
-    public MySQLFunctionBuilder round(String col, int decimals)
-    {
-        this.query.append(" ROUND(").append(this.prepareName(col, false)).append(",").append(decimals).append(")");
-        return this;
-    }
-
-    public MySQLFunctionBuilder format(String col, String format)
-    {
-        this.query.append(" FORMAT(").append(this.prepareName(col, false)).append(",").append(format).append(")");
+        this.query.append(" ").append(function.toUpperCase()).append("()");
         return this;
     }
 
@@ -140,9 +35,9 @@ public class MySQLFunctionBuilder<T extends MySQLConditionalBuilder> extends MyS
         return this;
     }
 
-    public MySQLFunctionBuilder groupBy(String col)
+    public MySQLFunctionBuilder groupBy(String... cols)
     {
-        this.query.append(" GROUP BY ").append(this.prepareName(col, false));
+        this.query.append(" GROUP BY ").append(this.prepareName(cols[0], false));//TODO multiple cols
         return this;
     }
 
@@ -191,7 +86,7 @@ public class MySQLFunctionBuilder<T extends MySQLConditionalBuilder> extends MyS
         this.query.append('?');
         return this;
     }
-    
+
     public MySQLFunctionBuilder value(String name)
     {
         this.query.append(name);
@@ -233,15 +128,39 @@ public class MySQLFunctionBuilder<T extends MySQLConditionalBuilder> extends MyS
         return this;
     }
 
-    public T endFunction()
-    {
-        this.parent.query.append(this.query);
-        return (T)this.parent;
-    }
-
     public FunctionBuilder comma()
     {
         this.query.append(',');
         return this;
+    }
+
+    public FunctionBuilder distinct()
+    {
+        this.query.append(" DISTINCT");
+        return this;
+    }
+
+    public FunctionBuilder wildcard()
+    {
+        this.query.append('*');
+        return this;
+    }
+
+    public FunctionBuilder endFunction()
+    {
+        this.query.append(')');
+        return this;
+    }
+
+    public FunctionBuilder where()
+    {
+        this.query.append(" WHERE");
+        return this;
+    }
+
+    public T endFunctions()
+    {
+        this.parent.query.append(this.query);
+        return (T)this.parent;
     }
 }

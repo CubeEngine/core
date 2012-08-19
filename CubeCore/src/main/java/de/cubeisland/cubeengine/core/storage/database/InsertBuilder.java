@@ -9,5 +9,5 @@ public interface InsertBuilder
     public InsertBuilder into(String table);
     public InsertBuilder cols(String... cols);
     
-    public QueryBuilder end();
+    public QueryBuilder endBuilder();
 }

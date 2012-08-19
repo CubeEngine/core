@@ -16,7 +16,6 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
     {
         super(builder);
     }
-    
 
     public UpdateBuilder tables(String... tables)
     {
@@ -47,12 +46,12 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
     }
 
     @Override
-    public QueryBuilder end()
+    public QueryBuilder endBuilder()
     {
         if (!this.hasCols)
         {
             throw new IllegalStateException("No cols where specified!");
         }
-        return super.end();
+        return super.endBuilder();
     }
 }

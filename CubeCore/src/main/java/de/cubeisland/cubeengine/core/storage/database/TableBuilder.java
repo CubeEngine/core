@@ -35,5 +35,5 @@ public interface TableBuilder
 
     public TableBuilder autoIncrement(int n);
     
-    public QueryBuilder end();
+    public QueryBuilder endBuilder();
 }
