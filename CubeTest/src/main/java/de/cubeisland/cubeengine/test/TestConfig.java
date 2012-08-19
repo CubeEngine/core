@@ -161,6 +161,7 @@ public class TestConfig extends Configuration
     public class TestSubConfig extends Configuration
     {
         @Option("sub.int")
+        @Comment("SubMapComment1")
         public int subInt = 1;
         @Option("sub.doub")
         public double subdoub = 2.3;
@@ -177,6 +178,8 @@ public class TestConfig extends Configuration
             public double subdoub = 2.3;
             @Option("sub.string")
             public String substri = "something";
+            @Option("offlineplayer")
+            public String offlineplayer = "noplayer";
         }
     }
 }

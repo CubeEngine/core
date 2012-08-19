@@ -216,7 +216,7 @@ public abstract class ConfigurationCodec
         {
             try
             {
-                return this.saveIntoMap((Configuration)object);
+                return this.saveIntoMap((Configuration)object, field.getAnnotation(Option.class).value());
             }
             catch (IllegalAccessException ex)
             {
@@ -495,7 +495,7 @@ public abstract class ConfigurationCodec
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            LinkedHashMap<String, Object> values = this.saveIntoMap(config);//Get Map & Comments
+            LinkedHashMap<String, Object> values = this.saveIntoMap(config, "");//Get Map & Comments
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
@@ -520,7 +520,7 @@ public abstract class ConfigurationCodec
      * @param config the Configuration
      * @throws IllegalAccessException
      */
-    private LinkedHashMap<String, Object> saveIntoMap(Configuration config) throws IllegalAccessException
+    private LinkedHashMap<String, Object> saveIntoMap(Configuration config, String basePath) throws IllegalAccessException
     {
         LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
 
@@ -530,7 +530,14 @@ public abstract class ConfigurationCodec
             MapComment[] mapcomments = clazz.getAnnotation(MapComments.class).value();
             for (MapComment comment : mapcomments)
             {
-                this.addComment(comment.path(), comment.text());
+                if ("".equals(basePath))
+                {
+                    this.addComment(comment.path(), comment.text());
+                }
+                else
+                {
+                    this.addComment(basePath + "." + comment.path(), comment.text());
+                }
             }
         }
         for (Field field : clazz.getFields())
@@ -545,7 +552,15 @@ public abstract class ConfigurationCodec
                 String path = field.getAnnotation(Option.class).value();
                 if (field.isAnnotationPresent(Comment.class))
                 {
-                    this.addComment(path, field.getAnnotation(Comment.class).value());
+                    Comment comment = field.getAnnotation(Comment.class);
+                    if ("".equals(basePath))
+                    {
+                        this.addComment(path, comment.value());
+                    }
+                    else
+                    {
+                        this.addComment(basePath + "." + path, comment.value());
+                    }
                 }
                 this.set(path, convertFrom(field, field.get(config)), values);
             }
