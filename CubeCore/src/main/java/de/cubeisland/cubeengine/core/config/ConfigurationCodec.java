@@ -38,7 +38,6 @@ public abstract class ConfigurationCodec
     public String SPACES;
     public String LINEBREAK;
     public String QUOTE;
-    //protected LinkedHashMap<String, Object> values;
     protected HashMap<String, String> comments;
     protected boolean first;
     protected Integer revision = null;
@@ -47,7 +46,6 @@ public abstract class ConfigurationCodec
     public ConfigurationCodec()
     {
         this.comments = new HashMap<String, String>();
-        //this.values = new LinkedHashMap<String, Object>();
     }
 
     /**
@@ -63,129 +61,85 @@ public abstract class ConfigurationCodec
         Converter converter = Convert.matchConverter(fieldClass);
         if (converter == null)
         {
-            if (Collection.class.isAssignableFrom(fieldClass))
+            Class<?> genType = field.getAnnotation(Option.class).genericType();
+            converter = Convert.matchConverter(genType);
+            if (converter != null)
             {
-                if (object instanceof Collection)
+                if (Collection.class.isAssignableFrom(fieldClass))
                 {
                     Collection<?> list = (Collection<?>)object;
                     if (list.isEmpty())
                     {
                         return object;
                     }
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = Convert.matchConverter(genType);
-                    if (converter != null)
+                    try
                     {
-                        Collection<Object> result;
-                        try
-                        {
-                            result = (Collection<Object>)field.get(config);
-                            result.clear();
-                        }
-                        catch (Exception e)
-                        {
-                            logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
-                            return null;
-                        }
+                        Collection<Object> result = (Collection<Object>)field.get(config);
+                        result.clear();
                         for (Object o : list)
                         {
-                            try
-                            {
-                                result.add(converter.fromObject(o));
-                            }
-                            catch (ConversionException e)
-                            {
-                                // TODO handle me!
-                            }
+                            result.add(converter.fromObject(o));
                         }
                         return result;
                     }
+                    catch (Exception ex)
+                    {
+                        logger.log(Level.SEVERE, "Error while converting", ex);
+                        return null;
+                    }
                 }
-                else
-                {
-                    logger.log(Level.WARNING, "Could not apply Collection for {0}", field.getName());
-                }
-            }
-            if (Map.class.isAssignableFrom(fieldClass))
-            {
-                if (object instanceof Map)
+                if (Map.class.isAssignableFrom(fieldClass))
                 {
                     Map<String, ?> map = (Map<String, ?>)object;
                     if (map.isEmpty())
                     {
                         return object;
                     }
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = Convert.matchConverter(genType);
-                    if (converter != null)
+                    try
                     {
-                        Map<String, Object> result;
-                        try
-                        {
-                            result = (Map<String, Object>)field.get(config);
-                            result.clear();
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.log(Level.SEVERE, "Error while converting to {0}", genType.toString());
-                            return null;
-                        }
+                        Map<String, Object> result = (Map<String, Object>)field.get(config);
+                        result.clear();
                         for (Map.Entry<String, ?> entry : map.entrySet())
                         {
-                            try
-                            {
-                                result.put(entry.getKey(), converter.fromObject(entry.getValue()));
-                            }
-                            catch (ConversionException e)
-                            {
-                                // TODO handle me!
-                            }
+                            result.put(entry.getKey(), converter.fromObject(entry.getValue()));
                         }
                         return result;
                     }
-                }
-                else
-                {
-                    logger.log(Level.WARNING, "Could not apply Map for {0}", field.getName());
+                    catch (Exception ex)
+                    {
+                        logger.log(Level.SEVERE, "Error while converting", ex);
+                        return null;
+                    }
                 }
             }
             if (fieldClass.isArray())
             {
-                if (object instanceof Collection)
+                Collection<Object> coll = (Collection)object;
+                Object tmparray = coll.toArray();
+                if (converter != null)
                 {
-                    Collection<Object> coll = (Collection)object;
-                    Object tmparray = coll.toArray();
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = Convert.matchConverter(genType);
-                    if (converter != null)
+                    Object o = Array.newInstance(genType, coll.size());
+                    for (int i = 0; i < coll.size(); ++i)
                     {
-                        Object o = Array.newInstance(genType, coll.size());
-                        for (int i = 0; i < coll.size(); ++i)
+                        try
                         {
-                            try
-                            {
-                                Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
-                            }
-                            catch (ConversionException e)
-                            {
-                                // TODO handle me!
-                            }
+                            Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
                         }
-                        return fieldClass.cast(o);
-                    }
-                    else
-                    {
-                        Object o = Array.newInstance(genType, coll.size());
-                        for (int i = 0; i < coll.size(); ++i)
+                        catch (ConversionException e)
                         {
-                            Array.set(o, i, Array.get(tmparray, i));
+                            logger.log(Level.WARNING, "Error while Converting", e);
                         }
-                        return fieldClass.cast(o);
                     }
+                    return fieldClass.cast(o);
                 }
                 else
                 {
-                    logger.log(Level.WARNING, "Could not apply Array for {0}", field.getName());
+                    Object o = Array.newInstance(genType, coll.size());
+                    for (int i = 0; i < coll.size(); ++i)
+                    {
+                        Array.set(o, i, Array.get(tmparray, i));
+                    }
+                    return fieldClass.cast(o);
                 }
             }
         }
@@ -197,7 +151,7 @@ public abstract class ConfigurationCodec
             }
             catch (ConversionException e)
             {
-                // TODO handle me!
+                logger.log(Level.WARNING, "Error while Converting", e);
             }
         }
         return object;
@@ -225,43 +179,50 @@ public abstract class ConfigurationCodec
         }
         Class<?> objectClass = object.getClass();
         Converter converter = Convert.matchConverter(objectClass);
-
         if (converter == null)
         {
-            if (Collection.class.isAssignableFrom(objectClass))
+            Class<?> genType = field.getAnnotation(Option.class).genericType();
+            converter = Convert.matchConverter(genType);
+            if (converter != null)
             {
-                if (object instanceof Collection)
+                if (Collection.class.isAssignableFrom(objectClass))
                 {
                     Collection<?> collection = (Collection<?>)object;
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = Convert.matchConverter(genType);
-                    if (converter != null)
+                    Collection<Object> result = new LinkedList<Object>();
+                    for (Object o : collection)
                     {
-                        Collection<Object> result = new LinkedList<Object>();
-                        for (Object o : collection)
+                        try
                         {
-                            try
-                            {
-                                result.add(converter.toObject(o));
-                            }
-                            catch (ConversionException e)
-                            {
-                                // TODO handle me!
-                            }
+                            result.add(converter.toObject(o));
                         }
-                        return result;
+                        catch (ConversionException e)
+                        {
+                            logger.log(Level.WARNING, "Error while Converting", e);
+                        }
                     }
+                    return result;
                 }
-                else
+                if (Map.class.isAssignableFrom(objectClass))
                 {
-                    logger.log(Level.WARNING, "Could not apply Collection to {0}", field.getName());
+                    Map<String, ?> map = (Map<String, ?>)object;
+                    Map<String, Object> result = new LinkedHashMap<String, Object>();
+                    for (String key : map.keySet())
+                    {
+                        try
+                        {
+                            result.put(key, converter.toObject(map.get(key)));
+                        }
+                        catch (ConversionException e)
+                        {
+                            logger.log(Level.WARNING, "Error while Converting", e);
+                        }
+                    }
+                    return result;
                 }
             }
-            else if (objectClass.isArray())
+            if (objectClass.isArray())
             {
                 Object[] array = (Object[])object;
-                Class<?> genType = field.getAnnotation(Option.class).genericType();
-                converter = Convert.matchConverter(genType);
                 if (converter != null)
                 {
                     Collection<Object> result = new LinkedList<Object>();
@@ -273,7 +234,7 @@ public abstract class ConfigurationCodec
                         }
                         catch (ConversionException e)
                         {
-                            // TODO handle me!
+                            logger.log(Level.WARNING, "Error while Converting", e);
                         }
                     }
                     return result;
@@ -285,35 +246,6 @@ public abstract class ConfigurationCodec
                     return result;
                 }
             }
-            else if (Map.class.isAssignableFrom(objectClass))
-            {
-                if (object instanceof Map)
-                {
-                    Map<String, ?> map = (Map<String, ?>)object;
-                    Class<?> genType = field.getAnnotation(Option.class).genericType();
-                    converter = Convert.matchConverter(genType);
-                    if (converter != null)
-                    {
-                        Map<String, Object> result = new LinkedHashMap<String, Object>();
-                        for (String key : map.keySet())
-                        {
-                            try
-                            {
-                                result.put(key, converter.toObject(map.get(key)));
-                            }
-                            catch (ConversionException e)
-                            {
-                                // TODO handle me!
-                            }
-                        }
-                        return result;
-                    }
-                }
-                else
-                {
-                    logger.log(Level.WARNING, "Could not apply Map to {0}", field.getName());
-                }
-            }
         }
         if (converter != null)
         {
@@ -323,7 +255,7 @@ public abstract class ConfigurationCodec
             }
             catch (ConversionException e)
             {
-                // TODO handle me!
+                logger.log(Level.WARNING, "Error while Converting", e);
             }
         }
         return object;
@@ -340,7 +272,7 @@ public abstract class ConfigurationCodec
         LinkedHashMap<String, Object> values = this.loadIntoMap(is);//load config into Codec
         values = this.updateConfig(values, config.getClass()); //update loaded config in Codec if needed
         this.loadIntoFields(config, values);//update Fields with loaded values
-        this.clear(); //clear loaded values
+        this.clear(); //clear Codec
     }
 
     /**
@@ -377,6 +309,7 @@ public abstract class ConfigurationCodec
                     }
                     catch (NumberFormatException ex)
                     {
+                        logger.warning("Invalid RevisionNumber");
                     }
                 }
                 while ((line = input.readLine()) != null)
@@ -441,36 +374,25 @@ public abstract class ConfigurationCodec
                 if (field.isAnnotationPresent(Option.class))
                 {
                     int mask = field.getModifiers();
-
                     if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
                     {
                         continue;
                     }
                     String path = field.getAnnotation(Option.class).value();
-                    //Get savedValue or default
-                    Object configElem = this.get(path, values);
-
-                    if (configElem == null)
+                    Object configElem = this.get(path, values);//Get savedValue or default
+                    if (configElem != null)
                     {
-                        //Set defaultValue if no value saved
-                        //No need for this anymore: this.set(path, convertFrom(field, field.get(config)));
-                    }
-                    else if (Configuration.class.isAssignableFrom(field.getType()))
-                    {
-                        Configuration subConfig = (Configuration)field.get(config);
-                        subConfig.setCodec(config.codec);
-                        subConfig.codec.loadIntoFields(subConfig, (Map)configElem);
-                        field.set(config, subConfig);
-                    }
-                    else
-                    {
-                        //Set new Field Value
-                        field.set(config, convertTo(config, field, configElem));
-                    }
-
-                    if (field.isAnnotationPresent(Comment.class))
-                    {
-                        this.addComment(path, field.getAnnotation(Comment.class).value());
+                        if (Configuration.class.isAssignableFrom(field.getType()))
+                        {
+                            Configuration subConfig = (Configuration)field.get(config);
+                            subConfig.setCodec(config.codec);
+                            subConfig.codec.loadIntoFields(subConfig, (Map)configElem);
+                            field.set(config, subConfig);//Set loaded Configuration into Field
+                        }
+                        else
+                        {
+                            field.set(config, convertTo(config, field, configElem));//Set loaded Value into Field
+                        }
                     }
                 }
             }
@@ -523,7 +445,6 @@ public abstract class ConfigurationCodec
     private LinkedHashMap<String, Object> saveIntoMap(Configuration config, String basePath) throws IllegalAccessException
     {
         LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
-
         Class<? extends Configuration> clazz = config.getClass();
         if (clazz.isAnnotationPresent(MapComments.class))
         {
@@ -801,7 +722,6 @@ public abstract class ConfigurationCodec
     public void clear()
     {
         this.comments.clear();
-        //this.values.clear();
     }
 
     /**
