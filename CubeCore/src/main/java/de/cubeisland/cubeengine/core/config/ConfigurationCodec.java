@@ -269,7 +269,7 @@ public abstract class ConfigurationCodec
      */
     public void load(Configuration config, InputStream is) throws IOException
     {
-        LinkedHashMap<String, Object> values = this.loadIntoMap(is);//load config into Codec
+        Map<String, Object> values = this.loadIntoMap(is);//load config into Codec
         values = this.updateConfig(values, config.getClass()); //update loaded config in Codec if needed
         this.loadIntoFields(config, values);//update Fields with loaded values
         this.clear(); //clear Codec
@@ -281,11 +281,11 @@ public abstract class ConfigurationCodec
      * @param is the InputStream
      * @throws IOException
      */
-    private LinkedHashMap<String, Object> loadIntoMap(InputStream is) throws IOException
+    private Map<String, Object> loadIntoMap(InputStream is) throws IOException
     {
         if (is == null)
         {
-            return new LinkedHashMap<String, Object>();
+            return new HashMap<String, Object>();
         }
         InputStreamReader reader = new InputStreamReader(is, "UTF-8");
         StringBuilder builder = new StringBuilder();
@@ -331,9 +331,9 @@ public abstract class ConfigurationCodec
      *
      * @param contents
      */
-    public abstract LinkedHashMap<String, Object> loadFromString(String contents);
+    public abstract Map<String, Object> loadFromString(String contents);
 
-    private LinkedHashMap<String, Object> updateConfig(LinkedHashMap<String, Object> values, Class<? extends Configuration> clazz)
+    private Map<String, Object> updateConfig(Map<String, Object> values, Class<? extends Configuration> clazz)
     {
         Revision revis = clazz.getAnnotation(Revision.class);
         if (revis != null && this.revision != null)
@@ -374,7 +374,7 @@ public abstract class ConfigurationCodec
                 if (field.isAnnotationPresent(Option.class))
                 {
                     int mask = field.getModifiers();
-                    if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
+                    if ((mask & Modifier.STATIC) == Modifier.STATIC)
                     {
                         continue;
                     }
@@ -417,7 +417,7 @@ public abstract class ConfigurationCodec
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            LinkedHashMap<String, Object> values = this.saveIntoMap(config, "");//Get Map & Comments
+            Map<String, Object> values = this.saveIntoMap(config, "");//Get Map & Comments
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
@@ -442,9 +442,9 @@ public abstract class ConfigurationCodec
      * @param config the Configuration
      * @throws IllegalAccessException
      */
-    private LinkedHashMap<String, Object> saveIntoMap(Configuration config, String basePath) throws IllegalAccessException
+    private Map<String, Object> saveIntoMap(Configuration config, String basePath) throws IllegalAccessException
     {
-        LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
+        Map<String, Object> values = new LinkedHashMap<String, Object>();
         Class<? extends Configuration> clazz = config.getClass();
         if (clazz.isAnnotationPresent(MapComments.class))
         {
@@ -495,7 +495,7 @@ public abstract class ConfigurationCodec
      * @param file the File
      * @throws IOException
      */
-    public void save(File file, LinkedHashMap<String, Object> values) throws IOException
+    public void save(File file, Map<String, Object> values) throws IOException
     {
         if (file == null)
         {
@@ -518,7 +518,7 @@ public abstract class ConfigurationCodec
      *
      * @return the config as String
      */
-    public String convertMapToString(LinkedHashMap<String, Object> values)
+    public String convertMapToString(Map<String, Object> values)
     {
         StringBuilder sb = new StringBuilder();
         first = true;
@@ -574,24 +574,6 @@ public abstract class ConfigurationCodec
     }
 
     /**
-     * Gets the value saved under the path
-     *
-     * @param path the path
-     * @return the value or null if no value saved
-     */
-    public Object get(String path, LinkedHashMap<String, Object> values)
-    {
-        if (path.contains("."))
-        {
-            return this.get(this.getSubPath(path), (Map<String, Object>)values.get(this.getBasePath(path)));
-        }
-        else
-        {
-            return values.get(path);
-        }
-    }
-
-    /**
      * Gets the value saved under this path in given section
      *
      * @param path the path
@@ -620,7 +602,7 @@ public abstract class ConfigurationCodec
      * @param path the path
      * @param value the value to set
      */
-    public LinkedHashMap<String, Object> set(String path, Object value, LinkedHashMap<String, Object> values)
+    public Map<String, Object> set(String path, Object value, Map<String, Object> values)
     {
         if (path.contains("."))
         {

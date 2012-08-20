@@ -26,13 +26,13 @@ public class YamlCodec extends ConfigurationCodec
         QUOTE = "'";
     }
 
-    public LinkedHashMap<String,Object> loadFromString(String contents)
+    public Map<String,Object> loadFromString(String contents)
     {
         if (contents == null)
         {
             return new LinkedHashMap<String, Object>();
         }
-        LinkedHashMap<String, Object> values = (LinkedHashMap<String, Object>)yaml.load(contents);
+        Map<String, Object> values = (Map<String, Object>)yaml.load(contents);
         if (values == null)
         {
             return new LinkedHashMap<String, Object>();
