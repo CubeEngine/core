@@ -10,6 +10,7 @@ public class SyncWorker implements Runnable
     private Thread main = Thread.currentThread();
     private long timeout;
     private boolean suspendOnTimeOut = false;
+    private boolean interruptSoon = false;
 
     public void setSuspendOnTimeOut(boolean b)
     {
@@ -23,6 +24,11 @@ public class SyncWorker implements Runnable
             main.notify();
             task.interrupt();
             return;
+        }
+        if (interruptSoon)
+        {
+            this.interruptSoon = false;
+            task.interrupt();
         }
         tasks.poll().run();
         this.run();
@@ -47,7 +53,7 @@ public class SyncWorker implements Runnable
             }
             else
             {
-                task.interrupt();
+                this.interruptSoon = true;
             }
         }
         catch (InterruptedException ex)
