@@ -1,65 +1,62 @@
 package de.cubeisland.cubeengine.core.util.worker;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- *
- * @author Robin Bechtel-Ostmann
- */
 public class SyncWorker implements Runnable
 {
-    private ConcurrentLinkedQueue<Runnable> jobs;
-    private boolean paused;
+    private Queue<Runnable> tasks = new LinkedBlockingQueue<Runnable>();
+    private Thread task = new Thread(this);
+    private Thread main = Thread.currentThread();
+    private long timeout;
+    private boolean suspendOnTimeOut = false;
 
-    public void syncWorker(BukkitScheduler scheduler, Plugin core)
+    public void setSuspendOnTimeOut(boolean b)
     {
-        scheduler.scheduleSyncRepeatingTask(core, this, 1, 1);
-        this.jobs = new ConcurrentLinkedQueue<Runnable>();
-        this.paused = false;
+        this.suspendOnTimeOut = b;
     }
 
-    @Override
     public void run()
     {
-        if (!this.jobs.isEmpty() && !this.paused)
+        if (tasks.isEmpty())
         {
-            this.jobs.poll().run();
+            main.notify();
+            task.interrupt();
+            return;
+        }
+        tasks.poll().run();
+        this.run();
+    }
+
+    public void doTasks()
+    {
+        if (task.isAlive())
+        {
+            task.resume();
+        }
+        else
+        {
+            task.start();
+        }
+        try
+        {
+            main.wait(timeout);
+            if (suspendOnTimeOut)
+            {
+                task.suspend();
+            }
+            else
+            {
+                task.interrupt();
+            }
+        }
+        catch (InterruptedException ex)
+        {
         }
     }
 
-    public void addJob(Runnable job, boolean autoStart)
+    public void addTasks(Runnable runnable)
     {
-        this.jobs.add(job);
-        if (autoStart && paused)
-        {
-            this.resume();
-        }
-    }
-
-    public void addJob(Runnable job)
-    {
-        this.jobs.add(job);
-        if (paused)
-        {
-            this.resume();
-        }
-    }
-
-    public void resume()
-    {
-        this.paused = false;
-    }
-
-    public void pause()
-    {
-        this.paused = true;
-    }
-
-    public void dropJobs()
-    {
-        this.pause();
-        this.jobs.clear();
+        this.tasks.offer(runnable);
     }
 }
