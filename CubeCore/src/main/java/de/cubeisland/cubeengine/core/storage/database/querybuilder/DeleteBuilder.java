@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Phillip Schichtel
  */
-public interface DeleteBuilder extends ConditionalBuilder<DeleteBuilder>
+public interface DeleteBuilder<This extends DeleteBuilder,QueryBuilder> extends ComponentBuilder<This,QueryBuilder>
 {
-    public DeleteBuilder from(String... tables);
+    public This from(String... tables);
 }

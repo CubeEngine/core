@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 
@@ -8,19 +9,21 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
  *
  * @author Anselm Brehme
  */
-public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
+public class MySQLTableBuilder extends MySQLComponentBuilder<MySQLTableBuilder, MySQLQueryBuilder> implements TableBuilder<MySQLTableBuilder, MySQLQueryBuilder>
 {
     private int fieldCounter;
+    private MySQLQueryBuilder parent;
 
-    protected MySQLTableBuilder(MySQLQueryBuilder builder)
+    protected MySQLTableBuilder(MySQLQueryBuilder parent, Database database)
     {
-        super(builder);
+        super(database);
+        this.parent = parent;
     }
     
-    protected TableBuilder create(String name, int actionIfExists)
+    protected MySQLTableBuilder create(String name, int actionIfExists)
     {
         this.fieldCounter = 0;
-        name = this.prepareName(name);
+        name = this.database.prepareName(name);
         switch (actionIfExists)
         {
             case 1: // DO NOTHING
@@ -35,7 +38,7 @@ public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
         return this;
     }
 
-    public TableBuilder beginFields()
+    public MySQLTableBuilder beginFields()
     {
         if (this.fieldCounter > 0)
         {
@@ -45,38 +48,38 @@ public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
         return this;
     }
 
-    public TableBuilder field(String name, AttrType type)
+    public MySQLTableBuilder field(String name, AttrType type)
     {
         return this.field(name, type, 0);
     }
 
-    public TableBuilder field(String name, AttrType type, int length)
+    public MySQLTableBuilder field(String name, AttrType type, int length)
     {
         return this.field(name, type, length, true);
     }
     
-    public TableBuilder field(String name, AttrType type, boolean notnull)
+    public MySQLTableBuilder field(String name, AttrType type, boolean notnull)
     {
         return this.field(name, type, 0, true);
     }
 
-    public TableBuilder field(String name, AttrType type, int length, boolean notnull)
+    public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull)
     {
         return this.field(name, type, length, notnull, false);
     }
 
-    public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned)
+    public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned)
     {
         return this.field(name, type, length, notnull, unsigned, false);
     }
 
-    public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai)
+    public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai)
     {
         if (this.fieldCounter > 0)
         {
             this.query.append(',');
         }
-        this.query.append(this.prepareColName(name)).append(' ').append(type.name());
+        this.query.append(this.database.prepareFieldName(name)).append(' ').append(type.name());
         if (length > 0)
         {
             this.query.append('(').append(length).append(')');
@@ -95,25 +98,25 @@ public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
         return this;
     }
 
-    public TableBuilder primaryKey(String key)
+    public MySQLTableBuilder primaryKey(String key)
     {
-        this.query.append(",PRIMARY KEY (").append(this.prepareColName(key)).append(')');
+        this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(key)).append(')');
         return this;
     }
 
-    public TableBuilder foreignKey(String key)
+    public MySQLTableBuilder foreignKey(String key)
     {
-        this.query.append(",FOREIGN KEY (").append(this.prepareColName(key)).append(')');
+        this.query.append(",FOREIGN KEY (").append(this.database.prepareFieldName(key)).append(')');
         return this;
     }
 
-    public TableBuilder references(String otherTable, String key)
+    public MySQLTableBuilder references(String otherTable, String key)
     {
-        this.query.append("REFERENCES ").append(this.prepareName(otherTable)).append(" (").append(this.prepareColName(key)).append(')');
+        this.query.append("REFERENCES ").append(this.database.prepareName(otherTable)).append(" (").append(this.database.prepareFieldName(key)).append(')');
         return this;
     }
 
-    public TableBuilder endFields()
+    public MySQLTableBuilder endFields()
     {
         this.query.append(')');
         this.fieldCounter = -1;
@@ -121,31 +124,32 @@ public class MySQLTableBuilder extends MySQLBuilderBase implements TableBuilder
         return this;
     }
 
-    public TableBuilder engine(String engine)
+    public MySQLTableBuilder engine(String engine)
     {
         this.query.append("ENGINE=").append(engine).append(" ");
         return this;
     }
 
-    public TableBuilder defaultcharset(String charset)
+    public MySQLTableBuilder defaultcharset(String charset)
     {
         this.query.append("DEFAULT CHARSET=").append(charset).append(" ");
         return this;
     }
 
-    public TableBuilder autoIncrement(int n)
+    public MySQLTableBuilder autoIncrement(int n)
     {
         this.query.append("AUTO_INCREMENT=").append(n).append(" ");
         return this;
     }
 
-    @Override
-    public QueryBuilder end()
+    public MySQLQueryBuilder end()
     {
         if (this.fieldCounter >= 0)
         {
             throw new IllegalStateException("A table needs at least one field!");
         }
-        return super.end();
+        this.parent.query.append(this.query.toString());
+        this.query = null;
+        return this.parent;
     }
 }

@@ -4,13 +4,10 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Phillip Schichtel
  */
-public interface ConditionalBuilder<T>
+public interface ConditionalBuilder<This,Parent> extends ComponentBuilder<This,Parent>
 {   
-    public WhereBuilder<T> beginWhere();
-    
-    public T orderBy(String... cols);
-    public T limit(int n);
-    public T offset(int n);
-    
-    public QueryBuilder end();
+    public This orderBy(String... cols);
+    public This limit(int n);
+    public This offset(int n);
+    public This where();
 }

@@ -13,11 +13,8 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public class MySQLQueryBuilder implements QueryBuilder
+public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, String> implements QueryBuilder<MySQLQueryBuilder, String>
 {
-    protected StringBuilder query;
-    protected MySQLDatabase database;
-    
     private MySQLInsertBuilder insertBuilder;
     private MySQLMergeBuilder mergeBuilder;
     private MySQLSelectBuilder selectBuilder;
@@ -27,9 +24,8 @@ public class MySQLQueryBuilder implements QueryBuilder
 
     protected MySQLQueryBuilder(MySQLDatabase database)
     {
-        this.database = database;
-        
-        this.query = null;
+        super(database);
+
         this.insertBuilder = null;
         this.selectBuilder = null;
         this.updateBuilder = null;
@@ -52,7 +48,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         if (this.insertBuilder == null)
         {
-            this.insertBuilder = new MySQLInsertBuilder(this);
+            this.insertBuilder = new MySQLInsertBuilder(this, database);
         }
         this.init();
         return this.insertBuilder;
@@ -62,7 +58,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         if (this.mergeBuilder == null)
         {
-            this.mergeBuilder = new MySQLMergeBuilder(this);
+            this.mergeBuilder = new MySQLMergeBuilder(this, database);
         }
         this.init();
         return this.mergeBuilder;
@@ -72,7 +68,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         if (this.selectBuilder == null)
         {
-            this.selectBuilder = new MySQLSelectBuilder(this);
+            this.selectBuilder = new MySQLSelectBuilder(this, database);
         }
         this.init();
         return selectBuilder.cols(cols);
@@ -82,23 +78,17 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         if (this.updateBuilder == null)
         {
-            this.updateBuilder = new MySQLUpdateBuilder(this);
+            this.updateBuilder = new MySQLUpdateBuilder(this, database);
         }
         this.init();
         return this.updateBuilder.tables(tables);
     }
     
-    public UpdateBuilder onDuplicateUpdate()
-    {
-        this.query.append("ON DUPLICATE KEY ");
-        return this.update();
-    }
-
     public DeleteBuilder delete()
     {
         if (this.deleteBuilder == null)
         {
-            this.deleteBuilder = new MySQLDeleteBuilder(this);
+            this.deleteBuilder = new MySQLDeleteBuilder(this, database);
         }
         this.init();
         return this.deleteBuilder;
@@ -108,13 +98,13 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         if (this.tableBuilder == null)
         {
-            this.tableBuilder = new MySQLTableBuilder(this);
+            this.tableBuilder = new MySQLTableBuilder(this, database);
         }
         this.init();
         return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
     }
     
-    public QueryBuilder clearTable(String table)
+    public MySQLQueryBuilder clearTable(String table)
     {
         Validate.notNull(table, "No table specified!");
         
@@ -124,7 +114,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
-    public QueryBuilder dropTable(String... tables)
+    public MySQLQueryBuilder dropTable(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
         
@@ -135,13 +125,6 @@ public class MySQLQueryBuilder implements QueryBuilder
             this.query.append(',').append(this.database.prepareName(tables[i]));
         }
 
-        return this;
-    }
-
-    public QueryBuilder customSql(String sql)
-    {
-        this.query.append(sql);
-        
         return this;
     }
 

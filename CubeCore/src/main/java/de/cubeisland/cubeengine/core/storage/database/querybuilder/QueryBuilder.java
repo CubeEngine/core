@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Anselm Brehme
  */
-public interface QueryBuilder
+public interface QueryBuilder<This,String> extends ComponentBuilder<This, String>
 {
     public InsertBuilder insert();
     
@@ -13,18 +13,14 @@ public interface QueryBuilder
     public SelectBuilder select(String... tables);
     
     public UpdateBuilder update(String... tables);
-    
-    public UpdateBuilder onDuplicateUpdate();
 
     public DeleteBuilder delete();
 
     public TableBuilder createTable(String name, boolean ifNoExist);
     
-    public QueryBuilder clearTable(String table);
+    public This clearTable(String table);
     
-    public QueryBuilder dropTable(String... tables);
+    public This dropTable(String... tables);
     
     public String end();
-    
-    public QueryBuilder customSql(String sql);
 }

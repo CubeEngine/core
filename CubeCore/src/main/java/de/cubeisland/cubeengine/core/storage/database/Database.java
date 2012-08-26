@@ -16,7 +16,7 @@ public interface Database
     
     public String prepareName(String name);
     
-    public String prepareColName(String name);
+    public String prepareFieldName(String name);
 
     public QueryBuilder getQueryBuilder();
 

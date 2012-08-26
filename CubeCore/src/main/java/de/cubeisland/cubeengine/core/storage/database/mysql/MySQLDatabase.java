@@ -73,7 +73,7 @@ public class MySQLDatabase extends AbstractDatabase
         return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
     }
     
-    public String prepareColName(String name)
+    public String prepareFieldName(String name)
     {
         Validate.notNull(name, "The name must not be null!");
         
