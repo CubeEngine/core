@@ -8,13 +8,15 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public class MySQLUpdateBuilder extends MySQLConditionalBuilder<MySQLUpdateBuilder,MySQLQueryBuilder> implements UpdateBuilder<MySQLUpdateBuilder,MySQLQueryBuilder>
+public class MySQLUpdateBuilder extends MySQLConditionalBuilder<MySQLUpdateBuilder> implements UpdateBuilder<MySQLUpdateBuilder,MySQLQueryBuilder>
 {
     private boolean hasCols;
-
-    protected MySQLUpdateBuilder(MySQLQueryBuilder builder, Database database)
+    private MySQLQueryBuilder parent;
+    
+    protected MySQLUpdateBuilder(MySQLQueryBuilder parent, Database database)
     {
-        super(builder, database);
+        super(database);
+        this.parent = parent;
     }
 
     public MySQLUpdateBuilder tables(String... tables)

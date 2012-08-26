@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
  *
  * @author Anselm Brehme
  */
-public interface TableBuilder<This extends TableBuilder, QueryBuilder> extends ComponentBuilder<This, QueryBuilder>
+public interface TableBuilder<This extends TableBuilder, Parent extends QueryBuilder> extends ComponentBuilder<This, Parent>
 {
     
     public This beginFields();

@@ -8,11 +8,14 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public class MySQLSelectBuilder extends MySQLConditionalBuilder<MySQLSelectBuilder, MySQLQueryBuilder> implements SelectBuilder<MySQLSelectBuilder, MySQLQueryBuilder>
+public class MySQLSelectBuilder extends MySQLConditionalBuilder<MySQLSelectBuilder> implements SelectBuilder<MySQLSelectBuilder, MySQLQueryBuilder>
 {
-    protected MySQLSelectBuilder(MySQLQueryBuilder builder, Database database)
+    private MySQLQueryBuilder parent;
+    
+    protected MySQLSelectBuilder(MySQLQueryBuilder parent, Database database)
     {
-        super(builder, database);
+        super(database);
+        this.parent = parent;
     }
 
     public MySQLSelectBuilder cols(String... cols)

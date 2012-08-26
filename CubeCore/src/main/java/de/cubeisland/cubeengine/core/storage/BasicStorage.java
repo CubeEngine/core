@@ -4,8 +4,6 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLQueryBuilder;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLTableBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import java.lang.reflect.Field;
@@ -38,12 +36,12 @@ public abstract class BasicStorage<V> implements Storage<V>
     public void initialize() throws SQLException
     {
         Entity entity = this.model.getAnnotation(Entity.class);
-        MySQLQueryBuilder builder = this.database.getQueryBuilder();
+        QueryBuilder builder = this.database.getQueryBuilder();
 
         final LinkedList<String> keys = new LinkedList<String>();
         final LinkedList<String> attributes = new LinkedList<String>();
         Attribute attribute;
-        MySQLTableBuilder tbuilder = builder.createTable(this.table, true).beginFields();
+        TableBuilder tbuilder = builder.createTable(this.table, true).beginFields();
         for (Field field : this.model.getDeclaredFields())
         {
             attribute = field.getAnnotation(Attribute.class);

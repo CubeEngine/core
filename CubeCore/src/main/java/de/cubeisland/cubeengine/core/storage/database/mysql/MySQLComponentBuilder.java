@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuil
  *
  * @author Anselm Brehme
  */
-public abstract class MySQLComponentBuilder<This, Parent> implements ComponentBuilder<This, Parent>
+public abstract class MySQLComponentBuilder<This extends MySQLComponentBuilder, Parent> implements ComponentBuilder<This, Parent>
 {
     protected StringBuilder query = new StringBuilder();
     protected Database database;

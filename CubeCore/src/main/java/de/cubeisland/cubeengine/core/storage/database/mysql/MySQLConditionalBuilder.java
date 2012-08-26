@@ -8,14 +8,11 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public abstract class MySQLConditionalBuilder<This, MySQLQueryBuilder> extends MySQLComponentBuilder<This, MySQLQueryBuilder> implements ConditionalBuilder<This, MySQLQueryBuilder>
+public abstract class MySQLConditionalBuilder<This extends MySQLConditionalBuilder> extends MySQLComponentBuilder<This, MySQLQueryBuilder> implements ConditionalBuilder<This, MySQLQueryBuilder>
 {
-    protected MySQLQueryBuilder parent;
-    
-    protected MySQLConditionalBuilder(MySQLQueryBuilder parent, Database database)
+    protected MySQLConditionalBuilder(Database database)
     {
         super(database);
-        this.parent = parent;
     }
 
     public This orderBy(String... cols)

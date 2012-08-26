@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Anselm Brehme
  */
-public interface ComponentBuilder<This,Parent>
+public interface ComponentBuilder<This extends ComponentBuilder,Parent>
 {
     public static final int EQUAL = 1;
     public static final int NOT_EQUAL = 2;
