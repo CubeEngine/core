@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.SelectBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
@@ -9,42 +9,37 @@ import de.cubeisland.cubeengine.core.util.Validate;
  */
 public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> implements SelectBuilder
 {
-    protected MySQLSelectBuilder(MySQLQueryBuilder builder)
+    protected MySQLSelectBuilder(MySQLQueryBuilder parent)
     {
-        super(builder);
+        super(parent);
     }
 
-    public SelectBuilder cols(String... cols)
+    public MySQLSelectBuilder cols(String... cols)
     {
         this.query = new StringBuilder("SELECT ");
-        if (cols == null)
-        {
-            //Nothing after SELECT so i can use functions etc
-        }
-        else if (cols.length == 0)
+        if (cols.length == 0)
         {
             this.query.append('*');
         }
         else
         {
-            this.query.append(this.prepareName(cols[0], false));
+            this.query.append(this.database.prepareFieldName(cols[0]));
             for (int i = 1; i < cols.length; ++i)
             {
-                this.query.append(',').append(this.prepareName(cols[i], false));
+                this.query.append(',').append(this.database.prepareFieldName(cols[i]));
             }
         }
         return this;
-        //TODO Select with Functions
     }
 
-    public SelectBuilder from(String... tables)
+    public MySQLSelectBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
 
-        this.query.append(" FROM ").append(this.prepareName(tables[0], true));
+        this.query.append(" FROM ").append(this.database.prepareName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.prepareName(tables[i], true));
+            this.query.append(',').append(this.database.prepareName(tables[i]));
         }
         return this;
     }

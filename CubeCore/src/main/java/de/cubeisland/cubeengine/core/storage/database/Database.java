@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +14,9 @@ public interface Database
 {
     public String getName();
     
-    public String prepareName(String name, boolean isTableName);
+    public String prepareName(String name);
+    
+    public String prepareFieldName(String name);
 
     public QueryBuilder getQueryBuilder();
 

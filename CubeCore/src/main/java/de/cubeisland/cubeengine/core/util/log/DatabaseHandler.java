@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.logging.Handler;
@@ -38,17 +38,17 @@ public class DatabaseHandler extends Handler
                 .endFields()
                 .engine("InnoDB").defaultcharset("utf8").autoIncrement(1)
                 .end()
-            .endQuery());
+            .end());
 
             this.db.prepareAndStoreStatement(this.getClass(), "insert", queryBuilder
                 .insert().into(table)
                 .cols("timestamp","level","logger","message")
                 .end()
-            .endQuery());
+            .end());
 
             this.db.prepareAndStoreStatement(this.getClass(), "clear", queryBuilder
                 .clearTable(table)
-            .endQuery());
+            .end());
         }
         catch (SQLException e)
         {

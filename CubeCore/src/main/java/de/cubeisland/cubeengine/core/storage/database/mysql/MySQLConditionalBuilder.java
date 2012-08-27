@@ -1,55 +1,46 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.ConditionalBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.ConditionalBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
  *
  * @author Anselm Brehme
  */
-public abstract class MySQLConditionalBuilder<T extends ConditionalBuilder> extends MySQLBuilderBase implements ConditionalBuilder<T>
+public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
 {
-    private MySQLFunctionBuilder functionBuilder;
-
-    protected MySQLConditionalBuilder(MySQLQueryBuilder builder)
+    protected MySQLConditionalBuilder(MySQLQueryBuilder parent)
     {
-        super(builder);
-        this.functionBuilder = null;
+        super(parent);
     }
 
-    public MySQLFunctionBuilder beginFunction()
-    {
-        if (this.functionBuilder == null)
-        {
-            this.functionBuilder = new MySQLFunctionBuilder(this, builder);
-        }
-        this.functionBuilder.query = new StringBuilder();
-        return this.functionBuilder;
-    }
-    
-    public T orderBy(String... cols)
+    public This orderBy(String... cols)
     {
         Validate.notEmpty(cols, "No cols specified!");
-        
-        this.query.append(" ORDER BY ").append(this.prepareName(cols[0], false));
+
+        this.query.append(" ORDER BY ").append(this.database.prepareFieldName(cols[0]));
         for (int i = 1; i < cols.length; ++i)
         {
-            this.query.append(',').append(this.prepareName(cols[i], false));
+            this.query.append(',').append(this.database.prepareFieldName(cols[i]));
         }
-        return (T)this;
+        return (This)this;
     }
 
-    public T limit(int n)
+    public This limit(int n)
     {
         this.query.append(" LIMIT ").append(n);
-        return (T)this;
+        return (This)this;
     }
 
-    public T offset(int n)
+    public This offset(int n)
     {
         this.query.append(" OFFSET ").append(n);
-        return (T)this;
+        return (This)this;
     }
-    
-    
+
+    public This where()
+    {
+        this.query.append(" WHERE ");
+        return (This)this;
+    }
 }

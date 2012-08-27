@@ -5,8 +5,9 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
-import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -94,7 +95,7 @@ public abstract class BasicStorage<V> implements Storage<V>
                 .engine(entity.engine()).defaultcharset(entity.charset())
                 //TODO AI if no ai
                 .autoIncrement(1);
-        this.database.execute(tbuilder.end().endQuery());
+        this.database.execute(tbuilder.end().end());
         this.prepareStatements(keys.get(0), attributes.toArray(new String[attributes.size()]));
     }
 
@@ -110,9 +111,9 @@ public abstract class BasicStorage<V> implements Storage<V>
             this.database.prepareAndStoreStatement(model, "store", builder
                 .insert()
                     .into(this.table)
-                    .cols(fields)
+                    .cols(allFields)
                 .end()
-            .endQuery());
+            .end());
 
             this.database.prepareAndStoreStatement(model, "merge", builder
                 .merge()
@@ -120,45 +121,42 @@ public abstract class BasicStorage<V> implements Storage<V>
                     .cols(allFields)
                     .updateCols(fields)
                 .end()
-            .endQuery());
+            .end());
             
             this.database.prepareAndStoreStatement(model, "get", builder
                 .select(allFields)
                     .from(this.table)
-                    .beginFunction().where()
-                         .field(key).is(FunctionBuilder.EQUAL).value()
-                    .endFunction()
+                .where()
+                .field(key).is(ComponentBuilder.EQUAL).value()
                 .end()
-            .endQuery());
+            .end());
             
             this.database.prepareAndStoreStatement(model, "getall", builder
                 .select(allFields)
                     .from(this.table)
                 .end()
-            .endQuery());
+            .end());
 
             this.database.prepareAndStoreStatement(model, "update", builder
                 .update(this.table)
-                    .cols(fields)
-                    .beginFunction().where()
-                        .field(key).is(FunctionBuilder.EQUAL).value()
-                    .endFunction()
-                .end()
-            .endQuery());
+                    .cols(allFields)
+                    .where()
+                        .field(key).is(ComponentBuilder.EQUAL).value()
+                    .end()
+            .end());
 
             this.database.prepareAndStoreStatement(model, "delete", builder
                 .delete()
                     .from(this.table)
-                    .beginFunction().where()
-                        .field(key).is(FunctionBuilder.EQUAL).value()
-                    .endFunction()
+                    .where()
+                        .field(key).is(ComponentBuilder.EQUAL).value()
                     .limit(1)
                 .end()
-            .endQuery());
+            .end());
             
             this.database.prepareAndStoreStatement(model, "clear", builder
                 .clearTable(this.table)
-            .endQuery());
+            .end());
             
             
             /*

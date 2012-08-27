@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.storage.database;
+package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
 /**
  *
@@ -7,6 +7,5 @@ package de.cubeisland.cubeengine.core.storage.database;
 public interface UpdateBuilder extends ConditionalBuilder<UpdateBuilder>
 {
     public UpdateBuilder tables(String... tables);
-    
     public UpdateBuilder cols(String... cols);
 }

@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 import de.cubeisland.cubeengine.core.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
 import de.cubeisland.cubeengine.core.storage.database.DriverNotFoundException;
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ public class MySQLDatabase extends AbstractDatabase
     private final String pass;
     private final String name;
     private final String tablePrefix;
-    private final QueryBuilder queryBuilder;
+    private final MySQLQueryBuilder queryBuilder;
     private final Thread creationThread = Thread.currentThread();
 
     public MySQLDatabase(DatabaseConfiguration config) throws SQLException, DriverNotFoundException
@@ -66,23 +66,22 @@ public class MySQLDatabase extends AbstractDatabase
     }
     
     @Override
-    public String prepareName(String name, boolean isTableName)
+    public String prepareName(String name)
     {
         Validate.notNull(name, "The name must not be null!");
         
-        if (isTableName)
-        {
-            return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
-        }
+        return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
+    }
+    
+    public String prepareFieldName(String name)
+    {
+        Validate.notNull(name, "The name must not be null!");
         
         int dotOffset = name.indexOf('.');
-        if (dotOffset == -1)
-        {
-            return NAME_QUOTE + name + NAME_QUOTE;
-        }
-        else
+        if (dotOffset >= 0)
         {
             return NAME_QUOTE + this.tablePrefix + name.substring(0, dotOffset) + NAME_QUOTE + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
         }
+        return this.prepareName(name);
     }
 }

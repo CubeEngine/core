@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.DeleteBuilder;
-import de.cubeisland.cubeengine.core.storage.database.InsertBuilder;
-import de.cubeisland.cubeengine.core.storage.database.MergeBuilder;
-import de.cubeisland.cubeengine.core.storage.database.QueryBuilder;
-import de.cubeisland.cubeengine.core.storage.database.SelectBuilder;
-import de.cubeisland.cubeengine.core.storage.database.TableBuilder;
-import de.cubeisland.cubeengine.core.storage.database.UpdateBuilder;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.DeleteBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.MergeBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
@@ -15,26 +16,24 @@ import de.cubeisland.cubeengine.core.util.Validate;
  */
 public class MySQLQueryBuilder implements QueryBuilder
 {
-    protected StringBuilder query;
-    protected MySQLDatabase database;
-    
     private MySQLInsertBuilder insertBuilder;
     private MySQLMergeBuilder mergeBuilder;
     private MySQLSelectBuilder selectBuilder;
     private MySQLUpdateBuilder updateBuilder;
     private MySQLDeleteBuilder deleteBuilder;
     private MySQLTableBuilder tableBuilder;
+    protected Database database;
+    protected StringBuilder query;
 
     protected MySQLQueryBuilder(MySQLDatabase database)
     {
-        this.database = database;
-        
-        this.query = null;
         this.insertBuilder = null;
         this.selectBuilder = null;
         this.updateBuilder = null;
         this.deleteBuilder = null;
         this.tableBuilder = null;
+
+        this.database = database;
     }
 
     private void init()
@@ -107,39 +106,32 @@ public class MySQLQueryBuilder implements QueryBuilder
         this.init();
         return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
     }
-    
-    public QueryBuilder clearTable(String table)
+
+    public MySQLQueryBuilder clearTable(String table)
     {
         Validate.notNull(table, "No table specified!");
-        
+
         this.init();
-        this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table, true));
-        
+        this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table));
+
         return this;
     }
 
-    public QueryBuilder dropTable(String... tables)
+    public MySQLQueryBuilder dropTable(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-        
+
         this.init();
-        this.query.append("DROP TABLE ").append(this.database.prepareName(tables[0], true));
+        this.query.append("DROP TABLE ").append(this.database.prepareName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareName(tables[i], true));
+            this.query.append(',').append(this.database.prepareName(tables[i]));
         }
 
         return this;
     }
 
-    public QueryBuilder customSql(String sql)
-    {
-        this.query.append(sql);
-        
-        return this;
-    }
-
-    public String endQuery()
+    public String end()
     {
         if (this.query == null)
         {
