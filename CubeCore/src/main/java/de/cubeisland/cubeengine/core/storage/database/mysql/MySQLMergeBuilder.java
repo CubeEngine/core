@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.MergeBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
 /**
@@ -68,13 +68,11 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
         return this;
     }
 
-    public MySQLQueryBuilder end()
+    @Override
+    public QueryBuilder end()
     {
         Validate.isTrue(this.updateColsSpecified, "You have to specify which cols to update!");
         this.insertCols = null;
-        
-        this.parent.query.append(this.query.toString());
-        this.query = null;
-        return this.parent;
+        return super.end();
     }
 }

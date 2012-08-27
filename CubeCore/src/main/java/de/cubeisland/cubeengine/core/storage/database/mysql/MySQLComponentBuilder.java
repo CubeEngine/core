@@ -12,13 +12,10 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
 {
     protected StringBuilder query = new StringBuilder();
     protected Database database;
-    
     private boolean inFunction = false;
     private boolean deepInFunction = false;
     protected Integer subDepth = 0;
-    
     protected MySQLQueryBuilder parent;
-    
 
     public MySQLComponentBuilder(MySQLQueryBuilder parent)
     {
@@ -44,7 +41,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         this.inFunction = true;
         return (This)this;
     }
-    
+
     public This endFunction()
     {
         this.deepInFunction = false;

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
@@ -43,12 +42,5 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
             this.query.append(',').append(this.database.prepareName(tables[i]));
         }
         return this;
-    }
-
-    public MySQLQueryBuilder end()
-    {
-        this.parent.query.append(this.query.toString());
-        this.query = null;
-        return this.parent;
     }
 }

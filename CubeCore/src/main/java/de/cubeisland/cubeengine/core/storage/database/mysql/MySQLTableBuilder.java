@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 
 /**
@@ -139,14 +139,13 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
         return this;
     }
 
-    public MySQLQueryBuilder end()
+    @Override
+    public QueryBuilder end()
     {
         if (this.fieldCounter >= 0)
         {
             throw new IllegalStateException("A table needs at least one field!");
         }
-        this.parent.query.append(this.query.toString());
-        this.query = null;
-        return this.parent;
+        return super.end();
     }
 }

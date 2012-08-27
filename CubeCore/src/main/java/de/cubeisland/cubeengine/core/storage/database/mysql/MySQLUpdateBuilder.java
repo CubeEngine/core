@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
@@ -46,14 +46,13 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
         return this;
     }
 
-    public MySQLQueryBuilder end()
+    @Override
+    public QueryBuilder end()
     {
         if (!this.hasCols)
         {
             throw new IllegalStateException("No cols where specified!");
         }
-        this.parent.query.append(this.query.toString());
-        this.query = null;
-        return this.parent;
+        return super.end();
     }
 }
