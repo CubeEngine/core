@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.config;
 
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.config.codec.JsonCodec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Validate;
@@ -31,8 +30,7 @@ public abstract class Configuration
 
     static
     {
-        registerCodec("yml", new YamlCodec());
-        registerCodec("json", new JsonCodec());
+        registerCodec(new YamlCodec(), "yml", "yaml");
     }
 
     /**
@@ -41,17 +39,34 @@ public abstract class Configuration
      * @param extension the extension
      * @param codec the codec
      */
-    public static void registerCodec(String extension, ConfigurationCodec codec)
+    public static void registerCodec(ConfigurationCodec codec, String... extensions)
     {
-        codecs.put(extension, codec);
+        for (String extension : extensions)
+        {
+            codecs.put(extension, codec);
+        }
+    }
+    
+    public final void save(File targetFile)
+    {
+        if (this.file == null)
+        {
+            throw new IllegalStateException("A configuration cannot be saved without a valid file!");
+        }
+        this.codec.save(this, targetFile);
+        this.onSaved(targetFile);
     }
 
     /**
      * Saves the Configuration to given file
      */
-    public void saveConfiguration()
+    public final void save()
     {
-        this.codec.save(this, this.file);
+        if (this.codec == null)
+        {
+            throw new IllegalStateException("A configuration cannot be saved without a valid codec!");
+        }
+        this.save(this.file);
     }
 
     /**
@@ -80,7 +95,6 @@ public abstract class Configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, File file)
     {
-        Validate.notNull(file, "The file must not be null!");
         if (file == null)
         {
             return null;
@@ -105,7 +119,7 @@ public abstract class Configuration
             {}
         }
         config.file = file;
-        config.saveConfiguration();
+        config.save();
         return config;
     }
 
@@ -163,6 +177,11 @@ public abstract class Configuration
     {
         this.codec = resolveCodec(fileExtension);
     }
+    
+    public void setCodec(ConfigurationCodec codec)
+    {
+        this.codec = codec;
+    }
 
     /**
      * Sets the file to load from
@@ -174,10 +193,26 @@ public abstract class Configuration
         Validate.notNull(file, "The file must not be null!");
         this.file = file;
     }
+    
+    /**
+     * Returns the file this config will be saved to
+     *
+     * @return the file this config will be saved to
+     */
+    public File getFile()
+    {
+        return this.file;
+    }
 
     /**
      * This method is called right after the configuration got loaded
      */
     public void onLoaded()
+    {}
+    
+    /**
+     * This method gets called right after the configration get saved
+     */
+    public void onSaved(File file)
     {}
 }

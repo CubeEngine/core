@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.test.database.TestStorage;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CubeTest extends Module
 {
@@ -19,15 +18,16 @@ public class CubeTest extends Module
     {
         try
         {
-            this.getLogger().info("Test1 onEnable...");
+            this.getLogger().info("enabling TestModule");
             Configuration.load(TestConfig.class, this);
             this.initializeDatabase();
             this.testDatabase();
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            Logger.getLogger(CubeTest.class.getName()).log(Level.SEVERE, null, ex);
+            this.getLogger().log(Level.SEVERE, "Error while Enabling the TestModule", ex);
         }
+        this.getLogger().info("TestModule succesfully enabeled");
 
     }
 
@@ -46,74 +46,108 @@ public class CubeTest extends Module
     {
     }
 
+    private Date getDate(int year, int month, int day)
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        return new Date(calendar.getTimeInMillis());
+    }
+
     public void testDatabase() throws SQLException
     {
-
         Database database = this.getDatabase();
-        Object[] obj = new Object[3];
-        obj[0] = new Date(2012, 8, 8);
-        obj[1] = 10;
-        obj[2] = "Heinz";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 6, 8);
-        obj[1] = 30;
-        obj[2] = "Peter";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 8, 6);
-        obj[1] = 20;
-        obj[2] = "Manfred";
-        database.preparedExecute(TestModel.class, "store", obj);
-
-        obj[0] = new Date(2012, 8, 8);
-        obj[1] = 20;
-        obj[2] = "Heinz";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 6, 8);
-        obj[1] = 120;
-        obj[2] = "Peter";
-        database.preparedExecute(TestModel.class, "store", obj);
-        obj[0] = new Date(2012, 8, 6);
-        obj[1] = 50;
-        obj[2] = "Manfred";
-        database.preparedExecute(TestModel.class, "store", obj);
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 10, "Heinz");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 6, 8), 30, "Hans");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 6), 20, "Manfred");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 20, "Heinz");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 120, "Hans");
+        database.preparedExecute(TestModel.class, "store", this.getDate(2011, 2, 8), 50, "Manfred");
         
         database.preparedQuery(TestModel.class, "get", 2);
         database.preparedQuery(TestModel.class, "getall");
-        Object[] obj2 = new Object[4];
-        obj2[0] = obj[0];
-        obj2[1] = 100;
-        obj2[2] = obj[2];
-        obj2[3] = 3;
-        database.preparedExecute(TestModel.class, "update", obj2);
+        database.preparedExecute(TestModel.class, "update", this.getDate(111, 2, 2) , 100 , "Paul", 3);
         database.query(
                 database.getQueryBuilder()
-                .select(null)
-                .beginFunction()
-                .avg("OrderPrice").as("OrderAverage")
-                .endFunction()
-                .from("Orders")
-                .end()
-                .endQuery());
+                            .select()
+                                .beginFunction("avg")
+                                    .field("OrderPrice")
+                                .endFunction()
+                                .as("OrderAverage")
+                                .endFunctions()
+                            .from("Orders")
+                            .endBuilder()
+                        .endQuery());
         
         database.query(
                 database.getQueryBuilder()
-                .select("id","Customer")
-                    .beginFunction()
-                        .comma()
-                        .sum("OrderPrice").as("OrderAverage")
-                    .endFunction()
-                .from("Orders")
-                .beginFunction()
-                    .groupBy("Customer")
-                    .having()
-                    .sum("OrderPrice")
-                    .is(FunctionBuilder.GREATER)
-                    .value("100")
-                .endFunction()
-                    
-                .end()
-                .endQuery());
+                        .select().cols("id","Customer")
+                            .beginFunctions()
+                                .comma()
+                                .beginFunction("sum")
+                                    .field("OrderPrice")
+                                .endFunction()
+                                .as("OrderAverage")
+                            .endFunctions()
+                            .from("Orders")
+                            .beginFunctions()
+                                .groupBy("Customer")
+                                .having()
+                                .beginFunction("sum")
+                                    .field("OrderPrice")
+                                .endFunction()
+                                .is(FunctionBuilder.GREATER)
+                                .value("100")
+                            .endFunctions()
+                        .endBuilder()
+                    .endQuery());
 
+        //SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
+        database.getQueryBuilder()
+                .select()
+                    .beginFunction("round")
+                        .beginFunction("avg")
+                            .wildcard()
+                        .endFunction()
+                    .endFunction().endFunctions()
+                    .from("table")
+                    .beginFunction("where")
+                        .field("dob_year")
+                        .is(FunctionBuilder.GREATER)
+                        .value("1920")
+                    .endFunction().endFunctions()
+                .endBuilder()
+            .endQuery();
+
+        //SELECT ProductName, ROUND(UnitPrice,0) as UnitPrice FROM Products
+        database.getQueryBuilder()
+                .select()
+                    .cols("ProductName")
+                    .beginFunctions()
+                        .comma()
+                        .beginFunction("round")
+                            .field("UnitPrice")
+                            .comma().value("0")
+                        .endFunction()
+                        .as("UnitPrice")
+                    .endFunctions()
+                    .from("Products")
+                .endBuilder()
+            .endQuery();
+        
+        //SELECT LCASE(LastName) as LastName,FirstName FROM Persons
+        database.getQueryBuilder()
+                .select()
+                    .beginFunction("lcase")
+                        .field("LastName")
+                    .endFunction()
+                    .as("LastName")
+                    .comma()
+                    .field("FirstName")
+                    .endFunctions()
+                    .from("Persons")
+                .endBuilder()
+            .endQuery();
+        
     }
 
     public void testl18n()

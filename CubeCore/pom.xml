@@ -88,6 +88,13 @@
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.10</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -140,6 +147,7 @@
                                     <include>com.google.code.gson:gson</include>
                                     <include>commons-lang:commons-lang</include>
                                     <include>io.netty:netty</include>
+                                    <include>org.yaml:snakeyaml</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

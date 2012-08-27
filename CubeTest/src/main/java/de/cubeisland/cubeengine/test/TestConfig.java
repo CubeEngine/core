@@ -23,6 +23,7 @@ import org.bukkit.plugin.Plugin;
  */
 
 @MapComments({
+{
     @MapComment(path = "regions", text = "more RandomTests:"),
     @MapComment(path = "list", text = "ListTests:"),
     @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
@@ -31,7 +32,7 @@ import org.bukkit.plugin.Plugin;
 @Codec("yml")
 public class TestConfig extends Configuration
 {
-    private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
+    private final Server server = ((Plugin) CubeEngine.getCore()).getServer();
 
     //TODO remove this test
     @Option("location")
@@ -118,4 +119,66 @@ public class TestConfig extends Configuration
             put("list2", list2);
         }
     };
+    @Option(value = "locationinmap", genericType = Location.class)
+    @Comment("multi location")
+    public LinkedHashMap<String, Location> locs;
+
+    
+    {
+        {
+            locs = new LinkedHashMap<String, Location>();
+            locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+        }
+    }
+    ;
+    
+    @Option("role.role")
+    @Comment("a single role")
+    public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
+    @Option(value = "role.roles", genericType = Role.class)
+    @Comment("multi roles")
+    public LinkedHashMap<String, Role> roles;
+
+    
+    {
+        {
+            roles = new LinkedHashMap<String, Role>();
+            roles.put("role1", new Role("guest", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+            roles.put("role2", new Role("member", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+            roles.put("role3", new Role("mod", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+            roles.put("role4", new Role("admin", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+        }
+    }
+    ;
+    
+    @Option("subconfig")
+    public TestSubConfig subConfig = new TestSubConfig();
+
+    public class TestSubConfig extends Configuration
+    {
+        @Option("sub.int")
+        @Comment("SubMapComment1")
+        public int subInt = 1;
+        @Option("sub.doub")
+        public double subdoub = 2.3;
+        @Option("sub.string")
+        public String substri = "nothin";
+        @Option("subsubconfig")
+        public TestSubSubConfig suboptimaleConfig = new TestSubSubConfig();
+
+        public class TestSubSubConfig extends Configuration
+        {
+            @Option("sub.int")
+            public int subInt = 1;
+            @Option("sub.doub")
+            public double subdoub = 2.3;
+            @Option("sub.string")
+            public String substri = "something";
+            @Option("offlineplayer")
+            public String offlineplayer = "noplayer";
+        }
+    }
 }

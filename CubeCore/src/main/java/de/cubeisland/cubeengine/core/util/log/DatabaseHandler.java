@@ -37,18 +37,18 @@ public class DatabaseHandler extends Handler
                     .primaryKey("id")
                 .endFields()
                 .engine("InnoDB").defaultcharset("utf8").autoIncrement(1)
-                .end()
-            .end());
+                .endBuilder()
+            .endQuery());
 
             this.db.prepareAndStoreStatement(this.getClass(), "insert", queryBuilder
                 .insert().into(table)
                 .cols("timestamp","level","logger","message")
-                .end()
-            .end());
+                .endBuilder()
+            .endQuery());
 
             this.db.prepareAndStoreStatement(this.getClass(), "clear", queryBuilder
                 .clearTable(table)
-            .end());
+            .endQuery());
         }
         catch (SQLException e)
         {

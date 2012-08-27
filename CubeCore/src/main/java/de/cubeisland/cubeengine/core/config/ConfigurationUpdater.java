@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.config;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -8,5 +8,5 @@ import java.util.LinkedHashMap;
  */
 public interface ConfigurationUpdater
 {
-    public LinkedHashMap<String, Object> update(LinkedHashMap<String, Object> loadedConfig, int fromRevision);
+    public Map<String, Object> update(Map<String, Object> loadedConfig, int fromRevision);
 }

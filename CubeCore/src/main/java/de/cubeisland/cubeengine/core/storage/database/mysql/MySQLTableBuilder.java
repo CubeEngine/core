@@ -140,12 +140,12 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     }
 
     @Override
-    public QueryBuilder end()
+    public QueryBuilder endBuilder()
     {
         if (this.fieldCounter >= 0)
         {
             throw new IllegalStateException("A table needs at least one field!");
         }
-        return super.end();
+        return super.endBuilder();
     }
 }

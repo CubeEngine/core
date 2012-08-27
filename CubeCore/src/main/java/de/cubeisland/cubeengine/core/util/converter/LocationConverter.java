@@ -33,7 +33,6 @@ public class LocationConverter implements Converter<Location>
         return loc;
     }
 
-    @SuppressWarnings("unchecked")
     public Location fromObject(Object object)
     {
         Map<String, Object> input = (Map<String, Object>)object;
