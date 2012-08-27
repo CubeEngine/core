@@ -23,7 +23,7 @@ public class MySQLDatabase extends AbstractDatabase
     private final String pass;
     private final String name;
     private final String tablePrefix;
-    private final QueryBuilder queryBuilder;
+    private final MySQLQueryBuilder queryBuilder;
     private final Thread creationThread = Thread.currentThread();
 
     public MySQLDatabase(DatabaseConfiguration config) throws SQLException, DriverNotFoundException

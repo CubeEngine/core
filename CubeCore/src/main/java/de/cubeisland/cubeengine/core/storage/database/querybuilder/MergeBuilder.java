@@ -4,9 +4,9 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Phillip Schichtel
  */
-public interface MergeBuilder<This extends MergeBuilder, Parent extends QueryBuilder> extends ComponentBuilder<This, Parent>
+public interface MergeBuilder extends ComponentBuilder<MergeBuilder>
 {
-    public This into(String table);
-    public This cols(String... cols);
-    public This updateCols(String... cols);
+    public MergeBuilder into(String table);
+    public MergeBuilder cols(String... cols);
+    public MergeBuilder updateCols(String... cols);
 }

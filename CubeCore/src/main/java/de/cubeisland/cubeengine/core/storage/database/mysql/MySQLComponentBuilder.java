@@ -2,12 +2,13 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 /**
  *
  * @author Anselm Brehme
  */
-public abstract class MySQLComponentBuilder<This extends MySQLComponentBuilder, Parent> implements ComponentBuilder<This, Parent>
+public abstract class MySQLComponentBuilder<This extends ComponentBuilder> implements ComponentBuilder<This>
 {
     protected StringBuilder query = new StringBuilder();
     protected Database database;
@@ -16,10 +17,13 @@ public abstract class MySQLComponentBuilder<This extends MySQLComponentBuilder, 
     private boolean deepInFunction = false;
     protected Integer subDepth = 0;
     
+    protected MySQLQueryBuilder parent;
+    
 
-    public MySQLComponentBuilder(Database database)
+    public MySQLComponentBuilder(MySQLQueryBuilder parent)
     {
-        this.database = database;
+        this.parent = parent;
+        this.database = parent.database;
     }
 
     public This rawSQL(String sql)
@@ -160,5 +164,12 @@ public abstract class MySQLComponentBuilder<This extends MySQLComponentBuilder, 
     {
         this.query.append("?");
         return (This)this;
+    }
+
+    public QueryBuilder end()
+    {
+        this.parent.query.append(this.query);
+        this.query = null;
+        return this.parent;
     }
 }

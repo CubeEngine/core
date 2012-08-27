@@ -4,8 +4,8 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Phillip Schichtel
  */
-public interface SelectBuilder<This extends SelectBuilder, Parent extends QueryBuilder> extends ConditionalBuilder<This, Parent>
+public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
 {
-    public This cols(String... cols);
-    public This from(String... tables);
+    public SelectBuilder cols(String... cols);
+    public SelectBuilder from(String... tables);
 }

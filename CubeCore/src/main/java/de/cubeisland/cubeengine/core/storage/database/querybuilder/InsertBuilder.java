@@ -4,8 +4,8 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Phillip Schichtel
  */
-public interface InsertBuilder<This extends InsertBuilder, Parent extends QueryBuilder> extends ComponentBuilder<This, Parent>
+public interface InsertBuilder extends ComponentBuilder<InsertBuilder>
 {
-    public This into(String table);
-    public This cols(String... cols);
+    public InsertBuilder into(String table);
+    public InsertBuilder cols(String... cols);
 }

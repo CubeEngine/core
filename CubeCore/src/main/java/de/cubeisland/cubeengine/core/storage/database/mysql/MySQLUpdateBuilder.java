@@ -8,21 +8,19 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public class MySQLUpdateBuilder extends MySQLConditionalBuilder<MySQLUpdateBuilder> implements UpdateBuilder<MySQLUpdateBuilder,MySQLQueryBuilder>
+public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> implements UpdateBuilder
 {
     private boolean hasCols;
-    private MySQLQueryBuilder parent;
-    
-    protected MySQLUpdateBuilder(MySQLQueryBuilder parent, Database database)
+
+    protected MySQLUpdateBuilder(MySQLQueryBuilder parent)
     {
-        super(database);
-        this.parent = parent;
+        super(parent);
     }
 
     public MySQLUpdateBuilder tables(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-        
+
         this.hasCols = false;
         this.query = new StringBuilder("UPDATE ");
         this.query.append(this.database.prepareName(tables[0]));
@@ -36,15 +34,15 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<MySQLUpdateBuild
     public MySQLUpdateBuilder cols(String... cols)
     {
         Validate.notEmpty(cols, "No cols specified!");
-        
+
         this.query.append(" SET ").append(this.database.prepareFieldName(cols[0])).append("=? ");
         for (int i = 1; i < cols.length; ++i)
         {
             this.query.append(',').append(this.database.prepareFieldName(cols[i])).append("=? ");
         }
-        
+
         this.hasCols = true;
-        
+
         return this;
     }
 

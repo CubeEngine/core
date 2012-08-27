@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
@@ -8,20 +7,13 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public class MySQLInsertBuilder extends MySQLComponentBuilder<MySQLInsertBuilder,MySQLQueryBuilder> implements InsertBuilder<MySQLInsertBuilder,MySQLQueryBuilder>
+public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> implements InsertBuilder
 {
-    private MySQLQueryBuilder parent;
-    
-    protected MySQLInsertBuilder(MySQLQueryBuilder parent, Database database)
+    protected MySQLInsertBuilder(MySQLQueryBuilder parent)
     {
-        super(database);
-        this.parent = parent;
+        super(parent);
     }
-    
-    protected MySQLInsertBuilder(Database database)
-    {
-        super(database);
-    }
+
 
     public MySQLInsertBuilder into(String table)
     {

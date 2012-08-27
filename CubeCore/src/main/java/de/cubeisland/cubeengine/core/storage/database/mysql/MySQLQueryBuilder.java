@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.DeleteBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.MergeBuilder;
@@ -13,7 +14,7 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, String> implements QueryBuilder<MySQLQueryBuilder, String>
+public class MySQLQueryBuilder implements QueryBuilder
 {
     private MySQLInsertBuilder insertBuilder;
     private MySQLMergeBuilder mergeBuilder;
@@ -21,16 +22,18 @@ public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, 
     private MySQLUpdateBuilder updateBuilder;
     private MySQLDeleteBuilder deleteBuilder;
     private MySQLTableBuilder tableBuilder;
+    protected Database database;
+    protected StringBuilder query;
 
     protected MySQLQueryBuilder(MySQLDatabase database)
     {
-        super(database);
-
         this.insertBuilder = null;
         this.selectBuilder = null;
         this.updateBuilder = null;
         this.deleteBuilder = null;
         this.tableBuilder = null;
+
+        this.database = database;
     }
 
     private void init()
@@ -48,7 +51,7 @@ public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, 
     {
         if (this.insertBuilder == null)
         {
-            this.insertBuilder = new MySQLInsertBuilder(this, database);
+            this.insertBuilder = new MySQLInsertBuilder(this);
         }
         this.init();
         return this.insertBuilder;
@@ -58,7 +61,7 @@ public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, 
     {
         if (this.mergeBuilder == null)
         {
-            this.mergeBuilder = new MySQLMergeBuilder(this, database);
+            this.mergeBuilder = new MySQLMergeBuilder(this);
         }
         this.init();
         return this.mergeBuilder;
@@ -68,7 +71,7 @@ public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, 
     {
         if (this.selectBuilder == null)
         {
-            this.selectBuilder = new MySQLSelectBuilder(this, database);
+            this.selectBuilder = new MySQLSelectBuilder(this);
         }
         this.init();
         return selectBuilder.cols(cols);
@@ -78,17 +81,17 @@ public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, 
     {
         if (this.updateBuilder == null)
         {
-            this.updateBuilder = new MySQLUpdateBuilder(this, database);
+            this.updateBuilder = new MySQLUpdateBuilder(this);
         }
         this.init();
         return this.updateBuilder.tables(tables);
     }
-    
+
     public DeleteBuilder delete()
     {
         if (this.deleteBuilder == null)
         {
-            this.deleteBuilder = new MySQLDeleteBuilder(this, database);
+            this.deleteBuilder = new MySQLDeleteBuilder(this);
         }
         this.init();
         return this.deleteBuilder;
@@ -98,26 +101,26 @@ public class MySQLQueryBuilder extends MySQLComponentBuilder<MySQLQueryBuilder, 
     {
         if (this.tableBuilder == null)
         {
-            this.tableBuilder = new MySQLTableBuilder(this, database);
+            this.tableBuilder = new MySQLTableBuilder(this);
         }
         this.init();
         return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
     }
-    
+
     public MySQLQueryBuilder clearTable(String table)
     {
         Validate.notNull(table, "No table specified!");
-        
+
         this.init();
         this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table));
-        
+
         return this;
     }
 
     public MySQLQueryBuilder dropTable(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-        
+
         this.init();
         this.query.append("DROP TABLE ").append(this.database.prepareName(tables[0]));
         for (int i = 1; i < tables.length; ++i)

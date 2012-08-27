@@ -4,9 +4,8 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Phillip Schichtel
  */
-public interface UpdateBuilder<This extends UpdateBuilder, Parent extends QueryBuilder> extends ConditionalBuilder<This, Parent>
+public interface UpdateBuilder extends ConditionalBuilder<UpdateBuilder>
 {
-    public This tables(String... tables);
-    
-    public This cols(String... cols);
+    public UpdateBuilder tables(String... tables);
+    public UpdateBuilder cols(String... cols);
 }

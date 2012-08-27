@@ -8,16 +8,14 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Phillip Schichtel
  */
-public class MySQLMergeBuilder extends MySQLComponentBuilder<MySQLMergeBuilder,MySQLQueryBuilder> implements MergeBuilder<MySQLMergeBuilder,MySQLQueryBuilder>
+public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> implements MergeBuilder
 {
     private boolean updateColsSpecified;
     private String[] insertCols;
-    private MySQLQueryBuilder parent;
     
-    protected MySQLMergeBuilder(MySQLQueryBuilder parent, Database database)
+    protected MySQLMergeBuilder(MySQLQueryBuilder parent)
     {
-        super(database);
-        this.parent = parent;
+        super(parent);
     }
 
     public MySQLMergeBuilder into(String table)

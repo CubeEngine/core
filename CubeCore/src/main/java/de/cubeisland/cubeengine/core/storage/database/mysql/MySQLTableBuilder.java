@@ -8,17 +8,15 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
  *
  * @author Anselm Brehme
  */
-public class MySQLTableBuilder extends MySQLComponentBuilder<MySQLTableBuilder, MySQLQueryBuilder> implements TableBuilder<MySQLTableBuilder, MySQLQueryBuilder>
+public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> implements TableBuilder
 {
     private int fieldCounter;
-    private MySQLQueryBuilder parent;
 
-    protected MySQLTableBuilder(MySQLQueryBuilder parent, Database database)
+    protected MySQLTableBuilder(MySQLQueryBuilder parent)
     {
-        super(database);
-        this.parent = parent;
+        super(parent);
     }
-    
+
     protected MySQLTableBuilder create(String name, int actionIfExists)
     {
         this.fieldCounter = 0;
@@ -56,7 +54,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<MySQLTableBuilder, 
     {
         return this.field(name, type, length, true);
     }
-    
+
     public MySQLTableBuilder field(String name, AttrType type, boolean notnull)
     {
         return this.field(name, type, 0, true);

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ConditionalBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 
@@ -8,11 +7,11 @@ import de.cubeisland.cubeengine.core.util.Validate;
  *
  * @author Anselm Brehme
  */
-public abstract class MySQLConditionalBuilder<This extends MySQLConditionalBuilder> extends MySQLComponentBuilder<This, MySQLQueryBuilder> implements ConditionalBuilder<This, MySQLQueryBuilder>
+public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
 {
-    protected MySQLConditionalBuilder(Database database)
+    protected MySQLConditionalBuilder(MySQLQueryBuilder parent)
     {
-        super(database);
+        super(parent);
     }
 
     public This orderBy(String... cols)

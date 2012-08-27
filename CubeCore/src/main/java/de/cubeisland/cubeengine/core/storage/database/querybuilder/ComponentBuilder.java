@@ -4,7 +4,7 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
  *
  * @author Anselm Brehme
  */
-public interface ComponentBuilder<This extends ComponentBuilder,Parent>
+public interface ComponentBuilder<This extends ComponentBuilder>
 {
     public static final int EQUAL = 1;
     public static final int NOT_EQUAL = 2;
@@ -32,7 +32,5 @@ public interface ComponentBuilder<This extends ComponentBuilder,Parent>
     public This beginSub();
     public This endSub();
     
-    public Parent end();
-    
-    
+    public QueryBuilder end();
 }

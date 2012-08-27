@@ -6,34 +6,20 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
  *
  * @author Anselm Brehme
  */
-public interface TableBuilder<This extends TableBuilder, Parent extends QueryBuilder> extends ComponentBuilder<This, Parent>
+public interface TableBuilder extends ComponentBuilder<TableBuilder>
 {
-    
-    public This beginFields();
-    
-    public This field(String name, AttrType type);
-    
-    public This field(String name, AttrType type, int length);
-    
-    public This field(String name, AttrType type, int length, boolean notnull);
-    
-    public This field(String name, AttrType type, boolean notnull);
-    
-    public This field(String name, AttrType type, int length, boolean notnull, boolean unsigned);
-    
-    public This field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai);
-    
-    public This primaryKey(String key);
-    
-    public This foreignKey(String key);
-
-    public This references(String table, String key);
-    
-    public This endFields();
-
-    public This engine(String engine);
-
-    public This defaultcharset(String charset);
-
-    public This autoIncrement(int n);
+    public TableBuilder beginFields();
+    public TableBuilder field(String name, AttrType type);
+    public TableBuilder field(String name, AttrType type, int length);
+    public TableBuilder field(String name, AttrType type, int length, boolean notnull);
+    public TableBuilder field(String name, AttrType type, boolean notnull);
+    public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned);
+    public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai);
+    public TableBuilder primaryKey(String key);
+    public TableBuilder foreignKey(String key);
+    public TableBuilder references(String table, String key);
+    public TableBuilder endFields();
+    public TableBuilder engine(String engine);
+    public TableBuilder defaultcharset(String charset);
+    public TableBuilder autoIncrement(int n);
 }
