@@ -163,6 +163,24 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    public This as(String field)
+    {
+        this.query.append(" AS(").append(this.database.prepareFieldName(field)).append(")");
+        return (This)this;
+    }
+
+    public This groupBy(String field)
+    {
+        this.query.append(" GROUP BY(").append(this.database.prepareFieldName(field)).append(")");
+        return (This)this;
+    }
+
+    public This having()
+    {
+        this.query.append(" HAVING");
+        return (This)this;
+    }
+
     public QueryBuilder end()
     {
         this.parent.query.append(this.query);

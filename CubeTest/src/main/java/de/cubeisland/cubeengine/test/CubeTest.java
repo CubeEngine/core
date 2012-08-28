@@ -2,13 +2,13 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.database.TestStorage;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.logging.Level;
 
 public class CubeTest extends Module
@@ -34,7 +34,7 @@ public class CubeTest extends Module
     public void initializeDatabase() throws SQLException
     {
 
-        this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").endQuery());
+        this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").end());
         TestStorage storage = new TestStorage(this.getDatabase());
         storage.initialize();
 
@@ -73,33 +73,28 @@ public class CubeTest extends Module
                                     .field("OrderPrice")
                                 .endFunction()
                                 .as("OrderAverage")
-                                .endFunctions()
                             .from("Orders")
-                            .endBuilder()
-                        .endQuery());
+                            .end()
+                        .end());
         
         database.query(
                 database.getQueryBuilder()
                         .select().cols("id","Customer")
-                            .beginFunctions()
-                                .comma()
+                                .rawSQL(",")
                                 .beginFunction("sum")
                                     .field("OrderPrice")
                                 .endFunction()
                                 .as("OrderAverage")
-                            .endFunctions()
                             .from("Orders")
-                            .beginFunctions()
                                 .groupBy("Customer")
                                 .having()
                                 .beginFunction("sum")
                                     .field("OrderPrice")
                                 .endFunction()
-                                .is(FunctionBuilder.GREATER)
+                                .is(ComponentBuilder.GREATER)
                                 .value("100")
-                            .endFunctions()
-                        .endBuilder()
-                    .endQuery());
+                         .end()
+                    .end());
 
         //SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
         database.getQueryBuilder()
@@ -108,31 +103,29 @@ public class CubeTest extends Module
                         .beginFunction("avg")
                             .wildcard()
                         .endFunction()
-                    .endFunction().endFunctions()
+                    .endFunction()
                     .from("table")
                     .beginFunction("where")
                         .field("dob_year")
-                        .is(FunctionBuilder.GREATER)
+                        .is(ComponentBuilder.GREATER)
                         .value("1920")
-                    .endFunction().endFunctions()
-                .endBuilder()
-            .endQuery();
+                    .endFunction()
+                .end()
+            .end();
 
         //SELECT ProductName, ROUND(UnitPrice,0) as UnitPrice FROM Products
         database.getQueryBuilder()
                 .select()
                     .cols("ProductName")
-                    .beginFunctions()
-                        .comma()
+                        .rawSQL(",")
                         .beginFunction("round")
                             .field("UnitPrice")
-                            .comma().value("0")
+                            .rawSQL(",").value("0")
                         .endFunction()
                         .as("UnitPrice")
-                    .endFunctions()
                     .from("Products")
-                .endBuilder()
-            .endQuery();
+                .end()
+            .end();
         
         //SELECT LCASE(LastName) as LastName,FirstName FROM Persons
         database.getQueryBuilder()
@@ -141,12 +134,11 @@ public class CubeTest extends Module
                         .field("LastName")
                     .endFunction()
                     .as("LastName")
-                    .comma()
+                    .rawSQL(",")
                     .field("FirstName")
-                    .endFunctions()
                     .from("Persons")
-                .endBuilder()
-            .endQuery();
+                .end()
+            .end();
         
     }
 
