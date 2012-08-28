@@ -31,13 +31,13 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
 
     public This function(String function)
     {
-        this.query.append(function).append("()");
+        this.query.append(" ").append(function).append("()");
         return (This)this;
     }
 
     public This beginFunction(String function)
     {
-        this.query.append(function).append("(");
+        this.query.append(" ").append(function).append("(");
         this.inFunction = true;
         return (This)this;
     }
@@ -79,7 +79,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         }
         if (value instanceof String)
         {
-            this.query.append(this.database.prepareName((String)value));
+            this.query.append(this.database.prepareString((String)value));
         }
         else
         {
@@ -165,7 +165,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
 
     public This as(String field)
     {
-        this.query.append(" AS(").append(this.database.prepareFieldName(field)).append(")");
+        this.query.append(" AS ").append(this.database.prepareFieldName(field));
         return (This)this;
     }
 

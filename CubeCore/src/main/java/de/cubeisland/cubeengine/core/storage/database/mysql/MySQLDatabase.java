@@ -80,8 +80,13 @@ public class MySQLDatabase extends AbstractDatabase
         int dotOffset = name.indexOf('.');
         if (dotOffset >= 0)
         {
-            return NAME_QUOTE + this.tablePrefix + name.substring(0, dotOffset) + NAME_QUOTE + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
+            return this.prepareName(name.substring(0, dotOffset)) + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
         }
-        return this.prepareName(name);
+        return NAME_QUOTE + name + NAME_QUOTE;
+    }
+
+    public String prepareString(String name)
+    {
+        return STRING_QUOTE + name + STRING_QUOTE;
     }
 }

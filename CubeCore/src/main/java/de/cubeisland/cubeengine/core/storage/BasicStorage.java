@@ -45,7 +45,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.attributes = new ArrayList<String>();
     }
 
-    public void initialize() throws SQLException
+    public void initialize()
     {
         Entity entity = this.modelClass.getAnnotation(Entity.class);
         QueryBuilder builder = this.database.getQueryBuilder();
@@ -98,82 +98,85 @@ public class BasicStorage<V extends Model> implements Storage<V>
         {
             tbuilder.autoIncrement(1);
         }
-        this.database.execute(tbuilder.end().end());
-        this.prepareStatements(key, attributes.toArray(new String[attributes.size()]));
-    }
-
-    private void prepareStatements(String key, String[] fields)
-    {
         try
         {
-            String[] allFields = new String[fields.length + 1];
-            allFields[0] = key;
-            System.arraycopy(fields, 0, allFields, 1, fields.length);
-            QueryBuilder builder = this.database.getQueryBuilder();
-
-            if (this.keyIsAI)
-            {
-                builder.insert()
-                    .into(this.table)
-                    .cols(allFields)
-                    .end();
-            }
-            else
-            {
-                builder.insert()
-                    .into(this.table)
-                    .cols(fields)
-                    .end();
-            }
-            this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
-
-            this.database.prepareAndStoreStatement(modelClass, "merge", builder
-                .merge()
-                .into(this.table)
-                .cols(allFields)
-                .updateCols(fields)
-                .end()
-                .end());
-
-            this.database.prepareAndStoreStatement(modelClass, "get", builder
-                .select(allFields)
-                .from(this.table)
-                .where()
-                .field(key).is(ComponentBuilder.EQUAL).value()
-                .end()
-                .end());
-
-            this.database.prepareAndStoreStatement(modelClass, "getall", builder
-                .select(allFields)
-                .from(this.table)
-                .end()
-                .end());
-
-            this.database.prepareAndStoreStatement(modelClass, "update", builder
-                .update(this.table)
-                .cols(allFields)
-                .where()
-                .field(key).is(ComponentBuilder.EQUAL).value()
-                .end()
-                .end());
-
-            this.database.prepareAndStoreStatement(modelClass, "delete", builder
-                .delete()
-                .from(this.table)
-                .where()
-                .field(key).is(ComponentBuilder.EQUAL).value()
-                .limit(1)
-                .end()
-                .end());
-
-            this.database.prepareAndStoreStatement(modelClass, "clear", builder
-                .clearTable(this.table)
-                .end());
+            this.database.execute(tbuilder.end().end());
+            this.prepareStatements(key, attributes.toArray(new String[attributes.size()]));
         }
         catch (SQLException ex)
         {
-            ex.printStackTrace();
+            throw new IllegalStateException("Error while initializing Database", ex);
         }
+    }
+
+    private void prepareStatements(String key, String[] fields) throws SQLException
+    {
+
+
+        String[] allFields = new String[fields.length + 1];
+        allFields[0] = key;
+        System.arraycopy(fields, 0, allFields, 1, fields.length);
+        QueryBuilder builder = this.database.getQueryBuilder();
+
+        if (this.keyIsAI)
+        {
+            builder.insert()
+                .into(this.table)
+                .cols(fields)
+                .end();
+        }
+        else
+        {
+            builder.insert()
+                .into(this.table)
+                .cols(allFields)
+                .end();
+        }
+        this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
+
+        this.database.prepareAndStoreStatement(modelClass, "merge", builder
+            .merge()
+            .into(this.table)
+            .cols(allFields)
+            .updateCols(fields)
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "get", builder
+            .select(allFields)
+            .from(this.table)
+            .where()
+            .field(key).is(ComponentBuilder.EQUAL).value()
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "getall", builder
+            .select(allFields)
+            .from(this.table)
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "update", builder
+            .update(this.table)
+            .cols(fields)
+            .where()
+            .field(key).is(ComponentBuilder.EQUAL).value()
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "delete", builder
+            .delete()
+            .from(this.table)
+            .where()
+            .field(key).is(ComponentBuilder.EQUAL).value()
+            .limit(1)
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "clear", builder
+            .clearTable(this.table)
+            .end());
+
     }
 
     public void subscribe(SubcribeType type, Callback callback)

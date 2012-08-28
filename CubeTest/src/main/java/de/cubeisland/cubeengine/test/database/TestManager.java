@@ -8,9 +8,9 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
  *
  * @author Anselm Brehme
  */
-public class TestStorage extends BasicStorage<TestModel>
+public class TestManager extends BasicStorage<TestModel>
 {
-    public TestStorage(Database database)
+    public TestManager(Database database)
     {
         super(database, TestModel.class);
     }

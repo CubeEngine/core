@@ -1,11 +1,9 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import gnu.trove.map.hash.THashMap;
-import java.sql.SQLException;
-import java.util.logging.Level;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -15,29 +13,22 @@ import org.bukkit.entity.Player;
  *
  * @author Anselm Brehme
  */
-public class UserManager
+public class UserManager extends BasicStorage<User>
 {
     private final Core core;
     private final THashMap<String, User> users;
-    private UserStorage storage;
     private final Server server;
 
     public UserManager(Core core, Server server)
     {
+        super(core.getDB(), User.class);
         this.core = core;
-        this.storage = new UserStorage(core.getDB());
-        try
-        {
-            this.storage.initialize();
-        }
-        catch (SQLException ex)
-        {
-            CubeEngine.getLogger().log(Level.SEVERE, "Failed to initialize UserStorage", ex);
-        }
+        this.initialize();
+
         this.server = server;
 
         this.users = new THashMap<String, User>();
-        for (User user : storage.getAll())
+        for (User user : this.getAll())
         {
             this.users.put(user.getName(), user);
         }
@@ -45,7 +36,7 @@ public class UserManager
 
     public UserManager addUser(User user)
     {
-        this.storage.store(user);
+        this.store(user);
         this.users.put(user.getName(), user);
         UserCreatedEvent event = new UserCreatedEvent(this.core, user);
         server.getPluginManager().callEvent(event);
@@ -54,7 +45,7 @@ public class UserManager
 
     public UserManager removeUser(User user)
     {
-        this.storage.delete(user);
+        this.delete(user);
         this.users.remove(user.getName());
 
         return this;
@@ -88,7 +79,6 @@ public class UserManager
     public void clean()
     {
         this.users.clear();
-        this.storage.clear();
-        this.storage = null;
+        this.clear();
     }
 }
