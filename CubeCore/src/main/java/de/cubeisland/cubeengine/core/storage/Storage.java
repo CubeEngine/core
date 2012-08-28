@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
+import de.cubeisland.cubeengine.core.util.Callback;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -7,7 +8,7 @@ import java.util.Collection;
  *
  * @author Phillip Schichtel
  */
-public interface Storage<V>
+public interface Storage<V extends Model>
 {
     /**
      * Initializes the DataBase
@@ -56,7 +57,7 @@ public interface Storage<V>
      * @param model the model to delete
      * @return whether the model got deleted
      */
-    public boolean delete(V model);
+    public void delete(V model);
 
     /**
      * Deletes the model by ID from DataBase
@@ -64,21 +65,19 @@ public interface Storage<V>
      * @param id the id to delete
      * @return whether the model got deleted
      */
-    public boolean deleteByKey(Object key);
+    public void deleteByKey(Object key);
 
     /**
      * Clears the Table
      */
     public void clear();
 
-    public void subscribe(StorageListener listener);
+    public void subscribe(SubcribeType type, Callback callback);
 
-    public interface StorageListener<V>
+    public enum SubcribeType
     {
-        public void onCreate(V model);
-
-        public void onUpdate(V model);
-
-        public void onRemove(V model);
+        CREATE,
+        DELETE,
+        UPDATE
     }
 }

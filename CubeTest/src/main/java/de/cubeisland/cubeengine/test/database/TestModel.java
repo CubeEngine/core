@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.test.database;
 
+import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
@@ -11,7 +12,7 @@ import java.sql.Date;
  * @author Anselm Brehme
  */
 @Entity(name = "Orders")
-public class TestModel
+public class TestModel implements Model<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)

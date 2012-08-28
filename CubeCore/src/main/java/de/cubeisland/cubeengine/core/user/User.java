@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
 import static de.cubeisland.cubeengine.CubeEngine._;
+import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
@@ -12,7 +13,7 @@ import org.bukkit.OfflinePlayer;
  * @author Phillip Schichtel
  */
 @Entity(name = "user")
-public class User extends UserBase
+public class User extends UserBase implements Model<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -57,12 +58,12 @@ public class User extends UserBase
         return this.language;
     }
 
-    public Integer getId()
+    public Integer getKey()
     {
         return this.id;
     }
 
-    public void setId(int id)
+    public void setKey(Integer id)
     {
         this.id = id;
     }

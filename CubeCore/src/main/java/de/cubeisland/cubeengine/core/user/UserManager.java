@@ -25,7 +25,7 @@ public class UserManager
     public UserManager(Core core, Server server)
     {
         this.core = core;
-        this.storage = new UserStorage(core.getDB(), server);
+        this.storage = new UserStorage(core.getDB());
         try
         {
             this.storage.initialize();
