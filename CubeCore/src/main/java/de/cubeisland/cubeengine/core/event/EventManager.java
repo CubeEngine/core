@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.event;
 
 import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.core.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 
@@ -40,13 +40,9 @@ public class EventManager
         HandlerList.unregisterAll();
     }
 
-    public <T> T fireEvent(T event)
+    public <T extends CubeEvent> T fireEvent(T event)
     {
-        if (!(event instanceof Event))
-        {
-            throw new IllegalArgumentException("The event must be a Bukkit event");
-        }
-        this.pm.callEvent((Event)event);
+        this.pm.callEvent(event);
         return event;
     }
 }
