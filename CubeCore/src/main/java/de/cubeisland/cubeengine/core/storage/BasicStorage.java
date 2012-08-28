@@ -3,13 +3,13 @@ package de.cubeisland.cubeengine.core.storage;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -22,6 +22,8 @@ public abstract class BasicStorage<V> implements Storage<V>
     protected final Database database;
     protected final Class<V> model;
     protected final String table;
+    
+    protected Collection<StorageListener> listerners;
 
     public BasicStorage(Database database, Class<V> model)
     {
@@ -187,5 +189,10 @@ public abstract class BasicStorage<V> implements Storage<V>
         {
             ex.printStackTrace();
         }
+    }
+
+    public void subscribe(StorageListener listener)
+    {
+        this.listerners.add(listener);
     }
 }

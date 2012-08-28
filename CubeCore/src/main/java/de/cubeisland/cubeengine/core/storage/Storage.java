@@ -13,7 +13,7 @@ public interface Storage<V>
      * Initializes the DataBase
      */
     public void initialize() throws SQLException;
-    
+
     /**
      * Returns the model by key
      *
@@ -70,4 +70,15 @@ public interface Storage<V>
      * Clears the Table
      */
     public void clear();
+
+    public void subscribe(StorageListener listener);
+
+    public interface StorageListener<V>
+    {
+        public void onCreate(V model);
+
+        public void onUpdate(V model);
+
+        public void onRemove(V model);
+    }
 }

@@ -37,8 +37,6 @@ public class CubeTest extends Module
         this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").end());
         TestStorage storage = new TestStorage(this.getDatabase());
         storage.initialize();
-
-
     }
 
     @Override
