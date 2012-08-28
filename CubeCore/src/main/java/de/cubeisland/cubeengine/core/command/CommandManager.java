@@ -23,9 +23,7 @@ public class CommandManager
 {
     private CommandMap commandMap;
     private Map<String, Command> knownCommands;
-    private static final String[] NO_PARENTS =
-    {
-    };
+    private static final String[] NO_PARENTS = {};
 
     public CommandManager(Core core)
     {
@@ -96,7 +94,7 @@ public class CommandManager
         }
         else
         {
-            parentCommand.addSubCommand(command);
+            parentCommand.addChild(command);
         }
     }
 

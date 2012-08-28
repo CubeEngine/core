@@ -2,8 +2,12 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Validate;
+import gnu.trove.map.hash.THashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,49 +19,79 @@ import org.bukkit.command.CommandSender;
 public abstract class CubeCommand extends Command
 {
     private final Module module;
-    private Map<String, CubeCommand> subCommands;
+    private final CubeCommand parent;
+    private Map<String, CubeCommand> children;
+    private Map<String, String> childrenAliases;
 
     public CubeCommand(Module module, String name)
     {
-        super(name);
-        this.module = module;
+        this(module, name, null);
+    }
+
+    public CubeCommand(Module module, String name, CubeCommand parent)
+    {
+        this(module, name, "", "", new ArrayList<String>(0), parent);
     }
 
     public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases)
     {
-        super(name, description, usageMessage, aliases);
-        this.module = module;
+        this(module, name, description, usageMessage, aliases, null);
     }
 
-    public CubeCommand getSubCommand(String name)
+    public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases, CubeCommand parent)
     {
-        if (name != null)
-        {
-            name = name.toLowerCase();
-            if (this.subCommands.containsKey(name))
-            {
-                return this.subCommands.get(name);
-            }
-        }
-        return null;
+        super("/" + name, description, usageMessage, aliases);
+        this.module = module;
+        this.parent = parent;
+
+        this.children = new LinkedHashMap<String, CubeCommand>();
+        this.childrenAliases = new THashMap<String, String>();
     }
 
-    public void addSubCommand(CubeCommand command)
+    public CubeCommand getChild(String name)
+    {
+        return this.getChild(name, false);
+    }
+
+    public CubeCommand getChild(String name, boolean ignoreAliases)
+    {
+        if (name == null)
+        {
+            return null;
+        }
+
+        name = name.toLowerCase(Locale.ENGLISH);
+        if (ignoreAliases)
+        {
+            return this.children.get(name);
+        }
+
+        String actualName = this.childrenAliases.get(name);
+        if (actualName == null)
+        {
+            actualName = name;
+        }
+
+        return this.children.get(actualName);
+    }
+
+    public void addChild(CubeCommand command)
     {
         Validate.notNull(command, "The command must not be null!");
 
-        this.subCommands.put(command.getName(), command);
+        final String name = command.getName();
+        this.children.put(name, command);
         for (String alias : command.getAliases())
         {
-            this.subCommands.put(alias, command);
+            this.childrenAliases.put(alias.toLowerCase(Locale.ENGLISH), name);
         }
     }
 
-    public boolean hasSubCommand(String name)
+    public boolean hasChild(String name)
     {
         if (name != null)
         {
-            return this.subCommands.containsKey(name.toLowerCase());
+            return this.children.containsKey(name.toLowerCase());
         }
         return false;
     }
@@ -65,21 +99,24 @@ public abstract class CubeCommand extends Command
     @Override
     public final boolean execute(CommandSender sender, String label, String[] args)
     {
-        if (args.length > 0 && !args[0].startsWith("-") && this.hasSubCommand(args[0]))
+        if (args.length > 0 && this.hasChild(args[0]))
         {
             String[] subArgs = new String[args.length - 1];
             System.arraycopy(args, 1, subArgs, 0, args.length - 1);
-            return this.getSubCommand(args[0]).execute(sender, label, subArgs);
+            return this.getChild(args[0]).execute(sender, label, subArgs);
         }
 
-        CommandContext context = new CommandContext(this, sender, label, args, null);
+        CommandContext context = new CommandContext(this.module.getCore(), sender, this, label);
+        context.parseCommandArgs(args);
+
+        this.run(context);
 
         return context.getResult();
     }
 
-    public List<CubeCommand> getSubCommands()
+    public List<CubeCommand> getChildren()
     {
-        return new LinkedList<CubeCommand>(this.subCommands.values());
+        return new LinkedList<CubeCommand>(this.children.values());
     }
 
     public final Module getModule()
@@ -87,16 +124,16 @@ public abstract class CubeCommand extends Command
         return this.module;
     }
 
-    public void removeSubCommand(String command)
+    public void removeChild(String name)
     {
-        CubeCommand removedCommand = this.subCommands.remove(command);
-        if (removedCommand != null)
+        name = name.toLowerCase(Locale.ENGLISH);
+        if (this.children.remove(name) != null)
         {
-            for (Map.Entry<String, CubeCommand> entry : this.subCommands.entrySet())
+            for (Map.Entry<String, String> entry : this.childrenAliases.entrySet())
             {
-                if (entry.getValue() == removedCommand)
+                if (entry.getValue().equals(name))
                 {
-                    this.subCommands.remove(entry.getKey());
+                    this.children.remove(entry.getKey());
                 }
             }
         }

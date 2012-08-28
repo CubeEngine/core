@@ -18,6 +18,7 @@ import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -1791,5 +1792,24 @@ public class UserBase implements Player
             return this.getWalkSpeed();
         }
         return 0;
+    }
+
+    public void playSound(Location location, Sound sound, float volume, float pitch)
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.playSound(location, sound, volume, pitch);
+        }
+    }
+
+    public Inventory getEnderChest()
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return player.getEnderChest();
+        }
+        return null;
     }
 }

@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.command;
 
 /**
- * This exception will be handled by the base command.
+ * This exception will be catched by the executor.
  * Its message will be send to the command sender.
  *
  * @author Phillip Schichtel

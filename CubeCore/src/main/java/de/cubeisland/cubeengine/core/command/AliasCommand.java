@@ -23,20 +23,20 @@ public class AliasCommand extends CubeCommand
     }
 
     @Override
-    public void addSubCommand(CubeCommand command)
+    public void addChild(CubeCommand command)
     {
-        this.command.addSubCommand(command);
+        this.command.addChild(command);
     }
 
     @Override
-    public void removeSubCommand(String command)
+    public void removeChild(String command)
     {
-        this.command.removeSubCommand(command);
+        this.command.removeChild(command);
     }
 
     @Override
-    public boolean hasSubCommand(String name)
+    public boolean hasChild(String name)
     {
-        return this.command.hasSubCommand(name);
+        return this.command.hasChild(name);
     }
 }
