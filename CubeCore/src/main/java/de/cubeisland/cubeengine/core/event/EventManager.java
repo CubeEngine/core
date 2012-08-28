@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.BukkitDependend;
 import de.cubeisland.cubeengine.core.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -20,24 +21,32 @@ public class EventManager
         this.pm = pm;
     }
 
-    public void registerListener(EventListener listener, Module module)
+    public EventManager registerListener(Listener listener, Module module)
     {
         this.pm.registerEvents(listener, module.getPluginWrapper());
+
+        return this;
     }
 
-    public void unregisterListener(EventListener listener)
+    public EventManager unregisterListener(Listener listener)
     {
         HandlerList.unregisterAll(listener);
+
+        return this;
     }
 
-    public void unregisterListener(Module module)
+    public EventManager unregisterListener(Module module)
     {
         HandlerList.unregisterAll(module.getPluginWrapper());
+
+        return this;
     }
 
-    public void unregisterListener()
+    public EventManager unregisterListener()
     {
         HandlerList.unregisterAll();
+
+        return this;
     }
 
     public <T extends CubeEvent> T fireEvent(T event)

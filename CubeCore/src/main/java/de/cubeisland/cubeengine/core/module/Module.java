@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
@@ -257,35 +256,6 @@ public abstract class Module
     public PluginWrapper getPluginWrapper()
     {
         return this.pluginWrapper;
-    }
-
-    /**
-     * This method registeres event listeners
-     *
-     * @param listener the listener
-     */
-    public void registerEvents(EventListener listener)
-    {
-        this.core.getEventManager().registerListener(listener, this);
-    }
-
-    /**
-     * This method unregisteres all event listeners of the given listener
-     * instance
-     *
-     * @param listener the listener
-     */
-    public void unregisterEvents(EventListener listener)
-    {
-        this.core.getEventManager().unregisterListener(listener);
-    }
-
-    /**
-     * This method unregisteres all event listeners
-     */
-    public void unregisterEvents()
-    {
-        this.core.getEventManager().unregisterListener(this);
     }
 
     /**
