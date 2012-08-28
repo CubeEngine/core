@@ -143,7 +143,7 @@ public class ModuleLoader
         {
             alreadyChecked.add(dep);
             try
-            {                                     //TODO STACKOVERFLOW
+            {
                 clazz = this.classLoaders.get(dep).findClass(name, false);
                 if (clazz != null)
                 {
