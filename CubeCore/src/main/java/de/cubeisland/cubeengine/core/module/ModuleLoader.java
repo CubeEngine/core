@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import gnu.trove.set.hash.THashSet;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -135,13 +136,15 @@ public class ModuleLoader
             return clazz;
         }
 
-        Set<String> alreadyChecked = new HashSet<String>(this.classLoaders.size() / 2);
+        Set<String> alreadyChecked = new THashSet<String>(this.classLoaders.size() / 2);
+        alreadyChecked.add(info.getName());
 
         for (String dep : info.getSoftDependencies())
         {
+            alreadyChecked.add(dep);
             try
             {                                     //TODO STACKOVERFLOW
-                clazz = this.classLoaders.get(dep).findClass(name);
+                clazz = this.classLoaders.get(dep).findClass(name, false);
                 if (clazz != null)
                 {
                     return clazz;
@@ -157,13 +160,10 @@ public class ModuleLoader
             {
                 continue;
             }
-            else
-            {
-                alreadyChecked.add(dep);
-            }
+            alreadyChecked.add(dep);
             try
             {
-                clazz = this.classLoaders.get(dep).findClass(name);
+                clazz = this.classLoaders.get(dep).findClass(name, false);
                 if (clazz != null)
                 {
                     return clazz;
@@ -179,7 +179,7 @@ public class ModuleLoader
             {
                 try
                 {
-                    clazz = this.classLoaders.get(module).findClass(name);
+                    clazz = this.classLoaders.get(module).findClass(name, false);
                     if (clazz != null)
                     {
                         return clazz;
