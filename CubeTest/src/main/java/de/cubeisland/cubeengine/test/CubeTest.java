@@ -43,6 +43,8 @@ public class CubeTest extends Module
         }
         logger.severe("SevereTestLog");
         logger.warning("WarningTestLog");
+        this.registerEvents(new TestListener(this));
+        
         logger.info("TestModule succesfully enabeled");
     }
 
@@ -75,8 +77,12 @@ public class CubeTest extends Module
     {
         Database database = this.getDatabase();
 
-        database.execute(database.getQueryBuilder()
+        try
+        {
+            database.execute(database.getQueryBuilder()
                 .clearTable("test_log").end());//Clears the TestLogs in Database
+        }
+        catch (Exception e){} //This does fail always with new db
 
         database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 10, "Heinz");
         database.preparedExecute(TestModel.class, "store", this.getDate(2012, 6, 8), 30, "Hans");

@@ -28,9 +28,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
     protected Collection<Callback> createCallbacks;
     protected Collection<Callback> deleteCallbacks;
     protected Collection<Callback> updateCallbacks;
-    private String key = null;
-    private boolean keyIsAI = false;
-    private ArrayList<String> attributes;
+    
+    protected String key = null;
+    protected boolean keyIsAI = false;
+    protected ArrayList<String> attributes;
 
     public BasicStorage(Database database, Class<V> model)
     {
@@ -109,7 +110,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
-    private void prepareStatements(String key, String[] fields) throws SQLException
+    protected void prepareStatements(String key, String[] fields) throws SQLException
     {
 
 

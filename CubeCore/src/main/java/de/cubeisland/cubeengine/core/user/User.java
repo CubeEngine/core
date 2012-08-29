@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.CubeEngine;
 import static de.cubeisland.cubeengine.CubeEngine._;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -17,20 +19,25 @@ public class User extends UserBase implements Model<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true)
-    protected int id;
-    
+    protected int key;
     @Attribute(name = "name", type = AttrType.VARCHAR, length = 16)
     protected final OfflinePlayer player;
-    
     @Attribute(name = "language", type = AttrType.VARCHAR, length = 5)
     protected String language;
-    
     public static final int BLOCK_FLY = 1;
+
+    public User(int key, String playername, String language)
+    {
+        super(playername);
+        this.key = key;
+        this.player = this.offlinePlayer;
+        this.language = language;
+    }
 
     public User(int key, OfflinePlayer player, String language)
     {
         super(player);
-        this.id = key;
+        this.key = key;
         this.player = player;
         this.language = language;
     }
@@ -38,6 +45,12 @@ public class User extends UserBase implements Model<Integer>
     public User(OfflinePlayer player)
     {
         this(-1, player, "en"); //TODO locate user and lookup language ?
+    }
+
+    @BukkitDependend("Uses the OfflinePlayer")
+    public User(String playername)
+    {
+        this(-1, CubeEngine.getOfflinePlayer(playername), "en"); //TODO locate user and lookup language ?
     }
 
     /**
@@ -60,12 +73,12 @@ public class User extends UserBase implements Model<Integer>
 
     public Integer getKey()
     {
-        return this.id;
+        return this.key;
     }
 
     public void setKey(Integer id)
     {
-        this.id = id;
+        this.key = id;
     }
 
     /**
