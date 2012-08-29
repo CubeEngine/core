@@ -22,9 +22,8 @@ public abstract class AbstractDatabase implements Database
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
     {
         PreparedStatement statement = this.bindValues(this.getStoredStatement(owner, name), params);
-        //statement.execute();
-        final ResultSet result = statement.getResultSet();
-        //Statement state = this.createAndBindValues("INSERT INTO `cube_user` (`player`,`language`) VALUES (?,?)", "fake","user");
+        statement.execute();
+        final ResultSet result = statement.getGeneratedKeys();
         if (result.next())
         {
             return result.getInt("GENERATED_KEY");

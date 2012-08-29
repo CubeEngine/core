@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
@@ -9,6 +10,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,11 +26,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
 {
     protected final Database database;
     protected final Class<V> modelClass;
+    protected Constructor<V> modelConstructor = null;
     protected final String table;
-    protected Collection<Callback> createCallbacks;
-    protected Collection<Callback> deleteCallbacks;
-    protected Collection<Callback> updateCallbacks;
-    
+    protected Collection<Callback> createCallbacks = new ArrayList<Callback>();
+    protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
+    protected Collection<Callback> updateCallbacks = new ArrayList<Callback>();
     protected String key = null;
     protected boolean keyIsAI = false;
     protected ArrayList<String> attributes;
@@ -48,6 +50,19 @@ public class BasicStorage<V extends Model> implements Storage<V>
 
     public void initialize()
     {
+        //Constructor:
+        for (Constructor c: this.modelClass.getConstructors())
+        {
+            if (c.isAnnotationPresent(DatabaseConstructor.class))
+            {
+                this.modelConstructor = c;
+            }
+        }
+        if (this.modelConstructor == null)
+        {
+            throw new IllegalStateException("DatabaseConstructor Annotation is missing!");
+        }
+        //Fields:
         Entity entity = this.modelClass.getAnnotation(Entity.class);
         QueryBuilder builder = this.database.getQueryBuilder();
 
@@ -205,7 +220,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                     values.add(resulsSet.getObject(name));
                 }
             }
-            loadedModel = (V)modelClass.getConstructors()[0].newInstance(values.toArray());
+            loadedModel = this.modelConstructor.newInstance(values);
         }
         catch (SQLException ex)
         {
@@ -233,7 +248,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 {
                     values.add(resulsSet.getObject(name));
                 }
-                V loadedModel = (V)modelClass.getConstructors()[0].newInstance(values.toArray());//TODO get right Constructor (with annotation)
+                V loadedModel = this.modelConstructor.newInstance(values);
                 loadedModels.add(loadedModel);
             }
         }

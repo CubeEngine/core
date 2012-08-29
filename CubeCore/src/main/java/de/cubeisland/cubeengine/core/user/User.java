@@ -6,8 +6,14 @@ import static de.cubeisland.cubeengine.CubeEngine._;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 
 /**
@@ -26,6 +32,22 @@ public class User extends UserBase implements Model<Integer>
     public String language;
     public static final int BLOCK_FLY = 1;
 
+    @DatabaseConstructor
+    public User(List<Object> args)
+    {
+        super((String)args.get(1));
+        try
+        {
+            this.key = Convert.fromObject(Integer.class, args.get(0));
+            this.player = this.offlinePlayer;
+            this.language = (String)args.get(2);
+        }
+        catch (ConversionException ex)
+        {
+            throw new IllegalStateException("Error while creating a User from Database");
+        }
+    }
+
     public User(int key, OfflinePlayer player, String language)
     {
         super(player);
@@ -43,14 +65,6 @@ public class User extends UserBase implements Model<Integer>
     public User(String playername)
     {
         this(-1, CubeEngine.getOfflinePlayer(playername), "en"); //TODO locate user and lookup language ?
-    }
-    
-    public User(int key, String playername, String language)
-    {
-        super(playername);
-        this.key = key;
-        this.player = this.offlinePlayer;
-        this.language = language;
     }
 
     /**

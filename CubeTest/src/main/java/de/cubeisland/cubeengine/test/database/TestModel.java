@@ -3,9 +3,11 @@ package de.cubeisland.cubeengine.test.database;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import java.sql.Date;
+import java.util.List;
 
 /**
  *
@@ -24,6 +26,12 @@ public class TestModel implements Model<Integer>
     @Attribute(type = AttrType.VARCHAR, length = 16)
     public String customer;
 
+    @DatabaseConstructor
+    public TestModel(List<Object> args)
+    {
+        //TODO implement me
+    }
+    
     public Integer getKey()
     {
         return this.id;
