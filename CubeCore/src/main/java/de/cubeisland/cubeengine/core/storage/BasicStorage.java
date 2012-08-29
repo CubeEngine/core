@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuil
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,10 +60,6 @@ public class BasicStorage<V extends Model> implements Storage<V>
             if (attribute != null)
             {
                 String name = field.getName();
-                if (!"".equals(attribute.name()))
-                {
-                    name = attribute.name();
-                }
                 tbuilder.field(name, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
                 if (field.isAnnotationPresent(Key.class))
                 {
@@ -259,18 +256,19 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
-            if (keyIsAI)
+            if (!keyIsAI)
             {
-                values.add(modelClass.getField(key).get(model));
+                values.add(modelClass.getDeclaredField(key).get(model));
             }
             for (String name : this.attributes)
             {
-                values.add(modelClass.getField(name).get(model));
+                values.add(modelClass.getDeclaredField(name).get(model));
             }
             PreparedStatement ps = this.database.getStoredStatement(modelClass, "store");
             for (int i = 0; i < values.size(); ++i)
             {
-                ps.setObject(i, values.get(i));
+                Object value = Convert.toObject(values.get(i));
+                ps.setObject(i+1, value);
             }
             if (keyIsAI)
             {
@@ -302,9 +300,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
             ArrayList<Object> values = new ArrayList<Object>();
             for (String name : this.attributes)
             {
-                values.add(modelClass.getField(name).get(model));
+                values.add(modelClass.getDeclaredField(name).get(model));
             }
-            values.add(modelClass.getField(key).get(model));
+            values.add(modelClass.getDeclaredField(key).get(model));
             this.database.preparedExecute(modelClass, "update", values.toArray());
 
             for (Callback cb : updateCallbacks)
@@ -327,10 +325,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
-            values.add(modelClass.getField(key).get(model));
+            values.add(modelClass.getDeclaredField(key).get(model));
             for (String name : this.attributes)
             {
-                values.add(modelClass.getField(name).get(model));
+                values.add(modelClass.getDeclaredField(name).get(model));
             }
             this.database.preparedExecute(modelClass, "merge", values.toArray());
 

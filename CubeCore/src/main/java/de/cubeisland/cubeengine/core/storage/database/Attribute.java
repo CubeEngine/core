@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Attribute
 {
-    public String name() default "";
     public AttrType type();
     public int length() default -1;
     public boolean notnull() default true;

@@ -17,11 +17,11 @@ public class TestModel implements Model<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int id;
-    @Attribute(name = "OrderDate", type = AttrType.VARCHAR, length = 16)
+    @Attribute(type = AttrType.VARCHAR, length = 16)
     public Date orderDate;
-    @Attribute(name = "OrderPrice", type = AttrType.DOUBLE)
+    @Attribute(type = AttrType.DOUBLE)
     public double orderPrice;
-    @Attribute(name = "Customer", type = AttrType.VARCHAR, length = 16)
+    @Attribute(type = AttrType.VARCHAR, length = 16)
     public String customer;
 
     public Integer getKey()

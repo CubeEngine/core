@@ -45,6 +45,7 @@ public class CubeTest extends Module
         logger.warning("WarningTestLog");
         this.registerEvents(new TestListener(this));
         
+        this.getUserManager().getUser("FakeUser");
         logger.info("TestModule succesfully enabeled");
     }
 

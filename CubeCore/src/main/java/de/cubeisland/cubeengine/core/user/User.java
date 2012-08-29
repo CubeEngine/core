@@ -18,12 +18,12 @@ import org.bukkit.OfflinePlayer;
 public class User extends UserBase implements Model<Integer>
 {
     @Key
-    @Attribute(type = AttrType.INT, unsigned = true)
-    protected int key;
-    @Attribute(name = "name", type = AttrType.VARCHAR, length = 16)
-    protected final OfflinePlayer player;
-    @Attribute(name = "language", type = AttrType.VARCHAR, length = 5)
-    protected String language;
+    @Attribute(type = AttrType.INT, unsigned = true, ai = true)
+    public int key;
+    @Attribute(type = AttrType.VARCHAR, length = 16)
+    public final OfflinePlayer player;
+    @Attribute(type = AttrType.VARCHAR, length = 5)
+    public String language;
     public static final int BLOCK_FLY = 1;
 
     public User(int key, String playername, String language)

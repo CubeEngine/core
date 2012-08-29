@@ -49,7 +49,7 @@ public class UserManager extends BasicStorage<User>
             .select(allFields)
             .from(this.table)
             .where()
-            .field("name").is(ComponentBuilder.EQUAL).value()
+            .field("player").is(ComponentBuilder.EQUAL).value()
             .end()
             .end()
             );
@@ -86,8 +86,8 @@ public class UserManager extends BasicStorage<User>
                 {
                     values.add(resulsSet.getObject(name));
                 }
+                loadedModel = (User)modelClass.getConstructors()[0].newInstance(values.toArray());
             }
-            loadedModel = (User)modelClass.getConstructors()[0].newInstance(values.toArray());
         }
         catch (SQLException ex)
         {
