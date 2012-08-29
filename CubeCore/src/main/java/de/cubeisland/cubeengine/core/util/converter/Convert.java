@@ -71,7 +71,7 @@ public class Convert
         {
             return converter.toObject(object);
         }
-        return null;
+        return object;
     }
 
     public static <T> T fromObject(Class<T> type, Object object) throws ConversionException

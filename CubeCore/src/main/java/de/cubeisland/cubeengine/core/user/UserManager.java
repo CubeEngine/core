@@ -144,6 +144,5 @@ public class UserManager extends BasicStorage<User>
     public void clean()
     {
         this.users.clear();
-        this.clear();
     }
 }

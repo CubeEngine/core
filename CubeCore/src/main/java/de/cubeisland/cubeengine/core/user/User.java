@@ -26,14 +26,6 @@ public class User extends UserBase implements Model<Integer>
     public String language;
     public static final int BLOCK_FLY = 1;
 
-    public User(int key, String playername, String language)
-    {
-        super(playername);
-        this.key = key;
-        this.player = this.offlinePlayer;
-        this.language = language;
-    }
-
     public User(int key, OfflinePlayer player, String language)
     {
         super(player);
@@ -51,6 +43,14 @@ public class User extends UserBase implements Model<Integer>
     public User(String playername)
     {
         this(-1, CubeEngine.getOfflinePlayer(playername), "en"); //TODO locate user and lookup language ?
+    }
+    
+    public User(int key, String playername, String language)
+    {
+        super(playername);
+        this.key = key;
+        this.player = this.offlinePlayer;
+        this.language = language;
     }
 
     /**

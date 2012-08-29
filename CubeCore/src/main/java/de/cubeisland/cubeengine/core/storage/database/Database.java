@@ -29,5 +29,5 @@ public interface Database
     public ResultSet query(String query, Object... params) throws SQLException;
     public void storePreparedStatement(Class owner, String name, PreparedStatement statement);
     public int update(String query, Object... params) throws SQLException;
-    public int getLastInsertedId(Statement statement) throws SQLException;
+    public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException;
 }
