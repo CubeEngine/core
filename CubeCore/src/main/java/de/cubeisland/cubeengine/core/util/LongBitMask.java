@@ -1,19 +1,19 @@
-package de.cubeisland.cubeengine.core.util.bitmask;
+package de.cubeisland.cubeengine.core.util;
 
 /**
- * Represents a bitmask with 32 bits
+ * Represents a bitmask with 64 bits
  *
  * @author Phillip Schichtel
  */
-public class BitMask
+public class LongBitMask
 {
-    private int mask;
+    private long mask;
 
     /**
      * Creates a new BitMask
      *
      */
-    public BitMask()
+    public LongBitMask()
     {
         this(0);
     }
@@ -23,7 +23,7 @@ public class BitMask
      *
      * @param mask the value to set the BitMask at the beginning
      */
-    public BitMask(int mask)
+    public LongBitMask(long mask)
     {
         this.mask = mask;
     }
@@ -33,7 +33,7 @@ public class BitMask
      *
      * @return the value saved by this BitMask
      */
-    public int get()
+    public long get()
     {
         return this.mask;
     }
@@ -44,7 +44,7 @@ public class BitMask
      * @param bits The bits to set
      * @return the new value of this BitMask
      */
-    public int set(int bits)
+    public long set(long bits)
     {
         return this.mask |= bits;
     }
@@ -54,7 +54,7 @@ public class BitMask
      *
      * @return 0
      */
-    public int reset()
+    public long reset()
     {
         return this.reset(0);
     }
@@ -65,7 +65,7 @@ public class BitMask
      * @param mask The value to reset the BitMask to
      * @return the new value of this BitMask
      */
-    public int reset(int mask)
+    public long reset(long mask)
     {
         return this.mask = mask;
     }
@@ -76,7 +76,7 @@ public class BitMask
      * @param bits The bits to unset
      * @return the new value of this BitMask
      */
-    public int unset(int bits)
+    public long unset(long bits)
     {
         return this.mask &= ~bits;
     }
@@ -87,18 +87,18 @@ public class BitMask
      * @param bits The bits to toggle
      * @return the new value of this BitMask
      */
-    public int toggle(int bits)
+    public long toggle(long bits)
     {
         return this.mask ^= bits;
     }
 
     /**
-     * Checks whether the specified bits are set.
+     * Checks whether the specified Bits are set.
      *
      * @param bits The bits to check.
-     * @return whether the specified bits are set or not
+     * @return whether the specified Bit are set or not
      */
-    public boolean isset(int bits)
+    public boolean isset(long bits)
     {
         return ((this.mask & bits) == bits);
     }

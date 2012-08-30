@@ -1,21 +1,21 @@
-package de.cubeisland.cubeengine.core.util.bitmask;
+package de.cubeisland.cubeengine.core.util;
 
 /**
- * Represents a bitmask with 16 bits
+ * Represents a bitmask with 32 bits
  *
  * @author Phillip Schichtel
  */
-public class ShortBitMask
+public class BitMask
 {
-    private short mask;
+    private int mask;
 
     /**
-     * Creates a new ByteBitMask
+     * Creates a new BitMask
      *
      */
-    public ShortBitMask()
+    public BitMask()
     {
-        this((short)0);
+        this(0);
     }
 
     /**
@@ -23,7 +23,7 @@ public class ShortBitMask
      *
      * @param mask the value to set the BitMask at the beginning
      */
-    public ShortBitMask(short mask)
+    public BitMask(int mask)
     {
         this.mask = mask;
     }
@@ -33,7 +33,7 @@ public class ShortBitMask
      *
      * @return the value saved by this BitMask
      */
-    public short get()
+    public int get()
     {
         return this.mask;
     }
@@ -44,7 +44,7 @@ public class ShortBitMask
      * @param bits The bits to set
      * @return the new value of this BitMask
      */
-    public short set(short bits)
+    public int set(int bits)
     {
         return this.mask |= bits;
     }
@@ -54,9 +54,9 @@ public class ShortBitMask
      *
      * @return 0
      */
-    public short reset()
+    public int reset()
     {
-        return this.reset((short)0);
+        return this.reset(0);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ShortBitMask
      * @param mask The value to reset the BitMask to
      * @return the new value of this BitMask
      */
-    public short reset(short mask)
+    public int reset(int mask)
     {
         return this.mask = mask;
     }
@@ -76,7 +76,7 @@ public class ShortBitMask
      * @param bits The bits to unset
      * @return the new value of this BitMask
      */
-    public short unset(short bits)
+    public int unset(int bits)
     {
         return this.mask &= ~bits;
     }
@@ -87,18 +87,18 @@ public class ShortBitMask
      * @param bits The bits to toggle
      * @return the new value of this BitMask
      */
-    public short toggle(short bits)
+    public int toggle(int bits)
     {
         return this.mask ^= bits;
     }
 
     /**
-     * Checks whether the specified Bits are set.
+     * Checks whether the specified bits are set.
      *
      * @param bits The bits to check.
-     * @return whether the specified Bits are set or not
+     * @return whether the specified bits are set or not
      */
-    public boolean isset(short bits)
+    public boolean isset(int bits)
     {
         return ((this.mask & bits) == bits);
     }
