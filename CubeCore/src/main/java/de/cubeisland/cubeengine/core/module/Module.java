@@ -27,23 +27,25 @@ public abstract class Module
     private ModuleInfo info;
     private ModuleLogger logger;
     private Set<Module> dependingModules = new HashSet<Module>();
+    private ModuleLoader loader;
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
     private PluginWrapper pluginWrapper;
 
-    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, File folder, ModuleClassLoader classLoader)
+    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {
         if (!this.initialized)
         {
             this.core = core;
             this.info = info;
+            this.loader = loader;
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
             this.pluginWrapper = pluginWrapper;
 
-            this.logger = new ModuleLogger(this);
+            this.logger = logger;
 
             this.onLoad();
             core.getEventManager().fireEvent(new ModuleLoadedEvent(core, this));
@@ -321,5 +323,10 @@ public abstract class Module
             this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;
         }
+    }
+
+    public ModuleLoader getLoader()
+    {
+        return this.loader;
     }
 }

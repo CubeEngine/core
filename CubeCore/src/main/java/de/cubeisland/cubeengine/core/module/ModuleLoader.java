@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.util.Validate;
+import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
 import java.io.File;
 import java.io.IOException;
@@ -21,18 +22,18 @@ import java.util.jar.JarFile;
  */
 public class ModuleLoader
 {
+    private final Core core;
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
-    private final Core core;
-    public static final String CLASS_PREFIX = "Cube";
-    private static final String BASE_FQDN = "de.cubeisland.cubeengine.";
-    private static final String INFO_FILE = "module.yml";
+    protected String classPrefix = "Cube";
+    protected String baseFQN = "de.cubeisland.cubeengine.";
+    protected final String infoFileName = "module.yml";
 
     public ModuleLoader(Core core)
     {
+        this.core = core;
         this.libClassLoader = new LibraryClassLoader(this.getClass().getClassLoader());
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
-        this.core = core;
     }
 
     public Module loadModule(File file) throws InvalidModuleException, MissingDependencyException
@@ -55,8 +56,18 @@ public class ModuleLoader
             }
 
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
-            Module module = Class.forName(BASE_FQDN + name.toLowerCase(Locale.ENGLISH) + "." + CLASS_PREFIX + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
-            module.initialize(this.core, info, new PluginWrapper(this.core, module), new File(info.getFile().getParentFile(), name), classLoader);
+            Module module = Class.forName(this.baseFQN + name.toLowerCase(Locale.ENGLISH) + "." + this.classPrefix + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
+
+            module.initialize(
+                this.core,
+                info,
+                new PluginWrapper(this.core, module),
+                new File(info.getFile().getParentFile(), name),
+                new ModuleLogger(this.core, info),
+                this,
+                classLoader
+            );
+
             this.classLoaders.put(name, classLoader);
             return module;
         }
@@ -88,7 +99,7 @@ public class ModuleLoader
         {
             jarFile = new JarFile(file);
 
-            JarEntry entry = jarFile.getJarEntry(INFO_FILE);
+            JarEntry entry = jarFile.getJarEntry(this.infoFileName);
             if (entry == null)
             {
                 throw new InvalidModuleException("The module '" + file.getPath() + "' does not contain a module.yml!");

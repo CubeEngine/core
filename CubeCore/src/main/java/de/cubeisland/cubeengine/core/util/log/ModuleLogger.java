@@ -1,6 +1,11 @@
 package de.cubeisland.cubeengine.core.util.log;
 
-import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.module.ModuleInfo;
+import java.io.File;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -8,16 +13,17 @@ import de.cubeisland.cubeengine.core.module.Module;
  */
 public class ModuleLogger extends CubeLogger
 {
-    private final Module module;
-
-    public ModuleLogger(Module module)
+    public ModuleLogger(Core core, ModuleInfo info)
     {
-        super(module.getName());
-        this.module = module;
-    }
-
-    public Module getModule()
-    {
-        return this.module;
+        super(info.getName());
+        try
+        {
+            this.addHandler(new FileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), info.getName().toLowerCase(Locale.ENGLISH) + ".log").toString()));
+            this.addHandler(new DatabaseHandler(Level.WARNING, core.getDB(), info.getName()));
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }
