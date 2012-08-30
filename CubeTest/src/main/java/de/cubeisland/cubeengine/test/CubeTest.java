@@ -4,6 +4,8 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.test.database.TestManager;
@@ -17,6 +19,8 @@ import java.util.logging.Logger;
 
 public class CubeTest extends Module
 {
+    public TestManager manager;
+    
     @Override
     public void onEnable()
     {
@@ -44,8 +48,9 @@ public class CubeTest extends Module
         logger.severe("SevereTestLog");
         logger.warning("WarningTestLog");
         this.registerEvents(new TestListener(this));
-        
-        this.getUserManager().getUser("FakeUser");
+
+        this.testUserManager();
+
         logger.info("TestModule succesfully enabeled");
     }
 
@@ -58,8 +63,8 @@ public class CubeTest extends Module
         catch (Exception e)
         {
         }
-        TestManager storage = new TestManager(this.getDatabase());
-        storage.initialize();
+        manager = new TestManager(this.getDatabase());
+        manager.initialize();
     }
 
     @Override
@@ -67,13 +72,32 @@ public class CubeTest extends Module
     {
     }
 
+    public void testUserManager()
+    {
+        UserManager uM = this.getUserManager();
+        //Testing insert
+        User user = uM.getUser("FakeUser");
+        //Testing delete
+        uM.delete(user);
+        //Testing get
+        uM.getUser("FakerXL");
+        uM.getUser("NoPlayer");
+        uM.getUser("NoUserAtAll");
+        user = uM.getUser("NoUser");
+        //Testung update
+        user.setLanguage("de");
+        uM.update(user);
+        //Testing getall
+        uM.getAll();
+    }
+    
     private Date getDate(int year, int month, int day)
     {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
         return new Date(calendar.getTimeInMillis());
     }
-
+    
     public void testDatabase() throws SQLException
     {
         Database database = this.getDatabase();
@@ -81,20 +105,25 @@ public class CubeTest extends Module
         try
         {
             database.execute(database.getQueryBuilder()
-                .clearTable("test_log").end());//Clears the TestLogs in Database
+                    .clearTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
         }
-        catch (Exception e){} //This does fail always with new db
+        catch (Exception e)
+        {
+        } 
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
+        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"));
+        this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"));
+        this.manager.get(2);
+        this.manager.getAll();
+        TestModel model = this.manager.get(3);
+        model.orderDate = this.getDate(111, 2, 2);
+        model.orderPrice = 100;
+        model.customer = "Paul";
+        this.manager.update(model);
 
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 10, "Heinz");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 6, 8), 30, "Hans");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 6), 20, "Manfred");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 20, "Heinz");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 120, "Hans");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2011, 2, 8), 50, "Manfred");
-
-        database.preparedQuery(TestModel.class, "get", 2);
-        database.preparedQuery(TestModel.class, "getall");
-        database.preparedExecute(TestModel.class, "update", this.getDate(111, 2, 2), 100, "Paul", 3);
         database.query(
                 database.getQueryBuilder()
                 .select()

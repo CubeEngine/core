@@ -30,12 +30,7 @@ public class UserManager extends BasicStorage<User>
         this.initialize();
 
         this.server = server;
-
         this.users = new THashMap<String, User>();
-        for (User user : this.getAll())
-        {
-            this.users.put(user.getName(), user);
-        }
     }
 
     @Override
@@ -86,7 +81,7 @@ public class UserManager extends BasicStorage<User>
                 {
                     values.add(resulsSet.getObject(name));
                 }
-                loadedModel = (User)modelClass.getConstructors()[0].newInstance(values.toArray());
+                loadedModel = this.modelConstructor.newInstance(values);
             }
         }
         catch (SQLException ex)
@@ -109,7 +104,8 @@ public class UserManager extends BasicStorage<User>
         }
         if (user == null)
         {
-            this.addUser(new User(name));
+            user = new User(name);
+            this.addUser(user);
         }
         return user;
     }

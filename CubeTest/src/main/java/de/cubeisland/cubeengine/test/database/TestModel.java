@@ -6,6 +6,8 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.sql.Date;
 import java.util.List;
 
@@ -29,7 +31,26 @@ public class TestModel implements Model<Integer>
     @DatabaseConstructor
     public TestModel(List<Object> args)
     {
-        //TODO implement me
+        try
+        {
+            this.id = Convert.fromObject(Integer.class, args.get(0));
+            this.orderDate = Convert.fromObject(Date.class,args.get(1));
+            this.orderPrice = Convert.fromObject(Double.class, args.get(2));
+            this.customer = (String)args.get(3);
+        }
+        catch (ConversionException ex)
+        {
+            throw new IllegalStateException("Error while converting Objects for Modelcreation");
+        }
+        
+    }
+
+    public TestModel(Date orderDate, double orderPrice, String customer)
+    {
+        this.id = -1;
+        this.orderDate = orderDate;
+        this.orderPrice = orderPrice;
+        this.customer = customer;
     }
     
     public Integer getKey()
