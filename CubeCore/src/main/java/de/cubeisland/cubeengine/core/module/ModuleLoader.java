@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.util.Validate;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import gnu.trove.set.hash.THashSet;
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class ModuleLoader
 
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
             Module module = Class.forName(BASE_FQDN + name.toLowerCase(Locale.ENGLISH) + "." + CLASS_PREFIX + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
-            module.initialize(this.core, info, new PluginWrapper(this.core, module), new CubeLogger(name), new File(info.getFile().getParentFile(), name), classLoader);
+            module.initialize(this.core, info, new PluginWrapper(this.core, module), new File(info.getFile().getParentFile(), name), classLoader);
             this.classLoaders.put(name, classLoader);
             return module;
         }

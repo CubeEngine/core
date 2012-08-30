@@ -17,7 +17,7 @@ public class DatabaseHandler extends Handler
 {
     private final Database database;
 
-    public DatabaseHandler(Level level, Database database, String table, String owner)
+    public DatabaseHandler(Level level, Database database, String table)
     {
         this.setLevel(level);
         this.database = database;
@@ -72,13 +72,14 @@ public class DatabaseHandler extends Handler
         {
             return;
         }
-        final Timestamp time = new Timestamp(record.getMillis());
-        final String level = record.getLevel().getLocalizedName();
-        final String msg = record.getMessage();
-        final String logger = record.getLoggerName();
         try
         {
-            database.preparedExecute(this.getClass(), "insert", time, level, logger, msg);
+            database.preparedExecute(this.getClass(), "insert",
+                new Timestamp(record.getMillis()),
+                record.getLevel().getLocalizedName(),
+                record.getLoggerName(),
+                record.getMessage()
+            );
         }
         catch (SQLException e)
         {

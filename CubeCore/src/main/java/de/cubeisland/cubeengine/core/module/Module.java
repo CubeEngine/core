@@ -8,12 +8,12 @@ import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Validate;
+import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * module for CubeEngine
@@ -25,24 +25,25 @@ public abstract class Module
     private boolean initialized = false;
     private Core core;
     private ModuleInfo info;
-    private Logger logger;
+    private ModuleLogger logger;
     private Set<Module> dependingModules = new HashSet<Module>();
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
     private PluginWrapper pluginWrapper;
 
-    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, Logger logger, File folder, ModuleClassLoader classLoader)
+    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, File folder, ModuleClassLoader classLoader)
     {
         if (!this.initialized)
         {
             this.core = core;
             this.info = info;
-            this.logger = logger;
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
             this.pluginWrapper = pluginWrapper;
+
+            this.logger = new ModuleLogger(this);
 
             this.onLoad();
             core.getEventManager().fireEvent(new ModuleLoadedEvent(core, this));
@@ -74,7 +75,7 @@ public abstract class Module
      *
      * @return the module logger
      */
-    public Logger getLogger()
+    public ModuleLogger getLogger()
     {
         return this.logger;
     }
