@@ -17,6 +17,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.Server;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -909,6 +910,16 @@ public class ApiPlayer extends ApiCommandSender implements Player
     }
 
     public float getWalkSpeed()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void playSound(Location location, Sound sound, float volume, float pitch)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Inventory getEnderChest()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

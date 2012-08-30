@@ -216,4 +216,82 @@ public final class StringUtils
         }
         return time;
     }
+
+    public static int wordDistance(String source, String target)
+    {
+        return wordDistance(source, target, new int[source.length() * target.length()]);
+    }
+
+    public static int wordDistance(String source, String target, int[] workspace)
+    {
+        int sourceLength = source.length();
+        int targetLength = target.length();
+        int lenS1 = sourceLength + 1;
+        int lenT1 = targetLength + 1;
+        if (lenT1 == 1)
+        {
+            return lenS1 - 1;
+        }
+        if (lenS1 == 1)
+        {
+            return lenT1 - 1;
+        }
+        int[] dl = workspace;
+        int dlIndex = 0;
+        int prevSourceIndex = 0, prevTargetIndex = 0, rowBefore = 0, min = 0, cost = 0, tmp = 0;
+        int tri = lenS1 + 2;
+        // start row with constant
+        dlIndex = 0;
+        for (tmp = 0; tmp < lenT1; tmp++)
+        {
+            dl[dlIndex] = tmp;
+            dlIndex += lenS1;
+        }
+        for (int sourceIndex = 0; sourceIndex < sourceLength; sourceIndex++)
+        {
+            dlIndex = sourceIndex + 1;
+            dl[dlIndex] = dlIndex; // start column with constant
+            for (int tIndex = 0; tIndex < targetLength; tIndex++)
+            {
+                rowBefore = dlIndex;
+                dlIndex += lenS1;
+                //deletion
+                min = dl[rowBefore] + 1;
+                // insertion
+                tmp = dl[dlIndex - 1] + 1;
+                if (tmp < min)
+                {
+                    min = tmp;
+                }
+                cost = 1;
+                if (source.charAt(sourceIndex) == target.charAt(tIndex))
+                {
+                    cost = 0;
+                }
+                if (sourceIndex > 0 && tIndex > 0)
+                {
+                    if (source.charAt(sourceIndex) == target.charAt(prevTargetIndex) && source.charAt(prevSourceIndex) == target.charAt(tIndex))
+                    {
+                        tmp = dl[rowBefore - tri] + cost;
+                        // transposition
+                        if (tmp < min)
+                        {
+                            min = tmp;
+                        }
+                    }
+                }
+                // substitution
+                tmp = dl[rowBefore - 1] + cost;
+                if (tmp < min)
+                {
+                    min = tmp;
+                }
+                dl[dlIndex] = min;
+                
+                prevTargetIndex = tIndex;
+            }
+            prevSourceIndex = sourceIndex;
+        }
+        return dl[dlIndex];
+    }
 }

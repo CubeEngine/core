@@ -15,18 +15,16 @@ import java.util.logging.LogRecord;
  */
 public class DatabaseHandler extends Handler
 {
-    private final Database db;
-    private final String table;
+    private final Database database;
 
-    public DatabaseHandler(Level level, Database db, String table)
+    public DatabaseHandler(Level level, Database database, String table)
     {
         this.setLevel(level);
-        this.db = db;
-        this.table = table;
+        this.database = database;
         try
         {
-            QueryBuilder queryBuilder = this.db.getQueryBuilder();
-            this.db.execute(queryBuilder
+            QueryBuilder queryBuilder = this.database.getQueryBuilder();
+            this.database.execute(queryBuilder
                 .createTable(table, true)
                 .beginFields()
                     .field("id", AttrType.INT, 11, true, true, true)
@@ -40,13 +38,13 @@ public class DatabaseHandler extends Handler
                 .end()
             .end());
 
-            this.db.prepareAndStoreStatement(this.getClass(), "insert", queryBuilder
+            this.database.prepareAndStoreStatement(this.getClass(), "insert", queryBuilder
                 .insert().into(table)
-                .cols("timestamp","level","logger","message")
+                .cols("timestamp", "level", "logger", "message")
                 .end()
             .end());
 
-            this.db.prepareAndStoreStatement(this.getClass(), "clear", queryBuilder
+            this.database.prepareAndStoreStatement(this.getClass(), "clear", queryBuilder
                 .clearTable(table)
             .end());
         }
@@ -60,7 +58,7 @@ public class DatabaseHandler extends Handler
     {
         try
         {
-            this.db.preparedExecute(this.getClass(), "clear");
+            this.database.preparedExecute(this.getClass(), "clear");
         }
         catch (SQLException ex)
         {
@@ -74,13 +72,14 @@ public class DatabaseHandler extends Handler
         {
             return;
         }
-        final Timestamp time = new Timestamp(record.getMillis());
-        final String level = record.getLevel().getLocalizedName();
-        final String msg = record.getMessage();
-        final String logger = record.getLoggerName();
         try
         {
-            db.preparedExecute(this.getClass(), "insert", time, level, logger, msg);
+            database.preparedExecute(this.getClass(), "insert",
+                new Timestamp(record.getMillis()),
+                record.getLevel().getLocalizedName(),
+                record.getLoggerName(),
+                record.getMessage()
+            );
         }
         catch (SQLException e)
         {
@@ -88,15 +87,17 @@ public class DatabaseHandler extends Handler
         }
     }
 
+    /**
+     * We're writing directly
+     */
     @Override
     public void flush()
-    {
-        //nicht nötig da direkt alles geschrieben wird
-    }
+    {}
 
+    /**
+     * Not needed as we use a shared database connection
+     */
     @Override
     public void close() throws SecurityException
-    {
-        //hier nicht nötig DB wird woanders geclosed
-    }
+    {}
 }

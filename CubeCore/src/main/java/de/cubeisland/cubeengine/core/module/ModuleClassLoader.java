@@ -30,7 +30,12 @@ public class ModuleClassLoader extends URLClassLoader
     }
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException
+    public Class<?> findClass(String name) throws ClassNotFoundException
+    {
+        return this.findClass(name, true);
+    }
+    
+    protected Class<?> findClass(String name, boolean global) throws ClassNotFoundException
     {
         Class<?> clazz = this.classMap.get(name);
 
@@ -43,7 +48,7 @@ public class ModuleClassLoader extends URLClassLoader
             catch (ClassNotFoundException e)
             {}
 
-            if (clazz == null)
+            if (clazz == null && global)
             {
                                           //TODO STACKOVERFLOW when Class not found
                 clazz = this.moduleLoader.getClazz(this.moduleInfo, name);

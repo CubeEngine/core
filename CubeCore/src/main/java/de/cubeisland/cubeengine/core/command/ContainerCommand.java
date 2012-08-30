@@ -24,7 +24,7 @@ public class ContainerCommand extends CubeCommand
         sender.sendMessage(" ");
 
 
-        for (CubeCommand command : context.getCommand().getSubCommands())
+        for (CubeCommand command : context.getCommand().getChildren())
         {
             sender.sendMessage(command.getName() + _(sender, command.getModule().getName(), command.getDescription()));
         }

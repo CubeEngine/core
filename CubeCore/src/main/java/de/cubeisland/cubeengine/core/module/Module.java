@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
@@ -9,12 +8,12 @@ import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Validate;
+import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * module for CubeEngine
@@ -26,24 +25,27 @@ public abstract class Module
     private boolean initialized = false;
     private Core core;
     private ModuleInfo info;
-    private Logger logger;
+    private ModuleLogger logger;
     private Set<Module> dependingModules = new HashSet<Module>();
+    private ModuleLoader loader;
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
     private PluginWrapper pluginWrapper;
 
-    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, Logger logger, File folder, ModuleClassLoader classLoader)
+    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {
         if (!this.initialized)
         {
             this.core = core;
             this.info = info;
-            this.logger = logger;
+            this.loader = loader;
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
             this.pluginWrapper = pluginWrapper;
+
+            this.logger = logger;
 
             this.onLoad();
             core.getEventManager().fireEvent(new ModuleLoadedEvent(core, this));
@@ -75,7 +77,7 @@ public abstract class Module
      *
      * @return the module logger
      */
-    public Logger getLogger()
+    public ModuleLogger getLogger()
     {
         return this.logger;
     }
@@ -260,35 +262,6 @@ public abstract class Module
     }
 
     /**
-     * This method registeres event listeners
-     *
-     * @param listener the listener
-     */
-    public void registerEvents(EventListener listener)
-    {
-        this.core.getEventManager().registerListener(listener, this);
-    }
-
-    /**
-     * This method unregisteres all event listeners of the given listener
-     * instance
-     *
-     * @param listener the listener
-     */
-    public void unregisterEvents(EventListener listener)
-    {
-        this.core.getEventManager().unregisterListener(listener);
-    }
-
-    /**
-     * This method unregisteres all event listeners
-     */
-    public void unregisterEvents()
-    {
-        this.core.getEventManager().unregisterListener(this);
-    }
-
-    /**
      * This method returns the file manager
      *
      * @return the file manager
@@ -350,5 +323,10 @@ public abstract class Module
             this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;
         }
+    }
+
+    public ModuleLoader getLoader()
+    {
+        return this.loader;
     }
 }

@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import java.text.MessageFormat;
-import java.util.logging.Filter;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -23,8 +21,7 @@ public class CubeLogger extends Logger
     public CubeLogger(String name)
     {
         super(name, null);
-        Logger bukkitlogger = Logger.getLogger(name);
-        this.setParent(bukkitlogger);
+        this.setParent(Logger.getLogger(name));
         this.setUseParentHandlers(false);
     }
 
