@@ -1,13 +1,19 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
-import gnu.trove.map.hash.THashMap;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.worker.Cleanable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -17,10 +23,10 @@ import org.bukkit.entity.Player;
  *
  * @author Anselm Brehme
  */
-public class UserManager extends BasicStorage<User>
+public class UserManager extends BasicStorage<User> implements Cleanable
 {
     private final Core core;
-    private final THashMap<String, User> users;
+    private final ConcurrentHashMap<String, User> users;//TODO clean this up from time to time; need Concurrent Map
     private final Server server;
 
     public UserManager(Core core, Server server)
@@ -30,7 +36,25 @@ public class UserManager extends BasicStorage<User>
         this.initialize();
 
         this.server = server;
-        this.users = new THashMap<String, User>();
+        this.users = new ConcurrentHashMap<String, User>();
+        
+        final UserManager uM = this;
+        Thread thread = new Thread(new Runnable()
+        {
+            public void run()
+            {
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+
+                    @Override
+                    public void run()
+                    {
+                        uM.cleanUp();
+                    }
+                }, 0, 10*1000);//All 10 sec //TODO later 10 min
+            }
+        });
+        thread.start();
     }
 
     @Override
@@ -46,10 +70,9 @@ public class UserManager extends BasicStorage<User>
             .where()
             .field("player").is(ComponentBuilder.EQUAL).value()
             .end()
-            .end()
-            );
-    }    
-    
+            .end());
+    }
+
     public UserManager addUser(User user)
     {
         this.store(user);
@@ -94,7 +117,7 @@ public class UserManager extends BasicStorage<User>
         }
         return loadedModel;
     }
-    
+
     public User getUser(String name)
     {
         User user = this.users.get(name);
@@ -135,10 +158,75 @@ public class UserManager extends BasicStorage<User>
             return user;
         }
         return savedUser;
-     }
+    }
 
     public void clean()
     {
         this.users.clear();
+    }
+
+    /**
+     * Finds an online User
+     *
+     * @return a online User
+     */
+    public User findOnlineUser(String name)
+    {
+        User user = this.findUser(name);
+        if (user != null)
+        {
+            if (user.isOnline())
+            {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds an User
+     *
+     * @return a User
+     */
+    @BukkitDependend("Uses BukkitServer to get all OnlinePlayers")
+    public User findUser(String name)//TODO tests for this
+    {
+        //Looking up loaded users
+        User user = this.users.get(name);
+        if (user == null)
+        {
+            //Looking up saved users
+            user = this.get(name);
+            if (user != null)
+            {
+                this.users.put(name, user);
+            }
+        }
+        if (user == null) //then NO user with exact name
+        {
+            //Get all online Player and searching for similar names
+            Player[] players = CubeEngine.getServer().getOnlinePlayers();
+            for (Player player : players)
+            {
+                if (StringUtils.wordDistance(name, player.getName()) <= 2)//Max Worddistance 2
+                {
+                    user = this.get(player.getName());//Gets User from DB
+                    this.users.put(user.getName(), user);//Adds User to loaded users
+                    return user;//First found is returned
+                }
+            }
+        }
+        return user;
+    }
+
+    public void cleanUp()//removes all users that are not online
+    {
+        for (User user : users.values())
+        {
+            if (!user.isOnline())
+            {
+                users.remove(user.getName());
+            }
+        }
     }
 }

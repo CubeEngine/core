@@ -47,7 +47,7 @@ public class CubeTest extends Module
         }
         logger.severe("SevereTestLog");
         logger.warning("WarningTestLog");
-        this.registerEvents(new TestListener(this));
+        this.getCore().getEventManager().registerListener(new TestListener(this), this);
 
         this.testUserManager();
 

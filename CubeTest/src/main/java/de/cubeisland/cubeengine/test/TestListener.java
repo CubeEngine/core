@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.CubeEngine;
-import de.cubeisland.cubeengine.core.event.EventListener;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
@@ -13,7 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
  *
  * @author Anselm Brehme
  */
-public class TestListener implements Listener, EventListener
+public class TestListener implements Listener
 {
     CubeTest test;
     
