@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.conomy.account;
 
+import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 
@@ -8,9 +9,9 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
  * @author Anselm Brehme
  */
 
-public abstract class AccountModel implements IAccount
+public abstract class AccountModel implements IAccount, Model<Integer>
 {
-    @Attribute(name="balance",type= AttrType.DOUBLE)
+    @Attribute(type= AttrType.DOUBLE)
     protected double balance;
     
     /**

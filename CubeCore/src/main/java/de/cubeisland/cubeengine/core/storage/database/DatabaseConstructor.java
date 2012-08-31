@@ -5,13 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ *
+ * @author Anselm Brehme
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Attribute
-{
-    public AttrType type();
-    public int length() default -1;
-    public boolean notnull() default true;
-    public boolean ai() default false;
-    public boolean unsigned() default false;
-}
+@Target(ElementType.CONSTRUCTOR)
+public @interface DatabaseConstructor
+{}

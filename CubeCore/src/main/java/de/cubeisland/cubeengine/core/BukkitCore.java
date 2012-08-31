@@ -17,6 +17,7 @@ import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
+import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,6 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
@@ -73,7 +73,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         try
         {
-            this.logger.addHandler(new FileHandler(new File(this.fileManager.getLogDir(), "core.log").toString()));
+            this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));
         }
         catch (IOException e)
         {
@@ -105,13 +105,13 @@ public class BukkitCore extends JavaPlugin implements Core
                 return;
             }
         }
-        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "log"));
+        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         this.userManager = new UserManager(this, this.server);//Needs Database
 
         this.registerPermissions(Perm.values());
         this.fileManager.dropResources(CoreResource.values());
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
-        
+
         this.executor = Executors.newFixedThreadPool(config.executorThreads);
     }
 

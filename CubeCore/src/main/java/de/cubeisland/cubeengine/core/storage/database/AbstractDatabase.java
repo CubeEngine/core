@@ -18,9 +18,11 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    
-    public int getLastInsertedId(Statement statement) throws SQLException
+
+    public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
     {
+        PreparedStatement statement = this.bindValues(this.getStoredStatement(owner, name), params);
+        statement.execute();
         final ResultSet result = statement.getGeneratedKeys();
         if (result.next())
         {

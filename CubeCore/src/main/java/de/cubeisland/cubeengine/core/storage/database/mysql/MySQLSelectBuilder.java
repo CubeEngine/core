@@ -17,11 +17,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     public MySQLSelectBuilder cols(String... cols)
     {
         this.query = new StringBuilder("SELECT ");
-        if (cols.length == 0)
-        {
-            this.query.append('*');
-        }
-        else
+        if (cols.length > 0)
         {
             this.query.append(this.database.prepareFieldName(cols[0]));
             for (int i = 1; i < cols.length; ++i)

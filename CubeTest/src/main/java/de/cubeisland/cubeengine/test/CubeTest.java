@@ -2,43 +2,69 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
+import de.cubeisland.cubeengine.core.util.log.FileHandler;
+import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
-import de.cubeisland.cubeengine.test.database.TestStorage;
+import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CubeTest extends Module
 {
+    public TestManager manager;
+    
     @Override
     public void onEnable()
     {
+        Logger logger = this.getLogger();
         try
         {
-            this.getLogger().info("enabling TestModule");
+            logger.info("enabling TestModule");
             Configuration.load(TestConfig.class, this);
             this.initializeDatabase();
             this.testDatabase();
         }
         catch (Exception ex)
         {
-            this.getLogger().log(Level.SEVERE, "Error while Enabling the TestModule", ex);
+            logger.log(Level.SEVERE, "Error while Enabling the TestModule", ex);
         }
-        this.getLogger().info("TestModule succesfully enabeled");
+        logger.addHandler(new DatabaseHandler(Level.WARNING, this.getDatabase(), "test_log"));
+        try
+        {
+            logger.addHandler(new FileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test.log").toString()));
+        }
+        catch (Exception ex)
+        {
+            logger.log(Level.SEVERE, "Error while adding the FileHandler", ex);
+        }
+        logger.severe("SevereTestLog");
+        logger.warning("WarningTestLog");
+        this.getCore().getEventManager().registerListener(new TestListener(this), this);
 
+        this.testUserManager();
+
+        logger.info("TestModule succesfully enabeled");
     }
 
     public void initializeDatabase() throws SQLException
     {
-
-        this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").endQuery());
-        TestStorage storage = new TestStorage(this.getDatabase());
-        storage.initialize();
-
-
+        try
+        {
+            this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").end());
+        }
+        catch (Exception e)
+        {
+        }
+        manager = new TestManager(this.getDatabase());
+        manager.initialize();
     }
 
     @Override
@@ -46,108 +72,132 @@ public class CubeTest extends Module
     {
     }
 
+    public void testUserManager()
+    {
+        UserManager uM = this.getUserManager();
+        //Testing insert
+        User user = uM.getUser("FakeUser");
+        //Testing delete
+        uM.delete(user);
+        //Testing get
+        uM.getUser("FakerXL");
+        uM.getUser("NoPlayer");
+        uM.getUser("NoUserAtAll");
+        user = uM.getUser("NoUser");
+        //Testung update
+        user.setLanguage("de");
+        uM.update(user);
+        //Testing getall
+        uM.getAll();
+    }
+    
     private Date getDate(int year, int month, int day)
     {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
         return new Date(calendar.getTimeInMillis());
     }
-
+    
     public void testDatabase() throws SQLException
     {
         Database database = this.getDatabase();
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 10, "Heinz");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 6, 8), 30, "Hans");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 6), 20, "Manfred");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 20, "Heinz");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2012, 8, 8), 120, "Hans");
-        database.preparedExecute(TestModel.class, "store", this.getDate(2011, 2, 8), 50, "Manfred");
-        
-        database.preparedQuery(TestModel.class, "get", 2);
-        database.preparedQuery(TestModel.class, "getall");
-        database.preparedExecute(TestModel.class, "update", this.getDate(111, 2, 2) , 100 , "Paul", 3);
+
+        try
+        {
+            database.execute(database.getQueryBuilder()
+                    .clearTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
+        }
+        catch (Exception e)
+        {
+        } 
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
+        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"));
+        this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"));
+        this.manager.get(2);
+        this.manager.getAll();
+        TestModel model = this.manager.get(3);
+        model.orderDate = this.getDate(111, 2, 2);
+        model.orderPrice = 100;
+        model.customer = "Paul";
+        this.manager.update(model);
+
         database.query(
                 database.getQueryBuilder()
-                            .select()
-                                .beginFunction("avg")
-                                    .field("OrderPrice")
-                                .endFunction()
-                                .as("OrderAverage")
-                                .endFunctions()
-                            .from("Orders")
-                            .endBuilder()
-                        .endQuery());
-        
+                .select()
+                .beginFunction("AVG")
+                .field("OrderPrice")
+                .endFunction()
+                .as("OrderAverage")
+                .from("Orders")
+                .end()
+                .end());
+
         database.query(
                 database.getQueryBuilder()
-                        .select().cols("id","Customer")
-                            .beginFunctions()
-                                .comma()
-                                .beginFunction("sum")
-                                    .field("OrderPrice")
-                                .endFunction()
-                                .as("OrderAverage")
-                            .endFunctions()
-                            .from("Orders")
-                            .beginFunctions()
-                                .groupBy("Customer")
-                                .having()
-                                .beginFunction("sum")
-                                    .field("OrderPrice")
-                                .endFunction()
-                                .is(FunctionBuilder.GREATER)
-                                .value("100")
-                            .endFunctions()
-                        .endBuilder()
-                    .endQuery());
+                .select().cols("id", "Customer")
+                .rawSQL(",")
+                .beginFunction("SUM")
+                .field("OrderPrice")
+                .endFunction()
+                .as("OrderAverage")
+                .from("Orders")
+                .groupBy("Customer")
+                .having()
+                .beginFunction("sum")
+                .field("OrderPrice")
+                .endFunction()
+                .is(ComponentBuilder.GREATER)
+                .value(100)
+                .end()
+                .end());
 
         //SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
         database.getQueryBuilder()
                 .select()
-                    .beginFunction("round")
-                        .beginFunction("avg")
-                            .wildcard()
-                        .endFunction()
-                    .endFunction().endFunctions()
-                    .from("table")
-                    .beginFunction("where")
-                        .field("dob_year")
-                        .is(FunctionBuilder.GREATER)
-                        .value("1920")
-                    .endFunction().endFunctions()
-                .endBuilder()
-            .endQuery();
+                .beginFunction("round")
+                .beginFunction("avg")
+                .wildcard()
+                .endFunction()
+                .endFunction()
+                .from("table")
+                .beginFunction("where")
+                .field("dob_year")
+                .is(ComponentBuilder.GREATER)
+                .value("1920")
+                .endFunction()
+                .end()
+                .end();
 
         //SELECT ProductName, ROUND(UnitPrice,0) as UnitPrice FROM Products
         database.getQueryBuilder()
                 .select()
-                    .cols("ProductName")
-                    .beginFunctions()
-                        .comma()
-                        .beginFunction("round")
-                            .field("UnitPrice")
-                            .comma().value("0")
-                        .endFunction()
-                        .as("UnitPrice")
-                    .endFunctions()
-                    .from("Products")
-                .endBuilder()
-            .endQuery();
-        
+                .cols("ProductName")
+                .rawSQL(",")
+                .beginFunction("round")
+                .field("UnitPrice")
+                .rawSQL(",").value("0")
+                .endFunction()
+                .as("UnitPrice")
+                .from("Products")
+                .end()
+                .end();
+
         //SELECT LCASE(LastName) as LastName,FirstName FROM Persons
         database.getQueryBuilder()
                 .select()
-                    .beginFunction("lcase")
-                        .field("LastName")
-                    .endFunction()
-                    .as("LastName")
-                    .comma()
-                    .field("FirstName")
-                    .endFunctions()
-                    .from("Persons")
-                .endBuilder()
-            .endQuery();
-        
+                .beginFunction("lcase")
+                .field("LastName")
+                .endFunction()
+                .as("LastName")
+                .rawSQL(",")
+                .field("FirstName")
+                .from("Persons")
+                .end()
+                .end();
+
     }
 
     public void testl18n()

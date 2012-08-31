@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.CubeEngine;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
@@ -65,6 +66,12 @@ public class UserBase implements Player
     public UserBase(Player player)
     {
         this.offlinePlayer = player;
+    }
+    
+    @BukkitDependend("Uses the OfflinePlayer")
+    public UserBase(String playername)
+    {
+        this.offlinePlayer = CubeEngine.getOfflinePlayer(playername);
     }
 
     public String getDisplayName()

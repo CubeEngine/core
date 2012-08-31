@@ -22,7 +22,7 @@ import org.bukkit.plugin.Plugin;
  * @author Anselm Brehme
  */
 
-@MapComments({
+@MapComments(
 {
     @MapComment(path = "regions", text = "more RandomTests:"),
     @MapComment(path = "list", text = "ListTests:"),
@@ -134,7 +134,7 @@ public class TestConfig extends Configuration
         }
     }
     ;
-    
+    /*
     @Option("role.role")
     @Comment("a single role")
     public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
@@ -153,6 +153,7 @@ public class TestConfig extends Configuration
         }
     }
     ;
+    */
     
     @Option("subconfig")
     public TestSubConfig subConfig = new TestSubConfig();

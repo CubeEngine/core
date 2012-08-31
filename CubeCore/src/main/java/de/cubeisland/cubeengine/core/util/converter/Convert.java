@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.util.converter;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.permission.Role;
+import java.sql.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +35,7 @@ public class Convert
         registerConverter(Double.class, converter = new DoubleConverter());
         registerConverter(double.class, converter);
         registerConverter(Role.class, new RoleConverter());
+        registerConverter(Date.class, new DateConverter());
     }
 
     public static void registerConverter(Class<?> clazz, Converter<?> converter)
@@ -71,7 +73,7 @@ public class Convert
         {
             return converter.toObject(object);
         }
-        return null;
+        return object;
     }
 
     public static <T> T fromObject(Class<T> type, Object object) throws ConversionException

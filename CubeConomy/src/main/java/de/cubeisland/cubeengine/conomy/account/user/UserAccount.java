@@ -44,7 +44,7 @@ public class UserAccount extends AccountModel
     @Override
     public Integer getKey()
     {
-        return this.user.getId();
+        return this.user.getKey();
     }
 
     @Override

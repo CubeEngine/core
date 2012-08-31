@@ -10,7 +10,10 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.logging.Logger;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -140,6 +143,29 @@ public final class CubeEngine
     public static CommandManager getCommandManager()
     {
         return core.getCommandManager();
+    }
+    
+    /**
+     * Returns the BukkitServer
+     *
+     * @return the BukkitServer
+     */
+    @BukkitDependend("Uses Bukkit's Server")
+    public static Server getServer()
+    {
+        return ((Plugin)core).getServer();
+    }
+    
+    /**
+     * Returns the OfflinePlayer
+     * 
+     * @param name the name of the player
+     * @return the OfflinePlayer
+     */
+    @BukkitDependend("Uses Bukkit's Server")
+    public static OfflinePlayer getOfflinePlayer(String name)
+    {
+        return getServer().getOfflinePlayer(name);
     }
 
     @BukkitDependend("Uses Bukkit's CommandSender")

@@ -2,26 +2,38 @@ package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.FunctionBuilder;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
+import de.cubeisland.cubeengine.core.util.Callback;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
+ * BasicStorage (1 Key only)
  *
  * @author Anselm Brehme
  */
-public abstract class BasicStorage<V> implements Storage<V>
+public class BasicStorage<V extends Model> implements Storage<V>
 {
     protected final Database database;
-    protected final Class<V> model;
+    protected final Class<V> modelClass;
+    protected Constructor<V> modelConstructor = null;
     protected final String table;
+    protected Collection<Callback> createCallbacks = new ArrayList<Callback>();
+    protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
+    protected Collection<Callback> updateCallbacks = new ArrayList<Callback>();
+    protected String key = null;
+    protected boolean keyIsAI = false;
+    protected ArrayList<String> attributes;
 
     public BasicStorage(Database database, Class<V> model)
     {
@@ -32,32 +44,41 @@ public abstract class BasicStorage<V> implements Storage<V>
         }
         this.table = entity.name();
         this.database = database;
-        this.model = model;
+        this.modelClass = model;
+        this.attributes = new ArrayList<String>();
     }
 
-    public void initialize() throws SQLException
+    public void initialize()
     {
-        Entity entity = this.model.getAnnotation(Entity.class);
+        //Constructor:
+        for (Constructor c: this.modelClass.getConstructors())
+        {
+            if (c.isAnnotationPresent(DatabaseConstructor.class))
+            {
+                this.modelConstructor = c;
+            }
+        }
+        if (this.modelConstructor == null)
+        {
+            throw new IllegalStateException("DatabaseConstructor Annotation is missing!");
+        }
+        //Fields:
+        Entity entity = this.modelClass.getAnnotation(Entity.class);
         QueryBuilder builder = this.database.getQueryBuilder();
 
-        final LinkedList<String> keys = new LinkedList<String>();
-        final LinkedList<String> attributes = new LinkedList<String>();
         Attribute attribute;
         TableBuilder tbuilder = builder.createTable(this.table, true).beginFields();
-        for (Field field : this.model.getDeclaredFields())
+        for (Field field : this.modelClass.getDeclaredFields())
         {
             attribute = field.getAnnotation(Attribute.class);
             if (attribute != null)
             {
                 String name = field.getName();
-                if (!"".equals(attribute.name()))
-                {
-                    name = attribute.name();
-                }
                 tbuilder.field(name, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
                 if (field.isAnnotationPresent(Key.class))
                 {
-                    keys.add(name);
+                    key = name;
+                    this.keyIsAI = field.getAnnotation(Attribute.class).ai();
                 }
                 else
                 {
@@ -66,20 +87,12 @@ public abstract class BasicStorage<V> implements Storage<V>
             }
         }
 
-        if (keys.isEmpty())
+        if (key == null)
         {
-            throw new IllegalArgumentException("The given model does not declare any keys!");
+            throw new IllegalArgumentException("The given model does not declare a keys!");
         }
-        else if (keys.size() > 1)
-        {
-            throw new IllegalArgumentException("The given model has declared too much keys! Use MultiKeyStorage");//TODO implement the MultiKeyStorage
-        }
-       
-        Iterator<String> keyIter = keys.iterator();
-        while (keyIter.hasNext())
-        {
-            tbuilder.primaryKey(keyIter.next());
-        }
+        tbuilder.primaryKey(key).endFields();
+
         //TODO foreign keys
         //        if (!foreignKey.isEmpty())
 //        {
@@ -91,101 +104,286 @@ public abstract class BasicStorage<V> implements Storage<V>
 //                query.append("(").append(relat.field()).append(")");
 //            }
 //        }
-        tbuilder.endFields()
-                .engine(entity.engine()).defaultcharset(entity.charset())
-                //TODO AI if no ai
-                .autoIncrement(1);
-        this.database.execute(tbuilder.end().end());
-        this.prepareStatements(keys.get(0), attributes.toArray(new String[attributes.size()]));
-    }
-
-    private void prepareStatements(String key, String[] fields)
-    {
+        tbuilder
+            .engine(entity.engine()).defaultcharset(entity.charset());
+        if (keyIsAI)
+        {
+            tbuilder.autoIncrement(1);
+        }
         try
         {
-            String[] allFields = new String[fields.length + 1];
-            allFields[0] = key;
-            System.arraycopy(fields, 0, allFields, 1, fields.length);
-            QueryBuilder builder = this.database.getQueryBuilder();
-            
-            this.database.prepareAndStoreStatement(model, "store", builder
-                .insert()
-                    .into(this.table)
-                    .cols(allFields)
-                .end()
-            .end());
-
-            this.database.prepareAndStoreStatement(model, "merge", builder
-                .merge()
-                    .into(this.table)
-                    .cols(allFields)
-                    .updateCols(fields)
-                .end()
-            .end());
-            
-            this.database.prepareAndStoreStatement(model, "get", builder
-                .select(allFields)
-                    .from(this.table)
-                .where()
-                .field(key).is(ComponentBuilder.EQUAL).value()
-                .end()
-            .end());
-            
-            this.database.prepareAndStoreStatement(model, "getall", builder
-                .select(allFields)
-                    .from(this.table)
-                .end()
-            .end());
-
-            this.database.prepareAndStoreStatement(model, "update", builder
-                .update(this.table)
-                    .cols(allFields)
-                    .where()
-                        .field(key).is(ComponentBuilder.EQUAL).value()
-                    .end()
-            .end());
-
-            this.database.prepareAndStoreStatement(model, "delete", builder
-                .delete()
-                    .from(this.table)
-                    .where()
-                        .field(key).is(ComponentBuilder.EQUAL).value()
-                    .limit(1)
-                .end()
-            .end());
-            
-            this.database.prepareAndStoreStatement(model, "clear", builder
-                .clearTable(this.table)
-            .end());
-            
-            
-            /*
-            
-            this.database.prepareAndStoreStatement(model, "get", "SELECT " + keys[0] + "," + attr
-                + " FROM " + tablename + " WHERE " + keys[0] + "=?");
-            this.database.prepareAndStoreStatement(model, "getall", "SELECT " + keys[0] + "," + attr
-                + " FROM " + tablename);
-            this.database.prepareAndStoreStatement(model, "store", "INSERT INTO " + tablename + " (" + attr + ") "
-                + "VALUES (?" + StringUtils.repeat(",?", attributes.length - 1) + ")");
-            this.database.prepareAndStoreStatement(model, "update", "UPDATE " + tablename + " SET " + StringUtils.implode("=?,", attributes)
-                + "=? WHERE " + keys[0] + "=?");
-            this.database.prepareAndStoreStatement(model, "delete", "DELETE FROM " + tablename + " WHERE " + keys[0] + "=? LIMIT 1");
-            this.database.prepareAndStoreStatement(model, "clear", "DELETE FROM " + tablename);
-            
-            StringBuilder mergevalues = new StringBuilder();
-            for (String attribute : attributes)
-            {
-                mergevalues.append(",").append(attribute).append("=values(").append(attribute).append(")");
-            }
-            this.database.prepareAndStoreStatement(model, "merge", "INSERT INTO " + tablename + " (" + keys[0] + "," + attr + ")"
-                + " VALUES (?" + StringUtils.repeat(",?", attributes.length - 1) + ")"
-                + " ON DUPLICATE KEY UPDATE " + keys[0] + "=values(" + keys[0] + ")" + mergevalues);
-                
-            */
+            this.database.execute(tbuilder.end().end());
+            this.prepareStatements(key, attributes.toArray(new String[attributes.size()]));
         }
         catch (SQLException ex)
         {
-            ex.printStackTrace();
+            throw new IllegalStateException("Error while initializing Database", ex);
+        }
+    }
+
+    protected void prepareStatements(String key, String[] fields) throws SQLException
+    {
+        String[] allFields = new String[fields.length + 1];
+        allFields[0] = key;
+        System.arraycopy(fields, 0, allFields, 1, fields.length);
+        QueryBuilder builder = this.database.getQueryBuilder();
+
+        if (this.keyIsAI)
+        {
+            builder.insert()
+                .into(this.table)
+                .cols(fields)
+                .end();
+        }
+        else
+        {
+            builder.insert()
+                .into(this.table)
+                .cols(allFields)
+                .end();
+        }
+        this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
+
+        this.database.prepareAndStoreStatement(modelClass, "merge", builder
+            .merge()
+            .into(this.table)
+            .cols(allFields)
+            .updateCols(fields)
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "get", builder
+            .select(allFields)
+            .from(this.table)
+            .where()
+            .field(key).is(ComponentBuilder.EQUAL).value()
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "getall", builder
+            .select(allFields)
+            .from(this.table)
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "update", builder
+            .update(this.table)
+            .cols(fields)
+            .where()
+            .field(key).is(ComponentBuilder.EQUAL).value()
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "delete", builder
+            .delete()
+            .from(this.table)
+            .where()
+            .field(key).is(ComponentBuilder.EQUAL).value()
+            .limit(1)
+            .end()
+            .end());
+
+        this.database.prepareAndStoreStatement(modelClass, "clear", builder
+            .clearTable(this.table)
+            .end());
+
+    }
+
+    public void subscribe(SubcribeType type, Callback callback)
+    {
+        switch (type)
+        {
+            case CREATE:
+                this.createCallbacks.add(callback);
+                break;
+            case DELETE:
+                this.deleteCallbacks.add(callback);
+                break;
+            case UPDATE:
+                this.updateCallbacks.add(callback);
+                break;
+        }
+    }
+
+    public V get(Object key)
+    {
+        V loadedModel = null;
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "get", key);
+            ArrayList<Object> values = new ArrayList<Object>();
+            if (resulsSet.next())
+            {
+                values.add(resulsSet.getObject(this.key));
+                for (String name : this.attributes)
+                {
+                    values.add(resulsSet.getObject(name));
+                }
+            }
+            loadedModel = this.modelConstructor.newInstance(values);
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while getting Model from Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+        return loadedModel;
+    }
+
+    public Collection<V> getAll()
+    {
+        Collection<V> loadedModels = new ArrayList<V>();
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getall");
+
+            while (resulsSet.next())
+            {
+                ArrayList<Object> values = new ArrayList<Object>();
+                values.add(resulsSet.getObject(this.key));
+                for (String name : this.attributes)
+                {
+                    values.add(resulsSet.getObject(name));
+                }
+                V loadedModel = this.modelConstructor.newInstance(values);
+                loadedModels.add(loadedModel);
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while getting Model from Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+        return loadedModels;
+    }
+
+    public void store(V model)
+    {
+        try
+        {
+            ArrayList<Object> values = new ArrayList<Object>();
+            if (!keyIsAI)
+            {
+                values.add(Convert.toObject(modelClass.getDeclaredField(key).get(model)));
+            }
+            for (String name : this.attributes)
+            {
+                values.add(Convert.toObject(modelClass.getDeclaredField(name).get(model)));
+            }
+            if (keyIsAI)
+            {
+                model.setKey(this.database.getLastInsertedId(modelClass, "store", values.toArray()));
+            }
+            else
+            {
+                this.database.preparedExecute(modelClass, "store", values.toArray());
+            }
+            for (Callback cb : createCallbacks)
+            {
+                cb.call(model.getKey());
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while storing Model into Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while reading Model to store", ex);
+        }
+    }
+
+    public void update(V model)
+    {
+        try
+        {
+            ArrayList<Object> values = new ArrayList<Object>();
+            for (String name : this.attributes)
+            {
+                values.add(Convert.toObject(modelClass.getDeclaredField(name).get(model)));
+            }
+            values.add(Convert.toObject(modelClass.getDeclaredField(key).get(model)));
+            this.database.preparedExecute(modelClass, "update", values.toArray());
+
+            for (Callback cb : updateCallbacks)
+            {
+                cb.call(model.getKey());
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while updating Model in Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while reading Model to update", ex);
+        }
+    }
+
+    public void merge(V model)
+    {
+        try
+        {
+            ArrayList<Object> values = new ArrayList<Object>();
+            values.add(Convert.toObject(modelClass.getDeclaredField(key).get(model)));
+            for (String name : this.attributes)
+            {
+                values.add(Convert.toObject(modelClass.getDeclaredField(name).get(model)));
+            }
+            this.database.preparedExecute(modelClass, "merge", values.toArray());
+
+            for (Callback cb : updateCallbacks)
+            {
+                cb.call(model.getKey());
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while updating Model in Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while reading Model to update", ex);
+        }
+    }
+
+    public void delete(V model)
+    {
+        this.deleteByKey(model.getKey());
+    }
+
+    public void deleteByKey(Object key)
+    {
+        try
+        {
+            this.database.preparedExecute(modelClass, "delete", key);
+
+            for (Callback cb : createCallbacks)
+            {
+                cb.call(key);
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while deleting from Database", ex);
+        }
+    }
+
+    public void clear()
+    {
+        try
+        {
+            this.database.preparedExecute(modelClass, "clear");
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while clearing Database", ex);
         }
     }
 }

@@ -18,7 +18,7 @@ public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> imp
     {
         Validate.notNull(table, "The table name must not be null!");
 
-        this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareFieldName(table)).append(' ');
+        this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareName(table)).append(' ');
         return this;
     }
 
