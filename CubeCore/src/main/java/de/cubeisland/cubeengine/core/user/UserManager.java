@@ -170,7 +170,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
      *
      * @return a online User
      */
-    public User findOnlineUser(String name)
+    public User findOnlineUser(String name)//TODO Do we want to return a similar User if exact User does exist but is not online?
     {
         User user = this.findUser(name);
         if (user != null)
