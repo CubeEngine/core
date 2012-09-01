@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,15 +26,25 @@ public class TestListener implements Listener
     @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
     {
-        User user = CubeEngine.getUserManager().getUser(event.getPlayer());
+        UserManager uM = CubeEngine.getUserManager();
+        User user = uM.getUser(event.getPlayer());
         user.sendMessage("INTERACT!");
+        User founduser = uM.findUser(user.getName());
+        founduser.sendMessage("I found You!");
+        founduser = uM.findUser(user.getName().substring(1));
+        founduser.sendMessage("I still found You!1");
+        founduser = uM.findUser(user.getName().substring(2));
+        founduser.sendMessage("I still found You!2");
+        founduser = uM.findUser(user.getName().substring(4));
+        if (founduser == null)
+        {
+            user.sendMessage("Could not find you!4");
+        }
     }
     
     @EventHandler
-    public void playerInteract(final PlayerJoinEvent event)
+    public void playerJoin(final PlayerJoinEvent event)
     {
-        User user = CubeEngine.getUserManager().getUser(event.getPlayer());
-        user.sendMessage("JOIN!");
         test.getLogger().log(Level.INFO, "{0} joined!", event.getPlayer().getName());
     }
 }

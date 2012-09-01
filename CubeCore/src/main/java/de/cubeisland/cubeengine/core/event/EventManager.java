@@ -1,10 +1,12 @@
 package de.cubeisland.cubeengine.core.event;
 
 import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -23,7 +25,8 @@ public class EventManager
 
     public EventManager registerListener(Listener listener, Module module)
     {
-        this.pm.registerEvents(listener, module.getPluginWrapper());
+        //this.pm.registerEvents(listener, module.getPluginWrapper());
+        this.pm.registerEvents(listener, (Plugin)module.getCore());
 
         return this;
     }

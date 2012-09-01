@@ -28,35 +28,37 @@ public class UserManager extends BasicStorage<User> implements Cleanable
     private final Core core;
     private final ConcurrentHashMap<String, User> users;//TODO clean this up from time to time; need Concurrent Map
     private final Server server;
-
+    
     public UserManager(Core core, Server server)
     {
         super(core.getDB(), User.class);
         this.core = core;
         this.initialize();
-
+        
         this.server = server;
         this.users = new ConcurrentHashMap<String, User>();
         
         final UserManager uM = this;
-        Thread thread = new Thread(new Runnable()
+        Thread thread;
+        thread = new Thread(new Runnable()
         {
             public void run()
             {
                 Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-
+                timer.schedule(new TimerTask()
+                {
                     @Override
                     public void run()
                     {
                         uM.cleanUp();
+                        CubeEngine.getLogger().info("[UserManager] Cleaning Up!");
                     }
-                }, 0, 10*1000);//All 10 sec //TODO later 10 min
+                }, 0, 10 * 60 * 1000);//All 10 min //TODO configurable
             }
         });
         thread.start();
     }
-
+    
     @Override
     protected void prepareStatements(String key, String[] fields) throws SQLException
     {
@@ -72,7 +74,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
             .end()
             .end());
     }
-
+    
     public UserManager addUser(User user)
     {
         this.store(user);
@@ -81,15 +83,15 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         server.getPluginManager().callEvent(event);
         return this;
     }
-
+    
     public UserManager removeUser(User user)
     {
         this.delete(user);
         this.users.remove(user.getName());
-
+        
         return this;
     }
-
+    
     public User get(String playername)
     {
         User loadedModel = null;
@@ -117,7 +119,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         }
         return loadedModel;
     }
-
+    
     public User getUser(String name)
     {
         User user = this.users.get(name);
@@ -132,22 +134,22 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         }
         return user;
     }
-
+    
     public User getUser(OfflinePlayer player)
     {
         return this.getUser(player.getName());
     }
-
+    
     public User getUser(Player player)
     {
         return this.getUser(player.getName());
     }
-
+    
     public User getUser(CommandSender sender)
     {
         return this.getUser(sender.getName());
     }
-
+    
     public User getUser(int key)
     {
         User user = this.get(key);
@@ -159,7 +161,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         }
         return savedUser;
     }
-
+    
     public void clean()
     {
         this.users.clear();
@@ -206,19 +208,32 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         {
             //Get all online Player and searching for similar names
             Player[] players = CubeEngine.getServer().getOnlinePlayers();
+            int dist = 5;
+            int ld;
             for (Player player : players)
             {
-                if (StringUtils.wordDistance(name, player.getName()) <= 2)//Max Worddistance 2
+                if (dist == 1)//if closest found stop searching
                 {
-                    user = this.get(player.getName());//Gets User from DB
-                    this.users.put(user.getName(), user);//Adds User to loaded users
-                    return user;//First found is returned
+                    break;
                 }
+                ld = StringUtils.getLevenshteinDistance(name, player.getName());
+                if (ld <= 3)//Max Worddistance 3
+                {
+                    if (ld < dist)//Get best match
+                    {
+                        dist = ld;
+                        user = this.getUser(player.getName());
+                    }
+                }
+            }
+            if (user != null)
+            {
+                this.users.put(user.getName(), user);//Adds User to loaded users
             }
         }
         return user;
     }
-
+    
     public void cleanUp()//removes all users that are not online
     {
         for (User user : users.values())
