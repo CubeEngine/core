@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.util.worker.Cleanable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,16 +29,16 @@ public class UserManager extends BasicStorage<User> implements Cleanable
     private final Core core;
     private final ConcurrentHashMap<String, User> users;//TODO clean this up from time to time; need Concurrent Map
     private final Server server;
-    
+
     public UserManager(Core core, Server server)
     {
         super(core.getDB(), User.class);
         this.core = core;
         this.initialize();
-        
+
         this.server = server;
         this.users = new ConcurrentHashMap<String, User>();
-        
+
         final UserManager uM = this;
         Thread thread;
         thread = new Thread(new Runnable()
@@ -58,7 +59,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         });
         thread.start();
     }
-    
+
     @Override
     protected void prepareStatements(String key, String[] fields) throws SQLException
     {
@@ -74,7 +75,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
             .end()
             .end());
     }
-    
+
     public UserManager addUser(User user)
     {
         this.store(user);
@@ -83,15 +84,15 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         server.getPluginManager().callEvent(event);
         return this;
     }
-    
+
     public UserManager removeUser(User user)
     {
         this.delete(user);
         this.users.remove(user.getName());
-        
+
         return this;
     }
-    
+
     public User get(String playername)
     {
         User loadedModel = null;
@@ -119,7 +120,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         }
         return loadedModel;
     }
-    
+
     public User getUser(String name)
     {
         User user = this.users.get(name);
@@ -134,22 +135,22 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         }
         return user;
     }
-    
+
     public User getUser(OfflinePlayer player)
     {
         return this.getUser(player.getName());
     }
-    
+
     public User getUser(Player player)
     {
         return this.getUser(player.getName());
     }
-    
+
     public User getUser(CommandSender sender)
     {
         return this.getUser(sender.getName());
     }
-    
+
     public User getUser(int key)
     {
         User user = this.get(key);
@@ -161,7 +162,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         }
         return savedUser;
     }
-    
+
     public void clean()
     {
         this.users.clear();
@@ -194,6 +195,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
     public User findUser(String name)//TODO tests for this
     {
         //Looking up loaded users
+        System.out.println("Looking up: " + name);
         User user = this.users.get(name);
         if (user == null)
         {
@@ -203,37 +205,100 @@ public class UserManager extends BasicStorage<User> implements Cleanable
             {
                 this.users.put(name, user);
             }
-        }
-        if (user == null) //then NO user with exact name
-        {
-            //Get all online Player and searching for similar names
-            Player[] players = CubeEngine.getServer().getOnlinePlayers();
-            int dist = 5;
-            int ld;
-            for (Player player : players)
+
+            if (user == null) //then NO user with exact name
             {
-                if (dist == 1)//if closest found stop searching
+                System.out.println("Not found directly! Search for typos (max 2)");
+                //Get all online Player and searching for similar names
+                Player[] players = CubeEngine.getServer().getOnlinePlayers();
+                int distance = 5;
+                int ld;
+                for (Player player : players)
                 {
-                    break;
-                }
-                ld = StringUtils.getLevenshteinDistance(name, player.getName());
-                if (ld <= 3)//Max Worddistance 3
-                {
-                    if (ld < dist)//Get best match
+                    String playername = player.getName();
+                    if (distance == 1)//if closest found stop searching
                     {
-                        dist = ld;
-                        user = this.getUser(player.getName());
+                        break;
+                    }
+                    if ((name.length() < (playername.length() - 3)) || (name.length() > (playername.length() + 3)))
+                    {
+                        continue;//length differ by more than 3
+                    }
+                    ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), playername.toLowerCase(Locale.ENGLISH));
+                    System.out.println(name + " : " + playername + " with LD: " + ld);
+                    if (ld <= 2)//Max Worddistance 2
+                    {
+
+                        if (ld < distance)//Get best match
+                        {
+                            distance = ld;
+                            user = this.getUser(playername);
+                        }
+                    }
+                }
+                if (user == null)
+                {
+                    System.out.println("Not found with typo! Search for SubString");
+                    //Search if name is part of playername
+                    int index = 16;
+                    for (Player player : players)
+                    {
+                        if (index == 0) //Found a player that begins with name
+                        {
+                            break;
+                        }
+                        //ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), player.getName().toLowerCase(Locale.ENGLISH));
+                        int ind = player.getName().toLowerCase(Locale.ENGLISH).indexOf(name.toLowerCase(Locale.ENGLISH));
+                        if (ind != -1)
+                        {
+                            System.out.println(name + " is in " + player.getName() + " at Index: " + ind);
+                            //name is in playername -> adjust ld
+                            if (ind < index) //Lower Index is better match
+                            {
+                                index = ind;
+                                user = this.getUser(player);
+                            }
+                        }
+                    }
+                    if ((user == null)&&(name.length()>3))//Search for typo in first part of name (only if name has 4 chars or more)
+                    {
+                        distance = 3;
+                        for (Player player : players)
+                        {
+                            if (distance == 1)
+                            {
+                                break;
+                            }
+                            if (player.getName().length() >= name.length())
+                            {
+                                String partName = player.getName().substring(0, name.length());
+                                ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), partName.toLowerCase(Locale.ENGLISH));
+                                if (ld <= 2)
+                                {
+                                    System.out.println(name + " at start of " + player.getName() + " with LD: " + ld);
+                                    if (ld < distance)//Get best match
+                                    {
+                                        distance = ld;
+                                        user = this.getUser(player.getName());
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-            if (user != null)
-            {
-                this.users.put(user.getName(), user);//Adds User to loaded users
-            }
+        }
+        if (user == null)
+        {
+            System.out.println("Not found " + name);
+        }
+        else
+        {
+            this.users.put(user.getName(), user);//Adds User to loaded users
         }
         return user;
     }
-    
+
     public void cleanUp()//removes all users that are not online
     {
         for (User user : users.values())
