@@ -83,11 +83,13 @@ public class UserManager extends BasicStorage<User> implements Cleanable
 
     public UserManager addUser(final User user)
     {
-        User inDB = this.get(user.getName());
-        if (inDB != null)
-        {//User is already in DB so do nothing
+        User inUse = this.users.get(user.getName());
+        if (inUse != null)
+        {
+            //User was already added
             return this;
         }
+        this.users.put(user.getName(), user);
         this.executor.submit(new Runnable()
         {
             public void run()
@@ -95,7 +97,6 @@ public class UserManager extends BasicStorage<User> implements Cleanable
                 instance.store(user);
             }
         });
-        this.users.put(user.getName(), user);
         UserCreatedEvent event = new UserCreatedEvent(this.core, user);
         server.getPluginManager().callEvent(event);
         return this;
