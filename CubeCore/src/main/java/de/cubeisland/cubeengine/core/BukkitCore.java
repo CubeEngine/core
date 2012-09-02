@@ -83,6 +83,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.moduleManager = new ModuleManager(this);
         this.commandManager = new CommandManager(this);
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
+        this.executor = Executors.newFixedThreadPool(config.executorThreads);
         this.i18n = new I18n(this, this.config.defaultLanguage);
         try
         {
@@ -112,7 +113,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.fileManager.dropResources(CoreResource.values());
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
 
-        this.executor = Executors.newFixedThreadPool(config.executorThreads);
+        
     }
 
     @Override

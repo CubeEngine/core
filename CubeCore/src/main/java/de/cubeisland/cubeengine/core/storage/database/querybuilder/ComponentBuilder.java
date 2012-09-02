@@ -30,7 +30,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     public This or();
     
     public This as(String field);
-    public This groupBy(String field);
+    public This groupBy(String... field);
     public This having();
     
     public This beginSub();

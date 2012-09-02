@@ -1,10 +1,8 @@
 package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

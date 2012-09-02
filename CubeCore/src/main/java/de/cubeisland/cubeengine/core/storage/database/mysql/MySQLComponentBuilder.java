@@ -169,9 +169,20 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
-    public This groupBy(String field)
+    public This groupBy(String... field)
     {
-        this.query.append(" GROUP BY(").append(this.database.prepareFieldName(field)).append(")");
+        if (field.length == 1)
+        {
+            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(field[0]));
+        }
+        else
+        {
+            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(field[0]));
+            for (int i = 1; i < field.length; ++i)
+            {
+                this.query.append(",").append(this.database.prepareFieldName(field[i]));
+            }
+        }
         return (This)this;
     }
 
