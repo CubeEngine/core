@@ -15,4 +15,6 @@ public interface QueryBuilder
     public QueryBuilder clearTable(String table);
     public QueryBuilder dropTable(String... tables);
     public String end();
+    //TODO transactions
+    //TODO lock tables
 }
