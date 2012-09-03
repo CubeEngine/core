@@ -20,10 +20,12 @@ import java.util.logging.Logger;
 public class CubeTest extends Module
 {
     public TestManager manager;
-    
+    public UserManager uM;
+
     @Override
     public void onEnable()
     {
+        this.uM = this.getUserManager();
         Logger logger = this.getLogger();
         try
         {
@@ -74,7 +76,6 @@ public class CubeTest extends Module
 
     public void testUserManager()
     {
-        UserManager uM = this.getUserManager();
         //Testing insert
         User user = uM.getUser("FakeUser");
         //Testing delete
@@ -90,14 +91,14 @@ public class CubeTest extends Module
         //Testing getall
         uM.getAll();
     }
-    
+
     private Date getDate(int year, int month, int day)
     {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
         return new Date(calendar.getTimeInMillis());
     }
-    
+
     public void testDatabase() throws SQLException
     {
         Database database = this.getDatabase();
@@ -109,7 +110,7 @@ public class CubeTest extends Module
         }
         catch (Exception e)
         {
-        } 
+        }
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
         this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
         this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));

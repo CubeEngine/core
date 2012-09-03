@@ -51,7 +51,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     public void initialize()
     {
         //Constructor:
-        for (Constructor c: this.modelClass.getConstructors())
+        for (Constructor c : this.modelClass.getConstructors())
         {
             if (c.isAnnotationPresent(DatabaseConstructor.class))
             {

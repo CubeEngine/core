@@ -135,7 +135,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         if (this.query == null)
         {
-            return ""; // TODO silently fail or throw IllegalStateException?
+            throw  new IllegalStateException("Query was null!");
         }
         String res = this.query.toString();
         this.query = null;

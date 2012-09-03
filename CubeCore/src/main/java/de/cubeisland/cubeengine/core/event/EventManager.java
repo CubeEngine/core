@@ -27,35 +27,30 @@ public class EventManager
     {
         //TODO this.pm.registerEvents(listener, module.getPluginWrapper());
         this.pm.registerEvents(listener, (Plugin)module.getCore());
-
         return this;
     }
-    
+
     public EventManager registerCoreListener(Listener listener)
     {
         this.pm.registerEvents(listener, (Plugin)CubeEngine.getCore());
-
         return this;
     }
 
     public EventManager unregisterListener(Listener listener)
     {
         HandlerList.unregisterAll(listener);
-
         return this;
     }
 
     public EventManager unregisterListener(Module module)
     {
         HandlerList.unregisterAll(module.getPluginWrapper());
-
         return this;
     }
 
     public EventManager unregisterListener()
     {
         HandlerList.unregisterAll();
-
         return this;
     }
 

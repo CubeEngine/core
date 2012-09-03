@@ -25,7 +25,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  *
@@ -49,7 +48,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         this.server = server;
         this.users = new ConcurrentHashMap<String, User>();
 
-        final UserManager uM = this;
+        this.instance = this;
         Thread thread;
         thread = new Thread(new Runnable()
         {
@@ -61,20 +60,20 @@ public class UserManager extends BasicStorage<User> implements Cleanable
                     @Override
                     public void run()
                     {
-                        uM.cleanUp();
+                        instance.cleanUp();
                         CubeEngine.getLogger().info("[UserManager] Cleaning Up!");
                     }
                 }, 0, core.getConfiguration().userManagerCleanup * 60 * 1000);
             }
         });
-        this.instance = this;
+
         CubeEngine.getEventManager().registerCoreListener(new Listener()
         {
             @EventHandler(priority = EventPriority.MONITOR)
-            public void onDisconnect(final PlayerQuitEvent event)
+            public void onQuit(final PlayerQuitEvent event)
             {
-                BukkitScheduler scheduler = CubeEngine.getServer().getScheduler();
-                scheduler.scheduleSyncDelayedTask((Plugin)core, new Runnable()
+                CubeEngine.getServer().getScheduler().
+                    scheduleSyncDelayedTask((Plugin)core, new Runnable()
                 {
                     public void run()
                     {

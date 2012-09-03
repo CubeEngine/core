@@ -87,8 +87,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.i18n = new I18n(this, this.config.defaultLanguage);
         try
         {
-            DatabaseConfiguration databaseConfig = Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml"));
-            this.database = new MySQLDatabase(databaseConfig); // add database factory
+            this.database = new MySQLDatabase(Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml")));
         }
         catch (SQLException e)
         {
