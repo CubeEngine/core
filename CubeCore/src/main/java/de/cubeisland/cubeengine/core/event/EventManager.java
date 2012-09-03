@@ -25,8 +25,15 @@ public class EventManager
 
     public EventManager registerListener(Listener listener, Module module)
     {
-        //this.pm.registerEvents(listener, module.getPluginWrapper());
+        //TODO this.pm.registerEvents(listener, module.getPluginWrapper());
         this.pm.registerEvents(listener, (Plugin)module.getCore());
+
+        return this;
+    }
+    
+    public EventManager registerCoreListener(Listener listener)
+    {
+        this.pm.registerEvents(listener, (Plugin)CubeEngine.getCore());
 
         return this;
     }

@@ -20,6 +20,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  *
@@ -61,8 +67,23 @@ public class UserManager extends BasicStorage<User> implements Cleanable
                 }, 0, core.getConfiguration().userManagerCleanup * 60 * 1000);
             }
         });
-        thread.start();
         this.instance = this;
+        CubeEngine.getEventManager().registerCoreListener(new Listener()
+        {
+            @EventHandler(priority = EventPriority.MONITOR)
+            public void onDisconnect(final PlayerQuitEvent event)
+            {
+                BukkitScheduler scheduler = CubeEngine.getServer().getScheduler();
+                scheduler.scheduleSyncDelayedTask((Plugin)core, new Runnable()
+                {
+                    public void run()
+                    {
+                        instance.users.remove(event.getPlayer().getName());
+                    }
+                }, 1);
+            }
+        });
+        thread.start();
     }
 
     @Override
