@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.BukkitDependend;
 import de.cubeisland.cubeengine.CubeEngine;
 import static de.cubeisland.cubeengine.CubeEngine._;
+import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
@@ -12,8 +13,7 @@ import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.WeakHashMap;
 import org.bukkit.OfflinePlayer;
 
 /**
@@ -21,7 +21,7 @@ import org.bukkit.OfflinePlayer;
  * @author Phillip Schichtel
  */
 @Entity(name = "user")
-public class User extends UserBase implements Model<Integer>
+public class User extends UserBase implements LinkingModel<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
@@ -31,6 +31,8 @@ public class User extends UserBase implements Model<Integer>
     @Attribute(type = AttrType.VARCHAR, length = 5)
     public String language;
     public static final int BLOCK_FLY = 1;
+    
+    protected WeakHashMap<Class<? extends Model>,Model> attachments;
 
     @DatabaseConstructor
     public User(List<Object> args)
@@ -107,5 +109,15 @@ public class User extends UserBase implements Model<Integer>
         String category = className.substring(25, className.indexOf('.', 26));
         String translated = _(this, category, string, params);
         this.sendMessage(translated);
+    }
+
+    public <T extends Model> void attach(T model)
+    {
+        this.attachments.put(model.getClass(), model);
+    }
+
+    public <T extends Model> T getAttachment(Class<T> modelClass)
+    {
+        return (T)this.attachments.get(modelClass);
     }
 }
