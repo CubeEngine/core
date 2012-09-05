@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.ConditionalBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
@@ -111,6 +112,7 @@ public class CubeTest extends Module
         catch (Exception e)
         {
         }
+        
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
         this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
         this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
@@ -198,6 +200,48 @@ public class CubeTest extends Module
                 .from("Persons")
                 .end()
                 .end();
+        
+        //testing locking tables
+        System.out.println(
+        database.getQueryBuilder()
+                .lock()
+                    .table("orders").as("LOrders")
+                        .read()
+                    .table("test").as("LTest")
+                        .write()
+                .end()
+            .nextQuery()
+                .select("orders")
+                    .cols("OrderPrice")
+                    .from("orders").as("LOrders")
+                        .where()
+                        .field("OrderPrice")
+                        .is(ConditionalBuilder.EQUAL)
+                        .value(100)
+                .end()
+            .nextQuery()
+                .unlockTables()
+            .end()
+                );
+        
+        //testing transactions
+        System.out.println(
+        database.getQueryBuilder()
+                .startTransaction()
+            .nextQuery()
+                .select("orders")
+                    .cols("OrderPrice")
+                    .from("orders")
+                        .where()
+                        .field("OrderPrice")
+                        .is(ConditionalBuilder.EQUAL)
+                        .value(100)
+                .end()
+            .nextQuery()
+                .commit()
+            .end()
+                );
+        
 
     }
 
