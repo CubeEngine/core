@@ -45,6 +45,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         {
             this.query = new StringBuilder();
         }
+        this.nextQuery = false;
     }
 
     public QueryBuilder clear()
@@ -129,7 +130,6 @@ public class MySQLQueryBuilder implements QueryBuilder
 
         this.init();
         this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table));
-
         return this;
     }
 
@@ -143,7 +143,6 @@ public class MySQLQueryBuilder implements QueryBuilder
         {
             this.query.append(',').append(this.database.prepareName(tables[i]));
         }
-
         return this;
     }
 
@@ -161,6 +160,13 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    public QueryBuilder rollback()
+    {
+        this.init();
+        this.query.append("ROLLBACK");
+        return this;
+    }
+
     public QueryBuilder unlockTables()
     {
         this.init();
@@ -168,9 +174,13 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Deprecated
+    /**
+     * Database wont understand multiple queries
+     */
     public QueryBuilder nextQuery()
     {
-        this.query.append("; ");
+        this.query.append(";\n");
         this.nextQuery = true;
         return this;
     }

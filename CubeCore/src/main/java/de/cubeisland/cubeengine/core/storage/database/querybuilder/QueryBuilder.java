@@ -17,6 +17,7 @@ public interface QueryBuilder
     public LockBuilder lock();
     public QueryBuilder startTransaction();
     public QueryBuilder commit();
+    public QueryBuilder rollback();
     public QueryBuilder unlockTables();
     public QueryBuilder nextQuery();
     
