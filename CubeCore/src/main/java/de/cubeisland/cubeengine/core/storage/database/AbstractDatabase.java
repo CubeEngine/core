@@ -1,13 +1,11 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.CubeEngine;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 
 /**
  *
@@ -17,6 +15,7 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
+    private boolean inTransaction;
 
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
     {
@@ -97,5 +96,23 @@ public abstract class AbstractDatabase implements Database
             throw new IllegalArgumentException("Statement not found!");
         }
         return statement;
+    }
+
+    public void startTransaction() throws SQLException
+    {
+        this.inTransaction = true;
+        this.prepareStatement(this.getQueryBuilder().startTransaction().end()).execute();
+    }
+
+    public void commmit() throws SQLException
+    {
+        this.inTransaction = false;
+        this.prepareStatement(this.getQueryBuilder().commit().end()).execute();
+    }
+
+    public void rollback() throws SQLException
+    {
+        this.inTransaction = false;
+        this.prepareStatement(this.getQueryBuilder().rollback().end()).execute();
     }
 }

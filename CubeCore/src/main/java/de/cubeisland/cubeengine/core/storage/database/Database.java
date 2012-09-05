@@ -29,4 +29,7 @@ public interface Database
     public void storePreparedStatement(Class owner, String name, PreparedStatement statement);
     public int update(String query, Object... params) throws SQLException;
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException;
+    public void startTransaction() throws SQLException;
+    public void commmit() throws SQLException;
+    public void rollback() throws SQLException;
 }
