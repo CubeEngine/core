@@ -15,7 +15,6 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    private boolean inTransaction;
 
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
     {
@@ -100,19 +99,16 @@ public abstract class AbstractDatabase implements Database
 
     public void startTransaction() throws SQLException
     {
-        this.inTransaction = true;
         this.prepareStatement(this.getQueryBuilder().startTransaction().end()).execute();
     }
 
     public void commmit() throws SQLException
     {
-        this.inTransaction = false;
         this.prepareStatement(this.getQueryBuilder().commit().end()).execute();
     }
 
     public void rollback() throws SQLException
     {
-        this.inTransaction = false;
         this.prepareStatement(this.getQueryBuilder().rollback().end()).execute();
     }
 }
