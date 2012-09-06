@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
+import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +18,12 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
+    protected Configuration config;
+
+    public AbstractDatabase(Class<? extends Configuration> configClass)
+    {
+        this.config = Configuration.load(configClass, new File(CubeEngine.getFileManager().getConfigDir(), "database.yml"));
+    }
 
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
     {

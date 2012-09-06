@@ -19,30 +19,18 @@ public class MySQLDatabase extends AbstractDatabase
 {
     private static final char NAME_QUOTE = '`';
     private static final char STRING_QUOTE = '\'';
-    
     private final String host;
     private final short port;
     private final String user;
     private final String pass;
-    private final String name;
+    private final String database;
     private final String tablePrefix;
     private final MySQLQueryBuilder queryBuilder;
     private final Thread creationThread = Thread.currentThread();
-    
-    private static MySQLDatabaseConfiguration config;
 
-    static
-    {
-         config = Configuration.load(MySQLDatabaseConfiguration.class, new File(CubeEngine.getFileManager().getConfigDir(), "database.yml"));
-    }
-    
     public MySQLDatabase() throws SQLException, DriverNotFoundException
     {
-        this(config.host, config.port, config.user, config.pass, config.database, config.tableprefix);
-    }
-
-    public MySQLDatabase(String host, short port, String user, String pass, String name, String tablePrefix) throws SQLException, DriverNotFoundException
-    {
+        super(MySQLDatabaseConfiguration.class);
         try
         {
             Class.forName("com.mysql.jdbc.Driver");
@@ -51,16 +39,17 @@ public class MySQLDatabase extends AbstractDatabase
         {
             throw new DriverNotFoundException("Couldn't find the MySQL driver!");
         }
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.pass = pass;
-        this.name = name;
-        this.tablePrefix = tablePrefix;
-        this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.name, this.user, this.pass);
+        MySQLDatabaseConfiguration configuration = (MySQLDatabaseConfiguration)this.config;
+        this.host = configuration.host;
+        this.port = configuration.port;
+        this.user = configuration.user;
+        this.pass = configuration.pass;
+        this.database = configuration.database;
+        this.tablePrefix = configuration.tablePrefix;
+        this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.database, this.user, this.pass);
         this.queryBuilder = new MySQLQueryBuilder(this);
     }
-    
+
     public String getName()
     {
         return "MySQL";
@@ -74,19 +63,19 @@ public class MySQLDatabase extends AbstractDatabase
         }
         return this.queryBuilder;
     }
-    
+
     @Override
     public String prepareName(String name)
     {
         Validate.notNull(name, "The name must not be null!");
-        
+
         return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
     }
-    
+
     public String prepareFieldName(String name)
     {
         Validate.notNull(name, "The name must not be null!");
-        
+
         int dotOffset = name.indexOf('.');
         if (dotOffset >= 0)
         {

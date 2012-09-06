@@ -29,5 +29,5 @@ public class MySQLDatabaseConfiguration extends Configuration
     public String database = "minecraft";
     @Option("tableprefix")
     @Comment("The tableprefix to use for all CubeEngine tables")
-    public String tableprefix = "cube_";
+    public String tablePrefix = "cube_";
 }
