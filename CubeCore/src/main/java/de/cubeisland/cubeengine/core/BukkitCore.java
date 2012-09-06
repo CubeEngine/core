@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.storage.database.DriverNotFoundException;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -85,34 +86,23 @@ public class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
         this.executor = Executors.newFixedThreadPool(config.executorThreads);
         this.i18n = new I18n(this, this.config.defaultLanguage);
-        try
+
+        this.database = DatabaseFactory.loadDatabase(this.config.database);
+        if (this.database == null)
         {
-            this.database = new MySQLDatabase(Configuration.load(DatabaseConfiguration.class, new File(fileManager.getConfigDir(), "database.yml")));
+            this.server.getPluginManager().disablePlugin(this);
+            return;
         }
-        catch (SQLException e)
-        {
-            this.logger.log(Level.SEVERE, "Couldn't establish the database connection: " + e.getLocalizedMessage(), e);
-        }
-        catch (DriverNotFoundException e)
-        {
-            this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
-        }
-        finally
-        {
-            if (this.database == null)
-            {
-                this.server.getPluginManager().disablePlugin(this);
-                return;
-            }
-        }
-        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
+        this.logger.addHandler(
+            new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         this.userManager = new UserManager(this, this.server);//Needs Database
 
         this.registerPermissions(Perm.values());
         this.fileManager.dropResources(CoreResource.values());
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());
+        this.moduleManager.loadModules(
+            this.fileManager.getModulesDir());
 
-        
+
     }
 
     @Override

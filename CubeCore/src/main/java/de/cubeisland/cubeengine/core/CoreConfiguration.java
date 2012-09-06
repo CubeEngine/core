@@ -31,4 +31,8 @@ public class CoreConfiguration extends Configuration
     @Option("usermanager.cleanup")
     @Comment("How often the UserManager should unload offline Players")
     public Integer userManagerCleanup = 10;
+    
+    @Option("database")
+    @Comment("Currently available: mySQL")
+    public String database = "mySQL";
 }
