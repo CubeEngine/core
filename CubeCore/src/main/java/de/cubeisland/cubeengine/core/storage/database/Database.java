@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  *
