@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.test;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
@@ -20,10 +20,12 @@ import java.util.logging.Logger;
 public class CubeTest extends Module
 {
     public TestManager manager;
-    
+    public UserManager uM;
+
     @Override
     public void onEnable()
     {
+        this.uM = this.getUserManager();
         Logger logger = this.getLogger();
         try
         {
@@ -74,7 +76,6 @@ public class CubeTest extends Module
 
     public void testUserManager()
     {
-        UserManager uM = this.getUserManager();
         //Testing insert
         User user = uM.getUser("FakeUser");
         //Testing delete
@@ -90,14 +91,14 @@ public class CubeTest extends Module
         //Testing getall
         uM.getAll();
     }
-    
+
     private Date getDate(int year, int month, int day)
     {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
         return new Date(calendar.getTimeInMillis());
     }
-    
+
     public void testDatabase() throws SQLException
     {
         Database database = this.getDatabase();
@@ -109,7 +110,8 @@ public class CubeTest extends Module
         }
         catch (Exception e)
         {
-        } 
+        }
+
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
         this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
         this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
@@ -149,7 +151,7 @@ public class CubeTest extends Module
                 .beginFunction("sum")
                 .field("OrderPrice")
                 .endFunction()
-                .is(ComponentBuilder.GREATER)
+                .is(GREATER)
                 .value(100)
                 .end()
                 .end());
@@ -165,7 +167,7 @@ public class CubeTest extends Module
                 .from("table")
                 .beginFunction("where")
                 .field("dob_year")
-                .is(ComponentBuilder.GREATER)
+                .is(GREATER)
                 .value("1920")
                 .endFunction()
                 .end()
@@ -197,7 +199,6 @@ public class CubeTest extends Module
                 .from("Persons")
                 .end()
                 .end();
-
     }
 
     public void testl18n()

@@ -1,14 +1,14 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 
 /**
  *
@@ -18,6 +18,12 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
+    protected Configuration config;
+
+    public AbstractDatabase(Class<? extends Configuration> configClass)
+    {
+        this.config = Configuration.load(configClass, new File(CubeEngine.getFileManager().getConfigDir(), "database.yml"));
+    }
 
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
     {
@@ -87,7 +93,6 @@ public abstract class AbstractDatabase implements Database
 
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        CubeEngine.getLogger().log(Level.INFO, "[SQL] " + statement);
         return this.connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
@@ -99,5 +104,20 @@ public abstract class AbstractDatabase implements Database
             throw new IllegalArgumentException("Statement not found!");
         }
         return statement;
+    }
+
+    public void startTransaction() throws SQLException
+    {
+        this.prepareStatement(this.getQueryBuilder().startTransaction().end()).execute();
+    }
+
+    public void commmit() throws SQLException
+    {
+        this.prepareStatement(this.getQueryBuilder().commit().end()).execute();
+    }
+
+    public void rollback() throws SQLException
+    {
+        this.prepareStatement(this.getQueryBuilder().rollback().end()).execute();
     }
 }

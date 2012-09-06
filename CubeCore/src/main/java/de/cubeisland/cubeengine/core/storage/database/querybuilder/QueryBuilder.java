@@ -14,5 +14,12 @@ public interface QueryBuilder
     public TableBuilder createTable(String name, boolean ifNoExist);
     public QueryBuilder clearTable(String table);
     public QueryBuilder dropTable(String... tables);
+    public LockBuilder lock();
+    public QueryBuilder startTransaction();
+    public QueryBuilder commit();
+    public QueryBuilder rollback();
+    public QueryBuilder unlockTables();
+    public QueryBuilder nextQuery();
+    
     public String end();
 }

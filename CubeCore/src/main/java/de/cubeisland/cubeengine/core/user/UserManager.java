@@ -11,13 +11,20 @@ import de.cubeisland.cubeengine.core.util.worker.Cleanable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -26,32 +33,53 @@ import org.bukkit.entity.Player;
 public class UserManager extends BasicStorage<User> implements Cleanable
 {
     private final Core core;
-    private final ConcurrentHashMap<String, User> users;//TODO clean this up from time to time; need Concurrent Map
+    private final ConcurrentHashMap<String, User> users;
     private final Server server;
+    private ExecutorService executor;
+    private final UserManager instance;
 
-    public UserManager(Core core, Server server)
+    public UserManager(final Core core, Server server)
     {
         super(core.getDB(), User.class);
         this.core = core;
         this.initialize();
+        this.executor = core.getExecutor();
 
         this.server = server;
         this.users = new ConcurrentHashMap<String, User>();
-        
-        final UserManager uM = this;
-        Thread thread = new Thread(new Runnable()
+
+        this.instance = this;
+        Thread thread;
+        thread = new Thread(new Runnable()
         {
             public void run()
             {
                 Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-
+                timer.schedule(new TimerTask()
+                {
                     @Override
                     public void run()
                     {
-                        uM.cleanUp();
+                        instance.cleanUp();
+                        CubeEngine.getLogger().info("[UserManager] Cleaning Up!");
                     }
-                }, 0, 10*1000);//All 10 sec //TODO later 10 min
+                }, 0, core.getConfiguration().userManagerCleanup * 60 * 1000);
+            }
+        });
+
+        CubeEngine.getEventManager().registerCoreListener(new Listener()
+        {
+            @EventHandler(priority = EventPriority.MONITOR)
+            public void onQuit(final PlayerQuitEvent event)
+            {
+                CubeEngine.getServer().getScheduler().
+                    scheduleSyncDelayedTask((Plugin)core, new Runnable()
+                {
+                    public void run()
+                    {
+                        instance.users.remove(event.getPlayer().getName());
+                    }
+                }, 1);
             }
         });
         thread.start();
@@ -73,20 +101,48 @@ public class UserManager extends BasicStorage<User> implements Cleanable
             .end());
     }
 
-    public UserManager addUser(User user)
+    public UserManager addUser(final User user)
     {
-        this.store(user);
+        User inUse = this.users.get(user.getName());
+        if (inUse != null)
+        {
+            //User was already added
+            return this;
+        }
         this.users.put(user.getName(), user);
+        this.executor.submit(new Runnable()
+        {
+            public void run()
+            {
+                instance.store(user);
+            }
+        });
         UserCreatedEvent event = new UserCreatedEvent(this.core, user);
         server.getPluginManager().callEvent(event);
         return this;
     }
 
-    public UserManager removeUser(User user)
+    public void updateUser(final User user)
     {
-        this.delete(user);
-        this.users.remove(user.getName());
+        this.executor.submit(new Runnable()
+        {
+            public void run()
+            {
+                instance.update(user);
+            }
+        });
+    }
 
+    public UserManager removeUser(final User user)
+    {
+        this.executor.submit(new Runnable()
+        {
+            public void run()
+            {
+                instance.delete(user);
+            }
+        });
+        this.users.remove(user.getName());
         return this;
     }
 
@@ -170,7 +226,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
      *
      * @return a online User
      */
-    public User findOnlineUser(String name)//TODO Do we want to return a similar User if exact User does exist but is not online?
+    public User findOnlineUser(String name)
     {
         User user = this.findUser(name);
         if (user != null)
@@ -189,7 +245,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
      * @return a User
      */
     @BukkitDependend("Uses BukkitServer to get all OnlinePlayers")
-    public User findUser(String name)//TODO tests for this
+    public User findUser(String name)
     {
         //Looking up loaded users
         User user = this.users.get(name);
@@ -201,20 +257,85 @@ public class UserManager extends BasicStorage<User> implements Cleanable
             {
                 this.users.put(name, user);
             }
-        }
-        if (user == null) //then NO user with exact name
-        {
-            //Get all online Player and searching for similar names
-            Player[] players = CubeEngine.getServer().getOnlinePlayers();
-            for (Player player : players)
+            if (user == null) //then NO user with exact name
             {
-                if (StringUtils.wordDistance(name, player.getName()) <= 2)//Max Worddistance 2
+                //Get all online Player and searching for similar names
+                Player[] players = CubeEngine.getServer().getOnlinePlayers();
+                int distance = 5;
+                int ld;
+                for (Player player : players)
                 {
-                    user = this.get(player.getName());//Gets User from DB
-                    this.users.put(user.getName(), user);//Adds User to loaded users
-                    return user;//First found is returned
+                    String playername = player.getName();
+                    if (distance == 1)//if closest found stop searching
+                    {
+                        break;
+                    }
+                    if ((name.length() < (playername.length() - 3)) || (name.length() > (playername.length() + 3)))
+                    {
+                        continue;//length differ by more than 3
+                    }
+                    ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), playername.toLowerCase(Locale.ENGLISH));
+                    if (ld <= 2)//Max Worddistance 2
+                    {
+                        if (ld < distance)//Get best match
+                        {
+                            distance = ld;
+                            user = this.getUser(playername);
+                        }
+                    }
+                }
+                if (user == null)
+                {
+                    //Search if name is part of playername
+                    int index = 16;
+                    for (Player player : players)
+                    {
+                        if (index == 0) //Found a player that begins with name
+                        {
+                            break;
+                        }
+                        //ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), player.getName().toLowerCase(Locale.ENGLISH));
+                        int ind = player.getName().toLowerCase(Locale.ENGLISH).indexOf(name.toLowerCase(Locale.ENGLISH));
+                        if (ind != -1)
+                        {
+                            //name is in playername -> adjust ld
+                            if (ind < index) //Lower Index is better match
+                            {
+                                index = ind;
+                                user = this.getUser(player);
+                            }
+                        }
+                    }
+                    if ((user == null) && (name.length() > 3))//Search for typo in first part of name (only if name has 4 chars or more)
+                    {
+                        distance = 3;
+                        for (Player player : players)
+                        {
+                            if (distance == 1)
+                            {
+                                break;
+                            }
+                            if (player.getName().length() >= name.length())
+                            {
+                                String partName = player.getName().substring(0, name.length());
+                                ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), partName.toLowerCase(Locale.ENGLISH));
+                                if (ld <= 2)
+                                {
+                                    if (ld < distance)//Get best match
+                                    {
+                                        distance = ld;
+                                        user = this.getUser(player.getName());
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+        if (user != null)
+        {
+            this.users.put(user.getName(), user);//Adds User to loaded users
         }
         return user;
     }

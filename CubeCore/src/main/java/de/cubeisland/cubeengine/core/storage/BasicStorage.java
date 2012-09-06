@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
@@ -51,7 +51,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     public void initialize()
     {
         //Constructor:
-        for (Constructor c: this.modelClass.getConstructors())
+        for (Constructor c : this.modelClass.getConstructors())
         {
             if (c.isAnnotationPresent(DatabaseConstructor.class))
             {
@@ -156,7 +156,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             .select(allFields)
             .from(this.table)
             .where()
-            .field(key).is(ComponentBuilder.EQUAL).value()
+            .field(key).is(EQUAL).value()
             .end()
             .end());
 
@@ -170,7 +170,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             .update(this.table)
             .cols(fields)
             .where()
-            .field(key).is(ComponentBuilder.EQUAL).value()
+            .field(key).is(EQUAL).value()
             .end()
             .end());
 
@@ -178,7 +178,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             .delete()
             .from(this.table)
             .where()
-            .field(key).is(ComponentBuilder.EQUAL).value()
+            .field(key).is(EQUAL).value()
             .limit(1)
             .end()
             .end());

@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.DeleteBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.LockBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.MergeBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
@@ -22,8 +23,10 @@ public class MySQLQueryBuilder implements QueryBuilder
     private MySQLUpdateBuilder updateBuilder;
     private MySQLDeleteBuilder deleteBuilder;
     private MySQLTableBuilder tableBuilder;
+    private MySQLLockBuilder lockBuilder;
     protected Database database;
     protected StringBuilder query;
+    private boolean nextQuery = false;
 
     protected MySQLQueryBuilder(MySQLDatabase database)
     {
@@ -38,7 +41,11 @@ public class MySQLQueryBuilder implements QueryBuilder
 
     private void init()
     {
-        this.query = new StringBuilder();
+        if (!this.nextQuery)//If is next query do not clear StringBuilder
+        {
+            this.query = new StringBuilder();
+        }
+        this.nextQuery = false;
     }
 
     public QueryBuilder clear()
@@ -107,13 +114,22 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
     }
 
+    public LockBuilder lock()
+    {
+        if (this.lockBuilder == null)
+        {
+            this.lockBuilder = new MySQLLockBuilder(this);
+        }
+        this.init();
+        return this.lockBuilder.lock();
+    }
+
     public MySQLQueryBuilder clearTable(String table)
     {
         Validate.notNull(table, "No table specified!");
 
         this.init();
         this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table));
-
         return this;
     }
 
@@ -127,7 +143,45 @@ public class MySQLQueryBuilder implements QueryBuilder
         {
             this.query.append(',').append(this.database.prepareName(tables[i]));
         }
+        return this;
+    }
 
+    public QueryBuilder startTransaction()
+    {
+        this.init();
+        this.query.append("START TRANSACTION");
+        return this;
+    }
+
+    public QueryBuilder commit()
+    {
+        this.init();
+        this.query.append("COMMIT");
+        return this;
+    }
+
+    public QueryBuilder rollback()
+    {
+        this.init();
+        this.query.append("ROLLBACK");
+        return this;
+    }
+
+    public QueryBuilder unlockTables()
+    {
+        this.init();
+        this.query.append("UNLOCK TABLES");
+        return this;
+    }
+
+    @Deprecated
+    /**
+     * Database wont understand multiple queries
+     */
+    public QueryBuilder nextQuery()
+    {
+        this.query.append(";\n");
+        this.nextQuery = true;
         return this;
     }
 
@@ -135,10 +189,11 @@ public class MySQLQueryBuilder implements QueryBuilder
     {
         if (this.query == null)
         {
-            return ""; // TODO silently fail or throw IllegalStateException?
+            throw new IllegalStateException("Query was null!");
         }
         String res = this.query.toString();
         this.query = null;
+        this.nextQuery = false;
         return res;
     }
 }

@@ -217,81 +217,75 @@ public final class StringUtils
         return time;
     }
 
-    public static int wordDistance(String source, String target)
+    /**
+     * Taken from org.apache.commons.lang.StringUtils
+     */
+    public static int getLevenshteinDistance(String s, String t)
     {
-        return wordDistance(source, target, new int[source.length() * target.length()]);
-    }
+        if (s == null || t == null)
+        {
+            throw new IllegalArgumentException("Strings must not be null");
+        }
 
-    public static int wordDistance(String source, String target, int[] workspace)
-    {
-        int sourceLength = source.length();
-        int targetLength = target.length();
-        int lenS1 = sourceLength + 1;
-        int lenT1 = targetLength + 1;
-        if (lenT1 == 1)
+        int n = s.length(); // length of s
+        int m = t.length(); // length of t
+
+        if (n == 0)
         {
-            return lenS1 - 1;
+            return m;
         }
-        if (lenS1 == 1)
+        else if (m == 0)
         {
-            return lenT1 - 1;
+            return n;
         }
-        int[] dl = workspace;
-        int dlIndex = 0;
-        int prevSourceIndex = 0, prevTargetIndex = 0, rowBefore = 0, min = 0, cost = 0, tmp = 0;
-        int tri = lenS1 + 2;
-        // start row with constant
-        dlIndex = 0;
-        for (tmp = 0; tmp < lenT1; tmp++)
+
+        if (n > m)
         {
-            dl[dlIndex] = tmp;
-            dlIndex += lenS1;
+            // swap the input strings to consume less memory
+            String tmp = s;
+            s = t;
+            t = tmp;
+            n = m;
+            m = t.length();
         }
-        for (int sourceIndex = 0; sourceIndex < sourceLength; sourceIndex++)
+
+        int p[] = new int[n + 1]; //'previous' cost array, horizontally
+        int d[] = new int[n + 1]; // cost array, horizontally
+        int _d[]; //placeholder to assist in swapping p and d
+
+        // indexes into strings s and t
+        int i; // iterates through s
+        int j; // iterates through t
+
+        char t_j; // jth character of t
+
+        int cost; // cost
+
+        for (i = 0; i <= n; i++)
         {
-            dlIndex = sourceIndex + 1;
-            dl[dlIndex] = dlIndex; // start column with constant
-            for (int tIndex = 0; tIndex < targetLength; tIndex++)
+            p[i] = i;
+        }
+
+        for (j = 1; j <= m; j++)
+        {
+            t_j = t.charAt(j - 1);
+            d[0] = j;
+
+            for (i = 1; i <= n; i++)
             {
-                rowBefore = dlIndex;
-                dlIndex += lenS1;
-                //deletion
-                min = dl[rowBefore] + 1;
-                // insertion
-                tmp = dl[dlIndex - 1] + 1;
-                if (tmp < min)
-                {
-                    min = tmp;
-                }
-                cost = 1;
-                if (source.charAt(sourceIndex) == target.charAt(tIndex))
-                {
-                    cost = 0;
-                }
-                if (sourceIndex > 0 && tIndex > 0)
-                {
-                    if (source.charAt(sourceIndex) == target.charAt(prevTargetIndex) && source.charAt(prevSourceIndex) == target.charAt(tIndex))
-                    {
-                        tmp = dl[rowBefore - tri] + cost;
-                        // transposition
-                        if (tmp < min)
-                        {
-                            min = tmp;
-                        }
-                    }
-                }
-                // substitution
-                tmp = dl[rowBefore - 1] + cost;
-                if (tmp < min)
-                {
-                    min = tmp;
-                }
-                dl[dlIndex] = min;
-                
-                prevTargetIndex = tIndex;
+                cost = s.charAt(i - 1) == t_j ? 0 : 1;
+                // minimum of cell to the left+1, to the top+1, diagonally left and up +cost
+                d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1] + cost);
             }
-            prevSourceIndex = sourceIndex;
+
+            // copy current distance counts to 'previous row' distance counts
+            _d = p;
+            p = d;
+            d = _d;
         }
-        return dl[dlIndex];
+
+        // our last action in the above loop was to switch d and p, so p now 
+        // actually has the most recent cost counts
+        return p[n];
     }
 }
