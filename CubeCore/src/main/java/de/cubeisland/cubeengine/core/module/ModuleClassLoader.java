@@ -40,7 +40,7 @@ public class ModuleClassLoader extends URLClassLoader
     {
         return this.findClass(name, true);
     }
-
+/*
     @Override
     public InputStream getResourceAsStream(String name)//TODO get the correct Resource for the module (currently taking from CubeCore.jar)
     {
@@ -59,6 +59,7 @@ public class ModuleClassLoader extends URLClassLoader
         }
     }
 
+*/
     protected Class<?> findClass(String name, boolean global) throws ClassNotFoundException
     {
         Class<?> clazz = this.classMap.get(name);
