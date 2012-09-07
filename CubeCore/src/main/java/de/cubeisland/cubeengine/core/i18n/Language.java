@@ -50,7 +50,7 @@ public class Language
         {
             if (!root.has("countries"))
             {
-                throw new IllegalStateException("Every language must have a list of counties where the language is spoken!");
+                throw new IllegalStateException("Every language must have a list of countries where the language is spoken!");
             }
             for (JsonElement elem : root.getAsJsonArray("countries"))
             {

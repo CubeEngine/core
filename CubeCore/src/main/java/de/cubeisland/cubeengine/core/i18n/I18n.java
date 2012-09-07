@@ -40,7 +40,7 @@ public class I18n
 
         this.countryMap = new THashMap<String, String>();
         this.languageMap = new THashMap<String, Language>();
-
+        this.defaultLanguage = defaultLanguage;
         this.loadLanguages(fileManager.getLanguageDir());
     }
 

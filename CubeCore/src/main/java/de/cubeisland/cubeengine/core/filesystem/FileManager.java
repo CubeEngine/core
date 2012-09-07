@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages all the configurations of the CubeEngine
@@ -146,8 +148,7 @@ public class FileManager
         {
             return file;
         }
-
-        InputStream reader = this.getClass().getResourceAsStream(resPath);
+        InputStream reader = clazz.getResourceAsStream(resPath);//TODO ModuleClassLoader does not take the Resource from the module but from Core
         if (reader != null)
         {
             try

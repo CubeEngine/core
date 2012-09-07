@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -18,7 +20,10 @@ public class ModuleClassLoader extends URLClassLoader
 
     public ModuleClassLoader(ModuleLoader moduleLoader, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {
-        super(new URL[] {info.getFile().toURI().toURL()}, parent);
+        super(new URL[]
+            {
+                info.getFile().toURI().toURL()
+            }, parent);
         this.moduleLoader = moduleLoader;
         this.classMap = new HashMap<String, Class<?>>();
         this.moduleInfo = info;
@@ -34,7 +39,20 @@ public class ModuleClassLoader extends URLClassLoader
     {
         return this.findClass(name, true);
     }
-    
+
+    @Override
+    public InputStream getResourceAsStream(String name)//TODO get the correct Resource for the module (currently taking from CubeCore.jar)
+    {
+        try
+        {
+            return this.findResource(name).openConnection().getInputStream();
+        }
+        catch (IOException ex)
+        {
+            throw new IllegalStateException("Resource not found!", ex);
+        }
+    }
+
     protected Class<?> findClass(String name, boolean global) throws ClassNotFoundException
     {
         Class<?> clazz = this.classMap.get(name);
@@ -46,11 +64,12 @@ public class ModuleClassLoader extends URLClassLoader
                 clazz = super.findClass(name);
             }
             catch (ClassNotFoundException e)
-            {}
+            {
+            }
 
             if (clazz == null && global)
             {
-                                          //TODO STACKOVERFLOW when Class not found
+                //TODO STACKOVERFLOW when Class not found
                 clazz = this.moduleLoader.getClazz(this.moduleInfo, name);
             }
 

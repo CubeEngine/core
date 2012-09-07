@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.test;
 
+import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -10,6 +11,7 @@ import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
+import de.cubeisland.cubeengine.test.l18n.TestRecource;
 import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -52,6 +54,7 @@ public class CubeTest extends Module
         this.getCore().getEventManager().registerListener(new TestListener(this), this);
 
         this.testUserManager();
+        this.testl18n();
 
         logger.info("TestModule succesfully enabeled");
     }
@@ -203,6 +206,7 @@ public class CubeTest extends Module
 
     public void testl18n()
     {
-        //TODO
+        CubeEngine.getFileManager().dropResources(TestRecource.values());//TODO this does not get the right Resource!
+        System.out.println(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
     }
 }
