@@ -60,12 +60,16 @@ public abstract class ConfigurationCodec
             Class<?> genericType = field.getAnnotation(Option.class).genericType();
             try
             {//Converts Collection / Map / Array  of genericType OR cast object into fieldClass
-                return Convert.fromObject(field, config, object, genericType);
+                return Convert.fromObject(field.getType(), field.get(config), object, genericType);
             }
             catch (ConversionException ex)
             {
                 logger.log(Level.SEVERE, "Error while converting", ex);
                 return null;
+            }
+            catch (Exception e)
+            {
+                throw new IllegalStateException("Error while converting", e);
             }
         }
         if (converter != null)

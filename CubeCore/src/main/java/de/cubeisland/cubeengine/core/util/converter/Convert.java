@@ -149,13 +149,12 @@ public class Convert
         return null;
     }
 
-    public static <T> T fromObject(Field field, Object instance, Object object, Class<?> genericType) throws ConversionException
+    public static <T> T fromObject(Class<T> fieldClass, Object fieldObject, Object object, Class<?> genericType) throws ConversionException
     {
         if (genericType == Object.class)
         {
             return (T)object;//no GenericType
         }
-        Class<?> fieldClass = field.getType();
         Converter converter = matchConverter(genericType);
 
         if (Collection.class.isAssignableFrom(fieldClass))
@@ -167,16 +166,8 @@ public class Convert
                 {
                     return (T)object;
                 }
-                Collection<Object> result;
-                try
-                {
-                    result = (Collection<Object>)field.get(instance);
-                    result.clear();
-                }
-                catch (Exception ex)
-                {
-                    throw new IllegalStateException("Error while Converting", ex);
-                }
+                Collection<Object> result = (Collection<Object>)fieldObject;
+                result.clear();
                 for (Object o : list)
                 {
                     result.add(converter.fromObject(o));
@@ -194,16 +185,8 @@ public class Convert
                 {
                     return (T)object;
                 }
-                Map<String, Object> result;
-                try
-                {
-                    result = (Map<String, Object>)field.get(instance);
-                    result.clear();
-                }
-                catch (Exception ex)
-                {
-                    throw new IllegalStateException("Error while Converting", ex);
-                }
+                Map<String, Object> result = (Map<String, Object>)fieldObject;
+                result.clear();
                 for (Map.Entry<String, ?> entry : map.entrySet())
                 {
                     result.put(entry.getKey(), converter.fromObject(entry.getValue()));
