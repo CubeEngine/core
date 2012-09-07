@@ -17,6 +17,8 @@ import java.util.logging.Logger;
  */
 public interface Core
 {
+    public static final int REVISION = 1;
+    
     /**
      * The method returns the database
      *

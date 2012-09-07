@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.module;
+package de.cubeisland.cubeengine.core.module.exception;
 
 /**
  *

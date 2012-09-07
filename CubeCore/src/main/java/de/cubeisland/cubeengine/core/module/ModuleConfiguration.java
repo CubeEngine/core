@@ -21,6 +21,9 @@ public class ModuleConfiguration extends Configuration
 
     @Option("description")
     public String description;
+    
+    @Option("core-version")
+    public int minCoreRevision = -1;
 
     @Option(value = "dependencies", genericType = String.class)
     public Set<String> dependencies = new HashSet<String>();

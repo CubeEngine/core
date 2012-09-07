@@ -16,6 +16,7 @@ public final class ModuleInfo
     private final String name;
     private final int revision;
     private final String description;
+    private final int minCoreVersion;
     private final Set<String> dependencies;
     private final Set<String> softDependencies;
 
@@ -27,6 +28,7 @@ public final class ModuleInfo
         this.name               = config.name.substring(0, 1).toUpperCase(Locale.ENGLISH) + config.name.substring(1).toLowerCase(Locale.ENGLISH);
         this.revision           = config.revision;
         this.description        = config.description;
+        this.minCoreVersion     = config.minCoreRevision;
         this.dependencies       = Collections.unmodifiableSet(config.dependencies);
         this.softDependencies   = Collections.unmodifiableSet(config.softDependencies);
     }
@@ -49,6 +51,11 @@ public final class ModuleInfo
     public String getDescription()
     {
         return this.description;
+    }
+    
+    public int getMinimumCoreRevision()
+    {
+        return this.minCoreVersion;
     }
 
     public Set<String> getDependencies()

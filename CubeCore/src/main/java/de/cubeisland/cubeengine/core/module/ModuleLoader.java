@@ -3,6 +3,10 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
@@ -36,25 +40,30 @@ public class ModuleLoader
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
     }
 
-    public Module loadModule(File file) throws InvalidModuleException, MissingDependencyException
+    public Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         return this.loadModule(this.loadModuleInfo(file));
     }
 
-    public Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException
+    public Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
+        final String name = info.getName();
+        
+        if (info.getMinimumCoreRevision() > Core.REVISION)
+        {
+            throw new IncompatibleCoreException(name, info.getMinimumCoreRevision());
+        }
+
+        for (String dep : info.getDependencies())
+        {
+            if (!this.classLoaders.containsKey(dep))
+            {
+                throw new MissingDependencyException(dep);
+            }
+        }
+        
         try
         {
-            final String name = info.getName();
-
-            for (String dep : info.getDependencies())
-            {
-                if (!this.classLoaders.containsKey(dep))
-                {
-                    throw new MissingDependencyException(dep);
-                }
-            }
-
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
             Module module = Class.forName(this.baseFQN + name.toLowerCase(Locale.ENGLISH) + "." + this.classPrefix + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
 
@@ -73,10 +82,6 @@ public class ModuleLoader
         }
         catch (Exception e)
         {
-            if (e instanceof MissingDependencyException)
-            {
-                throw (MissingDependencyException)e;
-            }
             throw new InvalidModuleException("Module: " + info.getName(), e);
         }
     }

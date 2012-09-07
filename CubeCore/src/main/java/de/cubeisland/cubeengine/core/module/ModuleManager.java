@@ -3,8 +3,13 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Validate;
-import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Collection;
@@ -12,6 +17,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +34,7 @@ public class ModuleManager
 
     public ModuleManager(Core core)
     {
-        this.modules = new THashMap<String, Module>();
+        this.modules = new ConcurrentHashMap<String, Module>();
         this.core = core;
         this.loader = new ModuleLoader(core);
     }
@@ -99,12 +105,12 @@ public class ModuleManager
         logger.info("Finished loading modules!");
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws ModuleException
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
     {
         return this.loadModule(name, moduleInfos, new Stack<String>(), false);
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
     {
         name = name.toLowerCase(Locale.ENGLISH);
         if (this.modules.containsKey(name))
