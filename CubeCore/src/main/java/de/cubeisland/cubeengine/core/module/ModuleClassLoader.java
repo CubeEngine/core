@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 /**
  *
@@ -43,11 +44,16 @@ public class ModuleClassLoader extends URLClassLoader
     @Override
     public InputStream getResourceAsStream(String name)//TODO get the correct Resource for the module (currently taking from CubeCore.jar)
     {
+        //this all does not work:
         try
         {
-            return this.findResource(name).openConnection().getInputStream();
+            return moduleLoader.getClazz(moduleInfo, moduleInfo.getName()+".class").getResourceAsStream(name);
+            //JarFile jFile = new JarFile(this.moduleInfo.getFile());
+            //Perhaps get the main Class from the Module
+            
+            //return this.findResource(name).openConnection().getInputStream();
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
             throw new IllegalStateException("Resource not found!", ex);
         }
