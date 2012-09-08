@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
 /**
@@ -94,5 +94,5 @@ public interface Core
      * 
      * @return the ExecutorService
      */
-    public ExecutorService getExecutor();
+    public ScheduledExecutorService getExecutor();
 }

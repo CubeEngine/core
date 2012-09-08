@@ -20,9 +20,8 @@ import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.bukkit.Server;
@@ -47,7 +46,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private EventManager eventRegistration;
     private Server server;
     private CommandManager commandManager;
-    private ExecutorService executor;
+    private ScheduledExecutorService executor;
 
     @Override
     public void onEnable()
@@ -83,7 +82,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.commandManager = new CommandManager(this);
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
         
-        this.executor = Executors.newFixedThreadPool(config.executorThreads);
+        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
         this.i18n = new I18n(this, this.config.defaultLanguage);
 
         this.database = DatabaseFactory.loadDatabase(this.config.database);
@@ -199,7 +198,7 @@ public class BukkitCore extends JavaPlugin implements Core
         return this.commandManager;
     }
 
-    public ExecutorService getExecutor()
+    public ScheduledExecutorService getExecutor()
     {
         return executor;
     }
