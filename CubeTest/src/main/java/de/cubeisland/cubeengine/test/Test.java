@@ -19,7 +19,7 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CubeTest extends Module
+public class Test extends Module
 {
     public TestManager manager;
     public UserManager uM;

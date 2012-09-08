@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.bukkit.Server;
@@ -81,6 +82,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.moduleManager = new ModuleManager(this);
         this.commandManager = new CommandManager(this);
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
+        
         this.executor = Executors.newFixedThreadPool(config.executorThreads);
         this.i18n = new I18n(this, this.config.defaultLanguage);
 
@@ -90,16 +92,12 @@ public class BukkitCore extends JavaPlugin implements Core
             this.server.getPluginManager().disablePlugin(this);
             return;
         }
-        this.logger.addHandler(
-            new DatabaseHandler(Level.WARNING, this.database, "core_log"));
-        this.userManager = new UserManager(this, this.server);//Needs Database
+        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
+        this.userManager = new UserManager(this);
 
         this.registerPermissions(Perm.values());
         this.fileManager.dropResources(CoreResource.values());
-        this.moduleManager.loadModules(
-            this.fileManager.getModulesDir());
-
-
+        this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 
     @Override

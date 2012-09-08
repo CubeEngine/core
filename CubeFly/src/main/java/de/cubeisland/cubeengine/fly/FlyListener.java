@@ -21,9 +21,9 @@ public class FlyListener implements Listener
 {
     private UserManager usermanager;
     private HashMap<Player, Task> tasks = new HashMap<Player, Task>();
-    private CubeFly fly;
+    private Fly fly;
 
-    public FlyListener(CubeFly fly)
+    public FlyListener(Fly fly)
     {
         this.fly = fly;
         this.usermanager = fly.getUserManager();
@@ -47,7 +47,7 @@ public class FlyListener implements Listener
         {
             if (!Perm.FLY_FEAHTER.isAuthorized(player))
             {
-                user.sendTMessage("&cYou dont have permission to use this!");
+                user.sendMessage("fly", "&cYou dont have permission to use this!");
                 //TODO Translation: 
                 //&cDu bist nicht berechtigt dies zu nutzen!
                 player.setAllowFlight(false); //Disable when player is flying

@@ -6,7 +6,7 @@ import java.io.File;
 import org.bukkit.Server;
 
 
-public class CubeFly extends Module
+public class Fly extends Module
 {
     public static boolean debugMode = false;
     protected Server server;

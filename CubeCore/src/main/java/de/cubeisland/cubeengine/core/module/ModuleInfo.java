@@ -13,6 +13,7 @@ import java.util.Set;
 public final class ModuleInfo
 {
     private final File file;
+    private final String main;
     private final String name;
     private final int revision;
     private final String description;
@@ -23,19 +24,35 @@ public final class ModuleInfo
     public ModuleInfo(File file, ModuleConfiguration config)
     {
         Validate.notNull(config, "The module configuration failed to loaded!");
-
-        this.file               = file;
-        this.name               = config.name.substring(0, 1).toUpperCase(Locale.ENGLISH) + config.name.substring(1).toLowerCase(Locale.ENGLISH);
-        this.revision           = config.revision;
-        this.description        = config.description;
-        this.minCoreVersion     = config.minCoreRevision;
-        this.dependencies       = Collections.unmodifiableSet(config.dependencies);
-        this.softDependencies   = Collections.unmodifiableSet(config.softDependencies);
+        Validate.notNull(config.name, "The module doesn't seem to have a name.");
+        
+        config.name = config.name.trim();
+        Validate.notEmpty(config.name, "The module name seems to be empty.");
+        
+        this.file = file;
+        this.name = config.name.substring(0, 1).toUpperCase(Locale.ENGLISH) + config.name.substring(1).toLowerCase(Locale.ENGLISH);
+        
+        if (config.main == null)
+        {
+            config.main = "de.cubeisland.cubeengine." + this.name.toLowerCase(Locale.ENGLISH) + "." + this.name;
+        }
+        this.main = config.main;
+        
+        this.revision = config.revision;
+        this.description = config.description;
+        this.minCoreVersion = config.minCoreRevision;
+        this.dependencies = Collections.unmodifiableSet(config.dependencies);
+        this.softDependencies = Collections.unmodifiableSet(config.softDependencies);
     }
 
     public File getFile()
     {
         return this.file;
+    }
+    
+    public String getMain()
+    {
+        return this.main;
     }
 
     public String getName()

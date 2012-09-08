@@ -16,9 +16,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class TestListener implements Listener
 {
-    CubeTest test;
+    Test test;
 
-    public TestListener(CubeTest test)
+    public TestListener(Test test)
     {
         this.test = test;
     }

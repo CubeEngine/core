@@ -54,13 +54,13 @@ public class ModuleManager
         return this.modules.values();
     }
 
-    public void loadModules(File directory)
+    public synchronized void loadModules(File directory)
     {
         Validate.isDir(directory, "The give dir is no dir!");
 
         Module module;
         ModuleInfo info;
-        HashMap<String, ModuleInfo> moduleInfos = new HashMap<String, ModuleInfo>();
+        Map<String, ModuleInfo> moduleInfos = new HashMap<String, ModuleInfo>();
         logger.info("Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
@@ -129,11 +129,11 @@ public class ModuleManager
         loadStack.push(name);
         for (String dep : info.getSoftDependencies())
         {
-            loadModule(dep, moduleInfos, loadStack, true);
+            this.loadModule(dep, moduleInfos, loadStack, true);
         }
         for (String dep : info.getDependencies())
         {
-            if (!loadModule(dep, moduleInfos, loadStack, false))
+            if (!this.loadModule(dep, moduleInfos, loadStack, false))
             {
                 throw new MissingDependencyException(dep);
             }

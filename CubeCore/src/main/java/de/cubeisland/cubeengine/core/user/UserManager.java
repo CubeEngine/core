@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.BukkitDependend;
 import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.BukkitCore;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
@@ -38,14 +39,14 @@ public class UserManager extends BasicStorage<User> implements Cleanable
     private ExecutorService executor;
     private final UserManager instance;
 
-    public UserManager(final Core core, Server server)
+    public UserManager(final Core core)
     {
         super(core.getDB(), User.class);
         this.core = core;
         this.initialize();
         this.executor = core.getExecutor();
 
-        this.server = server;
+        this.server = ((BukkitCore)core).getServer();
         this.users = new ConcurrentHashMap<String, User>();
 
         this.instance = this;

@@ -97,18 +97,26 @@ public class User extends UserBase implements LinkingModel<Integer>
         this.key = id;
     }
 
+    @Override
+    public void sendMessage(String string)
+    {
+        // TODO this should be removed before a release or disabled via some kind of debug flag!
+        if (Thread.currentThread().getStackTrace()[1].getClassName().startsWith("de.cubeisland.cubeengine."))
+        {
+            CubeEngine.getLogger().warning("A module sent an untranslated message!");
+        }
+        super.sendMessage(string);
+    }
+
     /**
      * Sends a translated Message to this User
      *
      * @param string the message to translate
      * @param params optional parameter
      */
-    public void sendTMessage(String string, Object... params)
+    public void sendMessage(String category, String string, Object... params)
     {
-        final String className = Thread.currentThread().getStackTrace()[2].getClassName();
-        String category = className.substring(25, className.indexOf('.', 26));
-        String translated = _(this, category, string, params);
-        this.sendMessage(translated);
+        this.sendMessage(_(this, category, string, params));
     }
 
     public <T extends Model> void attach(T model)

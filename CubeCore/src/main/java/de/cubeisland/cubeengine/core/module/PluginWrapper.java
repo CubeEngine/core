@@ -128,7 +128,7 @@ public class PluginWrapper implements Plugin
 
     public String getName()
     {
-        return this.module.getLoader().classPrefix + this.module.getName();
+        return this.module.getName();
     }
 
     public boolean onCommand(CommandSender cs, Command cmnd, String string, String[] strings)

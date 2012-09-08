@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -30,7 +29,6 @@ public class ModuleLoader
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
     protected String classPrefix = "Cube";
-    protected String baseFQN = "de.cubeisland.cubeengine.";
     protected final String infoFileName = "module.yml";
 
     public ModuleLoader(Core core)
@@ -40,12 +38,12 @@ public class ModuleLoader
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
     }
 
-    public Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
+    public synchronized Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         return this.loadModule(this.loadModuleInfo(file));
     }
 
-    public Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
+    public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         final String name = info.getName();
         
@@ -65,7 +63,7 @@ public class ModuleLoader
         try
         {
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
-            Module module = Class.forName(this.baseFQN + name.toLowerCase(Locale.ENGLISH) + "." + this.classPrefix + name, true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
+            Module module = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
 
             module.initialize(
                 this.core,
@@ -89,9 +87,11 @@ public class ModuleLoader
     public void unloadModule(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
+        
+        // TODO actually implement this 
     }
 
-    public ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
+    public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
     {
         Validate.fileExists(file, "The file must exist!");
         if (!FileExtentionFilter.JAR.accept(file))
