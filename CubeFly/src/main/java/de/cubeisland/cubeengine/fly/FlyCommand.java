@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.CubeEngine;
-import static de.cubeisland.cubeengine.CubeEngine._;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
