@@ -88,8 +88,6 @@ public class Test extends Module
         uM.getUser("NoPlayer");
         uM.getUser("NoUserAtAll");
         user = uM.getUser("NoUser");
-        //Testung update
-        user.setLanguage("de");
         uM.update(user);
         //Testing getall
         uM.getAll();
