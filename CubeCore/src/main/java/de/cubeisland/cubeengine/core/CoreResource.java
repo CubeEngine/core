@@ -9,9 +9,8 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
  */
 public enum CoreResource implements Resource
 {
-    GEOIP_DATABASE("resources/GeoIP.dat", "GeoIP.dat"),
-    ENGLISH_META("resources/language/en_US.json", "language/en_US.json"),
-    GERMAN_META("resources/language/de_DE.json", "language/de_DE.json"),
+    ENGLISH_META("resources/language/en_US.yml", "language/en_US.yml"),
+    GERMAN_META("resources/language/de_DE.yml", "language/de_DE.yml"),
     GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/core.json");
     private final String target;
     private final String source;
@@ -22,11 +21,13 @@ public enum CoreResource implements Resource
         this.target = target;
     }
 
+    @Override
     public String getSource()
     {
         return this.source;
     }
 
+    @Override
     public String getTarget()
     {
         return this.target;

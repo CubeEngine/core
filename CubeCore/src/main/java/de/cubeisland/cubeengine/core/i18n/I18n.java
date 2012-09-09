@@ -62,7 +62,7 @@ public class I18n
     private void loadLanguages(File languageDir)
     {
         Language language;
-        for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.JSON))
+        for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.YAML))
         {
             try
             {
