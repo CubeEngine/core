@@ -30,9 +30,8 @@ public class User extends UserBase implements LinkingModel<Integer>
     public final OfflinePlayer player;
     @Attribute(type = AttrType.VARCHAR, length = 5)
     public String language;
-    public static final int BLOCK_FLY = 1;
     
-    protected WeakHashMap<Class<? extends Model>,Model> attachments;
+    private WeakHashMap<Class<? extends Model>, Model> attachments;
 
     @DatabaseConstructor
     public User(List<Object> args)
@@ -77,21 +76,13 @@ public class User extends UserBase implements LinkingModel<Integer>
         return this.player;
     }
 
-    public void setLanguage(String lang)
-    {
-        this.language = lang;
-    }
-
-    public String getLanguage()
-    {
-        return this.language;
-    }
-
+    @Override
     public Integer getKey()
     {
         return this.key;
     }
 
+    @Override
     public void setKey(Integer id)
     {
         this.key = id;
@@ -119,11 +110,13 @@ public class User extends UserBase implements LinkingModel<Integer>
         this.sendMessage(_(this, category, string, params));
     }
 
+    @Override
     public <T extends Model> void attach(T model)
     {
         this.attachments.put(model.getClass(), model);
     }
 
+    @Override
     public <T extends Model> T getAttachment(Class<T> modelClass)
     {
         return (T)this.attachments.get(modelClass);

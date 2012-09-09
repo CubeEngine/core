@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Validate;
+import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Collection;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
 public class ModuleManager
 {
     private final Map<String, Module> modules;
+    private final Map<Class<? extends Module>, Module> classMap;
     private final Core core;
     private final ModuleLoader loader;
     private static final Logger logger = CubeEngine.getLogger();
@@ -35,6 +37,7 @@ public class ModuleManager
     public ModuleManager(Core core)
     {
         this.modules = new ConcurrentHashMap<String, Module>();
+        this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.core = core;
         this.loader = new ModuleLoader(core);
     }
@@ -56,7 +59,7 @@ public class ModuleManager
 
     public synchronized void loadModules(File directory)
     {
-        Validate.isDir(directory, "The give dir is no dir!");
+        Validate.isDir(directory, "The given File is no directory!");
 
         Module module;
         ModuleInfo info;

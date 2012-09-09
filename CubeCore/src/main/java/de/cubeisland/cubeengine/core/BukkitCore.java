@@ -83,7 +83,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
         
         this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
-        this.i18n = new I18n(this, this.config.defaultLanguage);
+        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
 
         this.database = DatabaseFactory.loadDatabase(this.config.database);
         if (this.database == null)
