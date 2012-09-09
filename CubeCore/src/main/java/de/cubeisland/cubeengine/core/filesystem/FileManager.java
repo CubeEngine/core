@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
+import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,6 +21,8 @@ public class FileManager
 
     public FileManager(File pluginsFolder) throws IOException
     {
+        Validate.isDir(pluginsFolder, "The plugins folder must not be null!");
+        
         this.dataFolder = new File(pluginsFolder, "CubeEngine");
         if (!this.dataFolder.isDirectory() && !this.dataFolder.mkdirs())
         {
@@ -67,12 +70,9 @@ public class FileManager
 
     public File getResourceFile(Resource resource)
     {
-        if (resource == null)
-        {
-            throw new IllegalArgumentException("The resource must not be null!");
-        }
+        Validate.notNull(resource, "The resource must not be null!");
+        
         String source = resource.getSource();
-
         // we only accept absolute paths!
         if (!source.startsWith("/"))
         {
@@ -84,10 +84,8 @@ public class FileManager
 
     public void dropResources(Resource[] resources)
     {
-        if (resources == null)
-        {
-            throw new IllegalArgumentException("The resources must not be null!");
-        }
+        Validate.notNull(resources, "The resources must not be null!");
+        
         for (Resource resource : resources)
         {
             this.getResourceFile(resource);
@@ -96,14 +94,8 @@ public class FileManager
 
     public File dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
     {
-        if (filePath == null)
-        {
-            throw new IllegalArgumentException("The file path must not be null!");
-        }
-        if (resPath == null)
-        {
-            throw new IllegalArgumentException("The resource path must not be null!");
-        }
+        Validate.notNull(filePath, "The file path must not be null!");
+        Validate.notNull(resPath, "The resource path must not be null!");
 
         if (filePath.startsWith("/"))
         {
@@ -114,22 +106,11 @@ public class FileManager
 
     public File dropResource(Class clazz, String resPath, File file, boolean overwrite)
     {
-        if (clazz == null)
-        {
-            throw new IllegalArgumentException("The class must not be null!");
-        }
-        if (resPath == null)
-        {
-            throw new IllegalArgumentException("The resource path must not be null!");
-        }
-        if (file == null)
-        {
-            throw new IllegalArgumentException("The file must not be null!");
-        }
-        if (file.exists() && !file.isFile())
-        {
-            throw new IllegalArgumentException("The given file exists, but is no file!");
-        }
+        Validate.notNull(clazz, "The class must not be null!");
+        Validate.notNull(resPath, "The resource path must not be null!");
+        Validate.notNull(file, "The file must not be null!");
+        Validate.fileExists(file, "The given file exists, but is no file!");
+
         if (file.exists() && !overwrite)
         {
             return file;
