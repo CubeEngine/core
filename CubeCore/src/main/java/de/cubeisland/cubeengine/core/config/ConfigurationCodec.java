@@ -91,6 +91,10 @@ public abstract class ConfigurationCodec
             {
                 return this.saveIntoMap((Configuration)object, field.getAnnotation(Option.class).value());
             }
+            if (object == null)
+            {
+                return null;
+            }
             Converter converter = Convert.matchConverter(object.getClass());
             if (converter == null)
             {
