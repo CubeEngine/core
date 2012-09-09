@@ -121,7 +121,7 @@ public class I18n
             {
                 return name.toLowerCase(Locale.ENGLISH);
             }
-            else if (delimPos == 2 && delimPos == 5)
+            else if (delimPos == 2 && length == 5)
             {
                 return name.substring(0, 1).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).toUpperCase(Locale.ENGLISH);
             }

@@ -150,8 +150,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            logger.log(Level.SEVERE, "Error while loading a Configuration!", t);
-            return null;
+            throw new IllegalStateException("Error while loading a Configuration!", t);
         }
     }
 
