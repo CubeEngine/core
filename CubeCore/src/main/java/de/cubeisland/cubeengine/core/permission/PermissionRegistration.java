@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.permission;
 
-import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.core.BukkitDependend;
 import org.bukkit.plugin.PluginManager;
 
 /**

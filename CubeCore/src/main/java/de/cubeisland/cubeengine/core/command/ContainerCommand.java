@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import static de.cubeisland.cubeengine.CubeEngine._;
+import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.util.List;
 import org.bukkit.command.CommandSender;

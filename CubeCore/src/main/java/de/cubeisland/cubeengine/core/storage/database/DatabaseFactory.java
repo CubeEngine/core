@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
 import java.util.HashMap;
 import java.util.Locale;

@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
 import com.avaje.ebean.EbeanServer;
-import de.cubeisland.cubeengine.BukkitDependend;
+import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import java.io.File;
 import java.io.InputStream;

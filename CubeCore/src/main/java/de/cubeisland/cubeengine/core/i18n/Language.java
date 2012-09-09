@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -23,9 +24,13 @@ public class Language
     private final File messageDir;
     private final JsonParser parser;
 
-    public Language(LanguageConfiguration config, File languageDir) throws IOException
+    public Language(LanguageConfiguration config, File languageDir)
     {
-        this.code = config.code.toUpperCase(Locale.ENGLISH);
+        Validate.notNull(config.code, "The code must not be null!");
+        Validate.notNull(config.name, "The name must not be null!");
+        Validate.notNull(config.localName, "The local name must not be null!");
+        
+        this.code = I18n.normalizeLanguage(config.code);
         this.name = config.name;
         this.localName = config.localName;
         this.messageDir = new File(languageDir, this.code);

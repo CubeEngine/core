@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.BukkitDependend;
-import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.BukkitCore;
+import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
@@ -227,7 +226,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             if (user == null) //then NO user with exact name
             {
                 //Get all online Player and searching for similar names
-                Player[] players = CubeEngine.getServer().getOnlinePlayers();
+                Player[] players = this.server.getOnlinePlayers();
                 int distance = 5;
                 int ld;
                 for (Player player : players)

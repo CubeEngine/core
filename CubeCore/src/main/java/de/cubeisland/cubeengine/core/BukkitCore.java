@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.BukkitDependend;
-import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.event.EventManager;
@@ -143,21 +141,25 @@ public class BukkitCore extends JavaPlugin implements Core
         }
     }
 
+    @Override
     public Database getDB()
     {
         return this.database;
     }
 
+    @Override
     public PermissionRegistration getPermissionRegistration()
     {
         return this.permissionRegistration;
     }
 
+    @Override
     public UserManager getUserManager()
     {
         return userManager;
     }
 
+    @Override
     public FileManager getFileManager()
     {
         return this.fileManager;
@@ -168,36 +170,43 @@ public class BukkitCore extends JavaPlugin implements Core
         this.permissionRegistration.registerPermissions(values);
     }
 
+    @Override
     public ModuleManager getModuleManager()
     {
         return this.moduleManager;
     }
 
+    @Override
     public I18n getI18n()
     {
         return this.i18n;
     }
 
+    @Override
     public CubeLogger getCoreLogger()
     {
         return this.logger;
     }
 
+    @Override
     public EventManager getEventManager()
     {
         return this.eventRegistration;
     }
 
+    @Override
     public CoreConfiguration getConfiguration()
     {
         return this.config;
     }
 
+    @Override
     public CommandManager getCommandManager()
     {
         return this.commandManager;
     }
 
+    @Override
     public ScheduledExecutorService getExecutor()
     {
         return executor;

@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.BukkitDependend;
-import de.cubeisland.cubeengine.CubeEngine;
-import static de.cubeisland.cubeengine.CubeEngine._;
+import de.cubeisland.cubeengine.core.BukkitDependend;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -36,7 +36,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     @DatabaseConstructor
     public User(List<Object> args)
     {
-        super((String)args.get(1));
+        super(CubeEngine.getOfflinePlayer((String)args.get(1)));
         try
         {
             this.key = Convert.fromObject(Integer.class, args.get(0));

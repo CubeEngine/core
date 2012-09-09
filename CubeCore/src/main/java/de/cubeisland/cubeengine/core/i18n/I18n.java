@@ -1,15 +1,20 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.util.Validate;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,6 +22,8 @@ import java.util.Map;
  */
 public class I18n
 {
+    private static final Logger LOGGER = new CubeLogger("language");
+    
     public static final String SOURCE_LANGUAGE = "en_US";
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
@@ -26,6 +33,14 @@ public class I18n
         this.languageMap = new THashMap<String, Language>();
         this.defaultLanguage = defaultLanguage;
         this.loadLanguages(fm.getLanguageDir());
+        try
+        {
+            LOGGER.addHandler(new FileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations.log").getPath()));
+        }
+        catch (IOException e)
+        {
+            Logger.getLogger(I18n.class.getName()).log(Level.SEVERE, null, e);
+        }
     }
 
     public String getDefaultLanguage()
@@ -54,13 +69,9 @@ public class I18n
                 language = new Language(Configuration.load(LanguageConfiguration.class, file), languageDir);
                 this.languageMap.put(language.getCode(), language);
             }
-            catch (IOException e)
+            catch (IllegalArgumentException e)
             {
-                e.printStackTrace(System.err);
-            }
-            catch (IllegalStateException e)
-            {
-                e.printStackTrace(System.err);
+                CubeEngine.getLogger().log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
     }
@@ -77,7 +88,14 @@ public class I18n
         {
             translation = lang.getTranslation(category, message);
         }
-        return String.format(translation == null ? message : translation, params);
+        
+        if (translation == null)
+        {
+            this.logMissingTranslation(language, category, message);
+            return String.format(message, params);
+        }
+        
+        return String.format(translation, params);
     }
 
     public void clean()
@@ -109,5 +127,10 @@ public class I18n
             }
         }
         return null;
+    }
+    
+    private void logMissingTranslation(String language, String category, String message)
+    {
+        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[] {language, category, message});
     }
 }

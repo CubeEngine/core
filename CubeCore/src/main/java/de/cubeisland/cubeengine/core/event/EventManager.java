@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.event;
 
-import de.cubeisland.cubeengine.BukkitDependend;
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.BukkitDependend;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
