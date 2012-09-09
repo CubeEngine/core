@@ -109,7 +109,10 @@ public class FileManager
         Validate.notNull(clazz, "The class must not be null!");
         Validate.notNull(resPath, "The resource path must not be null!");
         Validate.notNull(file, "The file must not be null!");
-        Validate.fileExists(file, "The given file exists, but is no file!");
+        if (file.exists() && !file.isFile())
+        {
+            throw new IllegalArgumentException("The given file exists, but is no file!");
+        }
 
         if (file.exists() && !overwrite)
         {
