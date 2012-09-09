@@ -62,7 +62,7 @@ public class ModuleLoader
         
         try
         {
-            ModuleClassLoader classLoader = new ModuleClassLoader(this, info, this.core.getClass().getClassLoader());
+            ModuleClassLoader classLoader = new ModuleClassLoader(this, info, getClass().getClassLoader());
             Module module = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
 
             module.initialize(
