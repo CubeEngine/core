@@ -78,12 +78,12 @@ public class BukkitCore extends JavaPlugin implements Core
         this.eventRegistration = new EventManager(pm);
         this.moduleManager = new ModuleManager(this);
         this.commandManager = new CommandManager(this);
-        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getConfigDir(), "core.yml"));
+        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
         
         this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
         this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
 
-        this.database = DatabaseFactory.loadDatabase(this.config.database);
+        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(this.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
             this.server.getPluginManager().disablePlugin(this);

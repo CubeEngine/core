@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.storage.DatabaseConfiguration;
+import de.cubeisland.cubeengine.core.util.Validate;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -12,18 +15,18 @@ import java.util.logging.Level;
  */
 public class DatabaseFactory
 {
-    static
-    {
-        databases = new HashMap<String, Class<? extends Database>>();
-        registerDatabase("mysql", MySQLDatabase.class);
-    }
-    public static HashMap<String, Class<? extends Database>> databases;
+    private static final HashMap<String, Class<? extends DatabaseConfiguration>> databases = new HashMap<String, Class<? extends DatabaseConfiguration>>();
 
-    public static Database loadDatabase(String name)
+    public static Database loadDatabase(String name, File configFile)
     {
+        Validate.notNull(name, "The name must not be null!");
+        Validate.notNull(configFile, "The config file must not be null!");
+        
+        Class<? extends DatabaseConfiguration> configClazz = databases.get(name.toLowerCase(Locale.ENGLISH));
         try
         {
-            return databases.get(name.toLowerCase(Locale.ENGLISH)).newInstance();
+            DatabaseConfiguration config = Configuration.load(configClazz, configFile);
+            return config.getDatabaseClass().getConstructor(DatabaseConfiguration.class).newInstance(config);
         }
         catch (Exception e)
         {
@@ -32,7 +35,7 @@ public class DatabaseFactory
         }
     }
 
-    public static void registerDatabase(String name, Class<? extends Database> clazz)
+    public static void registerDatabase(String name, Class<? extends DatabaseConfiguration> clazz)
     {
         databases.put(name.toLowerCase(Locale.ENGLISH), clazz);
     }
