@@ -2,8 +2,6 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
-import de.cubeisland.cubeengine.core.storage.database.DriverNotFoundException;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.sql.DriverManager;
@@ -15,11 +13,6 @@ import java.sql.SQLException;
  */
 public class MySQLDatabase extends AbstractDatabase
 {
-    static
-    {
-        DatabaseFactory.registerDatabase("mysql", MySQLDatabaseConfiguration.class);
-    }
-    
     private static final char NAME_QUOTE = '`';
     private static final char STRING_QUOTE = '\'';
     private final String host;
@@ -31,7 +24,7 @@ public class MySQLDatabase extends AbstractDatabase
     private final MySQLQueryBuilder queryBuilder;
     private final Thread creationThread = Thread.currentThread();
 
-    public MySQLDatabase(DatabaseConfiguration config) throws SQLException, DriverNotFoundException
+    public MySQLDatabase(DatabaseConfiguration config) throws SQLException
     {
         try
         {
@@ -39,7 +32,7 @@ public class MySQLDatabase extends AbstractDatabase
         }
         catch (ClassNotFoundException e)
         {
-            throw new DriverNotFoundException("Couldn't find the MySQL driver!");
+            throw new IllegalStateException("Couldn't find the MySQL driver!");
         }
         MySQLDatabaseConfiguration configuration = (MySQLDatabaseConfiguration)config;
         this.host = configuration.host;
