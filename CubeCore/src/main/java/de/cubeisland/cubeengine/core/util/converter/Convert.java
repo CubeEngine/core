@@ -3,13 +3,8 @@ package de.cubeisland.cubeengine.core.util.converter;
 import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.permission.Role;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.sql.Date;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +18,8 @@ import org.bukkit.OfflinePlayer;
 public class Convert
 {
     private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
+    private final static ConcurrentHashMap<Class<?>, GenericConverter<?>> GENERICCONVERTERS = new ConcurrentHashMap<Class<?>, GenericConverter<?>>();
+    private final static GenericConverter arrayConverter;
 
     static
     {
@@ -42,6 +39,10 @@ public class Convert
         registerConverter(double.class, converter);
         registerConverter(Role.class, new RoleConverter());
         registerConverter(Date.class, new DateConverter());
+
+        registerGenericConverter(Collection.class, new ColletionConverter());
+        registerGenericConverter(Map.class, new MapConverter());
+        arrayConverter = new ArrayConverter();
     }
 
     public static void registerConverter(Class<?> clazz, Converter<?> converter)
@@ -51,6 +52,15 @@ public class Convert
             return;
         }
         CONVERTERS.put(clazz, converter);
+    }
+
+    public static void registerGenericConverter(Class<?> clazz, GenericConverter<?> converter)
+    {
+        if (clazz == null || converter == null)
+        {
+            return;
+        }
+        GENERICCONVERTERS.put(clazz, converter);
     }
 
     /**
@@ -72,6 +82,29 @@ public class Convert
         return null;
     }
 
+    /**
+     * Searches matching GenericConverter
+     *
+     * @param objectClass the class to search for
+     * @return a matching GenericConverter or null if not found
+     */
+    public static <T> GenericConverter<T> matchGenericConverter(Class<? extends T> objectClass)
+    {
+        if (objectClass.isArray())
+        {
+            return arrayConverter;
+        }
+        for (Map.Entry<Class<?>, GenericConverter<?>> entry : GENERICCONVERTERS.entrySet())
+        {
+            if (entry.getKey().isAssignableFrom(objectClass))
+            {
+                registerGenericConverter(objectClass, entry.getValue());
+                return (GenericConverter<T>)entry.getValue();
+            }
+        }
+        return null;
+    }
+
     public static <T> Object toObject(T object) throws ConversionException
     {
         Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
@@ -88,55 +121,8 @@ public class Convert
         {
             return object;//no GenericType
         }
-        Converter converter = Convert.matchConverter(genericType);
-        Class<?> objectClass = object.getClass();
-
-        if (Collection.class.isAssignableFrom(objectClass))
-        {
-            if (converter != null)
-            {
-                Collection<?> collection = (Collection<?>)object;
-                Collection<Object> result = new LinkedList<Object>();
-                for (Object o : collection)
-                {
-                    result.add(converter.toObject(o));
-                }
-                return result;
-            }
-            return object;
-        }
-        if (Map.class.isAssignableFrom(objectClass))
-        {
-
-            if (converter != null)
-            {
-                Map<String, ?> map = (Map<String, ?>)object;
-                Map<String, Object> result = new LinkedHashMap<String, Object>();
-                for (String key : map.keySet())
-                {
-                    result.put(key, converter.toObject(map.get(key)));
-                }
-                return result;
-            }
-            return object;
-        }
-        if (objectClass.isArray())
-        {
-            Object[] array = (Object[])object;
-            if (converter != null)
-            {
-                Collection<Object> result = new LinkedList<Object>();
-                for (Object o : array)
-                {
-                    result.add(converter.toObject(o));
-                }
-                return result;
-            }
-            Collection<Object> result = new LinkedList<Object>();
-            result.addAll(Arrays.asList(array));
-            return result;
-        }
-        return object;
+        GenericConverter genericConverter = matchGenericConverter(object.getClass());
+        return genericConverter.toObject(object, genericType);
     }
 
     public static <T> T fromObject(Class<T> type, Object object) throws ConversionException
@@ -149,90 +135,14 @@ public class Convert
         return null;
     }
 
-    public static <T> T fromObject(Field field, Object instance, Object object, Class<?> genericType) throws ConversionException
+    public static <T> T fromObject(Class<T> fieldClass, Object fieldObject, Object object, Class<?> genericType) throws ConversionException
     {
         if (genericType == Object.class)
         {
             return (T)object;//no GenericType
         }
-        Class<?> fieldClass = field.getType();
-        Converter converter = matchConverter(genericType);
-
-        if (Collection.class.isAssignableFrom(fieldClass))
-        {
-            if (converter != null)
-            {
-                Collection<?> list = (Collection<?>)object;
-                if (list.isEmpty())
-                {
-                    return (T)object;
-                }
-                Collection<Object> result;
-                try
-                {
-                    result = (Collection<Object>)field.get(instance);
-                    result.clear();
-                }
-                catch (Exception ex)
-                {
-                    throw new IllegalStateException("Error while Converting", ex);
-                }
-                for (Object o : list)
-                {
-                    result.add(converter.fromObject(o));
-                }
-                return (T)result;
-            }
-            return (T)object;
-        }
-        if (Map.class.isAssignableFrom(fieldClass))
-        {
-            if (converter != null)
-            {
-                Map<String, ?> map = (Map<String, ?>)object;
-                if (map.isEmpty())
-                {
-                    return (T)object;
-                }
-                Map<String, Object> result;
-                try
-                {
-                    result = (Map<String, Object>)field.get(instance);
-                    result.clear();
-                }
-                catch (Exception ex)
-                {
-                    throw new IllegalStateException("Error while Converting", ex);
-                }
-                for (Map.Entry<String, ?> entry : map.entrySet())
-                {
-                    result.put(entry.getKey(), converter.fromObject(entry.getValue()));
-                }
-                return (T)result;
-            }
-            return (T)object;
-        }
-        if (fieldClass.isArray())
-        {
-            Collection<Object> coll = (Collection)object;
-            Object tmparray = coll.toArray();
-            if (converter != null)
-            {
-                Object o = Array.newInstance(genericType, coll.size());
-                for (int i = 0; i < coll.size(); ++i)
-                {
-                    Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
-                }
-                return (T)o;
-            }
-            Object o = Array.newInstance(genericType, coll.size());
-            for (int i = 0; i < coll.size(); ++i)
-            {
-                Array.set(o, i, Array.get(tmparray, i));
-            }
-            return (T)o;
-        }
-        return (T)object;
+        GenericConverter genericConverter = matchGenericConverter(fieldClass);
+        return (T)genericConverter.fromObject(object, genericType);
     }
 
     public static <T> String toString(T object) throws ConversionException

@@ -26,7 +26,7 @@ public class YamlCodec extends ConfigurationCodec
         QUOTE = "'";
     }
 
-    public Map<String,Object> loadFromString(String contents)
+    public Map<String, Object> loadFromString(String contents)
     {
         if (contents == null)
         {
@@ -42,10 +42,7 @@ public class YamlCodec extends ConfigurationCodec
 
     public String convertValue(String path, Object value, int off)
     {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(this.buildComment(path, off));
-
+        StringBuilder sb = new StringBuilder(this.buildComment(path, off));
         String offset = this.offset(off);
         String key = this.getSubKey(path);
         sb.append(offset).append(key).append(":");//{_OFFSET_Key:}

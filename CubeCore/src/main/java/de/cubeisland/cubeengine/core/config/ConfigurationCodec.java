@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -53,31 +54,24 @@ public abstract class ConfigurationCodec
      */
     public Object convertTo(Configuration config, Field field, Object object)
     {
-        Class<?> fieldClass = field.getType();
-        Converter converter = Convert.matchConverter(fieldClass);
-        if (converter == null)
+        Converter converter = Convert.matchConverter(field.getType());
+        try
         {
-            Class<?> genericType = field.getAnnotation(Option.class).genericType();
-            try
-            {//Converts Collection / Map / Array  of genericType OR cast object into fieldClass
-                return Convert.fromObject(field, config, object, genericType);
-            }
-            catch (ConversionException ex)
+            if (converter == null)
             {
-                logger.log(Level.SEVERE, "Error while converting", ex);
-                return null;
+                Class<?> genericType = field.getAnnotation(Option.class).genericType();
+                //Converts Collection / Map / Array  of genericType OR cast object into fieldClass
+                return Convert.fromObject(field.getType(), field.get(config), object, genericType);
             }
+            return converter.fromObject(object);
         }
-        if (converter != null)
+        catch (ConversionException ex)
         {
-            try
-            {
-                return converter.fromObject(object);
-            }
-            catch (ConversionException e)
-            {
-                logger.log(Level.WARNING, "Error while Converting", e);
-            }
+            logger.log(Level.WARNING, "Error while converting", ex);
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Error while converting", e);
         }
         return object;
     }
@@ -91,41 +85,28 @@ public abstract class ConfigurationCodec
      */
     public Object convertFrom(Field field, Object object)
     {
-        if (Configuration.class.isAssignableFrom(field.getType()))
+        try
         {
-            try
+            if (Configuration.class.isAssignableFrom(field.getType()))
             {
                 return this.saveIntoMap((Configuration)object, field.getAnnotation(Option.class).value());
             }
-            catch (IllegalAccessException ex)
+            Converter converter = Convert.matchConverter(object.getClass());
+            if (converter == null)
             {
-                logger.log(Level.SEVERE, "Error while converting SubConfiguration", ex);
-            }
-        }
-        Class<?> objectClass = object.getClass();
-        Converter converter = Convert.matchConverter(objectClass);
-        if (converter == null)
-        {
-            Class<?> genericType = field.getAnnotation(Option.class).genericType();
-            try
-            {//Converts Collection / Map / Array  of genericType OR returns object
+                Class<?> genericType = field.getAnnotation(Option.class).genericType();
+                //Converts Collection / Map / Array  of genericType OR returns object
                 return Convert.toObject(object, genericType);
             }
-            catch (ConversionException e)
-            {
-                logger.log(Level.WARNING, "Error while Converting", e);
-            }
+            return converter.toObject(object);
         }
-        if (converter != null)
+        catch (IllegalAccessException ex)
         {
-            try
-            {
-                return converter.toObject(object);
-            }
-            catch (ConversionException e)
-            {
-                logger.log(Level.WARNING, "Error while Converting", e);
-            }
+            logger.log(Level.SEVERE, "Error while converting SubConfiguration", ex);
+        }
+        catch (ConversionException e)
+        {
+            logger.log(Level.WARNING, "Error while Converting", e);
         }
         return object;
     }
@@ -156,9 +137,8 @@ public abstract class ConfigurationCodec
         {
             return new HashMap<String, Object>();
         }
-        InputStreamReader reader = new InputStreamReader(is, "UTF-8");
         StringBuilder builder = new StringBuilder();
-        BufferedReader input = new BufferedReader(reader);
+        BufferedReader input = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         try
         {
             String line;
@@ -171,15 +151,8 @@ public abstract class ConfigurationCodec
                 }
                 else
                 {
-                    try
-                    {
-                        int rev = Integer.parseInt(line.substring(line.indexOf(' ')));
-                        this.revision = rev;
-                    }
-                    catch (NumberFormatException ex)
-                    {
-                        logger.warning("Invalid RevisionNumber");
-                    }
+                    int rev = Integer.parseInt(line.substring(line.indexOf(' ')));
+                    this.revision = rev;
                 }
                 while ((line = input.readLine()) != null)
                 {
@@ -187,6 +160,10 @@ public abstract class ConfigurationCodec
                     builder.append(LINEBREAK);
                 }
             }
+        }
+        catch (NumberFormatException ex)
+        {
+            logger.warning("Invalid RevisionNumber");
         }
         finally
         {
@@ -267,7 +244,7 @@ public abstract class ConfigurationCodec
             }
             catch (IllegalAccessException ex)
             {
-                logger.severe("Error while loading a Configuration-Element!");
+                throw new IllegalStateException("Error while loading a Configuration-Element!", ex);
             }
         }
     }
@@ -297,11 +274,11 @@ public abstract class ConfigurationCodec
         }
         catch (IOException e)
         {
-            logger.severe("Error while saving a Configuration-File!");
+            logger.warning("Error while saving a Configuration-File!");
         }
         catch (IllegalAccessException e)
         {
-            logger.severe("Error while saving a Configuration-Element!");
+            throw new IllegalStateException("Error while saving a Configuration-Element!", e);
         }
     }
 
@@ -366,10 +343,7 @@ public abstract class ConfigurationCodec
      */
     public void save(File file, Map<String, Object> values) throws IOException
     {
-        if (file == null)
-        {
-            return;
-        }
+        Validate.notNull(file, "File for saving is null");
         String data = this.convertMapToString(values);
         FileWriter writer = new FileWriter(file);
         try
@@ -459,10 +433,7 @@ public abstract class ConfigurationCodec
         {
             return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.getBasePath(path)));
         }
-        else
-        {
-            return section.get(path);
-        }
+        return section.get(path);
     }
 
     /**
