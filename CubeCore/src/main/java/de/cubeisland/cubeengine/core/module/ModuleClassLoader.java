@@ -65,14 +65,16 @@ public class ModuleClassLoader extends URLClassLoader
         return clazz;
     }
 
+    // This method got overridden to first search through the current ClassLoader
     @Override
     public URL getResource(String name)
     {
-        URL url = findResource(name);//find Resource from this Module
-        if (url != null)//and then check parent
+        URL url = findResource(name);
+        if (url == null)
         {
-            return url;
+            return super.getResource(name);
         }
-        return super.getResource(name);
+        
+        return url;
     }
 }
