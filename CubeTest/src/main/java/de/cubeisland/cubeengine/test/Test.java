@@ -206,5 +206,6 @@ public class Test extends Module
     {
         CubeEngine.getFileManager().dropResources(TestRecource.values());//TODO this does not get the right Resource!
         System.out.println(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
+        System.out.println(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
     }
 }
