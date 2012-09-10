@@ -58,16 +58,28 @@ public enum ChatFormat
     
     public static String stripFormats(String string)
     {
+        if (string == null)
+        {
+            return null;
+        }
         return STRIP_FORMATS.matcher(string).replaceAll("");
     }
     
     public static String parseFormats(String string)
     {
+        if (string == null)
+        {
+            return null;
+        }
         return parseFormats('&', string);
     }
     
     public static String parseFormats(char baseChar, String string)
     {
+        if (string == null)
+        {
+            return null;
+        }
         char[] chars = string.toCharArray();
         for (int i = 0; i < chars.length - 1; i++)
         {
