@@ -23,18 +23,21 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         this.database = parent.database;
     }
 
+    @Override
     public This rawSQL(String sql)
     {
         this.query.append(sql);
         return (This)this;
     }
 
+    @Override
     public This function(String function)
     {
         this.query.append(" ").append(function).append("()");
         return (This)this;
     }
 
+    @Override
     public This beginFunction(String function)
     {
         this.query.append(" ").append(function).append("(");
@@ -42,6 +45,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This endFunction()
     {
         this.deepInFunction = false;
@@ -57,6 +61,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This field(String field)
     {
 
@@ -64,6 +69,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This value(Object value)
     {
         if (inFunction)
@@ -88,6 +94,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This is(Integer operation)
     {
         switch (operation)
@@ -116,24 +123,28 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This not()
     {
         this.query.append(" NOT");
         return (This)this;
     }
 
+    @Override
     public This and()
     {
         this.query.append(" AND");
         return (This)this;
     }
 
+    @Override
     public This or()
     {
         this.query.append(" OR");
         return (This)this;
     }
 
+    @Override
     public This beginSub()
     {
         this.query.append('(');
@@ -141,6 +152,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This endSub()
     {
         if (this.subDepth > 0)
@@ -151,24 +163,28 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This wildcard()
     {
         this.query.append("*");
         return (This)this;
     }
 
+    @Override
     public This value()
     {
         this.query.append("?");
         return (This)this;
     }
 
+    @Override
     public This as(String field)
     {
         this.query.append(" AS ").append(this.database.prepareFieldName(field));
         return (This)this;
     }
 
+    @Override
     public This groupBy(String... field)
     {
         if (field.length == 1)
@@ -186,12 +202,14 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         return (This)this;
     }
 
+    @Override
     public This having()
     {
         this.query.append(" HAVING");
         return (This)this;
     }
 
+    @Override
     public QueryBuilder end()
     {
         this.parent.query.append(this.query);

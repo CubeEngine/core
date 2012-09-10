@@ -78,6 +78,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         this.users.put(user.getName(), user);
         this.executor.submit(new Runnable()
         {
+            @Override
             public void run()
             {
                 store(user);
@@ -92,6 +93,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         this.executor.submit(new Runnable()
         {
+            @Override
             public void run()
             {
                 update(user);
@@ -103,6 +105,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         this.executor.submit(new Runnable()
         {
+            @Override
             public void run()
             {
                 delete(user);
@@ -182,6 +185,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         return savedUser;
     }
 
+    @Override
     public void clean()
     {
         this.users.clear();
@@ -306,6 +310,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         return user;
     }
 
+    @Override
     public void run()
     {
         for (User user : users.values())
@@ -322,6 +327,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)core, new Runnable()
         {
+            @Override
             public void run()
             {
                 users.remove(event.getPlayer().getName());

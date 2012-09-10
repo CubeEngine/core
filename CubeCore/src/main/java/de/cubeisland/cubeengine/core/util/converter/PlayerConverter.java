@@ -18,21 +18,25 @@ public class PlayerConverter implements Converter<OfflinePlayer>
         this.server = ((Plugin)core).getServer();
     }
 
+    @Override
     public Object toObject(OfflinePlayer object)
     {
         return this.toString(object);
     }
 
+    @Override
     public OfflinePlayer fromObject(Object object)
     {
         return this.fromString(String.valueOf(object));
     }
 
+    @Override
     public String toString(OfflinePlayer object)
     {
         return object.getName();
     }
 
+    @Override
     public OfflinePlayer fromString(String string)
     {
         return this.server.getOfflinePlayer(string);

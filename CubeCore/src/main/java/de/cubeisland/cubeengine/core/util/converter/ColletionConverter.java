@@ -9,6 +9,7 @@ import java.util.LinkedList;
  */
 public class ColletionConverter implements GenericConverter<Collection>
 {
+    @Override
     public Object toObject(Collection object, Class<?> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);
@@ -25,6 +26,7 @@ public class ColletionConverter implements GenericConverter<Collection>
         return object;//No Converter for GenericType -> is already a Collection
     }
 
+    @Override
     public <G> Collection fromObject(Object object, Class<G> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);

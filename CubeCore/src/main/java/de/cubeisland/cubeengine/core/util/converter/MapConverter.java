@@ -9,6 +9,7 @@ import java.util.Map;
  */
 public class MapConverter implements GenericConverter<Map>
 {
+    @Override
     public Object toObject(Map object, Class<?> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);
@@ -26,6 +27,7 @@ public class MapConverter implements GenericConverter<Map>
 
     }
 
+    @Override
     public <G> Map fromObject(Object object, Class<G> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);

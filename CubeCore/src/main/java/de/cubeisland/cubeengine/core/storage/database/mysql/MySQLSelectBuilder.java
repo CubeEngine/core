@@ -14,6 +14,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
         super(parent);
     }
 
+    @Override
     public MySQLSelectBuilder cols(String... cols)
     {
         this.query = new StringBuilder("SELECT ");
@@ -28,6 +29,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
         return this;
     }
 
+    @Override
     public MySQLSelectBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");

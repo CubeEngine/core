@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
-import de.cubeisland.cubeengine.core.i18n.I18n;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;

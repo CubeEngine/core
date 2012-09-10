@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.module.ModuleInfo;
 import java.io.File;
 import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

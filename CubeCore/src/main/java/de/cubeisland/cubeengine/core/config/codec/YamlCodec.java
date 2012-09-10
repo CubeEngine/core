@@ -26,6 +26,7 @@ public class YamlCodec extends ConfigurationCodec
         QUOTE = "'";
     }
 
+    @Override
     public Map<String, Object> loadFromString(String contents)
     {
         if (contents == null)
@@ -40,6 +41,7 @@ public class YamlCodec extends ConfigurationCodec
         return values;
     }
 
+    @Override
     public String convertValue(String path, Object value, int off)
     {
         StringBuilder sb = new StringBuilder(this.buildComment(path, off));
@@ -91,6 +93,7 @@ public class YamlCodec extends ConfigurationCodec
         return sb.toString();
     }
 
+    @Override
     public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
@@ -112,6 +115,7 @@ public class YamlCodec extends ConfigurationCodec
         return sb.toString();
     }
 
+    @Override
     public String buildComment(String path, int off)
     {
         String comment = this.comments.get(path);

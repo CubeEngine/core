@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class RoleConverter implements Converter<Role>
 {
+    @Override
     public Object toObject(Role role) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<String, Object>();
@@ -21,6 +22,7 @@ public class RoleConverter implements Converter<Role>
         return loc;
     }
 
+    @Override
     public Role fromObject(Object object) throws ConversionException
     {
         Map<String, Object> input = (Map<String, Object>)object;
@@ -32,11 +34,13 @@ public class RoleConverter implements Converter<Role>
         return new Role(name, parents, meta, permissions);
     }
     
+    @Override
     public String toString(Role object)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Role fromString(String string) throws ConversionException
     {
         throw new UnsupportedOperationException("Not supported yet.");

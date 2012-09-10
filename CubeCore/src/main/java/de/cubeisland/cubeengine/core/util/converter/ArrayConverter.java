@@ -11,6 +11,7 @@ import java.util.LinkedList;
  */
 public class ArrayConverter implements GenericConverter<Object[]>
 {
+    @Override
     public Object toObject(Object[] object, Class<?> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);
@@ -30,6 +31,7 @@ public class ArrayConverter implements GenericConverter<Object[]>
 
     }
 
+    @Override
     public <G> Object[] fromObject(Object object, Class<G> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);

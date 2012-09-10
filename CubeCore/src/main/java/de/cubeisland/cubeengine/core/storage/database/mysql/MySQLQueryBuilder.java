@@ -54,6 +54,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Override
     public InsertBuilder insert()
     {
         if (this.insertBuilder == null)
@@ -64,6 +65,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.insertBuilder;
     }
 
+    @Override
     public MergeBuilder merge()
     {
         if (this.mergeBuilder == null)
@@ -74,6 +76,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.mergeBuilder;
     }
 
+    @Override
     public SelectBuilder select(String... cols)
     {
         if (this.selectBuilder == null)
@@ -84,6 +87,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return selectBuilder.cols(cols);
     }
 
+    @Override
     public UpdateBuilder update(String... tables)
     {
         if (this.updateBuilder == null)
@@ -94,6 +98,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.updateBuilder.tables(tables);
     }
 
+    @Override
     public DeleteBuilder delete()
     {
         if (this.deleteBuilder == null)
@@ -104,6 +109,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.deleteBuilder;
     }
 
+    @Override
     public TableBuilder createTable(String name, boolean ifNoExist)
     {
         if (this.tableBuilder == null)
@@ -114,6 +120,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
     }
 
+    @Override
     public LockBuilder lock()
     {
         if (this.lockBuilder == null)
@@ -124,6 +131,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this.lockBuilder.lock();
     }
 
+    @Override
     public MySQLQueryBuilder clearTable(String table)
     {
         Validate.notNull(table, "No table specified!");
@@ -133,6 +141,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Override
     public MySQLQueryBuilder dropTable(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
@@ -146,6 +155,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Override
     public QueryBuilder startTransaction()
     {
         this.init();
@@ -153,6 +163,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Override
     public QueryBuilder commit()
     {
         this.init();
@@ -160,6 +171,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Override
     public QueryBuilder rollback()
     {
         this.init();
@@ -167,6 +179,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Override
     public QueryBuilder unlockTables()
     {
         this.init();
@@ -178,6 +191,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     /**
      * Database wont understand multiple queries
      */
+    @Override
     public QueryBuilder nextQuery()
     {
         this.query.append(";\n");
@@ -185,6 +199,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         return this;
     }
 
+    @Override
     public String end()
     {
         if (this.query == null)

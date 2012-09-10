@@ -16,12 +16,14 @@ public class MySQLLockBuilder extends MySQLComponentBuilder<LockBuilder> impleme
         super(parent);
     }
 
+    @Override
     public LockBuilder lock()
     {
         this.query.append("LOCK TABLES ");
         return this;
     }
 
+    @Override
     public LockBuilder table(String table)
     {
         if (multiple)
@@ -34,12 +36,14 @@ public class MySQLLockBuilder extends MySQLComponentBuilder<LockBuilder> impleme
         return this;
     }
 
+    @Override
     public LockBuilder read()
     {
         this.query.append(" READ");
         return this;
     }
 
+    @Override
     public LockBuilder write()
     {
         this.query.append(" WRITE");

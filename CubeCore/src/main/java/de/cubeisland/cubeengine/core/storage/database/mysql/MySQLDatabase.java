@@ -45,11 +45,13 @@ public class MySQLDatabase extends AbstractDatabase
         this.queryBuilder = new MySQLQueryBuilder(this);
     }
 
+    @Override
     public String getName()
     {
         return "MySQL";
     }
 
+    @Override
     public QueryBuilder getQueryBuilder()
     {
         if (Thread.currentThread() != this.creationThread)
@@ -67,6 +69,7 @@ public class MySQLDatabase extends AbstractDatabase
         return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
     }
 
+    @Override
     public String prepareFieldName(String name)
     {
         Validate.notNull(name, "The name must not be null!");
@@ -79,6 +82,7 @@ public class MySQLDatabase extends AbstractDatabase
         return NAME_QUOTE + name + NAME_QUOTE;
     }
 
+    @Override
     public String prepareString(String name)
     {
         return STRING_QUOTE + name + STRING_QUOTE;

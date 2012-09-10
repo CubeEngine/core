@@ -17,6 +17,7 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
         super(parent);
     }
 
+    @Override
     public MySQLUpdateBuilder tables(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
@@ -31,6 +32,7 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
         return this;
     }
 
+    @Override
     public MySQLUpdateBuilder cols(String... cols)
     {
         Validate.notEmpty(cols, "No cols specified!");

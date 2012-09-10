@@ -48,6 +48,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.attributes = new ArrayList<String>();
     }
 
+    @Override
     public void initialize()
     {
         //Constructor:
@@ -186,9 +187,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.database.prepareAndStoreStatement(modelClass, "clear", builder
             .clearTable(this.table)
             .end());
-
     }
 
+    @Override
     public void subscribe(SubcribeType type, Callback callback)
     {
         switch (type)
@@ -205,6 +206,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
+    @Override
     public V get(Object key)
     {
         V loadedModel = null;
@@ -233,6 +235,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         return loadedModel;
     }
 
+    @Override
     public Collection<V> getAll()
     {
         Collection<V> loadedModels = new ArrayList<V>();
@@ -263,6 +266,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         return loadedModels;
     }
 
+    @Override
     public void store(V model)
     {
         try
@@ -299,6 +303,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
+    @Override
     public void update(V model)
     {
         try
@@ -326,6 +331,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
+    @Override
     public void merge(V model)
     {
         try
@@ -353,11 +359,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
+    @Override
     public void delete(V model)
     {
         this.deleteByKey(model.getKey());
     }
 
+    @Override
     public void deleteByKey(Object key)
     {
         try
@@ -375,6 +383,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
+    @Override
     public void clear()
     {
         try
