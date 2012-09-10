@@ -6,7 +6,6 @@ import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;

@@ -123,7 +123,7 @@ public class I18n
             }
             else if (delimPos == 2 && length == 5)
             {
-                return name.substring(0, 1).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).toUpperCase(Locale.ENGLISH);
+                return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).toUpperCase(Locale.ENGLISH);
             }
         }
         return null;
