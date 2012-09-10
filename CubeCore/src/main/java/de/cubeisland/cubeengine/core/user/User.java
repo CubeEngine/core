@@ -47,7 +47,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
     }
 
-    public User(int key, OfflinePlayer player, String language)
+    public User(int key, OfflinePlayer player)
     {
         super(player);
         this.key = key;
@@ -56,13 +56,13 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     public User(OfflinePlayer player)
     {
-        this(-1, player, "en"); //TODO locate user and lookup language ?
+        this(-1, player);
     }
 
     @BukkitDependend("Uses the OfflinePlayer")
     public User(String playername)
     {
-        this(-1, CubeEngine.getOfflinePlayer(playername), "en"); //TODO locate user and lookup language ?
+        this(-1, CubeEngine.getOfflinePlayer(playername));
     }
 
     /**

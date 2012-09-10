@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.util;
 
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -174,7 +175,7 @@ public final class StringUtils
     /**
      * Converts Time in d | h | m | s to Milliseconds
      */
-    public static long convertTimeToMillis(String str)
+    public static long convertTimeToMillis(String str) throws ConversionException
     {
         Pattern pattern = Pattern.compile("^(\\d+)([smhd])?$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(str);
@@ -185,14 +186,9 @@ public final class StringUtils
         {
             time = Integer.parseInt(String.valueOf(matcher.group(1)));
         }
-        catch (IllegalStateException e)
-        {
-            return -1;
-        }
         catch (Exception e)
         {
-            //TODO Throw exception Or Show ErrorLog
-            return -1;
+            throw new ConversionException("Error while Converting String to time in millis");
         }
         if (time < 0)
         {

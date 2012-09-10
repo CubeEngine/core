@@ -118,7 +118,7 @@ public class FileManager
         {
             return file;
         }
-        InputStream reader = clazz.getResourceAsStream(resPath);//TODO ModuleClassLoader does not take the Resource from the module but from Core
+        InputStream reader = clazz.getResourceAsStream(resPath);
         if (reader != null)
         {
             try

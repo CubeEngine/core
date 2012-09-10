@@ -51,7 +51,6 @@ public class ModuleClassLoader extends URLClassLoader
 
             if (clazz == null && global)
             {
-                //TODO STACKOVERFLOW when Class not found
                 clazz = this.moduleLoader.getClazz(this.moduleInfo, name);
             }
 

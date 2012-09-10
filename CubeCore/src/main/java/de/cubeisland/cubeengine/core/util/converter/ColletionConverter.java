@@ -36,7 +36,7 @@ public class ColletionConverter implements GenericConverter<Collection>
             {
                 return (Collection)object;
             }
-            Collection<G> result = new LinkedList<G>();//TODO Always using linked list not good
+            Collection<G> result = new LinkedList<G>();
             for (Object o : list)
             {
                 result.add((G)converter.fromObject(o));
