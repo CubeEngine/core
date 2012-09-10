@@ -31,7 +31,6 @@ public class Test extends Module
         Logger logger = this.getLogger();
         try
         {
-            logger.info("enabling TestModule");
             Configuration.load(TestConfig.class, this);
             this.initializeDatabase();
             this.testDatabase();
@@ -49,14 +48,10 @@ public class Test extends Module
         {
             logger.log(Level.SEVERE, "Error while adding the FileHandler", ex);
         }
-        logger.severe("SevereTestLog");
-        logger.warning("WarningTestLog");
         this.getCore().getEventManager().registerListener(new TestListener(this), this);
 
         this.testUserManager();
         this.testl18n();
-
-        logger.info("TestModule succesfully enabeled");
     }
 
     public void initializeDatabase() throws SQLException
@@ -204,7 +199,7 @@ public class Test extends Module
 
     public void testl18n()
     {
-        CubeEngine.getFileManager().dropResources(TestRecource.values());//TODO this does not get the right Resource!
+        CubeEngine.getFileManager().dropResources(TestRecource.values());
         System.out.println(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
         System.out.println(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
     }

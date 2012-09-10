@@ -34,7 +34,7 @@ public class ModuleClassLoader extends URLClassLoader
     {
         return this.findClass(name, true);
     }
-    
+
     protected Class<?> findClass(String name, boolean global) throws ClassNotFoundException
     {
         Class<?> clazz = this.classMap.get(name);
@@ -63,5 +63,16 @@ public class ModuleClassLoader extends URLClassLoader
         }
 
         return clazz;
+    }
+
+    @Override
+    public URL getResource(String name)
+    {
+        URL url = findResource(name);
+        if (url != null)
+        {
+            return url;
+        }
+        return super.getResource(name);
     }
 }

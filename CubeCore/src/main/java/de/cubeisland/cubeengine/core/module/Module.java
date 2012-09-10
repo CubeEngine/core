@@ -290,17 +290,18 @@ public abstract class Module
     {
         if (!this.enabled)
         {
-            this.enabled = true;
             try
             {
+                this.logger.log(Level.INFO, "Enabling {0}-r{1}", new Object[]{this.getInfo().getName(), this.getInfo().getRevision()});
                 this.onEnable();
+                this.enabled = true;
                 this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, this));
             }
             catch (Throwable t)
             {
                 this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
+                this.logger.log(Level.INFO, "{0} disabled", this.getInfo().getName());
             }
-            this.enabled = false;
         }
         return this.enabled;
     }

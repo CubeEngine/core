@@ -92,7 +92,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     public void sendMessage(String string)
     {
         // TODO this should be removed before a release or disabled via some kind of debug flag!
-        if (Thread.currentThread().getStackTrace()[1].getClassName().startsWith("de.cubeisland.cubeengine."))
+        if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
         {
             CubeEngine.getLogger().warning("A module sent an untranslated message!");
         }

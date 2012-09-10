@@ -1,4 +1,8 @@
-package de.cubeisland.cubeengine.test.l18n;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 
@@ -6,14 +10,14 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
  *
  * @author Anselm Brehme
  */
-public enum TestRecource implements Resource
+public enum FlyResource implements Resource
 {
-    GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/test.json"),
-    FRENCH_MESSAGES("resources/language/messages/fr_FR.json", "language/fr_FR/test.json");
+
+    GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/fly.json");
     private final String target;
     private final String source;
 
-    private TestRecource(String source, String target)
+    private FlyResource(String source, String target)
     {
         this.source = source;
         this.target = target;
@@ -28,4 +32,5 @@ public enum TestRecource implements Resource
     {
         return this.target;
     }
+    
 }

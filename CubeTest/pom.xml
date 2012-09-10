@@ -51,7 +51,7 @@
                 </includes>
             </resource>
             <resource>
-                <targetPath>./resource/language</targetPath>
+                <targetPath>./resources/language</targetPath>
                 <directory>${basedir}/src/main/resources/language</directory>
                 <filtering>false</filtering>
                 <includes>

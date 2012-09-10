@@ -11,6 +11,7 @@ public enum CoreResource implements Resource
 {
     ENGLISH_META("resources/language/en_US.yml", "language/en_US.yml"),
     GERMAN_META("resources/language/de_DE.yml", "language/de_DE.yml"),
+    FRENCH_META("resources/language/fr_FR.yml", "language/fr_FR.yml"),
     GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/core.json");
     private final String target;
     private final String source;

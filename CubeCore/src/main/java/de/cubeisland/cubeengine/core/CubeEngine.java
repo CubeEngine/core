@@ -200,6 +200,6 @@ public final class CubeEngine
 
     public static String _(String language, String category, String text, Object... params)
     {
-        return core.getI18n().translate(language, category, language, params);
+        return core.getI18n().translate(language, category, text, params);
     }
 }

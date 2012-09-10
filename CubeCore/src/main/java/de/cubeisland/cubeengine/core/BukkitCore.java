@@ -67,6 +67,7 @@ public class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
+        this.fileManager.dropResources(CoreResource.values());
         try
         {
             this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));
@@ -83,7 +84,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
         this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
 
-        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(this.getDataFolder(), "database.yml"));
+        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
             this.logger.log(Level.SEVERE, "Could not find the database type ''{0}''", this.config.database);
@@ -94,7 +95,6 @@ public class BukkitCore extends JavaPlugin implements Core
         this.userManager = new UserManager(this);
 
         this.registerPermissions(Perm.values());
-        this.fileManager.dropResources(CoreResource.values());
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 

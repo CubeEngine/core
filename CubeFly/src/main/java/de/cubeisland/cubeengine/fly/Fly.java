@@ -22,6 +22,7 @@ public class Fly extends Module
         //this.getCommand("fly").setExecutor(baseCommand);
         this.getCore().getEventManager().registerListener(new FlyListener(this), this);
         this.config = Configuration.load(FlyConfiguration.class, this);
+        this.getFileManager().dropResources(FlyResource.values());
         this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
     }
 
