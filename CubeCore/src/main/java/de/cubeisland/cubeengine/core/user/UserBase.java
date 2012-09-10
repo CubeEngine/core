@@ -1991,6 +1991,7 @@ public class UserBase implements Player
         return null;
     }
     
+    /*
     public String getLanguage()
     {
         Player player = this.offlinePlayer.getPlayer();
@@ -2000,5 +2001,5 @@ public class UserBase implements Player
             // return this.offlinePlayer.getLanguage();
         }
         return I18n.SOURCE_LANGUAGE;
-    }
+    }*/
 }
