@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.i18n;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
@@ -95,7 +96,7 @@ public class Language
                     elem = entry.getValue();
                     if (elem.isJsonPrimitive())
                     {
-                        catMessages.put(entry.getKey(), elem.getAsString());
+                        catMessages.put(entry.getKey(), ChatFormat.parseFormats(elem.getAsString()));
                     }
                 }
                 if (!catMessages.isEmpty())

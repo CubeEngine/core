@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
@@ -13,6 +14,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,11 +29,13 @@ public class I18n
     public static final String SOURCE_LANGUAGE = "en_US";
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
+    private final Map<String, String> sourceLanguageCache;
 
     public I18n(FileManager fm, String defaultLanguage)
     {
         this.languageMap = new THashMap<String, Language>();
         this.defaultLanguage = defaultLanguage;
+        this.sourceLanguageCache = new ConcurrentHashMap<String, String>();
         this.loadLanguages(fm.getLanguageDir());
         try
         {
@@ -92,7 +96,11 @@ public class I18n
         if (translation == null)
         {
             this.logMissingTranslation(language, category, message);
-            return String.format(message, params);
+            translation = this.sourceLanguageCache.get(message);
+            if (translation == null)
+            {
+                this.sourceLanguageCache.put(message, translation = ChatFormat.parseFormats(message));
+            }
         }
         
         return String.format(translation, params);
