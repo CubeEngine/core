@@ -68,8 +68,8 @@ public class ModuleClassLoader extends URLClassLoader
     @Override
     public URL getResource(String name)
     {
-        URL url = findResource(name);
-        if (url != null)
+        URL url = findResource(name);//find Resource from this Module
+        if (url != null)//and then check parent
         {
             return url;
         }
