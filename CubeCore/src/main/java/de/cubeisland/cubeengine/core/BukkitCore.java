@@ -50,13 +50,11 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         CubeEngine.initialize(this);
+        PluginManager pm = this.server.getPluginManager();
 
         this.logger = new CubeLogger("Core");
         this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
 
-        this.server = this.getServer();
-        PluginManager pm = this.server.getPluginManager();
-        this.permissionRegistration = new PermissionRegistration(pm);
         try
         {
             this.fileManager = new FileManager(this.getDataFolder().getParentFile());
@@ -76,6 +74,9 @@ public class BukkitCore extends JavaPlugin implements Core
         {
             this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
+        
+        this.server = this.getServer();
+        this.permissionRegistration = new PermissionRegistration(pm);
         this.eventRegistration = new EventManager(pm);
         this.moduleManager = new ModuleManager(this);
         this.commandManager = new CommandManager(this);
