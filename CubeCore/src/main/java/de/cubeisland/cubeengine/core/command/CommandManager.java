@@ -7,8 +7,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
@@ -52,7 +55,7 @@ public class CommandManager
         }
     }
 
-    private void inject(Command command)
+    private void injectIntoRoot(Command command)
     {
         this.commandMap.register(command.getLabel(), command);
     }
@@ -81,7 +84,14 @@ public class CommandManager
         CubeCommand parentCommand = null;
         for (String parent : parents)
         {
-            parentCommand = this.getCommand(parent);
+            if (parentCommand == null)
+            {
+                parentCommand = this.getCommand(parent);
+            }
+            else
+            {
+                parentCommand = parentCommand.getChild(parent);
+            }
             if (parentCommand == null)
             {
                 throw new IllegalArgumentException("Parent command '" + parent + "' is not registered!");
@@ -90,17 +100,33 @@ public class CommandManager
 
         if (parentCommand == null)
         {
-            this.inject(command);
+            this.injectIntoRoot(command);
         }
         else
         {
             parentCommand.addChild(command);
         }
     }
+    
+    public void registerCommand(Module module, ContainerCommand command)
+    {
+        
+    }
 
     public void registerCommands(Module module, Object commandHolder)
     {
         this.registerCommands(module, commandHolder, NO_PARENTS);
+    }
+    
+    public void registerCommand(ContainerCommand command, String... parents)
+    {
+        this.registerCommand(command, parents);
+        
+        String[] newParents = new String[parents.length + 1];
+        newParents[0] = command.getName();
+        System.arraycopy(parents, 0, newParents, 1, parents.length);
+        
+        this.registerCommands(command.getModule(), command, newParents);
     }
 
     public void registerCommands(Module module, Object commandHolder, String... parents)
@@ -114,7 +140,7 @@ public class CommandManager
                 continue;
             }
             Class<?>[] params = method.getParameterTypes();
-            if (params.length >= 1 && params[0] == CommandContext.class)
+            if (params.length == 1 && params[0] == CommandContext.class)
             {
                 continue;
             }
@@ -124,11 +150,26 @@ public class CommandManager
             {
                 continue;
             }
+            
+            
+            String[] names = commandAnnotation.names();
+            Validate.notEmpty(names, "The given command has no names defined!");
 
-            String name = commandAnnotation.name().trim().toLowerCase(Locale.ENGLISH);
-            if ("".equals(name))
+            String name = names[0].trim().toLowerCase(Locale.ENGLISH);
+            List<String> aliases;
+            if (names.length > 1)
             {
-                name = method.getName();
+                aliases = Arrays.asList(Arrays.copyOfRange(names, 1, names.length - 1));
+                
+                // make sure the aliases are lowercased
+                for (int i = 0; i < aliases.size(); ++i)
+                {
+                    aliases.set(i, aliases.get(i).toLowerCase(Locale.ENGLISH));
+                }
+            }
+            else
+            {
+                aliases = Collections.EMPTY_LIST;
             }
 
             this.registerCommand(new ReflectedCommand(
@@ -139,7 +180,8 @@ public class CommandManager
                 name,
                 commandAnnotation.desc(),
                 commandAnnotation.usage(),
-                Arrays.asList(commandAnnotation.aliases())));
+                aliases
+            ));
         }
     }
 

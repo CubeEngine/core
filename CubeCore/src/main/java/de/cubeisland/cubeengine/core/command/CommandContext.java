@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -47,6 +48,10 @@ public class CommandContext
     public CommandContext(Core core, CommandSender sender, CubeCommand command, String label)
     {
         this.core = core;
+        if (sender instanceof Player)
+        {
+            sender = core.getUserManager().getUser((Player)sender);
+        }
         this.sender = sender;
         this.command = command;
         this.flags = new THashSet<String>();

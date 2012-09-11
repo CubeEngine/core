@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +20,6 @@ import org.bukkit.command.CommandSender;
 public abstract class CubeCommand extends Command
 {
     private final Module module;
-    private final CubeCommand parent;
     private Map<String, CubeCommand> children;
     private Map<String, String> childrenAliases;
 
@@ -42,7 +42,6 @@ public abstract class CubeCommand extends Command
     {
         super("/" + name, description, usageMessage, aliases);
         this.module = module;
-        this.parent = parent;
 
         this.children = new LinkedHashMap<String, CubeCommand>();
         this.childrenAliases = new THashMap<String, String>();
@@ -99,11 +98,13 @@ public abstract class CubeCommand extends Command
     @Override
     public final boolean execute(CommandSender sender, String label, String[] args)
     {
-        if (args.length > 0 && this.hasChild(args[0]))
+        if (args.length > 0)
         {
-            String[] subArgs = new String[args.length - 1];
-            System.arraycopy(args, 1, subArgs, 0, args.length - 1);
-            return this.getChild(args[0]).execute(sender, label, subArgs);
+            CubeCommand child = this.getChild(args[0].toLowerCase(Locale.ENGLISH));
+            if (child != null)
+            {
+                return child.execute(sender, label, Arrays.copyOfRange(args, 1, args.length - 1));
+            }
         }
 
         CommandContext context = new CommandContext(this.module.getCore(), sender, this, label);

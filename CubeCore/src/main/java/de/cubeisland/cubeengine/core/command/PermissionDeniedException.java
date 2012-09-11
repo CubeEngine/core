@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.user.User;
+import org.bukkit.command.CommandSender;
 
 /**
  *
@@ -8,16 +8,16 @@ import de.cubeisland.cubeengine.core.user.User;
  */
 public class PermissionDeniedException extends Exception
 {
-    private final User user;
+    private final CommandSender sender;
     
-    public PermissionDeniedException(User user, String message)
+    public PermissionDeniedException(CommandSender sender, String message)
     {
         super(message);
-        this.user = user;
+        this.sender = sender;
     }
     
-    public User getUser()
+    public CommandSender getSender()
     {
-        return this.user;
+        return this.sender;
     }
 }

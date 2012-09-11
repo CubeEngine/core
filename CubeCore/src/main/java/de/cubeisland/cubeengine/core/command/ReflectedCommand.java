@@ -2,13 +2,13 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Named;
+import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.map.hash.THashMap;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.permissions.PermissionDefault;
 
 /**
  *
@@ -18,43 +18,45 @@ public class ReflectedCommand extends CubeCommand
 {
     private final Object commandContainer;
     private final Method commandMethod;
-    private final Flag[] flags;
     private final int min;
     private final int max;
     private Map<String[], Class<?>> namedParameters;
+    private final boolean checkPermision;
+    private final String permissionNode;
+    private final PermissionDefault permissionDefault;
+    private final Flag[] flags;
+    private final Param[] params;
 
     public ReflectedCommand(Module module, Object commandContainer, Method method, Command annotation, String name, String description, String usage, List<String> aliases)
     {
         super(module, name, description, usage, aliases);
         this.commandMethod = method;
         this.commandContainer = commandContainer;
-
-        this.flags = annotation.flags();
+        
         this.min = annotation.min();
         this.max = annotation.max();
+        this.checkPermision = annotation.checkPerm();
         this.namedParameters = new THashMap<String[], Class<?>>();
-
-        Annotation[][] annotations = method.getParameterAnnotations();
-        Class<?>[] paramTypes = method.getParameterTypes();
-
-        Annotation[] paramAnnotations;
-        Named namedAnnotation;
-        for (int i = 1; i < paramTypes.length; ++i)
+        
+        this.flags = annotation.flags();
+        this.params = annotation.params();
+        
+        this.permissionDefault = annotation.permDefault();
+        if (this.checkPermision)
         {
-            namedAnnotation = null;
-            paramAnnotations = annotations[i];
-            for (int j = 0; j < paramAnnotations.length; ++j)
+            if ("".equals(annotation.permNode()))
             {
-                if (paramAnnotations[i] instanceof Named)
-                {
-                    namedAnnotation = (Named)paramAnnotations[j];
-                    break;
-                }
+                this.permissionNode = this.generatePermissionNode();
             }
-            if (namedAnnotation != null)
+            else
             {
-                this.namedParameters.put(namedAnnotation.value(), paramTypes[i]);
+                this.permissionNode = annotation.permNode();
             }
+            module.getCore().getPermissionRegistration().registerPermission(this.permissionNode, this.permissionDefault);
+        }
+        else
+        {
+            this.permissionNode = null;
         }
     }
 
@@ -67,7 +69,10 @@ public class ReflectedCommand extends CubeCommand
             {
                 throw new InvalidUsageException(this.min, this.max);
             }
-            // TODO permission check -> throw exception
+            if (this.checkPermision && context.getSender().hasPermission(usageMessage))
+            {
+                throw new PermissionDeniedException(context.getSender(), "You are not allowed to do this.");
+            }
 
             this.commandMethod.invoke(this.commandContainer, context);
         }
@@ -75,5 +80,10 @@ public class ReflectedCommand extends CubeCommand
         {
             context.setResult(false);
         }
+    }
+    
+    protected String generatePermissionNode()
+    {
+        return ""; // TODO implement me
     }
 }

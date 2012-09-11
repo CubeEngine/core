@@ -3,6 +3,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.bukkit.permissions.PermissionDefault;
 
 /**
  * Annotates a method as a command
@@ -13,12 +14,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Command
 {
-    public String name() default "";
-    public String[] aliases() default {};
+    public String[] names();
     public int min() default 0;
     public int max() default -1;
     public String desc();
-    public boolean permission() default true;
-    public String usage() default "auto";
+    public boolean checkPerm() default true;
+    public String permNode() default "";
+    public PermissionDefault permDefault() default PermissionDefault.FALSE;
+    public String usage() default "";
     public Flag[] flags() default {};
+    public Param[] params() default {};
 }
