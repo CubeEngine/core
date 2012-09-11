@@ -10,7 +10,7 @@ import java.io.FilenameFilter;
  */
 public class FileExtentionFilter implements FileFilter, FilenameFilter
 {
-    public static final FileExtentionFilter YAML = new FileExtentionFilter("yaml");
+    public static final FileExtentionFilter YAML = new FileExtentionFilter("yml");
     public static final FileExtentionFilter JSON = new FileExtentionFilter("json");
     public static final FileExtentionFilter INI = new FileExtentionFilter("ini");
     public static final FileExtentionFilter JAR = new FileExtentionFilter("jar");
@@ -25,11 +25,13 @@ public class FileExtentionFilter implements FileFilter, FilenameFilter
         this.extention = extention;
     }
 
+    @Override
     public boolean accept(File file)
     {
         return (file.isFile() && file.getPath().endsWith(this.extention));
     }
 
+    @Override
     public boolean accept(File dir, String name)
     {
         return name.endsWith(this.extention);

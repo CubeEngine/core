@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.BukkitDependend;
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.BukkitCore;
+import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
@@ -12,10 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -30,59 +29,26 @@ import org.bukkit.plugin.Plugin;
  *
  * @author Anselm Brehme
  */
-public class UserManager extends BasicStorage<User> implements Cleanable
+public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
 {
     private final Core core;
     private final ConcurrentHashMap<String, User> users;
     private final Server server;
-    private ExecutorService executor;
-    private final UserManager instance;
+    private final ScheduledExecutorService executor;
 
-    public UserManager(final Core core, Server server)
+    public UserManager(final Core core)
     {
         super(core.getDB(), User.class);
         this.core = core;
         this.initialize();
         this.executor = core.getExecutor();
 
-        this.server = server;
+        this.server = ((BukkitCore)core).getServer();
         this.users = new ConcurrentHashMap<String, User>();
-
-        this.instance = this;
-        Thread thread;
-        thread = new Thread(new Runnable()
-        {
-            public void run()
-            {
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask()
-                {
-                    @Override
-                    public void run()
-                    {
-                        instance.cleanUp();
-                        CubeEngine.getLogger().info("[UserManager] Cleaning Up!");
-                    }
-                }, 0, core.getConfiguration().userManagerCleanup * 60 * 1000);
-            }
-        });
-
-        CubeEngine.getEventManager().registerCoreListener(new Listener()
-        {
-            @EventHandler(priority = EventPriority.MONITOR)
-            public void onQuit(final PlayerQuitEvent event)
-            {
-                CubeEngine.getServer().getScheduler().
-                    scheduleSyncDelayedTask((Plugin)core, new Runnable()
-                {
-                    public void run()
-                    {
-                        instance.users.remove(event.getPlayer().getName());
-                    }
-                }, 1);
-            }
-        });
-        thread.start();
+        
+        final long delay = (long)core.getConfiguration().userManagerCleanup;
+        this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
+        this.core.getEventManager().registerCoreListener(this);
     }
 
     @Override
@@ -112,9 +78,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         this.users.put(user.getName(), user);
         this.executor.submit(new Runnable()
         {
+            @Override
             public void run()
             {
-                instance.store(user);
+                store(user);
             }
         });
         UserCreatedEvent event = new UserCreatedEvent(this.core, user);
@@ -126,9 +93,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable
     {
         this.executor.submit(new Runnable()
         {
+            @Override
             public void run()
             {
-                instance.update(user);
+                update(user);
             }
         });
     }
@@ -137,9 +105,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable
     {
         this.executor.submit(new Runnable()
         {
+            @Override
             public void run()
             {
-                instance.delete(user);
+                delete(user);
             }
         });
         this.users.remove(user.getName());
@@ -216,6 +185,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         return savedUser;
     }
 
+    @Override
     public void clean()
     {
         this.users.clear();
@@ -260,7 +230,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable
             if (user == null) //then NO user with exact name
             {
                 //Get all online Player and searching for similar names
-                Player[] players = CubeEngine.getServer().getOnlinePlayers();
+                Player[] players = this.server.getOnlinePlayers();
                 int distance = 5;
                 int ld;
                 for (Player player : players)
@@ -340,7 +310,8 @@ public class UserManager extends BasicStorage<User> implements Cleanable
         return user;
     }
 
-    public void cleanUp()//removes all users that are not online
+    @Override
+    public void run()
     {
         for (User user : users.values())
         {
@@ -349,5 +320,18 @@ public class UserManager extends BasicStorage<User> implements Cleanable
                 users.remove(user.getName());
             }
         }
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    private void onQuit(final PlayerQuitEvent event)
+    {
+        event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)core, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                users.remove(event.getPlayer().getName());
+            }
+        }, 1);
     }
 }

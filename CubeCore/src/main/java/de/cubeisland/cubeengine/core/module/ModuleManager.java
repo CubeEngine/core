@@ -1,8 +1,14 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
@@ -12,6 +18,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,13 +29,15 @@ import java.util.logging.Logger;
 public class ModuleManager
 {
     private final Map<String, Module> modules;
+    private final Map<Class<? extends Module>, Module> classMap;
     private final Core core;
     private final ModuleLoader loader;
     private static final Logger logger = CubeEngine.getLogger();
 
     public ModuleManager(Core core)
     {
-        this.modules = new THashMap<String, Module>();
+        this.modules = new ConcurrentHashMap<String, Module>();
+        this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.core = core;
         this.loader = new ModuleLoader(core);
     }
@@ -48,13 +57,13 @@ public class ModuleManager
         return this.modules.values();
     }
 
-    public void loadModules(File directory)
+    public synchronized void loadModules(File directory)
     {
-        Validate.isDir(directory, "The give dir is no dir!");
+        Validate.isDir(directory, "The given File is no directory!");
 
         Module module;
         ModuleInfo info;
-        HashMap<String, ModuleInfo> moduleInfos = new HashMap<String, ModuleInfo>();
+        Map<String, ModuleInfo> moduleInfos = new HashMap<String, ModuleInfo>();
         logger.info("Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
@@ -99,12 +108,12 @@ public class ModuleManager
         logger.info("Finished loading modules!");
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws ModuleException
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
     {
         return this.loadModule(name, moduleInfos, new Stack<String>(), false);
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException
+    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
     {
         name = name.toLowerCase(Locale.ENGLISH);
         if (this.modules.containsKey(name))
@@ -123,11 +132,11 @@ public class ModuleManager
         loadStack.push(name);
         for (String dep : info.getSoftDependencies())
         {
-            loadModule(dep, moduleInfos, loadStack, true);
+            this.loadModule(dep, moduleInfos, loadStack, true);
         }
         for (String dep : info.getDependencies())
         {
-            if (!loadModule(dep, moduleInfos, loadStack, false))
+            if (!this.loadModule(dep, moduleInfos, loadStack, false))
             {
                 throw new MissingDependencyException(dep);
             }

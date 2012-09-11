@@ -7,13 +7,7 @@
     <name>CubeEngine</name>
     <url>http://cubeisland.de</url>
     <packaging>pom</packaging>
-    <description>An all in one minecraft server solution.</description>
-
-    <scm>
-        <connection>scm:git:git://github.com/cubeisland/CubeEngine.git</connection>
-        <url>https://github.com/cubeisland/CubeEngine</url>
-        <developerConnection>scm:git:git@github.com:cubeisland/CubeEngine.git</developerConnection>
-    </scm>
+    <description>Minecraft module framework.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

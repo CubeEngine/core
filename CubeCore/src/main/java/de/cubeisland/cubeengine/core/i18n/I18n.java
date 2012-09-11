@@ -1,18 +1,22 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CoreResource;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.i18n.geoip.LookupService;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Validate;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,28 +24,27 @@ import java.util.Map;
  */
 public class I18n
 {
+    private static final Logger LOGGER = new CubeLogger("language");
+    
     public static final String SOURCE_LANGUAGE = "en_US";
-    private final LookupService lookupService;
-    private final Map<String, String> countryMap;
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
+    private final Map<String, String> sourceLanguageCache;
 
-    public I18n(Core core, String defaultLanguage)
+    public I18n(FileManager fm, String defaultLanguage)
     {
-        FileManager fileManager = core.getFileManager();
+        this.languageMap = new THashMap<String, Language>();
+        this.defaultLanguage = defaultLanguage;
+        this.sourceLanguageCache = new ConcurrentHashMap<String, String>();
+        this.loadLanguages(fm.getLanguageDir());
         try
         {
-            this.lookupService = new LookupService(fileManager.getResourceFile(CoreResource.GEOIP_DATABASE));
+            LOGGER.addHandler(new FileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations.log").getPath()));
         }
         catch (IOException e)
         {
-            throw new RuntimeException("CubeCore failed to load the GeoIP database!", e);
+            Logger.getLogger(I18n.class.getName()).log(Level.SEVERE, null, e);
         }
-
-        this.countryMap = new THashMap<String, String>();
-        this.languageMap = new THashMap<String, Language>();
-
-        this.loadLanguages(fileManager.getLanguageDir());
     }
 
     public String getDefaultLanguage()
@@ -63,39 +66,18 @@ public class I18n
     private void loadLanguages(File languageDir)
     {
         Language language;
-        for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.JSON))
+        for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.YAML))
         {
             try
             {
-                String name = file.getName();
-                name = name.substring(0, name.lastIndexOf('.'));
-                language = new Language(name, languageDir);
+                language = new Language(Configuration.load(LanguageConfiguration.class, file), languageDir);
                 this.languageMap.put(language.getCode(), language);
-
-                for (String country : language.getCountries())
-                {
-                    this.countryMap.put(country, name);
-                }
             }
-            catch (IOException e)
+            catch (IllegalArgumentException e)
             {
-                e.printStackTrace(System.err);
-            }
-            catch (IllegalStateException e)
-            {
-                e.printStackTrace(System.err);
+                CubeEngine.getLogger().log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
-    }
-
-    public String locateAddress(InetAddress address)
-    {
-        return this.lookupService.getCountry(address).getCode();
-    }
-
-    public String getLanguageFromCountry(String country)
-    {
-        return this.countryMap.get(country);
     }
 
     public String translate(String language, String category, String message, Object... params)
@@ -110,12 +92,22 @@ public class I18n
         {
             translation = lang.getTranslation(category, message);
         }
-        return String.format(translation == null ? message : translation, params);
+        
+        if (translation == null)
+        {
+            this.logMissingTranslation(language, category, message);
+            translation = this.sourceLanguageCache.get(message);
+            if (translation == null)
+            {
+                this.sourceLanguageCache.put(message, translation = ChatFormat.parseFormats(message));
+            }
+        }
+        
+        return String.format(translation, params);
     }
 
     public void clean()
     {
-        this.countryMap.clear();
         for (Language language : this.languageMap.values())
         {
             language.clean();
@@ -137,11 +129,16 @@ public class I18n
             {
                 return name.toLowerCase(Locale.ENGLISH);
             }
-            else if (delimPos == 2 && delimPos == 5)
+            else if (delimPos == 2 && length == 5)
             {
-                return name.substring(0, 1).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).toUpperCase(Locale.ENGLISH);
+                return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).toUpperCase(Locale.ENGLISH);
             }
         }
         return null;
+    }
+    
+    private void logMissingTranslation(String language, String category, String message)
+    {
+        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[] {language, category, message});
     }
 }

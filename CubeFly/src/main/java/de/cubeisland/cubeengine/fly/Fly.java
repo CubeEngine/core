@@ -6,7 +6,7 @@ import java.io.File;
 import org.bukkit.Server;
 
 
-public class CubeFly extends Module
+public class Fly extends Module
 {
     public static boolean debugMode = false;
     protected Server server;
@@ -22,6 +22,7 @@ public class CubeFly extends Module
         //this.getCommand("fly").setExecutor(baseCommand);
         this.getCore().getEventManager().registerListener(new FlyListener(this), this);
         this.config = Configuration.load(FlyConfiguration.class, this);
+        this.getFileManager().dropResources(FlyResource.values());
         this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
     }
 

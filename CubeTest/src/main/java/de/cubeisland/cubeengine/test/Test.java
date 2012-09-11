@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.test;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -10,6 +11,7 @@ import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
+import de.cubeisland.cubeengine.test.l18n.TestRecource;
 import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -17,7 +19,7 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CubeTest extends Module
+public class Test extends Module
 {
     public TestManager manager;
     public UserManager uM;
@@ -29,7 +31,6 @@ public class CubeTest extends Module
         Logger logger = this.getLogger();
         try
         {
-            logger.info("enabling TestModule");
             Configuration.load(TestConfig.class, this);
             this.initializeDatabase();
             this.testDatabase();
@@ -47,13 +48,10 @@ public class CubeTest extends Module
         {
             logger.log(Level.SEVERE, "Error while adding the FileHandler", ex);
         }
-        logger.severe("SevereTestLog");
-        logger.warning("WarningTestLog");
         this.getCore().getEventManager().registerListener(new TestListener(this), this);
 
         this.testUserManager();
-
-        logger.info("TestModule succesfully enabeled");
+        this.testl18n();
     }
 
     public void initializeDatabase() throws SQLException
@@ -85,8 +83,6 @@ public class CubeTest extends Module
         uM.getUser("NoPlayer");
         uM.getUser("NoUserAtAll");
         user = uM.getUser("NoUser");
-        //Testung update
-        user.setLanguage("de");
         uM.update(user);
         //Testing getall
         uM.getAll();
@@ -203,6 +199,8 @@ public class CubeTest extends Module
 
     public void testl18n()
     {
-        //TODO
+        CubeEngine.getFileManager().dropResources(TestRecource.values());
+        System.out.println(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
+        System.out.println(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
     }
 }

@@ -14,6 +14,7 @@ public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> imp
         super(parent);
     }
 
+    @Override
     public MySQLInsertBuilder into(String table)
     {
         Validate.notNull(table, "The table name must not be null!");
@@ -22,6 +23,7 @@ public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> imp
         return this;
     }
 
+    @Override
     public MySQLInsertBuilder cols(String... cols)
     {
         Validate.notEmpty(cols, "You have to specify at least one col to insert");

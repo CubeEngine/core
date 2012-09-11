@@ -63,6 +63,10 @@ public class ReflectedCommand extends CubeCommand
     {
         try
         {
+            if (context.size() < this.min || context.size() > this.max)
+            {
+                throw new InvalidUsageException(this.min, this.max);
+            }
             // TODO permission check -> throw exception
 
             this.commandMethod.invoke(this.commandContainer, context);

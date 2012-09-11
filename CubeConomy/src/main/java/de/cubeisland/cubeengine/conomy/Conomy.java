@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import java.io.File;
 import java.util.logging.Logger;
 
-public class CubeConomy extends Module
+public class Conomy extends Module
 {
     protected static Logger logger = null;
     public static boolean debugMode = false;

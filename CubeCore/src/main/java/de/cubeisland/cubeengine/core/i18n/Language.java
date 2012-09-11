@@ -1,16 +1,15 @@
 package de.cubeisland.cubeengine.core.i18n;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -21,45 +20,22 @@ public class Language
     private final String code;
     private final String name;
     private final String localName;
-    private final Set<String> countries;
     private final Map<String, Map<String, String>> messages;
     private final File messageDir;
     private final JsonParser parser;
 
-    public Language(String code, File languageDir) throws IOException
+    public Language(LanguageConfiguration config, File languageDir)
     {
-        this.code = code;
-        this.messageDir = new File(languageDir, code);
-        this.countries = new THashSet<String>();
-        this.messages = new THashMap<String, Map<String, String>>();
+        Validate.notNull(config.code, "The code must not be null!");
+        Validate.notNull(config.name, "The name must not be null!");
+        Validate.notNull(config.localName, "The local name must not be null!");
+        
+        this.code = I18n.normalizeLanguage(config.code);
+        this.name = config.name;
+        this.localName = config.localName;
+        this.messageDir = new File(languageDir, this.code);
+        this.messages = new ConcurrentHashMap<String, Map<String, String>>();
         this.parser = new JsonParser();
-
-        JsonObject root;
-        FileReader reader = new FileReader(new File(languageDir, code + ".json"));
-        root = parser.parse(reader).getAsJsonObject();
-        reader.close();
-
-        if (!root.has("name") || !root.has("localName"))
-        {
-            throw new IllegalStateException("The language " + code + " has no valid meta file!");
-        }
-        this.name = root.get("name").getAsString();
-        this.localName = root.get("localName").getAsString();
-
-        if (!this.code.equalsIgnoreCase(I18n.SOURCE_LANGUAGE))
-        {
-            if (!root.has("countries"))
-            {
-                throw new IllegalStateException("Every language must have a list of counties where the language is spoken!");
-            }
-            for (JsonElement elem : root.getAsJsonArray("countries"))
-            {
-                if (elem.isJsonPrimitive())
-                {
-                    this.countries.add(elem.getAsString());
-                }
-            }
-        }
     }
 
     public String getCode()
@@ -75,11 +51,6 @@ public class Language
     public String getLocalName()
     {
         return this.localName;
-    }
-
-    public Set<String> getCountries()
-    {
-        return Collections.unmodifiableSet(this.countries);
     }
 
     public void addMessages(String cat, Map<String, String> messages)
@@ -125,7 +96,7 @@ public class Language
                     elem = entry.getValue();
                     if (elem.isJsonPrimitive())
                     {
-                        catMessages.put(entry.getKey(), elem.getAsString());
+                        catMessages.put(entry.getKey(), ChatFormat.parseFormats(elem.getAsString()));
                     }
                 }
                 if (!catMessages.isEmpty())
@@ -144,7 +115,6 @@ public class Language
 
     void clean()
     {
-        this.countries.clear();
         this.messages.clear();
     }
 }

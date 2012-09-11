@@ -35,6 +35,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
         return this;
     }
 
+    @Override
     public MySQLTableBuilder beginFields()
     {
         if (this.fieldCounter > 0)
@@ -45,31 +46,37 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
         return this;
     }
 
+    @Override
     public MySQLTableBuilder field(String name, AttrType type)
     {
         return this.field(name, type, 0);
     }
 
+    @Override
     public MySQLTableBuilder field(String name, AttrType type, int length)
     {
         return this.field(name, type, length, true);
     }
 
+    @Override
     public MySQLTableBuilder field(String name, AttrType type, boolean notnull)
     {
         return this.field(name, type, 0, true);
     }
 
+    @Override
     public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull)
     {
         return this.field(name, type, length, notnull, false);
     }
 
+    @Override
     public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned)
     {
         return this.field(name, type, length, notnull, unsigned, false);
     }
 
+    @Override
     public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai)
     {
         if (this.fieldCounter > 0)
@@ -95,24 +102,28 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
         return this;
     }
 
+    @Override
     public MySQLTableBuilder primaryKey(String key)
     {
         this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(key)).append(')');
         return this;
     }
 
+    @Override
     public MySQLTableBuilder foreignKey(String key)
     {
         this.query.append(",FOREIGN KEY (").append(this.database.prepareFieldName(key)).append(')');
         return this;
     }
 
+    @Override
     public MySQLTableBuilder references(String otherTable, String key)
     {
         this.query.append("REFERENCES ").append(this.database.prepareName(otherTable)).append(" (").append(this.database.prepareFieldName(key)).append(')');
         return this;
     }
 
+    @Override
     public MySQLTableBuilder endFields()
     {
         this.query.append(')');
@@ -121,18 +132,21 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
         return this;
     }
 
+    @Override
     public MySQLTableBuilder engine(String engine)
     {
         this.query.append("ENGINE=").append(engine).append(" ");
         return this;
     }
 
+    @Override
     public MySQLTableBuilder defaultcharset(String charset)
     {
         this.query.append("DEFAULT CHARSET=").append(charset).append(" ");
         return this;
     }
 
+    @Override
     public MySQLTableBuilder autoIncrement(int n)
     {
         this.query.append("AUTO_INCREMENT=").append(n).append(" ");

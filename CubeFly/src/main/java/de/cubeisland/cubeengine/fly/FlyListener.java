@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
@@ -21,9 +21,9 @@ public class FlyListener implements Listener
 {
     private UserManager usermanager;
     private HashMap<Player, Task> tasks = new HashMap<Player, Task>();
-    private CubeFly fly;
+    private Fly fly;
 
-    public FlyListener(CubeFly fly)
+    public FlyListener(Fly fly)
     {
         this.fly = fly;
         this.usermanager = fly.getUserManager();
@@ -43,26 +43,23 @@ public class FlyListener implements Listener
             return;
         }
         User user = usermanager.getUser(player);
+        if (user == null)//User does not exist
+        {
+            return;
+        }
         if (Perm.FLY_BYPASS.isAuthorized(player));
         {
             if (!Perm.FLY_FEAHTER.isAuthorized(player))
             {
-                user.sendTMessage("&cYou dont have permission to use this!");
-                //TODO Translation: 
-                //&cDu bist nicht berechtigt dies zu nutzen!
+                user.sendMessage("core", "You dont have permission to use this!");
                 player.setAllowFlight(false); //Disable when player is flying
                 return;
             }
-            if (user == null)
-            {
-                //User does not exist -> No Permissions for using any CubeModule
-                //TODO return;
-            }
+
             FlyStartEvent flyStartEvent = new FlyStartEvent(CubeEngine.getCore(), user);
             if (flyStartEvent.isCancelled())
             {
-                //TODO user.sendTMessage("&cYou are not allowed to fly now!");
-                //&cDu darfst jetzt nicht fliegen!
+                user.sendMessage("fly", "You are not allowed to fly now!");
                 player.setAllowFlight(false); //Disable when player is flying
                 return;
             }
@@ -73,8 +70,7 @@ public class FlyListener implements Listener
         {
             final ItemStack feather = new ItemStack(Material.FEATHER, 1);
             player.getInventory().removeItem(feather);
-            //TODO user.sendTMessage("&6You can now fly!");
-            //&6Du kannst jetzt fliegen!
+            user.sendMessage("fly", "You can now fly!");
             Task flymore = new Task(fly)
             {
                 public void run()//2 feather/min
@@ -109,8 +105,7 @@ public class FlyListener implements Listener
         }
         else
         {//or not
-            //TODO user.sendTMessage("&6You cannot fly anymore!");
-            //&6Du kannst jetzt nicht mehr fliegen!
+            user.sendMessage("fly","You cannot fly anymore!");
         }
     }
 }

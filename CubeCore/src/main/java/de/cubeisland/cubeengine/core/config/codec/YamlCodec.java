@@ -26,7 +26,8 @@ public class YamlCodec extends ConfigurationCodec
         QUOTE = "'";
     }
 
-    public Map<String,Object> loadFromString(String contents)
+    @Override
+    public Map<String, Object> loadFromString(String contents)
     {
         if (contents == null)
         {
@@ -40,53 +41,59 @@ public class YamlCodec extends ConfigurationCodec
         return values;
     }
 
+    @Override
     public String convertValue(String path, Object value, int off)
     {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(this.buildComment(path, off));
-
+        StringBuilder sb = new StringBuilder(this.buildComment(path, off));
         String offset = this.offset(off);
         String key = this.getSubKey(path);
         sb.append(offset).append(key).append(":");//{_OFFSET_Key:}
-        if (value instanceof Map)
+        if (value == null)
         {
-            sb.append(LINEBREAK);
-            sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
-            return sb.toString();
-        }
-        else if (value instanceof String)
-        {
-            sb.append(" ").append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
-        }
-        else if (value instanceof Collection<?>)
-        {
-            if (((Collection<?>)value).isEmpty())
-            {
-                return sb.append(" []").append(LINEBREAK).toString();
-            }
-            for (Object o : (Collection<?>)value) //Convert Collection
-            {
-                sb.append(LINEBREAK).append(offset).append("- ");
-                if (o instanceof String)
-                {
-                    sb.append(QUOTE).append(o.toString()).append(QUOTE);
-                }
-                else
-                {
-                    sb.append(o.toString());
-                }
-            }
+            sb.append(" ");
         }
         else
         {
-            sb.append(" ").append(value.toString());
+            if (value instanceof Map)
+            {
+                sb.append(LINEBREAK);
+                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
+                return sb.toString();
+            }
+            else if (value instanceof String)
+            {
+                sb.append(" ").append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
+            }
+            else if (value instanceof Collection<?>)
+            {
+                if (((Collection<?>)value).isEmpty())
+                {
+                    return sb.append(" []").append(LINEBREAK).toString();
+                }
+                for (Object o : (Collection<?>)value) //Convert Collection
+                {
+                    sb.append(LINEBREAK).append(offset).append("- ");
+                    if (o instanceof String)
+                    {
+                        sb.append(QUOTE).append(o.toString()).append(QUOTE);
+                    }
+                    else
+                    {
+                        sb.append(o.toString());
+                    }
+                }
+            }
+            else
+            {
+                sb.append(" ").append(value.toString());
+            }
         }
         sb.append(LINEBREAK);
         this.first = false;
         return sb.toString();
     }
 
+    @Override
     public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
@@ -108,6 +115,7 @@ public class YamlCodec extends ConfigurationCodec
         return sb.toString();
     }
 
+    @Override
     public String buildComment(String path, int off)
     {
         String comment = this.comments.get(path);

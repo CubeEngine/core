@@ -14,6 +14,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> e
         super(parent);
     }
 
+    @Override
     public This orderBy(String... cols)
     {
         Validate.notEmpty(cols, "No cols specified!");
@@ -26,18 +27,21 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> e
         return (This)this;
     }
 
+    @Override
     public This limit(int n)
     {
         this.query.append(" LIMIT ").append(n);
         return (This)this;
     }
 
+    @Override
     public This offset(int n)
     {
         this.query.append(" OFFSET ").append(n);
         return (This)this;
     }
 
+    @Override
     public This where()
     {
         this.query.append(" WHERE ");

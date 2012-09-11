@@ -51,11 +51,11 @@
                 </includes>
             </resource>
             <resource>
-                <targetPath>./language</targetPath>
+                <targetPath>./resources/language</targetPath>
                 <directory>${basedir}/src/main/resources/language/</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*</include>
+                    <include>**/*</include>
                 </includes>
             </resource>
             <resource>

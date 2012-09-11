@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
+import de.cubeisland.cubeengine.core.storage.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
-import de.cubeisland.cubeengine.core.storage.database.DriverNotFoundException;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.sql.DriverManager;
@@ -24,18 +24,17 @@ public class MySQLDatabase extends AbstractDatabase
     private final MySQLQueryBuilder queryBuilder;
     private final Thread creationThread = Thread.currentThread();
 
-    public MySQLDatabase() throws SQLException, DriverNotFoundException
+    public MySQLDatabase(DatabaseConfiguration config) throws SQLException
     {
-        super(MySQLDatabaseConfiguration.class);
         try
         {
             Class.forName("com.mysql.jdbc.Driver");
         }
         catch (ClassNotFoundException e)
         {
-            throw new DriverNotFoundException("Couldn't find the MySQL driver!");
+            throw new IllegalStateException("Couldn't find the MySQL driver!");
         }
-        MySQLDatabaseConfiguration configuration = (MySQLDatabaseConfiguration)this.config;
+        MySQLDatabaseConfiguration configuration = (MySQLDatabaseConfiguration)config;
         this.host = configuration.host;
         this.port = configuration.port;
         this.user = configuration.user;
@@ -46,11 +45,13 @@ public class MySQLDatabase extends AbstractDatabase
         this.queryBuilder = new MySQLQueryBuilder(this);
     }
 
+    @Override
     public String getName()
     {
         return "MySQL";
     }
 
+    @Override
     public QueryBuilder getQueryBuilder()
     {
         if (Thread.currentThread() != this.creationThread)
@@ -68,6 +69,7 @@ public class MySQLDatabase extends AbstractDatabase
         return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
     }
 
+    @Override
     public String prepareFieldName(String name)
     {
         Validate.notNull(name, "The name must not be null!");
@@ -80,6 +82,7 @@ public class MySQLDatabase extends AbstractDatabase
         return NAME_QUOTE + name + NAME_QUOTE;
     }
 
+    @Override
     public String prepareString(String name)
     {
         return STRING_QUOTE + name + STRING_QUOTE;

@@ -34,7 +34,7 @@ public class ModuleClassLoader extends URLClassLoader
     {
         return this.findClass(name, true);
     }
-    
+
     protected Class<?> findClass(String name, boolean global) throws ClassNotFoundException
     {
         Class<?> clazz = this.classMap.get(name);
@@ -46,11 +46,11 @@ public class ModuleClassLoader extends URLClassLoader
                 clazz = super.findClass(name);
             }
             catch (ClassNotFoundException e)
-            {}
+            {
+            }
 
             if (clazz == null && global)
             {
-                                          //TODO STACKOVERFLOW when Class not found
                 clazz = this.moduleLoader.getClazz(this.moduleInfo, name);
             }
 
@@ -62,5 +62,18 @@ public class ModuleClassLoader extends URLClassLoader
         }
 
         return clazz;
+    }
+
+    // This method got overridden to first search through the current ClassLoader
+    @Override
+    public URL getResource(String name)
+    {
+        URL url = findResource(name);
+        if (url == null)
+        {
+            return super.getResource(name);
+        }
+        
+        return url;
     }
 }

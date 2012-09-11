@@ -18,6 +18,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
         super(parent);
     }
 
+    @Override
     public MySQLMergeBuilder into(String table)
     {
         this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareName(table)).append(" ");
@@ -26,6 +27,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
         return this;
     }
 
+    @Override
     public MySQLMergeBuilder cols(String... cols)
     {
         Validate.notEmpty(cols, "You have to specify at least one col to insert");
@@ -47,6 +49,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
         return this;
     }
 
+    @Override
     public MySQLMergeBuilder updateCols(String... updateCols)
     {
         if (this.insertCols == null)

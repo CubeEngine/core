@@ -1,9 +1,9 @@
-package de.cubeisland.cubeengine;
+package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.TableManager;
@@ -29,6 +29,11 @@ public final class CubeEngine
      */
     private CubeEngine()
     {
+    }
+    
+    public static boolean isInitialized()
+    {
+        return core != null;
     }
 
     /**
@@ -167,6 +172,11 @@ public final class CubeEngine
         return ((Plugin)core).getServer();
     }
     
+    public static I18n getI18n()
+    {
+        return core.getI18n();
+    }
+    
     /**
      * Returns the OfflinePlayer
      * 
@@ -201,6 +211,6 @@ public final class CubeEngine
 
     public static String _(String language, String category, String text, Object... params)
     {
-        return core.getI18n().translate(language, category, language, params);
+        return core.getI18n().translate(language, category, text, params);
     }
 }

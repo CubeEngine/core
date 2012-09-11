@@ -21,6 +21,7 @@ public class LocationConverter implements Converter<Location>
         this.server = ((Plugin)core).getServer();
     }
 
+    @Override
     public Object toObject(Location location)
     {
         Map<String, Object> loc = new LinkedHashMap<String, Object>();
@@ -33,6 +34,7 @@ public class LocationConverter implements Converter<Location>
         return loc;
     }
 
+    @Override
     public Location fromObject(Object object)
     {
         Map<String, Object> input = (Map<String, Object>)object;
@@ -46,11 +48,13 @@ public class LocationConverter implements Converter<Location>
         return new Location(world, x, y, z, (float)yaw, (float)pitch);
     }
 
+    @Override
     public Location fromString(String string)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public String toString(Location object)
     {
         throw new UnsupportedOperationException("Not supported yet.");

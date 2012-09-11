@@ -9,7 +9,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
 /**
@@ -18,6 +18,8 @@ import java.util.logging.Logger;
  */
 public interface Core
 {
+    public static final int REVISION = 1;
+    
     /**
      * The method returns the database
      *
@@ -93,7 +95,7 @@ public interface Core
      * 
      * @return the ExecutorService
      */
-    public ExecutorService getExecutor();
+    public ScheduledExecutorService getExecutor();
 
     public TableManager getTableManger();
 }

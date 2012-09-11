@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-import de.cubeisland.cubeengine.CubeEngine;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.Role;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +18,8 @@ import org.bukkit.OfflinePlayer;
 public class Convert
 {
     private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
+    private final static ConcurrentHashMap<Class<?>, GenericConverter<?>> GENERICCONVERTERS = new ConcurrentHashMap<Class<?>, GenericConverter<?>>();
+    private final static GenericConverter arrayConverter;
 
     static
     {
@@ -36,6 +39,10 @@ public class Convert
         registerConverter(double.class, converter);
         registerConverter(Role.class, new RoleConverter());
         registerConverter(Date.class, new DateConverter());
+
+        registerGenericConverter(Collection.class, new ColletionConverter());
+        registerGenericConverter(Map.class, new MapConverter());
+        arrayConverter = new ArrayConverter();
     }
 
     public static void registerConverter(Class<?> clazz, Converter<?> converter)
@@ -45,6 +52,15 @@ public class Convert
             return;
         }
         CONVERTERS.put(clazz, converter);
+    }
+
+    public static void registerGenericConverter(Class<?> clazz, GenericConverter<?> converter)
+    {
+        if (clazz == null || converter == null)
+        {
+            return;
+        }
+        GENERICCONVERTERS.put(clazz, converter);
     }
 
     /**
@@ -66,6 +82,29 @@ public class Convert
         return null;
     }
 
+    /**
+     * Searches matching GenericConverter
+     *
+     * @param objectClass the class to search for
+     * @return a matching GenericConverter or null if not found
+     */
+    public static <T> GenericConverter<T> matchGenericConverter(Class<? extends T> objectClass)
+    {
+        if (objectClass.isArray())
+        {
+            return arrayConverter;
+        }
+        for (Map.Entry<Class<?>, GenericConverter<?>> entry : GENERICCONVERTERS.entrySet())
+        {
+            if (entry.getKey().isAssignableFrom(objectClass))
+            {
+                registerGenericConverter(objectClass, entry.getValue());
+                return (GenericConverter<T>)entry.getValue();
+            }
+        }
+        return null;
+    }
+
     public static <T> Object toObject(T object) throws ConversionException
     {
         Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
@@ -76,6 +115,16 @@ public class Convert
         return object;
     }
 
+    public static <T> Object toObject(T object, Class<?> genericType) throws ConversionException
+    {
+        if (genericType == Object.class)
+        {
+            return object;//no GenericType
+        }
+        GenericConverter genericConverter = matchGenericConverter(object.getClass());
+        return genericConverter.toObject(object, genericType);
+    }
+
     public static <T> T fromObject(Class<T> type, Object object) throws ConversionException
     {
         Converter<T> converter = matchConverter(type);
@@ -84,6 +133,16 @@ public class Convert
             return converter.fromObject(object);
         }
         return null;
+    }
+
+    public static <T> T fromObject(Class<T> fieldClass, Object fieldObject, Object object, Class<?> genericType) throws ConversionException
+    {
+        if (genericType == Object.class)
+        {
+            return (T)object;//no GenericType
+        }
+        GenericConverter genericConverter = matchGenericConverter(fieldClass);
+        return (T)genericConverter.fromObject(object, genericType);
     }
 
     public static <T> String toString(T object) throws ConversionException

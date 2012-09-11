@@ -6,5 +6,5 @@ package de.cubeisland.cubeengine.core.util.worker;
  */
 public interface Cleanable 
 {
-    public void cleanUp();
+    public void clean();
 }

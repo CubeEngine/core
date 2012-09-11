@@ -1,7 +1,12 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.storage.DatabaseConfiguration;
+import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabaseConfiguration;
+import de.cubeisland.cubeengine.core.util.Validate;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -12,27 +17,41 @@ import java.util.logging.Level;
  */
 public class DatabaseFactory
 {
+    
+    private static final HashMap<String, Class<? extends DatabaseConfiguration>> databases = new HashMap<String, Class<? extends DatabaseConfiguration>>();
+    
     static
     {
-        databases = new HashMap<String, Class<? extends Database>>();
-        registerDatabase("mysql", MySQLDatabase.class);
+        DatabaseFactory.registerDatabase("mysql", MySQLDatabaseConfiguration.class);
     }
-    public static HashMap<String, Class<? extends Database>> databases;
 
-    public static Database loadDatabase(String name)
+    public static Database loadDatabase(String name, File configFile)
     {
-        try
+        Validate.notNull(name, "The name must not be null!");
+        Validate.notNull(configFile, "The config file must not be null!");
+        
+        Class<? extends DatabaseConfiguration> configClazz = databases.get(name.toLowerCase(Locale.ENGLISH));
+        if (configClazz != null)
         {
-            return databases.get(name.toLowerCase(Locale.ENGLISH)).newInstance();
+            try
+            {
+                DatabaseConfiguration config = Configuration.load(configClazz, configFile);
+                return config.getDatabaseClass().getConstructor(DatabaseConfiguration.class).newInstance(config);
+            }
+            catch (Exception e)
+            {
+                Throwable t = e;
+                if (t instanceof InvocationTargetException)
+                {
+                    t = e.getCause();
+                }
+                CubeEngine.getLogger().log(Level.SEVERE, "Couldn't establish the database connection: " + t.getLocalizedMessage(), t);
+            }
         }
-        catch (Exception e)
-        {
-            CubeEngine.getLogger().log(Level.SEVERE, "Couldn't establish the database connection: " + e.getLocalizedMessage(), e);
-            return null;
-        }
+        return null;
     }
 
-    public static void registerDatabase(String name, Class<? extends Database> clazz)
+    public static void registerDatabase(String name, Class<? extends DatabaseConfiguration> clazz)
     {
         databases.put(name.toLowerCase(Locale.ENGLISH), clazz);
     }

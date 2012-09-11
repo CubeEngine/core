@@ -1,16 +1,17 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.storage.DatabaseConfiguration;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 
 /**
  *
  * @author Anselm Brehme
  */
 @Codec("yml")
-public class MySQLDatabaseConfiguration extends Configuration
+public class MySQLDatabaseConfiguration extends DatabaseConfiguration
 {
     @Option("host")
     @Comment("The host to connect with. Default: localhost")
@@ -30,4 +31,10 @@ public class MySQLDatabaseConfiguration extends Configuration
     @Option("tableprefix")
     @Comment("The tableprefix to use for all CubeEngine tables")
     public String tablePrefix = "cube_";
+
+    @Override
+    public Class<? extends Database> getDatabaseClass()
+    {
+        return MySQLDatabase.class;
+    }
 }

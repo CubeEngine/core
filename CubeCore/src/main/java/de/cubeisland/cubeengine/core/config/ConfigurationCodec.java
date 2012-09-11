@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.config;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComments;
@@ -16,17 +16,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -57,102 +54,24 @@ public abstract class ConfigurationCodec
      */
     public Object convertTo(Configuration config, Field field, Object object)
     {
-        Class<?> fieldClass = field.getType();
-        Converter converter = Convert.matchConverter(fieldClass);
-        if (converter == null)
+        Converter converter = Convert.matchConverter(field.getType());
+        try
         {
-            Class<?> genType = field.getAnnotation(Option.class).genericType();
-            converter = Convert.matchConverter(genType);
-            if (converter != null)
+            if (converter == null)
             {
-                if (Collection.class.isAssignableFrom(fieldClass))
-                {
-                    Collection<?> list = (Collection<?>)object;
-                    if (list.isEmpty())
-                    {
-                        return object;
-                    }
-                    try
-                    {
-                        Collection<Object> result = (Collection<Object>)field.get(config);
-                        result.clear();
-                        for (Object o : list)
-                        {
-                            result.add(converter.fromObject(o));
-                        }
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.log(Level.SEVERE, "Error while converting", ex);
-                        return null;
-                    }
-                }
-                if (Map.class.isAssignableFrom(fieldClass))
-                {
-                    Map<String, ?> map = (Map<String, ?>)object;
-                    if (map.isEmpty())
-                    {
-                        return object;
-                    }
-                    try
-                    {
-                        Map<String, Object> result = (Map<String, Object>)field.get(config);
-                        result.clear();
-                        for (Map.Entry<String, ?> entry : map.entrySet())
-                        {
-                            result.put(entry.getKey(), converter.fromObject(entry.getValue()));
-                        }
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.log(Level.SEVERE, "Error while converting", ex);
-                        return null;
-                    }
-                }
+                Class<?> genericType = field.getAnnotation(Option.class).genericType();
+                //Converts Collection / Map / Array  of genericType OR cast object into fieldClass
+                return Convert.fromObject(field.getType(), field.get(config), object, genericType);
             }
-            if (fieldClass.isArray())
-            {
-                Collection<Object> coll = (Collection)object;
-                Object tmparray = coll.toArray();
-                if (converter != null)
-                {
-                    Object o = Array.newInstance(genType, coll.size());
-                    for (int i = 0; i < coll.size(); ++i)
-                    {
-                        try
-                        {
-                            Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
-                        }
-                        catch (ConversionException e)
-                        {
-                            logger.log(Level.WARNING, "Error while Converting", e);
-                        }
-                    }
-                    return fieldClass.cast(o);
-                }
-                else
-                {
-                    Object o = Array.newInstance(genType, coll.size());
-                    for (int i = 0; i < coll.size(); ++i)
-                    {
-                        Array.set(o, i, Array.get(tmparray, i));
-                    }
-                    return fieldClass.cast(o);
-                }
-            }
+            return converter.fromObject(object);
         }
-        if (converter != null)
+        catch (ConversionException ex)
         {
-            try
-            {
-                return converter.fromObject(object);
-            }
-            catch (ConversionException e)
-            {
-                logger.log(Level.WARNING, "Error while Converting", e);
-            }
+            logger.log(Level.WARNING, "Error while converting", ex);
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Error while converting", e);
         }
         return object;
     }
@@ -166,97 +85,32 @@ public abstract class ConfigurationCodec
      */
     public Object convertFrom(Field field, Object object)
     {
-        if (Configuration.class.isAssignableFrom(field.getType()))
+        try
         {
-            try
+            if (Configuration.class.isAssignableFrom(field.getType()))
             {
                 return this.saveIntoMap((Configuration)object, field.getAnnotation(Option.class).value());
             }
-            catch (IllegalAccessException ex)
+            if (object == null)
             {
-                logger.log(Level.SEVERE, "Error while converting SubConfiguration", ex);
+                return null;
             }
+            Converter converter = Convert.matchConverter(object.getClass());
+            if (converter == null)
+            {
+                Class<?> genericType = field.getAnnotation(Option.class).genericType();
+                //Converts Collection / Map / Array  of genericType OR returns object
+                return Convert.toObject(object, genericType);
+            }
+            return converter.toObject(object);
         }
-        Class<?> objectClass = object.getClass();
-        Converter converter = Convert.matchConverter(objectClass);
-        if (converter == null)
+        catch (IllegalAccessException ex)
         {
-            Class<?> genType = field.getAnnotation(Option.class).genericType();
-            converter = Convert.matchConverter(genType);
-            if (converter != null)
-            {
-                if (Collection.class.isAssignableFrom(objectClass))
-                {
-                    Collection<?> collection = (Collection<?>)object;
-                    Collection<Object> result = new LinkedList<Object>();
-                    for (Object o : collection)
-                    {
-                        try
-                        {
-                            result.add(converter.toObject(o));
-                        }
-                        catch (ConversionException e)
-                        {
-                            logger.log(Level.WARNING, "Error while Converting", e);
-                        }
-                    }
-                    return result;
-                }
-                if (Map.class.isAssignableFrom(objectClass))
-                {
-                    Map<String, ?> map = (Map<String, ?>)object;
-                    Map<String, Object> result = new LinkedHashMap<String, Object>();
-                    for (String key : map.keySet())
-                    {
-                        try
-                        {
-                            result.put(key, converter.toObject(map.get(key)));
-                        }
-                        catch (ConversionException e)
-                        {
-                            logger.log(Level.WARNING, "Error while Converting", e);
-                        }
-                    }
-                    return result;
-                }
-            }
-            if (objectClass.isArray())
-            {
-                Object[] array = (Object[])object;
-                if (converter != null)
-                {
-                    Collection<Object> result = new LinkedList<Object>();
-                    for (Object o : array)
-                    {
-                        try
-                        {
-                            result.add(converter.toObject(o));
-                        }
-                        catch (ConversionException e)
-                        {
-                            logger.log(Level.WARNING, "Error while Converting", e);
-                        }
-                    }
-                    return result;
-                }
-                else
-                {
-                    Collection<Object> result = new LinkedList<Object>();
-                    result.addAll(Arrays.asList(array));
-                    return result;
-                }
-            }
+            logger.log(Level.SEVERE, "Error while converting SubConfiguration", ex);
         }
-        if (converter != null)
+        catch (ConversionException e)
         {
-            try
-            {
-                return converter.toObject(object);
-            }
-            catch (ConversionException e)
-            {
-                logger.log(Level.WARNING, "Error while Converting", e);
-            }
+            logger.log(Level.WARNING, "Error while Converting", e);
         }
         return object;
     }
@@ -287,9 +141,8 @@ public abstract class ConfigurationCodec
         {
             return new HashMap<String, Object>();
         }
-        InputStreamReader reader = new InputStreamReader(is, "UTF-8");
         StringBuilder builder = new StringBuilder();
-        BufferedReader input = new BufferedReader(reader);
+        BufferedReader input = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         try
         {
             String line;
@@ -302,15 +155,8 @@ public abstract class ConfigurationCodec
                 }
                 else
                 {
-                    try
-                    {
-                        int rev = Integer.parseInt(line.substring(line.indexOf(' ')));
-                        this.revision = rev;
-                    }
-                    catch (NumberFormatException ex)
-                    {
-                        logger.warning("Invalid RevisionNumber");
-                    }
+                    int rev = Integer.parseInt(line.substring(line.indexOf(' ')));
+                    this.revision = rev;
                 }
                 while ((line = input.readLine()) != null)
                 {
@@ -318,6 +164,10 @@ public abstract class ConfigurationCodec
                     builder.append(LINEBREAK);
                 }
             }
+        }
+        catch (NumberFormatException ex)
+        {
+            logger.warning("Invalid RevisionNumber");
         }
         finally
         {
@@ -398,7 +248,7 @@ public abstract class ConfigurationCodec
             }
             catch (IllegalAccessException ex)
             {
-                logger.severe("Error while loading a Configuration-Element!");
+                throw new IllegalStateException("Error while loading a Configuration-Element!", ex);
             }
         }
     }
@@ -428,11 +278,11 @@ public abstract class ConfigurationCodec
         }
         catch (IOException e)
         {
-            logger.severe("Error while saving a Configuration-File!");
+            logger.warning("Error while saving a Configuration-File!");
         }
         catch (IllegalAccessException e)
         {
-            logger.severe("Error while saving a Configuration-Element!");
+            throw new IllegalStateException("Error while saving a Configuration-Element!", e);
         }
     }
 
@@ -497,10 +347,7 @@ public abstract class ConfigurationCodec
      */
     public void save(File file, Map<String, Object> values) throws IOException
     {
-        if (file == null)
-        {
-            return;
-        }
+        Validate.notNull(file, "File for saving is null");
         String data = this.convertMapToString(values);
         FileWriter writer = new FileWriter(file);
         try
@@ -573,8 +420,6 @@ public abstract class ConfigurationCodec
         return off.toString();
     }
 
-    
-
     /**
      * Gets the value saved under this path in given section
      *
@@ -592,10 +437,7 @@ public abstract class ConfigurationCodec
         {
             return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.getBasePath(path)));
         }
-        else
-        {
-            return section.get(path);
-        }
+        return section.get(path);
     }
 
     /**

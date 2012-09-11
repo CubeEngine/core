@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine;
+package de.cubeisland.cubeengine.core;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

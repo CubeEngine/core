@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.config;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -150,8 +150,7 @@ public abstract class Configuration
         }
         catch (Throwable t)
         {
-            logger.log(Level.SEVERE, "Error while loading a Configuration!", t);
-            return null;
+            throw new IllegalStateException("Error while loading a Configuration!", t);
         }
     }
 

@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.test;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
@@ -21,7 +21,6 @@ import org.bukkit.plugin.Plugin;
  *
  * @author Anselm Brehme
  */
-
 @MapComments(
 {
     @MapComment(path = "regions", text = "more RandomTests:"),
@@ -33,8 +32,6 @@ import org.bukkit.plugin.Plugin;
 public class TestConfig extends Configuration
 {
     private final Server server = ((Plugin) CubeEngine.getCore()).getServer();
-
-    //TODO remove this test
     @Option("location")
     @Comment("LocationTest")
     public Location location = new Location(server.getWorld("world"), 1, 2, 3, 0, 0);
@@ -56,7 +53,8 @@ public class TestConfig extends Configuration
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
-		{
+        
+        {
             put("default", 7);
         }
     };
@@ -78,6 +76,7 @@ public class TestConfig extends Configuration
     @Option("list.stringlist")
     public List<String> stringlist = new ArrayList<String>()
     {
+        
         {
             add("quark");
             add("kekse");
@@ -135,26 +134,25 @@ public class TestConfig extends Configuration
     }
     ;
     /*
-    @Option("role.role")
-    @Comment("a single role")
-    public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
-    @Option(value = "role.roles", genericType = Role.class)
-    @Comment("multi roles")
-    public LinkedHashMap<String, Role> roles;
+     @Option("role.role")
+     @Comment("a single role")
+     public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
+     @Option(value = "role.roles", genericType = Role.class)
+     @Comment("multi roles")
+     public LinkedHashMap<String, Role> roles;
 
     
-    {
-        {
-            roles = new LinkedHashMap<String, Role>();
-            roles.put("role1", new Role("guest", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-            roles.put("role2", new Role("member", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-            roles.put("role3", new Role("mod", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-            roles.put("role4", new Role("admin", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-        }
-    }
-    ;
-    */
-    
+     {
+     {
+     roles = new LinkedHashMap<String, Role>();
+     roles.put("role1", new Role("guest", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+     roles.put("role2", new Role("member", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+     roles.put("role3", new Role("mod", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+     roles.put("role4", new Role("admin", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
+     }
+     }
+     ;
+     */
     @Option("subconfig")
     public TestSubConfig subConfig = new TestSubConfig();
 

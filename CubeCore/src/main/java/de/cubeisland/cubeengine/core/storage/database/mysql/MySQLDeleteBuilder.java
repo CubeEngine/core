@@ -14,6 +14,7 @@ public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder> i
         super(parent);
     }
 
+    @Override
     public MySQLDeleteBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified");
