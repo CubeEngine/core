@@ -14,6 +14,8 @@ public class TableManager extends BasicStorage<Table>
     public TableManager(final Core core)
     {
         super(core.getDB(), Table.class, Core.REVISION);
+        tableManager = this;
+        this.initialize();
         for (Table t : this.getAll())
         {
             tables.put(t.table, t);

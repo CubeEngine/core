@@ -93,6 +93,7 @@ public class BukkitCore extends JavaPlugin implements Core
             this.server.getPluginManager().disablePlugin(this);
             return;
         }
+        this.tableManager = new TableManager(this);
         this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         this.userManager = new UserManager(this);
 

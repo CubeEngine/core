@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
@@ -26,7 +25,7 @@ import java.util.Collection;
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {
-    protected static final TableManager tableManager;
+    protected static TableManager tableManager = null;//Init in TableManager.class
     protected final Database database;
     protected final Class<V> modelClass;
     protected Constructor<V> modelConstructor = null;
@@ -40,11 +39,6 @@ public class BasicStorage<V extends Model> implements Storage<V>
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
     private int revision;
 
-    static
-    {
-        tableManager = CubeEngine.getTableManager();
-    }
-
     public BasicStorage(Database database, Class<V> model, int revision)
     {
         Entity entity = model.getAnnotation(Entity.class);
@@ -57,6 +51,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.modelClass = model;
         this.attributes = new ArrayList<String>();
         this.revision = revision;
+        this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
     }
 
     @Override
@@ -133,6 +128,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         {
             throw new IllegalStateException("Error while initializing Database", ex);
         }
+        tableManager.registerTable(this.table, this.revision);
     }
 
     protected void prepareStatements(String key, String[] fields) throws SQLException
@@ -412,22 +408,18 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void updateStructure()
     {
-        int dbRevision = tableManager.getRevision(table);
+        int dbRevision = tableManager.getRevision(this.table);
         DatabaseUpdater updater = this.updaters.get(dbRevision);
-        if (updater == null)
+        if (updater != null)//No Updater for this
         {
             updater.update(database);
-            tableManager.registerTable(table, this.revision);
+            tableManager.registerTable(this.table, this.revision);
         }
     }
 
     @Override
     public void registerUpdater(DatabaseUpdater updater, int... fromRevision)
     {
-        if (this.updaters == null)
-        {
-            this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
-        }
         for (int i : fromRevision)
         {
             this.updaters.put(i, updater);
