@@ -50,6 +50,7 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         CubeEngine.initialize(this);
+        this.server = this.getServer();
         PluginManager pm = this.server.getPluginManager();
 
         this.logger = new CubeLogger("Core");
@@ -65,7 +66,9 @@ public class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
+        
         this.fileManager.dropResources(CoreResource.values());
+        
         try
         {
             this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));
@@ -75,7 +78,15 @@ public class BukkitCore extends JavaPlugin implements Core
             this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
         
-        this.server = this.getServer();
+        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
+        if (this.database == null)
+        {
+            this.logger.log(Level.SEVERE, "Could not find the database type ''{0}''", this.config.database);
+            this.server.getPluginManager().disablePlugin(this);
+            return;
+        }
+        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
+        
         this.permissionRegistration = new PermissionRegistration(pm);
         this.eventRegistration = new EventManager(pm);
         this.moduleManager = new ModuleManager(this);
@@ -85,14 +96,6 @@ public class BukkitCore extends JavaPlugin implements Core
         this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
         this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
 
-        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
-        if (this.database == null)
-        {
-            this.logger.log(Level.SEVERE, "Could not find the database type ''{0}''", this.config.database);
-            this.server.getPluginManager().disablePlugin(this);
-            return;
-        }
-        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         this.userManager = new UserManager(this);
 
         this.registerPermissions(Perm.values());
