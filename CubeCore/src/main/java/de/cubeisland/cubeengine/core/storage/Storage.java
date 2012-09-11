@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Callback;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -73,6 +74,10 @@ public interface Storage<V extends Model>
     public void clear();
 
     public void subscribe(SubcribeType type, Callback callback);
+
+    public void updateStructure();
+
+    public void registerUpdater(DatabaseUpdater updater, int... fromRevision);
 
     public enum SubcribeType
     {

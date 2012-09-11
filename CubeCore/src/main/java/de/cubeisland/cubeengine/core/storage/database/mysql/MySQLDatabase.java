@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.MySQLDatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
 import de.cubeisland.cubeengine.core.storage.database.DriverNotFoundException;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;

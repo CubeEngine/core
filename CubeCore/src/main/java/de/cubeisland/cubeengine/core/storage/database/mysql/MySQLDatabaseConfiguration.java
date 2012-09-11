@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core;
+package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;

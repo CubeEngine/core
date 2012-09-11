@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
+import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -85,6 +86,16 @@ public final class CubeEngine
         return core.getPermissionRegistration();
     }
 
+    /**
+     * Returns the TableManager
+     * 
+     * @return the TableManager
+     */
+    public static TableManager getTableManager()
+    {
+        return core.getTableManger();
+    }
+    
     /**
      * Returns the UserManager
      *
