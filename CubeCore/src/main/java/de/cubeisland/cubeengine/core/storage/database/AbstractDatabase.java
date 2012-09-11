@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
+import de.cubeisland.cubeengine.core.storage.Storage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -128,6 +129,7 @@ public abstract class AbstractDatabase implements Database
         this.prepareStatement(this.getQueryBuilder().rollback().end()).execute();
     }
     
+    @Override
     public void update(Storage manager)
     {
         manager.updateStructure();

@@ -12,6 +12,6 @@ public class TestManager extends BasicStorage<TestModel>
 {
     public TestManager(Database database)
     {
-        super(database, TestModel.class);
+        super(database, TestModel.class,1);//TODO
     }
 }

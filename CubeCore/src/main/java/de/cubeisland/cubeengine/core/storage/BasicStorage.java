@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.CubeEngine;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
@@ -409,6 +409,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
+    @Override
     public void updateStructure()
     {
         int dbRevision = tableManager.getRevision(table);
@@ -420,6 +421,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
     }
 
+    @Override
     public void registerUpdater(DatabaseUpdater updater, int... fromRevision)
     {
         if (this.updaters == null)

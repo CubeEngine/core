@@ -11,6 +11,6 @@ public class BankAccountStorage extends BasicStorage<BankAccount>
 {
     public BankAccountStorage(Database database)
     {
-        super(database, BankAccount.class);
+        super(database, BankAccount.class,1);//TODO
     }
 }
