@@ -50,6 +50,7 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         CubeEngine.initialize(this);
+        
         this.server = this.getServer();
         PluginManager pm = this.server.getPluginManager();
 
@@ -78,6 +79,8 @@ public class BukkitCore extends JavaPlugin implements Core
             this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
         
+        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
+        
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
@@ -88,17 +91,18 @@ public class BukkitCore extends JavaPlugin implements Core
         this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         
         this.permissionRegistration = new PermissionRegistration(pm);
+        this.registerPermissions(Perm.values());
+        
         this.eventRegistration = new EventManager(pm);
-        this.moduleManager = new ModuleManager(this);
-        this.commandManager = new CommandManager(this);
-        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
         
         this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
-        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
-
         this.userManager = new UserManager(this);
-
-        this.registerPermissions(Perm.values());
+        
+        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);   
+        
+        this.commandManager = new CommandManager(this);
+        
+        this.moduleManager = new ModuleManager(this);
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 
