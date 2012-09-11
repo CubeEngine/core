@@ -153,7 +153,10 @@ public class CommandManager
             
             
             String[] names = commandAnnotation.names();
-            Validate.notEmpty(names, "The given command has no names defined!");
+            if (names.length == 0)
+            {
+                names = new String[] {method.getName()};
+            }
 
             String name = names[0].trim().toLowerCase(Locale.ENGLISH);
             List<String> aliases;

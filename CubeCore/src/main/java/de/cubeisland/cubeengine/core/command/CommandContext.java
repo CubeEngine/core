@@ -50,7 +50,7 @@ public class CommandContext
         this.core = core;
         if (sender instanceof Player)
         {
-            sender = core.getUserManager().getUser((Player)sender);
+            sender = core.getUserManager().getUser(sender);
         }
         this.sender = sender;
         this.command = command;

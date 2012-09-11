@@ -14,7 +14,7 @@ import org.bukkit.permissions.PermissionDefault;
 @Target(ElementType.METHOD)
 public @interface Command
 {
-    public String[] names();
+    public String[] names() default {};
     public int min() default 0;
     public int max() default -1;
     public String desc();
