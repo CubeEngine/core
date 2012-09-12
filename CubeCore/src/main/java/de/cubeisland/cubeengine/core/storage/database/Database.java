@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
+import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,4 +33,5 @@ public interface Database
     public void startTransaction() throws SQLException;
     public void commmit() throws SQLException;
     public void rollback() throws SQLException;
+    public void update(Storage manager);
 }

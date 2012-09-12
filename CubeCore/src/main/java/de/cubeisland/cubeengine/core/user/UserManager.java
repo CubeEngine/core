@@ -38,7 +38,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
     public UserManager(final Core core)
     {
-        super(core.getDB(), User.class);
+        super(core.getDB(), User.class, Core.REVISION);
         this.core = core;
         this.initialize();
         this.executor = core.getExecutor();

@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
+import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -45,6 +46,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private Server server;
     private CommandManager commandManager;
     private ScheduledExecutorService executor;
+    private TableManager tableManager;
 
     @Override
     public void onEnable()
@@ -91,6 +93,9 @@ public class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
+		// depends on: database
+        this.tableManager = new TableManager(this);
+
         // depends on: database ( TODO drop the database logger )
         this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         
@@ -235,5 +240,10 @@ public class BukkitCore extends JavaPlugin implements Core
     public ScheduledExecutorService getExecutor()
     {
         return executor;
+    }
+
+    public TableManager getTableManger()
+    {
+        return this.tableManager;
     }
 }

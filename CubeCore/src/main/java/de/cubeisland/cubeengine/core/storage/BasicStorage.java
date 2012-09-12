@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -24,6 +25,7 @@ import java.util.Collection;
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {
+    protected static TableManager tableManager = null;//Init in TableManager.class
     protected final Database database;
     protected final Class<V> modelClass;
     protected Constructor<V> modelConstructor = null;
@@ -34,8 +36,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
     protected String key = null;
     protected boolean keyIsAI = false;
     protected ArrayList<String> attributes;
+    protected TIntObjectHashMap<DatabaseUpdater> updaters;
+    private int revision;
+    private boolean initialized = false;
 
-    public BasicStorage(Database database, Class<V> model)
+    public BasicStorage(Database database, Class<V> model, int revision)
     {
         Entity entity = model.getAnnotation(Entity.class);
         if (entity == null)
@@ -46,11 +51,21 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.database = database;
         this.modelClass = model;
         this.attributes = new ArrayList<String>();
+        this.revision = revision;
+        this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
     }
 
     @Override
     public void initialize()
     {
+        if (this.initialized)
+        {
+            return;
+        }
+        else
+        {
+            this.initialized = true;
+        }
         //Constructor:
         for (Constructor c : this.modelClass.getConstructors())
         {
@@ -66,6 +81,8 @@ public class BasicStorage<V extends Model> implements Storage<V>
         //Fields:
         Entity entity = this.modelClass.getAnnotation(Entity.class);
         QueryBuilder builder = this.database.getQueryBuilder();
+
+        this.updateStructure();
 
         Attribute attribute;
         TableBuilder tbuilder = builder.createTable(this.table, true).beginFields();
@@ -120,6 +137,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         {
             throw new IllegalStateException("Error while initializing Database", ex);
         }
+        tableManager.registerTable(this.table, this.revision);
     }
 
     protected void prepareStatements(String key, String[] fields) throws SQLException
@@ -393,6 +411,27 @@ public class BasicStorage<V extends Model> implements Storage<V>
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while clearing Database", ex);
+        }
+    }
+
+    @Override
+    public void updateStructure()
+    {
+        int dbRevision = tableManager.getRevision(this.table);
+        DatabaseUpdater updater = this.updaters.get(dbRevision);
+        if (updater != null)//No Updater for this
+        {
+            updater.update(database);
+            tableManager.registerTable(this.table, this.revision);
+        }
+    }
+
+    @Override
+    public void registerUpdater(DatabaseUpdater updater, int... fromRevision)
+    {
+        for (int i : fromRevision)
+        {
+            this.updaters.put(i, updater);
         }
     }
 }
