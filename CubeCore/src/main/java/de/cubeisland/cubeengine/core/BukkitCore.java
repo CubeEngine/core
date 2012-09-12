@@ -55,7 +55,7 @@ public class BukkitCore extends JavaPlugin implements Core
         PluginManager pm = this.server.getPluginManager();
 
         this.logger = new CubeLogger("Core");
-        this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
+        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
 
         try
         {
