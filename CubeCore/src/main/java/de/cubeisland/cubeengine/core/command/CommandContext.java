@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
@@ -11,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,6 +27,8 @@ import org.bukkit.inventory.ItemStack;
 @BukkitDependend("Uses Bukkit's CommandSender")
 public class CommandContext
 {
+    private static final Pattern COMMAND_VALIDATE_PATTERN = Pattern.compile("^[\\w\\d\\.]+$", Pattern.CASE_INSENSITIVE);
+    
     private Core core;
     private final CommandSender sender;
     private final CubeCommand command;
@@ -61,8 +66,18 @@ public class CommandContext
         this.namedParamAliases = new THashMap<String, String>();
         this.result = true;
     }
+    
+    public void parseCommandArgs(String[] commandLine)
+    {
+        this.parseCommandArgs(commandLine, new Flag[0]);
+    }
+    
+    public void parseCommandArgs(String[] commandLine, Flag[] flags)
+    {
+        this.parseCommandArgs(commandLine, flags, new Param[0]);
+    }
 
-    public void parseCommandArgs(String... commandLine)
+    public void parseCommandArgs(String[] commandLine, Flag[] flags, Param[] params)
     {
         Validate.notEmpty(commandLine, "There needs to be at least 1 argument!");
 
@@ -75,80 +90,40 @@ public class CommandContext
 
         for (int i = 1; i < commandLine.length; ++i)
         {
-            firstChar = commandLine[i].charAt(0);
-            length = commandLine[i].length();
-
-            if (length < 1)
+            if (commandLine[i].isEmpty())
             {
-                if (quotedArgBuilder != null)
-                {
-                    quotedArgBuilder.append(' ');
-                }
                 continue;
             }
-
-            switch (firstChar)
+            firstChar = commandLine[i].charAt(0);
+            
+            if (quotedArgBuilder == null)
             {
-                case '\'':
-                case '"':
-                    if (quotedArgBuilder == null)
-                    {
-                        if (i + 1 >= commandLine.length)
-                        {
-                            this.params.add(commandLine[i].substring(1));
-                        }
-                        else
-                        {
-                            quoteChar = firstChar;
-                            quotedArgBuilder = new StringBuilder(commandLine[i].substring(1));
-                        }
-                        break;
-                    }
-                case '-':
-                    if (quotedArgBuilder == null && commandLine[i].matches("^\\-[A-Za-z]+$"))
-                    {
-                        this.flags.add(commandLine[i].substring(1));
-                        break;
-                    }
-                default:
-                    if (quotedArgBuilder == null)
-                    {
-                        this.params.add(commandLine[i]);
-                    }
-                    else
-                    {
-                        int quoteOffset = commandLine[i].indexOf(quoteChar);
-                        if (quoteOffset >= 0)
-                        {
-                            String before = commandLine[i].substring(0, quoteOffset);
-                            String after = "";
-                            if (quoteOffset + 1 < length)
-                            {
-                                after = commandLine[i].substring(quoteOffset + 1);
-                            }
+                if (firstChar == '-')
+                {
 
-                            if (before.length() > 0)
-                            {
-                                quotedArgBuilder.append(' ').append(before);
-                            }
-                            this.params.add(quotedArgBuilder.toString());
-                            quotedArgBuilder = null;
+                }
+                else if (COMMAND_VALIDATE_PATTERN.matcher(commandLine[i]).matches())
+                {
 
-                            if (after.length() > 0)
-                            {
-                                this.params.add(after);
-                            }
-                        }
-                        else
-                        {
-                            quotedArgBuilder.append(' ').append(commandLine[i]);
-                            if (i + 1 >= commandLine.length)
-                            {
-                                this.params.add(quotedArgBuilder.toString());
-                                quotedArgBuilder = null;
-                            }
-                        }
-                    }
+                }
+                else
+                {
+
+                }
+            }
+            else if (quotedArgBuilder == null && (firstChar == '"' || firstChar == '\''))
+            {
+                quoteChar = firstChar;
+                quotedArgBuilder = new StringBuilder();
+                
+                if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
+                {
+                    
+                }
+            }
+            else
+            {
+                
             }
         }
     }
