@@ -38,6 +38,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     protected ArrayList<String> attributes;
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
     private int revision;
+    private boolean initialized = false;
 
     public BasicStorage(Database database, Class<V> model, int revision)
     {
@@ -57,6 +58,14 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void initialize()
     {
+        if (this.initialized)
+        {
+            return;
+        }
+        else
+        {
+            this.initialized = true;
+        }
         //Constructor:
         for (Constructor c : this.modelClass.getConstructors())
         {

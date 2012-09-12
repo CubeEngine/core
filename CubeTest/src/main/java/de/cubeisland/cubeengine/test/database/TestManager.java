@@ -21,7 +21,5 @@ public class TestManager extends BasicStorage<TestModel>
                 //update blubb
             }
         }, 1,2,3);
-        this.initialize();
-        
     }
 }
