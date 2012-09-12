@@ -12,6 +12,7 @@ import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,6 +79,11 @@ public class I18n
                 CubeEngine.getLogger().log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
+    }
+    
+    public Collection<String> getLanguages()
+    {
+        return this.languageMap.keySet();
     }
 
     public String translate(String language, String category, String message, Object... params)
