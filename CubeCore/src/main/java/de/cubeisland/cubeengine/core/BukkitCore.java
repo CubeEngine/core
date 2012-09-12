@@ -50,13 +50,13 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         CubeEngine.initialize(this);
+        
+        this.server = this.getServer();
+        PluginManager pm = this.server.getPluginManager();
 
         this.logger = new CubeLogger("Core");
         this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
 
-        this.server = this.getServer();
-        PluginManager pm = this.server.getPluginManager();
-        this.permissionRegistration = new PermissionRegistration(pm);
         try
         {
             this.fileManager = new FileManager(this.getDataFolder().getParentFile());
@@ -67,34 +67,58 @@ public class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
+        
         this.fileManager.dropResources(CoreResource.values());
+        
         try
         {
+            // depends on: file manager
             this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));
         }
         catch (IOException e)
         {
             this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
-        this.eventRegistration = new EventManager(pm);
-        this.moduleManager = new ModuleManager(this);
-        this.commandManager = new CommandManager(this);
+        
+        // depends on: file manager
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
         
-        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
-        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
-
+        // depends on: core config and file manager
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
             this.logger.log(Level.SEVERE, "Could not find the database type ''{0}''", this.config.database);
-            this.server.getPluginManager().disablePlugin(this);
+            pm.disablePlugin(this);
             return;
         }
+        // depends on: database ( TODO drop the database logger )
         this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
-        this.userManager = new UserManager(this);
+        
+        // depends on: plugin manager
+        this.permissionRegistration = new PermissionRegistration(pm);
 
+        // depends on: permission registration
         this.registerPermissions(Perm.values());
+        
+        // depends on: plugin manager
+        this.eventRegistration = new EventManager(pm);
+        
+        // depends on: core config
+        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
+        
+        // depends on: executor, database, Server, core config and event registration
+        this.userManager = new UserManager(this);
+        
+        // depends on: file manager, core config
+        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
+        
+        // depends on: Server
+        this.commandManager = new CommandManager(this);
+        
+        // depends on: database
+        this.moduleManager = new ModuleManager(this);
+
+        // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 
