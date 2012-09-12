@@ -96,6 +96,18 @@ public interface Core
      * @return the ExecutorService
      */
     public ScheduledExecutorService getExecutor();
+    
+    /**
+     * This method returns the DebugMode
+     * 
+     * @return the debugMode
+     */
+    public boolean isDebug();
 
+    /**
+     * This method returns the TableManager
+     * 
+     * @return the TableManager
+     */
     public TableManager getTableManger();
 }

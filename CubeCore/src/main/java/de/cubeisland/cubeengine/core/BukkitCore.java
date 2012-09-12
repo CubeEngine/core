@@ -16,7 +16,6 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
-import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -242,8 +241,15 @@ public class BukkitCore extends JavaPlugin implements Core
         return executor;
     }
 
+    @Override
     public TableManager getTableManger()
     {
         return this.tableManager;
+    }
+
+    @Override
+    public boolean isDebug()
+    {
+        return this.config.debugMode;
     }
 }

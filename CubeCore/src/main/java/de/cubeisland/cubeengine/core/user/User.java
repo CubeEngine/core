@@ -29,7 +29,6 @@ public class User extends UserBase implements LinkingModel<Integer>
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 16)
     public final OfflinePlayer player;
-    
     private WeakHashMap<Class<? extends Model>, Model> attachments;
 
     @DatabaseConstructor
@@ -88,10 +87,12 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Override
     public void sendMessage(String string)
     {
-        // TODO this should be removed before a release or disabled via some kind of debug flag!
         if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
         {
-            CubeEngine.getLogger().warning("A module sent an untranslated message!");
+            if (CubeEngine.getCore().isDebug())
+            {
+                CubeEngine.getLogger().warning("A module sent an untranslated message!");
+            }
         }
         super.sendMessage(string);
     }
@@ -118,25 +119,24 @@ public class User extends UserBase implements LinkingModel<Integer>
     {
         return (T)this.attachments.get(modelClass);
     }
-    
     private static boolean languageWorkaroundInitialized;
     private static Field localeStringField;
     private static Field handleField;
     private static Field localeField;
-    
+
     static
     {
         try
         {
             localeStringField = Class.forName("net.minecraft.server.LocaleLanguage").getDeclaredField("d");
             localeStringField.setAccessible(true);
-            
+
             handleField = Class.forName("org.bukkit.craftbukkit.entity.CraftPlayer").getDeclaredField("entity");
             handleField.setAccessible(true);
-            
+
             localeField = Class.forName("net.minecraft.server.EntityPlayer").getDeclaredField("locale");
             localeField.setAccessible(true);
-            
+
             languageWorkaroundInitialized = true;
         }
         catch (Exception e)
@@ -144,7 +144,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             languageWorkaroundInitialized = false;
         }
     }
-    
+
     public String getLanguage()
     {
         if (languageWorkaroundInitialized)
@@ -154,8 +154,9 @@ public class User extends UserBase implements LinkingModel<Integer>
                 return (String)localeStringField.get(localeField.get(handleField.get(this)));
             }
             catch (Exception e)
-            {}
+            {
+            }
         }
-        return CubeEngine.getCore().getConfiguration().defaultLanguage;   
+        return CubeEngine.getCore().getConfiguration().defaultLanguage;
     }
 }
