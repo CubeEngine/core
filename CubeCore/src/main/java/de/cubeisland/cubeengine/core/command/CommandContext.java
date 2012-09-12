@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,17 +26,15 @@ import org.bukkit.inventory.ItemStack;
 @BukkitDependend("Uses Bukkit's CommandSender")
 public class CommandContext
 {
-    private static final Pattern COMMAND_VALIDATE_PATTERN = Pattern.compile("^[\\w\\d\\.]+$", Pattern.CASE_INSENSITIVE);
-    
     private Core core;
     private final CommandSender sender;
     private final CubeCommand command;
     private String label;
-    private final Set<String> flags;
-    private final Map<String, String> flagAliases;
-    private final LinkedList<String> params;
-    private final Map<String, String> namedParams;
+    private final Map<String, Boolean> flags;
+    private Map<String, String> flagLongnameMap;
+    private final LinkedList<String> indexedParams;
     private final Map<String, String> namedParamAliases;
+    private final Map<String, Object> namedParams;
     private boolean empty;
     private int size;
     private boolean result;
@@ -59,11 +56,11 @@ public class CommandContext
         }
         this.sender = sender;
         this.command = command;
-        this.flags = new THashSet<String>();
-        this.flagAliases = new THashMap<String, String>();
-        this.params = new LinkedList<String>();
-        this.namedParams = new THashMap<String, String>();
-        this.namedParamAliases = new THashMap<String, String>();
+        this.flags = new THashMap<String, Boolean>(0);
+        this.flagLongnameMap = new THashMap<String, String>(0);
+        this.indexedParams = new LinkedList<String>();
+        this.namedParams = new THashMap<String, Object>(0);
+        this.namedParamAliases = new THashMap<String, String>(0);
         this.result = true;
     }
     
@@ -82,46 +79,118 @@ public class CommandContext
         Validate.notEmpty(commandLine, "There needs to be at least 1 argument!");
 
         this.label = commandLine[0];
+        
+        this.flagLongnameMap = new THashMap<String, String>(flags.length);
+        for (Flag flag : flags)
+        {
+            this.flags.put(flag.name(), false);
+            if (!"".equals(flag.longName()))
+            {
+                this.flagLongnameMap.put(flag.longName(), flag.name());
+            }
+        }
+        
+        Map<String, Param> paramMap = new THashMap<String, Param>(params.length);
+        Map<String, String> paramAliasMap = new THashMap<String, String>();
+        String[] names;
+        
+        for (Param param : params)
+        {
+            names = param.names();
+            if (names.length == 0)
+            {
+                throw new IllegalArgumentException("One of the declared parameters does not specify a name!");
+            }
+            paramMap.put(names[0], param);
+            for (int i = 1; i < names.length; ++i)
+            {
+                paramAliasMap.put(names[i], names[0]);
+            }
+        }
 
         char firstChar;
         char quoteChar = '\0';
-        int length;
-        StringBuilder quotedArgBuilder = null;
+        StringBuilder quotedArgBuilder = null; // null => not constructing a string
+        
+        Param currentParam = null;
+        Class[] types = null;
+        int typeOffset = 0;
 
         for (int i = 1; i < commandLine.length; ++i)
         {
             if (commandLine[i].isEmpty())
             {
+                if (quotedArgBuilder != null)
+                {
+                    quotedArgBuilder.append(' ');
+                }
                 continue;
             }
             firstChar = commandLine[i].charAt(0);
             
             if (quotedArgBuilder == null)
             {
-                if (firstChar == '-')
+                if (firstChar == '"' || firstChar == '\'')
                 {
+                    quoteChar = firstChar;
 
+                    if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
+                    {
+                        quotedArgBuilder = new StringBuilder(commandLine[i].substring(1));
+                    }
+                    else
+                    {
+                        this.indexedParams.add(commandLine[i].substring(1, commandLine[i].length() - 1));
+                    }
                 }
-                else if (COMMAND_VALIDATE_PATTERN.matcher(commandLine[i]).matches())
+                else if (firstChar == '-')
                 {
-
+                    String flag = commandLine[i].substring(1);
+                    if (flag.charAt(0) == '-')
+                    {
+                        flag = flag.substring(1);
+                    }
+                    if (this.flagLongnameMap.containsKey(flag))
+                    {
+                        flag = this.flagLongnameMap.get(flag);
+                    }
+                    if (flag != null)
+                    {
+                        this.flags.put(flag, true);
+                    }
                 }
                 else
                 {
-
+                    String paramName = commandLine[i];
+                    if (paramAliasMap.containsKey(paramName))
+                    {
+                        paramName = paramAliasMap.get(paramName);
+                    }
+                    Param param = paramMap.get(paramName);
+                    if (param != null)
+                    {
+                        currentParam = param;
+                    }
+                    else
+                    {
+                        this.indexedParams.add(commandLine[0]);
+                    }
                 }
             }
-            else if (quotedArgBuilder == null && (firstChar == '"' || firstChar == '\''))
+            else if (quotedArgBuilder != null)
             {
-                quoteChar = firstChar;
-                quotedArgBuilder = new StringBuilder();
-                
                 if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
                 {
-                    
+                    quotedArgBuilder.append(' ').append(commandLine[i].substring(0, commandLine[i].length() - 1));
+                    this.indexedParams.add(quotedArgBuilder.toString());
+                    quotedArgBuilder = null;
+                }
+                else
+                {
+                    quotedArgBuilder.append(commandLine[i]);
                 }
             }
-            else
+            else if (currentParam != null)
             {
                 
             }
@@ -166,7 +235,16 @@ public class CommandContext
      */
     public boolean hasFlag(String flag)
     {
-        return this.flags.contains(flag);
+        if (this.flagLongnameMap.containsKey(flag))
+        {
+            flag = this.flagLongnameMap.get(flag);
+        }
+        Boolean flagState = this.flags.get(flag);
+        if (flagState == null)
+        {
+            throw new IllegalArgumentException("The requested flag was not declared!");
+        }
+        return flagState.booleanValue();
     }
 
     /**
@@ -196,7 +274,7 @@ public class CommandContext
      */
     public String getString(int i)
     {
-        return this.params.get(i);
+        return this.indexedParams.get(i);
     }
 
     /**
@@ -210,7 +288,7 @@ public class CommandContext
     {
         if (i >= 0 && this.size > i)
         {
-            return this.params.get(i);
+            return this.indexedParams.get(i);
         }
         return def;
     }
@@ -342,7 +420,16 @@ public class CommandContext
      */
     public Set<String> getFlags()
     {
-        return Collections.unmodifiableSet(this.flags);
+        // TODO cache this
+        Set<String> availableFlags = new THashSet<String>();
+        for (Map.Entry<String, Boolean> entry : flags.entrySet())
+        {
+            if (entry.getValue())
+            {
+                availableFlags.add(entry.getKey());
+            }
+        }
+        return availableFlags;
     }
 
     /**
@@ -352,7 +439,7 @@ public class CommandContext
      */
     public List<String> getParams()
     {
-        return Collections.unmodifiableList(this.params);
+        return Collections.unmodifiableList(this.indexedParams);
     }
 
     /**
