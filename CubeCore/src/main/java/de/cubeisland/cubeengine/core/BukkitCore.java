@@ -57,7 +57,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.logger = new CubeLogger("Core");
         this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
 
-        try
+        try //needs PluginManager & logger
         {
             this.fileManager = new FileManager(this.getDataFolder().getParentFile());
         }
@@ -70,7 +70,7 @@ public class BukkitCore extends JavaPlugin implements Core
         
         this.fileManager.dropResources(CoreResource.values());
         
-        try
+        try // needs fileManager & logger
         {
             this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));
         }
@@ -79,31 +79,31 @@ public class BukkitCore extends JavaPlugin implements Core
             this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
         
-        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
+        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));   // needs fileManager
         
-        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
-        if (this.database == null)
+        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));  // needs config & fileManager
+        if (this.database == null)  //needs logger & pluginManager
         {
             this.logger.log(Level.SEVERE, "Could not find the database type ''{0}''", this.config.database);
-            this.server.getPluginManager().disablePlugin(this);
+            pm.disablePlugin(this);
             return;
         }
-        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
+        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));  //needs database
         
-        this.permissionRegistration = new PermissionRegistration(pm);
-        this.registerPermissions(Perm.values());
+        this.permissionRegistration = new PermissionRegistration(pm);   // needs pluginManager
+        this.registerPermissions(Perm.values());    // needs permissionRegistration
         
-        this.eventRegistration = new EventManager(pm);
+        this.eventRegistration = new EventManager(pm);  //needs pluginManager
         
-        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
-        this.userManager = new UserManager(this);
+        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);  //needs config
+        this.userManager = new UserManager(this);   // needs executor, database, server, config & eventRegistration
         
-        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);   
+        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);   //needs fileManager & config
         
-        this.commandManager = new CommandManager(this);
+        this.commandManager = new CommandManager(this); // needs server
         
         this.moduleManager = new ModuleManager(this);
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());
+        this.moduleManager.loadModules(this.fileManager.getModulesDir());   // needs fileManager
     }
 
     @Override
