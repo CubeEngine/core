@@ -2,8 +2,13 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Validate;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import java.util.Collections;
@@ -13,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -27,11 +33,11 @@ public class CommandContext
     private final CommandSender sender;
     private final CubeCommand command;
     private String label;
-    private final Set<String> flags;
-    private final Map<String, String> flagAliases;
-    private final LinkedList<String> params;
-    private final Map<String, String> namedParams;
+    private final Map<String, Boolean> flags;
+    private Map<String, String> flagLongnameMap;
+    private final LinkedList<String> indexedParams;
     private final Map<String, String> namedParamAliases;
+    private final Map<String, Object> namedParams;
     private boolean empty;
     private int size;
     private boolean result;
@@ -47,103 +53,208 @@ public class CommandContext
     public CommandContext(Core core, CommandSender sender, CubeCommand command, String label)
     {
         this.core = core;
+        if (sender instanceof Player)
+        {
+            sender = core.getUserManager().getUser(sender);
+        }
         this.sender = sender;
         this.command = command;
-        this.flags = new THashSet<String>();
-        this.flagAliases = new THashMap<String, String>();
-        this.params = new LinkedList<String>();
-        this.namedParams = new THashMap<String, String>();
-        this.namedParamAliases = new THashMap<String, String>();
+        this.flags = new THashMap<String, Boolean>(0);
+        this.flagLongnameMap = new THashMap<String, String>(0);
+        this.indexedParams = new LinkedList<String>();
+        this.namedParams = new THashMap<String, Object>(0);
+        this.namedParamAliases = new THashMap<String, String>(0);
         this.result = true;
     }
+    
+    public void parseCommandArgs(String[] commandLine)
+    {
+        this.parseCommandArgs(commandLine, new Flag[0]);
+    }
+    
+    public void parseCommandArgs(String[] commandLine, Flag[] flags)
+    {
+        this.parseCommandArgs(commandLine, flags, new Param[0]);
+    }
 
-    public void parseCommandArgs(String... commandLine)
+    public void parseCommandArgs(String[] commandLine, Flag[] flags, Param[] params)
     {
         Validate.notEmpty(commandLine, "There needs to be at least 1 argument!");
 
         this.label = commandLine[0];
+        
+        this.flagLongnameMap = new THashMap<String, String>(flags.length);
+        for (Flag flag : flags)
+        {
+            this.flags.put(flag.name(), false);
+            if (!"".equals(flag.longName()))
+            {
+                this.flagLongnameMap.put(flag.longName(), flag.name());
+            }
+        }
+        
+        Map<String, Param> paramMap = new THashMap<String, Param>(params.length);
+        Map<String, String> paramAliasMap = new THashMap<String, String>();
+        String[] names;
+        
+        for (Param param : params)
+        {
+            names = param.names();
+            if (names.length == 0)
+            {
+                throw new IllegalArgumentException("One of the declared parameters does not specify a name!");
+            }
+            paramMap.put(names[0], param);
+            for (int i = 1; i < names.length; ++i)
+            {
+                paramAliasMap.put(names[i], names[0]);
+            }
+        }
 
+        // same vars to hold states from cycle to cycle
         char firstChar;
         char quoteChar = '\0';
-        int length;
-        StringBuilder quotedArgBuilder = null;
+        StringBuilder quotedArgBuilder = null; // null => not constructing a string
+        String lastQuotedParam;
+        
+        // vars related to the parameters conversion
+        Param currentParam = null;
+        int typeOffset = 0;
 
         for (int i = 1; i < commandLine.length; ++i)
         {
-            firstChar = commandLine[i].charAt(0);
-            length = commandLine[i].length();
-
-            if (length < 1)
+            // is this part empty?
+            if (commandLine[i].isEmpty())
             {
+                // are we building a string?
                 if (quotedArgBuilder != null)
                 {
                     quotedArgBuilder.append(' ');
                 }
                 continue;
             }
-
-            switch (firstChar)
+            
+            // set the first char for easier access
+            firstChar = commandLine[i].charAt(0);
+            
+            // are we not building a string?
+            if (quotedArgBuilder == null)
             {
-                case '\'':
-                case '"':
-                    if (quotedArgBuilder == null)
+                // does this part start with " or ' ?
+                if (firstChar == '"' || firstChar == '\'')
+                {
+                    // set the quote char to check the closing against the correct one
+                    quoteChar = firstChar;
+
+                    // is this string closed in the same part?
+                    if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
                     {
-                        if (i + 1 >= commandLine.length)
-                        {
-                            this.params.add(commandLine[i].substring(1));
-                        }
-                        else
-                        {
-                            quoteChar = firstChar;
-                            quotedArgBuilder = new StringBuilder(commandLine[i].substring(1));
-                        }
-                        break;
-                    }
-                case '-':
-                    if (quotedArgBuilder == null && commandLine[i].matches("^\\-[A-Za-z]+$"))
-                    {
-                        this.flags.add(commandLine[i].substring(1));
-                        break;
-                    }
-                default:
-                    if (quotedArgBuilder == null)
-                    {
-                        this.params.add(commandLine[i]);
+                        // add the string as a parameter
+                        this.indexedParams.add(commandLine[i].substring(1, commandLine[i].length() - 1));
                     }
                     else
                     {
-                        int quoteOffset = commandLine[i].indexOf(quoteChar);
-                        if (quoteOffset >= 0)
+                        // create a string builder to build the string
+                        quotedArgBuilder = new StringBuilder(commandLine[i].substring(1));
+                    }
+                }
+                // might this be a flag?
+                else if (firstChar == '-')
+                {
+                    // get the name of the flag
+                    String flag = commandLine[i].substring(1);
+                    // was a second dash used?
+                    if (flag.charAt(0) == '-')
+                    {
+                        // strip that as well
+                        flag = flag.substring(1);
+                    }
+                    // is this a long name mapped to a short name?
+                    if (this.flagLongnameMap.containsKey(flag))
+                    {
+                        // replace the name
+                        flag = this.flagLongnameMap.get(flag);
+                    }
+                    // is there flag now?
+                    if (flag != null)
+                    {
+                        // set the flag state to true
+                        this.flags.put(flag, true);
+                    }
+                }
+                else
+                {
+                    // set the param name for easier access
+                    String paramName = commandLine[i];
+                    // is this an alias?
+                    if (paramAliasMap.containsKey(paramName))
+                    {
+                        // replace the name by the mapped one
+                        paramName = paramAliasMap.get(paramName);
+                    }
+                    // get the param
+                    Param param = paramMap.get(paramName);
+                    
+                    // was a param found?
+                    if (param != null)
+                    {
+                        // set the current param to work with in the following cycles
+                        currentParam = param;
+                    }
+                    else
+                    {
+                        // add the part as an indexed param as no name was found
+                        this.indexedParams.add(commandLine[0]);
+                    }
+                }
+            }
+            // are we building a string?
+            else if (quotedArgBuilder != null)
+            {
+                // is the last char the closing quote?
+                if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
+                {
+                    // append the part to the string
+                    quotedArgBuilder.append(' ').append(commandLine[i].substring(0, commandLine[i].length() - 1));
+                    // add the string to as parameter
+                    lastQuotedParam = quotedArgBuilder.toString();
+                    // reset the string builder
+                    quotedArgBuilder = null;
+                }
+                else
+                {
+                    // append the part to the string
+                    quotedArgBuilder.append(commandLine[i]);
+                }
+            }
+            // are we parsing a named parameters?
+            else if (currentParam != null)
+            {
+                if (currentParam.types().length < typeOffset)
+                {
+                    Class type = currentParam.types()[typeOffset++];
+                    // do we have a string here?
+                    if (String.class.isAssignableFrom(type))
+                    {
+                        quotedArgBuilder = new StringBuilder();
+                    }
+                    else
+                    {
+                        try
                         {
-                            String before = commandLine[i].substring(0, quoteOffset);
-                            String after = "";
-                            if (quoteOffset + 1 < length)
-                            {
-                                after = commandLine[i].substring(quoteOffset + 1);
-                            }
-
-                            if (before.length() > 0)
-                            {
-                                quotedArgBuilder.append(' ').append(before);
-                            }
-                            this.params.add(quotedArgBuilder.toString());
-                            quotedArgBuilder = null;
-
-                            if (after.length() > 0)
-                            {
-                                this.params.add(after);
-                            }
+                            this.namedParams.put(currentParam.names()[0], Convert.fromString(type, commandLine[i]));
                         }
-                        else
+                        catch (ConversionException e)
                         {
-                            quotedArgBuilder.append(' ').append(commandLine[i]);
-                            if (i + 1 >= commandLine.length)
-                            {
-                                this.params.add(quotedArgBuilder.toString());
-                                quotedArgBuilder = null;
-                            }
+                            throw new IllegalParameterValue(currentParam.names()[0], i, commandLine[i], type);
                         }
                     }
+                }
+                else
+                {
+                    // reset the type offset as we are done here
+                    typeOffset = 0;
+                }
             }
         }
     }
@@ -186,7 +297,16 @@ public class CommandContext
      */
     public boolean hasFlag(String flag)
     {
-        return this.flags.contains(flag);
+        if (this.flagLongnameMap.containsKey(flag))
+        {
+            flag = this.flagLongnameMap.get(flag);
+        }
+        Boolean flagState = this.flags.get(flag);
+        if (flagState == null)
+        {
+            throw new IllegalArgumentException("The requested flag was not declared!");
+        }
+        return flagState.booleanValue();
     }
 
     /**
@@ -216,7 +336,7 @@ public class CommandContext
      */
     public String getString(int i)
     {
-        return this.params.get(i);
+        return this.indexedParams.get(i);
     }
 
     /**
@@ -230,7 +350,7 @@ public class CommandContext
     {
         if (i >= 0 && this.size > i)
         {
-            return this.params.get(i);
+            return this.indexedParams.get(i);
         }
         return def;
     }
@@ -362,7 +482,16 @@ public class CommandContext
      */
     public Set<String> getFlags()
     {
-        return Collections.unmodifiableSet(this.flags);
+        // TODO cache this
+        Set<String> availableFlags = new THashSet<String>();
+        for (Map.Entry<String, Boolean> entry : flags.entrySet())
+        {
+            if (entry.getValue())
+            {
+                availableFlags.add(entry.getKey());
+            }
+        }
+        return availableFlags;
     }
 
     /**
@@ -372,7 +501,7 @@ public class CommandContext
      */
     public List<String> getParams()
     {
-        return Collections.unmodifiableList(this.params);
+        return Collections.unmodifiableList(this.indexedParams);
     }
 
     /**

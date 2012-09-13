@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.permission;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -19,6 +20,25 @@ public class PermissionRegistration
     }
 
     /**
+     * Registers a String as a permission
+     *
+     * @param perm the permission node
+     * @param permDefault the default value
+     * @return fluent interface
+     */
+    public PermissionRegistration registerPermission(String perm, PermissionDefault permDefault)
+    {
+        try
+        {
+            this.pm.addPermission(new org.bukkit.permissions.Permission(perm, permDefault));
+        }
+        catch (IllegalArgumentException e)
+        {}
+        
+        return this;
+    }
+
+    /**
      * Registeres a permission
      *
      * @param permission the permission
@@ -26,8 +46,7 @@ public class PermissionRegistration
      */
     public PermissionRegistration registerPermission(Permission permission)
     {
-        this.pm.addPermission(new org.bukkit.permissions.Permission(permission.getPermission(), permission.getPermissionDefault()));
-        return this;
+        return this.registerPermission(permission.getPermission(), permission.getPermissionDefault());
     }
 
     /**

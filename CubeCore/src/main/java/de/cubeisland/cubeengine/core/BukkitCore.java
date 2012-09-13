@@ -9,13 +9,13 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
+import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
-import de.cubeisland.cubeengine.core.util.log.RemoteHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -45,6 +45,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private Server server;
     private CommandManager commandManager;
     private ScheduledExecutorService executor;
+    private TableManager tableManager;
 
     @Override
     public void onEnable()
@@ -55,7 +56,7 @@ public class BukkitCore extends JavaPlugin implements Core
         PluginManager pm = this.server.getPluginManager();
 
         this.logger = new CubeLogger("Core");
-        this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
+        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
 
         try
         {
@@ -72,38 +73,57 @@ public class BukkitCore extends JavaPlugin implements Core
         
         try
         {
-            this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));  // needs fileManager
+            // depends on: file manager
+            this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));
         }
         catch (IOException e)
         {
             this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
         
-        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));   // needs fileManager
+        // depends on: file manager
+        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
         
-        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));  // needs config & fileManager
+        // depends on: core config and file manager
+        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
             this.logger.log(Level.SEVERE, "Could not find the database type ''{0}''", this.config.database);
             pm.disablePlugin(this);
             return;
         }
-        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));  // needs database
+		// depends on: database
+        this.tableManager = new TableManager(this);
+
+        // depends on: database ( TODO drop the database logger )
+        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         
-        this.permissionRegistration = new PermissionRegistration(pm);   // needs pluginManager
-        this.registerPermissions(Perm.values());    // needs permissionRegistration
+        // depends on: plugin manager
+        this.permissionRegistration = new PermissionRegistration(pm);
+
+        // depends on: permission registration
+        this.registerPermissions(Perm.values());
         
-        this.eventRegistration = new EventManager(pm);  // needs pluginManager
+        // depends on: plugin manager
+        this.eventRegistration = new EventManager(pm);
         
-        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);  // needs config
-        this.userManager = new UserManager(this);   // needs executor, database, server, config & eventRegistration
+        // depends on: core config
+        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
         
-        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);   // needs fileManager & config
+        // depends on: executor, database, Server, core config and event registration
+        this.userManager = new UserManager(this);
         
-        this.commandManager = new CommandManager(this); // needs server
+        // depends on: file manager, core config
+        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
         
+        // depends on: Server
+        this.commandManager = new CommandManager(this);
+        
+        // depends on: database
         this.moduleManager = new ModuleManager(this);
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());   // needs fileManager
+
+        // depends on: file manager
+        this.moduleManager.loadModules(this.fileManager.getModulesDir());
     }
 
     @Override
@@ -219,5 +239,17 @@ public class BukkitCore extends JavaPlugin implements Core
     public ScheduledExecutorService getExecutor()
     {
         return executor;
+    }
+
+    @Override
+    public TableManager getTableManger()
+    {
+        return this.tableManager;
+    }
+
+    @Override
+    public boolean isDebug()
+    {
+        return this.config.debugMode;
     }
 }

@@ -14,7 +14,7 @@ public class UserAccountStorage extends BasicStorage<UserAccount>
 
     public UserAccountStorage(Database database, UserManager cuManager)
     {
-        super(database, UserAccount.class);
+        super(database, UserAccount.class, 1);//TODO
         this.cuManager = cuManager;
     }
 }

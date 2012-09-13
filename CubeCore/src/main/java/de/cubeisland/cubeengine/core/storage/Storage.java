@@ -74,6 +74,10 @@ public interface Storage<V extends Model>
 
     public void subscribe(SubcribeType type, Callback callback);
 
+    public void updateStructure();
+
+    public void registerUpdater(DatabaseUpdater updater, int... fromRevision);
+
     public enum SubcribeType
     {
         CREATE,

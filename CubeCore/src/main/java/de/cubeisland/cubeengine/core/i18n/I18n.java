@@ -8,10 +8,12 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
+import de.cubeisland.cubeengine.core.util.worker.Cleanable;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +24,7 @@ import java.util.logging.Logger;
  *
  * @author Phillip Schichtel
  */
-public class I18n
+public class I18n implements Cleanable
 {
     private static final Logger LOGGER = new CubeLogger("language");
     
@@ -79,12 +81,17 @@ public class I18n
             }
         }
     }
+    
+    public Collection<String> getLanguages()
+    {
+        return this.languageMap.keySet();
+    }
 
     public String translate(String language, String category, String message, Object... params)
     {
         if (SOURCE_LANGUAGE.equalsIgnoreCase(language))
         {
-            return message;
+            return message; // TODO Colored messages
         }
         String translation = null;
         Language lang = this.languageMap.get(language);
@@ -106,6 +113,7 @@ public class I18n
         return String.format(translation, params);
     }
 
+    @Override
     public void clean()
     {
         for (Language language : this.languageMap.values())
@@ -127,11 +135,11 @@ public class I18n
             final int delimPos = name.indexOf('_');
             if (delimPos < 0 && length == 2)
             {
-                return name.toLowerCase(Locale.ENGLISH);
+                return name.toLowerCase(Locale.ENGLISH); // TODO should we convert it from ab to ab_AB ?
             }
             else if (delimPos == 2 && length == 5)
             {
-                return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).toUpperCase(Locale.ENGLISH);
+                return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3, 5).replace("_", "").toUpperCase(Locale.ENGLISH);
             }
         }
         return null;

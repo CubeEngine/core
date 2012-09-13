@@ -30,6 +30,10 @@ public class TestListener implements Listener
         {
             this.testUserManager(event);
         }
+        if (event.getMessage().startsWith("i18n"))
+        {
+            this.testI18n(event);
+        }
     }
 
     @EventHandler
@@ -75,5 +79,13 @@ public class TestListener implements Listener
                 user.sendMessage("Found " + founduser.getName());
             }
         }
+    }
+
+    private void testI18n(PlayerChatEvent event)
+    {
+        User user = CubeEngine.getUserManager().getUser(event.getPlayer());
+        user.sendMessage("test", "english TEST");
+        user.sendMessage("test", "&1color &2Test");
+        user.sendMessage(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "&1color &2Test"));
     }
 }

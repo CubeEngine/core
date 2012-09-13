@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
+import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.concurrent.ScheduledExecutorService;
@@ -95,4 +96,18 @@ public interface Core
      * @return the ExecutorService
      */
     public ScheduledExecutorService getExecutor();
+    
+    /**
+     * This method returns the DebugMode
+     * 
+     * @return the debugMode
+     */
+    public boolean isDebug();
+
+    /**
+     * This method returns the TableManager
+     * 
+     * @return the TableManager
+     */
+    public TableManager getTableManger();
 }
