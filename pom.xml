@@ -30,5 +30,6 @@
         <module>CubeWar</module>
         <module>CubeAuctions</module>
         -->
+        <module>CubeRuleBook</module>
     </modules>
 </project>
