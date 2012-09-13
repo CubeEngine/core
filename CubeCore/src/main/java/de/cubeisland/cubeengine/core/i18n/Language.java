@@ -3,10 +3,12 @@ package de.cubeisland.cubeengine.core.i18n;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.worker.Cleanable;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
@@ -15,7 +17,7 @@ import org.apache.commons.lang.Validate;
  *
  * @author Phillip Schichtel
  */
-public class Language
+public class Language implements Cleanable
 {
     private final String code;
     private final String name;
@@ -23,6 +25,7 @@ public class Language
     private final Map<String, Map<String, String>> messages;
     private final File messageDir;
     private final JsonParser parser;
+    private final Locale locale;
 
     public Language(LanguageConfiguration config, File languageDir)
     {
@@ -31,16 +34,25 @@ public class Language
         Validate.notNull(config.localName, "The local name must not be null!");
         
         this.code = I18n.normalizeLanguage(config.code);
+        Validate.notNull(this.code, "The configured language code is invalid!");
+        
         this.name = config.name;
         this.localName = config.localName;
         this.messageDir = new File(languageDir, this.code);
         this.messages = new ConcurrentHashMap<String, Map<String, String>>();
         this.parser = new JsonParser();
+        
+        this.locale = new Locale(this.code.substring(0, 2), this.code.substring(3, 5));
     }
 
     public String getCode()
     {
         return this.code;
+    }
+    
+    public Locale getLocale()
+    {
+        return this.locale;
     }
 
     public String getName()
@@ -113,7 +125,8 @@ public class Language
         return null;
     }
 
-    void clean()
+    @Override
+    public void clean()
     {
         this.messages.clear();
     }
