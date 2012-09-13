@@ -91,7 +91,7 @@ public class I18n implements Cleanable
     {
         if (SOURCE_LANGUAGE.equalsIgnoreCase(language))
         {
-            return message;
+            return message; // TODO Colored messages
         }
         String translation = null;
         Language lang = this.languageMap.get(language);
