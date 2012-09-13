@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command;
+package de.cubeisland.cubeengine.core.command.exception;
 
 import org.bukkit.command.CommandSender;
 

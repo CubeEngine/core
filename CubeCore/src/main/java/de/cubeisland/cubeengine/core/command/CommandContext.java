@@ -4,8 +4,11 @@ import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Validate;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import java.util.Collections;
@@ -108,91 +111,150 @@ public class CommandContext
             }
         }
 
+        // same vars to hold states from cycle to cycle
         char firstChar;
         char quoteChar = '\0';
         StringBuilder quotedArgBuilder = null; // null => not constructing a string
+        String lastQuotedParam;
         
+        // vars related to the parameters conversion
         Param currentParam = null;
-        Class[] types = null;
         int typeOffset = 0;
 
         for (int i = 1; i < commandLine.length; ++i)
         {
+            // is this part empty?
             if (commandLine[i].isEmpty())
             {
+                // are we building a string?
                 if (quotedArgBuilder != null)
                 {
                     quotedArgBuilder.append(' ');
                 }
                 continue;
             }
+            
+            // set the first char for easier access
             firstChar = commandLine[i].charAt(0);
             
+            // are we not building a string?
             if (quotedArgBuilder == null)
             {
+                // does this part start with " or ' ?
                 if (firstChar == '"' || firstChar == '\'')
                 {
+                    // set the quote char to check the closing against the correct one
                     quoteChar = firstChar;
 
+                    // is this string closed in the same part?
                     if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
                     {
-                        quotedArgBuilder = new StringBuilder(commandLine[i].substring(1));
+                        // add the string as a parameter
+                        this.indexedParams.add(commandLine[i].substring(1, commandLine[i].length() - 1));
                     }
                     else
                     {
-                        this.indexedParams.add(commandLine[i].substring(1, commandLine[i].length() - 1));
+                        // create a string builder to build the string
+                        quotedArgBuilder = new StringBuilder(commandLine[i].substring(1));
                     }
                 }
+                // might this be a flag?
                 else if (firstChar == '-')
                 {
+                    // get the name of the flag
                     String flag = commandLine[i].substring(1);
+                    // was a second dash used?
                     if (flag.charAt(0) == '-')
                     {
+                        // strip that as well
                         flag = flag.substring(1);
                     }
+                    // is this a long name mapped to a short name?
                     if (this.flagLongnameMap.containsKey(flag))
                     {
+                        // replace the name
                         flag = this.flagLongnameMap.get(flag);
                     }
+                    // is there flag now?
                     if (flag != null)
                     {
+                        // set the flag state to true
                         this.flags.put(flag, true);
                     }
                 }
                 else
                 {
+                    // set the param name for easier access
                     String paramName = commandLine[i];
+                    // is this an alias?
                     if (paramAliasMap.containsKey(paramName))
                     {
+                        // replace the name by the mapped one
                         paramName = paramAliasMap.get(paramName);
                     }
+                    // get the param
                     Param param = paramMap.get(paramName);
+                    
+                    // was a param found?
                     if (param != null)
                     {
+                        // set the current param to work with in the following cycles
                         currentParam = param;
                     }
                     else
                     {
+                        // add the part as an indexed param as no name was found
                         this.indexedParams.add(commandLine[0]);
                     }
                 }
             }
+            // are we building a string?
             else if (quotedArgBuilder != null)
             {
+                // is the last char the closing quote?
                 if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
                 {
+                    // append the part to the string
                     quotedArgBuilder.append(' ').append(commandLine[i].substring(0, commandLine[i].length() - 1));
-                    this.indexedParams.add(quotedArgBuilder.toString());
+                    // add the string to as parameter
+                    lastQuotedParam = quotedArgBuilder.toString();
+                    // reset the string builder
                     quotedArgBuilder = null;
                 }
                 else
                 {
+                    // append the part to the string
                     quotedArgBuilder.append(commandLine[i]);
                 }
             }
+            // are we parsing a named parameters?
             else if (currentParam != null)
             {
-                
+                if (currentParam.types().length < typeOffset)
+                {
+                    Class type = currentParam.types()[typeOffset++];
+                    // do we have a string here?
+                    if (String.class.isAssignableFrom(type))
+                    {
+                        quotedArgBuilder = new StringBuilder();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            this.namedParams.put(currentParam.names()[0], Convert.fromString(type, commandLine[i]));
+                        }
+                        catch (ConversionException e)
+                        {
+                            throw new IllegalParameterValue(currentParam.names()[0], i, commandLine[i], type);
+                        }
+                    }
+                }
+                else
+                {
+                    // reset the type offset as we are done here
+                    typeOffset = 0;
+                }
             }
         }
     }
