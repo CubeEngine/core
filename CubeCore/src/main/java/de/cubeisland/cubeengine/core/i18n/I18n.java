@@ -91,7 +91,7 @@ public class I18n implements Cleanable
     {
         if (SOURCE_LANGUAGE.equalsIgnoreCase(language))
         {
-            return message; // TODO Colored messages
+            return this.parseSourceLanguage(message);
         }
         String translation = null;
         Language lang = this.languageMap.get(language);
@@ -103,14 +103,25 @@ public class I18n implements Cleanable
         if (translation == null)
         {
             this.logMissingTranslation(language, category, message);
-            translation = this.sourceLanguageCache.get(message);
-            if (translation == null)
-            {
-                this.sourceLanguageCache.put(message, translation = ChatFormat.parseFormats(message));
-            }
+            translation = this.parseSourceLanguage(message);
         }
         
         return String.format(translation, params);
+    }
+    
+    private String parseSourceLanguage(String message)
+    {
+        if (message == null)
+        {
+            return null;
+        }
+        String parsed = this.sourceLanguageCache.get(message);
+        if (parsed == null)
+        {
+            this.sourceLanguageCache.put(message, parsed = ChatFormat.parseFormats(message));
+            return parsed;
+        }
+        return parsed;
     }
 
     @Override
@@ -135,11 +146,11 @@ public class I18n implements Cleanable
             final int delimPos = name.indexOf('_');
             if (delimPos < 0 && length == 2)
             {
-                return name.toLowerCase(Locale.ENGLISH); // TODO should we convert it from ab to ab_AB ?
+                return name.toLowerCase(Locale.ENGLISH) + "_" + name.toUpperCase(Locale.ENGLISH);
             }
             else if (delimPos == 2 && length == 5)
             {
-                return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3, 5).replace("_", "").toUpperCase(Locale.ENGLISH);
+                return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).replace("_", "").toUpperCase(Locale.ENGLISH);
             }
         }
         return null;
