@@ -4,8 +4,8 @@
  */
 package de.cubeisland.cubeengine.rulebook;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,11 +31,14 @@ class NewPlayerJoinListener implements Listener
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
-        if(player.hasPlayedBefore())
+        if(!player.hasPlayedBefore())
         {
+            User user = this.module.getCore().getUserManager().getUser(player);
             BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
+            
             ruleBook.setAuthor(this.module.getCore().getServer().getServerName());
-            ruleBook.setTitle("Regelbuch");
+            ruleBook.setTitle(CubeEngine._(user.getLanguage(), "rulebook", "Rulebook"));
+            ruleBook.setPages(this.module.getConfig().getPages(user.getLanguage()));
             
             player.sendMessage("hallo");
             player.setItemInHand(ruleBook.getItemStack());
