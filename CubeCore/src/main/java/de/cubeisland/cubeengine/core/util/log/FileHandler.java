@@ -16,12 +16,12 @@ public class FileHandler extends java.util.logging.FileHandler
 {
     public FileHandler(Level level, String pattern) throws IOException, SecurityException
     {
-        this(level, pattern, 5000, 3, true);
+        this(level, pattern, 5000, 1, true);
     }
 
     public FileHandler(Level level, String pattern, boolean append) throws IOException, SecurityException
     {
-        this(level, pattern, 5000, 3, append);
+        this(level, pattern, 5000, 1, append);
     }
 
     public FileHandler(Level level, String pattern, int limit, int count) throws IOException, SecurityException

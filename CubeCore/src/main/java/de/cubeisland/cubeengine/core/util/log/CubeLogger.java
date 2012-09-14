@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.util.log;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -36,7 +37,7 @@ public class CubeLogger extends Logger
             msg = MessageFormat.format(msg, record.getParameters());
         }
         record.setParameters(null);
-        record.setMessage("["+this.getName() + "] " + msg);
+        record.setMessage("[" + this.getName() + "] " + msg);
         this.getParent().log(record);
         record.setMessage(msg);
         super.log(record);
@@ -45,5 +46,13 @@ public class CubeLogger extends Logger
     public void exception(String msg, Throwable t)
     {
         this.log(Level.SEVERE, msg, t);
+    }
+
+    public void debug(String msg)
+    {
+        if (CubeEngine.getCore().isDebug())
+        {
+            this.log(Level.INFO, msg);
+        }
     }
 }
