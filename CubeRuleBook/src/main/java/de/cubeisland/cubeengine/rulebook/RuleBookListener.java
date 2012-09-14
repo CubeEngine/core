@@ -17,12 +17,12 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Wolfi
  */
-class NewPlayerJoinListener implements Listener 
+class RuleBookListener implements Listener 
 {
 
     Rulebook module;
     
-    public NewPlayerJoinListener(Rulebook module) 
+    public RuleBookListener(Rulebook module) 
     {
         this.module = module;
     }
