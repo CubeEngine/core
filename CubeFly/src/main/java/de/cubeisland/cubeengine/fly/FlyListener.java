@@ -40,10 +40,7 @@ public class FlyListener implements Listener
         {
             user.setAllowFlight(true);
             user.setFlying(true);
-            user.sendMessage("stay fly");
-            return;
         }
-        user.sendMessage("no fly");
     }
     
     @EventHandler
@@ -54,11 +51,11 @@ public class FlyListener implements Listener
         {
             FlyModel model = fly.getFlyManager().getFlyModel(user);
             model.flying = true;
-            fly.getFlyManager().merge(model);
+            fly.getFlyManager().save(model);
         }
         else
         {
-            fly.getFlyManager().deleteByKey(user.getKey());
+            fly.getFlyManager().remove(user.getKey());
         }
     }
     

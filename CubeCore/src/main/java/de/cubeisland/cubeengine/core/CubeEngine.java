@@ -10,12 +10,11 @@ import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
-
 /**
  *
  * @author Phillip Schichtel
@@ -175,6 +174,16 @@ public final class CubeEngine
     public static I18n getI18n()
     {
         return core.getI18n();
+    }
+    
+    /**
+     * This method returns the Worker/ExecutorService
+     * 
+     * @return the ExecutorService
+     */
+    public static ScheduledExecutorService getExecutor()
+    {
+        return core.getExecutor();
     }
     
     /**

@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.fly.database;
 
+
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
@@ -30,4 +32,27 @@ public class FlyManager extends BasicStorage<FlyModel>
         }
         return model;
     }
+
+    public void save(final FlyModel model)
+    {
+        CubeEngine.getExecutor().submit(new Runnable()
+        {
+            public void run()
+            {
+                merge(model);
+            }
+        });
+    }
+
+    public void remove(final int key)
+    {
+        CubeEngine.getExecutor().submit(new Runnable()
+        {
+            public void run()
+            {
+                deleteByKey(key);
+            }
+        });
+    }    
 }
+
