@@ -21,7 +21,7 @@ public class Rulebook extends Module
         CubeEngine.getFileManager().dropResources(RuleBookResource.values());
         
         this.config = new RuleBookConfiguration(this);
-        this.getCore().getEventManager().registerListener(new NewPlayerJoinListener(this), this); 
+        this.getCore().getEventManager().registerListener(new RuleBookListener(this), this); 
     }
     
     @Override
