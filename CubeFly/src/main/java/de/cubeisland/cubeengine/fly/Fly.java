@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.fly.database.FlyManager;
 import java.io.File;
 import org.bukkit.Server;
 
@@ -12,6 +13,7 @@ public class Fly extends Module
     protected Server server;
     protected File dataFolder;
     private FlyConfiguration config;
+    private FlyManager flyManager;
 
     @Override
     public void onEnable()
@@ -24,6 +26,12 @@ public class Fly extends Module
         this.config = Configuration.load(FlyConfiguration.class, this);
         this.getFileManager().dropResources(FlyResource.values());
         this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
+        this.flyManager = new FlyManager(this.getDatabase(), this.getInfo().getRevision());
+    }
+    
+    public FlyManager getFlyManager()
+    {
+        return this.flyManager;
     }
 
     @Override

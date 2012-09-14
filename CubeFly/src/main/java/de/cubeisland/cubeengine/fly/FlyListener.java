@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
+import de.cubeisland.cubeengine.fly.database.FlyModel;
 import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,6 +12,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -29,6 +32,36 @@ public class FlyListener implements Listener
         this.usermanager = fly.getUserManager();
     }
 
+    @EventHandler
+    public void playerJoin(final PlayerJoinEvent event)
+    {
+        User user = usermanager.getUser(event.getPlayer());
+        if (fly.getFlyManager().getFlyModel(user).flying)
+        {
+            user.setAllowFlight(true);
+            user.setFlying(true);
+            user.sendMessage("stay fly");
+            return;
+        }
+        user.sendMessage("no fly");
+    }
+    
+    @EventHandler
+    public void playerQuit(final PlayerQuitEvent event)
+    {
+        User user = usermanager.getUser(event.getPlayer());
+        if (user.isFlying())
+        {
+            FlyModel model = fly.getFlyManager().getFlyModel(user);
+            model.flying = true;
+            fly.getFlyManager().merge(model);
+        }
+        else
+        {
+            fly.getFlyManager().deleteByKey(user.getKey());
+        }
+    }
+    
     @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
     {
