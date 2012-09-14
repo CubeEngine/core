@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -39,6 +40,8 @@ public class Convert
         registerConverter(double.class, converter);
         registerConverter(Role.class, new RoleConverter());
         registerConverter(Date.class, new DateConverter());
+        registerConverter(Level.class, new LevelConverter());
+            
 
         registerGenericConverter(Collection.class, new ColletionConverter());
         registerGenericConverter(Map.class, new MapConverter());

@@ -292,7 +292,7 @@ public abstract class Module
         {
             try
             {
-                this.logger.log(Level.INFO, "Enabling {0}-r{1}", new Object[]{this.getInfo().getName(), this.getInfo().getRevision()});
+                this.logger.log(Level.FINER, "Enabling {0}-r{1}", new Object[]{this.getInfo().getName(), this.getInfo().getRevision()});
                 this.onEnable();
                 this.enabled = true;
                 this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, this));

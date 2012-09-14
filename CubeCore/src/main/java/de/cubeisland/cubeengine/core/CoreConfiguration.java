@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import java.util.logging.Level;
 
 /**
  *
@@ -35,4 +36,8 @@ public class CoreConfiguration extends Configuration
     @Option("database")
     @Comment("Currently available: mySQL")
     public String database = "mySQL";
+    
+    @Option("logging.Level")
+    @Comment("Logging into Console \nALL > FINEST > FINER > FINE > INFO > OFF")
+    public Level loggingLevel = Level.FINE;
 }

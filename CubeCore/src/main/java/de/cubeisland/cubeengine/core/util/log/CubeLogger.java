@@ -26,7 +26,7 @@ public class CubeLogger extends Logger
         this.setLevel(Level.ALL);
     }
 
-    //Pass ConsoleLogging to BukkitLogger
+    // Pass ConsoleLogging to BukkitLogger
     @Override
     public void log(LogRecord record)
     {
@@ -38,13 +38,22 @@ public class CubeLogger extends Logger
             msg = MessageFormat.format(msg, record.getParameters());
         }
         record.setParameters(null);
-        record.setMessage("[" + this.getName() + "] " + msg);
+
         if (!CubeEngine.getCore().isDebug())
         {
             record.setThrown(null);
         }
-        this.getParent().log(record);
-        record.setMessage(msg);
+        Level level = record.getLevel();
+        if (record.getLevel().intValue() <= Level.INFO.intValue())
+        {
+            record.setLevel(Level.INFO); // LogLevel lower than info are displayed as INFO anyways
+        }
+        if (level.intValue() >= CubeEngine.getCore().getConfiguration().loggingLevel.intValue())
+        { // only log to console if Log is important enough
+            record.setMessage("[" + this.getName() + "] " + msg);
+            this.getParent().log(record);
+            record.setMessage(msg);
+        }
         super.log(record);
     }
 
