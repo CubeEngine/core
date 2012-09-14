@@ -31,18 +31,14 @@ class NewPlayerJoinListener implements Listener
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
-        if(!player.hasPlayedBefore())
+        if(player.hasPlayedBefore())
         {
-            Material ruleBook = Material.WRITTEN_BOOK;
+            BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
+            ruleBook.setAuthor(this.module.getCore().getServer().getServerName());
+            ruleBook.setTitle("Regelbuch");
             
-            // TODO write Text in the Book. Do not know how it works!
-            User user = new User(player.getName());
-            for(String line : module.getConfig().getText(user.getLanguage()).split("\n"))
-            {
-                player.sendMessage(ChatColor.RED + line);
-            }
-            
-            player.setItemInHand(new ItemStack(ruleBook));
+            player.sendMessage("hallo");
+            player.setItemInHand(ruleBook.getItemStack());
         }
     }
 }
