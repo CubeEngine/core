@@ -38,6 +38,10 @@ public class CubeLogger extends Logger
         }
         record.setParameters(null);
         record.setMessage("[" + this.getName() + "] " + msg);
+        if (!CubeEngine.getCore().isDebug())
+        {
+            record.setThrown(null);
+        }
         this.getParent().log(record);
         record.setMessage(msg);
         super.log(record);
@@ -52,7 +56,7 @@ public class CubeLogger extends Logger
     {
         if (CubeEngine.getCore().isDebug())
         {
-            this.log(Level.INFO, msg);
+            this.log(Level.INFO, "[Debug] {0}", msg);
         }
     }
 }
