@@ -72,10 +72,25 @@ public interface Storage<V extends Model>
      */
     public void clear();
 
+    /**
+     * Subscribes for given SubscribeType
+     * 
+     * @param type the SubcribeType
+     * @param callback the Callback
+     */
     public void subscribe(SubcribeType type, Callback callback);
 
+    /**
+     * Check if DatabaseStructure needs to be updated and update
+     */
     public void updateStructure();
 
+    /**
+     * Registers an updater
+     * 
+     * @param updater the updater
+     * @param fromRevision the revision to update from with this updater
+     */
     public void registerUpdater(DatabaseUpdater updater, int... fromRevision);
 
     public enum SubcribeType

@@ -14,7 +14,6 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import java.io.File;
 import java.io.IOException;
@@ -94,9 +93,6 @@ public class BukkitCore extends JavaPlugin implements Core
         }
 		// depends on: database
         this.tableManager = new TableManager(this);
-
-        // depends on: database ( TODO drop the database logger )
-        this.logger.addHandler(new DatabaseHandler(Level.WARNING, this.database, "core_log"));
         
         // depends on: plugin manager
         this.permissionRegistration = new PermissionRegistration(pm);

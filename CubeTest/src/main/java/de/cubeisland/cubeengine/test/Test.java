@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.DatabaseHandler;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
@@ -39,7 +38,6 @@ public class Test extends Module
         {
             logger.log(Level.SEVERE, "Error while Enabling the TestModule", ex);
         }
-        logger.addHandler(new DatabaseHandler(Level.WARNING, this.getDatabase(), "test_log"));
         try
         {
             logger.addHandler(new FileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test.log").toString()));

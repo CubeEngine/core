@@ -45,28 +45,75 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
         this.server = ((BukkitCore)core).getServer();
         this.users = new ConcurrentHashMap<String, User>();
-        
+
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
         this.core.getEventManager().registerCoreListener(this);
     }
 
     @Override
-    protected void prepareStatements(String key, String[] fields) throws SQLException
+    protected void prepareStatements(String key, String[] fields)
     {
-        super.prepareStatements(key, fields);
-        String[] allFields = new String[fields.length + 1];
-        allFields[0] = key;
-        System.arraycopy(fields, 0, allFields, 1, fields.length);
-        this.database.prepareAndStoreStatement(User.class, "getByName", this.database.getQueryBuilder()
-            .select(allFields)
-            .from(this.table)
-            .where()
-            .field("player").is(ComponentBuilder.EQUAL).value()
-            .end()
-            .end());
+        try
+        {
+            super.prepareStatements(key, fields);
+            String[] allFields = new String[fields.length + 1];
+            allFields[0] = key;
+            System.arraycopy(fields, 0, allFields, 1, fields.length);
+            this.database.prepareAndStoreStatement(User.class, "getByName", this.database.getQueryBuilder()
+                .select(allFields)
+                .from(this.table)
+                .where()
+                .field("player").is(ComponentBuilder.EQUAL).value()
+                .end()
+                .end());
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while preparing statements for " + this.table, ex);
+        }
     }
 
+    /**
+     * Custom Getter for getting User from DB by Name
+     *
+     * @param playername the name
+     * @return the User OR null if not found
+     */
+    public User get(String playername)
+    {
+        User loadedModel = null;
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByName", playername);
+            ArrayList<Object> values = new ArrayList<Object>();
+            if (resulsSet.next())
+            {
+                values.add(resulsSet.getObject(this.key));
+                for (String name : this.attributes)
+                {
+                    values.add(resulsSet.getObject(name));
+                }
+                loadedModel = this.modelConstructor.newInstance(values);
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while getting Model from Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+        return loadedModel;
+    }
+
+    /**
+     * Adds the user
+     *
+     * @param user the User
+     * @return fluent interface
+     */
     public UserManager addUser(final User user)
     {
         User inUse = this.users.get(user.getName());
@@ -101,6 +148,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         });
     }
 
+    /**
+     * Removes the user permanently. Data cannot be retrieved
+     *
+     * @param user the User
+     * @return fluent interface
+     */
     public UserManager removeUser(final User user)
     {
         this.executor.submit(new Runnable()
@@ -115,34 +168,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         return this;
     }
 
-    public User get(String playername)
-    {
-        User loadedModel = null;
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByName", playername);
-            ArrayList<Object> values = new ArrayList<Object>();
-            if (resulsSet.next())
-            {
-                values.add(resulsSet.getObject(this.key));
-                for (String name : this.attributes)
-                {
-                    values.add(resulsSet.getObject(name));
-                }
-                loadedModel = this.modelConstructor.newInstance(values);
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new IllegalStateException("Error while getting Model from Database", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
-        return loadedModel;
-    }
-
+    /**
+     * Gets a User by name (creates new User if not found)
+     *
+     * @param name the name
+     * @return the User
+     */
     public User getUser(String name)
     {
         User user = this.users.get(name);
@@ -158,21 +189,53 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         return user;
     }
 
+    /**
+     * Gets a User by Offlineplayer (creates new User if not found)
+     *
+     * @param player the player
+     * @return the User
+     */
     public User getUser(OfflinePlayer player)
     {
+        if (!player.hasPlayedBefore())
+        {
+            return null;
+        }
         return this.getUser(player.getName());
     }
 
+    /**
+     * Gets a User by Player (creates new User if not found)
+     *
+     * @param player the player
+     * @return the User
+     */
     public User getUser(Player player)
     {
         return this.getUser(player.getName());
     }
 
+    /**
+     * Gets a User by CommandSender (creates new User if not found)
+     *
+     * @param sender the sender
+     * @return the User OR null if sender is not a Player
+     */
     public User getUser(CommandSender sender)
     {
-        return this.getUser(sender.getName());
+        if (sender instanceof Player)
+        {
+            return this.getUser(sender.getName());
+        }
+        return null;
     }
 
+    /**
+     * Gets a User by Key in DB
+     *
+     * @param key
+     * @return
+     */
     public User getUser(int key)
     {
         User user = this.get(key);
@@ -194,6 +257,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     /**
      * Finds an online User
      *
+     * @param name the name
      * @return a online User
      */
     public User findOnlineUser(String name)
@@ -212,6 +276,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     /**
      * Finds an User
      *
+     * @param name the name
      * @return a User
      */
     @BukkitDependend("Uses BukkitServer to get all OnlinePlayers")
@@ -321,7 +386,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             }
         }
     }
-    
+
+    /**
+     * Removes the user from loaded UserList when quitting the server
+     *
+     * @param event the PlayerQuitEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     private void onQuit(final PlayerQuitEvent event)
     {

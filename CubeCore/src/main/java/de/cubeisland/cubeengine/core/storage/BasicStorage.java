@@ -131,80 +131,93 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             this.database.execute(tbuilder.end().end());
-            this.prepareStatements(key, attributes.toArray(new String[attributes.size()]));
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while initializing Database", ex);
+            throw new IllegalStateException("Error while creating Table", ex);
         }
+        this.prepareStatements(key, attributes.toArray(new String[attributes.size()]));
         tableManager.registerTable(this.table, this.revision);
     }
 
-    protected void prepareStatements(String key, String[] fields) throws SQLException
+    /**
+     * Prepares the Default-Statements
+     *
+     * @param key the key
+     * @param fields the fields
+     */
+    protected void prepareStatements(String key, String[] fields)
     {
-        String[] allFields = new String[fields.length + 1];
-        allFields[0] = key;
-        System.arraycopy(fields, 0, allFields, 1, fields.length);
-        QueryBuilder builder = this.database.getQueryBuilder();
+        try
+        {
+            String[] allFields = new String[fields.length + 1];
+            allFields[0] = key;
+            System.arraycopy(fields, 0, allFields, 1, fields.length);
+            QueryBuilder builder = this.database.getQueryBuilder();
 
-        if (this.keyIsAI)
-        {
-            builder.insert()
-                .into(this.table)
-                .cols(fields)
-                .end();
-        }
-        else
-        {
-            builder.insert()
+            if (this.keyIsAI)
+            {
+                builder.insert()
+                    .into(this.table)
+                    .cols(fields)
+                    .end();
+            }
+            else
+            {
+                builder.insert()
+                    .into(this.table)
+                    .cols(allFields)
+                    .end();
+            }
+            this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
+
+            this.database.prepareAndStoreStatement(modelClass, "merge", builder
+                .merge()
                 .into(this.table)
                 .cols(allFields)
-                .end();
+                .updateCols(fields)
+                .end()
+                .end());
+
+            this.database.prepareAndStoreStatement(modelClass, "get", builder
+                .select(allFields)
+                .from(this.table)
+                .where()
+                .field(key).is(EQUAL).value()
+                .end()
+                .end());
+
+            this.database.prepareAndStoreStatement(modelClass, "getall", builder
+                .select(allFields)
+                .from(this.table)
+                .end()
+                .end());
+
+            this.database.prepareAndStoreStatement(modelClass, "update", builder
+                .update(this.table)
+                .cols(fields)
+                .where()
+                .field(key).is(EQUAL).value()
+                .end()
+                .end());
+
+            this.database.prepareAndStoreStatement(modelClass, "delete", builder
+                .delete()
+                .from(this.table)
+                .where()
+                .field(key).is(EQUAL).value()
+                .limit(1)
+                .end()
+                .end());
+
+            this.database.prepareAndStoreStatement(modelClass, "clear", builder
+                .clearTable(this.table)
+                .end());
         }
-        this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
-
-        this.database.prepareAndStoreStatement(modelClass, "merge", builder
-            .merge()
-            .into(this.table)
-            .cols(allFields)
-            .updateCols(fields)
-            .end()
-            .end());
-
-        this.database.prepareAndStoreStatement(modelClass, "get", builder
-            .select(allFields)
-            .from(this.table)
-            .where()
-            .field(key).is(EQUAL).value()
-            .end()
-            .end());
-
-        this.database.prepareAndStoreStatement(modelClass, "getall", builder
-            .select(allFields)
-            .from(this.table)
-            .end()
-            .end());
-
-        this.database.prepareAndStoreStatement(modelClass, "update", builder
-            .update(this.table)
-            .cols(fields)
-            .where()
-            .field(key).is(EQUAL).value()
-            .end()
-            .end());
-
-        this.database.prepareAndStoreStatement(modelClass, "delete", builder
-            .delete()
-            .from(this.table)
-            .where()
-            .field(key).is(EQUAL).value()
-            .limit(1)
-            .end()
-            .end());
-
-        this.database.prepareAndStoreStatement(modelClass, "clear", builder
-            .clearTable(this.table)
-            .end());
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while preparing statements for "+this.table, ex);
+        }
     }
 
     @Override
@@ -231,16 +244,16 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "get", key);
-            ArrayList<Object> values = new ArrayList<Object>();
             if (resulsSet.next())
             {
+                ArrayList<Object> values = new ArrayList<Object>();
                 values.add(resulsSet.getObject(this.key));
                 for (String name : this.attributes)
                 {
                     values.add(resulsSet.getObject(name));
                 }
+                loadedModel = this.modelConstructor.newInstance(values);
             }
-            loadedModel = this.modelConstructor.newInstance(values);
         }
         catch (SQLException ex)
         {

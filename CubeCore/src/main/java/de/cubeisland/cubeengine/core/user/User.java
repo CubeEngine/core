@@ -14,7 +14,7 @@ import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.OfflinePlayer;
 
 /**
@@ -29,21 +29,14 @@ public class User extends UserBase implements LinkingModel<Integer>
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 16)
     public final OfflinePlayer player;
-    private WeakHashMap<Class<? extends Model>, Model> attachments;
+    private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
 
     @DatabaseConstructor
-    public User(List<Object> args)
+    public User(List<Object> args) throws ConversionException
     {
         super(CubeEngine.getOfflinePlayer((String)args.get(1)));
-        try
-        {
-            this.key = Convert.fromObject(Integer.class, args.get(0));
-            this.player = this.offlinePlayer;
-        }
-        catch (ConversionException ex)
-        {
-            throw new IllegalStateException("Error while creating a User from Database");
-        }
+        this.key = Convert.fromObject(Integer.class, args.get(0));
+        this.player = this.offlinePlayer;
     }
 
     public User(int key, OfflinePlayer player)
@@ -111,12 +104,20 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Override
     public <T extends Model> void attach(T model)
     {
+        if (this.attachments == null)
+        {
+            this.attachments = new ConcurrentHashMap<Class<? extends Model>, Model>();
+        }
         this.attachments.put(model.getClass(), model);
     }
 
     @Override
     public <T extends Model> T getAttachment(Class<T> modelClass)
     {
+        if (this.attachments == null)
+        {
+            return null;
+        }
         return (T)this.attachments.get(modelClass);
     }
     private static boolean languageWorkaroundInitialized;
