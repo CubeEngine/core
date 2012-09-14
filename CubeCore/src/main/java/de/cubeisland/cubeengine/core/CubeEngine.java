@@ -169,7 +169,7 @@ public final class CubeEngine
     @BukkitDependend("Uses Bukkit's Server")
     public static Server getServer()
     {
-        return ((Plugin)core).getServer();
+        return core.getServer();
     }
     
     public static I18n getI18n()
