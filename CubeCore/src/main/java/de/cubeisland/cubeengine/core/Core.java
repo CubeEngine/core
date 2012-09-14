@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
+import org.bukkit.Server;
 
 /**
  *
@@ -19,6 +20,13 @@ import java.util.logging.Logger;
 public interface Core
 {
     public static final int REVISION = 1;
+    
+    /**
+     * The method returns the Server
+     * 
+     * @return the server instance 
+     */
+    public Server getServer();
     
     /**
      * The method returns the database
