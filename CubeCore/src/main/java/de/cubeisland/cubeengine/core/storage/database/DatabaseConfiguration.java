@@ -1,7 +1,6 @@
-package de.cubeisland.cubeengine.core.storage;
+package de.cubeisland.cubeengine.core.storage.database;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.storage.database.Database;
 
 /**
  *

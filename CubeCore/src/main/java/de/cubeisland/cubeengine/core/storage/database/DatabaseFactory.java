@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.storage.database;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.storage.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;

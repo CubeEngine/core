@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.core.storage.DatabaseConfiguration;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 
 /**

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.util.Callback;
 import java.sql.SQLException;
 import java.util.Collection;
