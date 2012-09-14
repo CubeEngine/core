@@ -135,6 +135,7 @@ public class FlyListener implements Listener
         }
         else
         {//or not
+            player.setFallDistance(0);
             user.sendMessage("fly","You cannot fly anymore!");
         }
     }
