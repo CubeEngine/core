@@ -3,7 +3,8 @@ package de.cubeisland.cubeengine.core.i18n;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.worker.Cleanable;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.commons.lang.Validate;
+
 
 /**
  *

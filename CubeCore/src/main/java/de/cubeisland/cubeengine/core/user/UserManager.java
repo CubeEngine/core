@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.worker.Cleanable;
+import de.cubeisland.cubeengine.core.util.Cleanable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

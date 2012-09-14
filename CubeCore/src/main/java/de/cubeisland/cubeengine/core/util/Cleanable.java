@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.util.worker;
+package de.cubeisland.cubeengine.core.util;
 
 /**
  *

@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.config.annotations.Updater;
+import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.core.util.converter.Converter;
@@ -23,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
 
 /**
  *
