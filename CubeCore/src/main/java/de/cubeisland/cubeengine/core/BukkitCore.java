@@ -73,7 +73,7 @@ public class BukkitCore extends JavaPlugin implements Core
         try
         {
             // depends on: file manager
-            this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core.log").toString()));
+            this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
         }
         catch (IOException e)
         {

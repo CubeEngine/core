@@ -40,7 +40,7 @@ public class Test extends Module
         }
         try
         {
-            logger.addHandler(new FileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test.log").toString()));
+            logger.addHandler(new FileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
         {

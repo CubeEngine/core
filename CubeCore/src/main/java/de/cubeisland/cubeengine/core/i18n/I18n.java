@@ -41,7 +41,7 @@ public class I18n implements Cleanable
         this.loadLanguages(fm.getLanguageDir());
         try
         {
-            LOGGER.addHandler(new FileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations.log").getPath()));
+            LOGGER.addHandler(new FileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
         }
         catch (IOException e)
         {

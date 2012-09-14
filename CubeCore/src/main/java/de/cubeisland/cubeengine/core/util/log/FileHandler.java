@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -16,22 +17,30 @@ public class FileHandler extends java.util.logging.FileHandler
 {
     public FileHandler(Level level, String pattern) throws IOException, SecurityException
     {
-        this(level, pattern, 5000, 1, true);
+        super(pattern + "_%g.log", 500000, 3, true);
+        this.init(level);
     }
 
     public FileHandler(Level level, String pattern, boolean append) throws IOException, SecurityException
     {
-        this(level, pattern, 5000, 1, append);
+        super(pattern + "_%g.log", 500000, 3, append);
+        this.init(level);
     }
 
     public FileHandler(Level level, String pattern, int limit, int count) throws IOException, SecurityException
     {
-        this(level, pattern, limit, count, true);
+        super(pattern + "_%g.log", limit, count, true);
+        this.init(level);
     }
 
     public FileHandler(Level level, String pattern, int limit, int count, boolean append) throws IOException, SecurityException
     {
         super(pattern, limit, count, append);
+        this.init(level);
+    }
+
+    private void init(Level level) throws SecurityException, UnsupportedEncodingException
+    {
         this.setFormatter(new FileFormatter());
         this.setEncoding("UTF-8");
         this.setLevel(level);

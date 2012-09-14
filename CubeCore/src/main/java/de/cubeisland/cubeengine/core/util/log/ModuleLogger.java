@@ -17,7 +17,7 @@ public class ModuleLogger extends CubeLogger
         super(info.getName());
         try
         {
-            this.addHandler(new FileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), info.getName().toLowerCase(Locale.ENGLISH) + ".log").toString()));
+            this.addHandler(new FileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), info.getName().toLowerCase(Locale.ENGLISH)).toString()));
         }
         catch (Exception e)
         {

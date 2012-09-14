@@ -23,6 +23,7 @@ public class CubeLogger extends Logger
         super(name, null);
         this.setParent(Logger.getLogger(name));
         this.setUseParentHandlers(false);
+        this.setLevel(Level.ALL);
     }
 
     //Pass ConsoleLogging to BukkitLogger
