@@ -7,6 +7,8 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.EnchantMatcher;
+import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
@@ -50,6 +52,7 @@ public class Test extends Module
 
         this.testUserManager();
         this.testl18n();
+        this.testMatchers();
     }
 
     public void initializeDatabase() throws SQLException
@@ -200,5 +203,16 @@ public class Test extends Module
         CubeEngine.getFileManager().dropResources(TestRecource.values());
         System.out.println(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
         System.out.println(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
+    }
+
+    private void testMatchers()
+    {
+        System.out.println(EnchantMatcher.get().matchEnchantment("infinity"));
+        System.out.println(EnchantMatcher.get().matchEnchantment("infini"));
+        System.out.println(EnchantMatcher.get().matchEnchantment("hablablubb"));
+        System.out.println(EnchantMatcher.get().matchEnchantment("protect"));
+        System.out.println(MaterialMatcher.get().matchItemStack("stone"));
+        System.out.println(MaterialMatcher.get().matchItemStack("stoned"));
+        
     }
 }
