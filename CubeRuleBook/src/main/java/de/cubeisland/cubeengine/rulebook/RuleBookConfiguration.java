@@ -78,29 +78,42 @@ public class RuleBookConfiguration
     
     private void convertText(String language)
     {
-        List<String> convertedText = new ArrayList<String>();
-        int lineNumber = 0;
-        convertedText.add("");
-        
+        List<String> lines = new ArrayList<String>(); 
         for(String line : getText(language).split("\n"))
         {
-            if(line.length() > 255)
+            while(line.length() > 255)
             {
-                while(line.length() > 255)
-                {
-                    // not supported yet
-                }
+                int index = line.substring(0, 254).lastIndexOf(" ");
+                lines.add(line.substring(0, index));
+                line = line.substring(index + 1);
             }
-            if( (line.length() + convertedText.get(lineNumber).length()) > 255)
+            lines.add(line);
+        }
+        
+        List<String> convertedText = new ArrayList<String>();
+        int line = 0;
+        int page = 0;
+        convertedText.add("");
+        
+        for(int i = 0; i < lines.size(); i++)
+        {
+            if(convertedText.get(page).length() + lines.get(i).length() > 255 || line > 11)
             {
-                convertedText.add(line);
-                lineNumber++;
+                page++;
+                convertedText.add("");
+                line = 0;
+            }
+            if(line == 0)
+            {
+                convertedText.set(page, lines.get(i));
             }
             else
             {
-                convertedText.set(lineNumber, convertedText.get(lineNumber) + " " + line);
+                convertedText.set(page, convertedText.get(page) + "\n" + lines.get(i));
             }
+            line++;
         }
+        
         this.convertedRuleMap.put(language, convertedText);
     }
     
@@ -115,19 +128,12 @@ public class RuleBookConfiguration
     }
     
     public String[] getPages(String language)
-    {
+    { 
         List<String> pageList = this.convertedRuleMap.get(language);
         if(pageList == null) 
         {
             return null;
         }
-        
-        String[] pages = new String[pageList.size()];
-        
-        for(int i = 0; i < pageList.size(); i++)
-        {
-            pages[i] = pageList.get(i);
-        }
-        return pages;
+        return pageList.toArray(new String[pageList.size()]);
     }
 }
