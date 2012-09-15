@@ -39,8 +39,7 @@ class RuleBookListener implements Listener
             ruleBook.setAuthor(this.module.getCore().getServer().getServerName());
             ruleBook.setTitle(CubeEngine._(user.getLanguage(), "rulebook", "Rulebook"));
             ruleBook.setPages(this.module.getConfig().getPages(user.getLanguage()));
-            
-            player.sendMessage("hallo");
+
             player.setItemInHand(ruleBook.getItemStack());
         }
     }
