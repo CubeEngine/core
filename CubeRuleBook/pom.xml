@@ -2,55 +2,38 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.cubeisland</groupId>
-        <artifactId>cubeengine</artifactId>
+        <artifactId>cubeengine-aggregator</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>de.cubeisland</groupId>
     <artifactId>cuberulebook</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>CubeRuleBook</name>
-    <url>http://cubeisland.de</url>
-    <packaging>jar</packaging>
-    <description>Enhanced PvP for your Server</description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-  
-    <repositories>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.2.5-R1.3</version>
+            <version>${bukkitVersion}</version>
         </dependency>
         <dependency>
             <groupId>de.cubeisland</groupId>
             <artifactId>cubecore</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <type>jar</type>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.3.2-R0.1</version>
+            <version>${bukkitVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>minecraft-server</artifactId>
-            <version>1.3.2</version>
+            <version>${minecraftVersion}</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>CubeRuleBook</finalName>
+        <finalName>${project.name}</finalName>
         <resources>
             <resource>
                 <targetPath>.</targetPath>
@@ -66,14 +49,6 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>.</targetPath>
-                <directory>${basedir}/</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>README.md</include>
                 </includes>
             </resource>
         </resources>
