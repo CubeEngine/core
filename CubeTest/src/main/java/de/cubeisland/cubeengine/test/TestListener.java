@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -24,7 +24,7 @@ public class TestListener implements Listener
     }
 
     @EventHandler
-    public void playerChat(final PlayerChatEvent event)
+    public void playerChat(final AsyncPlayerChatEvent event)
     {
         if (event.getMessage().startsWith("um "))
         {
@@ -47,7 +47,7 @@ public class TestListener implements Listener
         test.getLogger().log(Level.INFO, "{0} joined!", event.getPlayer().getName());
     }
 
-    private void testUserManager(PlayerChatEvent event)
+    private void testUserManager(AsyncPlayerChatEvent event)
     {
         String msg = event.getMessage().substring(3);
         UserManager uM = CubeEngine.getUserManager();
@@ -81,7 +81,7 @@ public class TestListener implements Listener
         }
     }
 
-    private void testI18n(PlayerChatEvent event)
+    private void testI18n(AsyncPlayerChatEvent event)
     {
         User user = CubeEngine.getUserManager().getUser(event.getPlayer());
         user.sendMessage("test", "english TEST");
