@@ -1,14 +1,8 @@
 #!/usr/bin/php
 <?php
-    define('SOURCE', 'items.csv');
+    define('SOURCE', 'https://raw.github.com/essentials/Essentials/master/Essentials/src/items.csv');
     define('TARGET', 'items.txt');
     define('SKIPPED', 'skippeditems.txt');
-
-    if (!is_readable(SOURCE))
-    {
-        echo SOURCE . " not found!\n";
-        exit(1);
-    }
 
     $target = @fopen(TARGET, 'wb');
     if (!$target)
@@ -25,13 +19,17 @@
     }
 
     $lines = file(SOURCE);
+    if (!$lines)
+    {
+        echo SOURCE . " could not be read!\n";
+        exit(1);
+    }
+    
     $lastId = -1;
     $lastData = -1;
     $lastName = null;
-    $i = 0;
     foreach ($lines as $line)
     {
-        ++$i;
         $line = trim($line);
         if (empty($line) || $line[0] == '#' || substr_count($line, ',') !== 2)
         {
