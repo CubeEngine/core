@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
 import de.cubeisland.cubeengine.core.util.Validate;
+import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,11 +19,12 @@ public class FileManager
     private final File languageDir;
     private final File logDir;
     private final File modulesDir;
+    private THashMap<File, String> fileSources = new THashMap<File, String>();
 
     public FileManager(File pluginsFolder) throws IOException
     {
         Validate.isDir(pluginsFolder, "The plugins folder must not be null!");
-        
+
         this.dataFolder = new File(pluginsFolder, "CubeEngine");
         if (!this.dataFolder.isDirectory() && !this.dataFolder.mkdirs())
         {
@@ -71,7 +73,7 @@ public class FileManager
     public File getResourceFile(Resource resource)
     {
         Validate.notNull(resource, "The resource must not be null!");
-        
+
         String source = resource.getSource();
         // we only accept absolute paths!
         if (!source.startsWith("/"))
@@ -85,7 +87,7 @@ public class FileManager
     public void dropResources(Resource[] resources)
     {
         Validate.notNull(resources, "The resources must not be null!");
-        
+
         for (Resource resource : resources)
         {
             this.getResourceFile(resource);
@@ -144,7 +146,12 @@ public class FileManager
         {
             throw new RuntimeException("Could not find the resource '" + resPath + "'!");
         }
-
+        fileSources.put(file, resPath);
         return file;
+    }
+
+    public String getSourceOf(File file)
+    {
+        return this.fileSources.get(file);
     }
 }

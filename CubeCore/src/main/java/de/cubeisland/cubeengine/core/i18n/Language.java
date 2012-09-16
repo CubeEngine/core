@@ -10,6 +10,7 @@ import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +25,7 @@ public class Language implements Cleanable
     private final String name;
     private final String localName;
     private final String parent;
+    private Language parentLanguage = null;
     private final Map<String, Map<String, String>> messages;
     private final File messageDir;
     private final JsonParser parser;
@@ -94,13 +96,20 @@ public class Language implements Cleanable
             String msg = catMessages.get(message);
             if (msg == null)
             {
-                try
+                if (parent != null)
                 {
-                    return i18n.getLanguage(parent).getTranslation(cat, message);
+                    if (this.parentLanguage == null)
+                    {
+                        this.parentLanguage = i18n.getLanguage(parent);
+                        if (parentLanguage == null)
+                        {
+                            throw new IllegalStateException("Parent Language " + this.parent + " not found");
+                        }
+                    }
+                    return this.parentLanguage.getTranslation(cat, message);
                 }
-                catch (NullPointerException e) // parent is null or Language not found
-                {}
             }
+            return msg;
         }
         return null;
     }
@@ -124,6 +133,7 @@ public class Language implements Cleanable
                         catMessages.put(entry.getKey(), ChatFormat.parseFormats(elem.getAsString()));
                     }
                 }
+                this.updateMessages(cat, catMessages);
                 if (!catMessages.isEmpty())
                 {
                     this.messages.put(cat, catMessages);
@@ -136,6 +146,29 @@ public class Language implements Cleanable
             e.printStackTrace(System.err);
         }
         return null;
+    }
+
+    private void updateMessages(String cat, Map<String, String> catMessages) throws IOException
+    {
+        InputStreamReader reader = new InputStreamReader(CubeEngine.getModuleManager().getModule(cat).getResource(CubeEngine.getFileManager().getSourceOf(new File(this.messageDir, cat + ".json"))));
+        JsonElement root = parser.parse(reader);
+        reader.close();
+        if (root.isJsonObject())
+        {
+            JsonElement elem;
+            for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject().entrySet())
+            {
+                if (catMessages.containsKey(entry.getKey()))
+                {
+                    continue; // Key already in map
+                }
+                elem = entry.getValue();
+                if (elem.isJsonPrimitive())
+                {
+                    catMessages.put(entry.getKey(), ChatFormat.parseFormats(elem.getAsString()));
+                }
+            }
+        }
     }
 
     @Override
