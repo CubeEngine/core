@@ -213,6 +213,7 @@ public class Test extends Module
         System.out.println(EnchantMatcher.get().matchEnchantment("protect"));
         System.out.println(MaterialMatcher.get().matchItemStack("stone"));
         System.out.println(MaterialMatcher.get().matchItemStack("stoned"));
+        System.out.println(MaterialMatcher.get().matchItemStack("hablablubb"));
         
     }
 }

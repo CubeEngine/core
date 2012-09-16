@@ -52,18 +52,35 @@ public class EnchantMatcher
     public Enchantment matchEnchantment(String s)
     {
         Enchantment ench = this.enchantments.get(s.toLowerCase(Locale.ENGLISH));
+        try
+        {
+            int enchId = Integer.parseInt(s);
+            return Enchantment.getById(enchId);
+        }
+        catch (NumberFormatException e)
+        {}
         if (ench == null)
         {
             if (s.length() < 4)
             {
                 return null;
             }
+            String t_key = null;
             for (String key : this.enchantments.keySet())
             {
-                if (StringUtils.getLevenshteinDistance(s.toLowerCase(Locale.ENGLISH), key) <= 2)
+                int ld = StringUtils.getLevenshteinDistance(s.toLowerCase(Locale.ENGLISH), key);
+                if (ld == 1)
                 {
-                    ench = this.enchantments.get(key);
+                    return this.enchantments.get(key);
                 }
+                if (ld <= 2)
+                {
+                    t_key = key;
+                }
+            }
+            if (t_key != null)
+            {
+                return this.enchantments.get(t_key);
             }
         }
         return ench;
