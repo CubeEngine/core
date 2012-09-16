@@ -8,6 +8,7 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.EnchantMatcher;
+import de.cubeisland.cubeengine.core.util.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import de.cubeisland.cubeengine.test.database.TestManager;
@@ -201,24 +202,28 @@ public class Test extends Module
     public void testl18n()
     {
         CubeEngine.getFileManager().dropResources(TestRecource.values());
-        System.out.println(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
-        System.out.println(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
+        this.getLogger().debug(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
+        this.getLogger().debug(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
     }
 
     private void testMatchers()
     {
-        System.out.println(EnchantMatcher.get().matchEnchantment("infinity"));
-        System.out.println(EnchantMatcher.get().matchEnchantment("infini"));
-        System.out.println(EnchantMatcher.get().matchEnchantment("hablablubb"));
-        System.out.println(EnchantMatcher.get().matchEnchantment("protect"));
-        System.out.println(MaterialMatcher.get().matchItemStack("stone"));
-        System.out.println(MaterialMatcher.get().matchItemStack("stoned"));
-        System.out.println(MaterialMatcher.get().matchItemStack("hablablubb"));
-        System.out.println(MaterialMatcher.get().matchItemStack("wool:red"));
-        System.out.println(MaterialMatcher.get().matchItemStack("35"));
-        System.out.println(MaterialMatcher.get().matchItemStack("35:15"));
-        System.out.println(MaterialMatcher.get().matchItemStack("35:red"));
-        System.out.println(MaterialMatcher.get().matchItemStack("wood:birch"));
-        
+        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infinity"));
+        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infini"));
+        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("hablablubb") + " is null");
+        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("protect"));
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stone"));
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stoned"));
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("hablablubb") + " is null");
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wool:red"));
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35"));
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:15"));
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:red"));
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wood:birch"));
+        this.getLogger().debug(EntityMatcher.get().matchEntity("arrow"));
+        this.getLogger().debug(EntityMatcher.get().matchEntity("pig"));
+        this.getLogger().debug(EntityMatcher.get().matchMonster("zombi"));
+        this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("shep"));
+        this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("ghast") + " is null");
     }
 }

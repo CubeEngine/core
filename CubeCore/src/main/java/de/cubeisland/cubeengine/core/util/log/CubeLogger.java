@@ -62,7 +62,7 @@ public class CubeLogger extends Logger
         this.log(Level.SEVERE, msg, t);
     }
 
-    public void debug(String msg)
+    public void debug(Object msg)
     {
         if (CubeEngine.getCore().isDebug())
         {
