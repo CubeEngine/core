@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
  *
@@ -95,6 +96,19 @@ public abstract class Configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, File file)
     {
+        return load(clazz, file, true);
+    }
+
+    /**
+     * Loads and returns the loaded Configuration from File
+     *
+     * @param file the configurationfile
+     * @param clazz the configuration
+     * @param save whether to instantly save the config after it was loaded
+     * @return the loaded configuration
+     */
+    public static <T extends Configuration> T load(Class<T> clazz, File file, boolean save)
+    {
         if (file == null)
         {
             return null;
@@ -119,7 +133,10 @@ public abstract class Configuration
             {}
         }
         config.file = file;
-        config.save();
+        if (save)
+        {
+            config.save();
+        }
         return config;
     }
 
@@ -132,13 +149,13 @@ public abstract class Configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
     {
+        Codec type = clazz.getAnnotation(Codec.class);
+        if (type == null)
+        {
+            throw new InvalidConfigurationException("Configuration Type undefined!");
+        }
         try
         {
-            Codec type = clazz.getAnnotation(Codec.class);
-            if (type == null)
-            {
-                throw new IllegalStateException("Configuration Type undefined!");
-            }
             T config = clazz.newInstance();
             config.setCodec(type.value());
             if (is != null)
@@ -148,9 +165,13 @@ public abstract class Configuration
             config.onLoaded();
             return config;
         }
-        catch (Throwable t)
+        catch (Exception e)
         {
-            throw new IllegalStateException("Error while loading a Configuration!", t);
+            if (e instanceof ReaderException)
+            {
+                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com", e);
+            }
+            throw new InvalidConfigurationException("Error while loading a Configuration!", e);
         }
     }
 

@@ -1,10 +1,8 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
@@ -14,9 +12,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,16 +27,19 @@ public class I18n implements Cleanable
 {
     private static final Logger LOGGER = new CubeLogger("language");
     
-    public static final String SOURCE_LANGUAGE = "en_US";
+    public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
-    private final Map<String, String> sourceLanguageCache;
+
+    public I18n(FileManager fm)
+    {
+        this(fm, SOURCE_LANGUAGE.getCode());
+    }
 
     public I18n(FileManager fm, String defaultLanguage)
     {
         this.languageMap = new THashMap<String, Language>();
         this.defaultLanguage = defaultLanguage;
-        this.sourceLanguageCache = new ConcurrentHashMap<String, String>();
         this.loadLanguages(fm.getLanguageDir());
         try
         {
@@ -59,7 +61,7 @@ public class I18n implements Cleanable
         Validate.notNull(language, "The language must not be null!");
 
         language = normalizeLanguage(language);
-        if (this.languageMap.containsKey(language))
+        if (SOURCE_LANGUAGE.equals(language) || this.languageMap.containsKey(language))
         {
             this.defaultLanguage = language;
         }
@@ -67,19 +69,81 @@ public class I18n implements Cleanable
 
     private void loadLanguages(File languageDir)
     {
-        Language language;
+        Map<String, LanguageConfiguration> languages = new HashMap<String, LanguageConfiguration>();
+        LanguageConfiguration config;
         for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.YAML))
         {
-            try
+            config = Configuration.load(LanguageConfiguration.class, file, false);
+            config.code = normalizeLanguage(config.code);
+            if (config.code != null)
             {
-                language = new Language(Configuration.load(LanguageConfiguration.class, file), languageDir);
-                this.languageMap.put(language.getCode(), language);
+                languages.put(config.code, config);
             }
-            catch (IllegalArgumentException e)
+            else
             {
-                CubeEngine.getLogger().log(Level.SEVERE, e.getLocalizedMessage(), e);
+                LOGGER.log(Level.SEVERE, "The language ''{0}'' has an invalid configation!", file.getName());
             }
         }
+        
+        Stack<String> loadStack = new Stack<String>();
+        for (LanguageConfiguration entry : languages.values())
+        {
+            this.loadLanguage(languageDir, entry, languages, loadStack);
+        }
+    }
+    
+    private Language loadLanguage(File languageDir, LanguageConfiguration config, Map<String, LanguageConfiguration> languages, Stack<String> loadStack)
+    {
+        if (this.languageMap.containsKey(config.code))
+        {
+            return this.languageMap.get(config.code);
+        }
+        if (loadStack.contains(config.code))
+        {
+            LOGGER.log(Level.SEVERE, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
+            return null;
+        }
+        Language language = null;
+        config.parent = normalizeLanguage(config.parent);
+        if (SOURCE_LANGUAGE.equals(config.parent))
+        {
+            language = SOURCE_LANGUAGE;
+        }
+        else
+        {
+            LanguageConfiguration parent = languages.get(config.parent);
+            if (parent != null)
+            {
+                loadStack.add(config.code);
+                language = this.loadLanguage(languageDir, parent, languages, loadStack);
+                loadStack.pop();
+            }
+        }
+
+        try
+        {
+            language = new NormalLanguage(config, languageDir, language);
+            this.languageMap.put(config.code, language);
+            if (config.clones != null)
+            {
+                Language clonedLanguage;
+                for (String clone : config.clones)
+                {
+                    clonedLanguage = ClonedLanguage.clone(language, clone);
+                    if (clonedLanguage != null && !SOURCE_LANGUAGE.equals(clonedLanguage.getCode()))
+                    {
+                        this.languageMap.put(clonedLanguage.getCode(), clonedLanguage);
+                    }
+                }
+            }
+            
+            return language;
+        }
+        catch (IllegalArgumentException e)
+        {
+            LOGGER.log(Level.SEVERE, "Failed to load the language ''{0}'': {1}", new Object[] {config.code, e.getLocalizedMessage()});
+        }
+        return null;
     }
     
     public Collection<String> getLanguages()
@@ -95,7 +159,7 @@ public class I18n implements Cleanable
     public String translate(String language, String category, String message, Object... params)
     {
         String translation = null;
-        if (!SOURCE_LANGUAGE.equalsIgnoreCase(language))
+        if (!SOURCE_LANGUAGE.equals(language))
         {
             Language lang = this.languageMap.get(language);
             if (lang != null)
@@ -107,25 +171,10 @@ public class I18n implements Cleanable
         if (translation == null)
         {
             this.logMissingTranslation(language, category, message);
-            translation = this.parseSourceLanguage(message);
+            translation = SOURCE_LANGUAGE.getTranslation(category, message);
         }
         
         return String.format(translation, params);
-    }
-    
-    private String parseSourceLanguage(String message)
-    {
-        if (message == null)
-        {
-            return null;
-        }
-        String parsed = this.sourceLanguageCache.get(message);
-        if (parsed == null)
-        {
-            this.sourceLanguageCache.put(message, parsed = ChatFormat.parseFormats(message));
-            return parsed;
-        }
-        return parsed;
     }
 
     @Override
@@ -135,6 +184,7 @@ public class I18n implements Cleanable
         {
             language.clean();
         }
+        SOURCE_LANGUAGE.clean();
         this.languageMap.clear();
     }
 
