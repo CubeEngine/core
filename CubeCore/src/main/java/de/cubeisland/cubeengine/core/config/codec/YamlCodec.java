@@ -45,6 +45,7 @@ public class YamlCodec extends ConfigurationCodec
         return values;
     }
 
+    @Override
     protected void loadedKeys(Map<String, Object> values)
     {
         for (String key : values.keySet())
