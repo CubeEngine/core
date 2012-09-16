@@ -233,6 +233,7 @@ public class MaterialMatcher
                     names = new ArrayList<String>();
                     readItems.put(new ItemStack(id, 1, data), names);
                 }
+                else
                 {
                     names.add(line);
                 }
@@ -241,7 +242,7 @@ public class MaterialMatcher
         }
         catch (NumberFormatException ex)
         {
-            throw new IllegalStateException("items.txt is corrupted!");
+            throw new IllegalStateException("items.txt is corrupted!", ex);
         }
         catch (IOException ex)
         {
@@ -280,9 +281,9 @@ public class MaterialMatcher
                 }
             }
         }
-        catch (NumberFormatException e)
+        catch (NumberFormatException ex)
         {
-            throw new IllegalStateException("datavalues.txt is corrupted!", e);
+            throw new IllegalStateException("datavalues.txt is corrupted!", ex);
         }
         catch (IOException ex)
         {

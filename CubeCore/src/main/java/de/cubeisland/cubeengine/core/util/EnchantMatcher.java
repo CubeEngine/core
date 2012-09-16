@@ -7,6 +7,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -58,7 +59,8 @@ public class EnchantMatcher
             return Enchantment.getById(enchId);
         }
         catch (NumberFormatException e)
-        {}
+        {
+        }
         if (ench == null)
         {
             if (s.length() < 4)
@@ -114,7 +116,11 @@ public class EnchantMatcher
             }
             return enchs;
         }
-        catch (Exception ex)
+        catch (NumberFormatException ex)
+        {
+            throw new IllegalStateException("enchantments.txt is corrupted!", ex);
+        }
+        catch (IOException ex)
         {
             throw new IllegalStateException("Error while reading enchantments.txt", ex);
         }
