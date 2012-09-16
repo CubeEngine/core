@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.i18n;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.Validate;
@@ -13,7 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 /**
  *
  * @author Phillip Schichtel
@@ -23,26 +23,29 @@ public class Language implements Cleanable
     private final String code;
     private final String name;
     private final String localName;
+    private final String parent;
     private final Map<String, Map<String, String>> messages;
     private final File messageDir;
     private final JsonParser parser;
     private final Locale locale;
+    private static final I18n i18n = CubeEngine.getI18n();
 
     public Language(LanguageConfiguration config, File languageDir)
     {
         Validate.notNull(config.code, "The code must not be null!");
         Validate.notNull(config.name, "The name must not be null!");
         Validate.notNull(config.localName, "The local name must not be null!");
-        
+
         this.code = I18n.normalizeLanguage(config.code);
         Validate.notNull(this.code, "The configured language code is invalid!");
-        
+
         this.name = config.name;
         this.localName = config.localName;
+        this.parent = config.parent.toLowerCase(Locale.ENGLISH);
         this.messageDir = new File(languageDir, this.code);
         this.messages = new ConcurrentHashMap<String, Map<String, String>>();
         this.parser = new JsonParser();
-        
+
         this.locale = new Locale(this.code.substring(0, 2), this.code.substring(3, 5));
     }
 
@@ -50,7 +53,7 @@ public class Language implements Cleanable
     {
         return this.code;
     }
-    
+
     public Locale getLocale()
     {
         return this.locale;
@@ -88,7 +91,16 @@ public class Language implements Cleanable
         }
         if (catMessages != null)
         {
-            return catMessages.get(message);
+            String msg = catMessages.get(message);
+            if (msg == null)
+            {
+                try
+                {
+                    return i18n.getLanguage(parent).getTranslation(cat, message);
+                }
+                catch (NullPointerException e) // parent is null or Language not found
+                {}
+            }
         }
         return null;
     }

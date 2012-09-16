@@ -86,6 +86,11 @@ public class I18n implements Cleanable
     {
         return this.languageMap.keySet();
     }
+    
+    public Language getLanguage(String name)
+    {
+        return this.languageMap.get(name);
+    }
 
     public String translate(String language, String category, String message, Object... params)
     {

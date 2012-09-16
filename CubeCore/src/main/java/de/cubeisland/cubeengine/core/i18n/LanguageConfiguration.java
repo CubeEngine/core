@@ -19,4 +19,7 @@ public class LanguageConfiguration extends Configuration
     
     @Option("localname")
     public String localName;
+    
+    @Option("parent")
+    public String parent;
 }
