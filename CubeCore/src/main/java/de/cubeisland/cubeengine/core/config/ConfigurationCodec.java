@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +40,7 @@ public abstract class ConfigurationCodec
     protected boolean first;
     protected Integer revision = null;
     private static final Logger logger = CubeEngine.getLogger();
+    protected HashMap<String, String> loadedKeys;
 
     public ConfigurationCodec()
     {
@@ -228,8 +230,7 @@ public abstract class ConfigurationCodec
                     {
                         continue;
                     }
-                    String path = field.getAnnotation(Option.class).value();
-                    Object configElem = this.get(path, values);//Get savedValue or default
+                    Object configElem = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), values);//Get savedValue or default
                     if (configElem != null)
                     {
                         if (Configuration.class.isAssignableFrom(field.getType()))
@@ -435,10 +436,26 @@ public abstract class ConfigurationCodec
         }
         if (path.contains("."))
         {
-            return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.getBasePath(path)));
+            return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.findKey(this.getBasePath(path))));
         }
-        return section.get(path);
+        return section.get(this.findKey(path));
     }
+
+    /**
+     * Gets the loaded Key for given lowercase Key
+     *
+     * @param key the key
+     * @return the loadedKey
+     */
+    private String findKey(String key)
+    {
+        return this.loadedKeys.get(key);
+    }
+
+    /**
+     * Fills LowerCaseKey -> LoadedKey Map
+     */
+    protected abstract void loadedKeys(Map<String, Object> values);
 
     /**
      * Sets a value at a specified path

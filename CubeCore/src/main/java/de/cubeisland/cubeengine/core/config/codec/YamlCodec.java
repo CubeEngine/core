@@ -2,7 +2,9 @@ package de.cubeisland.cubeengine.core.config.codec;
 
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
@@ -38,7 +40,21 @@ public class YamlCodec extends ConfigurationCodec
         {
             return new LinkedHashMap<String, Object>();
         }
+        this.loadedKeys = new HashMap<String, String>();
+        this.loadedKeys(values);
         return values;
+    }
+
+    protected void loadedKeys(Map<String, Object> values)
+    {
+        for (String key : values.keySet())
+        {
+            this.loadedKeys.put(key.toLowerCase(Locale.ENGLISH), key);
+            if (values.get(key) instanceof Map)
+            {
+                this.loadedKeys((Map<String, Object>)values.get(key));
+            }
+        }
     }
 
     @Override
@@ -47,7 +63,7 @@ public class YamlCodec extends ConfigurationCodec
         StringBuilder sb = new StringBuilder(this.buildComment(path, off));
         String offset = this.offset(off);
         String key = this.getSubKey(path);
-        sb.append(offset).append(key).append(":");//{_OFFSET_Key:}
+        sb.append(offset).append(key.toLowerCase(Locale.ENGLISH)).append(":");//{_OFFSET_Key:}
         if (value == null)
         {
             sb.append(" ");
