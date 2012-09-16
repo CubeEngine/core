@@ -334,7 +334,7 @@ public abstract class ConfigurationCodec
                         this.addComment(basePath + "." + path, comment.value());
                     }
                 }
-                this.set(path, convertFrom(field, field.get(config)), values);
+                this.set(path.toLowerCase(Locale.ENGLISH), convertFrom(field, field.get(config)), values);
             }
         }
         return values;

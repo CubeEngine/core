@@ -64,7 +64,7 @@ public class YamlCodec extends ConfigurationCodec
         StringBuilder sb = new StringBuilder(this.buildComment(path, off));
         String offset = this.offset(off);
         String key = this.getSubKey(path);
-        sb.append(offset).append(key.toLowerCase(Locale.ENGLISH)).append(":");//{_OFFSET_Key:}
+        sb.append(offset).append(key).append(":");//{_OFFSET_Key:}
         if (value == null)
         {
             sb.append(" ");
