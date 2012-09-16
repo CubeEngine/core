@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.util;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TShortObjectHashMap;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.NPC;
+import java.util.Map;
 
 /**
  *
@@ -22,16 +19,14 @@ import org.bukkit.entity.NPC;
  */
 public class EntityMatcher
 {
-    private THashMap<String, EntityType> entities;
     private static EntityMatcher instance = null;
 
     public EntityMatcher()
     {
-        this.entities = new THashMap<String, EntityType>();
-        TIntObjectHashMap<List<String>> entityList = this.readEntities();
-        for (int id : entityList.keys())
+        TShortObjectHashMap<List<String>> entityList = this.readEntities();
+        for (short id : entityList.keys())
         {
-            this.registerEntity(EntityType.fromId(id), entityList.get(id));
+            EntityType.fromId(id).registerName(entityList.get(id));
         }
     }
 
@@ -44,12 +39,14 @@ public class EntityMatcher
         return instance;
     }
 
-    public EntityType matchEntity(String s)
+    public EntityType matchEntity(String name)
     {
-        EntityType ench = this.entities.get(s.toLowerCase(Locale.ENGLISH));
+        Map<String,EntityType> entities = EntityType.getNameSets();
+        String s = name.toLowerCase(Locale.ENGLISH);
+        EntityType ench = entities.get(s);
         try
         {
-            int entityId = Integer.parseInt(s);
+            short entityId = Short.parseShort(s);
             return EntityType.fromId(entityId);
         }
         catch (NumberFormatException e)
@@ -62,12 +59,12 @@ public class EntityMatcher
                 return null;
             }
             String t_key = null;
-            for (String key : this.entities.keySet())
+            for (String key : entities.keySet())
             {
-                int ld = StringUtils.getLevenshteinDistance(s.toLowerCase(Locale.ENGLISH), key);
+                int ld = StringUtils.getLevenshteinDistance(s, key);
                 if (ld == 1)
                 {
-                    return this.entities.get(key);
+                    return entities.get(key);
                 }
                 if (ld <= 2)
                 {
@@ -76,7 +73,7 @@ public class EntityMatcher
             }
             if (t_key != null)
             {
-                return this.entities.get(t_key);
+                return entities.get(t_key);
             }
         }
         return ench;
@@ -90,13 +87,22 @@ public class EntityMatcher
             return type;
         }
         return null;
+    }
 
+    public EntityType matchSpawnEggMobs(String s)
+    {
+        EntityType type = this.matchMob(s);
+        if (type.canBeSpawnedBySpawnEgg())
+        {
+            return type;
+        }
+        return null;
     }
 
     public EntityType matchMonster(String s)
     {
         EntityType type = this.matchEntity(s);
-        if (Monster.class.isAssignableFrom(type.getEntityClass()))
+        if (type.isMonster())
         {
             return type;
         }
@@ -106,27 +112,29 @@ public class EntityMatcher
     public EntityType matchFriendlyMob(String s)
     {
         EntityType type = this.matchEntity(s);
-        if (Animals.class.isAssignableFrom(type.getEntityClass()) || NPC.class.isAssignableFrom(type.getEntityClass()))
+        if (type.isFriendly())
+        {
+            return type;
+        }
+        return null;
+    }
+    
+    public EntityType matchProjectile(String s)
+    {
+        EntityType type = this.matchEntity(s);
+        if (type.isProjectile())
         {
             return type;
         }
         return null;
     }
 
-    private void registerEntity(EntityType id, List<String> names)
-    {
-        for (String s : names)
-        {
-            this.entities.put(s.toLowerCase(Locale.ENGLISH), id);
-        }
-    }
-
-    private TIntObjectHashMap<List<String>> readEntities()
+    private TShortObjectHashMap<List<String>> readEntities()
     {
         try
         {
             BufferedReader reader = new BufferedReader(new FileReader(new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget())));
-            TIntObjectHashMap<List<String>> entityList = new TIntObjectHashMap<List<String>>();
+            TShortObjectHashMap<List<String>> entityList = new TShortObjectHashMap<List<String>>();
             String line;
             ArrayList<String> names = new ArrayList<String>();
             while ((line = reader.readLine()) != null)
@@ -138,7 +146,7 @@ public class EntityMatcher
                 }
                 if (line.endsWith(":"))
                 {
-                    int id = Integer.parseInt(line.substring(0, line.length() - 1));
+                    short id = Short.parseShort(line.substring(0, line.length() - 1));
                     names = new ArrayList<String>();
                     entityList.put(id, names);
                 }
