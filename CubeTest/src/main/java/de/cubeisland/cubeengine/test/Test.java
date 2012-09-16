@@ -214,6 +214,11 @@ public class Test extends Module
         System.out.println(MaterialMatcher.get().matchItemStack("stone"));
         System.out.println(MaterialMatcher.get().matchItemStack("stoned"));
         System.out.println(MaterialMatcher.get().matchItemStack("hablablubb"));
+        System.out.println(MaterialMatcher.get().matchItemStack("wool:red"));
+        System.out.println(MaterialMatcher.get().matchItemStack("35"));
+        System.out.println(MaterialMatcher.get().matchItemStack("35:15"));
+        System.out.println(MaterialMatcher.get().matchItemStack("35:red"));
+        System.out.println(MaterialMatcher.get().matchItemStack("wood:birch"));
         
     }
 }

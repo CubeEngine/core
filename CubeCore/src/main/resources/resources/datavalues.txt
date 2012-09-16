@@ -1,0 +1,80 @@
+5,17,18,125,126:
+    oak: 0
+    pine,spruce: 1
+    birch: 2
+    jungle: 3
+35:
+    white: 0
+    orange: 1
+    magenta: 2
+    lightblue,lblue: 3
+    yellow: 4
+    lime,lgreen: 5
+    pink: 6
+    gray: 7
+    lightgray,lgray: 8
+    cyan: 9
+    purple: 10
+    blue: 11
+    brown: 12
+    green: 13
+    red: 14
+    black: 15
+351:
+    white: 15
+    orange: 14
+    magenta: 13
+    lightblue,lblue: 12
+    yellow: 11
+    lime,lgreen: 10
+    pink: 9
+    gray: 8
+    lightgray,lgray: 7
+    cyan: 6
+    purple: 5
+    blue: 4
+    brown: 3
+    green: 2
+    red: 1
+    black: 0
+43,44:
+    clean,stone: 0
+    sandstone: 1
+    wood: 2
+    cobble: 3
+    brick: 4
+    stonebrick: 5
+24:
+    normal: 0
+    chiseled,creeper: 0
+    smooth,clean: 0
+98:
+    normal: 0
+    mossy: 1
+    cracked,old: 2
+    chiseled,round: 3
+99,100:
+    pores: 0
+    cap: 5
+    stem: 10
+    allstem: 14
+    allcap: 15
+373:
+    water: 0
+    awkward: 16
+    thick: 32
+    mundane: 64
+#regen: 1
+#speed: 2
+#fireresistance: 3
+#poison: 4
+#heal: 5
+#nightvision: 6
+#weak: 8
+#strength: 9
+#slow: 10
+#damage: 12
+#invisible invisibility: 14
+#tier2: 32
+#long: 64
+#splash: 16384

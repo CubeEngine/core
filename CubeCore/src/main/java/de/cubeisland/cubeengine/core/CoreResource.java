@@ -13,7 +13,8 @@ public enum CoreResource implements Resource
     FRENCH_META("resources/language/fr_FR.yml", "language/fr_FR.yml"),
     GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/core.json"),
     ENCHANTMENTS("resources/enchantments.txt", "data/enchantments.txt"),
-    ITEMS("resources/items.txt", "data/items.txt");
+    ITEMS("resources/items.txt", "data/items.txt"),
+    DATAVALUES("resources/datavalues.txt", "data/datavalues.txt");
     private final String target;
     private final String source;
 
