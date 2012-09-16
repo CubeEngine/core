@@ -1,16 +1,20 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.Resource;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.Validate;
-import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +47,7 @@ public class Language implements Cleanable
 
         this.name = config.name;
         this.localName = config.localName;
-        this.parent = config.parent.toLowerCase(Locale.ENGLISH);
+        this.parent = I18n.normalizeLanguage(config.parent);
         this.messageDir = new File(languageDir, this.code);
         this.messages = new ConcurrentHashMap<String, Map<String, String>>();
         this.parser = new JsonParser();
@@ -121,9 +125,9 @@ public class Language implements Cleanable
             FileReader reader = new FileReader(new File(this.messageDir, cat + ".json"));
             JsonElement root = parser.parse(reader);
             reader.close();
+            Map<String, String> catMessages = new LinkedHashMap<String, String>();
             if (root.isJsonObject())
             {
-                Map<String, String> catMessages = new THashMap<String, String>();
                 JsonElement elem;
                 for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject().entrySet())
                 {
@@ -133,12 +137,12 @@ public class Language implements Cleanable
                         catMessages.put(entry.getKey(), ChatFormat.parseFormats(elem.getAsString()));
                     }
                 }
-                this.updateMessages(cat, catMessages);
-                if (!catMessages.isEmpty())
-                {
-                    this.messages.put(cat, catMessages);
-                    return catMessages;
-                }
+            }
+            this.updateMessages(cat, catMessages);
+            if (!catMessages.isEmpty())
+            {
+                this.messages.put(cat, catMessages);
+                return catMessages;
             }
         }
         catch (IOException e)
@@ -148,26 +152,67 @@ public class Language implements Cleanable
         return null;
     }
 
-    private void updateMessages(String cat, Map<String, String> catMessages) throws IOException
+    private void updateMessages(String cat, Map<String, String> catMessages)
     {
-        InputStreamReader reader = new InputStreamReader(CubeEngine.getModuleManager().getModule(cat).getResource(CubeEngine.getFileManager().getSourceOf(new File(this.messageDir, cat + ".json"))));
-        JsonElement root = parser.parse(reader);
-        reader.close();
-        if (root.isJsonObject())
+        try
         {
-            JsonElement elem;
-            for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject().entrySet())
+            boolean updated = false;
+            File file = new File(this.messageDir, cat + ".json");
+            Resource resource = CubeEngine.getFileManager().getSourceOf(file);
+            if (resource == null)
             {
-                if (catMessages.containsKey(entry.getKey()))
+                return;
+            }
+            String source = resource.getSource();
+            // we only accept absolute paths!
+            if (!source.startsWith("/"))
+            {
+                source = "/" + source;
+            }
+            InputStreamReader reader = new InputStreamReader(resource.getClass().getResourceAsStream(source));
+            JsonElement root = parser.parse(reader);
+            reader.close();
+            if (root.isJsonObject())
+            {
+                JsonElement elem;
+                for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject().entrySet())
                 {
-                    continue; // Key already in map
-                }
-                elem = entry.getValue();
-                if (elem.isJsonPrimitive())
-                {
-                    catMessages.put(entry.getKey(), ChatFormat.parseFormats(elem.getAsString()));
+                    if (catMessages.containsKey(entry.getKey()))
+                    {
+                        continue; // Key already in map
+                    }
+                    elem = entry.getValue();
+                    if (elem.isJsonPrimitive())
+                    {
+                        catMessages.put(entry.getKey(), ChatFormat.parseFormats(elem.getAsString()));
+                    }
+                    updated = true;
                 }
             }
+            if (updated)
+            {
+                FileWriter fw = new FileWriter(file);
+                StringBuilder sb = new StringBuilder("{\n");
+                Iterator<String> iter = catMessages.keySet().iterator();
+                String key;
+                if (iter.hasNext())
+                {
+                    key = iter.next();
+                    sb.append("    \"").append(key).append("\": \"").append(catMessages.get(key)).append("\"");
+                }
+                while (iter.hasNext())
+                {
+                    key = iter.next();
+                    sb.append(",\n    \"").append(key).append("\": \"").append(catMessages.get(key)).append("\"");
+                }
+                sb.append("\n}");
+                fw.write(sb.toString());
+                fw.close();
+            }
+        }
+        catch (IOException ex)
+        {
+            ex.printStackTrace(System.err);
         }
     }
 

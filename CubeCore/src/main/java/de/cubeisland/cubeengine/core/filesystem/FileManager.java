@@ -19,7 +19,7 @@ public class FileManager
     private final File languageDir;
     private final File logDir;
     private final File modulesDir;
-    private THashMap<File, String> fileSources = new THashMap<File, String>();
+    private THashMap<File, Resource> fileSources = new THashMap<File, Resource>();
 
     public FileManager(File pluginsFolder) throws IOException
     {
@@ -80,8 +80,9 @@ public class FileManager
         {
             source = "/" + source;
         }
-
-        return this.dropResource(resource.getClass(), source, resource.getTarget(), false);
+        File file = this.dropResource(resource.getClass(), source, resource.getTarget(), false);
+        this.fileSources.put(file, resource);
+        return file;
     }
 
     public void dropResources(Resource[] resources)
@@ -115,7 +116,6 @@ public class FileManager
         {
             throw new IllegalArgumentException("The given file exists, but is no file!");
         }
-
         if (file.exists() && !overwrite)
         {
             return file;
@@ -146,11 +146,10 @@ public class FileManager
         {
             throw new RuntimeException("Could not find the resource '" + resPath + "'!");
         }
-        fileSources.put(file, resPath);
         return file;
     }
 
-    public String getSourceOf(File file)
+    public Resource getSourceOf(File file)
     {
         return this.fileSources.get(file);
     }
