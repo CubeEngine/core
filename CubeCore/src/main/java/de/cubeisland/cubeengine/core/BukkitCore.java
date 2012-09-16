@@ -87,7 +87,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
-            this.logger.log(Level.SEVERE, "Could not find the database type ''{0}''", this.config.database);
+            this.logger.log(Level.SEVERE, "Could not connect to the database type ''{0}''", this.config.database);
             pm.disablePlugin(this);
             return;
         }

@@ -89,15 +89,14 @@ public class I18n implements Cleanable
 
     public String translate(String language, String category, String message, Object... params)
     {
-        if (SOURCE_LANGUAGE.equalsIgnoreCase(language))
-        {
-            return this.parseSourceLanguage(message);
-        }
         String translation = null;
-        Language lang = this.languageMap.get(language);
-        if (lang != null)
+        if (!SOURCE_LANGUAGE.equalsIgnoreCase(language))
         {
-            translation = lang.getTranslation(category, message);
+            Language lang = this.languageMap.get(language);
+            if (lang != null)
+            {
+                translation = lang.getTranslation(category, message);
+            }
         }
         
         if (translation == null)

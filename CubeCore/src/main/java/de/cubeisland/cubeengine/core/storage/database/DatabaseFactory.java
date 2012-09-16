@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,7 +22,7 @@ public class DatabaseFactory
     
     static
     {
-        DatabaseFactory.registerDatabase("mysql", MySQLDatabaseConfiguration.class);
+        registerDatabase("mysql", MySQLDatabaseConfiguration.class);
     }
 
     public static Database loadDatabase(String name, File configFile)
@@ -44,7 +45,12 @@ public class DatabaseFactory
                 {
                     t = e.getCause();
                 }
-                CubeEngine.getLogger().log(Level.SEVERE, "Couldn't establish the database connection: " + t.getLocalizedMessage(), t);
+                Logger logger = CubeEngine.getLogger();
+                logger.log(Level.SEVERE, "Couldn't establish the database connection: " + t.getLocalizedMessage(), t);
+                while ((t = t.getCause()) != null)
+                {
+                    logger.log(Level.SEVERE, "  Caused by: " + t.getLocalizedMessage(), t);
+                }
             }
         }
         return null;

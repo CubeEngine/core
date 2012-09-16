@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 /**
  *
@@ -27,8 +28,10 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
+    
     @Attribute(type = AttrType.VARCHAR, length = 16)
     public final OfflinePlayer player;
+    
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
 
     @DatabaseConstructor
@@ -132,7 +135,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             localeStringField = Class.forName("net.minecraft.server.LocaleLanguage").getDeclaredField("d");
             localeStringField.setAccessible(true);
 
-            handleField = Class.forName("org.bukkit.craftbukkit.entity.CraftPlayer").getDeclaredField("entity");
+            handleField = Class.forName("org.bukkit.craftbukkit.entity.CraftEntity").getDeclaredField("entity");
             handleField.setAccessible(true);
 
             localeField = Class.forName("net.minecraft.server.EntityPlayer").getDeclaredField("locale");
@@ -148,15 +151,17 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     public String getLanguage()
     {
-        if (languageWorkaroundInitialized)
+        Player onlinePlayer = this.offlinePlayer.getPlayer();
+        if (onlinePlayer != null && languageWorkaroundInitialized)
         {
             try
             {
-                return (String)localeStringField.get(localeField.get(handleField.get(this)));
+                Object obj = handleField.get(onlinePlayer);
+                obj = localeField.get(obj);
+                return (String)localeStringField.get(obj);
             }
             catch (Exception e)
-            {
-            }
+            {}
         }
         return CubeEngine.getCore().getConfiguration().defaultLanguage;
     }

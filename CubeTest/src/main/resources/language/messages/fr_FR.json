@@ -1,5 +1,6 @@
 {
     "english TEST": "francais TEST",
-    "&1color &2Test": "&2teste de &1couleur"
+    "&1color &2Test": "&2teste de &1couleur",
+    "Your language is: %s": "o_O!"
 }
 

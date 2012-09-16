@@ -34,8 +34,8 @@ public class CoreConfiguration extends Configuration
     public Integer userManagerCleanup = 10;
     
     @Option("database")
-    @Comment("Currently available: mySQL")
-    public String database = "mySQL";
+    @Comment("Currently available: mysql")
+    public String database = "mysql";
     
     @Option("logging.Level")
     @Comment("Logging into Console \nALL > FINEST > FINER > FINE > INFO > OFF")
