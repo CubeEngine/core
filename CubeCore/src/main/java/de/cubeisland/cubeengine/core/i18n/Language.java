@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.cubeisland.cubeengine.core.CubeEngine;
@@ -88,7 +87,7 @@ public class Language implements Cleanable
         this.messages.put(cat, messages);
     }
 
-    public String getTranslation(String cat, String message)
+    public String getTranslation(String cat, String keyMessage)
     {
         Map<String, String> catMessages = this.messages.get(cat);
         if (catMessages == null)
@@ -97,7 +96,7 @@ public class Language implements Cleanable
         }
         if (catMessages != null)
         {
-            String msg = catMessages.get(message);
+            String msg = catMessages.get(keyMessage);
             if (msg == null)
             {
                 if (parent != null)
@@ -107,10 +106,12 @@ public class Language implements Cleanable
                         this.parentLanguage = i18n.getLanguage(parent);
                         if (parentLanguage == null)
                         {
-                            throw new IllegalStateException("Parent Language " + this.parent + " not found");
+                            return null;
                         }
                     }
-                    return this.parentLanguage.getTranslation(cat, message);
+                    msg = this.parentLanguage.getTranslation(cat, keyMessage);
+                    catMessages.put(keyMessage, msg);
+                    return msg;
                 }
             }
             return msg;
