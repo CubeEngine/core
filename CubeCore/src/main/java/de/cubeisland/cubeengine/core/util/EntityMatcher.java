@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  *
@@ -26,7 +27,14 @@ public class EntityMatcher
         TShortObjectHashMap<List<String>> entityList = this.readEntities();
         for (short id : entityList.keys())
         {
-            EntityType.fromId(id).registerName(entityList.get(id));
+            try
+            {
+                EntityType.fromId(id).registerName(entityList.get(id));
+            }
+            catch (NullPointerException e)
+            {
+                CubeEngine.getLogger().log(Level.WARNING, "Unknown Entity ID: {0} {1}", new Object[]{id, entityList.get(id).get(0)});
+            }
         }
     }
 
@@ -41,7 +49,7 @@ public class EntityMatcher
 
     public EntityType matchEntity(String name)
     {
-        Map<String,EntityType> entities = EntityType.getNameSets();
+        Map<String, EntityType> entities = EntityType.getNameSets();
         String s = name.toLowerCase(Locale.ENGLISH);
         EntityType ench = entities.get(s);
         try
@@ -118,7 +126,7 @@ public class EntityMatcher
         }
         return null;
     }
-    
+
     public EntityType matchProjectile(String s)
     {
         EntityType type = this.matchEntity(s);

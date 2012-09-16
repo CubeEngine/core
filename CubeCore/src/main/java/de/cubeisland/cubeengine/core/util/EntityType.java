@@ -78,6 +78,17 @@ public enum EntityType
     private static final THashMap<String, EntityType> NAME_MAP = new THashMap<String, EntityType>();
     private static final TShortObjectHashMap<EntityType> ID_MAP = new TShortObjectHashMap<EntityType>();
 
+    static
+    {
+        for (EntityType type : values())
+        {
+            if (type.getBukkitType().getTypeId() > 0)
+            {
+                ID_MAP.put(type.getBukkitType().getTypeId(), type);
+            }
+        }
+    }
+
     private EntityType(org.bukkit.entity.EntityType type, boolean spawnEgg)
     {
         this.type = type;
@@ -108,12 +119,12 @@ public enum EntityType
     {
         return this.type.isAlive();
     }
-    
+
     public boolean isMonster()
     {
         return Monster.class.isAssignableFrom(this.getEntityClass());
     }
-    
+
     public boolean isFriendly()
     {
         return Animals.class.isAssignableFrom(this.getEntityClass()) || NPC.class.isAssignableFrom(this.getEntityClass());
@@ -123,7 +134,7 @@ public enum EntityType
     {
         return Projectile.class.isAssignableFrom(this.getEntityClass());
     }
-    
+
     public void registerName(List<String> names)
     {
         for (String name : names)
@@ -131,8 +142,8 @@ public enum EntityType
             NAME_MAP.put(name, this);
         }
     }
-    
-    public static Map<String,EntityType> getNameSets()
+
+    public static Map<String, EntityType> getNameSets()
     {
         return NAME_MAP;
     }

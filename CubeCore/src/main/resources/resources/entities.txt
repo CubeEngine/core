@@ -19,8 +19,8 @@
     ThrownEnderpearl
 15:
     EyeOfEnderSignal
-16:
-    ThrownPotion
+#16:
+#    ThrownPotion
 17:
     ThrownExpBottle
 18:
@@ -37,11 +37,6 @@
     Minecart
 41:
     Boat
-#Generic
-48:
-    Mob
-49:
-    Monster
 #Hostile mobs
 50:
     Creeper
