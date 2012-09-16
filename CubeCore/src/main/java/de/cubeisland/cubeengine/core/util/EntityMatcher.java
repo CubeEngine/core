@@ -11,7 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
 
 /**
  *
@@ -82,83 +85,32 @@ public class EntityMatcher
     public EntityType matchMob(String s)
     {
         EntityType type = this.matchEntity(s);
-        switch (type)
+        if (type.isAlive())
         {
-            case BLAZE:
-            case CAVE_SPIDER:
-            case CHICKEN:
-            case COW:
-            case CREEPER:
-            case ENDERMAN:
-            case GHAST:
-            case GIANT:
-            case IRON_GOLEM:
-            case MAGMA_CUBE:
-            case MUSHROOM_COW:
-            case OCELOT:
-            case PIG:
-            case PIG_ZOMBIE:
-            case SHEEP:
-            case SILVERFISH:
-            case SKELETON:
-            case SLIME:
-            case SNOWMAN:
-            case SPIDER:
-            case SQUID:
-            case VILLAGER:
-            case WOLF:
-            case ZOMBIE:
-                return type;
-            default:
-                return null;
+            return type;
         }
+        return null;
+
     }
 
     public EntityType matchMonster(String s)
     {
         EntityType type = this.matchEntity(s);
-        switch (type)
+        if (Monster.class.isAssignableFrom(type.getEntityClass()))
         {
-            case BLAZE:
-            case CAVE_SPIDER:
-            case CREEPER:
-            case ENDERMAN:
-            case GHAST:
-            case GIANT:
-            case MAGMA_CUBE:
-            case PIG_ZOMBIE:
-            case SILVERFISH:
-            case SKELETON:
-            case SLIME:
-            case SPIDER:
-            case SQUID:
-            case ZOMBIE:
-                return type;
-            default:
-                return null;
+            return type;
         }
+        return null;
     }
 
     public EntityType matchFriendlyMob(String s)
     {
         EntityType type = this.matchEntity(s);
-        switch (type)
+        if (Animals.class.isAssignableFrom(type.getEntityClass()) || NPC.class.isAssignableFrom(type.getEntityClass()))
         {
-            case CHICKEN:
-            case COW:
-            case IRON_GOLEM:
-            case MUSHROOM_COW:
-            case OCELOT:
-            case PIG:
-            case SHEEP:
-            case SNOWMAN:
-            case SQUID:
-            case VILLAGER:
-            case WOLF:
-                return type;
-            default:
-                return null;
+            return type;
         }
+        return null;
     }
 
     private void registerEntity(EntityType id, List<String> names)
