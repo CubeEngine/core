@@ -1,7 +1,0 @@
-name: CubeCore
-version: ${project.version}
-main: de.cubeisland.cubeengine.core.BukkitCore
-website: http://cubeisland.de
-description: "Core plugin for all the Cube plugins"
-authors:
-  - "Cube Island"
