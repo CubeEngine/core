@@ -33,6 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 @BukkitDependend("This is the bukkit plugin")
 public class BukkitCore extends JavaPlugin implements Core
 {
+    private boolean debug = true;
     private Database database;
     private PermissionRegistration permissionRegistration;
     private UserManager userManager;
@@ -83,6 +84,8 @@ public class BukkitCore extends JavaPlugin implements Core
         
         // depends on: file manager
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
+        
+        this.debug = this.config.debugMode;
         
         // depends on: core config and file manager
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
@@ -253,10 +256,6 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public boolean isDebug()
     {
-        if (this.config == null)
-        {
-            return true;
-        }
-        return this.config.debugMode;
+        return this.debug;
     }
 }
