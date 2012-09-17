@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
  */
 public class CubeLogger extends Logger
 {
+    private boolean useBukkitLogger;
+
     /**
      * Creates a new Logger by this name
      *
@@ -20,10 +22,22 @@ public class CubeLogger extends Logger
      */
     public CubeLogger(String name)
     {
+        this(name, true);
+    }
+
+    /**
+     * Creates a new Logger by this name
+     *
+     * @param name the name
+     * @param useBukkitLogger log into console or not
+     */
+    public CubeLogger(String name, boolean useBukkitLogger)
+    {
         super(name, null);
         this.setParent(Logger.getLogger(name));
         this.setUseParentHandlers(false);
         this.setLevel(Level.ALL);
+        this.useBukkitLogger = useBukkitLogger;
     }
 
     // Pass ConsoleLogging to BukkitLogger
@@ -48,11 +62,14 @@ public class CubeLogger extends Logger
         {
             record.setLevel(Level.INFO); // LogLevel lower than info are displayed as INFO anyways
         }
-        if (level.intValue() >= CubeEngine.getCore().getConfiguration().loggingLevel.intValue())
-        { // only log to console if Log is important enough
-            record.setMessage("[" + this.getName() + "] " + msg);
-            this.getParent().log(record);
-            record.setMessage(msg);
+        if (useBukkitLogger)
+        {
+            if (level.intValue() >= CubeEngine.getCore().getConfiguration().loggingLevel.intValue())
+            { // only log to console if Log is important enough
+                record.setMessage("[" + this.getName() + "] " + msg);
+                this.getParent().log(record);
+                record.setMessage(msg);
+            }
         }
         super.log(record);
     }
@@ -68,5 +85,10 @@ public class CubeLogger extends Logger
         {
             this.log(Level.INFO, "[Debug] {0}", msg);
         }
+    }
+    
+    public void setUseBukkitLogger(boolean b)
+    {
+        this.useBukkitLogger = b;
     }
 }

@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class I18n implements Cleanable
 {
-    private static final Logger LOGGER = new CubeLogger("language");
+    private static final Logger LOGGER = new CubeLogger("language",false);
     
     public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;
