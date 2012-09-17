@@ -85,6 +85,7 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: file manager
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
         
+        CubeLogger.setLoggingLevel(this.config.loggingLevel);
         this.debug = this.config.debugMode;
         
         // depends on: core config and file manager

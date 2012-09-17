@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 public class CubeLogger extends Logger
 {
     private boolean useBukkitLogger;
+    private static Level loggingLevel = Level.ALL;
 
     /**
      * Creates a new Logger by this name
@@ -64,7 +65,7 @@ public class CubeLogger extends Logger
         }
         if (useBukkitLogger)
         {
-            if (level.intValue() >= CubeEngine.getCore().getConfiguration().loggingLevel.intValue())
+            if (level.intValue() >= loggingLevel.intValue())
             { // only log to console if Log is important enough
                 record.setMessage("[" + this.getName() + "] " + msg);
                 this.getParent().log(record);
@@ -90,5 +91,10 @@ public class CubeLogger extends Logger
     public void setUseBukkitLogger(boolean b)
     {
         this.useBukkitLogger = b;
+    }
+    
+    public static void setLoggingLevel(Level level)
+    {
+        loggingLevel = level;
     }
 }
