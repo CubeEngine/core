@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
@@ -12,7 +13,6 @@ import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -130,48 +130,20 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
         return (T)this.attachments.get(modelClass);
     }
-    private static boolean languageWorkaroundInitialized;
-    private static Field localeStringField;
-    private static Field handleField;
-    private static Field localeField;
-
-    static
-    {
-        try
-        {
-            localeStringField = Class.forName("net.minecraft.server.LocaleLanguage").getDeclaredField("d");
-            localeStringField.setAccessible(true);
-
-            handleField = Class.forName("org.bukkit.craftbukkit.entity.CraftEntity").getDeclaredField("entity");
-            handleField.setAccessible(true);
-
-            localeField = Class.forName("net.minecraft.server.EntityPlayer").getDeclaredField("locale");
-            localeField.setAccessible(true);
-
-            languageWorkaroundInitialized = true;
-        }
-        catch (Exception e)
-        {
-            languageWorkaroundInitialized = false;
-        }
-    }
 
     public String getLanguage()
     {
+        String language = null;
         Player onlinePlayer = this.offlinePlayer.getPlayer();
-        if (onlinePlayer != null && languageWorkaroundInitialized)
+        if (onlinePlayer != null)
         {
-            try
-            {
-                Object obj = handleField.get(onlinePlayer);
-                obj = localeField.get(obj);
-                return (String)localeStringField.get(obj);
-            }
-            catch (Exception e)
-            {
-            }
+            language = BukkitUtils.getLanguage(onlinePlayer);
         }
-        return CubeEngine.getCore().getConfiguration().defaultLanguage;
+        if (language == null)
+        {
+            language = CubeEngine.getCore().getConfiguration().defaultLanguage;
+        }
+        return language;
     }
 
     @Override

@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -14,7 +14,6 @@ import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 
 /**
  *
@@ -29,29 +28,8 @@ public class CommandManager
 
     public CommandManager(Core core)
     {
-        try
-        {
-            PluginManager pm = ((Plugin)core).getServer().getPluginManager();
-            for (Field field : pm.getClass().getDeclaredFields())
-            {
-                if (CommandMap.class.isAssignableFrom(field.getType()))
-                {
-                    this.commandMap = (CommandMap)field.get(pm);
-                    break;
-                }
-            }
-            for (Field field : this.commandMap.getClass().getDeclaredFields())
-            {
-                if (Map.class.isAssignableFrom(field.getType()))
-                {
-                    this.knownCommands = (Map<String, Command>)field.get(this.commandMap);
-                    break;
-                }
-            }
-        }
-        catch (Exception e)
-        {
-        }
+        this.commandMap = BukkitUtils.getCommandMap(((Plugin)core).getServer().getPluginManager());
+        this.knownCommands = BukkitUtils.getKnownCommandMap(this.commandMap);
     }
 
     private void injectIntoRoot(Command command)

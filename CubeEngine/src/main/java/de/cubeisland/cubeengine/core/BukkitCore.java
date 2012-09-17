@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core;
 
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.event.EventManager;
@@ -123,6 +124,9 @@ public class BukkitCore extends JavaPlugin implements Core
         
         // depends on: finshed loading modules
         this.getUserManager().cleanDB();
+        
+        // depends on: server
+        BukkitUtils.registerPacketHookInjector(this, pm);
     }
 
     @Override
