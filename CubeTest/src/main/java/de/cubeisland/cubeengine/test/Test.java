@@ -17,6 +17,7 @@ import de.cubeisland.cubeengine.test.l18n.TestRecource;
 import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,18 +77,22 @@ public class Test extends Module
 
     public void testUserManager()
     {
-        //Testing insert
-        User user = uM.getUser("FakeUser");
-        //Testing delete
-        uM.delete(user);
         //Testing get
-        uM.getUser("FakerXL");
-        uM.getUser("NoPlayer");
-        uM.getUser("NoUserAtAll");
-        user = uM.getUser("NoUser");
-        uM.update(user);
+        User userToDel = uM.getUser("userGetsDel");
+        User user = uM.getUser("UserU");
+        uM.getUser("User1");
+        uM.getUser("User2");
         //Testing getall
         uM.getAll();
+        //Testing delete
+        uM.delete(userToDel);
+        //Test update
+        user.nogc = true;
+        user.lastseen = new Timestamp(50);
+        uM.update(user);
+        user = uM.getUser("User1");
+        user.lastseen = new Timestamp(50);
+        uM.update(user);
     }
 
     private Date getDate(int year, int month, int day)

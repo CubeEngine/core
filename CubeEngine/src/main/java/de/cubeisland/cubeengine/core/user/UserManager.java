@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.GREATER;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -434,19 +434,20 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         try
         {
-            System.out.println("CLEAN DB!");
             ResultSet result =
                 this.database.query(
                 this.database.getQueryBuilder()
-                .select(this.key).from(this.table)
-                .where().field("lastseen").is(GREATER).value()
+                .select(this.key,"nogc").from(this.table)
+                .where().field("lastseen").is(LESS).value()
                 .end().end(),
                 new Timestamp(System.currentTimeMillis()
                 - StringUtils.convertTimeToMillis(this.core.getConfiguration().userManagerCleanupDatabase)));
             while (result.next())
             {
-                this.deleteByKey(result.getInt("key"));
-                System.out.println("CLEAN DB!"+result.getInt("key"));
+                if (!result.getBoolean("nogc"))
+                {
+                    this.deleteByKey(result.getInt("key"));
+                }
             }
         }
         catch (Exception ex)

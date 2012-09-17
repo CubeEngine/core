@@ -173,7 +173,7 @@ public final class StringUtils
     }
 
     
-    private static final int DAY = 24*60*60*1000;
+    private static final long DAY = (long)24*60*60*1000;
     /**
      * Converts Time in y | M | w | d | h | m | s to Long default is m
      */
@@ -201,7 +201,7 @@ public final class StringUtils
         {
             unitSuffix = "m";
         }
-        switch (unitSuffix.toLowerCase(Locale.ENGLISH).charAt(0))
+        switch (unitSuffix.charAt(0))
         {
             case 'y':
             case 'Y':
