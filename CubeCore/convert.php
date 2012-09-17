@@ -12,7 +12,7 @@
     }
     
     $skipped = @fopen(SKIPPED, 'wb');
-    if (!$target)
+    if (!$skipped)
     {
         echo "Failed to open " . SKIPPED . " for writing!\n";
         exit(1);
