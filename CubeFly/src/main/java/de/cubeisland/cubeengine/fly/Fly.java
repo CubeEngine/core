@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.annotations.LoadConfiguration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.fly.database.FlyManager;
 import java.io.File;
@@ -12,6 +13,8 @@ public class Fly extends Module
     public static boolean debugMode = false;
     protected Server server;
     protected File dataFolder;
+    
+    @LoadConfiguration(FlyConfiguration.class)
     private FlyConfiguration config;
     private FlyManager flyManager;
 
