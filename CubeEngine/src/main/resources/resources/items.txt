@@ -1,104 +1,70 @@
 1:0
   stone
-  sstone
+  cleanstone
   smoothstone
   rock
 2:0
   grass
-  greendirt
-  greenland
 3:0
   dirt
   earth
   land
 4:0
   cobblestone
-  cstone
   cobble
 5:0
-  plank
-  woodenplank
-  wplank
+  planks
+  woodenplanks
   plankwooden
-  plankw
 5:1
-  darkwoodenplank
-  darkplankwooden
-  dwoodenplank
-  dplankwooden
-  sprucewoodenplank
+  darkplanks
+  darkwoodplanks
+  pineplanks
+  spruceplanks
 5:2
-  lightwoodenplank
-  lightplankwooden
-  birchplank
-  birchplankwooden
+  whiteplanks
+  lightplanks
+  birchplanks
+  birchwoodplanks
 5:3
-  junglewoodenplank
-  jungleplankwooden
-  jungleplank
+  junglewoodplanks
+  jungleplanks
 6:0
   sapling
   treesapling
-  logsapling
-  trunksapling
-  woodsapling
+  oaksapling
+  sap
   treesap
-  logsap
-  trunksap
-  woodsap
+  oaksap
 6:1
   darksapling
-  darkwoodsapling
-  dsapling
+  pinesapling
+  sprucesapling
   darksap
-  darktreesap
-  darklogsap
-  darktrunksap
-  darkwoodsap
-  blacksap
-  blacktreesap
-  blackwoodsap
   pinesap
-  dsap
-  dtreesap
-  dlogsap
-  dtrunksap
-  dwoodsap
+  sprucesap
 6:2
   birchsapling
-  birchtreesapling
-  birchwoodsapling
   whitesapling
-  whitetreesapling
-  whitewoodsapling
-  bsapling
   birchsap
-  birchtreesap
-  birchwoodsap
   whitesap
-  whitetreesap
-  whitewoodsap
-  bsap
 6:3
   junglesapling
-  jsapling
   junglesap
-  jsap
 7:0
   bedrock
-  oprock
   adminblock
   adminium
 8:0
   water
 9:0
   stationarywater
-  swater
+  statwater
 10:0
   lava
 11:0
   stationarylava
-  slava
+  statlava
 12:0
   sand
 13:0
@@ -106,94 +72,51 @@
 14:0
   goldore
   oregold
-  goldo
-  oreg
 15:0
   ironore
   oreiron
-  irono
-  steelo
-  iore
 16:0
   coalore
   orecoal
-  coalo
 17:0
   tree
   log
-  trunk
   wood
-  oaktree
   oaklog
-  oaktrunk
   oakwood
-  otree
-  olog
-  otrunk
-  owood
 17:1
-  darktree
   darklog
-  darktrunk
   darkwood
-  blacktree
   blacklog
-  blacktrunk
   blackwood
-  dtree
-  dlog
-  dtrunk
-  dwood
-  bltree
-  bllog
-  bltrunk
-  blwood
+  pinelog
+  pinewood
+  sprucelog
+  sprucewood
 17:2
   birch
   birchtree
   birchlog
-  birchtrunk
   birchwood
-  whitetree
   whitelog
-  whitetrunk
   whitewood
-  bitree
-  bilog
-  bitrunk
-  biwood
-  btree
-  blog
-  btrunk
-  bwood
-  wtree
-  wlog
-  wtrunk
-  wwood
 17:3
   junglewood
-  jwood
+  jungletree
   junglelog
-  jlog
-  monkeytree
-  monkeylog
-18:4
+18:0
   leaves
   leaf
-  treeleaves
-  logleaves
-  trunkleaves
-  woodleaves
-  treeleaf
-  logleaf
-  trunkleaf
-  woodleaf
-18:6
+18:1
+  pineleaves
+  pineleaf
+  spruceleaves
+  spruceleaf
+18:2
   birchleaves
   birchleaf
-18:7
+18:3
   jungleleaves
-  jleaves
   jungleleaf
 19:0
   sponge
@@ -201,111 +124,67 @@
   glass
 21:0
   lapislazuliore
-  lapislazulio
-  orelapislazuli
   lapisore
+  orelapislazuli
   orelapis
-  lore
 22:0
   lapislazuliblock
   blocklapislazuli
   lapisblock
   blocklapis
-  lblock
 23:0
   dispenser
-  dispense
 24:0
   sandstone
-  sastone
 24:1
-  creepsandstone
-  creepsastone
   creepersandstone
-  hieroglyphicsandstone
-  hieroglyphsastone
-  hsandstone
+  chiseledsandstone
+  hieroglyphsandstone
   pyramidsandstone
-  psandstone
 24:2
   smoothsandstone
-  smoothsastone
-  ssandstone
+  cleansandstone
 25:0
   noteblock
   musicblock
-  nblock
 26:0
   bedblock
 27:0
   poweredtrack
   poweredrail
   boostertrack
-  powertrack
-  boosttrack
-  ptrack
-  brail
+  boosterrail
 28:0
   detectortrack
   detectorrail
-  detectingtrack
-  detectrail
-  dtrack
 29:7
-  stickypistonbase
   stickypiston
-  stickpistonbase
-  stickpiston
-  stickyp
-  spistonbase
-  spiston
-  psticky
+  slimepiston
 30:0
   spiderweb
-  sweb
+  cobweb
 31:0
-  deadshrub
-  shrubdead
-  dshrub
+  deadgrass
+  grassdead
 31:1
   longgrass
   tallgrass
   grasslong
   grasstall
-  lgrass
 31:2
   fern
-  liveshrub
-  shrublive
-  lshrub
 32:0
   deadbush
   bushdead
-  dbush
 33:7
-  normalpistonbase
   normalpiston
-  normpistonbase
-  normpiston
-  npistonbase
-  npiston
   piston
-  pistonblock
 34:0
   pistonextension
-  pistonextnormal
-  pistonext
-  extpistonnormal
-  extpiston
-  epistonnormal
-  episton
 35:0
   whitecloth
   whitewool
   whitecotton
-  wcloth
-  wwool
-  wcotton
   cloth
   wool
   cotton
@@ -313,302 +192,167 @@
   orangecloth
   orangewool
   orangecotton
-  ocloth
-  owool
-  ocotton
 35:2
   magentacloth
   magentawool
   magentacotton
-  mcloth
-  mwool
-  mcotton
+
 35:3
   lightbluecloth
   lightbluewool
   lightbluecotton
-  lbluecloth
-  lbluewool
-  lbluecotton
-  lightblucloth
-  lightbluwool
-  lightblucotton
-  lblucloth
-  lbluwool
-  lblucotton
 35:4
   yellowcloth
   yellowwool
   yellowcotton
-  ycloth
-  ywool
-  ycotton
 35:5
   lightgreencloth
   lightgreenwool
   lightgreencotton
-  lgreencloth
-  lgreenwool
-  lgreencotton
-  lightgrecloth
-  lightgrewool
-  lightgrecotton
-  lgrecloth
-  lgrewool
-  lgrecotton
 35:6
   pinkcloth
   pinkwool
   pinkcotton
-  picloth
-  piwool
-  picotton
 35:7
   graycloth
   graywool
   graycotton
-  gracloth
-  grawool
-  gracotton
 35:8
   lightgraycloth
   lightgraywool
   lightgraycotton
-  lgraycloth
-  lgraywool
-  lgraycotton
-  lightgracloth
-  lightgrawool
-  lightgracotton
-  lgracloth
-  lgrawool
-  lgracotton
 35:9
   cyancloth
   cyanwool
   cyancotton
-  ccloth
-  cwool
-  ccotton
 35:10
   purplecloth
   purplewool
   purplecotton
-  pucloth
-  puwool
-  pucotton
 35:11
   bluecloth
   bluewool
   bluecotton
-  blucloth
-  bluwool
-  blucotton
 35:12
   browncloth
   brownwool
   browncotton
-  brocloth
-  browool
-  brocotton
 35:13
   darkgreencloth
   darkgreenwool
   darkgreencotton
-  dgreencloth
-  dgreenwool
-  dgreencotton
+  greencloth
+  greenwool
   greencotton
-  dgrecloth
-  dgrewool
-  dgrecotton
 35:14
   redcloth
   redwool
   redcotton
-  rcloth
-  rwool
-  rcotton
 35:15
   blackcloth
   blackwool
   blackcotton
-  blacloth
-  blawool
-  blacotton
 36:0
+  blockmovedbypiston
   pistonmovingpiece
-  pistonmp
 37:0
   yellowflower
-  yflower
+  flower
+  dandelion
 38:0
   redrose
-  rrose
   redflower
+  rose
 39:0
   brownmushroom
   brownmush
-  bmushroom
-  bmush
 40:0
   redmushroom
   redmush
-  rmushroom
-  rmush
 41:0
   goldblock
   blockgold
-  gblock
 42:0
   ironblock
   steelblock
   blockiron
   blocksteel
-  iblock
 43:0
-  smoothstonedoubleslab
-  sdslab
-  doublesmoothstoneslab
-  dslab
-  smoothstonedhalfblock
+  doubleslab
+  cleandoubleslab
+  smoothdoubleslab
+  doublestep
+  cleandoublestep
+  smoothdoublestep
 43:1
-  sandstonestep
-  ssdstep
-  sandstonedslab
-  ssdslab
-  sandstonedhalfblock
+  sandstonedoublestep
+  sandstonedoubleslab
 43:2
-  woodenstonedhalfblock
-  woodenstonedstep
-  woodplankstonedslab
-  plankstonedslab
-  wstoneslab
+  woodstonedoublestep
+  woodstonedoubleslab
 43:3
-  cobblestonedstep
-  cobbledstep
-  cstonedstep
-  cobblestonedhalfblock
-  cstonedhalfblock
+  cobblestonedoublestep
+  cobbledoublestep
+  cobblestonedoubleslab
+  cobbledoubleslab
 43:4
-  brickdstep
-  brickdslab
-  brickdhalfblock
+  brickdoublestep
+  claybrickdoublestep
+  brickdoubleslab
+  claybrickdoubleslab
 43:5
   stonebrickdoublestep
-  stonebdoublestep
-  stonebdstep
   stonebrickdoubleslab
-  stonebrickdslab
-  stonebdoubleslab
-  stonebrickdoublehalfblock
-  stonebdoublehalfblock
-  stonebdhalfblock
 43:6
   adminslab
   magicslab
-  adslab
 44:0
-  smoothstonestep
-  stonestep
-  sstep
-  smoothstoneslab
+  slab
   stoneslab
-  sslab
-  smoothstonehalfblock
-  stonehalfblock
-  shalfblock
+  cleanstoneslab
+  step
+  stonestep
+  cleanstonestep
 44:1
   sanddstonestep
-  sstonestep
-  ssstep
   sanddstoneslab
-  sstoneslab
-  ssslab
-  sanddstonehalfblock
-  sstonehalfblock
-  sshalfblock
 44:2
-  woodenplankstonestep
-  woodplankstonestep
-  plankstonestep
-  woodenstonestep
-  wstonestep
-  woodenplankstoneslab
-  wplankstoneslab
-  woodenstoneslab
-  wstoneslab
-  woodenplankstonehalfblock
-  wplankstonehalfblock
-  woodenstonehalfblock
-  wstonehalfblock
+  woodstonestep
+  woodstoneslab
 44:3
-  cobblestonestep
   cobblestep
-  cstonestep
-  csstep
-  cobblestoneslab
   cobbleslab
-  cstoneslab
-  csslab
-  cobblestonehalfblock
-  cobblehalfblock
-  cstonehalfblock
-  cshalfblock
+  cobblestonestep
+  cobblestoneslab
 44:4
-  brickblockstep
-  brickbstep
-  bstep
-  brickblockslab
-  brickbslab
-  bslab
-  brickblockhalfblock
-  brickbhalfblock
-  bhalfblock
+  brickstep
+  brickslab
+  claybrickstep
+  claybrickslab
 44:5
   stonebrickstep
-  stonebstep
-  sbrickstep
-  sbstep
   stonebrickslab
-  stonebslab
-  sbrickslab
-  sbslab
-  stonebrickhalfblock
-  stonebhalfblock
-  sbrickhalfblock
-  sbhalfblock
 45:0
   brickblock
   blockbrick
-  bblock
+  claybrickblock
 46:0
-  blocktnt
-  bombblock
-  blockbomb
-  dynamiteblock
-  blockdynamite
   tnt
   bomb
   dynamite
 47:0
   bookcase
-  casebook
   bookshelf
-  shelfbook
   bookblock
-  blockbook
 48:0
   mossycobblestone
-  mosscobblestone
   mossycobble
-  mcobble
+  mossystone
 49:0
   obsidian
   obsi
 50:0
   torch
-  burningstick
 51:0
   fire
   flame
@@ -617,695 +361,327 @@
   mobcage
   monsterspawner
   monstercage
-  mspawner
-  mcage
   spawner
-  cage
 53:0
-  woodenstairs
   woodstairs
-  wstair
 54:0
   chest
   container
 55:0
   redstonewireblock
-  rstonewireblock
-  redswireblock
-  redstonewire
-  redswire
   wire
 56:0
   diamondore
-  crystalore
-  diamondo
-  crystalo
-  orediamond
-  orecrystal
-  dore
 57:0
   diamondblock
   blockdiamond
-  crystalblock
-  blockcrystal
-  dblock
 58:0
   workbench
   craftingbench
   worktable
   craftingtable
-  wbench
 59:0
-  crops
   crop
-  wheatcrops
   wheatcrop
 60:0
   soil
+  farmland
 61:0
   furnace
+  oven
 62:0
   burningfurnace
-  bfurnace
+  burningoven
 63:0
   signpost
-  spost
 64:0
-  woodendoorhalf
   wooddoorhalf
-  woodendoorbottom
-  wdoorbottom
-  woodendoorblock
-  wdoorblock
+  wooddoorblock
 65:0
   ladder
 66:0
   minecarttrack
   minecartrail
-  mcarttrack
-  mcrail
+  rail
   track
 67:0
   cobblestonestairs
-  cstonestairs
   cobblestairs
-  csstairs
-  cobblestonestair
-  cstonestair
-  cobblestair
-  csstair
 68:0
   wallsign
-  wsign
 69:0
   lever
 70:0
-  smoothstonepressureplate
-  smoothstonepressplate
-  smoothstonepplate
-  sstonepressureplate
-  sstonepplate
   stonepressureplate
-  stonepplate
-  spressureplate
-  spplate
+  stoneplate
 71:0
   irondoorhalf
-  idoorhalf
-  irondoorbottom
   irondoorblock
   steeldoorhalf
-  sdoorhalf
-  steeldoorbottom
-  sdoorbottom
   steeldoorblock
-  sdoorblock
 72:0
-  woodenpressureplate
-  woodenpressplate
-  woodenpplate
   woodpressureplate
-  woodpplate
-  wpressureplate
-  wpplate
+  woodplate
 73:0
   redstoneore
-  redsore
-  rstoneore
-  rsore
   oreredstone
-  orereds
-  orerstone
-  orers
 74:0
   glowingredstoneore
-  glowingredore
-  grsore
-  oreglowingrstone
-  oregreds
-  oreglowingrs
-  oregrs
+  oreglowingredstone
 75:0
   redstonetorchoff
-  rstonetorchoff
-  redstorchoff
 76:0
   redstonetorchon
   redstonetorch
-  rstonetorchon
-  redstorchon
-  rstorch
 77:0
-  smoothstonebutton
-  sstonebutton
-  sbutton
+  button
+  stonebutton
 78:0
-  snowcovering
   snowcover
 79:0
   ice
-  frozenwater
-  waterfrozen
-  freezewater
-  waterfreeze
 80:0
   snowblock
   blocksnow
-  sblock
 81:0
   cactus
-  cactuses
-  cacti
 82:0
   clay
   clayblock
   blockclay
-  cblock
 83:0
   reedblock
-  reedsblock
   sugarcaneblock
-  scaneblock
-  bambooblock
   blockreed
   blocksugarcane
-  blockscane
-  blockbamboo
 84:0
   jukebox
-  jbox
 85:0
   fence
-  woodenfence
-  wfence
-  fencewooden
-  fencew
+  woodfence
 86:0
   pumpkin
 87:0
   netherrack
-  netherrock
   netherstone
   hellstone
-  nstone
 88:0
   soulsand
   slowsand
-  smud
 89:0
   lightstoneblock
   glowstoneblock
   lightstone
   glowstone
-  lightblock
-  glowblock
-  lstone
 90:0
   portal
 91:0
   jackolantern
   pumpkinlantern
   glowingpumpkin
-  lightpumpkin
-  jpumpkin
-  plantren
-  glowpumpkin
 92:0
   cakeblock
 93:0
   repeateroff
-  repeatoff
-  delayeroff
-  dioderoff
-  repeaterblockoff
-  delayerblockoff
-  dioderblockoff
+  diodeoff
 94:0
   repeateron
-  repeaton
-  delayeron
   dioderon
-  repeaterblockon
-  delayerblockon
-  dioderblockon
 95:0
   lockedchest
-  lockchest
   aprilfoolschest
   aprilchest
-  lootchest
 96:0
   trapdoor
-  doortrap
   hatch
-  tdoor
-  trapd
 97:0
-  silverfish
-  monstereggsmoothstone
-  monstereggsstone
-  meggsmoothstone
-  meggsstone
-  mesmoothstone
-  messtone
-  silverfishsmoothstone
-  silverfishsstone
-  trapsmoothstone
+  silverfishstone
+  silverfishblock
   trapsstone
+  stonesilverfish
 97:1
-  monstereggcobblestone
-  monstereggcstone
-  meggcobblestone
-  meggcstone
-  mecobblestone
-  mecstone
   silverfishcobblestone
-  silverfishcstone
-  sfishcobblestone
-  sfishcstone
-  fishcobblestone
-  fishcstone
-  sfcobblestone
-  sfcstone
-  trapcobblestone
-  trapcstone
+  silverfishcobble
+  cobblesilverfish
 97:2
-  monstereggstonebrick
-  monstereggsbrick
-  meggstonebrick
-  meggsbrick
-  mestonebrick
-  mesbrick
-  silverfishstonebrick
-  silverfishsbrick
-  trapstonebrick
-  trapsbrick
+  silverfishbrickstone
+  silverfishcobble
+  bricksilverfish
 98:0
   stonebrick
-  stonebricks
   stonebrickblock
-  stonebb
-  sbrick
 98:1
   mossystonebrick
-  mossystonebricks
   mossystonebrickblock
-  mossystonebb
 98:2
   crackedstonebrick
-  crackedstonebricks
   crackedstonebrickblock
-  crackedstonebb
+  oldstonebrick
 98:3
   circlestonebrick
-  circlestonebb
-  circlesbb
+  chiseledstonebrick
+  roundbrick
+  roundstonebrick
 99:0
   hugeredmushroom
   bigredmushroom
-  redmushroomcap
-  brmushroom
   giantredmushroom
-  grmushroom
 100:0
   hugebrownmushroom
   bigbrownmushroom
-  brownmushroomcap
-  bbmushroom
   giantbrownmushroom
-  gbmushroom
 101:0
   ironbars
-  ironbarsb
-  ironbarsblock
-  metalbarsblock
-  jailbarsblock
-  mbarsblock
-  jbarsblock
-  jbarsb
-  ibarsblock
+  metalbars
 102:0
   glasspane
-  glassp
   paneglass
   flatglass
-  skinnyglass
-  sglass
-  glassflat
-  glassskinny
-  glasss
 103:0
   melon
   watermelon
-  greenmelon
-  melongreen
   melonblock
   watermelonblock
-  greenmelonblock
 104:0
   pumpkinstem
-  stempumpkin
-  pumpstem
-  stempump
 105:0
   melonstem
-  watermelonstem
-  greenmelonstem
-  stemmelon
-  stemwatermelon
-  stemgreenmelon
 106:0
   vines
-  vine
-  greenvines
-  vinesgreen
-  vinesg
+  climbplant
 107:0
-  wfencegate
   woodfencegate
-  woodgate
-  gate
-  gardengate
-  ggate
   fencegate
-  fencegatewooden
 108:0
   brickstairs
   redbrickstairs
-  redbstairs
-  rbrickstairs
-  bstairs
-  brickstair
-  redbstair
-  rbrickstair
-  bstair
+  claybrickstairs
 109:0
   stonebrickstairs
-  stonebstairs
-  sbstairs
-  cementbrickstairs
-  cementstairs
-  cbstairs
   greybrickstairs
-  greybstairs
 110:0
-  purplegrass
-  pinkgrass
   mycel
   mycelium
-  swampgrass
-  sgrass
   mushroomgrass
-  mushgrass
 111:0
   waterlily
   lilypad
   swamppad
-  lpad
-  wlily
 112:0
   netherbrick
-  nbrick
   hellbrick
-  deathbrick
-  dbrick
 113:0
   netherfence
-  nfence
+  netherbrickfence
   hellfence
-  deathfence
-  dfence
 114:0
   netherbrickstairs
   hellbrickstairs
-  hellstairs
-  nstairs
   netherstairs
-  hellbstairs
-  nbstairs
-  netherbrickstair
-  hellbrickstair
-  hellstair
-  nstair
-  netherstair
-  nbstair
-  netherbstair
+  hellstairs
 115:0
-  netherwarts
-  netherwart
-  nethercrop
-  hellwarts
-  hellplant
-  hellcrop
-  nwarts
-  ncrop
-  nplant
-  hwarts
-  hplant
-  hcrop
+  netherwartblock
+  nethercrops
 116:0
   enchantmenttable
   magictable
-  etable
-  booktable
   magicdesk
   enchantmentdesk
-  edesk
-  bookdesk
-  btable
-  bdesk
-  mtable
-  mdesk
 117:0
   brewingstandblock
-  brewerblock
   potionstandblock
-  potionbrewerblock
-  pstandblock
-  pbrewerblock
 118:0
-  cauldron
-  steelcauldron
-  ironcauldron
-  scauldron
-  potioncauldron
-  pcauldron
+  cauldronblock
 119:0
   enderportal
-  endergoo
   endportal
-  egoo
-  eportal
 120:0
   enderportalframe
-  endportalframe
-  endgooframe
-  eportalframe
+  portalframe
 121:0
-  enderstone
   endstone
-  endrock
-  estone
 122:0
   enderdragonegg
-  endegg
   dragonegg
-  degg
   bossegg
 123:0
   redstonelamp
   redstonelampoff
-  redlamp
-  rslampoff
 124:0
   redstonelampon
-  redlampon
 125:0
-  doublewoodenplankstep
-  doublewstep
-  dwstep
-  woodenplankdoubleslab
-  plankdoubleslab
-  woodendoubleslab
+  doublewoodplankstep
+  doublewoodplankslab
+  doublewoodstep
+  doublewoodslab
 125:1
-  darkwoodenplankdoublehalfblock
-  darkwdhalfblock
-  darkdoublewoodenplankhalfblock
-  darkdhalfblock
-  darkwoodenplankdoublestep
-  darkwdstep
-  darkdoublewoodenplankstep
-  darkdwoodenplankstep
-  darkwoodenplankdoubleslab
-  darkwoodendoubleslab
-  darkwooddoubleslab
-  darkdoublewoodslab
-  darkdoubleslab
-  darkdslab
+  doubledarkwoodplankstep
+  doubledarkwoodplankslab
+  doubledarkwoodstep
+  doubledarkwoodslab
 125:2
-  birchwoodenplankdoublehalfblock
-  birchwdhalfblock
-  birchdhalfblock
-  birchwoodenplankdoublestep
-  birchwdstep
-  birchdoublewoodenplankstep
-  birchdwoodenplankstep
-  birchplankdoubleslab
-  birchdoubleslab
-  birchdslab
-  lightwoodenplankdoublehalfblock
-  lightwdhalfblock
-  lightdhalfblock
-  lightwoodenplankdoublestep
-  lightwdstep
-  lightdoublewoodenplankstep
-  lightdwoodenplankstep
-  lightplankdoubleslab
-  lightdoubleslab
-  lightdslab
+  doublebirchwoodplankstep
+  doublebirchwoodplankslab
+  doublebirchwoodstep
+  doublebirchwoodslab
 125:3
-  junglewoodenplankdoublehalfblock
-  junglewdhalfblock
-  jungledhalfblock
-  junglewoodenplankdoublestep
-  junglewdstep
-  jungledoublewoodenplankstep
-  jungledwoodenplankstep
-  jungleplankdoubleslab
-  jungledoubleslab
-  jungledslab
-  forestwoodenplankdoublehalfblock
-  forestwdhalfblock
-  forestdhalfblock
-  forestwoodenplankdoublestep
-  forestwdstep
-  forestdoublewoodenplankstep
-  forestdwoodenplankstep
-  forestplankdoubleslab
-  forestdoubleslab
-  forestdslab
+  doublejunglewoodplankstep
+  doublejunglewoodplankslab
+  doublejunglewoodstep
+  doublejunglewoodslab 
 126:0
-  woodenplankstep
   woodplankstep
-  plankstep
-  woodenstep
-  wstep
-  woodenplankslab
-  wplankslab
-  woodenslab
-  wslab
-  woodenplankhalfblock
-  wplankhalfblock
-  woodenhalfblock
-  oakwplankstep
-  oakwoodenstep
-  oakwplankslab
-  oakwoodenslab
-  oakwslab
-  oakwoodenhalfblock
-  oakwhalfblock
+  woodplankslab
+  woodstep
+  woodslab
+  oakwoodstep
+  oakwoodslab
+  oakwoodplanksstep
+  oakwoodplanksslab
 126:1
-  spruceplankstep
-  sprucewoodenstep
-  sprucewplankslab
-  sprucewoodenslab
-  darkwstep
-  darkwslab
-  darkwhalfblock
+  darkwoodstep
+  darkwoodslab
+  darkwoodplanksstep
+  darkwoodplanksslab
 126:2
-  birchplankstep
-  birchwoodenstep
-  birchwstep
-  birchwhalfblock
-  lightwoodenstep
-  lightwstep
-  lightwoodenslab
-  lightwslab
-  lightwoodenhalfblock
-  lightwhalfblock
+  birchwoodstep
+  birchwoodslab
+  birchwoodplanksstep
+  birchwoodplanksslab
 126:3
-  jungleplankstep
-  junglewoodenstep
-  junglewstep
-  junglewoodenslab
-  junglewslab
-  junglewoodenhalfblock
-  junglewhalfblock
-  forestwoodenstep
-  forestwstep
-  forestwoodenslab
-  forestwslab
-  forestwoodenhalfblock
-  forestwhalfblock
+  junglewoodstep
+  junglewoodslab
+  junglewoodplanksstep
+  junglewoodplanksslab
 127:0
   cocoaplant
-  cocopant
   cocoafruit
 128:0
   sandstairs
   sandstonestairs
-  sandsstairs
-  sstonestairs
-  ssstairs
-  sandstair
-  sandstonestair
-  sandsstair
-  sstonestair
-  ssstair
 129:0
   emeraldore
-  eore
   oreemerald
-  oree
 130:0
   enderchest
   endchest
-  chestender
-  cheste
-  endercontainer
-  econtainer
 131:0
   tripwirehook
-  tripwire
-  trip
-  tripwirelever
   triphook
 132:0
   tripwireblock
-  tripblock
-  blocktrip
-  blocktripwire
+  tripwire
 133:0
   emeraldblock
   blockemerald
-  eblock
 134:0
-  sprucewoodenstairs
-  sprucewstairs
+  sprucewoodstairs
   darkwoodenstairs
-  darkwstairs
-  sprucewoodenstair
-  sprucewstair
-  darkwoodenstair
-  darkwstair
+  pinewoodstairs
 135:0
-  birchwoodenstairs
-  birchwstairs
-  lightwoodenstairs
-  lightwstairs
-  birchwoodenstair
-  birchwstair
-  lightwoodenstair
-  lightwstair
+  birchwoodstairs
 136:0
-  junglewoodenstairs
-  junglewstairs
-  forestwoodenstairs
-  forestwstairs
-  junglewoodenstair
-  junglewstair
-  forestwoodenstair
-  forestwstair
+  junglewoodstairs
 # 137:0
 #   commandblock
 #   cmdblock
@@ -1321,42 +697,28 @@
 #   flowerpotblock
 # 141:0
 #   carrotcrop
-#   carrotcrops
 # 142:0
-#   potatocrop
 #   potatocrops
-#   potatoescrop
 #   potatoescrops
 # 143:0
 #   buttonwood
-#   woodenbutton
 #   woodbutton
 256:0
   ironshovel
   ironspade
-  ishovel
-  ispade
   steelshovel
   steelspade
 257:0
   ironpickaxe
   ironpick
   steelpickaxe
-  ipickaxe
+  steelpick
 258:0
   ironaxe
-  iaxe
   steelaxe
 259:0
   flintandsteel
-  flintandiron
   flintandtinder
-  flintnsteel
-  flintniron
-  flintntinder
-  flintsteel
-  flintiron
-  flinttinder
   lighter
 260:0
   apple
@@ -1368,355 +730,178 @@
   coal
 263:1
   charcoal
-  ccoal
 264:0
   diamond
-  crystal
 265:0
   ironingot
   ironbar
   steelingot
   steelbar
-  iingot
-  ibar
-  ingotiron
-  bariron
-  ingotsteel
-  barsteel
-  ingoti
-  bari
 266:0
   goldingot
   goldbar
-  gingot
-  gbar
-  ingotgold
-  bargold
-  ingotg
-  barg
 267:0
   ironsword
   steelsword
-  isword
 268:0
-  woodensword
   woodsword
 269:0
-  woodenshovel
-  woodenspade
   woodshovel
   woodspade
-  wshovel
-  wspade
 270:0
-  woodenpickaxe
-  woodenpick
   woodpickaxe
-  wpick
+  woodpick
 271:0
-  woodenaxe
   woodaxe
 272:0
-  smoothstonesword
-  cobblestonesword
-  sstonesword
-  sssword
+  stonesword
 273:0
-  smoothstoneshovel
-  smoothstonespade
-  cobblestoneshovel
-  cobblestonespade
-  sstoneshovel
-  sstonespade
-  cstoneshovel
-  cstonespade
   stoneshovel
   stonespade
 274:0
-  smoothstonepickaxe
-  cobblestonepickaxe
-  smoothstonepick
-  cobblestonepick
-  sstonepickaxe
-  cstonepick
   stonepickaxe
-  sspickaxe
-  cspick
-  spickaxe
+  stonepick
 275:0
-  smoothstoneaxe
-  cobblestoneaxe
-  sstoneaxe
-  ssaxe
+  stoneaxe
 276:0
   diamondsword
-  crystalsword
-  dsword
 277:0
   diamondshovel
   diamondspade
-  crystalshovel
-  crystalspade
-  dshovel
-  dspade
 278:0
   diamondpickaxe
   diamondpick
-  crystalpickaxe
-  dpickaxe
 279:0
   diamondaxe
-  crystalaxe
-  daxe
 280:0
   stick
-  twig
-  branch
 281:0
   bowl
 282:0
   mushroomsoup
-  mrsoup
+  soup
 283:0
   goldsword
-  gsword
 284:0
   goldshovel
   goldspade
-  gshovel
-  gspade
 285:0
   goldpickaxe
   goldpick
-  gpickaxe
 286:0
   goldaxe
-  gaxe
 287:0
   string
-  rope
 288:0
   feather
 289:0
   gunpowder
   sulfur
 290:0
-  woodenhoe
   woodhoe
 291:0
-  smoothstonehoe
-  cobblestonehoe
-  sstonehoe
-  sshoe
+  stonehoe
 292:0
   ironhoe
   steelhoe
-  ihoe
 293:0
   diamondhoe
-  crystalhoe
-  dhoe
 295:0
   seeds
-  seed
 296:0
   wheat
 297:0
   bread
 298:0
   leatherhelmet
-  leatherhelm
-  lhelmet
-  lhat
+  leatherhat
+  leathercap
 299:0
   leatherchestplate
-  leatherplatebody
   leatherplate
   leathershirt
-  lchestplate
-  lplatebody
-  lplate
-  lshirt
 300:0
   leatherleggings
-  leatherlegs
   leatherpants
-  lleggings
-  llegs
-  lpants
 301:0
   leatherboots
   leathershoes
-  lboots
 302:0
   chainmailhelmet
-  chainmailhelm
-  chainmhelmet
-  chainmhat
-  cmailhelmet
-  cmailhat
+  chainmailhat
+  chainmailcap
   chainhelmet
   chainhat
-  cmhelmet
-  cmhat
+  chaincap
 303:0
   chainmailchestplate
-  chainmailplatebody
   chainmailplate
   chainmailshirt
-  chainmchestplate
-  chainmplatebody
-  chainmplate
-  chainmshirt
-  cmailchestplate
-  cmailplatebody
-  cmailplate
-  cmailshirt
   chainchestplate
-  chainplatebody
   chainplate
   chainshirt
-  cmchestplate
-  cmplatebody
-  cmplate
-  cmshirt
 304:0
   chainmailleggings
-  chainmaillegs
   chainmailpants
-  chainmleggings
-  chainmlegs
-  chainmpants
-  cmailleggings
-  cmaillegs
-  cmailpants
   chainleggings
-  chainlegs
   chainpants
-  cmleggings
-  cmlegs
-  cmpants
 305:0
   chainmailboots
   chainmailshoes
-  chainmboots
-  cmailshoes
   chainboots
-  cmboots
+  chainshoes
 306:0
   ironhelmet
-  ironhelm
-  ihelmet
-  ihat
+  ironhat
+  ironcap
   steelhelmet
   steelhat
-  shelmet
-  shat
+  steelcap
 307:0
   ironchestplate
-  ironplatebody
   ironplate
   ironshirt
-  ichestplate
-  iplatebody
-  iplate
-  ishirt
   steelchestplate
-  steelplatebody
   steelplate
   steelshirt
-  schestplate
-  splatebody
-  sshirt
 308:0
   ironleggings
-  ironlegs
   ironpants
-  ileggings
-  ilegs
-  ipants
   steelleggings
-  steellegs
   steelpants
-  sleggings
-  slegs
-  spants
 309:0
   ironboots
   ironshoes
-  iboots
   steelboots
-  sboots
+  steelshoes
 310:0
   diamondhelmet
-  diamondhelm
-  dhelmet
-  dhat
-  crystalhelmet
-  crystalhat
-  chelmet
-  chat
+  diamondhat
+  diamondcap
 311:0
   diamondchestplate
-  diamondplatebody
   diamondplate
   diamondshirt
-  dchestplate
-  dplatebody
-  dplate
-  dshirt
-  crystalchestplate
-  crystalplatebody
-  crystalplate
-  crystalshirt
-  cchestplate
-  cplatebody
-  cplate
-  cshirt
 312:0
   diamondleggings
-  diamondlegs
   diamondpants
-  dleggings
-  dlegs
-  dpants
-  crystalleggings
-  crystallegs
-  crystalpants
-  cleggings
-  clegs
-  cpants
 313:0
   diamondboots
   diamondshoes
-  dboots
-  crystalboots
-  cboots
 314:0
   goldhelmet
-  goldhelm
-  ghelmet
-  ghat
+  goldhat
+  goldcap
 315:0
   goldchestplate
-  goldplatebody
   goldplate
   goldshirt
-  gchestplate
-  gplatebody
-  gplateplate
-  gshirt
 316:0
   goldleggings
-  goldlegs
   goldpants
-  gleggings
-  glegs
-  gpants
 317:0
   goldboots
   goldshoes
-  gboots
 318:0
   flint
 319:0
@@ -1724,8 +909,6 @@
   rawpork
 320:0
   grilledpork
-  grillpork
-  gpork
   cookedpork
   bacon
 321:0
@@ -1734,44 +917,33 @@
 322:0
   goldenapple
   goldapple
+322:1
+  enchantedgoldenapple
+  enchantedgoldapple
+  magicapple
+  magicgoldapple
 323:0
   sign
 324:0
-  woodendoor
   wooddoor
 325:0
   bucket
-  bukkit
 326:0
   waterbucket
-  waterbukkit
-  wbucket
 327:0
   magmabucket
-  magmabukkit
   lavabucket
-  lbukkit
 328:0
   minecart
-  mcart
 329:0
   saddle
 330:0
   irondoor
-  idoor
   steeldoor
-  sdoor
-  dooriron
-  doorsteel
-  doors
 331:0
   redstonedust
   redstone
-  rstonedust
-  rstone
-  redsdust
 332:0
-  snow
   snowball
 333:0
   boat
@@ -1779,252 +951,139 @@
   leather
 335:0
   milkbucket
-  milkbukkit
-  mbucket
+  milk
 336:0
   claybrick
   brick
 337:0
   clayball
-  cball
 338:0
-  reeds
   reed
   sugarcane
-  scane
-  bamboo
 339:0
   paper
-  papyrus
 340:0
   book
 341:0
   slimeball
-  slball
 342:0
   storageminecart
   chestminecart
-  storagemcart
-  chestmcart
-  storagecart
-  chestcart
-  sminecart
-  cmcart
 343:0
-  engineminecart
   poweredminecart
   furnaceminecart
-  enginemcart
-  poweredmcart
-  furnacemcart
-  enginecart
-  poweredcart
-  furnacecart
-  eminecart
-  pmcart
 344:0
   egg
 345:0
   compass
 346:0
   fishingrod
-  fishrod
   rod
 347:0
   goldwatch
   goldclock
-  gwatch
-  gclock
   watch
   clock
 348:0
-  glowingstonebdust
-  lightstonebdust
-  glowstonebdust
-  glowingstonedust
-  lightstonedust
   glowstonedust
-  lbdust
 349:0
   rawfish
-  rafish
+  fish
 350:0
   cookedfish
-  cookfish
   grilledfish
-  gfish
-  roastedfish
-  rofish
 351:0
   dye
   inksack
-  sac
-  blackinksack
-  blacksac
-  inksackblack
-  isacclack
-  blacksaccolour
-  isacclackcolour
-  blacksaccolor
-  blackinksackdye
-  blacksacdye
   blackcolor
   blackdye
 351:1
   rosered
-  roseredcolor
-  rosereddye
-  redrosecolor
-  redrosedye
-  redr
-  redrcolor
-  redrdye
   redcolor
   reddye
 351:2
   cactusgreen
-  greencactus
-  greencactuscolor
-  cactusgreendye
-  greencactusdye
-  greencolour
+  greencolor
   greendye
 351:3
   cocoabeans
-  cocoabean
-  cbeans
-  cocoabeanscolour
-  cbeanscolour
-  cocoabeanscolor
-  browncbeanscolor
-  brownbcolor
-  cocoabeansdye
-  cbeansdye
-  browncocoabeansdye
-  browncbeansdye
-  brownbdye
-  browncolour
+  browncolor
   browndye
 351:4
-  bluelapislzuli
-  bluelapisl
   lapislazuliblue
-  lapislazuli
-  bluelapislcolor
-  lapislazulicolor
-  bluelapisldye
-  lapisldye
-  bluecolour
+  lapisdye
+  bluecolor
   bluedye
 351:5
-  purplecolour
   purplecolor
   purpledye
 351:6
-  cyancolour
   cyancolor
   cyandye
 351:7
-  lightgraycolour
   lightgraycolor
   lightgraydye
-  lgraycolour
-  lgraydye
 351:8
-  graycolour
   graycolor
   graydye
 351:9
-  pinkcolour
   pinkcolor
   pinkdye
 351:10
-  limecolour
   limecolor
   limedye
 351:11
   dandelionyellow
-  dandelionyellowdye
-  yellowdandelion
-  yellowdandeliondye
-  yellowd
-  yellowdcolour
-  yellowddye
-  dyellow
-  dyellowdye
-  yellowcolour
   yellowdye
+  yellowcolor
 351:12
-  lightbluecolour
   lightbluecolor
   lightbluedye
-  lbluecolour
-  lbluedye
 351:13
-  magentacolour
   magentacolor
   magentadye
 351:14
-  orangecolour
   orangecolor
   orangedye
 351:15
   bonemeal
   bonemealdye
-  whitecolour
+  whitecolor
   whitedye
 352:0
   bone
 353:0
   sugar
-  whitedust
 354:0
   cake
 355:0
   bed
 356:0
   repeater
-  repeat
   delayer
-  dioder
+  diode
 357:0
   cookie
 358:0
   map
-  chart
 359:0
   sheers
-  sheer
-  woolcutters
-  cutterswool
+  woolcutter
 360:0
   melonslice
-  mslice
   slicemelon
   watermelonslice
-  greenmelonslice
-  melongreenslice
 361:0
   pumpkinseeds
-  pseeds
   seedspumpkin
-  pumpseeds
-  seedspump
 362:0
   melonseeds
-  mseeds
   watermelonseeds
-  greenmelonseeds
-  gmelonseeds
   seedsmelon
-  seedswatermelon
 363:0
   rawbeef
   rawsteak
-  uncookedbeef
-  uncookedsteak
   cowmeat
-  plainbeef
 364:0
   beef
   steak
@@ -2032,786 +1091,222 @@
   grilledbeef
   cookedsteak
   grilledsteak
-  cookedcowmeat
 365:0
   rawchicken
-  uncookedchicken
-  plainchicken
-  chickenplain
-  chickenuncooked
   chickenraw
 366:0
   cookedchicken
   grilledchicken
-  toastedchicken
-  gchicken
   friedchicken
-  cchicken
 367:0
   rottenflesh
   zombieflesh
   rottenmeat
   zombiemeat
-  badflesh
-  poisonflesh
-  zombieremains
 368:0
   enderpearl
-  pearl
-  bluepearl
-  endergem
 369:0
   blazerod
-  goldenrod
   blazestick
-  goldstick
-  brod
-  bstick
 370:0
   ghasttear
-  ghastdrop
-  ghosttear
-  ghostdrop
-  gtear
-  gdrop
-  tear
 371:0
   goldnugget
-  gnugget
 372:0
+  nethwart
   netherstalk
-  deathstalk
-  hellstalk
-  nstalk
 373:0
   potion
-  mixture
-  potions
   waterbottle
-  fullbottle
-  watervase
-  fullvase
 373:16
   awkwardpotion
-  awkwardpot
 373:32
   thickpotion
-  thickpot
 373:64
-  mundaneexpotion
-  mundaneextendedpotion
-  mundaneexpot
-  mundaneextendedpot
-373:8192
   mundanepotion
-  mundanepot
 373:8193
   regenerationpotion
-  regeneratepotion
   regenpotion
-  regenerationpot
-  regenpot
-  rpot
 373:8194
   swiftnesspotion
   swiftpotion
-  swiftnesspot
-  swiftpot
 373:8195
   fireresistancepotion
   fireresistpotion
-  fireresistancepot
-  fireresistpot
-  fpot
 373:8196
   posionpotion
-  acidpotion
-  posionpot
-  acidpot
-  ppot
 373:8197
   healingpotion
   healpotion
   lifepotion
-  healingpot
-  lifepot
-  hpot
 373:8200
   weaknesspotion
   weakpotion
-  weaknesspot
-  weakpot
 373:8201
   strengthpotion
   strongpotion
-  strengthpot
-  strpot
 373:8202
   slownesspotion
   slowpotion
-  slownesspot
-  slowpot
 373:8204
   harmingpotion
   damagepotion
-  harmingpot
-  damagepot
-  dpot
 373:8225
-  regenerationleveliipotion
-  regenerateleveliipotion
-  regenleveliipotion
-  regenerationlevel2potion
-  regenlevel2potion
-  regenerationiipotion
-  regeniipotion
-  regenerationleveliipot
-  regenleveliipot
-  regenerationlevel2pot
-  regenlevel2pot
-  regenerationiipot
-  regeniipot
-  r2pot
+  regeneration2potion
+  regen2potion
 373:8226
-  swiftnessleveliipotion
-  swiftleveliipotion
-  swiftnesslevel2potion
-  swiftlevel2potion
-  swiftnessiipotion
-  swiftiipotion
-  swiftnessleveliipot
-  swiftleveliipot
-  swiftnesslevel2pot
-  swiftlevel2pot
-  swiftnessiipot
-  swiftiipot
-  sw2pot
+  swiftness2potion
+  swift2potion
 373:8228
-  posionleveliipotion
-  acidleveliipotion
-  posionlevel2potion
-  acidlevel2potion
-  posioniipotion
-  acidiipotion
-  posionleveliipot
-  acidleveliipot
-  posionlevel2pot
-  acidlevel2pot
-  posioniipot
-  acidiipot
-  p2pot
+  posion2potion
 373:8229
-  healingleveliipotion
-  healleveliipotion
-  healinglevel2potion
-  healingiipotion
-  healingleveliipot
-  heallevel2pot
-  healingiipot
-  h2potpot
+  healing2potion
+  heal2potion
+  life2potion
 373:8233
-  strengthleveliipotion
-  strongleveliipotion
-  strengthlevel2potion
-  strlevel2potion
-  strengthiipotion
-  striipotion
-  strengthleveliipot
-  strleveliipot
-  strengthlevel2pot
-  strlevel2pot
-  strengthiipot
-  striipot
-  s2pot
+  strength2potion
+  strong2potion
 373:8236
-  harmingleveliipotion
-  damageleveliipotion
-  harminglevel2potion
-  damagelevel2potion
-  harmingiipotion
-  damageiipotion
-  harmingleveliipot
-  damageleveliipot
-  harminglevel2pot
-  damagelevel2pot
-  harmingiipot
-  damageiipot
-  d2pot
+  harming2potion
+  damage2potion
 373:8257
-  regenerationextendedpotion
-  regenerateextendedpotion
-  regenextendepotion
-  regenerationexpotion
-  regenexpotion
-  regenerationextendedpot
-  regenextendepot
-  regenerationexpot
-  regenexpot
-  repot
+  longregenerationpotion
+  longregenpotion
 373:8258
-  swiftnessextendedpotion
-  swiftextendedpotion
-  swiftnessexpotion
-  swiftexpotion
-  swiftnessextendedpot
-  swiftextendedpot
-  swiftnessexpot
-  swiftexpot
-  swepot
+  longswiftnesspotion
+  longswiftpotion
 373:8259
-  fireresistanceextendedpotion
-  fireresistextendedpotion
-  fireresistanceexpotion
-  fireresistexpotion
-  fireresistanceextendedpot
-  fireresistextendedpot
-  fireresistanceexpot
-  fireresistexpot
-  fepot
+  longfireresistancepotion
+  longfireresistpotion
 373:8260
-  posionextendedpotion
-  acidextendedpotion
-  posionexpotion
-  acidexpotion
-  posionextendedpot
-  acidextendedpot
-  posionexpot
-  acidexpot
-  pepot
+  longposionpotion
 373:8264
-  weaknessextendedpotion
-  weakextendedpotion
-  weaknessexpotion
-  weakexpotion
-  weaknessextendedpot
-  weakextendedpot
-  weaknessexpot
-  weakexpot
-  wepot
+  longweaknesspotion
+  longweakpotion
 373:8265
-  strengthextendedpotion
-  strongextendedpotion
-  strengthexpotion
-  strexpotion
-  strengthextendedpot
-  strextendedpot
-  strengthexpot
-  strexpot
+  longstrengthpotion
+  longstrongpotion
 373:8266
-  slownessextendedpotion
-  slowextenedpotion
-  slownessexpotion
-  slowexpotion
-  slownessextendedpot
-  slowextenedpot
-  slownessexpot
-  slowexpot
+  longslownesspotion
+  longslowpotion
 373:8289
-  regenerationdualbitpotion
-  regeneratedualbitpotion
-  regendualbitpotion
-  regenerationdualbitpot
-  regendualbitpot
-  rdbpot
+  dualregenerationpotion
+  dualregenpotion
 373:8290
-  swiftnessdualbitpotion
-  swiftdualbitpotion
-  swiftnessdualbitpot
-  swiftdualbitpot
-  swdbpot
+  dualswiftnesspotion
+  dualswiftpotion
 373:8292
-  poisondualbitpotion
-  aciddualbitpotion
-  poisondualbitpot
-  aciddualbitpot
-  pdbpot
+  dualpoisonpotion
 373:8297
-  strengthdualbitpotion
-  strongdualbitpotion
-  strengthdualbitpot
-  strdualbitpot
-  sdbpot
-373:16384
-  splashmundanepotion
-  splmundanepotion
+  dualstrengthpotion
+  dualstrongpotion
 373:16385
   splashregenerationpotion
-  splashregeneratepotion
   splashregenpotion
-  splashregenerationpot
-  splashregenpot
-  regenerationsplashpotion
-  regensplashpotion
-  splregenerationpotion
-  splregenpotion
-  splregenerationpot
-  splregenpot
-  sprpot
 373:16386
   splashswiftnesspotion
   splashswiftpotion
-  splashswiftnesspot
-  splashswiftpot
-  splswiftnesspotion
-  splswiftpotion
-  splswiftnesspot
-  splswiftpot
-  spswpot
 373:16387
   splashfireresistancepotion
   splashfireresistpotion
-  splashfireresistancepot
-  splashfireresistpot
-  splfireresistancepotion
-  splfireresistpotion
-  splfireresistancepot
-  splfireresistpot
-  spfpot
 373:16388
   splashposionpotion
-  splashacidpotion
-  splashposionpot
-  splashacidpot
-  splposionpotion
-  splacidpotion
-  splposionpot
-  splacidpot
-  spppot
 373:16389
   splashhealingpotion
   splashhealpotion
   splashlifepotion
-  splashhealingpot
-  splashlifepot
-  splhealingpotion
-  spllifepotion
-  splhealingpot
-  spllifepot
-  sphpot
 373:16392
   splashweaknesspotion
   splashweakpotion
-  splashweaknesspot
-  splashweakpot
-  splweaknesspotion
-  splweakpotion
-  splweaknesspot
-  splweakpot
-  spwpot
 373:16393
   splashstrengthpotion
   splashstrongpotion
-  splashstrengthpot
-  splashstrpot
-  splstrengthpotion
-  splstrpotion
-  splstrengthpot
-  splstrpot
 373:16394
   splashslownesspotion
   splashslowpotion
-  splashslownesspot
-  splashslowpot
-  splslownesspotion
-  splslowpotion
-  splslownesspot
-  splslowpot
 373:16396
   splashharmingpotion
   splashdamagepotion
-  splashharmingpot
-  splashdamagepot
-  dmgsplashpot
-  splharmingpotion
-  spldamagepotion
-  splharmingpot
-  spldamagepot
-  sdpot
 373:16417
-  splashregenerationleveliipotion
-  splashregenerateleveliipotion
-  splashregenleveliipotion
-  splashregenerationlevel2potion
-  splashregenlevel2potion
-  splashregenerationiipotion
-  splashregeniipotion
-  splashregenerationleveliipot
-  splashregenleveliipot
-  splashregenerationlevel2pot
-  splashregenlevel2pot
-  splashregenerationiipot
-  splashregeniipot
-  splregenerationleveliipotion
-  splregenleveliipotion
-  splregenerationlevel2potion
-  splregenlevel2potion
-  splregenerationiipotion
-  splregeniipotion
-  splregenerationleveliipot
-  splregenleveliipot
-  splregenerationlevel2pot
-  splregenlevel2pot
-  splregenerationiipot
-  splregeniipot
-  spr2pot
+  splashregeneration2potion
+  splashregen2potion
 373:16418
-  splashswiftnessleveliipotion
-  splashswiftleveliipotion
-  splashswiftnesslevel2potion
-  splashswiftlevel2potion
-  splashswiftnessiipotion
-  splashswiftiipotion
-  splashswiftnessleveliipot
-  splashswiftleveliipot
-  splashswiftnesslevel2pot
-  splashswiftlevel2pot
-  splashswiftnessiipot
-  splashswiftiipot
-  splswiftnessleveliipotion
-  splswiftleveliipotion
-  splswiftnesslevel2potion
-  splswiftlevel2potion
-  splswiftnessiipotion
-  splswiftiipotion
-  splswiftnessleveliipot
-  splswiftleveliipot
-  splswiftnesslevel2pot
-  splswiftlevel2pot
-  splswiftnessiipot
-  splswiftiipot
-  spsw2pot
+  splashswiftness2potion
+  splashswift2potion
 373:16420
-  splashposionleveliipotion
-  splashacidleveliipotion
-  splashposionlevel2potion
-  splashacidlevel2potion
-  splashposioniipotion
-  splashacidiipotion
-  splashposionleveliipot
-  splashacidleveliipot
-  splashposionlevel2pot
-  splashacidlevel2pot
-  splashposioniipot
-  splashacidiipot
-  splposionleveliipotion
-  splacidleveliipotion
-  splposionlevel2potion
-  splcidlevel2potion
-  splposioniipotion
-  splacidiipotion
-  splposionleveliipot
-  splacidleveliipot
-  splposionlevel2pot
-  splacidlevel2pot
-  splposioniipot
-  splacidiipot
-  spp2pot
+  splashposion2potion
 373:16421
-  splashhealingleveliipotion
-  splashhealleveliipotion
-  splashhealinglevel2potion
-  splashhealingiipotion
-  splashhealingleveliipot
-  splashheallevel2pot
-  splashhealingiipot
-  splhealingleveliipotion
-  splheallevel2potion
-  splhealingiipotion
-  splhealingleveliipot
-  splheallevel2pot
-  splhealingiipot
-  sph2pot
+  splashhealing2potion
+  splashheal2potion
+  splashlife2potion
 373:16425
-  splashstrengthleveliipotion
-  splashstrongleveliipotion
-  splashstrengthlevel2potion
-  splashstrlevel2potion
-  splashstrengthiipotion
-  splashstriipotion
-  splashstrengthleveliipot
-  splashstrleveliipot
-  splashstrengthlevel2pot
-  splashstrlevel2pot
-  splashstrengthiipot
-  splashstriipot
-  splstrengthleveliipotion
-  splstrleveliipotion
-  splstrengthlevel2potion
-  splstrlevel2potion
-  splstrengthiipotion
-  splstriipotion
-  splstrengthleveliipot
-  splstrleveliipot
-  splstrengthlevel2pot
-  splstrlevel2pot
-  splstrengthiipot
-  splstriipot
-  sps2pot
+  splashstrength2potion
+  splashstrong2potion
 373:16428
-  splashharmingleveliipotion
-  splashdamageleveliipotion
-  splashharminglevel2potion
-  splashdamagelevel2potion
-  splashharmingiipotion
-  splashdamageiipotion
-  splashharmingleveliipot
-  splashdamageleveliipot
-  splashharminglevel2pot
-  splashdamagelevel2pot
-  splashharmingiipot
-  splashdamageiipot
-  splharmingleveliipotion
-  spldamageleveliipotion
-  splharminglevel2potion
-  spldamagelevel2potion
-  splharmingiipotion
-  spldamageiipotion
-  splharmingleveliipot
-  spldamageleveliipot
-  splharminglevel2pot
-  spldamagelevel2pot
-  splharmingiipot
-  spldamageiipot
-  spd2pot
+  splashharming2potion
+  splashdamage2potion
 373:16449
-  splashregenerationextendedpotion
-  splashregenerateextendedpotion
-  splashregenextendepotion
-  splashregenerationexpotion
-  splashregenexpotion
-  splashregenerationextendedpot
-  splashregenextendepot
-  splashregenerationexpot
-  splashregenexpot
-  splregenerationextendedpotion
-  splregenextendepotion
-  splregenerationexpotion
-  splregenexpotion
-  splregenerationextendedpot
-  splregenextendepot
-  splregenerationexpot
-  splregenexpot
-  sprepot
+  longsplashregenerationpotion
+  longsplashregenpotion
 373:16450
-  splashswiftnessextendedpotion
-  splashswiftextendedpotion
-  splashswiftnessexpotion
-  splashswiftexpotion
-  splashswiftnessextendedpot
-  splashswiftextendedpot
-  splashswiftnessexpot
-  splashswiftexpot
-  splswiftnessextendedpotion
-  splswiftextendedpotion
-  splswiftnessexpotion
-  splswiftexpotion
-  splswiftnessextendedpot
-  splswiftextendedpot
-  splswiftnessexpot
-  splswiftexpot
-  spswepot
+  longsplashswiftnesspotion
+  longsplashswiftpotion
 373:16451
-  splashfireresistanceextendedpotion
-  splashfireresistextendedpotion
-  splashfireresistanceexpotion
-  splashfireresistexpotion
-  splashfireresistanceextendedpot
-  splashfireresistextendedpot
-  splashfireresistanceexpot
-  splashfireresistexpot
-  splfireresistanceextendedpotion
-  splfireresistextendedpotion
-  splfireresistanceexpotion
-  splfireresistexpotion
-  splfireresistanceextendedpot
-  splfireresistextendedpot
-  splfireresistanceexpot
-  splfireresistexpot
-  spfepot
+  longsplashfireresistancepotion
+  longsplashfireresistpotion
 373:16452
-  splashposionextendedpotion
-  splashacidextendedpotion
-  splashposionexpotion
-  splashacidexpotion
-  splashposionextendedpot
-  splashacidextendedpot
-  splashposionexpot
-  splashacidexpot
-  splposionextendedpotion
-  splacidextendedpotion
-  splposionexpotion
-  splacidexpotion
-  splposionextendedpot
-  splacidextendedpot
-  splposionexpot
-  splacidexpot
-  sppepot
+  longsplashposionpotion
 373:16456
-  splashweaknessextendedpotion
-  splashweakextendedpotion
-  splashweaknessexpotion
-  splashweakexpotion
-  splashweaknessextendedpot
-  splashweakextendedpot
-  splashweaknessexpot
-  splashweakexpot
-  splweaknessextendedpotion
-  sphweakextendedpotion
-  splweaknessexpotion
-  splweakexpotion
-  splweaknessextendedpot
-  splweakextendedpot
-  splweaknessexpot
-  splweakexpot
-  spwepot
+  longsplashweaknesspotion
+  longsplashweakpotion
 373:16457
-  splashstrengthextendedpotion
-  splashstrongextendedpotion
-  splashstrengthexpotion
-  splashstrexpotion
-  splashstrengthextendedpot
-  splashstrextendedpot
-  splashstrengthexpot
-  splashstrexpot
-  splstrengthextendedpotion
-  splstrextendedpotion
-  splstrengthexpotion
-  splstrexpotion
-  splstrengthextendedpot
-  splstrextendedpot
-  splstrengthexpot
-  splstrexpot
-  spsepot
+  longsplashstrengthpotion
+  longsplashstrongpotion
 373:16458
-  splashslownessextendedpotion
-  splashslowextenedpotion
-  splashslownessexpotion
-  splashslowexpotion
-  splashslownessextendedpot
-  splashslowextenedpot
-  splashslownessexpot
-  splashslowexpot
-  splslownessextendedpotion
-  splslowextenedpotion
-  splslownessexpotion
-  splslowexpotion
-  splslownessextendedpot
-  splslowextenedpot
-  splslownessexpot
-  splslowexpot
-  spslepot
+  longsplashslownesspotion
+  longsplashslowpotion
 373:16481
-  splashregenerationdualbitpotion
-  splashregeneratedualbitpotion
-  splashregendualbitpotion
-  splashregenerationdualbitpot
-  splashregendualbitpot
-  splregenerationdualbitpotion
-  splregendualbitpotion
-  splregenerationdualbitpot
-  splregendualbitpot
-  sprdbpot
+  dualsplashregenerationpotion
+  dualsplashregenpotion
 373:16482
-  splashswiftnessdualbitpotion
-  splashswiftdualbitpotion
-  splashswiftnessdualbitpot
-  splashswiftdualbitpot
-  splswiftnessdualbitpotion
-  splswiftdualbitpotion
-  splswiftnessdualbitpot
-  splswiftdualbitpot
-  spswdbpot
+  dualsplashswiftnesspotion
+  dualsplashswiftpotion
 373:16484
-  splashpoisondualbitpotion
-  splashaciddualbitpotion
-  splashpoisondualbitpot
-  splashaciddualbitpot
-  splpoisondualbitpotion
-  splaciddualbitpotion
-  splpoisondualbitpot
-  splaciddualbitpot
-  sppdbpot
+  dualsplashposionpotion
 373:16489
-  splashstrengthdualbitpotion
-  splashstrongdualbitpotion
-  splashstrengthdualbitpot
-  splashstrdualbitpot
-  splstrengthdualbitpotion
-  splstrdualbitpotion
-  splstrengthdualbitpot
-  splstrdualbitpot
-  spsdbpot
+  dualsplashstrengthpotion
+  dualsplashstrongpotion
 374:0
   glassbottle
   bottle
-  gvase
-  glassvase
   emptyglassbottle
   emptybottle
-  emptygvase
-  emptyglassvase
-  eglassbottle
-  ebottle
-  egvase
-  eglassvase
 375:0
   spidereye
   eyeofspider
-  spiderseye
-  spiderball
-  spidernugget
-  spidersball
-  spidersnugget
-  seye
-  sball
-  snugget
 376:0
   fermentedspidereye
-  craftedspidereye
-  fermentedeyeofspider
-  craftedeyeofspider
   fspidereye
-  feyeofspider
-  cspidereye
 377:0
   blazepowder
   blazedust
-  goldpowder
-  golddust
-  gpowder
-  bdust
 378:0
   magmacream
-  goldcream
-  blazecream
-  mcream
-  combinedcream
-  ccream
 379:0
-  bstand
-  pstand
   brewingstand
   potionstand
 380:0
-  cauldronitem
-  ironcauldronitem
-  steelcauldronitem
-  icauldronitem
+  cauldron
+  ironcauldron
+  steelcauldron
 381:0
   eyeofender
   endereye
-  evilendereye
-  evileyeofender
-  evilenderpearl
-  eeye
-  eofender
 382:0
-  speckledmelon
+  glisteringmelon
   goldmelon
   sparklymelon
-  glisteningmelon
   shiningmelon
-  gmelon
 383:50
   creeperegg
   eggcreeper
@@ -2835,23 +1330,7 @@
   eggghast
 383:57
   zombiepigmanegg
-  zpigmanegg
-  zombiepmanegg
-  zpmanegg
-  zombiepigmegg
-  zpigmegg
-  zombiepigegg
-  zpigegg
-  zombiepmegg
   eggzombiepigman
-  eggzpigman
-  eggzombiepman
-  eggzpman
-  eggzombiepigm
-  eggzpigm
-  eggzombiepig
-  eggzpig
-  eggzombiepm
 383:58
   endermanegg
   eggenderman
@@ -2896,14 +1375,12 @@
   eggmushroomcow
 383:97
   snowgolemegg
-  sgolemegg
   eggsnowgolem
 383:98
   ocelotegg
   eggocelot
 383:99
   irongolemegg
-  igolemegg
   eggirongolem
 383:120
   villageregg
@@ -2914,14 +1391,11 @@
   expbottle
   bottleexp
   enchantbottle
-  bottleenchanting
 385:0
   firecharge
   fireball
-  grenade
 386:0
   bookandquill
-  booknquill
   bookandfeather
   writeablebook
 387:0
@@ -2937,17 +1411,13 @@
 # 390:0
 #   flowerpot
 # 391:0
-#   carrots
 #   carrot
 # 392:0
 #   potato
-#   potatoes
 # 393:0
 #   bakedpotato
-#   bakedpotatoes
 # 394:0
 #   poisonouspotato
-#   poisonouspotatoes
 # 395:0
 #   emptymap
 #   mapempty
@@ -2957,414 +1427,57 @@
 #   goldencarrot
 #   goldencarrots
 2256:0
-  goldmusicrecord
-  goldmusicdisk
-  goldmusiccd
-  13musicrecord
-  13musicdisk
-  13musiccd
-  gomusicrecord
-  gomusicdisk
-  gomusiccd
-  goldmrecord
-  goldmdisk
-  goldmcd
-  13mrecord
-  13mdisk
-  13mcd
-  gomrecord
-  gomdisk
-  gomcd
   goldrecord
   golddisk
-  goldcd
-  13record
-  13disk
-  13cd
-  gorecord
-  godisk
-  gocd
-  record1
-  disk1
-  cd1
-  1record
-  1disk
-  1cd
+  record13
+  disk13
 2257:0
-  greenmusicrecord
-  greenmusicdisk
-  greenmusiccd
-  catmusicrecord
-  catmusicdisk
-  catmusiccd
-  grmusicrecord
-  grmusicdisk
-  grmusiccd
-  greenmrecord
-  greenmdisk
-  greenmcd
-  catmrecord
-  catmdisk
-  catmcd
-  grmrecord
-  grmdisk
-  grmcd
   greenrecord
   greendisk
-  greencd
-  catrecord
-  catdisk
-  catcd
-  grrecord
-  grdisk
-  grcd
-  record2
-  disk2
-  cd2
-  2record
-  2disk
-  2cd
+  recordcat
+  diskcat
 2258:0
-  orangemusicrecord
-  orangemusicdisk
-  orangemusiccd
-  blocksmusicrecord
-  blocksmusicdisk
-  blocksmusiccd
-  ormusicrecord
-  ormusicdisk
-  ormusiccd
-  orangemrecord
-  orangemdisk
-  orangemcd
-  blocksmrecord
-  blocksmdisk
-  blocksmcd
-  ormrecord
-  ormdisk
-  ormcd
   orangerecord
   orangedisk
-  orangecd
-  blocksrecord
-  blocksdisk
-  blockscd
-  orrecord
-  ordisk
-  orcd
-  record3
-  disk3
-  cd3
-  3record
-  3disk
-  3cd
+  recordblocks
+  diskblocks
 2259:0
-  redmusicrecord
-  redmusicdisk
-  redmusiccd
-  chripmusicrecord
-  chripmusicdisk
-  chripmusiccd
-  remusicrecord
-  remusicdisk
-  remusiccd
-  redmrecord
-  redmdisk
-  redmcd
-  chripmrecord
-  chripmdisk
-  chripmcd
-  remrecord
-  remdisk
-  remcd
   redrecord
   reddisk
-  redcd
-  chriprecord
-  chripdisk
-  chripcd
-  rerecord
-  redisk
-  recd
-  disk4
-  cd4
-  4record
-  4disk
-  4cd
+  recordchirp
+  diskchirp
 2260:0
-  lightgreenmusicrecord
-  lightgreenmusicdisk
-  lightgreenmusiccd
-  lgreenmusicrecord
-  lgreenmusicdisk
-  lgreenmusiccd
-  lightgrmusicrecord
-  lightgrmusicdisk
-  lightgrmusiccd
-  farmusicrecord
-  farmusicdisk
-  farmusiccd
-  lgrmusicrecord
-  lgrmusicdisk
-  lgrmusiccd
-  lightgreenmrecord
-  lightgreenmdisk
-  lightgreenmcd
-  lgreenmrecord
-  lgreenmdisk
-  lgreenmcd
-  lightgrmrecord
-  lightgrmdisk
-  lightgrmcd
-  farmrecord
-  farmdisk
-  farmcd
-  lgrmrecord
-  lgrmdisk
-  lgrmcd
   lightgreenrecord
   lightgreendisk
-  lightgreencd
-  lgreenrecord
-  lgreendisk
-  lgreencd
-  lightgrrecord
-  lightgrdisk
-  lightgrcd
-  farrecord
-  fardisk
-  farcd
-  lgrrecord
-  lgrdisk
-  lgrcd
-  record5
-  disk5
-  cd5
-  5record
-  5disk
+  recordfar
+  diskfar
 2261:0
-  purplemusicrecord
-  purplemusicdisk
-  purplemusiccd
-  mallmusicrecord
-  mallmusicdisk
-  mallmusiccd
-  pumusicrecord
-  pumusicdisk
-  pumusiccd
-  purplemrecord
-  purplemdisk
-  purplemcd
-  mallmrecord
-  mallmdisk
-  mallmcd
-  pumrecord
-  pumdisk
-  pumcd
   purplerecord
   purpledisk
-  purplecd
-  mallrecord
-  malldisk
-  mallcd
-  purecord
-  pudisk
-  pucd
-  record6
-  disk6
-  cd6
-  6record
-  6disk
-  6cd
+  recordmall
+  diskmall
 2262:0
-  pinkmusicrecord
-  pinkmusicdisk
-  pinkmusiccd
-  mellohimusicrecord
-  mellohimusicdisk
-  mellohimusiccd
-  pimusicrecord
-  pimusicdisk
-  pimusiccd
-  pinkmrecord
-  pinkmdisk
-  pinkmcd
-  mellohimrecord
-  mellohimdisk
-  mellohimcd
-  pimrecord
-  pimdisk
-  pimcd
   pinkrecord
   pinkdisk
-  pinkcd
-  mellohirecord
-  mellohidisk
-  mellohicd
-  pirecord
-  pidisk
-  picd
-  record7
-  disk7
-  cd7
-  7record
-  7disk
-  7cd
+  recordmellohi
+  diskmellohi
 2263:0
-  blackmusicrecord
-  blackmusicdisk
-  blackmusiccd
-  stalmusicrecord
-  stalmusicdisk
-  stalmusiccd
-  blmusicrecord
-  blmusicdisk
-  blmusiccd
-  blackmrecord
-  blackmdisk
-  blackmcd
-  stalmrecord
-  stalmdisk
-  stalmcd
-  blmrecord
-  blmdisk
-  blmcd
   blackrecord
   blackdisk
-  blackcd
-  stalrecord
-  staldisk
-  stalcd
-  blrecord
-  bldisk
-  blcd
-  record8
-  disk8
-  cd8
-  8record
-  8disk
-  8cd
+  recordstal
+  diskstal
 2264:0
-  whitemusicrecord
-  whitemusicdisk
-  whitemusiccd
-  stradmusicrecord
-  stradmusicdisk
-  stradmusiccd
-  whmusicrecord
-  whmusicdisk
-  whmusiccd
-  whitemrecord
-  whitemdisk
-  whitemcd
-  stradmrecord
-  stradmdisk
-  stradmcd
-  whmrecord
-  whmdisk
-  whmcd
   whiterecord
   whitedisk
-  whitecd
-  stradrecord
-  straddisk
-  stradcd
-  whrecord
-  whdisk
-  whcd
-  record9
-  disk9
-  cd9
-  9record
-  9disk
-  9cd
+  recordstrad
+  diskstrad
 2265:0
-  darkgreenmusicrecord
-  darkgreenmusicdisk
-  darkgreenmusiccd
-  dgreenmusicrecord
-  dgreenmusicdisk
-  dgreenmusiccd
-  darkgrmusicrecord
-  darkgrmusicdisk
-  darkgrmusiccd
-  wardmusicrecord
-  wardmusicdisk
-  wardmusiccd
-  dgrmusicrecord
-  dgrmusicdisk
-  dgrmusiccd
-  darkgreenmrecord
-  darkgreenmdisk
-  darkgreenmcd
-  dgreenmrecord
-  dgreenmdisk
-  dgreenmcd
-  darkgrmrecord
-  darkgrmdisk
-  darkgrmcd
-  wardmrecord
-  wardmdisk
-  wardmcd
-  dgrmrecord
-  dgrmdisk
-  dgrmcd
-  darkgreenrecord
-  darkgreendisk
-  darkgreencd
-  dgreenrecord
-  dgreendisk
-  dgreencd
-  darkgrrecord
-  darkgrdisk
-  darkgrcd
-  wardrecord
-  warddisk
-  wardcd
-  dgrrecord
-  dgrdisk
-  dgrcd
-  record10
-  disk10
-  cd10
-  10record
-  10disk
+  greenrecord
+  greendisk
+  recordward
+  diskward
 2266:0
-  crackedmusicrecord
-  crackedmusicdisk
-  crackedmusiccd
-  crackmusicrecord
-  crackmusicdisk
-  crackmusiccd
-  11musicrecord
-  11musicdisk
-  11musiccd
-  cmusicrecord
-  cmusicdisk
-  cmusiccd
-  crackedmrecord
-  crackedmdisk
-  crackedmcd
-  crackmrecord
-  crackmdisk
-  crackmcd
-  11mrecord
-  11mdisk
-  11mcd
-  cmrecord
-  cmdisk
-  cmcd
   crackedrecord
   crackeddisk
-  crackedcd
-  crackrecord
-  crackdisk
-  crackcd
-  cdisk
-  ccd
   record11
   disk11
-  cd11
-  11record
-  11disk
-  11cd
