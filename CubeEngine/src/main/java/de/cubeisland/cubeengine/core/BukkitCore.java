@@ -249,6 +249,10 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public boolean isDebug()
     {
+        if (this.config == null)
+        {
+            return true;
+        }
         return this.config.debugMode;
     }
 }
