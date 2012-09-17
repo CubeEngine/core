@@ -22,121 +22,34 @@
   plankwooden
   plankw
 5:1
-  darkplank
   darkwoodenplank
-  darkwplank
   darkplankwooden
-  darkplankw
-  dplank
   dwoodenplank
-  dwplank
   dplankwooden
-  dplankw
-  spruceplank
   sprucewoodenplank
-  sprucewplank
-  spruceplankwooden
-  spruceplankw
-  splank
-  swoodenplank
-  swplank
-  splankwooden
-  splankw
 5:2
-  lightplank
   lightwoodenplank
-  lightwplank
   lightplankwooden
-  lightplankw
   birchplank
-  birchwoodenplank
-  birchwplank
   birchplankwooden
-  birchplankw
-  bplank
-  bwoodenplank
-  bwplank
-  bplankwooden
-  bplankw
 5:3
-  jungleplank
   junglewoodenplank
-  junglewplank
   jungleplankwooden
-  jungleplankw
-  jplank
-  jwoodenplank
-  jwplank
-  jplankwooden
-  jplankw
+  jungleplank
 6:0
   sapling
   treesapling
   logsapling
   trunksapling
   woodsapling
-  oaktreesapling
-  oaklogsapling
-  oaktrunksapling
-  oakwoodsapling
-  normaltreesapling
-  normallogsapling
-  normaltrunksapling
-  normalwoodsapling
-  osapling
-  otreesapling
-  ologsapling
-  otrunksapling
-  owoodsapling
-  nsapling
-  ntreesapling
-  nlogsapling
-  ntrunksapling
-  nwoodsapling
   treesap
   logsap
   trunksap
   woodsap
-  oaktreesap
-  oaklogsap
-  oaktrunksap
-  oakwoodsap
-  osap
-  otreesap
-  ologsap
-  otrunksap
-  owoodsap
 6:1
   darksapling
-  darktreesapling
-  darklogsapling
-  darktrunksapling
   darkwoodsapling
-  blacksapling
-  blacktreesapling
-  blacklogsapling
-  blacktrunksapling
-  blackwoodsapling
-  sprucesapling
-  sprucetreesapling
-  sprucelogsapling
-  sprucetrunksapling
-  sprucewoodsapling
   dsapling
-  dtreesapling
-  dlogsapling
-  dtrunksapling
-  dwoodsapling
-  blsapling
-  bltreesapling
-  bllogsapling
-  bltrunksapling
-  blwoodsapling
-  ssapling
-  streesapling
-  slogsapling
-  strunksapling
-  swoodsapling
   darksap
   darktreesap
   darklogsap
@@ -144,95 +57,28 @@
   darkwoodsap
   blacksap
   blacktreesap
-  blacklogsap
-  blacktrunksap
   blackwoodsap
   pinesap
-  pinetreesap
-  pinelogsap
-  pinetrunksap
-  pinewoodsap
-  sprucesap
-  sprucetreesap
-  sprucelogsap
-  sprucetrunksap
-  sprucewoodsap
   dsap
   dtreesap
   dlogsap
   dtrunksap
   dwoodsap
-  blsap
-  bltreesap
-  bllogsap
-  bltrunksap
-  blwoodsap
-  ssap
-  streesap
-  slogsap
-  strunksap
-  swoodsap
 6:2
   birchsapling
   birchtreesapling
-  birchlogsapling
-  birchtrunksapling
   birchwoodsapling
   whitesapling
   whitetreesapling
-  whitelogsapling
-  whitetrunksapling
   whitewoodsapling
-  bisapling
-  bitreesapling
-  bilogsapling
-  bitrunksapling
-  biwoodsapling
   bsapling
-  btreesapling
-  blogsapling
-  btrunksapling
-  bwoodsapling
-  pasapling
-  patreesapling
-  palogsapling
-  patrunksapling
-  pawoodsapling
-  wsapling
-  wtreesapling
-  wlogsapling
-  wtrunksapling
-  wwoodsapling
   birchsap
   birchtreesap
-  birchlogsap
-  birchtrunksap
   birchwoodsap
   whitesap
   whitetreesap
-  whitelogsap
-  whitetrunksap
   whitewoodsap
-  bisap
-  bitreesap
-  bilogsap
-  bitrunksap
-  biwoodsap
   bsap
-  btreesap
-  blogsap
-  btrunksap
-  bwoodsap
-  pasap
-  patreesap
-  palogsap
-  patrunksap
-  pawoodsap
-  wsap
-  wtreesap
-  wlogsap
-  wtrunksap
-  wwoodsap
 6:3
   junglesapling
   jsapling
@@ -266,8 +112,6 @@
   ironore
   oreiron
   irono
-  steelore
-  oresteel
   steelo
   iore
 16:0
@@ -296,11 +140,6 @@
   blacklog
   blacktrunk
   blackwood
-  spruce
-  sprucetree
-  sprucelog
-  sprucetrunk
-  sprucewood
   dtree
   dlog
   dtrunk
@@ -309,10 +148,6 @@
   bllog
   bltrunk
   blwood
-  stree
-  slog
-  strunk
-  swood
 17:2
   birch
   birchtree
@@ -349,58 +184,17 @@
   logleaves
   trunkleaves
   woodleaves
-  oaktreeleaves
-  oaklogleaves
-  oaktrunkleaves
-  oakwoodleaves
-  otreeleaves
-  ologleaves
-  otrunkleaves
-  owoodleaves
   treeleaf
   logleaf
   trunkleaf
   woodleaf
-  oaktreeleaf
-  oaklogleaf
-  oaktrunkleaf
-  oakwoodleaf
-  otreeleaf
-  ologleaf
-  otrunkleaf
-  owoodleaf
 18:6
   birchleaves
   birchleaf
-  birchtreeleaves
-  birchlogleaves
-  birchtrunkleaves
-  birchwoodleaves
-  btreeleaves
-  blogleaves
-  btrunkleaves
-  bwoodleaves
-  bitreeleaves
-  bilogleaves
-  bitrunkleaves
-  biwoodleaves
-  birchtreeleaf
-  birchlogleaf
-  birchtrunkleaf
-  birchwoodleaf
-  btreeleaf
-  blogleaf
-  btrunkleaf
-  bwoodleaf
-  bitreeleaf
-  bilogleaf
-  bitrunkleaf
-  biwoodleaf
 18:7
   jungleleaves
   jleaves
   jungleleaf
-  monkeyleaf
 19:0
   sponge
 20:0
@@ -465,12 +259,6 @@
   stickyp
   spistonbase
   spiston
-  pistonstickybase
-  pistonsticky
-  pistonstickbase
-  pistonstick
-  pistonsbase
-  pistons
   psticky
 30:0
   spiderweb
@@ -501,22 +289,12 @@
   normpiston
   npistonbase
   npiston
-  pistonnormalbase
-  pistonnormal
-  pistonnbase
-  pistonn
-  pistonbase
   piston
   pistonblock
 34:0
-  pistonextensionnormal
   pistonextension
   pistonextnormal
   pistonext
-  pistonenormal
-  pistone
-  extensionpistonnormal
-  extensionpiston
   extpistonnormal
   extpiston
   epistonnormal
@@ -640,18 +418,10 @@
   dgreencloth
   dgreenwool
   dgreencotton
-  greencloth
-  greenwool
   greencotton
-  darkgrecloth
-  darkgrewool
-  darkgrecotton
   dgrecloth
   dgrewool
   dgrecotton
-  grecloth
-  grewool
-  grecotton
 35:14
   redcloth
   redwool
@@ -697,311 +467,43 @@
   blocksteel
   iblock
 43:0
-  smoothstonedoublestep
-  smoothstonedstep
-  stonedoublestep
-  stonedstep
-  sdoublestep
-  sdstep
-  doublesmoothstonestep
-  dsmoothstonestep
-  doublestonestep
-  dstonestep
-  doublesstep
-  dstep
   smoothstonedoubleslab
-  smoothstonedslab
-  stonedoubleslab
-  stonedslab
-  sdoubleslab
   sdslab
   doublesmoothstoneslab
-  dsmoothstoneslab
-  doublestoneslab
-  dstoneslab
-  doublesslab
   dslab
-  smoothstonedoublehalfblock
   smoothstonedhalfblock
-  stonedoublehalfblock
-  stonedhalfblock
-  sdoublehalfblock
-  sdhalfblock
-  doublesmoothstonehalfblock
-  dsmoothstonehalfblock
-  doublestonehalfblock
-  dstonehalfblock
-  doubleshalfblock
-  dhalfblock
 43:1
-  sandstonedoublestep
-  sandstonedstep
-  sstonedoublestep
-  sstonedstep
-  ssdoublestep
+  sandstonestep
   ssdstep
-  doublesandstonestep
-  dsandstonestep
-  doublesstonestep
-  dsstonestep
-  doublessstep
-  dsstep
-  sandstonedoubleslab
   sandstonedslab
-  sstonedoubleslab
-  sstonedslab
-  ssdoubleslab
   ssdslab
-  doublesandstoneslab
-  dsandstoneslab
-  doublesstoneslab
-  dsstoneslab
-  doublessslab
-  dsslab
-  sandstonedoublehalfblock
   sandstonedhalfblock
-  sstonedoublehalfblock
-  sstonedhalfblock
-  ssdoublehalfblock
-  ssdhalfblock
-  doublesandstonehalfblock
-  dsandstonehalfblock
-  doublesstonehalfblock
-  dsstonehalfblock
-  doublesshalfblock
-  dsshalfblock
 43:2
-  woodenplankstonedoublehalfblock
-  woodenplankstonedhalfblock
-  woodplankstonedoublehalfblock
-  woodplankstonedhalfblock
-  wplankstonedoublehalfblock
-  wplankstonedhalfblock
-  plankstonedoublehalfblock
-  planstonekdhalfblock
-  woodenstonedoublehalfblock
   woodenstonedhalfblock
-  woodstonedoublehalfblock
-  woodstonedhalfblock
-  wstonedoublehalfblock
-  wstonedhalfblock
-  doublewoodenplankstonehalfblock
-  dwoodenplankstonehalfblock
-  doublewoodplankstonehalfblock
-  dwoodplankstonehalfblock
-  doublewplankstonehalfblock
-  dwplankstonehalfblock
-  doubleplankstonehalfblock
-  dplankstonehalfblock
-  doublewoodenstonehalfblock
-  dwoodenstonehalfblock
-  doublewoodstonehalfblock
-  dwoodstonehalfblock
-  doublewstonehalfblock
-  dwstonehalfblock
-  woodenplankstonedoublestep
-  woodenplankstonedstep
-  woodplankstonedoublestep
-  woodplankstonedstep
-  wplankstonedoublestep
-  wplankstonedstep
-  plankstonedoublestep
-  plankstonedstep
-  woodenstonedoublestep
   woodenstonedstep
-  woodstonedoublestep
-  woodstonedstep
-  wstonedoublestep
-  wstonedstep
-  doublewoodenplankstonestep
-  dwoodenplankstonestep
-  doublewoodplankstonestep
-  dwoodplankstonestep
-  doublewplankstonestep
-  dwplankstonestep
-  doubleplankstonestep
-  dplankstonestep
-  doublewoodenstonestep
-  dwoodenstonestep
-  doublewoodstonestep
-  dwoodstonestep
-  doublewstonestep
-  dwstonestep
-  woodenplankstonedoubleslab
-  woodenplankstonedslab
-  woodplankstonedoubleslab
   woodplankstonedslab
-  wplankstonedoubleslab
-  wplankstonedslab
-  plankstonedoubleslab
   plankstonedslab
-  woodenstonedoubleslab
-  woodenstonedslab
-  woodstonedoubleslab
-  woodstonedslab
-  wstonedoubleslab
-  wstonedslab
-  doublewoodenplankstoneslab
-  dwoodenplankstoneslab
-  doublewoodplankstoneslab
-  dwoodplankstoneslab
-  doublewplankstoneslab
-  dwplankstoneslab
-  doubleplankstoneslab
-  dplankstoneslab
-  doublewoodenstoneslab
-  dwoodenstoneslab
-  doublewoodstoneslab
-  dwoodstoneslab
-  doublewstoneslab
-  dwstoneslab
+  wstoneslab
 43:3
-  cobblestonedoublestep
   cobblestonedstep
-  cobbledoublestep
   cobbledstep
-  cstonedoublestep
   cstonedstep
-  csdoublestep
-  csdstep
-  doublecobblestonestep
-  dcobblestonestep
-  doublecobblestep
-  dcobblestep
-  doublecstonestep
-  dcstonestep
-  doublecsstep
-  dcsstep
-  cobblestonedoubleslab
-  cobblestonedslab
-  cobbledoubleslab
-  cobbledslab
-  cstonedoubleslab
-  cstonedslab
-  csdoubleslab
-  csdslab
-  doublecobblestoneslab
-  dcobblestoneslab
-  doublecobbleslab
-  dcobbleslab
-  doublecstoneslab
-  dcstoneslab
-  doublecsslab
-  dcsslab
-  cobblestonedoublehalfblock
   cobblestonedhalfblock
-  cobbledoublehalfblock
-  cobbledhalfblock
-  cstonedoublehalfblock
   cstonedhalfblock
-  csdoublehalfblock
-  csdhalfblock
-  doublecobblestonehalfblock
-  dcobblestonehalfblock
-  doublecobblehalfblock
-  dcobblehalfblock
-  doublecstonehalfblock
-  dcstonehalfblock
-  doublecshalfblock
-  dcshalfblock
 43:4
-  brickblockdoublestep
-  brickblockdstep
-  brickbdoublestep
-  brickbdstep
-  brickdoublestep
   brickdstep
-  bdoublestep
-  bdstep
-  brickblockdoubleslab
-  brickblockdslab
-  brickbdoubleslab
-  brickbdslab
-  brickdoubleslab
   brickdslab
-  bdoubleslab
-  bdslab
-  doublebrickblockstep
-  dbrickblockstep
-  doublebrickbstep
-  dbrickbstep
-  doublebrickstep
-  dbrickstep
-  doublebstep
-  dbstep
-  doublebrickblockslab
-  dbrickblockslab
-  doublebrickbslab
-  dbrickbslab
-  doublebrickslab
-  dbrickslab
-  doublebslab
-  dbslab
-  brickblockdoublehalfblock
-  brickblockdhalfblock
-  brickbdoublehalfblock
-  brickbdhalfblock
-  brickdoublehalfblock
   brickdhalfblock
-  bdoublehalfblock
-  bdhalfblock
-  doublebrickblockhalfblock
-  dbrickblockhalfblock
-  doublebrickbhalfblock
-  dbrickbhalfblock
-  doublebrickhalfblock
-  dbrickhalfblock
-  doublebhalfblock
-  dbhalfblock
 43:5
   stonebrickdoublestep
-  stonebrickdstep
   stonebdoublestep
   stonebdstep
-  sbrickdoublestep
-  sbrickdstep
-  sbdoublestep
-  sbdstep
   stonebrickdoubleslab
   stonebrickdslab
   stonebdoubleslab
-  stonebdslab
-  sbrickdoubleslab
-  sbrickdslab
-  sbdoubleslab
-  sbdslab
-  doublestonebrickstep
-  dstonebrickstep
-  doublestonebstep
-  dstonebstep
-  doublesbrickstep
-  dsbrickstep
-  doublesbstep
-  dsbstep
-  doublestonebrickslab
-  dstonebrickslab
-  doublestonebslab
-  dstonebslab
-  doublesbrickslab
-  dsbrickdslab
-  doublesbslab
-  dsbslab
   stonebrickdoublehalfblock
-  stonebrickdhalfblock
   stonebdoublehalfblock
   stonebdhalfblock
-  sbrickdoublehalfblock
-  sbrickdhalfblock
-  sbdoublehalfblock
-  sbdhalfblock
-  doublestonebrickhalfblock
-  dstonebrickhalfblock
-  doublestonebhalfblock
-  dstonebhalfblock
-  doublesbrickhalfblock
-  dsbrickhalfblock
-  doublesbhalfblock
-  dsbhalfblock
 43:6
   adminslab
   magicslab
@@ -1237,23 +739,10 @@
   orers
 74:0
   glowingredstoneore
-  glowredstoneore
-  glowingrstoneore
-  grstoneore
-  glowingredsore
-  gredsore
   glowingredore
-  gredore
-  glowingrsore
   grsore
-  oreglowingredstone
-  oregredstone
   oreglowingrstone
-  oregrstone
-  oreglowingreds
   oregreds
-  oreglowingred
-  oregred
   oreglowingrs
   oregrs
 75:0
@@ -1324,22 +813,10 @@
   slowsand
   smud
 89:0
-  glowingstoneblock
   lightstoneblock
   glowstoneblock
-  blockglowingstone
-  blocklightstone
-  blockglowstone
-  glowingstoneb
-  lightstoneb
-  glowstoneb
-  bglowingstone
-  blightstone
-  bglowstone
-  glowingstone
   lightstone
   glowstone
-  glowingblock
   lightblock
   glowblock
   lstone
@@ -1393,12 +870,6 @@
   messtone
   silverfishsmoothstone
   silverfishsstone
-  sfishsmoothstone
-  sfishsstone
-  fishsmoothstone
-  fishsstone
-  sfsmoothstone
-  sfsstone
   trapsmoothstone
   trapsstone
 97:1
@@ -1427,12 +898,6 @@
   mesbrick
   silverfishstonebrick
   silverfishsbrick
-  sfishstonebrick
-  sfishsbrick
-  fishstonebrick
-  fishsbrick
-  sfstonebrick
-  sfsbrick
   trapstonebrick
   trapsbrick
 98:0
@@ -1474,11 +939,8 @@
   ironbarsb
   ironbarsblock
   metalbarsblock
-  metalbarsb
   jailbarsblock
-  jailbarsb
   mbarsblock
-  mbarsb
   jbarsblock
   jbarsb
   ibarsblock
@@ -1575,33 +1037,17 @@
   dfence
 114:0
   netherbrickstairs
-  nbrickstairs
   hellbrickstairs
-  deathbrickstairs
-  dbrickstairs
-  dstairs
   hellstairs
-  deathstairs
   nstairs
   netherstairs
-  dbstairs
   hellbstairs
-  deathbstairs
   nbstairs
-  netherbstairs
   netherbrickstair
-  nbrickstair
   hellbrickstair
-  deathbrickstair
-  dbrickstair
-  dstair
   hellstair
-  deathstair
   nstair
   netherstair
-  dbstair
-  hellbstair
-  deathbstair
   nbstair
   netherbstair
 115:0
@@ -1611,18 +1057,12 @@
   hellwarts
   hellplant
   hellcrop
-  deathwarts
-  deathplant
-  deathcrop
   nwarts
   ncrop
   nplant
   hwarts
   hplant
   hcrop
-  dwarts
-  dplant
-  dcrop
 116:0
   enchantmenttable
   magictable
@@ -1681,721 +1121,67 @@
   redstonelampon
   redlampon
 125:0
-  woodenplankdoublehalfblock
-  woodenplankdhalfblock
-  woodplankdoublehalfblock
-  woodplankdhalfblock
-  wplankdoublehalfblock
-  wplankdhalfblock
-  plankdoublehalfblock
-  plankdhalfblock
-  woodendoublehalfblock
-  woodendhalfblock
-  wooddoublehalfblock
-  wooddhalfblock
-  wdoublehalfblock
-  wdhalfblock
-  doublewoodenplankhalfblock
-  dwoodenplankhalfblock
-  doublewoodplankhalfblock
-  dwoodplankhalfblock
-  doublewplankhalfblock
-  dwplankhalfblock
-  doubleplankhalfblock
-  dplankhalfblock
-  doublewoodenhalfblock
-  dwoodenhalfblock
-  doublewoodhalfblock
-  dwoodhalfblock
-  doublewhalfblock
-  dwhalfblock
-  woodenplankdoublestep
-  woodenplankdstep
-  woodplankdoublestep
-  woodplankdstep
-  wplankdoublestep
-  wplankdstep
-  plankdoublestep
-  plankdstep
-  woodendoublestep
-  woodendstep
-  wooddoublestep
-  wooddstep
-  wdoublestep
-  wdstep
   doublewoodenplankstep
-  dwoodenplankstep
-  doublewoodplankstep
-  dwoodplankstep
-  doublewplankstep
-  dwplankstep
-  doubleplankstep
-  dplankstep
-  doublewoodenstep
-  dwoodenstep
-  doublewoodstep
-  dwoodstep
   doublewstep
   dwstep
   woodenplankdoubleslab
-  woodenplankdslab
-  woodplankdoubleslab
-  woodplankdslab
-  wplankdoubleslab
-  wplankdslab
   plankdoubleslab
-  plankdslab
   woodendoubleslab
-  woodendslab
-  wooddoubleslab
-  wooddslab
-  wdoubleslab
-  wdslab
-  doublewoodenplankslab
-  dwoodenplankslab
-  doublewoodplankslab
-  dwoodplankslab
-  doublewplankslab
-  dwplankslab
-  doubleplankslab
-  dplankslab
-  doublewoodenslab
-  dwoodenslab
-  doublewoodslab
-  dwoodslab
-  doublewslab
-  dwslab
-  oakwoodenplankdoublehalfblock
-  oakwoodenplankdhalfblock
-  oakwoodplankdoublehalfblock
-  oakwoodplankdhalfblock
-  oakwplankdoublehalfblock
-  oakwplankdhalfblock
-  oakplankdoublehalfblock
-  oakplankdhalfblock
-  oakwoodendoublehalfblock
-  oakwoodendhalfblock
-  oakwooddoublehalfblock
-  oakwooddhalfblock
-  oakwdoublehalfblock
-  oakwdhalfblock
-  oakdoublewoodenplankhalfblock
-  oakdwoodenplankhalfblock
-  oakdoublewoodplankhalfblock
-  oakdwoodplankhalfblock
-  oakdoublewplankhalfblock
-  oakdwplankhalfblock
-  oakdoubleplankhalfblock
-  oakdplankhalfblock
-  oakdoublewoodenhalfblock
-  oakdwoodenhalfblock
-  oakdoublewoodhalfblock
-  oakdwoodhalfblock
-  oakdoublewhalfblock
-  oakdwhalfblock
-  oakdoublehalfblock
-  oakdhalfblock
-  oakwoodenplankdoublestep
-  oakwoodenplankdstep
-  oakwoodplankdoublestep
-  oakwoodplankdstep
-  oakwplankdoublestep
-  oakwplankdstep
-  oakplankdoublestep
-  oakplankdstep
-  oakwoodendoublestep
-  oakwoodendstep
-  oakwooddoublestep
-  oakwooddstep
-  oakwdoublestep
-  oakwdstep
-  oakdoublewoodenplankstep
-  oakdwoodenplankstep
-  oakdoublewoodplankstep
-  oakdwoodplankstep
-  oakdoublewplankstep
-  oakdwplankstep
-  oakdoubleplankstep
-  oakdplankstep
-  oakdoublewoodenstep
-  oakdwoodenstep
-  oakdoublewoodstep
-  oakdwoodstep
-  oakdoublewstep
-  oakdwstep
-  oakdoublestep
-  oakdstep
-  oakwoodenplankdoubleslab
-  oakwoodenplankdslab
-  oakwoodplankdoubleslab
-  oakwoodplankdslab
-  oakwplankdoubleslab
-  oakwplankdslab
-  oakplankdoubleslab
-  oakplankdslab
-  oakwoodendoubleslab
-  oakwoodendslab
-  oakwooddoubleslab
-  oakwooddslab
-  oakwdoubleslab
-  oakwdslab
-  oakdoublewoodenplankslab
-  oakdwoodenplankslab
-  oakdoublewoodplankslab
-  oakdwoodplankslab
-  oakdoublewplankslab
-  oakdwplankslab
-  oakdoubleplankslab
-  oakdplankslab
-  oakdoublewoodenslab
-  oakdwoodenslab
-  oakdoublewoodslab
-  oakdwoodslab
-  oakdoublewslab
-  oakdwslab
-  oakdoubleslab
-  oakdslab
 125:1
-  sprucewoodenplankdoublehalfblock
-  sprucewoodenplankdhalfblock
-  sprucewoodplankdoublehalfblock
-  sprucewoodplankdhalfblock
-  sprucewplankdoublehalfblock
-  sprucewplankdhalfblock
-  spruceplankdoublehalfblock
-  spruceplankdhalfblock
-  sprucewoodendoublehalfblock
-  sprucewoodendhalfblock
-  sprucewooddoublehalfblock
-  sprucewooddhalfblock
-  sprucewdoublehalfblock
-  sprucewdhalfblock
-  sprucedoublewoodenplankhalfblock
-  sprucedwoodenplankhalfblock
-  sprucedoublewoodplankhalfblock
-  sprucedwoodplankhalfblock
-  sprucedoublewplankhalfblock
-  sprucedwplankhalfblock
-  sprucedoubleplankhalfblock
-  sprucedplankhalfblock
-  sprucedoublewoodenhalfblock
-  sprucedwoodenhalfblock
-  sprucedoublewoodhalfblock
-  sprucedwoodhalfblock
-  sprucedoublewhalfblock
-  sprucedwhalfblock
-  sprucedoublehalfblock
-  sprucedhalfblock
-  sprucewoodenplankdoublestep
-  sprucewoodenplankdstep
-  sprucewoodplankdoublestep
-  sprucewoodplankdstep
-  sprucewplankdoublestep
-  sprucewplankdstep
-  spruceplankdoublestep
-  spruceplankdstep
-  sprucewoodendoublestep
-  sprucewoodendstep
-  sprucewooddoublestep
-  sprucewooddstep
-  sprucewdoublestep
-  sprucewdstep
-  sprucedoublewoodenplankstep
-  sprucedwoodenplankstep
-  sprucedoublewoodplankstep
-  sprucedwoodplankstep
-  sprucedoublewplankstep
-  sprucedwplankstep
-  sprucedoubleplankstep
-  sprucedplankstep
-  sprucedoublewoodenstep
-  sprucedwoodenstep
-  sprucedoublewoodstep
-  sprucedwoodstep
-  sprucedoublewstep
-  sprucedwstep
-  sprucedoublestep
-  sprucedstep
-  sprucewoodenplankdoubleslab
-  sprucewoodenplankdslab
-  sprucewoodplankdoubleslab
-  sprucewoodplankdslab
-  sprucewplankdoubleslab
-  sprucewplankdslab
-  spruceplankdoubleslab
-  spruceplankdslab
-  sprucewoodendoubleslab
-  sprucewoodendslab
-  sprucewooddoubleslab
-  sprucewooddslab
-  sprucewdoubleslab
-  sprucewdslab
-  sprucedoublewoodenplankslab
-  sprucedwoodenplankslab
-  sprucedoublewoodplankslab
-  sprucedwoodplankslab
-  sprucedoublewplankslab
-  sprucedwplankslab
-  sprucedoubleplankslab
-  sprucedplankslab
-  sprucedoublewoodenslab
-  sprucedwoodenslab
-  sprucedoublewoodslab
-  sprucedwoodslab
-  sprucedoublewslab
-  sprucedwslab
-  sprucedoubleslab
-  sprucedslab
   darkwoodenplankdoublehalfblock
-  darkwoodenplankdhalfblock
-  darkwoodplankdoublehalfblock
-  darkwoodplankdhalfblock
-  darkwplankdoublehalfblock
-  darkwplankdhalfblock
-  darkplankdoublehalfblock
-  darkplankdhalfblock
-  darkwoodendoublehalfblock
-  darkwoodendhalfblock
-  darkwooddoublehalfblock
-  darkwooddhalfblock
-  darkwdoublehalfblock
   darkwdhalfblock
   darkdoublewoodenplankhalfblock
-  darkdwoodenplankhalfblock
-  darkdoublewoodplankhalfblock
-  darkdwoodplankhalfblock
-  darkdoublewplankhalfblock
-  darkdwplankhalfblock
-  darkdoubleplankhalfblock
-  darkdplankhalfblock
-  darkdoublewoodenhalfblock
-  darkdwoodenhalfblock
-  darkdoublewoodhalfblock
-  darkdwoodhalfblock
-  darkdoublewhalfblock
-  darkdwhalfblock
-  darkdoublehalfblock
   darkdhalfblock
   darkwoodenplankdoublestep
-  darkwoodenplankdstep
-  darkwoodplankdoublestep
-  darkwoodplankdstep
-  darkwplankdoublestep
-  darkwplankdstep
-  darkplankdoublestep
-  darkplankdstep
-  darkwoodendoublestep
-  darkwoodendstep
-  darkwooddoublestep
-  darkwooddstep
-  darkwdoublestep
   darkwdstep
   darkdoublewoodenplankstep
   darkdwoodenplankstep
-  darkdoublewoodplankstep
-  darkdwoodplankstep
-  darkdoublewplankstep
-  darkdwplankstep
-  darkdoubleplankstep
-  darkdplankstep
-  darkdoublewoodenstep
-  darkdwoodenstep
-  darkdoublewoodstep
-  darkdwoodstep
-  darkdoublewstep
-  darkdwstep
-  darkdoublestep
-  darkdstep
   darkwoodenplankdoubleslab
-  darkwoodenplankdslab
-  darkwoodplankdoubleslab
-  darkwoodplankdslab
-  darkwplankdoubleslab
-  darkwplankdslab
-  darkplankdoubleslab
-  darkplankdslab
   darkwoodendoubleslab
-  darkwoodendslab
   darkwooddoubleslab
-  darkwooddslab
-  darkwdoubleslab
-  darkwdslab
-  darkdoublewoodenplankslab
-  darkdwoodenplankslab
-  darkdoublewoodplankslab
-  darkdwoodplankslab
-  darkdoublewplankslab
-  darkdwplankslab
-  darkdoubleplankslab
-  darkdplankslab
-  darkdoublewoodenslab
-  darkdwoodenslab
   darkdoublewoodslab
-  darkdwoodslab
-  darkdoublewslab
-  darkdwslab
   darkdoubleslab
   darkdslab
 125:2
   birchwoodenplankdoublehalfblock
-  birchwoodenplankdhalfblock
-  birchwoodplankdoublehalfblock
-  birchwoodplankdhalfblock
-  birchwplankdoublehalfblock
-  birchwplankdhalfblock
-  birchplankdoublehalfblock
-  birchplankdhalfblock
-  birchwoodendoublehalfblock
-  birchwoodendhalfblock
-  birchwooddoublehalfblock
-  birchwooddhalfblock
-  birchwdoublehalfblock
   birchwdhalfblock
-  birchdoublewoodenplankhalfblock
-  birchdwoodenplankhalfblock
-  birchdoublewoodplankhalfblock
-  birchdwoodplankhalfblock
-  birchdoublewplankhalfblock
-  birchdwplankhalfblock
-  birchdoubleplankhalfblock
-  birchdplankhalfblock
-  birchdoublewoodenhalfblock
-  birchdwoodenhalfblock
-  birchdoublewoodhalfblock
-  birchdwoodhalfblock
-  birchdoublewhalfblock
-  birchdwhalfblock
-  birchdoublehalfblock
   birchdhalfblock
   birchwoodenplankdoublestep
-  birchwoodenplankdstep
-  birchwoodplankdoublestep
-  birchwoodplankdstep
-  birchwplankdoublestep
-  birchwplankdstep
-  birchplankdoublestep
-  birchplankdstep
-  birchwoodendoublestep
-  birchwoodendstep
-  birchwooddoublestep
-  birchwooddstep
-  birchwdoublestep
   birchwdstep
   birchdoublewoodenplankstep
   birchdwoodenplankstep
-  birchdoublewoodplankstep
-  birchdwoodplankstep
-  birchdoublewplankstep
-  birchdwplankstep
-  birchdoubleplankstep
-  birchdplankstep
-  birchdoublewoodenstep
-  birchdwoodenstep
-  birchdoublewoodstep
-  birchdwoodstep
-  birchdoublewstep
-  birchdwstep
-  birchdoublestep
-  birchdstep
-  birchwoodenplankdoubleslab
-  birchwoodenplankdslab
-  birchwoodplankdoubleslab
-  birchwoodplankdslab
-  birchwplankdoubleslab
-  birchwplankdslab
   birchplankdoubleslab
-  birchplankdslab
-  birchwoodendoubleslab
-  birchwoodendslab
-  birchwooddoubleslab
-  birchwooddslab
-  birchwdoubleslab
-  birchwdslab
-  birchdoublewoodenplankslab
-  birchdwoodenplankslab
-  birchdoublewoodplankslab
-  birchdwoodplankslab
-  birchdoublewplankslab
-  birchdwplankslab
-  birchdoubleplankslab
-  birchdplankslab
-  birchdoublewoodenslab
-  birchdwoodenslab
-  birchdoublewoodslab
-  birchdwoodslab
-  birchdoublewslab
-  birchdwslab
   birchdoubleslab
   birchdslab
   lightwoodenplankdoublehalfblock
-  lightwoodenplankdhalfblock
-  lightwoodplankdoublehalfblock
-  lightwoodplankdhalfblock
-  lightwplankdoublehalfblock
-  lightwplankdhalfblock
-  lightplankdoublehalfblock
-  lightplankdhalfblock
-  lightwoodendoublehalfblock
-  lightwoodendhalfblock
-  lightwooddoublehalfblock
-  lightwooddhalfblock
-  lightwdoublehalfblock
   lightwdhalfblock
-  lightdoublewoodenplankhalfblock
-  lightdwoodenplankhalfblock
-  lightdoublewoodplankhalfblock
-  lightdwoodplankhalfblock
-  lightdoublewplankhalfblock
-  lightdwplankhalfblock
-  lightdoubleplankhalfblock
-  lightdplankhalfblock
-  lightdoublewoodenhalfblock
-  lightdwoodenhalfblock
-  lightdoublewoodhalfblock
-  lightdwoodhalfblock
-  lightdoublewhalfblock
-  lightdwhalfblock
-  lightdoublehalfblock
   lightdhalfblock
   lightwoodenplankdoublestep
-  lightwoodenplankdstep
-  lightwoodplankdoublestep
-  lightwoodplankdstep
-  lightwplankdoublestep
-  lightwplankdstep
-  lightplankdoublestep
-  lightplankdstep
-  lightwoodendoublestep
-  lightwoodendstep
-  lightwooddoublestep
-  lightwooddstep
-  lightwdoublestep
   lightwdstep
   lightdoublewoodenplankstep
   lightdwoodenplankstep
-  lightdoublewoodplankstep
-  lightdwoodplankstep
-  lightdoublewplankstep
-  lightdwplankstep
-  lightdoubleplankstep
-  lightdplankstep
-  lightdoublewoodenstep
-  lightdwoodenstep
-  lightdoublewoodstep
-  lightdwoodstep
-  lightdoublewstep
-  lightdwstep
-  lightdoublestep
-  lightdstep
-  lightwoodenplankdoubleslab
-  lightwoodenplankdslab
-  lightwoodplankdoubleslab
-  lightwoodplankdslab
-  lightwplankdoubleslab
-  lightwplankdslab
   lightplankdoubleslab
-  lightplankdslab
-  lightwoodendoubleslab
-  lightwoodendslab
-  lightwooddoubleslab
-  lightwooddslab
-  lightwdoubleslab
-  lightwdslab
-  lightdoublewoodenplankslab
-  lightdwoodenplankslab
-  lightdoublewoodplankslab
-  lightdwoodplankslab
-  lightdoublewplankslab
-  lightdwplankslab
-  lightdoubleplankslab
-  lightdplankslab
-  lightdoublewoodenslab
-  lightdwoodenslab
-  lightdoublewoodslab
-  lightdwoodslab
-  lightdoublewslab
-  lightdwslab
   lightdoubleslab
   lightdslab
 125:3
   junglewoodenplankdoublehalfblock
-  junglewoodenplankdhalfblock
-  junglewoodplankdoublehalfblock
-  junglewoodplankdhalfblock
-  junglewplankdoublehalfblock
-  junglewplankdhalfblock
-  jungleplankdoublehalfblock
-  jungleplankdhalfblock
-  junglewoodendoublehalfblock
-  junglewoodendhalfblock
-  junglewooddoublehalfblock
-  junglewooddhalfblock
-  junglewdoublehalfblock
   junglewdhalfblock
-  jungledoublewoodenplankhalfblock
-  jungledwoodenplankhalfblock
-  jungledoublewoodplankhalfblock
-  jungledwoodplankhalfblock
-  jungledoublewplankhalfblock
-  jungledwplankhalfblock
-  jungledoubleplankhalfblock
-  jungledplankhalfblock
-  jungledoublewoodenhalfblock
-  jungledwoodenhalfblock
-  jungledoublewoodhalfblock
-  jungledwoodhalfblock
-  jungledoublewhalfblock
-  jungledwhalfblock
-  jungledoublehalfblock
   jungledhalfblock
   junglewoodenplankdoublestep
-  junglewoodenplankdstep
-  junglewoodplankdoublestep
-  junglewoodplankdstep
-  junglewplankdoublestep
-  junglewplankdstep
-  jungleplankdoublestep
-  jungleplankdstep
-  junglewoodendoublestep
-  junglewoodendstep
-  junglewooddoublestep
-  junglewooddstep
-  junglewdoublestep
   junglewdstep
   jungledoublewoodenplankstep
   jungledwoodenplankstep
-  jungledoublewoodplankstep
-  jungledwoodplankstep
-  jungledoublewplankstep
-  jungledwplankstep
-  jungledoubleplankstep
-  jungledplankstep
-  jungledoublewoodenstep
-  jungledwoodenstep
-  jungledoublewoodstep
-  jungledwoodstep
-  jungledoublewstep
-  jungledwstep
-  jungledoublestep
-  jungledstep
-  junglewoodenplankdoubleslab
-  junglewoodenplankdslab
-  junglewoodplankdoubleslab
-  junglewoodplankdslab
-  junglewplankdoubleslab
-  junglewplankdslab
   jungleplankdoubleslab
-  jungleplankdslab
-  junglewoodendoubleslab
-  junglewoodendslab
-  junglewooddoubleslab
-  junglewooddslab
-  junglewdoubleslab
-  junglewdslab
-  jungledoublewoodenplankslab
-  jungledwoodenplankslab
-  jungledoublewoodplankslab
-  jungledwoodplankslab
-  jungledoublewplankslab
-  jungledwplankslab
-  jungledoubleplankslab
-  jungledplankslab
-  jungledoublewoodenslab
-  jungledwoodenslab
-  jungledoublewoodslab
-  jungledwoodslab
-  jungledoublewslab
-  jungledwslab
   jungledoubleslab
   jungledslab
   forestwoodenplankdoublehalfblock
-  forestwoodenplankdhalfblock
-  forestwoodplankdoublehalfblock
-  forestwoodplankdhalfblock
-  forestwplankdoublehalfblock
-  forestwplankdhalfblock
-  forestplankdoublehalfblock
-  forestplankdhalfblock
-  forestwoodendoublehalfblock
-  forestwoodendhalfblock
-  forestwooddoublehalfblock
-  forestwooddhalfblock
-  forestwdoublehalfblock
   forestwdhalfblock
-  forestdoublewoodenplankhalfblock
-  forestdwoodenplankhalfblock
-  forestdoublewoodplankhalfblock
-  forestdwoodplankhalfblock
-  forestdoublewplankhalfblock
-  forestdwplankhalfblock
-  forestdoubleplankhalfblock
-  forestdplankhalfblock
-  forestdoublewoodenhalfblock
-  forestdwoodenhalfblock
-  forestdoublewoodhalfblock
-  forestdwoodhalfblock
-  forestdoublewhalfblock
-  forestdwhalfblock
-  forestdoublehalfblock
   forestdhalfblock
   forestwoodenplankdoublestep
-  forestwoodenplankdstep
-  forestwoodplankdoublestep
-  forestwoodplankdstep
-  forestwplankdoublestep
-  forestwplankdstep
-  forestplankdoublestep
-  forestplankdstep
-  forestwoodendoublestep
-  forestwoodendstep
-  forestwooddoublestep
-  forestwooddstep
-  forestwdoublestep
   forestwdstep
   forestdoublewoodenplankstep
   forestdwoodenplankstep
-  forestdoublewoodplankstep
-  forestdwoodplankstep
-  forestdoublewplankstep
-  forestdwplankstep
-  forestdoubleplankstep
-  forestdplankstep
-  forestdoublewoodenstep
-  forestdwoodenstep
-  forestdoublewoodstep
-  forestdwoodstep
-  forestdoublewstep
-  forestdwstep
-  forestdoublestep
-  forestdstep
-  forestwoodenplankdoubleslab
-  forestwoodenplankdslab
-  forestwoodplankdoubleslab
-  forestwoodplankdslab
-  forestwplankdoubleslab
-  forestwplankdslab
   forestplankdoubleslab
-  forestplankdslab
-  forestwoodendoubleslab
-  forestwoodendslab
-  forestwooddoubleslab
-  forestwooddslab
-  forestwdoubleslab
-  forestwdslab
-  forestdoublewoodenplankslab
-  forestdwoodenplankslab
-  forestdoublewoodplankslab
-  forestdwoodplankslab
-  forestdoublewplankslab
-  forestdwplankslab
-  forestdoubleplankslab
-  forestdplankslab
-  forestdoublewoodenslab
-  forestdwoodenslab
-  forestdoublewoodslab
-  forestdwoodslab
-  forestdoublewslab
-  forestdwslab
   forestdoubleslab
   forestdslab
 126:0
@@ -2411,95 +1197,44 @@
   woodenplankhalfblock
   wplankhalfblock
   woodenhalfblock
-  whalfblock
-  oakwoodenplankstep
   oakwplankstep
   oakwoodenstep
-  oakwstep
-  oakwoodenplankslab
   oakwplankslab
   oakwoodenslab
   oakwslab
-  oakwoodenplankhalfblock
-  oakwplankhalfblock
   oakwoodenhalfblock
   oakwhalfblock
 126:1
-  sprucewoodenplankstep
-  sprucewoodplankstep
   spruceplankstep
   sprucewoodenstep
-  sprucewstep
-  sprucewoodenplankslab
   sprucewplankslab
   sprucewoodenslab
-  sprucewslab
-  sprucewoodenplankhalfblock
-  sprucewplankhalfblock
-  sprucewoodenhalfblock
-  sprucewhalfblock
-  darkwoodenplankstep
-  darkwplankstep
-  darkwoodenstep
   darkwstep
-  darkwoodenplankslab
-  darkwplankslab
-  darkwoodenslab
   darkwslab
-  darkwoodenplankhalfblock
-  darkwplankhalfblock
-  darkwoodenhalfblock
   darkwhalfblock
 126:2
-  birchwoodenplankstep
-  birchwoodplankstep
   birchplankstep
   birchwoodenstep
   birchwstep
-  birchwoodenplankslab
-  birchwplankslab
-  birchwoodenslab
-  birchwslab
-  birchwoodenplankhalfblock
-  birchwplankhalfblock
-  birchwoodenhalfblock
   birchwhalfblock
-  lightwoodenplankstep
-  lightwplankstep
   lightwoodenstep
   lightwstep
-  lightwoodenplankslab
-  lightwplankslab
   lightwoodenslab
   lightwslab
-  lightwoodenplankhalfblock
-  lightwplankhalfblock
   lightwoodenhalfblock
   lightwhalfblock
 126:3
-  junglewoodenplankstep
-  junglewoodplankstep
   jungleplankstep
   junglewoodenstep
   junglewstep
-  junglewoodenplankslab
-  junglewplankslab
   junglewoodenslab
   junglewslab
-  junglewoodenplankhalfblock
-  junglewplankhalfblock
   junglewoodenhalfblock
   junglewhalfblock
-  forestwoodenplankstep
-  forestwplankstep
   forestwoodenstep
   forestwstep
-  forestwoodenplankslab
-  forestwplankslab
   forestwoodenslab
   forestwslab
-  forestwoodenplankhalfblock
-  forestwplankhalfblock
   forestwoodenhalfblock
   forestwhalfblock
 127:0
@@ -2545,57 +1280,30 @@
   blockemerald
   eblock
 134:0
-  sprucewoodenplankstairs
-  sprucewoodplankstairs
-  spruceplankstairs
   sprucewoodenstairs
   sprucewstairs
-  darkwoodenplankstairs
-  darkwplankstairs
   darkwoodenstairs
   darkwstairs
-  sprucewoodenplankstair
-  sprucewplankstair
   sprucewoodenstair
   sprucewstair
-  darkwoodenplankstair
-  darkwplankstair
   darkwoodenstair
   darkwstair
 135:0
-  birchwoodenplankstairs
-  birchwoodplankstairs
-  birchplankstairs
   birchwoodenstairs
   birchwstairs
-  lightwoodenplankstairs
-  lightwplankstairs
   lightwoodenstairs
   lightwstairs
-  birchwoodenplankstair
-  birchwplankstair
   birchwoodenstair
   birchwstair
-  lightwoodenplankstair
-  lightwplankstair
   lightwoodenstair
   lightwstair
 136:0
-  junglewoodenplankstairs
-  junglewoodplankstairs
-  jungleplankstairs
   junglewoodenstairs
   junglewstairs
-  forestwoodenplankstairs
-  forestwplankstairs
   forestwoodenstairs
   forestwstairs
-  junglewoodenplankstair
-  junglewplankstair
   junglewoodenstair
   junglewstair
-  forestwoodenplankstair
-  forestwplankstair
   forestwoodenstair
   forestwstair
 # 137:0
@@ -2724,10 +1432,6 @@
   cstonespade
   stoneshovel
   stonespade
-  ssshovel
-  ssspade
-  sshovel
-  sspade
 274:0
   smoothstonepickaxe
   cobblestonepickaxe
@@ -3134,24 +1838,12 @@
   watch
   clock
 348:0
-  glowingstoneblockdust
-  lightstoneblockdust
-  glowstoneblockdust
-  blockglowingstonedust
-  blocklightstonedust
-  blockglowstonedust
   glowingstonebdust
   lightstonebdust
   glowstonebdust
-  bglowingstonedust
-  blightstonedust
-  bglowstonedust
   glowingstonedust
   lightstonedust
   glowstonedust
-  glowingblockdust
-  lightblockdust
-  glowblockdust
   lbdust
 349:0
   rawfish
@@ -3171,18 +1863,11 @@
   blacksac
   inksackblack
   isacclack
-  blackinksackcolour
   blacksaccolour
-  inksackblackcolour
   isacclackcolour
-  blackinksackcolor
   blacksaccolor
-  inksackblackcolor
-  sacblackcolor
   blackinksackdye
   blacksacdye
-  inksackblackdye
-  isacclackdye
   blackcolor
   blackdye
 351:1
@@ -3199,9 +1884,6 @@
 351:2
   cactusgreen
   greencactus
-  cactusgreencolour
-  greencactuscolour
-  cactusgreencolor
   greencactuscolor
   cactusgreendye
   greencactusdye
@@ -3211,17 +1893,9 @@
   cocoabeans
   cocoabean
   cbeans
-  browncocoabeans
-  browncbeans
-  brownb
   cocoabeanscolour
   cbeanscolour
-  browncocoabeanscolour
-  browncbeanscolour
-  brownbcolour
   cocoabeanscolor
-  cbeanscolor
-  browncocoabeanscolor
   browncbeanscolor
   brownbcolor
   cocoabeansdye
@@ -3234,28 +1908,11 @@
 351:4
   bluelapislzuli
   bluelapisl
-  bluel
   lapislazuliblue
-  lapislblue
   lapislazuli
-  lapisl
-  bluelapislazulicolour
-  bluelapislcolour
-  lapislazulibluecolour
-  lapislbluecolour
-  lapislazulicolour
-  lapislcolour
-  bluelapislazulicolor
   bluelapislcolor
-  lapislazulibluecolor
-  lapislbluecolor
   lapislazulicolor
-  lapislcolor
-  bluelapislazulidye
   bluelapisldye
-  lapislazulibluedye
-  lapislbluedye
-  lapislazulidye
   lapisldye
   bluecolour
   bluedye
@@ -3287,16 +1944,13 @@
   limedye
 351:11
   dandelionyellow
-  dandelionyellowcolour
   dandelionyellowdye
   yellowdandelion
-  yellowdandelioncolour
   yellowdandeliondye
   yellowd
   yellowdcolour
   yellowddye
   dyellow
-  dyellowcolour
   dyellowdye
   yellowcolour
   yellowdye
@@ -3315,24 +1969,8 @@
   orangecolor
   orangedye
 351:15
-  whitebonemeal
-  whitebonemealcolour
-  whitebonemealdye
-  bonemealwhite
-  bonemealwhitecolour
-  bonemealwhitedye
-  whitebonem
-  whitebonemcolour
-  whitebonemdye
-  bonemwhite
-  bonemwhitecolour
-  bonemwhitedye
   bonemeal
-  bonemealcolour
   bonemealdye
-  bonem
-  bonemcolour
-  bonemdye
   whitecolour
   whitedye
 352:0
@@ -3440,22 +2078,6 @@
 371:0
   goldnugget
   gnugget
-  goldball
-  goldpebble
-  gball
-  gpebble
-  pigzombienugget
-  pigznugget
-  pzombienugget
-  pznugget
-  pigzombieball
-  pigzball
-  pzombieball
-  pzball
-  pigzombiepebble
-  pigzpebble
-  pzombiepebble
-  pzpebble
 372:0
   netherstalk
   deathstalk
