@@ -23,7 +23,7 @@
     </repositories>
 
     <modules>
-        <module>CubeCore</module>
+        <module>CubeEngine</module>
         <module>CubeFly</module>
         <module>CubeConomy</module>
         <module>CubeTest</module>

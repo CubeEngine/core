@@ -6,8 +6,8 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>cubecore</artifactId>
-    <name>CubeCore</name>
+    <artifactId>cubeengine</artifactId>
+    <name>CubeEngine</name>
 
     <dependencies>
         <dependency>

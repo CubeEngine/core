@@ -59,7 +59,7 @@ public class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            this.fileManager = new FileManager(this.getDataFolder().getParentFile());
+            this.fileManager = new FileManager(this.getDataFolder());
         }
         catch (IOException e)
         {
