@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -437,17 +438,15 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             ResultSet result =
                 this.database.query(
                 this.database.getQueryBuilder()
-                .select(this.key,"nogc").from(this.table)
+                .select(this.key).from(this.table)
                 .where().field("lastseen").is(LESS).value()
+                .and().field("nogc").is(EQUAL).value(false)
                 .end().end(),
                 new Timestamp(System.currentTimeMillis()
                 - StringUtils.convertTimeToMillis(this.core.getConfiguration().userManagerCleanupDatabase)));
             while (result.next())
             {
-                if (!result.getBoolean("nogc"))
-                {
-                    this.deleteByKey(result.getInt("key"));
-                }
+                this.deleteByKey(result.getInt("key"));
             }
         }
         catch (Exception ex)
