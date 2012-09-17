@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.config.annotations.Updater;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
@@ -274,7 +275,7 @@ public abstract class ConfigurationCodec
             {
                 this.revision = a_revision.value();
             }
-            this.save(file, values);
+            this.save(config, file, values);
             this.clear();
         }
         catch (IOException e)
@@ -346,10 +347,10 @@ public abstract class ConfigurationCodec
      * @param file the File
      * @throws IOException
      */
-    public void save(File file, Map<String, Object> values) throws IOException
+    public void save(Configuration config, File file, Map<String, Object> values) throws IOException
     {
         Validate.notNull(file, "File for saving is null");
-        String data = this.convertMapToString(values);
+        String data = this.convertMapToString(config, values);
         FileWriter writer = new FileWriter(file);
         try
         {
@@ -366,14 +367,14 @@ public abstract class ConfigurationCodec
      *
      * @return the config as String
      */
-    public String convertMapToString(Map<String, Object> values)
+    public String convertMapToString(Configuration config, Map<String, Object> values)
     {
         StringBuilder sb = new StringBuilder();
         first = true;
         sb.append(this.revision());
-        sb.append(this.head());
+        sb.append(StringUtils.implode("\n", config.head()));
         sb.append(this.convertMap("", values, 0));
-        sb.append(this.tail());
+        sb.append(StringUtils.implode("\n", config.tail()));
         return sb.toString();
     }
 
@@ -578,26 +579,6 @@ public abstract class ConfigurationCodec
         {
             return new StringBuilder("#Revision: ").append(this.revision).append(LINEBREAK).toString();
         }
-        return "";
-    }
-
-    /**
-     * This is inserted in front of the String to safe
-     *
-     * @return the head
-     */
-    public String head()
-    {
-        return "";
-    }
-
-    /**
-     * This is appended to the String to safe
-     *
-     * @return the tail
-     */
-    public String tail()
-    {
         return "";
     }
 }

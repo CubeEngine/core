@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.NotImplementedException;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
@@ -47,7 +48,7 @@ public abstract class Configuration
             codecs.put(extension, codec);
         }
     }
-    
+
     public final void save(File targetFile)
     {
         if (this.file == null)
@@ -130,7 +131,8 @@ public abstract class Configuration
                 inputStream.close();
             }
             catch (IOException ex)
-            {}
+            {
+            }
         }
         config.file = file;
         if (save)
@@ -197,7 +199,7 @@ public abstract class Configuration
     {
         this.codec = resolveCodec(fileExtension);
     }
-    
+
     public void setCodec(ConfigurationCodec codec)
     {
         this.codec = codec;
@@ -213,7 +215,7 @@ public abstract class Configuration
         Validate.notNull(file, "The file must not be null!");
         this.file = file;
     }
-    
+
     /**
      * Returns the file this config will be saved to
      *
@@ -228,11 +230,29 @@ public abstract class Configuration
      * This method is called right after the configuration got loaded
      */
     public void onLoaded()
-    {}
-    
+    {
+    }
+
     /**
      * This method gets called right after the configration get saved
      */
     public void onSaved(File file)
-    {}
+    {
+    }
+
+    /**
+     * Returns the lines to be added in front of the Configuration
+     */
+    public String[] head()
+    {
+        return new String[0];
+    }
+
+    /**
+     *Returns the lines to be added at the end of the Configuration
+     */
+    public String[] tail()
+    {
+        return new String[0];
+    }
 }
