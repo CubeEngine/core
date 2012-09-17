@@ -253,6 +253,8 @@
 11:0
   stationarylava
   slava
+12:0
+  sand
 13:0
   gravel
 14:0
@@ -439,6 +441,8 @@
   noteblock
   musicblock
   nblock
+26:0
+  bedblock
 27:0
   poweredtrack
   poweredrail
@@ -1143,6 +1147,8 @@
 59:0
   crops
   crop
+  wheatcrops
+  wheatcrop
 60:0
   soil
 61:0
@@ -1273,6 +1279,7 @@
   cactuses
   cacti
 82:0
+  clay
   clayblock
   blockclay
   cblock
@@ -1442,12 +1449,14 @@
 99:0
   hugeredmushroom
   bigredmushroom
+  redmushroomcap
   brmushroom
   giantredmushroom
   grmushroom
 100:0
   hugebrownmushroom
   bigbrownmushroom
+  brownmushroomcap
   bbmushroom
   giantbrownmushroom
   gbmushroom
@@ -1532,6 +1541,7 @@
   purplegrass
   pinkgrass
   mycel
+  mycelium
   swampgrass
   sgrass
   mushroomgrass
