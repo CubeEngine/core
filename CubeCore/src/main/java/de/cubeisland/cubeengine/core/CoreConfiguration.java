@@ -33,6 +33,10 @@ public class CoreConfiguration extends Configuration
     @Comment("How often the UserManager should unload offline Players")
     public Integer userManagerCleanup = 10;
     
+    @Option("usermanager.cleanupDatabase")
+    @Comment("After which time should CubeEngine delete a Users data from Database")
+    public String userManagerCleanupDatabase = "3M";
+    
     @Option("database")
     @Comment("Currently available: mysql")
     public String database = "mysql";

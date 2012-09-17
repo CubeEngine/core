@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
@@ -217,7 +217,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while preparing statements for "+this.table, ex);
+            throw new IllegalStateException("Error while preparing statements for " + this.table, ex);
         }
     }
 
@@ -431,12 +431,19 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void updateStructure()
     {
-        int dbRevision = tableManager.getRevision(this.table);
-        DatabaseUpdater updater = this.updaters.get(dbRevision);
-        if (updater != null)//No Updater for this
+        try
         {
-            updater.update(database);
-            tableManager.registerTable(this.table, this.revision);
+            int dbRevision = tableManager.getRevision(this.table);
+            DatabaseUpdater updater = this.updaters.get(dbRevision);
+            if (updater != null)//No Updater for this
+            {
+                updater.update(database);
+                tableManager.registerTable(this.table, this.revision);
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new IllegalStateException("Error while updating DatabaseStructure", e);
         }
     }
 

@@ -172,12 +172,14 @@ public final class StringUtils
         }
     }
 
+    
+    private static final int DAY = 24*60*60*1000;
     /**
-     * Converts Time in d | h | m | s to Milliseconds
+     * Converts Time in y | M | w | d | h | m | s to Long default is m
      */
     public static long convertTimeToMillis(String str) throws ConversionException
     {
-        Pattern pattern = Pattern.compile("^(\\d+)([smhd])?$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^(\\d+)([sSmhHdDwWMyY])?$");
         Matcher matcher = pattern.matcher(str);
         matcher.find();
 
@@ -201,14 +203,28 @@ public final class StringUtils
         }
         switch (unitSuffix.toLowerCase(Locale.ENGLISH).charAt(0))
         {
+            case 'y':
+            case 'Y':
+                time *= 365;
             case 'd':
+            case 'D':
                 time *= 24;
             case 'h':
+            case 'H':
                 time *= 60;
             case 'm':
                 time *= 60;
             case 's':
+            case 'S':
                 time *= 1000;
+                break;
+            case 'W':
+            case 'w':
+                time *= 7*DAY;
+                break;
+            case 'M':
+                time *= 30*DAY;
+                break;
         }
         return time;
     }

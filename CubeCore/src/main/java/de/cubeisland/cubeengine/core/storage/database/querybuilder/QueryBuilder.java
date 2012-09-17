@@ -20,6 +20,7 @@ public interface QueryBuilder
     public QueryBuilder rollback();
     public QueryBuilder unlockTables();
     public QueryBuilder nextQuery();
+    public AlterTableBuilder alterTable(String table);
     
     public String end();
 }

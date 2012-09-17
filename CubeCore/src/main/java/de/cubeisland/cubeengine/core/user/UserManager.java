@@ -4,12 +4,17 @@ import de.cubeisland.cubeengine.core.BukkitCore;
 import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.GREATER;
 import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +45,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         super(core.getDB(), User.class, Core.REVISION);
         this.core = core;
+        this.registerUpdaters();
         this.initialize();
         this.executor = core.getExecutor();
 
@@ -49,6 +55,21 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
         this.core.getEventManager().registerCoreListener(this);
+    }
+
+    private void registerUpdaters()
+    {
+        this.registerUpdater(new DatabaseUpdater()
+        {
+            @Override
+            public void update(Database database) throws SQLException
+            {
+                database.execute(
+                    database.getQueryBuilder().alterTable(table).add("nogc", AttrType.BOOLEAN).rawSQL(" DEFAULT false").end().end());
+                database.execute(
+                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.DATETIME).rawSQL(" DEFAULT NOW()").end().end());
+            }
+        }, 1);
     }
 
     @Override
@@ -388,7 +409,8 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     }
 
     /**
-     * Removes the user from loaded UserList when quitting the server
+     * Removes the user from loaded UserList when quitting the server and
+     * updates lastseen in database
      *
      * @param event the PlayerQuitEvent
      */
@@ -400,8 +422,36 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             @Override
             public void run()
             {
+                User user = getUser(event.getPlayer());
+                user.lastseen = new Timestamp(System.currentTimeMillis());
+                update(user);
                 users.remove(event.getPlayer().getName());
             }
         }, 1);
+    }
+
+    public void cleanDB()
+    {
+        try
+        {
+            System.out.println("CLEAN DB!");
+            ResultSet result =
+                this.database.query(
+                this.database.getQueryBuilder()
+                .select(this.key).from(this.table)
+                .where().field("lastseen").is(GREATER).value()
+                .end().end(),
+                new Timestamp(System.currentTimeMillis()
+                - StringUtils.convertTimeToMillis(this.core.getConfiguration().userManagerCleanupDatabase)));
+            while (result.next())
+            {
+                this.deleteByKey(result.getInt("key"));
+                System.out.println("CLEAN DB!"+result.getInt("key"));
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while cleaning DB", ex);
+        }
     }
 }

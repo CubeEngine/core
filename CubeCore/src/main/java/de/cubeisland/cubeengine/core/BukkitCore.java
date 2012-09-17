@@ -120,6 +120,9 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
+        
+        // depends on: finshed loading modules
+        this.getUserManager().cleanDB();
     }
 
     @Override

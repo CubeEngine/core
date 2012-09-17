@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.AlterTableBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.DeleteBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.LockBuilder;
@@ -24,6 +25,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     private MySQLDeleteBuilder deleteBuilder;
     private MySQLTableBuilder tableBuilder;
     private MySQLLockBuilder lockBuilder;
+    private MySQLAlterTableBuilder alterTableBuilder;
     protected Database database;
     protected StringBuilder query;
     private boolean nextQuery = false;
@@ -153,6 +155,17 @@ public class MySQLQueryBuilder implements QueryBuilder
             this.query.append(',').append(this.database.prepareName(tables[i]));
         }
         return this;
+    }
+    
+    @Override
+    public AlterTableBuilder alterTable(String table)
+    {
+        if (this.alterTableBuilder == null)
+        {
+            this.alterTableBuilder = new MySQLAlterTableBuilder(this);
+        }
+        this.init();
+        return this.alterTableBuilder.alterTable(table);
     }
 
     @Override
