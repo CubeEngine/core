@@ -21,15 +21,12 @@ public class FileManager
     private final File modulesDir;
     private THashMap<File, Resource> fileSources = new THashMap<File, Resource>();
 
-    public FileManager(File pluginsFolder) throws IOException
+    public FileManager(File dataFolder) throws IOException
     {
-        Validate.isDir(pluginsFolder, "The plugins folder must not be null!");
+        Validate.isDir(dataFolder, "The data folder must not be null!");
 
-        this.dataFolder = new File(pluginsFolder, "CubeEngine");
-        if (!this.dataFolder.isDirectory() && !this.dataFolder.mkdirs())
-        {
-            throw new IOException("Failed to create the data folder");
-        }
+        dataFolder.mkdirs();
+        this.dataFolder = dataFolder;
 
         this.languageDir = new File(this.dataFolder, "language");
         if (!this.languageDir.isDirectory() && !this.languageDir.mkdirs())
