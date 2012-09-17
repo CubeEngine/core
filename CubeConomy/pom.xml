@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>de.cubeisland</groupId>
-            <artifactId>cubecore</artifactId>
+            <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
