@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
@@ -25,6 +21,9 @@ import java.util.Map;
 
 public class RuleBookConfiguration
 {
+   private final static int NumberOfCharsPerPage = 260;
+   private final static int NumberOfCharsPerLine = 20;
+   
    Rulebook ruleBook;
    Map<String, String> ruleMap = new HashMap<String,String>();
    Map<String, List<String>> convertedRuleMap = new HashMap<String, List<String>>();
@@ -32,7 +31,6 @@ public class RuleBookConfiguration
    public RuleBookConfiguration(Rulebook ruleBook)
    {
        this.ruleBook = ruleBook;
-
        for(String language : this.ruleBook.getCore().getI18n().getLanguages())
        {
            try 
@@ -75,46 +73,74 @@ public class RuleBookConfiguration
         
         this.ruleMap.put(language, text);
     }
+      
+    private int getNumberOfLines(String string)
+    {
+        return (int) Math.ceil((double)string.length() / (double)NumberOfCharsPerLine);
+    } 
+    
+    private int getNumberOfLines(String[] strings)
+    {
+        int result = 0;
+        for(String string : strings)
+        {
+            result += getNumberOfLines(string);
+        }
+        return result;
+    }
     
     private void convertText(String language)
     {
-        List<String> lines = new ArrayList<String>(); 
-        for(String line : getText(language).split("\n"))
+        List<String> lines = createLines(this.getText(language));
+        this.convertedRuleMap.put(language, createPages(lines));
+    }
+    
+    private List<String> createLines(String text)
+    {
+        List<String> lines = new ArrayList<String>();
+        for(String line : text.split("\n"))
         {
-            while(line.length() > 255)
+            line = line.trim();
+            while(line.length() > NumberOfCharsPerPage)
             {
-                int index = line.substring(0, 254).lastIndexOf(" ");
+                int index = line.substring(0, NumberOfCharsPerPage).lastIndexOf(" ");
+                if(index == -1) 
+                {
+                    index = NumberOfCharsPerPage;
+                }
                 lines.add(line.substring(0, index));
-                line = line.substring(index + 1);
+                line = line.substring(index).trim();
             }
             lines.add(line);
-        }
-        
-        List<String> convertedText = new ArrayList<String>();
-        int line = 0;
+        }    
+        return lines;
+    }
+    
+    private List<String> createPages(List<String> lines) 
+    {
+        // TODO made to parts of the line and copy the first at the last page if there is enough space.  
+        List<String> pages = new ArrayList<String>();
+        pages.add("");
         int page = 0;
-        convertedText.add("");
         
-        for(int i = 0; i < lines.size(); i++)
+        for(String line : lines)
         {
-            if(convertedText.get(page).length() + lines.get(i).length() > 255 || line > 11)
+            if( (getNumberOfLines(pages.get(page)) + getNumberOfLines(line) ) > 13)
             {
                 page++;
-                convertedText.add("");
-                line = 0;
+                pages.add("");
             }
-            if(line == 0)
+            if(pages.get(page).length() == 0)
             {
-                convertedText.set(page, lines.get(i));
+                pages.set(page, line);
             }
             else
             {
-                convertedText.set(page, convertedText.get(page) + "\n" + lines.get(i));
+                pages.set(page, pages.get(page) + "\n" + line);
             }
-            line++;
         }
         
-        this.convertedRuleMap.put(language, convertedText);
+        return pages;
     }
     
     public Collection<String> getLanguages()
