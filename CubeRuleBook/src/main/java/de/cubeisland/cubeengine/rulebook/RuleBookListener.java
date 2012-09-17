@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
@@ -12,14 +8,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 /**
  *
  * @author Wolfi
  */
-class RuleBookListener implements Listener 
+class RuleBookListener implements Listener, Runnable
 {
-
+    private static String playerName = null;
     Rulebook module;
     
     public RuleBookListener(Rulebook module) 
@@ -33,14 +30,31 @@ class RuleBookListener implements Listener
         Player player = event.getPlayer();
         if(!player.hasPlayedBefore())
         {
-            User user = this.module.getCore().getUserManager().getUser(player);
+            playerName = player.getName();
+            player.getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.module.getCore(), this, 15);
+        }
+    }
+
+    public void run() 
+    {
+        if(playerName != null)
+        {
+            User user = this.module.getCore().getUserManager().getUser(playerName);
+            String language = user.getLanguage();
+            
+            if(!this.module.getConfig().getLanguages().contains(language))
+            {
+                language = this.module.getCore().getI18n().getDefaultLanguage();
+            }
+                
             BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
             
             ruleBook.setAuthor(this.module.getCore().getServer().getServerName());
-            ruleBook.setTitle(CubeEngine._(user.getLanguage(), "rulebook", "Rulebook"));
-            ruleBook.setPages(this.module.getConfig().getPages(user.getLanguage()));
+            ruleBook.setTitle(CubeEngine._(language, "rulebook", "Rulebook"));
+            ruleBook.setPages(this.module.getConfig().getPages(language));
 
-            player.setItemInHand(ruleBook.getItemStack());
+            user.setItemInHand(ruleBook.getItemStack());
+            playerName = null;
         }
     }
 }
