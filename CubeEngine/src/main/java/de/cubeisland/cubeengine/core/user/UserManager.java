@@ -68,7 +68,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 database.execute(
                     database.getQueryBuilder().alterTable(table).add("nogc", AttrType.BOOLEAN).rawSQL(" DEFAULT false").end().end());
                 database.execute(
-                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.DATETIME).rawSQL(" DEFAULT NOW()").end().end());
+                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.DATETIME).rawSQL(" DEFAULT CURRENT_TIMESTAMP").end().end());
             }
         }, 1);
     }
