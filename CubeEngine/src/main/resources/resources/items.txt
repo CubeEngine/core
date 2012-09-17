@@ -693,6 +693,11 @@
 #   cobblewall
 #   wallcobble
 #   wallcobblestone
+# 139:1
+#   mossstonewall
+#   mosswall
+#   wallmossstone
+#   wallmoss
 # 140:0
 #   flowerpotblock
 # 141:0
