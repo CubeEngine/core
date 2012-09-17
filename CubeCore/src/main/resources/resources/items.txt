@@ -476,15 +476,24 @@
   spiderweb
   sweb
 31:0
+  deadshrub
+  shrubdead
+  dshrub
+31:1
   longgrass
   tallgrass
   grasslong
   grasstall
   lgrass
+31:2
+  fern
+  liveshrub
+  shrublive
+  lshrub
 32:0
-  deadshrub
-  shrubdead
-  dshrub
+  deadbush
+  bushdead
+  dbush
 33:7
   normalpistonbase
   normalpiston
@@ -2589,6 +2598,31 @@
   forestwplankstair
   forestwoodenstair
   forestwstair
+# 137:0
+#   commandblock
+#   cmdblock
+# 138:0
+#   beaconblock
+#   beacon
+# 139:0
+#   cobblestonewall
+#   cobblewall
+#   wallcobble
+#   wallcobblestone
+# 140:0
+#   flowerpotblock
+# 141:0
+#   carrotcrop
+#   carrotcrops
+# 142:0
+#   potatocrop
+#   potatocrops
+#   potatoescrop
+#   potatoescrops
+# 143:0
+#   buttonwood
+#   woodenbutton
+#   woodbutton
 256:0
   ironshovel
   ironspade
@@ -4276,6 +4310,30 @@
   ownedbook
 388:0
   emerald
+# 389:0
+#   itemframe
+# 390:0
+#   flowerpot
+# 391:0
+#   carrots
+#   carrot
+# 392:0
+#   potato
+#   potatoes
+# 393:0
+#   bakedpotato
+#   bakedpotatoes
+# 394:0
+#   poisonouspotato
+#   poisonouspotatoes
+# 395:0
+#   emptymap
+#   mapempty
+#   mapclear
+#   clearmap
+# 396:0
+#   goldencarrot
+#   goldencarrots
 2256:0
   goldmusicrecord
   goldmusicdisk
