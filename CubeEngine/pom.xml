@@ -24,6 +24,7 @@
             <groupId>org.bukkit</groupId>
             <artifactId>minecraft-server</artifactId>
             <version>${minecraftVersion}</version>
+        </dependency>
         <dependency>
             <groupId>net.sf.trove4j</groupId>
             <artifactId>trove4j</artifactId>
