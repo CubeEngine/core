@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.NotImplementedException;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
@@ -245,7 +244,7 @@ public abstract class Configuration
      */
     public String[] head()
     {
-        return new String[0];
+        return null;
     }
 
     /**
@@ -253,6 +252,6 @@ public abstract class Configuration
      */
     public String[] tail()
     {
-        return new String[0];
+        return null;
     }
 }

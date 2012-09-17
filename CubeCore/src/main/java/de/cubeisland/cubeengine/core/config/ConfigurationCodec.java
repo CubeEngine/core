@@ -372,9 +372,15 @@ public abstract class ConfigurationCodec
         StringBuilder sb = new StringBuilder();
         first = true;
         sb.append(this.revision());
-        sb.append(StringUtils.implode("\n", config.head()));
+        if (config.head() != null)
+        {
+            sb.append("# ").append(StringUtils.implode("\n# ", config.head()));
+        }
         sb.append(this.convertMap("", values, 0));
-        sb.append(StringUtils.implode("\n", config.tail()));
+        if (config.tail() != null)
+        {
+            sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
+        }
         return sb.toString();
     }
 
