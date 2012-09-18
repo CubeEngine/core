@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.LanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.LoadConfiguration;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -22,6 +23,8 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 public class Test extends Module
 {
@@ -59,6 +62,14 @@ public class Test extends Module
         this.testUserManager();
         this.testl18n();
         this.testMatchers();
+        
+        this.getCore().getEventManager().registerListener(new Listener() {
+            @EventHandler
+            public void onLanguageReceived(LanguageReceivedEvent event)
+            {
+                System.out.print("Player: " + event.getPlayer().getName() + " Lang: " + event.getLanguage());
+            }
+        }, this);
     }
 
     public void initializeDatabase() throws SQLException

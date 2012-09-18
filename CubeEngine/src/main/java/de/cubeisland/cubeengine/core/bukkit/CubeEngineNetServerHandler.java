@@ -27,6 +27,6 @@ public class CubeEngineNetServerHandler extends NetServerHandler
     public void a(Packet204LocaleAndViewDistance packet204localeandviewdistance)
     {
         parent.a(packet204localeandviewdistance);
-        this.pm.callEvent(new LanguageReceivedEvent(packet204localeandviewdistance.d()));
+        this.pm.callEvent(new LanguageReceivedEvent(this.player.getBukkitEntity(), packet204localeandviewdistance.d()));
     }
 }
