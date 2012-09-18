@@ -130,7 +130,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.getUserManager().cleanDB();
         
         // depends on: server
-        //BukkitUtils.registerPacketHookInjector(this, pm);
+        BukkitUtils.registerPacketHookInjector(this, pm);
     }
 
     @Override

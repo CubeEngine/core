@@ -1,15 +1,16 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
+import net.minecraft.server.ServerConnection;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,6 +28,7 @@ import org.bukkit.plugin.SimplePluginManager;
 public class BukkitUtils
 {
     private static final Field localeStringField;
+    private static Field nshListField = null;
     
     static
     {
@@ -34,11 +36,20 @@ public class BukkitUtils
         {
             localeStringField = LocaleLanguage.class.getDeclaredField("d");
             localeStringField.setAccessible(true);
+            
         }
         catch (Exception e)
         {
             throw new RuntimeException("Failed to initialize the Bukkit-Language-Hack!");
         }
+
+        try
+        {
+            nshListField = ServerConnection.class.getDeclaredField("d");
+            nshListField.setAccessible(true);
+        }
+        catch (Exception e)
+        {}
     }
 
     private BukkitUtils()
@@ -119,25 +130,35 @@ public class BukkitUtils
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerJoin(PlayerJoinEvent event)
         {
+            if (nshListField == null)
+            {
+                return;
+            }
+            final Player player = event.getPlayer();
+            EntityPlayer playerEntity = ((CraftPlayer)player).getHandle();
+            NetServerHandler oldHandler = playerEntity.netServerHandler;
             try
             {
-                final Player player = event.getPlayer();
-                EntityPlayer playerEntity = ((CraftPlayer)player).getHandle();
-                MinecraftServer minecraftServer = ((CraftServer)player.getServer()).getServer();
 
-                if (playerEntity.netServerHandler.getClass() != CubeEngineNetServerHandler.class)
+                if (oldHandler.getClass() != CubeEngineNetServerHandler.class)
                 {
-                    playerEntity.netServerHandler = new CubeEngineNetServerHandler(
-                        player.getServer().getPluginManager(),
-                        playerEntity.netServerHandler,
-                        minecraftServer,
-                        playerEntity.netServerHandler.networkManager,
-                        playerEntity
-                    );
+                    CubeEngineNetServerHandler handler = new CubeEngineNetServerHandler(playerEntity);
+                    
+                    Location loc = player.getLocation();
+                    handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+                    
+                    ServerConnection sc = playerEntity.server.ac();
+                    ((List<NetServerHandler>)nshListField.get(sc)).remove(oldHandler);
+                    sc.a(handler);
+                    System.out.print("Replaced the NetServerHandler of player '" + player.getName() + "'");
+                    oldHandler.disconnected = true;
                 }
             }
             catch (Exception e)
-            {}
+            {
+                playerEntity.netServerHandler = oldHandler;
+                e.printStackTrace(System.err);
+            }
         }
     }
 }

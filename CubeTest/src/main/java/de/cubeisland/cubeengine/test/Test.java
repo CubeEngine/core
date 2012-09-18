@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.LanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.LoadConfiguration;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -66,7 +66,7 @@ public class Test extends Module
         
         this.getCore().getEventManager().registerListener(new Listener() {
             @EventHandler
-            public void onLanguageReceived(LanguageReceivedEvent event)
+            public void onLanguageReceived(PlayerLanguageReceivedEvent event)
             {
                 System.out.print("Player: " + event.getPlayer().getName() + " Lang: " + event.getLanguage());
             }

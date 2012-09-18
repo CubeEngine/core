@@ -8,12 +8,12 @@ import org.bukkit.event.player.PlayerEvent;
  *
  * @author Phillip Schichtel
  */
-public class LanguageReceivedEvent extends PlayerEvent
+public class PlayerLanguageReceivedEvent extends PlayerEvent
 {
     private static final HandlerList handlers = new HandlerList();
     private final String language;
 
-    public LanguageReceivedEvent(Player player, String language)
+    public PlayerLanguageReceivedEvent(Player player, String language)
     {
         super(player);
         this.language = language;

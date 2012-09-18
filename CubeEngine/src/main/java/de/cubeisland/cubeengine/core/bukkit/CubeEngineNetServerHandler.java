@@ -4,6 +4,7 @@ import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.INetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
+import net.minecraft.server.Packet;
 import net.minecraft.server.Packet204LocaleAndViewDistance;
 import org.bukkit.plugin.PluginManager;
 
@@ -14,19 +15,17 @@ import org.bukkit.plugin.PluginManager;
 public class CubeEngineNetServerHandler extends NetServerHandler
 {
     private final PluginManager pm;
-    private final NetServerHandler parent;
     
-    public CubeEngineNetServerHandler(PluginManager pm, NetServerHandler parent, MinecraftServer minecraftserver, INetworkManager inetworkmanager, EntityPlayer entityplayer)
+    public CubeEngineNetServerHandler(EntityPlayer player)
     {
-        super(minecraftserver, inetworkmanager, entityplayer);
-        this.pm = pm;
-        this.parent = parent;
+        super(player.server, player.netServerHandler.networkManager, player);
+        this.pm = player.getBukkitEntity().getServer().getPluginManager();
     }
 
     @Override
     public void a(Packet204LocaleAndViewDistance packet204localeandviewdistance)
     {
-        parent.a(packet204localeandviewdistance);
-        this.pm.callEvent(new LanguageReceivedEvent(this.player.getBukkitEntity(), packet204localeandviewdistance.d()));
+        super.a(packet204localeandviewdistance);
+        this.pm.callEvent(new PlayerLanguageReceivedEvent(this.player.getBukkitEntity(), packet204localeandviewdistance.d()));
     }
 }
