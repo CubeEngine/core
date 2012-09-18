@@ -37,6 +37,7 @@ public class Test extends Module
     @Override
     public void onEnable()
     {
+        this.getFileManager().dropResources(TestRecource.values());
         this.uM = this.getUserManager();
         Logger logger = this.getLogger();
         try
@@ -103,10 +104,10 @@ public class Test extends Module
         uM.delete(userToDel);
         //Test update
         user.nogc = true;
-        user.lastseen = new Timestamp(50);
+        user.lastseen = new Timestamp(50000);
         uM.update(user);
         user = uM.getUser("User1");
-        user.lastseen = new Timestamp(50);
+        user.lastseen = new Timestamp(50000);
         uM.update(user);
     }
 
@@ -221,7 +222,7 @@ public class Test extends Module
 
     public void testl18n()
     {
-        CubeEngine.getFileManager().dropResources(TestRecource.values());
+        
         this.getLogger().debug(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
         this.getLogger().debug(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
     }

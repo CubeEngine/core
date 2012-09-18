@@ -101,5 +101,6 @@ public class TestListener implements Listener
         user.sendMessage("test", "english TEST");
         user.sendMessage("test", "&1color &2Test");
         user.sendMessage(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "&1color &2Test"));
+        user.sendMessage("test", "NotTranslatedMessageIsNotTranslated");
     }
 }

@@ -69,9 +69,9 @@ public class CubeLogger extends Logger
             { // only log to console if Log is important enough
                 record.setMessage("[" + this.getName() + "] " + msg);
                 this.getParent().log(record);
-                record.setMessage(msg);
             }
         }
+        record.setMessage(msg);
         super.log(record);
     }
 

@@ -65,10 +65,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             @Override
             public void update(Database database) throws SQLException
             {
+                
                 database.execute(
                     database.getQueryBuilder().alterTable(table).add("nogc", AttrType.BOOLEAN).rawSQL(" DEFAULT false").end().end());
                 database.execute(
-                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.TIMESTAMP).end().end());
+                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.TIMESTAMP).rawSQL(" DEFAULT ").value().end().end()
+                    ,new Timestamp(System.currentTimeMillis()));
             }
         }, 1);
     }
