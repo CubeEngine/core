@@ -47,7 +47,6 @@ public abstract class Module
 
             this.logger = logger;
 
-            this.onLoad();
             core.getEventManager().fireEvent(new ModuleLoadedEvent(core, this));
         }
     }

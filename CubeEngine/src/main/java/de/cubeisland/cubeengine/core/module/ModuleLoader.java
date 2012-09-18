@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
@@ -12,6 +13,7 @@ import gnu.trove.set.hash.THashSet;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +48,7 @@ public class ModuleLoader
     public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         final String name = info.getName();
-        
+
         if (info.getMinimumCoreRevision() > Core.REVISION)
         {
             throw new IncompatibleCoreException(name, info.getMinimumCoreRevision());
@@ -59,11 +61,12 @@ public class ModuleLoader
                 throw new MissingDependencyException(dep);
             }
         }
-        
+
         try
         {
             ModuleClassLoader classLoader = new ModuleClassLoader(this, info, getClass().getClassLoader());
-            Module module = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class).getConstructor().newInstance();
+            Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
+            Module module = moduleClass.getConstructor().newInstance();
 
             module.initialize(
                 this.core,
@@ -72,8 +75,21 @@ public class ModuleLoader
                 new File(info.getFile().getParentFile(), name),
                 new ModuleLogger(this.core, info),
                 this,
-                classLoader
-            );
+                classLoader);
+
+            for (Field field : moduleClass.getDeclaredFields())
+            {
+                if (field.isAnnotationPresent(From.class))
+                {
+                    if (Configuration.class.isAssignableFrom(field.getType()))
+                    {
+                        field.setAccessible(true);
+                        Configuration.load(field.getType().asSubclass(Configuration.class), new File(module.getFolder(), field.getAnnotation(From.class).value()));
+                    }
+                }
+            }
+
+            module.onLoad();
 
             this.classLoaders.put(name, classLoader);
             return module;
@@ -87,7 +103,7 @@ public class ModuleLoader
     public void unloadModule(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
-        
+
         // TODO actually implement this 
     }
 
@@ -129,7 +145,8 @@ public class ModuleLoader
                     jarFile.close();
                 }
                 catch (IOException e)
-                {}
+                {
+                }
             }
         }
         return info;
@@ -147,7 +164,8 @@ public class ModuleLoader
             clazz = this.libClassLoader.findClass(name);
         }
         catch (ClassNotFoundException e)
-        {}
+        {
+        }
 
         if (clazz != null)
         {
@@ -169,7 +187,8 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException e)
-            {}
+            {
+            }
         }
 
         for (String dep : info.getDependencies())
@@ -188,7 +207,8 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException e)
-            {}
+            {
+            }
         }
 
         for (String module : this.classLoaders.keySet())
@@ -204,7 +224,8 @@ public class ModuleLoader
                     }
                 }
                 catch (ClassNotFoundException e)
-                {}
+                {
+                }
             }
         }
 

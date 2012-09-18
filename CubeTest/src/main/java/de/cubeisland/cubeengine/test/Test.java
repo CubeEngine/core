@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.test;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.config.annotations.LoadConfiguration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -31,7 +32,7 @@ public class Test extends Module
     public TestManager manager;
     public UserManager uM;
     
-    @LoadConfiguration(TestConfig.class)
+    @From("test2")
     protected TestConfig config;
 
     @Override
