@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
-import de.cubeisland.cubeengine.core.util.Validate;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
 import java.io.File;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -93,10 +93,14 @@ public class ModuleLoader
 
     public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
     {
-        Validate.fileExists(file, "The file must exist!");
+        Validate.notNull(file, "The file most not be null!");
+        if (!file.exists())
+        {
+            throw new IllegalArgumentException("The file must exist!");
+        }
         if (!FileExtentionFilter.JAR.accept(file))
         {
-            throw new IllegalArgumentException("The file doesn't seem");
+            throw new IllegalArgumentException("The file doesn't seem to be a JAR file");
         }
         ModuleInfo info;
         JarFile jarFile = null;

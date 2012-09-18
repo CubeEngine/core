@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
-import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.commons.lang.Validate;
 
 /**
  * Manages all the configurations of the CubeEngine
@@ -23,9 +23,15 @@ public class FileManager
 
     public FileManager(File dataFolder) throws IOException
     {
-        Validate.isDir(dataFolder, "The data folder must not be null!");
-
-        dataFolder.mkdirs();
+        Validate.notNull(dataFolder, "The data folder must not be null!");
+        if (!dataFolder.exists())
+        {
+            dataFolder.mkdirs();
+        }
+        else if (!dataFolder.isDirectory())
+        {
+            throw new IllegalArgumentException("The data folder was found, but it doesn't seem to be directoy!");
+        }
         this.dataFolder = dataFolder;
 
         this.languageDir = new File(this.dataFolder, "language");

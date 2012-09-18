@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
-import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
@@ -21,6 +20,7 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -59,7 +59,11 @@ public class ModuleManager
 
     public synchronized void loadModules(File directory)
     {
-        Validate.isDir(directory, "The given File is no directory!");
+        Validate.notNull(directory, "The directoy must not be null!");
+        if (!directory.isDirectory())
+        {
+            throw new IllegalArgumentException("The given File is no directory!");
+        }
 
         Module module;
         ModuleInfo info;

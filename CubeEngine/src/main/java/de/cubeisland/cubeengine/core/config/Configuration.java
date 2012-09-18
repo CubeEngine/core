@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 /**

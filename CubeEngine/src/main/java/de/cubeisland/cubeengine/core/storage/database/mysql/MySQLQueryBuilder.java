@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder;
-import de.cubeisland.cubeengine.core.util.Validate;
+import org.apache.commons.lang.Validate;
 
 /**
  *

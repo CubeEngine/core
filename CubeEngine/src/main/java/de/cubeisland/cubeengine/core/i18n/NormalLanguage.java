@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
@@ -17,6 +16,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.commons.lang.Validate;
 
 /**
  *

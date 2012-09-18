@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.util.Validate;
 import java.io.File;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
+import org.apache.commons.lang.Validate;
 
 /**
  *

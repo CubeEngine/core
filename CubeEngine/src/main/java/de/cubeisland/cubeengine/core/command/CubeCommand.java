@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.Validate;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
