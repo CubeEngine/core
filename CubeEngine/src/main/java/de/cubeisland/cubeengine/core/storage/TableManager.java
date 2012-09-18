@@ -24,6 +24,10 @@ public class TableManager extends BasicStorage<Table>
 
     public void registerTable(String table, Integer revision)
     {
+        if ("tables".equals(table))
+        {
+            return;
+        }
         Table t = this.tables.get(table);
         if (t != null)
         {

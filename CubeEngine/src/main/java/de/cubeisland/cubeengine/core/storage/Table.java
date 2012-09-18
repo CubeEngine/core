@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Anselm Brehme
  */
-@Entity(name = "table")
+@Entity(name = "tables")
 public class Table implements Model<Integer>
 {
     @Key
