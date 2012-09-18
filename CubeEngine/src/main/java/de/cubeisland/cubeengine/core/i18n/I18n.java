@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -148,7 +149,10 @@ public class I18n implements Cleanable
     
     public Collection<String> getLanguages()
     {
-        return this.languageMap.keySet();
+        Set<String> languages = this.languageMap.keySet();
+        languages.add(SOURCE_LANGUAGE.getCode());
+        
+        return languages;
     }
     
     public Language getLanguage(String name)
