@@ -433,25 +433,32 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
     public void cleanDB()
     {
-        try
+        this.executor.submit(new Runnable()
         {
-            ResultSet result =
-                this.database.query(
-                this.database.getQueryBuilder()
-                .select(this.key).from(this.table)
-                .where().field("lastseen").is(LESS).value()
-                .and().field("nogc").is(EQUAL).value(false)
-                .end().end(),
-                new Timestamp(System.currentTimeMillis()
-                - StringUtils.convertTimeToMillis(this.core.getConfiguration().userManagerCleanupDatabase)));
-            while (result.next())
+            @Override
+            public void run()
             {
-                this.deleteByKey(result.getInt("key"));
+                try
+                {
+                    ResultSet result =
+                        database.query(
+                        database.getQueryBuilder()
+                        .select(key).from(table)
+                        .where().field("lastseen").is(LESS).value()
+                        .and().field("nogc").is(EQUAL).value(false)
+                        .end().end(),
+                        new Timestamp(System.currentTimeMillis()
+                        - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
+                    while (result.next())
+                    {
+                        deleteByKey(result.getInt("key"));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new IllegalStateException("Error while cleaning DB", ex);
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while cleaning DB", ex);
-        }
+        });
     }
 }
