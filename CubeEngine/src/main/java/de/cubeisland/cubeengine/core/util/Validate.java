@@ -23,7 +23,7 @@ public class Validate extends org.apache.commons.lang.Validate
     public static void isDir(File file, String message)
     {
         notNull(file, "The file must not be null!");
-        if (!file.isDirectory())
+        if (file.exists() && !file.isDirectory())
         {
             throw new IllegalArgumentException(message);
         }
