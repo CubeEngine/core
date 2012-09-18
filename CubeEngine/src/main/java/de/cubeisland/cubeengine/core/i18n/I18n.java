@@ -12,6 +12,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -149,9 +150,8 @@ public class I18n implements Cleanable
     
     public Collection<String> getLanguages()
     {
-        Set<String> languages = this.languageMap.keySet();
+        Set<String> languages = new HashSet<String>(this.languageMap.keySet());
         languages.add(SOURCE_LANGUAGE.getCode());
-        
         return languages;
     }
     
