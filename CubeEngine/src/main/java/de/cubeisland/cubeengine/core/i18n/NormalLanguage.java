@@ -114,6 +114,11 @@ public class NormalLanguage implements Cleanable, Language
         return null;
     }
 
+    public Language getParent()
+    {
+        return this.parent;
+    }
+
     private Map<String, String> loadMessages(String cat)
     {
         try
