@@ -16,6 +16,7 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlCodec extends ConfigurationCodec
 {
     private final Yaml yaml;
+    private boolean useLineBreak = false;
 
     public YamlCodec()
     {
@@ -61,7 +62,7 @@ public class YamlCodec extends ConfigurationCodec
     @Override
     public String convertValue(String path, Object value, int off)
     {
-        StringBuilder sb = new StringBuilder(this.buildComment(path, off));
+        StringBuilder sb = new StringBuilder();
         String offset = this.offset(off);
         String key = this.getSubKey(path);
         sb.append(offset).append(key).append(":");//{_OFFSET_Key:}
@@ -118,17 +119,30 @@ public class YamlCodec extends ConfigurationCodec
         {
             return sb.append(this.offset(off)).append("{}").append(LINEBREAK).toString();
         }
+        useLineBreak = false;
         for (Map.Entry<String, Object> entry : values.entrySet())
         {
             if (off == 0)
             {
-                sb.append(this.convertValue(entry.getKey(), entry.getValue(), off));
+                sb.append(this.buildComment(entry.getKey(), off))
+                    .append(this.convertValue(entry.getKey(), entry.getValue(), off));//path value off
             }
             else
             {
-                sb.append(this.convertValue(path + "." + entry.getKey(), entry.getValue(), off));
+                sb.append(this.buildComment(path + "." + entry.getKey(), off))
+                    .append(this.convertValue(path + "." + entry.getKey(), entry.getValue(), off));
+            }
+            if (!first)
+            {
+                useLineBreak = true;
             }
         }
+        if (!sb.toString().endsWith(LINEBREAK+LINEBREAK))
+        {
+            sb.append(LINEBREAK);
+        }
+        useLineBreak = false;
+        first = true;
         return sb.toString();
     }
 
@@ -140,17 +154,17 @@ public class YamlCodec extends ConfigurationCodec
         {
             return ""; //No Comment
         }
-        else
+        String offset = this.offset(off);
+        comment = comment.replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
+        comment = offset + COMMENT_PREFIX + comment + LINEBREAK;
+        if (this.first)
         {
-            String offset = this.offset(off);
-            comment = comment.replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
-            comment = offset + COMMENT_PREFIX + comment + LINEBREAK;
-            if (this.first)
-            {
-                this.first = false;
-                return comment;
-            }
-            return LINEBREAK + comment;
+            this.first = false;
         }
+        if (useLineBreak)
+        {
+            comment = LINEBREAK + comment;
+        }
+        return comment;
     }
 }

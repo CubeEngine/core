@@ -374,7 +374,7 @@ public abstract class ConfigurationCodec
         sb.append(this.revision());
         if (config.head() != null)
         {
-            sb.append("# ").append(StringUtils.implode("\n# ", config.head()));
+            sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
         }
         sb.append(this.convertMap("", values, 0));
         if (config.tail() != null)

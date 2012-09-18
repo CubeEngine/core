@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.From;
-import de.cubeisland.cubeengine.core.config.annotations.LoadConfiguration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
@@ -32,7 +31,7 @@ public class Test extends Module
     public TestManager manager;
     public UserManager uM;
     
-    @From("test2")
+    @From("test.yml")
     protected TestConfig config;
 
     @Override
@@ -43,7 +42,6 @@ public class Test extends Module
         Logger logger = this.getLogger();
         try
         {
-            this.config = Configuration.load(TestConfig.class, this);
             this.initializeDatabase();
             this.testDatabase();
         }

@@ -33,8 +33,8 @@ public class CoreConfiguration extends Configuration
     @Comment("How often the UserManager should unload offline Players")
     public Integer userManagerCleanup = 10;
     
-    @Option("usermanager.cleanupDatabase")
-    @Comment("After which time should CubeEngine delete a Users data from Database")
+    @Option("usermanager.garbagecollection")
+    @Comment("After which time should CubeEngine delete all of a Users data from Database")
     public String userManagerCleanupDatabase = "3M";
     
     @Option("database")
@@ -44,4 +44,14 @@ public class CoreConfiguration extends Configuration
     @Option("logging.Level")
     @Comment("Logging into Console \nALL > FINEST > FINER > FINE > INFO > OFF")
     public Level loggingLevel = Level.FINE;
+
+    @Override
+    public String[] head()
+    {
+        return new String[]
+            {
+                "This is the CubeEngine CoreConfiguration.", 
+                "Changes here can affect every CubeEngine-Module"
+            };
+    }
 }
