@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.cubefun;
+package de.cubeisland.cubeengine.fun;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
