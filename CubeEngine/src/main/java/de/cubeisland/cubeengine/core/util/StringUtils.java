@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
