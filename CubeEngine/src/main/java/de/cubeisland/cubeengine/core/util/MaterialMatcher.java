@@ -180,6 +180,41 @@ public class MaterialMatcher
         return null;
     }
 
+    private boolean readItems(THashMap<ItemStack, List<String>> map, List<String> input, boolean update)
+    {
+        boolean updated = false;
+        ArrayList<String> names = new ArrayList<String>();
+        for (String line : input)
+        {
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith("#"))
+            {
+                continue;
+            }
+            if (line.contains(":"))
+            {
+                int id = Integer.parseInt(line.substring(0, line.indexOf(":")));
+                short data = Short.parseShort(line.substring(line.indexOf(":") + 1));
+                names = new ArrayList<String>();
+                ItemStack item = new ItemStack(id, 1, data);
+                if (!update)
+                {
+                    map.put(item, names);
+                }
+                else if (map.get(item) == null || map.get(item).isEmpty())
+                {
+                    map.put(item, names);
+                    updated = true;
+                }
+            }
+            else
+            {
+                names.add(line);
+            }
+        }
+        return updated;
+    }
+
     private THashMap<ItemStack, List<String>> readItems()
     {
         try
@@ -188,30 +223,7 @@ public class MaterialMatcher
             List<String> input = FileUtil.getFileAsStringList(file);
 
             THashMap<ItemStack, List<String>> readItems = new THashMap<ItemStack, List<String>>();
-            int id;
-            short data;
-            ArrayList<String> names = new ArrayList<String>();
-            for (String line : input)
-            {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
-                {
-                    continue;
-                }
-                if (line.contains(":"))
-                {
-                    id = Integer.parseInt(line.substring(0, line.indexOf(":")));
-                    data = Short.parseShort(line.substring(line.indexOf(":") + 1));
-                    names = new ArrayList<String>();
-                    readItems.put(new ItemStack(id, 1, data), names);
-                }
-                else
-                {
-                    names.add(line);
-                }
-            }
-            // update
-            boolean updated = false;
+            this.readItems(readItems, input, false);
             Resource resource = CubeEngine.getFileManager().getSourceOf(file);
             String source = resource.getSource();
             if (!source.startsWith("/"))
@@ -219,37 +231,13 @@ public class MaterialMatcher
                 source = "/" + source;
             }
             List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
-            for (String line : jarinput)
+            if (this.readItems(readItems, jarinput, true))
             {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
-                {
-                    continue;
-                }
-                if (line.contains(":"))
-                {
-                    id = Integer.parseInt(line.substring(0, line.indexOf(":")));
-                    data = Short.parseShort(line.substring(line.indexOf(":") + 1));
-                    names = new ArrayList<String>();
-                    ItemStack item = new ItemStack(id, 1, data);
-                    if (readItems.get(item) == null) // Item not in readItems!
-                    {
-                        readItems.put(item, names);
-                        updated = true;
-                    }
-                }
-                else
-                {
-                    names.add(line);
-                }
-            }
-            if (updated) // save if updated
-            {
-                CubeEngine.getLogger().log(Level.FINER,"Updated items.txt");
+                CubeEngine.getLogger().log(Level.FINER, "Updated items.txt");
                 StringBuilder sb = new StringBuilder();
                 for (ItemStack item : readItems.keySet())
                 {
-                    sb.append(item.getTypeId()).append(":").append(item.getData()).append("\n");
+                    sb.append(item.getTypeId()).append(":").append(item.getDurability()).append("\n");
                     List<String> itemnames = readItems.get(item);
                     for (String itemname : itemnames)
                     {

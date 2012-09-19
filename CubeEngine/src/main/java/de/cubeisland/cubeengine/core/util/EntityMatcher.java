@@ -125,6 +125,39 @@ public class EntityMatcher
         return null;
     }
 
+    private boolean readEntities(TShortObjectHashMap<List<String>> map, List<String> input, boolean update)
+    {
+        boolean updated = false;
+        ArrayList<String> names = new ArrayList<String>();
+        for (String line : input)
+        {
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith("#"))
+            {
+                continue;
+            }
+            if (line.endsWith(":"))
+            {
+                short id = Short.parseShort(line.substring(0, line.length() - 1));
+                names = new ArrayList<String>();
+                if (!update)
+                {
+                    map.put(id, names);
+                }
+                else if (map.get(id) == null || map.get(id).isEmpty())
+                {
+                    map.put(id, names);
+                    updated = true;
+                }
+            }
+            else
+            {
+                names.add(line);
+            }
+        }
+        return updated;
+    }    
+    
     private TShortObjectHashMap<List<String>> readEntities()
     {
         try
@@ -133,27 +166,7 @@ public class EntityMatcher
             List<String> input = FileUtil.getFileAsStringList(file);
 
             TShortObjectHashMap<List<String>> entityList = new TShortObjectHashMap<List<String>>();
-            ArrayList<String> names = new ArrayList<String>();
-            for (String line : input)
-            {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
-                {
-                    continue;
-                }
-                if (line.endsWith(":"))
-                {
-                    short id = Short.parseShort(line.substring(0, line.length() - 1));
-                    names = new ArrayList<String>();
-                    entityList.put(id, names);
-                }
-                else
-                {
-                    names.add(line);
-                }
-            }
-            // update
-            boolean updated = false;
+            this.readEntities(entityList, input, false);
             Resource resource = CubeEngine.getFileManager().getSourceOf(file);
             String source = resource.getSource();
             if (!source.startsWith("/"))
@@ -161,30 +174,7 @@ public class EntityMatcher
                 source = "/" + source;
             }
             List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
-            for (String line : jarinput)
-            {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
-                {
-                    continue;
-                }
-                if (line.endsWith(":"))
-                {
-
-                    short id = Short.parseShort(line.substring(0, line.length() - 1));
-                    names = new ArrayList<String>();
-                    if (entityList.get(id) == null)
-                    {
-                        entityList.put(id, names);
-                        updated = true;
-                    }
-                }
-                else
-                {
-                    names.add(line);
-                }
-            }
-            if (updated)
+            if (readEntities(entityList, jarinput, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated entities.txt");
                 StringBuilder sb = new StringBuilder();

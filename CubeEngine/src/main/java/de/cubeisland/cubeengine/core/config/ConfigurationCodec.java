@@ -563,7 +563,7 @@ public abstract class ConfigurationCodec
      */
     public void addComment(String path, String comment)
     {
-        this.comments.put(path, comment);
+        this.comments.put(path.toLowerCase(Locale.ENGLISH), comment);
     }
 
     /**

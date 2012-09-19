@@ -78,35 +78,48 @@ public class EnchantMatcher
         return ench;
     }
 
+    private boolean readEnchantments(TIntObjectHashMap<List<String>> map, List<String> input, boolean update)
+    {
+        boolean updated = false;
+        ArrayList<String> names = new ArrayList<String>();
+        for (String line : input)
+        {
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith("#"))
+            {
+                continue;
+            }
+            if (line.endsWith(":"))
+            {
+                int id = Integer.parseInt(line.substring(0, line.length() - 1));
+                names = new ArrayList<String>();
+                if (!update)
+                {
+                    map.put(id, names);
+                }
+                else if (map.get(id) == null || map.get(id).isEmpty())
+                {
+                    map.put(id, names);
+                    updated = true;
+                }
+            }
+            else
+            {
+                names.add(line);
+            }
+        }
+        return updated;
+    }
+
     private TIntObjectHashMap<List<String>> readEnchantments()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
             List<String> input = FileUtil.getFileAsStringList(file);
-            
+
             TIntObjectHashMap<List<String>> enchs = new TIntObjectHashMap<List<String>>();
-            ArrayList<String> names = new ArrayList<String>();
-            for (String line : input)
-            {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
-                {
-                    continue;
-                }
-                if (line.endsWith(":"))
-                {
-                    int id = Integer.parseInt(line.substring(0, line.length() - 1));
-                    names = new ArrayList<String>();
-                    enchs.put(id, names);
-                }
-                else
-                {
-                    names.add(line);
-                }
-            }
-            // update
-            boolean updated = false;
+            this.readEnchantments(enchs, input, false);
             Resource resource = CubeEngine.getFileManager().getSourceOf(file);
             String source = resource.getSource();
             if (!source.startsWith("/"))
@@ -114,30 +127,7 @@ public class EnchantMatcher
                 source = "/" + source;
             }
             List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
-            for (String line : jarinput)
-            {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
-                {
-                    continue;
-                }
-                if (line.endsWith(":"))
-                {
-
-                    short id = Short.parseShort(line.substring(0, line.length() - 1));
-                    names = new ArrayList<String>();
-                    if (enchs.get(id) == null)
-                    {
-                        enchs.put(id, names);
-                        updated = true;
-                    }
-                }
-                else
-                {
-                    names.add(line);
-                }
-            }
-            if (updated)
+            if (this.readEnchantments(enchs, jarinput, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated enchantments.txt");
                 StringBuilder sb = new StringBuilder();
