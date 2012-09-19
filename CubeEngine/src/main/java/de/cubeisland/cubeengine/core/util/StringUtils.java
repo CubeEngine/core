@@ -305,12 +305,13 @@ public final class StringUtils
     static final int wd = 1, wi = 1, wc = 1, ws = 1;
 
     /**
-     * Taken from http://qqqqx.blogspot.de/2011/09/dameraulevenshtein-distance.html 
+     * Taken from
+     * http://qqqqx.blogspot.de/2011/09/dameraulevenshtein-distance.html
      * Computes the Demerau-LevenshteinDistance
-     * 
+     *
      * @param a
      * @param b
-     * @return 
+     * @return
      */
     public static int getDemerauLevenshteinDistance(String a, String b)
     {
@@ -382,7 +383,12 @@ public final class StringUtils
      */
     public static String matchString(String string, Collection<String> stringlist)
     {
-        return matchString(string, stringlist, true, 1, string.length(), 20, 2, 60);
+        return matchString(string, stringlist, true, 1, string.length(), 20, 2, 40, true);
+    }
+
+    public static String matchString(String string, Collection<String> stringlist, boolean ignoreLdPerLengthOnLD1)
+    {
+        return matchString(string, stringlist, true, 1, string.length(), 20, 2, 40, ignoreLdPerLengthOnLD1);
     }
 
     /**
@@ -404,7 +410,7 @@ public final class StringUtils
      * @param percentLdOfLength
      * @return a matching String
      */
-    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive, int firstLdCheck, int maxIndex, int maxbehindIndex, int secondLdCheck, int percentLdOfLength)
+    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive, int firstLdCheck, int maxIndex, int maxbehindIndex, int secondLdCheck, int percentLdOfLength, boolean ignoreLdPerLengthOnLD1)
     {
         if (stringlist == null || string == null || stringlist.isEmpty())
         {
@@ -442,7 +448,7 @@ public final class StringUtils
                 }
                 if (ld <= firstLdCheck) // Match with ld <= 2 and searchString > 4
                 {
-                    if ((ld * 100 / searchStringLength) <= percentLdOfLength || ld == 1)
+                    if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1))
                     {
                         CubeEngine.getLogger().fine("LD1: Found " + inList + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength);
                         if (ld < distance)
@@ -473,15 +479,16 @@ public final class StringUtils
                     }
                     if (index != -1) // Found seachString in inList
                     {
-                        CubeEngine.getLogger().fine("Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
                         if (index < indexfound) // Compare to last match
                         {
+                            CubeEngine.getLogger().fine("Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
                             indexfound = index;
                             behindindex = inList.length() - (index + searchStringLength);
                             foundString = inList;
                         }
                         if (index == indexfound && inList.length() - (index + searchStringLength) <= behindindex)
                         {
+                            CubeEngine.getLogger().fine("Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
                             behindindex = inList.length() - (index + searchStringLength);
                             foundString = inList;
                         }
@@ -494,6 +501,7 @@ public final class StringUtils
             if (secondLdCheck >= 1) // LD lower than 1 -> NO Check
             {
                 distance = secondLdCheck + 1;
+                int behindindex = maxbehindIndex;
                 for (String inList : stringlist)
                 {
                     if (inList.length() >= searchStringLength) // can inList contain searchString?
@@ -506,13 +514,22 @@ public final class StringUtils
                         ld = getDemerauLevenshteinDistance(subString, searchString);
                         if (ld <= secondLdCheck) // Found light Typo at start of String
                         {
-                            if ((ld * 100 / searchStringLength) <= percentLdOfLength || ld == 1)
+                            if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1))
                             {
-                                CubeEngine.getLogger().fine("LD2: Found " + inList + "|" + subString + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength);
+                                CubeEngine.getLogger().fine("LD2: Found " + inList + "|" + subString + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength + " and behindindex " + (inList.length() - searchStringLength));
                                 if (ld < distance) // Compare to last match
                                 {
                                     distance = ld;
                                     foundString = inList;
+                                    behindindex = inList.length() - searchStringLength;
+                                }
+                                if (ld == distance)
+                                {
+                                    if ((inList.length() - searchStringLength) < behindindex)
+                                    {
+                                        foundString = inList;
+                                        behindindex = inList.length() - searchStringLength;
+                                    }
                                 }
                             }
                         }

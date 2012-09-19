@@ -151,7 +151,7 @@ public class MaterialMatcher
 
     private ItemStack matchWithLevenshteinDistance(String s)
     {
-        String t_key = StringUtils.matchString(s, this.items.keySet());
+        String t_key = StringUtils.matchString(s, this.items.keySet(), false);
         if (t_key != null)
         {
             return this.items.get(t_key);
