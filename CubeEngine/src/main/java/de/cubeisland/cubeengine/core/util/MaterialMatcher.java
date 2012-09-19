@@ -30,6 +30,7 @@ public class MaterialMatcher
     {
         this.items = new THashMap<String, ItemStack>();
         THashMap<ItemStack, List<String>> readItems = this.readItems();
+        this.readDataValues();
         for (ItemStack item : readItems.keySet())
         {
             this.registerItemStack(item, readItems.get(item));
