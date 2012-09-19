@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -301,6 +302,74 @@ public final class StringUtils
         // actually has the most recent cost counts
         return p[n];
     }
+    static final int wd = 1, wi = 1, wc = 1, ws = 1;
+
+    /**
+     * Taken from http://qqqqx.blogspot.de/2011/09/dameraulevenshtein-distance.html 
+     * Computes the Demerau-LevenshteinDistance
+     * 
+     * @param a
+     * @param b
+     * @return 
+     */
+    public static int getDemerauLevenshteinDistance(String a, String b)
+    {
+        final int inf = a.length() * wd + b.length() * wi + 1;
+        int[][] H = new int[a.length() + 2][b.length() + 2];
+        for (int i = 0; i <= a.length(); i++)
+        {
+            H[i + 1][1] = i * wd;
+            H[i + 1][0] = inf;
+        }
+        for (int j = 0; j <= b.length(); j++)
+        {
+            H[1][j + 1] = j * wi;
+            H[0][j + 1] = inf;
+        }
+        HashMap<Character, Integer> DA = new HashMap<Character, Integer>();
+        for (int d = 0; d < a.length(); d++)
+        {
+            if (!DA.containsKey(a.charAt(d)))
+            {
+                DA.put(a.charAt(d), 0);
+            }
+        }
+        for (int d = 0; d < b.length(); d++)
+        {
+            if (!DA.containsKey(b.charAt(d)))
+            {
+                DA.put(b.charAt(d), 0);
+            }
+        }
+        for (int i = 1; i <= a.length(); i++)
+        {
+            int DB = 0;
+            for (int j = 1; j <= b.length(); j++)
+            {
+                final int i1 = DA.get(b.charAt(j - 1));
+                final int j1 = DB;
+                int d = wc;
+                if (a.charAt(i - 1) == b.charAt(j - 1))
+                {
+                    d = 0;
+                    DB = j;
+                }
+                H[i + 1][j + 1] = min(
+                    H[i][j] + d,
+                    H[i + 1][j] + wi,
+                    H[i][j + 1] + wd,
+                    H[i1][j1] + ((i - i1 - 1) * wd)
+                    + ws + ((j - j1 - 1) * wi));
+            }
+            DA.put(a.charAt(i - 1), i);
+        }
+        return H[a.length() + 1][b.length() + 1];
+    }
+
+    private static int min(int a, int b, int c, int d)
+    {
+        return Math.min(a, Math.min(b, Math.min(c, d)));
+    }
 
     /**
      * CaseInsensitive StringMatching First LD-Check 1 IndexCheck maxIndex:
@@ -365,11 +434,11 @@ public final class StringUtils
                 }
                 if (caseInSensitive)
                 {
-                    ld = getLevenshteinDistance(inList.toLowerCase(Locale.ENGLISH), string);
+                    ld = getDemerauLevenshteinDistance(inList.toLowerCase(Locale.ENGLISH), string);
                 }
                 else
                 {
-                    ld = getLevenshteinDistance(inList, string);
+                    ld = getDemerauLevenshteinDistance(inList, string);
                 }
                 if (ld <= firstLdCheck) // Match with ld <= 2 and searchString > 4
                 {
@@ -434,7 +503,7 @@ public final class StringUtils
                         {
                             subString = subString.toLowerCase(Locale.ENGLISH);
                         }
-                        ld = getLevenshteinDistance(subString, searchString);
+                        ld = getDemerauLevenshteinDistance(subString, searchString);
                         if (ld <= secondLdCheck) // Found light Typo at start of String
                         {
                             if ((ld * 100 / searchStringLength) <= percentLdOfLength || ld == 1)
