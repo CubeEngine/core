@@ -130,36 +130,21 @@ public class MaterialMatcher
                 case HUGE_MUSHROOM_1:
                 case HUGE_MUSHROOM_2:
                 case POTION:
-                    item.setDurability(this.datavalues.get(item.getType().getId()).get(data));
+                    String foundData = StringUtils.matchString(data, this.datavalues.get(item.getTypeId()).keySet());
+                    if (foundData != null)
+                    {
+                        item.setDurability(this.datavalues.get(item.getType().getId()).get(foundData));
+                    }
                     return item;
-                /*
-                 case MONSTER_EGG: // TODO Entity Matcher ??
-                 creeper: 50
-                 skeleton: 51
-                 spider: 52
-                 zombie: 54
-                 slime: 55
-                 ghast: 56
-                 zombiepigman: 57
-                 enderman: 58
-                 cavespider: 59
-                 silverfish: 60
-                 blaze: 61
-                 magmacube: 62
-                 pig: 90
-                 sheep: 91
-                 cow: 92
-                 chicken: 93
-                 squid: 94
-                 wolf: 95
-                 mooshroom: 96
-                 ocelot: 98
-                 villager: 120
-                 */
+                case MONSTER_EGG:
+                    EntityType foundEggData = EntityMatcher.get().matchSpawnEggMobs(data);
+                    if (foundEggData != null)
+                    {
+                        item.setDurability(foundEggData.getBukkitType().getTypeId());
+                    }
                 default:
-                    return null;
+                    return item;
             }
-
         }
         return null; //could not set data -> invalid item
     }
@@ -170,19 +155,7 @@ public class MaterialMatcher
         {
             return null;
         }
-        String t_key = null;
-        for (String key : this.items.keySet())
-        {
-            int ld = StringUtils.getLevenshteinDistance(s, key);
-            if (ld == 1)
-            {
-                return this.items.get(key);
-            }
-            if (ld <= 2)
-            {
-                t_key = key;
-            }
-        }
+        String t_key = StringUtils.matchString(s, this.items.keySet());
         if (t_key != null)
         {
             return this.items.get(t_key);

@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -307,12 +308,12 @@ public final class StringUtils
      * @param stringlist the possible Strings to find
      * @return a found match or null
      */
-    public static String matchString(String string, List<String> stringlist)
+    public static String matchString(String string, Collection<String> stringlist)
     {
         return matchString(string, stringlist, true);
     }
 
-    public static String matchString(String string, List<String> stringlist, boolean caseInSensitive)
+    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive)
     {
         if (stringlist == null || string == null || stringlist.isEmpty())
         {

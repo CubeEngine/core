@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,7 +50,7 @@ public class EntityMatcher
     {
         Map<String, EntityType> entities = EntityType.getNameSets();
         String s = name.toLowerCase(Locale.ENGLISH);
-        EntityType ench = entities.get(s);
+        EntityType entity = entities.get(s);
         try
         {
             short entityId = Short.parseShort(s);
@@ -60,31 +59,19 @@ public class EntityMatcher
         catch (NumberFormatException e)
         {
         }
-        if (ench == null)
+        if (entity == null)
         {
             if (s.length() < 4)
             {
                 return null;
             }
-            String t_key = null;
-            for (String key : entities.keySet())
-            {
-                int ld = StringUtils.getLevenshteinDistance(s, key);
-                if (ld == 1)
-                {
-                    return entities.get(key);
-                }
-                if (ld <= 2)
-                {
-                    t_key = key;
-                }
-            }
+            String t_key = StringUtils.matchString(name, entities.keySet());
             if (t_key != null)
             {
                 return entities.get(t_key);
             }
         }
-        return ench;
+        return entity;
     }
 
     public EntityType matchMob(String s)

@@ -65,12 +65,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             @Override
             public void update(Database database) throws SQLException
             {
-                
+
                 database.execute(
                     database.getQueryBuilder().alterTable(table).add("nogc", AttrType.BOOLEAN).rawSQL(" DEFAULT false").end().end());
                 database.execute(
-                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.TIMESTAMP).rawSQL(" DEFAULT ").value().end().end()
-                    ,new Timestamp(System.currentTimeMillis()));
+                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.TIMESTAMP).rawSQL(" DEFAULT ").value().end().end(), new Timestamp(System.currentTimeMillis()));
             }
         }, 1);
     }
@@ -320,76 +319,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             {
                 //Get all online Player and searching for similar names
                 Player[] players = this.server.getOnlinePlayers();
-                int distance = 5;
-                int ld;
+                ArrayList<String> onlinePlayerList = new ArrayList<String>();
                 for (Player player : players)
                 {
-                    String playername = player.getName();
-                    if (distance == 1)//if closest found stop searching
-                    {
-                        break;
-                    }
-                    if ((name.length() < (playername.length() - 3)) || (name.length() > (playername.length() + 3)))
-                    {
-                        continue;//length differ by more than 3
-                    }
-                    ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), playername.toLowerCase(Locale.ENGLISH));
-                    if (ld <= 2)//Max Worddistance 2
-                    {
-                        if (ld < distance)//Get best match
-                        {
-                            distance = ld;
-                            user = this.getUser(playername);
-                        }
-                    }
+                    onlinePlayerList.add(player.getName());
                 }
-                if (user == null)
-                {
-                    //Search if name is part of playername
-                    int index = 16;
-                    for (Player player : players)
-                    {
-                        if (index == 0) //Found a player that begins with name
-                        {
-                            break;
-                        }
-                        //ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), player.getName().toLowerCase(Locale.ENGLISH));
-                        int ind = player.getName().toLowerCase(Locale.ENGLISH).indexOf(name.toLowerCase(Locale.ENGLISH));
-                        if (ind != -1)
-                        {
-                            //name is in playername -> adjust ld
-                            if (ind < index) //Lower Index is better match
-                            {
-                                index = ind;
-                                user = this.getUser(player);
-                            }
-                        }
-                    }
-                    if ((user == null) && (name.length() > 3))//Search for typo in first part of name (only if name has 4 chars or more)
-                    {
-                        distance = 3;
-                        for (Player player : players)
-                        {
-                            if (distance == 1)
-                            {
-                                break;
-                            }
-                            if (player.getName().length() >= name.length())
-                            {
-                                String partName = player.getName().substring(0, name.length());
-                                ld = StringUtils.getLevenshteinDistance(name.toLowerCase(Locale.ENGLISH), partName.toLowerCase(Locale.ENGLISH));
-                                if (ld <= 2)
-                                {
-                                    if (ld < distance)//Get best match
-                                    {
-                                        distance = ld;
-                                        user = this.getUser(player.getName());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                user = this.getUser(StringUtils.matchString(name, onlinePlayerList));
             }
         }
         if (user != null)

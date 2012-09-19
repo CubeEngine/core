@@ -67,19 +67,7 @@ public class EnchantMatcher
             {
                 return null;
             }
-            String t_key = null;
-            for (String key : this.enchantments.keySet())
-            {
-                int ld = StringUtils.getLevenshteinDistance(s.toLowerCase(Locale.ENGLISH), key);
-                if (ld == 1)
-                {
-                    return this.enchantments.get(key);
-                }
-                if (ld <= 2)
-                {
-                    t_key = key;
-                }
-            }
+            String t_key = StringUtils.matchString(s, this.enchantments.keySet());
             if (t_key != null)
             {
                 return this.enchantments.get(t_key);
