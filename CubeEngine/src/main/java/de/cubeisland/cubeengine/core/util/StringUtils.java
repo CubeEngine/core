@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.util;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -312,7 +313,7 @@ public final class StringUtils
      */
     public static String matchString(String string, Collection<String> stringlist)
     {
-        return matchString(string, stringlist, true, 1, string.length(), 20, 2, string.length());
+        return matchString(string, stringlist, true, 1, string.length(), 20, 2, 60);
     }
 
     /**
@@ -331,10 +332,10 @@ public final class StringUtils
      * @param maxIndex
      * @param maxbehindIndex
      * @param secondLdCheck
-     * @param minLengthforLdCheck
+     * @param percentLdOfLength
      * @return a matching String
      */
-    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive, int firstLdCheck, int maxIndex, int maxbehindIndex, int secondLdCheck, int minLengthforLdCheck)
+    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive, int firstLdCheck, int maxIndex, int maxbehindIndex, int secondLdCheck, int percentLdOfLength)
     {
         if (stringlist == null || string == null || stringlist.isEmpty())
         {
@@ -372,17 +373,21 @@ public final class StringUtils
                 }
                 if (ld <= firstLdCheck) // Match with ld <= 2 and searchString > 4
                 {
-                    if (ld < distance)
+                    if ((ld * 100 / searchStringLength) <= percentLdOfLength || ld == 1)
                     {
-                        distance = ld;
-                        foundString = inList;
+                        CubeEngine.getLogger().fine("LD1: Found " + inList + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength);
+                        if (ld < distance)
+                        {
+                            distance = ld;
+                            foundString = inList;
+                        }
                     }
                 }
             }
         }
-        if (maxIndex >= 0) // Index lower than 0 -> NO CHECK
+        if (foundString == null) // Not Found -> does String contain searchString?
         {
-            if (foundString == null) // Not Found -> does String contain searchString?
+            if (maxIndex >= 0) // Index lower than 0 -> NO CHECK
             {
                 int indexfound = maxIndex;
                 int index;
@@ -399,6 +404,7 @@ public final class StringUtils
                     }
                     if (index != -1) // Found seachString in inList
                     {
+                        CubeEngine.getLogger().fine("Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
                         if (index < indexfound) // Compare to last match
                         {
                             indexfound = index;
@@ -414,31 +420,28 @@ public final class StringUtils
                 }
             }
         }
-        if (secondLdCheck >= 1) // LD lower than 1 -> NO Check
+        if (foundString == null) // Not Found -> search for Typo at start
         {
-            if (foundString == null) // Not Found -> search for Typo at start
+            if (secondLdCheck >= 1) // LD lower than 1 -> NO Check
             {
-                if (searchStringLength > minLengthforLdCheck) // Only search if long enough
+                distance = secondLdCheck + 1;
+                for (String inList : stringlist)
                 {
-                    distance = secondLdCheck + 1;
-                    for (String inList : stringlist)
+                    if (inList.length() >= searchStringLength) // can inList contain searchString?
                     {
-                        if (inList.length() >= searchStringLength) // can inList contain searchString?
+                        String subString = inList.substring(0, searchStringLength);
+                        if (caseInSensitive)
                         {
-                            String subString = inList.substring(0, searchStringLength);
-                            if (caseInSensitive)
+                            subString = subString.toLowerCase(Locale.ENGLISH);
+                        }
+                        ld = getLevenshteinDistance(subString, searchString);
+                        if (ld <= secondLdCheck) // Found light Typo at start of String
+                        {
+                            if ((ld * 100 / searchStringLength) <= percentLdOfLength || ld == 1)
                             {
-                                subString = subString.toLowerCase(Locale.ENGLISH);
-                            }
-                            ld = getLevenshteinDistance(subString, searchString);
-                            if (ld <= secondLdCheck || ld == 1) // Found light Typo at start of String
-                            {
+                                CubeEngine.getLogger().fine("LD2: Found " + inList + "|" + subString + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength);
                                 if (ld < distance) // Compare to last match
                                 {
-                                    if (ld == 1)
-                                    {
-                                        return inList; // ld 1 Typo in start of String
-                                    }
                                     distance = ld;
                                     foundString = inList;
                                 }
@@ -448,6 +451,7 @@ public final class StringUtils
                 }
             }
         }
+        CubeEngine.getLogger().fine("Found " + foundString + " for " + searchString);
         return foundString;
     }
 }
