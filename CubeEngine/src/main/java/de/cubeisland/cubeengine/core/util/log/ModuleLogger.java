@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.module.ModuleInfo;
 import java.io.File;
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  *
@@ -12,9 +13,12 @@ import java.util.logging.Level;
  */
 public class ModuleLogger extends CubeLogger
 {
+    private final String prefix;
+    
     public ModuleLogger(Core core, ModuleInfo info)
     {
-        super(info.getName());
+        super(info.getName(), core.getCoreLogger());
+        this.prefix = "[" + info.getName() + "] ";
         try
         {
             this.addHandler(new FileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), info.getName().toLowerCase(Locale.ENGLISH)).toString()));
@@ -23,5 +27,12 @@ public class ModuleLogger extends CubeLogger
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void log(LogRecord record)
+    {
+        record.setMessage(this.prefix + record.getMessage());
+        super.log(record);
     }
 }

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
@@ -27,7 +28,7 @@ import org.apache.commons.lang.Validate;
  */
 public class I18n implements Cleanable
 {
-    private static final Logger LOGGER = new CubeLogger("language",false);
+    private static final Logger LOGGER = new CubeLogger("language", null);
     
     public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;

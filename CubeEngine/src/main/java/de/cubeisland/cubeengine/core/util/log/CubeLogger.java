@@ -1,11 +1,9 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -13,7 +11,6 @@ import java.util.regex.Pattern;
  */
 public class CubeLogger extends Logger
 {
-    private boolean useBukkitLogger;
     private static Level loggingLevel = Level.ALL;
 
     /**
@@ -23,7 +20,7 @@ public class CubeLogger extends Logger
      */
     public CubeLogger(String name)
     {
-        this(name, true);
+        this(name, null);
     }
 
     /**
@@ -32,47 +29,27 @@ public class CubeLogger extends Logger
      * @param name the name
      * @param useBukkitLogger log into console or not
      */
-    public CubeLogger(String name, boolean useBukkitLogger)
+    public CubeLogger(String name, Logger parent)
     {
         super(name, null);
-        this.setParent(Logger.getLogger(name));
-        this.setUseParentHandlers(false);
+        if (parent != null)
+        {
+            this.setParent(parent);
+        }
         this.setLevel(Level.ALL);
-        this.useBukkitLogger = useBukkitLogger;
     }
 
-    // Pass ConsoleLogging to BukkitLogger
     @Override
     public void log(LogRecord record)
     {
-        String msg = record.getMessage();
-        Object[] params = record.getParameters();
-        if (!(params == null || params.length == 0))
+        if (this.getParent() != null)
         {
-            Pattern.compile("\\{\\d").matcher(msg).find();
-            msg = MessageFormat.format(msg, record.getParameters());
+            getParent().log(record);
         }
-        record.setParameters(null);
-
-        if (!CubeEngine.getCore().isDebug())
+        else
         {
-            record.setThrown(null);
+            super.log(record);
         }
-        Level level = record.getLevel();
-        if (record.getLevel().intValue() <= Level.INFO.intValue())
-        {
-            record.setLevel(Level.INFO); // LogLevel lower than info are displayed as INFO anyways
-        }
-        if (useBukkitLogger)
-        {
-            if (level.intValue() >= loggingLevel.intValue())
-            { // only log to console if Log is important enough
-                record.setMessage("[" + this.getName() + "] " + msg);
-                this.getParent().log(record);
-            }
-        }
-        record.setMessage(msg);
-        super.log(record);
     }
 
     public void exception(String msg, Throwable t)
@@ -82,15 +59,10 @@ public class CubeLogger extends Logger
 
     public void debug(Object msg)
     {
-        if (CubeEngine.getCore().isDebug())
+        if (CubeEngine.isDebug())
         {
-            this.log(Level.INFO, "[Debug] {0}", msg);
+            this.log(Level.INFO, "[Debug] " + msg);
         }
-    }
-    
-    public void setUseBukkitLogger(boolean b)
-    {
-        this.useBukkitLogger = b;
     }
     
     public static void setLoggingLevel(Level level)

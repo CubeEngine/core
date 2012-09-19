@@ -222,4 +222,14 @@ public final class CubeEngine
     {
         return core.getI18n().translate(language, category, text, params);
     }
+
+    public static CoreConfiguration getConfiguration()
+    {
+        return core.getConfiguration();
+    }
+    
+    public static boolean isDebug()
+    {
+        return core.isDebug();
+    }
 }
