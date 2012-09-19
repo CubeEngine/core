@@ -314,6 +314,10 @@ public final class StringUtils
 
     public static String matchString(String string, List<String> stringlist, boolean caseInSensitive)
     {
+        if (stringlist == null || string == null || stringlist.isEmpty())
+        {
+            return null;
+        }
         int distance = 3;
         int ld;
         String searchString = string;
@@ -384,14 +388,14 @@ public final class StringUtils
         }
         if (foundString == null) // Not Found -> search for Typo at start
         {
-            if (searchStringLength > 3) // Only search if is 4 long or more
+            if (searchStringLength > 4) // Only search if is 5 long or more
             {
                 distance = 3;
                 for (String inList : stringlist)
                 {
-                    if (inList.length() >= searchStringLength - 1) // can inList contain searchString?
+                    if (inList.length() >= searchStringLength) // can inList contain searchString?
                     {
-                        String subString = inList.substring(0, inList.length());
+                        String subString = inList.substring(0, searchStringLength);
                         if (caseInSensitive)
                         {
                             subString = subString.toLowerCase(Locale.ENGLISH);

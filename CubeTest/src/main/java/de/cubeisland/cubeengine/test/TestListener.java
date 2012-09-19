@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.test;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -34,6 +35,10 @@ public class TestListener implements Listener
         if (event.getMessage().startsWith("i18n"))
         {
             this.testI18n(event);
+        }
+        if (event.getMessage().startsWith("find "))
+        {
+            this.testMatchStrings(event);
         }
     }
 
@@ -102,5 +107,11 @@ public class TestListener implements Listener
         user.sendMessage("test", "&1color &2Test");
         user.sendMessage(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "&1color &2Test"));
         user.sendMessage("test", "NotTranslatedMessageIsNotTranslated");
+    }
+
+    private void testMatchStrings(AsyncPlayerChatEvent event)
+    {
+        String msg = event.getMessage().substring(5);
+        event.getPlayer().sendMessage(StringUtils.matchString(msg, Test.aListOfPlayers));
     }
 }

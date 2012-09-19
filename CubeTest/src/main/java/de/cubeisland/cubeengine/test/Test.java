@@ -2,8 +2,8 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
-import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.From;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
@@ -21,6 +21,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.event.EventHandler;
@@ -33,6 +34,8 @@ public class Test extends Module
     
     @From("test.yml")
     protected TestConfig config;
+    
+    public static List<String> aListOfPlayers;
 
     @Override
     public void onEnable()
@@ -62,6 +65,7 @@ public class Test extends Module
         this.testUserManager();
         this.testl18n();
         this.testMatchers();
+        this.testsomeUtils();
         
         this.getCore().getEventManager().registerListener(new Listener() {
             @EventHandler
@@ -245,5 +249,17 @@ public class Test extends Module
         this.getLogger().debug(EntityMatcher.get().matchMonster("zombi"));
         this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("shep"));
         this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("ghast") + " is null");
+    }
+
+    private void testsomeUtils()
+    {
+        try
+        {
+            aListOfPlayers = FileUtil.getFileAsStringList(new File(this.getFolder(),"testdata/player.txt"));
+        }
+        catch (Exception ex)
+        {
+            this.getLogger().log(Level.SEVERE,"Error in testsomeutils",ex);
+        }
     }
 }
