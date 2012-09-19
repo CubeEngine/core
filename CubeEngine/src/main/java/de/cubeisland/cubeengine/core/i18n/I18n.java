@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
@@ -121,7 +120,6 @@ public class I18n implements Cleanable
                 loadStack.pop();
             }
         }
-
         try
         {
             language = new NormalLanguage(config, languageDir, language);

@@ -3,13 +3,13 @@ package de.cubeisland.cubeengine.core.i18n;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
@@ -192,7 +192,6 @@ public class NormalLanguage implements Cleanable, Language
             }
             if (updated)
             {
-                FileWriter fw = new FileWriter(file);
                 StringBuilder sb = new StringBuilder("{\n");
                 Iterator<String> iter = catMessages.keySet().iterator();
                 String key;
@@ -207,8 +206,7 @@ public class NormalLanguage implements Cleanable, Language
                     sb.append(",\n    \"").append(key).append("\": \"").append(catMessages.get(key)).append("\"");
                 }
                 sb.append("\n}");
-                fw.write(sb.toString());
-                fw.close();
+                FileUtil.saveFile(sb.toString(), file);
             }
         }
         catch (IOException ex)

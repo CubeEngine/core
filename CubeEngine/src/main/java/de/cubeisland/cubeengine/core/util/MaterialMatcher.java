@@ -2,15 +2,17 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
+import de.cubeisland.cubeengine.core.filesystem.Resource;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,7 +30,6 @@ public class MaterialMatcher
     {
         this.items = new THashMap<String, ItemStack>();
         THashMap<ItemStack, List<String>> readItems = this.readItems();
-        this.readDataValues();
         for (ItemStack item : readItems.keySet())
         {
             this.registerItemStack(item, readItems.get(item));
@@ -182,13 +183,14 @@ public class MaterialMatcher
     {
         try
         {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ITEMS.getTarget())));
+            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ITEMS.getTarget());
+            List<String> input = FileUtil.getFileAsStringList(file);
+
             THashMap<ItemStack, List<String>> readItems = new THashMap<ItemStack, List<String>>();
-            String line;
             int id;
             short data;
             ArrayList<String> names = new ArrayList<String>();
-            while ((line = reader.readLine()) != null)
+            for (String line : input)
             {
                 line = line.trim();
                 if (line.isEmpty() || line.startsWith("#"))
@@ -207,6 +209,54 @@ public class MaterialMatcher
                     names.add(line);
                 }
             }
+            // update
+            boolean updated = false;
+            Resource resource = CubeEngine.getFileManager().getSourceOf(file);
+            String source = resource.getSource();
+            if (!source.startsWith("/"))
+            {
+                source = "/" + source;
+            }
+            List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
+            for (String line : jarinput)
+            {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#"))
+                {
+                    continue;
+                }
+                if (line.contains(":"))
+                {
+                    id = Integer.parseInt(line.substring(0, line.indexOf(":")));
+                    data = Short.parseShort(line.substring(line.indexOf(":") + 1));
+                    names = new ArrayList<String>();
+                    ItemStack item = new ItemStack(id, 1, data);
+                    if (readItems.get(item) == null) // Item not in readItems!
+                    {
+                        readItems.put(item, names);
+                        updated = true;
+                    }
+                }
+                else
+                {
+                    names.add(line);
+                }
+            }
+            if (updated) // save if updated
+            {
+                CubeEngine.getLogger().log(Level.FINER,"Updated items.txt");
+                StringBuilder sb = new StringBuilder();
+                for (ItemStack item : readItems.keySet())
+                {
+                    sb.append(item.getTypeId()).append(":").append(item.getData()).append("\n");
+                    List<String> itemnames = readItems.get(item);
+                    for (String itemname : itemnames)
+                    {
+                        sb.append("  ").append(itemname).append("\n");
+                    }
+                }
+                FileUtil.saveFile(sb.toString(), file);
+            }
             return readItems;
         }
         catch (NumberFormatException ex)
@@ -224,10 +274,10 @@ public class MaterialMatcher
         this.datavalues = new TIntObjectHashMap<THashMap<String, Short>>();
         try
         {
+            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.DATAVALUES.getTarget());
+            List<String> input = FileUtil.getFileAsStringList(file);
             THashMap<String, Short> data = new THashMap<String, Short>();
-            BufferedReader reader = new BufferedReader(new FileReader(new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.DATAVALUES.getTarget())));
-            String line;
-            while ((line = reader.readLine()) != null)
+            for (String line : input)
             {
                 line = line.trim();
                 if (line.isEmpty() || line.startsWith("#"))

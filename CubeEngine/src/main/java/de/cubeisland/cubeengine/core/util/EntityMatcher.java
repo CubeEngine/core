@@ -2,11 +2,12 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
+import de.cubeisland.cubeengine.core.filesystem.Resource;
 import gnu.trove.map.hash.TShortObjectHashMap;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -128,11 +129,12 @@ public class EntityMatcher
     {
         try
         {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget())));
+            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
+            List<String> input = FileUtil.getFileAsStringList(file);
+
             TShortObjectHashMap<List<String>> entityList = new TShortObjectHashMap<List<String>>();
-            String line;
             ArrayList<String> names = new ArrayList<String>();
-            while ((line = reader.readLine()) != null)
+            for (String line : input)
             {
                 line = line.trim();
                 if (line.isEmpty() || line.startsWith("#"))
@@ -149,6 +151,53 @@ public class EntityMatcher
                 {
                     names.add(line);
                 }
+            }
+            // update
+            boolean updated = false;
+            Resource resource = CubeEngine.getFileManager().getSourceOf(file);
+            String source = resource.getSource();
+            if (!source.startsWith("/"))
+            {
+                source = "/" + source;
+            }
+            List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
+            for (String line : jarinput)
+            {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#"))
+                {
+                    continue;
+                }
+                if (line.endsWith(":"))
+                {
+
+                    short id = Short.parseShort(line.substring(0, line.length() - 1));
+                    names = new ArrayList<String>();
+                    if (entityList.get(id) == null)
+                    {
+                        entityList.put(id, names);
+                        updated = true;
+                    }
+                }
+                else
+                {
+                    names.add(line);
+                }
+            }
+            if (updated)
+            {
+                CubeEngine.getLogger().log(Level.FINER, "Updated entities.txt");
+                StringBuilder sb = new StringBuilder();
+                for (short key : entityList.keys())
+                {
+                    sb.append(key).append(":").append("\n");
+                    List<String> entitynames = entityList.get(key);
+                    for (String entityname : entitynames)
+                    {
+                        sb.append("    ").append(entityname).append("\n");
+                    }
+                }
+                FileUtil.saveFile(sb.toString(), file);
             }
             return entityList;
         }
