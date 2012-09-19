@@ -17,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -199,6 +198,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      */
     public User getUser(String name)
     {
+        if (name == null)
+        {
+            return null;
+        }
         User user = this.users.get(name);
         if (user == null)
         {

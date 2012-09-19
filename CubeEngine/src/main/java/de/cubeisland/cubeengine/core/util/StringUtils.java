@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.util;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -302,7 +304,9 @@ public final class StringUtils
     }
 
     /**
-     * CaseInsensitive StringMatching
+     * CaseInsensitive StringMatching First LD-Check 1 IndexCheck maxIndex:
+     * string.length() maxBehind: 20 Second LD-Check 2 maxLength:
+     * string.length()
      *
      * @param string the string to search
      * @param stringlist the possible Strings to find
@@ -310,16 +314,35 @@ public final class StringUtils
      */
     public static String matchString(String string, Collection<String> stringlist)
     {
-        return matchString(string, stringlist, true);
+        return matchString(string, stringlist, true, 1, string.length(), 20, 2, string.length());
     }
 
-    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive)
+    /**
+     * Tries to match a String with - LD with distance
+     *
+     * @param firstLdCheck - Index with
+     * @param maxIndex and
+     * @param maxbehindIndex - LD at start with distance
+     * @param secondLdCheck when longer than
+     * @param maxLengthforLdCheck
+     *
+     * @param string
+     * @param stringlist
+     * @param caseInSensitive
+     * @param firstLdCheck
+     * @param maxIndex
+     * @param maxbehindIndex
+     * @param secondLdCheck
+     * @param minLengthforLdCheck
+     * @return a matching String
+     */
+    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive, int firstLdCheck, int maxIndex, int maxbehindIndex, int secondLdCheck, int minLengthforLdCheck)
     {
         if (stringlist == null || string == null || stringlist.isEmpty())
         {
             return null;
         }
-        int distance = 3;
+        int distance;
         int ld;
         String searchString = string;
         if (caseInSensitive)
@@ -332,86 +355,95 @@ public final class StringUtils
         {
             return string; // Direct Match
         }
-        for (String inList : stringlist)
+        if (firstLdCheck >= 1) // LD lower than 1 -> NO Check
         {
-            if ((searchStringLength < (inList.length() - 3)) || (searchStringLength > (inList.length() + 3)))
-            {
-                continue; // length differ by more than 3
-            }
-            if (caseInSensitive)
-            {
-                ld = getLevenshteinDistance(inList.toLowerCase(Locale.ENGLISH), string);
-            }
-            else
-            {
-                ld = getLevenshteinDistance(inList, string);
-            }
-            if (ld <= 2) // Match with ld <= 2
-            {
-                if (ld < distance) // Compare to last match
-                {
-                    if (ld == 1)
-                    {
-                        return inList; // Found best possible match
-                    }
-                    distance = ld;
-                    foundString = inList;
-                }
-            }
-        }
-        if (foundString == null) // Not Found -> does String contain searchString?
-        {
-            int indexfound = searchStringLength;
-            int index;
+            distance = firstLdCheck + 1;
             for (String inList : stringlist)
             {
+                if ((searchStringLength < (inList.length() - 3)) || (searchStringLength > (inList.length() + 3)))
+                {
+                    continue; // length differ by more than 3
+                }
                 if (caseInSensitive)
                 {
-                    index = inList.toLowerCase(Locale.ENGLISH).indexOf(searchString);
+                    ld = getLevenshteinDistance(inList.toLowerCase(Locale.ENGLISH), string);
                 }
                 else
                 {
-                    index = inList.indexOf(searchString);
+                    ld = getLevenshteinDistance(inList, string);
                 }
-                if (index != -1) // Found seachString in inList
+                if (ld <= firstLdCheck) // Match with ld <= 2 and searchString > 4
                 {
-                    if (index < indexfound) // Compare to last match
+                    if (ld < distance)
                     {
-                        if (index == 0)
-                        {
-                            return inList; // Found searchString at start of inList
-                        }
-                        indexfound = index;
+                        distance = ld;
                         foundString = inList;
                     }
                 }
             }
         }
-        if (foundString == null) // Not Found -> search for Typo at start
+        if (maxIndex >= 0) // Index lower than 0 -> NO CHECK
         {
-            if (searchStringLength > 4) // Only search if is 5 long or more
+            if (foundString == null) // Not Found -> does String contain searchString?
             {
-                distance = 3;
+                int indexfound = maxIndex;
+                int index;
+                int behindindex = maxbehindIndex;
                 for (String inList : stringlist)
                 {
-                    if (inList.length() >= searchStringLength) // can inList contain searchString?
+                    if (caseInSensitive)
                     {
-                        String subString = inList.substring(0, searchStringLength);
-                        if (caseInSensitive)
+                        index = inList.toLowerCase(Locale.ENGLISH).indexOf(searchString);
+                    }
+                    else
+                    {
+                        index = inList.indexOf(searchString);
+                    }
+                    if (index != -1) // Found seachString in inList
+                    {
+                        if (index < indexfound) // Compare to last match
                         {
-                            subString = subString.toLowerCase(Locale.ENGLISH);
+                            indexfound = index;
+                            behindindex = inList.length() - (index + searchStringLength);
+                            foundString = inList;
                         }
-                        ld = getLevenshteinDistance(subString, searchString);
-                        if (ld <= 2) // Found light Typo at start of String
+                        if (index == indexfound && inList.length() - (index + searchStringLength) <= behindindex)
                         {
-                            if (ld < distance) // Compare to last match
+                            behindindex = inList.length() - (index + searchStringLength);
+                            foundString = inList;
+                        }
+                    }
+                }
+            }
+        }
+        if (secondLdCheck >= 1) // LD lower than 1 -> NO Check
+        {
+            if (foundString == null) // Not Found -> search for Typo at start
+            {
+                if (searchStringLength > minLengthforLdCheck) // Only search if long enough
+                {
+                    distance = secondLdCheck + 1;
+                    for (String inList : stringlist)
+                    {
+                        if (inList.length() >= searchStringLength) // can inList contain searchString?
+                        {
+                            String subString = inList.substring(0, searchStringLength);
+                            if (caseInSensitive)
                             {
-                                if (ld == 1)
+                                subString = subString.toLowerCase(Locale.ENGLISH);
+                            }
+                            ld = getLevenshteinDistance(subString, searchString);
+                            if (ld <= secondLdCheck || ld == 1) // Found light Typo at start of String
+                            {
+                                if (ld < distance) // Compare to last match
                                 {
-                                    return inList; // ld 1 Typo in start of String
+                                    if (ld == 1)
+                                    {
+                                        return inList; // ld 1 Typo in start of String
+                                    }
+                                    distance = ld;
+                                    foundString = inList;
                                 }
-                                distance = ld;
-                                foundString = inList;
                             }
                         }
                     }

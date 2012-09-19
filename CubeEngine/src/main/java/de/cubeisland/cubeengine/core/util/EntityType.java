@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.util;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
@@ -139,7 +140,7 @@ public enum EntityType
     {
         for (String name : names)
         {
-            NAME_MAP.put(name, this);
+            NAME_MAP.put(name.toLowerCase(Locale.ENGLISH), this);
         }
     }
 

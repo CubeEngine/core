@@ -1312,6 +1312,9 @@
   goldmelon
   sparklymelon
   shiningmelon
+383:0
+  spawnegg
+  monsteregg
 383:50
   creeperegg
   eggcreeper

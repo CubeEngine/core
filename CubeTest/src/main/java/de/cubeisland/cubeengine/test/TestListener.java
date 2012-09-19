@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.test;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,6 +12,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -40,6 +42,10 @@ public class TestListener implements Listener
         {
             this.testMatchStrings(event);
         }
+        if (event.getMessage().startsWith("i "))
+        {
+            this.giveItem(event);
+        }
     }
 
     @EventHandler
@@ -53,7 +59,7 @@ public class TestListener implements Listener
     {
         if (event.getSpawnReason().equals(SpawnReason.SPAWNER_EGG))
         {
-            test.getLogger().debug("SpawnEggUse! "+event.getEntity());
+            test.getLogger().debug("SpawnEggUse! " + event.getEntity());
         }
     }
 
@@ -113,5 +119,20 @@ public class TestListener implements Listener
     {
         String msg = event.getMessage().substring(5);
         event.getPlayer().sendMessage(StringUtils.matchString(msg, Test.aListOfPlayers));
+    }
+
+    private void giveItem(AsyncPlayerChatEvent event)
+    {
+        User user = CubeEngine.getUserManager().getUser(event.getPlayer());
+        String msg = event.getMessage().substring(2);
+        ItemStack item = MaterialMatcher.get().matchItemStack(msg);
+        if (item == null)
+        {
+            user.sendMessage(msg + " not Found");
+            return;
+        }
+        item.setAmount(64);
+        user.getInventory().addItem(item);
+        user.updateInventory();
     }
 }
