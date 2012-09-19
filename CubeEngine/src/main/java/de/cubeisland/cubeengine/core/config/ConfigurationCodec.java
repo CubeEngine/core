@@ -193,7 +193,7 @@ public abstract class ConfigurationCodec
         {
             if (revis.value() > this.revision)
             {
-                logger.log(Level.INFO, "Updating Configuration from Revision {0}", this.revision);
+                logger.log(Level.INFO, "Updating Configuration from Revision " + this.revision);
                 Updater annotation = clazz.getClass().getAnnotation(Updater.class);
                 if (annotation != null)
                 {

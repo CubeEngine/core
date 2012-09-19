@@ -120,7 +120,7 @@ public abstract class Configuration
         }
         catch (FileNotFoundException e)
         {
-            logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
+            logger.log(Level.INFO, file.getName() + " not found! Creating new config...");
         }
         T config = load(clazz, inputStream); //loading config from InputSream or Default
         if (inputStream != null)
@@ -248,7 +248,7 @@ public abstract class Configuration
     }
 
     /**
-     *Returns the lines to be added at the end of the Configuration
+     * Returns the lines to be added at the end of the Configuration
      */
     public String[] tail()
     {

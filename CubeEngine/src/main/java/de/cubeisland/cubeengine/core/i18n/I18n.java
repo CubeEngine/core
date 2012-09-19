@@ -29,7 +29,6 @@ import org.apache.commons.lang.Validate;
 public class I18n implements Cleanable
 {
     private static final Logger LOGGER = new CubeLogger("language", null);
-    
     public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
@@ -84,17 +83,17 @@ public class I18n implements Cleanable
             }
             else
             {
-                LOGGER.log(Level.SEVERE, "The language ''{0}'' has an invalid configation!", file.getName());
+                LOGGER.log(Level.SEVERE, "The language ''" + file.getName() + "'' has an invalid configation!");
             }
         }
-        
+
         Stack<String> loadStack = new Stack<String>();
         for (LanguageConfiguration entry : languages.values())
         {
             this.loadLanguage(languageDir, entry, languages, loadStack);
         }
     }
-    
+
     private Language loadLanguage(File languageDir, LanguageConfiguration config, Map<String, LanguageConfiguration> languages, Stack<String> loadStack)
     {
         if (this.languageMap.containsKey(config.code))
@@ -103,7 +102,7 @@ public class I18n implements Cleanable
         }
         if (loadStack.contains(config.code))
         {
-            LOGGER.log(Level.SEVERE, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
+            LOGGER.log(Level.SEVERE, "The language ''" + loadStack.peek() + "'' caused a circular dependency!");
             return null;
         }
         Language language = null;
@@ -139,23 +138,23 @@ public class I18n implements Cleanable
                     }
                 }
             }
-            
+
             return language;
         }
         catch (IllegalArgumentException e)
         {
-            LOGGER.log(Level.SEVERE, "Failed to load the language ''{0}'': {1}", new Object[] {config.code, e.getLocalizedMessage()});
+            LOGGER.log(Level.SEVERE, "Failed to load the language ''" + config.code + "'': " + e.getLocalizedMessage());
         }
         return null;
     }
-    
+
     public Collection<String> getLanguages()
     {
         Set<String> languages = new HashSet<String>(this.languageMap.keySet());
         languages.add(SOURCE_LANGUAGE.getCode());
         return languages;
     }
-    
+
     public Language getLanguage(String name)
     {
         return this.languageMap.get(name);
@@ -172,13 +171,13 @@ public class I18n implements Cleanable
                 translation = lang.getTranslation(category, message);
             }
         }
-        
+
         if (translation == null)
         {
             this.logMissingTranslation(language, category, message);
             translation = SOURCE_LANGUAGE.getTranslation(category, message);
         }
-        
+
         return String.format(translation, params);
     }
 
@@ -214,9 +213,9 @@ public class I18n implements Cleanable
         }
         return null;
     }
-    
+
     private void logMissingTranslation(String language, String category, String message)
     {
-        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[] {language, category, message});
+        LOGGER.log(Level.INFO, "\"" + language + "\" - \"" + category + "\" - \"" + message + "\"");
     }
 }

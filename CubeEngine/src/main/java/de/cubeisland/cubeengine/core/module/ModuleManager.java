@@ -151,7 +151,7 @@ public class ModuleManager
         {
             return false;
         }
-        logger.log(Level.FINE, "Module {0}-r{1} successfully loaded!", new Object[] {info.getName(), info.getRevision()});
+        logger.log(Level.FINE, "Module " + info.getName() + "-r" + info.getRevision() + " successfully loaded!");
         this.modules.put(module.getName().toLowerCase(Locale.ENGLISH), module);
         return true;
     }

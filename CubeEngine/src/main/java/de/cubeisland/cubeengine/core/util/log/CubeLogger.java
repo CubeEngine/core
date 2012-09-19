@@ -37,19 +37,25 @@ public class CubeLogger extends Logger
             this.setParent(parent);
         }
         this.setLevel(Level.ALL);
+        this.setUseParentHandlers(false);
     }
 
     @Override
     public void log(LogRecord record)
     {
+        Level level = record.getLevel();
+        if (level.intValue() < Level.INFO.intValue())
+        {
+            record.setLevel(Level.INFO); // Lower LogLevel can get logged in Console too
+        }
         if (this.getParent() != null)
         {
-            getParent().log(record);
+            if (level.intValue() > loggingLevel.intValue())
+            {
+                this.getParent().log(record);
+            }
         }
-        else
-        {
-            super.log(record);
-        }
+        super.log(record);
     }
 
     public void exception(String msg, Throwable t)
@@ -64,7 +70,7 @@ public class CubeLogger extends Logger
             this.log(Level.INFO, "[Debug] " + msg);
         }
     }
-    
+
     public static void setLoggingLevel(Level level)
     {
         loggingLevel = level;

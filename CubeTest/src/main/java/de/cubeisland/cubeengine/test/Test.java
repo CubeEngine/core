@@ -23,7 +23,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -31,10 +30,8 @@ public class Test extends Module
 {
     public TestManager manager;
     public UserManager uM;
-    
     @From("test.yml")
     protected TestConfig config;
-    
     public static List<String> aListOfPlayers;
 
     @Override
@@ -42,7 +39,6 @@ public class Test extends Module
     {
         this.getFileManager().dropResources(TestRecource.values());
         this.uM = this.getUserManager();
-        Logger logger = this.getLogger();
         try
         {
             this.initializeDatabase();
@@ -50,15 +46,15 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            logger.log(Level.SEVERE, "Error while Enabling the TestModule", ex);
+            this.getLogger().log(Level.SEVERE, "Error while Enabling the TestModule", ex);
         }
         try
         {
-            logger.addHandler(new FileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
+            this.getLogger().addHandler(new FileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
         {
-            logger.log(Level.SEVERE, "Error while adding the FileHandler", ex);
+            this.getLogger().log(Level.SEVERE, "Error while adding the FileHandler", ex);
         }
         this.getCore().getEventManager().registerListener(new TestListener(this), this);
 
@@ -66,8 +62,9 @@ public class Test extends Module
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
-        
-        this.getCore().getEventManager().registerListener(new Listener() {
+
+        this.getCore().getEventManager().registerListener(new Listener()
+        {
             @EventHandler
             public void onLanguageReceived(PlayerLanguageReceivedEvent event)
             {
@@ -225,7 +222,6 @@ public class Test extends Module
 
     public void testl18n()
     {
-        
         this.getLogger().debug(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
         this.getLogger().debug(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
     }
@@ -256,11 +252,11 @@ public class Test extends Module
     {
         try
         {
-            aListOfPlayers = FileUtil.getFileAsStringList(new File(this.getFolder(),"testdata/player.txt"));
+            aListOfPlayers = FileUtil.getFileAsStringList(new File(this.getFolder(), "testdata/player.txt"));
         }
         catch (Exception ex)
         {
-            this.getLogger().log(Level.SEVERE,"Error in testsomeutils",ex);
+            this.getLogger().log(Level.SEVERE, "Error in testsomeutils", ex);
         }
     }
 }

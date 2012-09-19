@@ -32,7 +32,7 @@ public class EntityMatcher
             }
             catch (NullPointerException e)
             {
-                CubeEngine.getLogger().log(Level.WARNING, "Unknown Entity ID: {0} {1}", new Object[]{id, entityList.get(id).get(0)});
+                CubeEngine.getLogger().log(Level.WARNING, "Unknown Entity ID: " + id + " " + entityList.get(id).get(0));
             }
         }
     }
