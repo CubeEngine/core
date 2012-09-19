@@ -171,9 +171,8 @@ public final class StringUtils
             return string;
         }
     }
+    private static final long DAY = (long)24 * 60 * 60 * 1000;
 
-    
-    private static final long DAY = (long)24*60*60*1000;
     /**
      * Converts Time in y | M | w | d | h | m | s to Long default is m
      */
@@ -220,10 +219,10 @@ public final class StringUtils
                 break;
             case 'W':
             case 'w':
-                time *= 7*DAY;
+                time *= 7 * DAY;
                 break;
             case 'M':
-                time *= 30*DAY;
+                time *= 30 * DAY;
                 break;
         }
         return time;
@@ -299,5 +298,121 @@ public final class StringUtils
         // our last action in the above loop was to switch d and p, so p now 
         // actually has the most recent cost counts
         return p[n];
+    }
+
+    /**
+     * CaseInsensitive StringMatching
+     *
+     * @param string the string to search
+     * @param stringlist the possible Strings to find
+     * @return a found match or null
+     */
+    public static String matchString(String string, List<String> stringlist)
+    {
+        return matchString(string, stringlist, true);
+    }
+
+    public static String matchString(String string, List<String> stringlist, boolean caseInSensitive)
+    {
+        int distance = 3;
+        int ld;
+        String searchString = string;
+        if (caseInSensitive)
+        {
+            searchString = searchString.toLowerCase(Locale.ENGLISH);
+        }
+        int searchStringLength = searchString.length();
+        String foundString = null;
+        if (stringlist.contains(string))
+        {
+            return string; // Direct Match
+        }
+        for (String inList : stringlist)
+        {
+            if ((searchStringLength < (inList.length() - 3)) || (searchStringLength > (inList.length() + 3)))
+            {
+                continue; // length differ by more than 3
+            }
+            if (caseInSensitive)
+            {
+                ld = getLevenshteinDistance(inList.toLowerCase(Locale.ENGLISH), string);
+            }
+            else
+            {
+                ld = getLevenshteinDistance(inList, string);
+            }
+            if (ld <= 2) // Match with ld <= 2
+            {
+                if (ld < distance) // Compare to last match
+                {
+                    if (ld == 1)
+                    {
+                        return inList; // Found best possible match
+                    }
+                    distance = ld;
+                    foundString = inList;
+                }
+            }
+        }
+        if (foundString == null) // Not Found -> does String contain searchString?
+        {
+            int indexfound = searchStringLength;
+            int index;
+            for (String inList : stringlist)
+            {
+                if (caseInSensitive)
+                {
+                    index = inList.toLowerCase(Locale.ENGLISH).indexOf(searchString);
+                }
+                else
+                {
+                    index = inList.indexOf(searchString);
+                }
+                if (index != -1) // Found seachString in inList
+                {
+                    if (index < indexfound) // Compare to last match
+                    {
+                        if (index == 0)
+                        {
+                            return inList; // Found searchString at start of inList
+                        }
+                        indexfound = index;
+                        foundString = inList;
+                    }
+                }
+            }
+        }
+        if (foundString == null) // Not Found -> search for Typo at start
+        {
+            if (searchStringLength > 3) // Only search if is 4 long or more
+            {
+                distance = 3;
+                for (String inList : stringlist)
+                {
+                    if (inList.length() >= searchStringLength - 1) // can inList contain searchString?
+                    {
+                        String subString = inList.substring(0, inList.length());
+                        if (caseInSensitive)
+                        {
+                            subString = subString.toLowerCase(Locale.ENGLISH);
+                        }
+                        ld = getLevenshteinDistance(subString, searchString);
+                        if (ld <= 2) // Found light Typo at start of String
+                        {
+                            if (ld < distance) // Compare to last match
+                            {
+                                if (ld == 1)
+                                {
+                                    return inList; // ld 1 Typo in start of String
+                                }
+                                distance = ld;
+                                foundString = inList;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return foundString;
     }
 }
