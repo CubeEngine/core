@@ -745,6 +745,7 @@
 266:0
   goldingot
   goldbar
+  gold
 267:0
   ironsword
   steelsword
