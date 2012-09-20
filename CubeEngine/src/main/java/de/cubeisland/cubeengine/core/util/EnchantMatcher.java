@@ -7,7 +7,6 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -76,51 +75,14 @@ public class EnchantMatcher
         return ench;
     }
 
-    private boolean readEnchantments(TIntObjectHashMap<List<String>> map, List<String> input, boolean update)
-    {
-        boolean updated = false;
-        ArrayList<String> names = new ArrayList<String>();
-        for (String line : input)
-        {
-            line = line.trim();
-            if (line.isEmpty() || line.startsWith("#"))
-            {
-                continue;
-            }
-            if (line.endsWith(":"))
-            {
-                int id = Integer.parseInt(line.substring(0, line.length() - 1));
-                names = new ArrayList<String>();
-                if (!update)
-                {
-                    map.put(id, names);
-                }
-                else if (map.get(id) == null || map.get(id).isEmpty())
-                {
-                    map.put(id, names);
-                    updated = true;
-                }
-            }
-            else
-            {
-                names.add(line);
-            }
-        }
-        return updated;
-    }
-
     private TIntObjectHashMap<List<String>> readEnchantments()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
-            List<String> input = FileUtil.readStringList(file);
-
             TIntObjectHashMap<List<String>> enchs = new TIntObjectHashMap<List<String>>();
-            this.readEnchantments(enchs, input, false);
-            
-            List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
-            if (jarinput != null && this.readEnchantments(enchs, jarinput, true))
+            FileUtil.parseStringList(file, enchs, false);
+            if (FileUtil.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchs, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated enchantments.txt");
                 StringBuilder sb = new StringBuilder();

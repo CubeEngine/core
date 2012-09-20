@@ -3,10 +3,9 @@ package de.cubeisland.cubeengine.core.util;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import gnu.trove.map.hash.TShortObjectHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -22,13 +21,14 @@ public class EntityMatcher
 
     public EntityMatcher()
     {
-        TShortObjectHashMap<List<String>> entityList = this.readEntities();
-        for (short id : entityList.keys())
+        TIntObjectHashMap<List<String>> entityList = this.readEntities();
+        for (int id : entityList.keys())
         {
             try
             {
-                EntityType.fromId(id).registerName(entityList.get(id));
+                EntityType.fromId((short)id).registerName(entityList.get(id));
             }
+            // TODO catch Exception if id is not a short
             catch (NullPointerException e)
             {
                 CubeEngine.getLogger().log(Level.WARNING, "Unknown Entity ID: " + id + " " + entityList.get(id).get(0));
@@ -123,55 +123,18 @@ public class EntityMatcher
         return null;
     }
 
-    private boolean readEntities(TShortObjectHashMap<List<String>> map, List<String> input, boolean update)
-    {
-        boolean updated = false;
-        ArrayList<String> names = new ArrayList<String>();
-        for (String line : input)
-        {
-            line = line.trim();
-            if (line.isEmpty() || line.startsWith("#"))
-            {
-                continue;
-            }
-            if (line.endsWith(":"))
-            {
-                short id = Short.parseShort(line.substring(0, line.length() - 1));
-                names = new ArrayList<String>();
-                if (!update)
-                {
-                    map.put(id, names);
-                }
-                else if (map.get(id) == null || map.get(id).isEmpty())
-                {
-                    map.put(id, names);
-                    updated = true;
-                }
-            }
-            else
-            {
-                names.add(line);
-            }
-        }
-        return updated;
-    }    
-    
-    private TShortObjectHashMap<List<String>> readEntities()
+    private TIntObjectHashMap<List<String>> readEntities()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
-            List<String> input = FileUtil.readStringList(file);
-
-            TShortObjectHashMap<List<String>> entityList = new TShortObjectHashMap<List<String>>();
-            this.readEntities(entityList, input, false);
-            
-            List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
-            if (jarinput != null && this.readEntities(entityList, jarinput, true))
+            TIntObjectHashMap<List<String>> entityList = new TIntObjectHashMap<List<String>>();
+            FileUtil.parseStringList(file, entityList, false);
+            if (FileUtil.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated entities.txt");
                 StringBuilder sb = new StringBuilder();
-                for (short key : entityList.keys())
+                for (int key : entityList.keys())
                 {
                     sb.append(key).append(":").append("\n");
                     List<String> entitynames = entityList.get(key);
