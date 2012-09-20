@@ -5,21 +5,17 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue;
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * This class holds all the arguments that got passed to the command
@@ -37,7 +33,7 @@ public class CommandContext
     private Map<String, String> flagLongnameMap;
     private final LinkedList<String> indexedParams;
     private final Map<String, String> namedParamAliases;
-    private final Map<String, Object> namedParams;
+    private final Map<String, Object[]> namedParams;
     private boolean empty;
     private int size;
     private boolean result;
@@ -62,16 +58,16 @@ public class CommandContext
         this.flags = new THashMap<String, Boolean>(0);
         this.flagLongnameMap = new THashMap<String, String>(0);
         this.indexedParams = new LinkedList<String>();
-        this.namedParams = new THashMap<String, Object>(0);
+        this.namedParams = new THashMap<String, Object[]>(0);
         this.namedParamAliases = new THashMap<String, String>(0);
         this.result = true;
     }
-    
+
     public void parseCommandArgs(String[] commandLine)
     {
         this.parseCommandArgs(commandLine, new Flag[0]);
     }
-    
+
     public void parseCommandArgs(String[] commandLine, Flag[] flags)
     {
         this.parseCommandArgs(commandLine, flags, new Param[0]);
@@ -82,21 +78,21 @@ public class CommandContext
         Validate.notEmpty(commandLine, "There needs to be at least 1 argument!");
 
         this.label = commandLine[0];
-        
+
         this.flagLongnameMap = new THashMap<String, String>(flags.length);
         for (Flag flag : flags)
         {
-            this.flags.put(flag.name(), false);
+            this.flags.put(flag.name().toLowerCase(Locale.ENGLISH), false);
             if (!"".equals(flag.longName()))
             {
-                this.flagLongnameMap.put(flag.longName(), flag.name());
+                this.flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
             }
         }
-        
+
         Map<String, Param> paramMap = new THashMap<String, Param>(params.length);
         Map<String, String> paramAliasMap = new THashMap<String, String>();
         String[] names;
-        
+
         for (Param param : params)
         {
             names = param.names();
@@ -104,10 +100,11 @@ public class CommandContext
             {
                 throw new IllegalArgumentException("One of the declared parameters does not specify a name!");
             }
-            paramMap.put(names[0], param);
+            String name = names[0].toLowerCase(Locale.ENGLISH);
+            paramMap.put(name, param);
             for (int i = 1; i < names.length; ++i)
             {
-                paramAliasMap.put(names[i], names[0]);
+                paramAliasMap.put(names[i].toLowerCase(Locale.ENGLISH), name);
             }
         }
 
@@ -116,147 +113,110 @@ public class CommandContext
         char quoteChar = '\0';
         StringBuilder quotedArgBuilder = null; // null => not constructing a string
         String lastQuotedParam;
-        
-        // vars related to the parameters conversion
-        Param currentParam = null;
-        int typeOffset = 0;
+
 
         for (int i = 1; i < commandLine.length; ++i)
         {
-            // is this part empty?
-            if (commandLine[i].isEmpty())
-            {
-                // are we building a string?
-                if (quotedArgBuilder != null)
-                {
-                    quotedArgBuilder.append(' ');
-                }
-                continue;
-            }
-            
-            // set the first char for easier access
             firstChar = commandLine[i].charAt(0);
-            
-            // are we not building a string?
-            if (quotedArgBuilder == null)
-            {
-                // does this part start with " or ' ?
-                if (firstChar == '"' || firstChar == '\'')
-                {
-                    // set the quote char to check the closing against the correct one
-                    quoteChar = firstChar;
 
-                    // is this string closed in the same part?
-                    if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
-                    {
-                        // add the string as a parameter
-                        this.indexedParams.add(commandLine[i].substring(1, commandLine[i].length() - 1));
-                    }
-                    else
-                    {
-                        // create a string builder to build the string
-                        quotedArgBuilder = new StringBuilder(commandLine[i].substring(1));
-                    }
-                }
-                // might this be a flag?
-                else if (firstChar == '-')
+            // is string?
+            if (firstChar == '"' || firstChar == '\'')
+            {
+                readString(firstChar, i, commandLine);
+            }
+            else if (firstChar == '-')
+            {
+                // get the name of the flag
+                String flag = commandLine[i];
+                // was a second dash used?
+                while (!flag.isEmpty() && flag.charAt(0) == '-')
                 {
-                    // get the name of the flag
-                    String flag = commandLine[i].substring(1);
-                    // was a second dash used?
-                    if (flag.charAt(0) == '-')
-                    {
-                        // strip that as well
-                        flag = flag.substring(1);
-                    }
-                    // is this a long name mapped to a short name?
-                    if (this.flagLongnameMap.containsKey(flag))
-                    {
-                        // replace the name
-                        flag = this.flagLongnameMap.get(flag);
-                    }
-                    // is there flag now?
-                    if (flag != null)
-                    {
-                        // set the flag state to true
-                        this.flags.put(flag, true);
-                    }
+                    // strip that as well
+                    flag = flag.substring(1);
                 }
-                else
+
+                if (flag.isEmpty())
                 {
-                    // set the param name for easier access
-                    String paramName = commandLine[i];
-                    // is this an alias?
-                    if (paramAliasMap.containsKey(paramName))
-                    {
-                        // replace the name by the mapped one
-                        paramName = paramAliasMap.get(paramName);
-                    }
-                    // get the param
-                    Param param = paramMap.get(paramName);
-                    
-                    // was a param found?
-                    if (param != null)
-                    {
-                        // set the current param to work with in the following cycles
-                        currentParam = param;
-                    }
-                    else
-                    {
-                        // add the part as an indexed param as no name was found
-                        this.indexedParams.add(commandLine[0]);
-                    }
+                    this.indexedParams.add(commandLine[i]);
+                }
+
+                flag = flag.toLowerCase(Locale.ENGLISH);
+
+                // is this a long name mapped to a short name?
+                if (this.flagLongnameMap.containsKey(flag))
+                {
+                    // replace the name
+                    flag = this.flagLongnameMap.get(flag);
+                }
+                // is there flag now?
+                if (flag != null)
+                {
+                    // set the flag state to true
+                    this.flags.put(flag, true);
                 }
             }
-            // are we building a string?
-            else if (quotedArgBuilder != null)
+            else
             {
-                // is the last char the closing quote?
-                if (commandLine[i].charAt(commandLine[i].length() - 1) == quoteChar)
+                String paramName = commandLine[i].toLowerCase(Locale.ENGLISH);
+                // is this an alias?
+                if (paramAliasMap.containsKey(paramName))
                 {
-                    // append the part to the string
-                    quotedArgBuilder.append(' ').append(commandLine[i].substring(0, commandLine[i].length() - 1));
-                    // add the string to as parameter
-                    lastQuotedParam = quotedArgBuilder.toString();
-                    // reset the string builder
-                    quotedArgBuilder = null;
+                    // replace the name by the mapped one
+                    paramName = paramAliasMap.get(paramName);
                 }
-                else
+                // get the param
+                Param param = paramMap.get(paramName);
+
+                if (param != null)
                 {
-                    // append the part to the string
-                    quotedArgBuilder.append(commandLine[i]);
-                }
-            }
-            // are we parsing a named parameters?
-            else if (currentParam != null)
-            {
-                if (currentParam.types().length < typeOffset)
-                {
-                    Class type = currentParam.types()[typeOffset++];
-                    // do we have a string here?
-                    if (String.class.isAssignableFrom(type))
-                    {
-                        quotedArgBuilder = new StringBuilder();
-                    }
-                    else
+                    Class<?>[] types = param.types();
+                    Object[] values = new Object[types.length];
+
+                    int j = 0;
+                    for (; j < types.length && i < commandLine.length; j++, i++)
                     {
                         try
                         {
-                            this.namedParams.put(currentParam.names()[0], Convert.fromString(type, commandLine[i]));
+                            if (String.class.isAssignableFrom(types[j]))
+                            {
+                                values[i] = readString(i, commandLine);
+                            }
+                            values[i] = Convert.fromString(types[j], commandLine[i]);
                         }
                         catch (ConversionException e)
                         {
-                            throw new IllegalParameterValue(currentParam.names()[0], i, commandLine[i], type);
+                            throw new IllegalParameterValue(param.names()[0], j, commandLine[i], types[j]);
                         }
                     }
+
+                    this.namedParams.put(label, values);
                 }
                 else
                 {
-                    // reset the type offset as we are done here
-                    typeOffset = 0;
+                    this.indexedParams.add(commandLine[0]);
                 }
             }
         }
+    }
+
+    private static String readString(Integer offset, String[] commandLine)
+    {
+        char quote = commandLine[offset].charAt(0);
+        if (quote == '"' || quote == '\'')
+        {
+            return readString(quote, offset, commandLine);
+        }
+        return commandLine[offset];
+    }
+
+    private static String readString(char quoteChar, Integer offset, String[] commandLine)
+    {
+        return readString(quoteChar, offset, commandLine, new StringBuilder());
+    }
+
+    private static String readString(char quoteChar, Integer offset, String[] commandLine, StringBuilder builder)
+    {
+        return "";
     }
 
     /**
@@ -334,9 +294,19 @@ public class CommandContext
      * @return the value as String
      * @throws IndexOutOfBoundsException if the index is out of range
      */
-    public String getString(int i)
+    public String getString(int i) throws ConversionException
     {
-        return this.indexedParams.get(i);
+        return this.getIndexed(i, String.class);
+    }
+
+    public String getString(String name)
+    {
+        return this.getNamed(name, String.class);
+    }
+
+    public String getString(String name, int i)
+    {
+        return this.getNamed(name, String.class, i);
     }
 
     /**
@@ -356,157 +326,23 @@ public class CommandContext
     }
 
     /**
-     * Returns the requested value as an int
-     *
-     * @param index the index
-     * @return the value as int
-     */
-    public int getInt(int index) throws NumberFormatException
-    {
-        return Integer.parseInt(this.getString(index));
-    }
-
-    /**
-     * Returns the requested value as a double
-     *
-     * @param index the index
-     * @return the value as double
-     */
-    public double getDouble(int index) throws NumberFormatException
-    {
-        return Double.parseDouble(this.getString(index));
-    }
-
-    /**
-     * Returns the requested value as a long
-     *
-     * @param i the index
-     * @return the value as long
-     */
-    public long getLong(int index) throws NumberFormatException
-    {
-        return Long.parseLong(this.getString(index));
-    }
-
-    /**
-     * Returns the requested value as a boolean
-     *
-     * enable --> true true --> true yes --> true on --> true 1 --> true
-     *
-     * everything else --> false
-     *
-     * @param i the index
-     * @return true or false
-     */
-    public boolean getBoolean(int index)
-    {
-        return this.getBoolean(index, "true", "yes", "on", "1", "enable");
-    }
-
-    /**
-     * Returns the value as true, when it equals (case insensitive) any of the
-     * given words.
-     *
-     * @param index the index
-     * @param trueWords the words that indicate true
-     * @return true if any of the words match
-     */
-    public boolean getBoolean(int index, String... trueWords)
-    {
-        String string = this.getString(index);
-        for (String word : trueWords)
-        {
-            if (string.equalsIgnoreCase(word))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns the requested value as a User
-     *
-     * @param index the index
-     * @return the value as User
-     */
-    public User getUser(int index)
-    {
-        return this.core.getUserManager().getUser(this.getString(index));
-    }
-
-    /**
-     * Returns the requested value as a Material
-     *
-     * @param index the index
-     * @return the value as Material
-     */
-    public Material getMaterial(int index)
-    {
-        //TODO eigene items.csv pder ähnlich
-        return Material.matchMaterial(this.getString(index));
-    }
-
-    /**
-     * Returns the requested value as a ItemStack
-     *
-     * @param index the index
-     * @return the value as ItemStack
-     */
-    public ItemStack getItemStack(int index)
-    {
-        String value = this.getString(index);
-        String[] values = value.split(":");
-        //TODO eigene items.csv pder ähnlich
-        Material material = Material.matchMaterial(values[0]);
-        short data = 0;
-        if (values.length > 1)
-        {
-            try
-            {
-                data = Short.parseShort(values[1]);
-            }
-            catch (NumberFormatException ex)
-            {
-                //TODO do something?
-            }
-        }
-        ItemStack item = new ItemStack(material, 1, data);
-        return item;
-    }
-
-    /**
-     * Returns a Set of the Flags
-     * 
-     * @return the Flags as Set of String
-     */
-    public Set<String> getFlags()
-    {
-        // TODO cache this
-        Set<String> availableFlags = new THashSet<String>();
-        for (Map.Entry<String, Boolean> entry : flags.entrySet())
-        {
-            if (entry.getValue())
-            {
-                availableFlags.add(entry.getKey());
-            }
-        }
-        return availableFlags;
-    }
-
-    /**
      * Returns the list of Params
-     * 
+     *
      * @return the Params in a List of Strings
      */
-    public List<String> getParams()
+    public List<String> getIndexed()
     {
         return Collections.unmodifiableList(this.indexedParams);
     }
 
+    public Map<String, Object[]> getNamed()
+    {
+        return Collections.unmodifiableMap(this.namedParams);
+    }
+
     /**
      * Returns the result
-     * 
+     *
      * @return the result
      */
     public boolean getResult()
@@ -516,7 +352,7 @@ public class CommandContext
 
     /**
      * Sets the result
-     * 
+     *
      * @param result the result to set
      */
     public void setResult(boolean result)
@@ -526,7 +362,7 @@ public class CommandContext
 
     /**
      * Returns the CommandSender
-     * 
+     *
      * @return the CommandSender
      */
     @BukkitDependend("This returns the CommandSender")
@@ -537,7 +373,7 @@ public class CommandContext
 
     /**
      * Returns the Command
-     * 
+     *
      * @return the CubeCommand
      */
     public CubeCommand getCommand()
@@ -545,8 +381,38 @@ public class CommandContext
         return this.command;
     }
 
-    public <T> T getParam(String name, Class<T> type)
+    public <T> T getIndexed(int index, Class<T> type) throws ConversionException
     {
-        return type.cast(name);
+        // TODO bounds checks: IndexOutOfBoundsException of > max or < min, otherwise null
+        return Convert.fromString(type, this.indexedParams.get(index));
+    }
+
+    public boolean hasNamed(String name)
+    {
+        return this.namedParams.containsKey(name.toLowerCase(Locale.ENGLISH));
+    }
+
+    public <T> T getNamed(String name, Class<T> type)
+    {
+        return this.getNamed(name, type, 0);
+    }
+
+    public <T> T getNamed(String name, Class<T> type, int i)
+    {
+        Object[] values = this.namedParams.get(name.toLowerCase(Locale.ENGLISH));
+        if (values == null)
+        {
+            return null;
+        }
+
+        if (i >= values.length)
+        {
+            throw new IndexOutOfBoundsException("The named parameter you requested has only " + values.length + " values.");
+        }
+        if (type.isAssignableFrom(values[i].getClass()))
+        {
+            return type.cast(values[i]);
+        }
+        return null;
     }
 }
