@@ -3,12 +3,12 @@ package de.cubeisland.cubeengine.core.util;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 /**
@@ -21,8 +21,8 @@ public class EntityMatcher
 
     public EntityMatcher()
     {
-        TIntObjectHashMap<List<String>> entityList = this.readEntities();
-        for (int id : entityList.keys())
+        TreeMap<Integer,List<String>> entityList = this.readEntities();
+        for (int id : entityList.keySet())
         {
             try
             {
@@ -123,27 +123,17 @@ public class EntityMatcher
         return null;
     }
 
-    private TIntObjectHashMap<List<String>> readEntities()
+    private TreeMap<Integer,List<String>> readEntities()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
-            TIntObjectHashMap<List<String>> entityList = new TIntObjectHashMap<List<String>>();
+            TreeMap<Integer,List<String>> entityList = new TreeMap<Integer,List<String>>();
             FileUtil.parseStringList(file, entityList, false);
             if (FileUtil.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated entities.txt");
-                StringBuilder sb = new StringBuilder();
-                for (int key : entityList.keys())
-                {
-                    sb.append(key).append(":").append("\n");
-                    List<String> entitynames = entityList.get(key);
-                    for (String entityname : entitynames)
-                    {
-                        sb.append("    ").append(entityname).append("\n");
-                    }
-                }
-                FileUtil.saveFile(sb.toString(), file);
+                FileUtil.parseAndSaveStringListMap(entityList, file);
             }
             return entityList;
         }

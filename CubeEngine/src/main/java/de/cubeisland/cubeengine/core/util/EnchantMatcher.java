@@ -4,11 +4,11 @@ import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import org.bukkit.enchantments.Enchantment;
 
@@ -25,8 +25,8 @@ public class EnchantMatcher
     {
         this.enchantments = new THashMap<String, Enchantment>();
 
-        TIntObjectHashMap<List<String>> enchs = this.readEnchantments();
-        for (int id : enchs.keys())
+        TreeMap<Integer, List<String>> enchs = this.readEnchantments();
+        for (int id : enchs.keySet())
         {
             this.registerEnchantment(Enchantment.getById(id), enchs.get(id));
         }
@@ -75,27 +75,17 @@ public class EnchantMatcher
         return ench;
     }
 
-    private TIntObjectHashMap<List<String>> readEnchantments()
+    private TreeMap<Integer, List<String>> readEnchantments()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
-            TIntObjectHashMap<List<String>> enchs = new TIntObjectHashMap<List<String>>();
+            TreeMap<Integer, List<String>> enchs = new TreeMap<Integer, List<String>>();
             FileUtil.parseStringList(file, enchs, false);
             if (FileUtil.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchs, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated enchantments.txt");
-                StringBuilder sb = new StringBuilder();
-                for (int key : enchs.keys())
-                {
-                    sb.append(key).append(":").append("\n");
-                    List<String> entitynames = enchs.get(key);
-                    for (String entityname : entitynames)
-                    {
-                        sb.append("    ").append(entityname).append("\n");
-                    }
-                }
-                FileUtil.saveFile(sb.toString(), file);
+                FileUtil.parseAndSaveStringListMap(enchs, file);
             }
             return enchs;
         }
