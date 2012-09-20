@@ -206,28 +206,43 @@ public class MaterialMatcher
                     {
                         names = new ArrayList<String>(); // New DATA Create new nameList
                         readData.put(data, names);
+                        currentData = data;
                     }
                     if (currentId != id)
                     {
                         readData = new TreeMap<Short, List<String>>(); // New ID Create new ID & DATA
+                        names = new ArrayList<String>(); // New DATA Create new nameList
                         map.put(id, readData);
                         currentData = data;
                         currentId = id;
                     }
                 }
-                else if (map.get(id) == null || map.get(id).isEmpty()) // Unkown ID -> Create new ID & DATA
+                else
                 {
-                    readData = new TreeMap<Short, List<String>>(); // New ID Create new DataValContainer
-                    names = new ArrayList<String>(); // New DATA Create new nameList
-                    readData.put(data, names);
-                    map.put(id, readData);
+                    if (currentData != data)
+                    {
+                        names = new ArrayList<String>(); // New DATA Create new nameList
+                        currentData = data;
+                    }
+                    if (currentId != id)
+                    {
+                        readData = new TreeMap<Short, List<String>>(); // New ID Create new DataValContainer
+                        names = new ArrayList<String>(); // New DATA Create new nameList
+                        currentData = data;
+                        currentId = id;
+                    }
+                    if (map.get(id) == null || map.get(id).isEmpty()) // Unkown ID -> Create new ID & DATA
+                    {
 
-                    updated = true;
-                }
-                else if (map.get(id).get(data) == null || map.get(id).get(data).isEmpty()) // Known ID unkown DATA -> Create new DATA
-                {
-                    names = new ArrayList<String>(); // New DATA Create new nameList
-                    map.get(id).put(data, names);
+                        readData.put(data, names);
+                        map.put(id, readData);
+
+                        updated = true;
+                    }
+                    else if (map.get(id).get(data) == null || map.get(id).get(data).isEmpty()) // Known ID unkown DATA -> Create new DATA
+                    {
+                        map.get(id).put(data, names);
+                    }
                 }
             }
             else
@@ -247,7 +262,7 @@ public class MaterialMatcher
 
             TreeMap<Integer, TreeMap<Short, List<String>>> readItems = new TreeMap<Integer, TreeMap<Short, List<String>>>();
             this.readItems(readItems, input, false);
-            
+
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
             if (jarinput != null && this.readItems(readItems, jarinput, true))
             {
