@@ -34,16 +34,8 @@
                 </includes>
             </resource>
             <resource>
-                <targetPath>./resources/language</targetPath>
-                <directory>${basedir}/src/main/resources/language</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>./resources/data</targetPath>
-                <directory>${basedir}/src/main/resources/data</directory>
+                <targetPath>./resources</targetPath>
+                <directory>${basedir}/src/main/resources</directory>
                 <filtering>false</filtering>
                 <includes>
                     <include>**/*</include>

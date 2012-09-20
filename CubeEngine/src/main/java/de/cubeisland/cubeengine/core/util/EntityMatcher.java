@@ -3,11 +3,9 @@ package de.cubeisland.cubeengine.core.util;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.filesystem.Resource;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -163,18 +161,13 @@ public class EntityMatcher
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
-            List<String> input = FileUtil.getFileAsStringList(file);
+            List<String> input = FileUtil.readStringList(file);
 
             TShortObjectHashMap<List<String>> entityList = new TShortObjectHashMap<List<String>>();
             this.readEntities(entityList, input, false);
-            Resource resource = CubeEngine.getFileManager().getSourceOf(file);
-            String source = resource.getSource();
-            if (!source.startsWith("/"))
-            {
-                source = "/" + source;
-            }
-            List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
-            if (readEntities(entityList, jarinput, true))
+            
+            List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
+            if (jarinput != null && this.readEntities(entityList, jarinput, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated entities.txt");
                 StringBuilder sb = new StringBuilder();

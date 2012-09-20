@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
@@ -231,5 +232,10 @@ public final class CubeEngine
     public static boolean isDebug()
     {
         return core.isDebug();
+    }
+    
+    public static ObjectMapper getJsonObjectMapper()
+    {
+        return core.getJsonObjectMapper();
     }
 }

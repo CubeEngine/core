@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
@@ -47,11 +49,15 @@ public class BukkitCore extends JavaPlugin implements Core
     private CommandManager commandManager;
     private ScheduledExecutorService executor;
     private TableManager tableManager;
+    private ObjectMapper jsonObjectMapper;
 
     @Override
     public void onEnable()
     {
         CubeEngine.initialize(this);
+        
+        this.jsonObjectMapper = new ObjectMapper();
+        this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         
         this.server = this.getServer();
         PluginManager pm = this.server.getPluginManager();
@@ -258,5 +264,11 @@ public class BukkitCore extends JavaPlugin implements Core
     public boolean isDebug()
     {
         return this.debug;
+    }
+
+    @Override
+    public ObjectMapper getJsonObjectMapper()
+    {
+        return this.jsonObjectMapper;
     }
 }

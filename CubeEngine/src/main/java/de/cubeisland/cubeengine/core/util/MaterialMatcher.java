@@ -3,12 +3,10 @@ package de.cubeisland.cubeengine.core.util;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.filesystem.Resource;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -245,18 +243,13 @@ public class MaterialMatcher
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ITEMS.getTarget());
-            List<String> input = FileUtil.getFileAsStringList(file);
+            List<String> input = FileUtil.readStringList(file);
 
             TreeMap<Integer, TreeMap<Short, List<String>>> readItems = new TreeMap<Integer, TreeMap<Short, List<String>>>();
             this.readItems(readItems, input, false);
-            Resource resource = CubeEngine.getFileManager().getSourceOf(file);
-            String source = resource.getSource();
-            if (!source.startsWith("/"))
-            {
-                source = "/" + source;
-            }
-            List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
-            if (this.readItems(readItems, jarinput, true))
+            
+            List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
+            if (jarinput != null && this.readItems(readItems, jarinput, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated items.txt");
                 StringBuilder sb = new StringBuilder();
@@ -292,7 +285,7 @@ public class MaterialMatcher
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.DATAVALUES.getTarget());
-            List<String> input = FileUtil.getFileAsStringList(file);
+            List<String> input = FileUtil.readStringList(file);
             THashMap<String, Short> data = new THashMap<String, Short>();
             for (String line : input)
             {

@@ -3,12 +3,10 @@ package de.cubeisland.cubeengine.core.util;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.filesystem.Resource;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -116,18 +114,13 @@ public class EnchantMatcher
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
-            List<String> input = FileUtil.getFileAsStringList(file);
+            List<String> input = FileUtil.readStringList(file);
 
             TIntObjectHashMap<List<String>> enchs = new TIntObjectHashMap<List<String>>();
             this.readEnchantments(enchs, input, false);
-            Resource resource = CubeEngine.getFileManager().getSourceOf(file);
-            String source = resource.getSource();
-            if (!source.startsWith("/"))
-            {
-                source = "/" + source;
-            }
-            List<String> jarinput = FileUtil.getReaderAsStringList(new InputStreamReader(resource.getClass().getResourceAsStream(source)));
-            if (this.readEnchantments(enchs, jarinput, true))
+            
+            List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
+            if (jarinput != null && this.readEnchantments(enchs, jarinput, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated enchantments.txt");
                 StringBuilder sb = new StringBuilder();

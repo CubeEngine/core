@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
-import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -19,7 +20,7 @@ public class FileManager
     private final File languageDir;
     private final File logDir;
     private final File modulesDir;
-    private THashMap<File, Resource> fileSources = new THashMap<File, Resource>();
+    private ConcurrentMap<File, Resource> fileSources;
 
     public FileManager(File dataFolder) throws IOException
     {
@@ -51,6 +52,8 @@ public class FileManager
         {
             throw new IOException("Failed to create the modules folder");
         }
+        
+        this.fileSources = new ConcurrentHashMap<File, Resource>();
     }
 
     public File getDataFolder()
@@ -72,18 +75,32 @@ public class FileManager
     {
         return this.modulesDir;
     }
-
-    public File getResourceFile(Resource resource)
+    
+    private static String getSaneSource(Resource resource)
     {
-        Validate.notNull(resource, "The resource must not be null!");
-
         String source = resource.getSource();
         // we only accept absolute paths!
         if (!source.startsWith("/"))
         {
             source = "/" + source;
         }
-        File file = this.dropResource(resource.getClass(), source, resource.getTarget(), false);
+        return source;
+    }
+    
+    public InputStream getResourceStream(Resource resource)
+    {
+        if (resource == null)
+        {
+            return null;
+        }
+        return resource.getClass().getResourceAsStream(getSaneSource(resource));
+    }
+
+    public File getResourceFile(Resource resource)
+    {
+        Validate.notNull(resource, "The resource must not be null!");
+
+        File file = this.dropResource(resource.getClass(), getSaneSource(resource), resource.getTarget(), false);
         this.fileSources.put(file, resource);
         return file;
     }
@@ -152,8 +169,8 @@ public class FileManager
         return file;
     }
 
-    public Resource getSourceOf(File file)
+    public InputStream getSourceOf(File file)
     {
-        return this.fileSources.get(file);
+        return this.getResourceStream(this.fileSources.get(file));
     }
 }

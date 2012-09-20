@@ -252,7 +252,7 @@ public class Test extends Module
     {
         try
         {
-            aListOfPlayers = FileUtil.getFileAsStringList(new File(this.getFolder(), "testdata/player.txt"));
+            aListOfPlayers = FileUtil.readStringList(new File(this.getFolder(), "testdata/player.txt"));
         }
         catch (Exception ex)
         {

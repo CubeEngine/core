@@ -161,19 +161,23 @@ public class I18n implements Cleanable
     public String translate(String language, String category, String message, Object... params)
     {
         String translation = null;
-        if (!SOURCE_LANGUAGE.equals(language))
+        if (SOURCE_LANGUAGE.equals(language))
+        {
+            translation = SOURCE_LANGUAGE.getTranslation(category, message);
+        }
+        else
         {
             Language lang = this.languageMap.get(language);
             if (lang != null)
             {
                 translation = lang.getTranslation(category, message);
             }
-        }
 
-        if (translation == null)
-        {
-            this.logMissingTranslation(language, category, message);
-            translation = SOURCE_LANGUAGE.getTranslation(category, message);
+            if (translation == null)
+            {
+                this.logMissingTranslation(language, category, message);
+                translation = SOURCE_LANGUAGE.getTranslation(category, message);
+            }
         }
 
         return String.format(translation, params);

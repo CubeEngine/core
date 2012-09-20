@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
@@ -118,4 +119,11 @@ public interface Core
      * @return the TableManager
      */
     public TableManager getTableManger();
+    
+    /**
+     * The method returns
+     *
+     * @return the global ObjectMapper of Jackson
+     */
+    public ObjectMapper getJsonObjectMapper();
 }
