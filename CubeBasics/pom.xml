@@ -2,69 +2,43 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.cubeisland</groupId>
-        <artifactId>cubeengine</artifactId>
+        <artifactId>cubeengine-aggregator</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>de.cubeisland</groupId>
     <artifactId>basics</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>CubeBasics</name>
-    <url>http://cubeisland.de</url>
-    <packaging>jar</packaging>
-    <description>Just the Basics</description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-  
-    <repositories>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.2.5-R1.3</version>
+            <version>${bukkitVersion}</version>
         </dependency>
         <dependency>
             <groupId>de.cubeisland</groupId>
-            <artifactId>cubecore</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <type>jar</type>
+            <artifactId>cubeengine</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>CubeBasics</finalName>
+        <finalName>${project.name}</finalName>
         <resources>
             <resource>
                 <targetPath>.</targetPath>
                 <directory>${basedir}/src/main/resources/</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>config.yml</include>
-                    <include>plugin.yml</include>
+                    <include>module.yml</include>
                 </includes>
             </resource>
             <resource>
-                <targetPath>./language</targetPath>
-                <directory>${basedir}/src/main/resources/language/</directory>
+                <targetPath>./resources</targetPath>
+                <directory>${basedir}/src/main/resources/</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>.</targetPath>
-                <directory>${basedir}/</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>README.md</include>
+                    <include>**/*</include>
                 </includes>
             </resource>
         </resources>
@@ -77,27 +51,7 @@
                 <configuration>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>de.cubeisland:libminecraft</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>   
         </plugins>
     </build>
 </project>

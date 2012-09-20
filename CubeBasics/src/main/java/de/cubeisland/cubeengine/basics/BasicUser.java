@@ -1,7 +1,13 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.core.persistence.Model;
+import de.cubeisland.cubeengine.core.storage.Model;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,29 +15,29 @@ import java.util.List;
  *
  * @author Anselm Brehme
  */
-public class BasicUser implements Model<User>
+public class BasicUser implements Model<Integer>
 {
-    User user;
+    @Key
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public final int key; // User Key
+    
+    @Attribute(type = AttrType.TEXT)
+    public List<String> mailbox = new ArrayList<String>(); //PlayerName: message
+    
     private boolean unlimitedItems = false; //no need to safe in DB -> reset on restart
-    //TODO storage
-    private List<String> mailbox = new ArrayList<String>(); //PlayerName: message
 
+    @DatabaseConstructor
+    public BasicUser(List<Object> args) throws ConversionException
+    {
+        this.key = Convert.fromObject(Integer.class, args.get(0));
+        this.mailbox = Convert.matchGenericConverter(List.class).fromObject(args.get(1), String.class);
+    }
+    
     public BasicUser(User user)
     {
-        this.user = user;
+        this.key = user.getKey();
     }
     
-    public BasicUser(User user, List<String> mailbox)
-    {
-        this.user = user;
-        this.mailbox = mailbox;
-    }
-    
-    public User getKey()
-    {
-        return this.user;
-    }
-
     public boolean hasUnlimitedItems()
     {
         return unlimitedItems;
@@ -40,11 +46,6 @@ public class BasicUser implements Model<User>
     public void setUnlimitedItems(boolean unlimitedItems)
     {
         this.unlimitedItems = unlimitedItems;
-    }
-
-    public void setKey(User key)
-    {
-        throw new UnsupportedOperationException("Not supported.");
     }
     
     public void addMail(User user, String message)
@@ -60,6 +61,16 @@ public class BasicUser implements Model<User>
     public int countMail()
     {
         return this.mailbox.size();
+    }
+
+    public Integer getKey()
+    {
+        return key;
+    }
+
+    public void setKey(Integer key)
+    {
+        throw new UnsupportedOperationException("Not supported.");
     }
     
 }

@@ -1,21 +1,11 @@
 package de.cubeisland.cubeengine.basics.cheat;
 
-import static de.cubeisland.cubeengine.CubeEngine._;
-import de.cubeisland.cubeengine.basics.Perm;
-import de.cubeisland.cubeengine.core.CubeCore;
-import de.cubeisland.cubeengine.core.command.Command;
-import de.cubeisland.cubeengine.core.command.CommandArgs;
-import de.cubeisland.cubeengine.core.command.RequiresPermission;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.util.List;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -23,25 +13,21 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CheatCommands
 {
-    UserManager cuManager = CubeCore.getInstance().getUserManager();
+    UserManager cuManager = CubeEngine.getUserManager();
     Cheat cheat = new Cheat();
-    //TODO constructor & register Cmds
-    //TODO language stuff
-    //TODO command stuff
 
     //@Flag({"unsafe","u"})
     //@Param(type=String.class)
     //@Param(type=Integer.class)
-    @RequiresPermission
     //@Usage("<Enchantment> [level] [-unsafe]")
-    //@Description("Adds an Enchantment to the item in your hand")
-    @Command()//min=0,//max=2
-    public void enchant(CommandSender sender, CommandArgs args)
+    @Command(desc = "Adds an Enchantment to the item in your hand")//min=0,//max=2
+    public void enchant(CommandSender sender)
     {
-        User user = cuManager.getUser(sender);
+        /*
+         * User user = cuManager.getUser(sender);
         if (user == null)
         {
-            user.sendTMessage("&cThis command can only be used ingame!");
+            user.sendMessage("&cThis command can only be used ingame!");
             return;
         }
         if (args.size() > 0)
@@ -50,7 +36,7 @@ public class CheatCommands
             ItemStack item = user.getItemInHand();
             if (item.getType().equals(Material.AIR))
             {
-                user.sendTMessage("&6ProTip: You cannot enchant your fists!");
+                user.sendMessage("&6ProTip: You cannot enchant your fists!");
                 //"&6Protipp: Du kannst deine Fäuste nicht verzaubern!"
                 return;
             }
@@ -64,16 +50,16 @@ public class CheatCommands
             {
                 if (!Perm.COMMAND_ENCHANT_UNSAFE.isAuthorized(user))
                 {
-                    user.sendTMessage("&cYou are not allowed to use this command!");
+                    user.sendMessage("&cYou are not allowed to use this command!");
                     return;
                 }
                 cheat.unsafeEnchantItemInHand(user, ench, level);
-                user.sendTMessage("&aAdded unsafe Enchantment: &6%s&a to your item!", ench.toString());
+                user.sendMessage("&aAdded unsafe Enchantment: &6%s&a to your item!", ench.toString());
                 //"&6Unsichere Verzauberung: &6%s&a zu deinem Item hinzugefügt!"
                 return;
             }
             cheat.enchantItemInHand(user, ench, level);
-            user.sendTMessage("&aAdded Enchantment: &6%s&a to your item!", ench.toString());
+            user.sendMessage("&aAdded Enchantment: &6%s&a to your item!", ench.toString());
             //"&Verzauberung: &6%s&a zu deinem Item hinzugefügt!"
         }
         else
@@ -102,17 +88,16 @@ public class CheatCommands
             sender.sendMessage("PROTECTION_PROJECTILE: projectileprotection, projprot, arrowprot");
             sender.sendMessage("SILK_TOUCH: silktouch");
             sender.sendMessage("WATER_WORKER: waterworker, aquaaffinity");
-        }
+        }*/
     }
 
     //@Param(type=User.class)
-    @RequiresPermission
     //@Usage("[Player]")
-    //@Description("Refills your hunger bar")
-    @Command()//min=0,//max=1
-    public void feed(CommandSender sender, CommandArgs args)
+    @Command(desc = "Refills your hunger bar")//min=0,//max=1
+    public void feed(CommandSender sender)
     {
-        User send = cuManager.getUser(sender);
+        /*
+         * User send = cuManager.getUser(sender);
         if (args.size() > 0)
         {
             User user = args.getUser(1);
@@ -122,24 +107,24 @@ public class CheatCommands
                 return;
             }
             cheat.feed(user);
-            send.sendTMessage("&6Feeded %s", user.getName());
-            user.sendTMessage("&6You got fed by %s", sender.getName());
+            send.sendMessage("&6Feeded %s", user.getName());
+            user.sendMessage("&6You got fed by %s", sender.getName());
         }
         else
         {
             cheat.feed(send);
-            send.sendTMessage("&6You are now fed!");
-        }
+            send.sendMessage("&6You are now fed!");
+        }*/
     }
 
     //@Param(type=User.class)
-    @RequiresPermission
     //@Usage("[Player]")
     //@Description("Changes the gamemode")
-    @Command()//min=0,//max=1
-    public void gamemode(CommandSender sender, CommandArgs args)
+    @Command(desc = "Changes the gamemode")//min=0,//max=1
+    public void gamemode(CommandSender sender)
     {
-        User send = cuManager.getUser(sender);
+        /*
+         * User send = cuManager.getUser(sender);
         if (args.size() > 0)
         {
             User user = args.getUser(1);
@@ -151,13 +136,13 @@ public class CheatCommands
             cheat.gamemode(user, user.getGameMode() != GameMode.CREATIVE);
             if (user.getGameMode() == GameMode.CREATIVE)
             {
-                send.sendTMessage("&6%s is now in Creative-Mode!", user.getName());
-                user.sendTMessage("&6Your gamemode was changed to: Creative");
+                send.sendMessage("&6%s is now in Creative-Mode!", user.getName());
+                user.sendMessage("&6Your gamemode was changed to: Creative");
             }
             else
             {
-                send.sendTMessage("&6%s is now in Survival-Mode!", user.getName());
-                user.sendTMessage("&6Your gamemode was changed to: Survival");
+                send.sendMessage("&6%s is now in Survival-Mode!", user.getName());
+                user.sendMessage("&6Your gamemode was changed to: Survival");
             }
         }
         else
@@ -165,26 +150,29 @@ public class CheatCommands
             cheat.gamemode(send, send.getGameMode() != GameMode.CREATIVE);
             if (send.getGameMode() == GameMode.CREATIVE)
             {
-                send.sendTMessage("&6Your gamemode was changed to: Creative");
+                send.sendMessage("&6Your gamemode was changed to: Creative");
             }
             else
             {
-                send.sendTMessage("&6Your gamemode was changed to: Survival");
+                send.sendMessage("&6Your gamemode was changed to: Survival");
             }
-        }
+        }*/
     }
 
     //@Param(type=User.class)
     //@Param(type=ItemStack.class)
     //@Param(type=Integer.class)
-    //@Flag({"blacklist","b"})
-    @RequiresPermission
     //@Usage("<Player> <Material[:Data]> [amount]")
-    //@Description("Gives the specified Item to a player")
-    @Command()//min=2,//max=3
-    public void give(CommandSender sender, CommandArgs args)
+    @Command(
+    desc = "Gives the specified Item to a player",
+    flags =
     {
-        User user = args.getUser(1);
+        @Flag(name = "b", longName = "blacklist")
+    }, min = 2, max = 3)
+    public void give(CommandSender sender)
+    {
+        /*
+         * User user = args.getUser(1);
         User send = cuManager.getUser(sender);
         ItemStack item = args.getItemStack(2);
         int amount = item.getMaxStackSize();
@@ -199,28 +187,27 @@ public class CheatCommands
             {
                 if (Perm.COMMAND_GIVE_BLACKLIST.isAuthorized(user))
                 {
-                    send.sendTMessage("You gave %s %s x&d", user.getName(), item.toString(), amount);
-                    user.sendTMessage("%s just gave you %s x&d", send.getName(), item.toString(), amount);
+                    send.sendMessage("You gave %s %s x&d", user.getName(), item.toString(), amount);
+                    user.sendMessage("%s just gave you %s x&d", send.getName(), item.toString(), amount);
                     cheat.item(user, item);
                     return;
                 }
             }
-            send.sendTMessage("This item is blacklisted!");
+            send.sendMessage("This item is blacklisted!");
             return;
         }
         cheat.item(user, item);
-        send.sendTMessage("You gave %s %s x&d", user.getName(), item.toString(), amount);
-        user.sendTMessage("%s just gave you %s x&d", send.getName(), item.toString(), amount);
+        send.sendMessage("You gave %s %s x&d", user.getName(), item.toString(), amount);
+        user.sendMessage("%s just gave you %s x&d", send.getName(), item.toString(), amount);
+        */
     }
 
     //@Param(type=User.class)
-    @RequiresPermission
     //@Usage("[Player]")
-    //@Description("Heals a Player")
-    @Command()//min=0,//max=1
-    public void heal(CommandSender sender, CommandArgs args)
+    @Command(desc = "Heals a Player", max = 1)//min=0,//max=1
+    public void heal(CommandSender sender)
     {
-        User send = cuManager.getUser(sender);
+        /*User send = cuManager.getUser(sender);
         if (args.size() > 0)
         {
             User user = args.getUser(1);
@@ -230,27 +217,31 @@ public class CheatCommands
                 return;
             }
             cheat.heal(user);
-            send.sendTMessage("&Healed %s", user.getName());
-            user.sendTMessage("&6You got healed by %s", sender.getName());
+            send.sendMessage("&Healed %s", user.getName());
+            user.sendMessage("&6You got healed by %s", sender.getName());
         }
         else
         {
             cheat.heal(send);
-            send.sendTMessage("&6You are now healed!");
-        }
+            send.sendMessage("&6You are now healed!");
+        }*/
     }
 
     //@Param(type=User.class)
     //@Param(type=ItemStack.class)
     //@Param(type=Integer.class)
-    //@Flag({"blacklist","b"})
-    @RequiresPermission
     //@Usage("<Material[:Data]> [amount]")
-    //@Description("Gives the specified Item to you")
-    @Command()//min=1,//max=2
-    public void item(CommandSender sender, CommandArgs args)
+    @Command(
+    desc = "Gives the specified Item to you",
+    max = 2,
+    min = 1,
+    flags =
     {
-        User user = cuManager.getUser(sender);
+        @Flag(longName = "blacklist", name = "b")
+    })
+    public void item(CommandSender sender)
+    {
+       /* User user = cuManager.getUser(sender);
         ItemStack item = args.getItemStack(2);
         int amount = item.getMaxStackSize();
         if (args.size() > 2)
@@ -264,37 +255,40 @@ public class CheatCommands
             {
                 if (Perm.COMMAND_ITEM_BLACKLIST.isAuthorized(user))
                 {
-                    user.sendTMessage("Received: %s x&d", item.toString(), amount);
+                    user.sendMessage("Received: %s x&d", item.toString(), amount);
                     cheat.item(user, item);
                     return;
                 }
             }
-            user.sendTMessage("This item is blacklisted!");
+            user.sendMessage("This item is blacklisted!");
             return;
         }
         cheat.item(user, item);
-        user.sendTMessage("Received: %s x&d", item.toString(), amount);
+        user.sendMessage("Received: %s x&d", item.toString(), amount);*/
     }
 
-    @RequiresPermission
-    //@Description("Refills the Stack in hand")
-    @Command()//min=0,//max=0
-    public void more(CommandSender sender, CommandArgs args)
+    @Command(desc = "Refills the Stack in hand")//min=0,//max=0
+    public void more(CommandSender sender)
     {
         User user = cuManager.getUser(sender);
         cheat.more(user);
-        user.sendTMessage("Refilled Stack in Hand!");
+        user.sendMessage("Refilled Stack in Hand!");
     }
 
-    @RequiresPermission
     //@Param(type=String.class)
     //@Param(type=User.class)
     //@Usage("<day|night|dawn|even> [player] [-all]")
-    //@Description("Changes the time for a player")
-    @Command()//min=1,//max=2
-    public void ptime(CommandSender sender, CommandArgs args)
+    @Command(
+            desc = "Changes the time for a player",
+    min = 1,
+    max = 2,
+    flags =
     {
-        long time = 0;
+        @Flag(longName = "all", name = "a")
+    })
+    public void ptime(CommandSender sender)
+    {
+        /*long time = 0;
         if (args.getString(1).equalsIgnoreCase("day"))
         {
             time = 12 * 1000;
@@ -325,17 +319,19 @@ public class CheatCommands
             user.sendTMessage("&cThe User %s does not exist!", args.getString(1));
             return;
         }
-        cheat.ptime(user, time);
+        cheat.ptime(user, time);*/
     }
 
-    @RequiresPermission
     //@Flag({"all","a"})
     //@Usage("[-all]")
     //@Description("Repairs your items")
-    @Command()//min=0,//max=0
-    public void repair(CommandSender sender, CommandArgs args)
+    @Command(desc="Repairs your items",flags={
+        @Flag(longName="all",name="a")
+    })//min=0,//max=0
+    public void repair(CommandSender sender)
     {
-        User user;
+        /*
+         * User user;
         if (sender instanceof Player)
         {
             user = cuManager.getUser(sender);
@@ -372,19 +368,18 @@ public class CheatCommands
             {
                 user.sendTMessage("Item cannot be repaired!");
             }
-        }
+        }*/
     }
 
-    @RequiresPermission
     //@Param(type=String.class)
     //@Param(type=World.class)
     //@Flag({"all","a"})
     //@Usage("<day|night|dawn|even> [world] [-all]")
     //@Description("Changes the time of a world")
-    @Command()//min=1,//max=2
-    public void time(CommandSender sender, CommandArgs args)
+    @Command(desc="Changes the time of a world")//min=1,//max=2
+    public void time(CommandSender sender)
     {
-        long time = 0;
+        /*long time = 0;
         if (args.getString(1).equalsIgnoreCase("day"))
         {
             time = 12 * 1000;
@@ -420,10 +415,10 @@ public class CheatCommands
             }
             return;
         }
-        cheat.settime(world, time);
+        cheat.settime(world, time);*/
     }
 
-    public void unlimited(CommandSender sender, CommandArgs args)
+    public void unlimited(CommandSender sender)
     {
     }
 }

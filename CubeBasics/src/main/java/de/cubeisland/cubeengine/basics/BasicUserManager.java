@@ -1,28 +1,56 @@
 package de.cubeisland.cubeengine.basics;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
-import java.util.HashMap;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class BasicUserManager
+public class BasicUserManager extends BasicStorage<BasicUser>
 {
-    private HashMap<User,BasicUser> basicusers = new HashMap<User,BasicUser>();
-    
+    public BasicUserManager(Database database, int revision)
+    {
+        super(database, BasicUser.class, revision);
+        this.initialize();
+    }
+
     public BasicUser getBasicUser(User user)
     {
-        return this.basicusers.get(user);
+        BasicUser model = user.getAttachment(BasicUser.class);
+        if (model == null)
+        {
+            model = this.get(user.getKey());
+            if (model == null)
+            {
+                model = new BasicUser(user);
+            }
+            user.attach(model);
+        }
+        return model;
     }
-    
-    public void addBasicUser(User user)
+
+    public void save(final BasicUser model)
     {
-        this.basicusers.put(user, new BasicUser(user));
+        CubeEngine.getExecutor().submit(new Runnable()
+        {
+            public void run()
+            {
+                merge(model);
+            }
+        });
     }
-         
-    public void removeBasicUser(User user)
+
+    public void remove(final int key)
     {
-        basicusers.remove(user);
+        CubeEngine.getExecutor().submit(new Runnable()
+        {
+            public void run()
+            {
+                deleteByKey(key);
+            }
+        });
     }
 }
