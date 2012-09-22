@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.IOException;
@@ -81,11 +80,11 @@ public class EnchantMatcher
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
             TreeMap<Integer, List<String>> enchs = new TreeMap<Integer, List<String>>();
-            FileUtil.parseStringList(file, enchs, false);
-            if (FileUtil.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchs, true))
+            AliasMapFormat.parseStringList(file, enchs, false);
+            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchs, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated enchantments.txt");
-                FileUtil.parseAndSaveStringListMap(enchs, file);
+                AliasMapFormat.parseAndSaveStringListMap(enchs, file);
             }
             return enchs;
         }

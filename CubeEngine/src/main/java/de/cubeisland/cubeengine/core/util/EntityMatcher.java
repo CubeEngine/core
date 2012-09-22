@@ -21,7 +21,7 @@ public class EntityMatcher
 
     public EntityMatcher()
     {
-        TreeMap<Integer,List<String>> entityList = this.readEntities();
+        TreeMap<Integer, List<String>> entityList = this.readEntities();
         for (int id : entityList.keySet())
         {
             try
@@ -123,17 +123,17 @@ public class EntityMatcher
         return null;
     }
 
-    private TreeMap<Integer,List<String>> readEntities()
+    private TreeMap<Integer, List<String>> readEntities()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
-            TreeMap<Integer,List<String>> entityList = new TreeMap<Integer,List<String>>();
-            FileUtil.parseStringList(file, entityList, false);
-            if (FileUtil.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
+            TreeMap<Integer, List<String>> entityList = new TreeMap<Integer, List<String>>();
+            AliasMapFormat.parseStringList(file, entityList, false);
+            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {
                 CubeEngine.getLogger().log(Level.FINER, "Updated entities.txt");
-                FileUtil.parseAndSaveStringListMap(entityList, file);
+                AliasMapFormat.parseAndSaveStringListMap(entityList, file);
             }
             return entityList;
         }
