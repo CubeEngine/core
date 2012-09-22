@@ -55,10 +55,10 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         CubeEngine.initialize(this);
-        
+
         this.jsonObjectMapper = new ObjectMapper();
         this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        
+
         this.server = this.getServer();
         PluginManager pm = this.server.getPluginManager();
 
@@ -75,9 +75,9 @@ public class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
-        
+
         this.fileManager.dropResources(CoreResource.values());
-        
+
         try
         {
             // depends on: file manager
@@ -87,13 +87,13 @@ public class BukkitCore extends JavaPlugin implements Core
         {
             this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }
-        
+
         // depends on: file manager
         this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
-        
+
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
         this.debug = this.config.debugMode;
-        
+
         // depends on: core config and file manager
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
@@ -102,39 +102,42 @@ public class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
-		// depends on: database
+        // depends on: database
         this.tableManager = new TableManager(this);
-        
+
         // depends on: plugin manager
         this.permissionRegistration = new PermissionRegistration(pm);
 
         // depends on: permission registration
         this.registerPermissions(Perm.values());
-        
+
         // depends on: plugin manager
         this.eventRegistration = new EventManager(pm);
-        
+
         // depends on: core config
         this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
-        
+
         // depends on: executor, database, Server, core config and event registration
         this.userManager = new UserManager(this);
-        
+
+        // register Listerer for UserManger
+        pm.registerEvents(this.userManager, this);
+
         // depends on: file manager, core config
         this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
-        
+
         // depends on: Server
         this.commandManager = new CommandManager(this);
-        
+
         // depends on: database
         this.moduleManager = new ModuleManager(this);
 
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
-        
+
         // depends on: finshed loading modules
         this.getUserManager().cleanDB();
-        
+
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this, pm);
     }

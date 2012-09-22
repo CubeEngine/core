@@ -54,7 +54,6 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
-        this.core.getEventManager().registerCoreListener(this);
     }
 
     private void registerUpdaters()

@@ -30,12 +30,6 @@ public class EventManager
         return this;
     }
 
-    public EventManager registerCoreListener(Listener listener)
-    {
-        this.pm.registerEvents(listener, (Plugin)CubeEngine.getCore());
-        return this;
-    }
-
     public EventManager unregisterListener(Listener listener)
     {
         HandlerList.unregisterAll(listener);
