@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.command;
 
 import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.module.Module;
+import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 
@@ -11,6 +12,11 @@ import org.bukkit.command.CommandSender;
  */
 public class ContainerCommand extends CubeCommand
 {
+    public ContainerCommand(Module module, String name, String description)
+    {
+        super(module, name, description, "[command]", Collections.<String>emptyList());
+    }
+    
     public ContainerCommand(Module module, String name, String description, List<String> aliases)
     {
         super(module, name, description, "[command]", aliases);

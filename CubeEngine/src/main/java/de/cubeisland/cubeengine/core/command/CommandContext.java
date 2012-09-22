@@ -30,9 +30,7 @@ public class CommandContext
     private final CubeCommand command;
     private String label;
     private final Map<String, Boolean> flags;
-    private Map<String, String> flagLongnameMap;
     private final LinkedList<String> indexedParams;
-    private final Map<String, String> namedParamAliases;
     private final Map<String, Object[]> namedParams;
     private boolean empty;
     private int size;
@@ -56,10 +54,8 @@ public class CommandContext
         this.sender = sender;
         this.command = command;
         this.flags = new THashMap<String, Boolean>(0);
-        this.flagLongnameMap = new THashMap<String, String>(0);
         this.indexedParams = new LinkedList<String>();
         this.namedParams = new THashMap<String, Object[]>(0);
-        this.namedParamAliases = new THashMap<String, String>(0);
         this.result = true;
     }
 
@@ -78,14 +74,18 @@ public class CommandContext
         Validate.notEmpty(commandLine, "There needs to be at least 1 argument!");
 
         this.label = commandLine[0];
+        if (this.label.charAt(0) == '/')
+        {
+            this.label = this.label.substring(1);
+        }
 
-        this.flagLongnameMap = new THashMap<String, String>(flags.length);
+        Map<String, String> flagLongnameMap = new THashMap<String, String>(flags.length);
         for (Flag flag : flags)
         {
             this.flags.put(flag.name().toLowerCase(Locale.ENGLISH), false);
             if (!"".equals(flag.longName()))
             {
-                this.flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
+                flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
             }
         }
 
@@ -108,30 +108,14 @@ public class CommandContext
             }
         }
 
-        // same vars to hold states from cycle to cycle
-        char firstChar;
-        char quoteChar = '\0';
-        StringBuilder quotedArgBuilder = null; // null => not constructing a string
-        String lastQuotedParam;
-
-
-        for (int i = 1; i < commandLine.length; ++i)
+        Integer i = new Integer(1);
+        for (;i < commandLine.length; ++i)
         {
-            firstChar = commandLine[i].charAt(0);
-
-            // is string?
-            if (firstChar == '"' || firstChar == '\'')
+            if (commandLine[i].charAt(0) == '-')
             {
-                readString(firstChar, i, commandLine);
-            }
-            else if (firstChar == '-')
-            {
-                // get the name of the flag
                 String flag = commandLine[i];
-                // was a second dash used?
                 while (!flag.isEmpty() && flag.charAt(0) == '-')
                 {
-                    // strip that as well
                     flag = flag.substring(1);
                 }
 
@@ -142,29 +126,26 @@ public class CommandContext
 
                 flag = flag.toLowerCase(Locale.ENGLISH);
 
-                // is this a long name mapped to a short name?
-                if (this.flagLongnameMap.containsKey(flag))
+                if (flagLongnameMap.containsKey(flag))
                 {
-                    // replace the name
-                    flag = this.flagLongnameMap.get(flag);
+                    flag = flagLongnameMap.get(flag);
                 }
-                // is there flag now?
-                if (flag != null)
+                if (flag != null && this.flags.containsKey(flag))
                 {
-                    // set the flag state to true
                     this.flags.put(flag, true);
+                }
+                else
+                {
+                    this.indexedParams.add(commandLine[i]);
                 }
             }
             else
             {
                 String paramName = commandLine[i].toLowerCase(Locale.ENGLISH);
-                // is this an alias?
                 if (paramAliasMap.containsKey(paramName))
                 {
-                    // replace the name by the mapped one
                     paramName = paramAliasMap.get(paramName);
                 }
-                // get the param
                 Param param = paramMap.get(paramName);
 
                 if (param != null)
@@ -172,28 +153,36 @@ public class CommandContext
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
 
+                    i++;
                     int j = 0;
-                    for (; j < types.length && i < commandLine.length; j++, i++)
+                    for (; j < types.length && i < commandLine.length; j++)
                     {
                         try
                         {
                             if (String.class.isAssignableFrom(types[j]))
                             {
-                                values[i] = readString(i, commandLine);
+                                values[j] = readString(i, commandLine);
                             }
-                            values[i] = Convert.fromString(types[j], commandLine[i]);
+                            else
+                            {
+                                values[j] = Convert.fromString(types[j], commandLine[i]);
+                            }
                         }
                         catch (ConversionException e)
                         {
-                            throw new IllegalParameterValue(param.names()[0], j, commandLine[i], types[j]);
+                            throw new IllegalParameterValue(paramName, j, commandLine[i], types[j]);
+                        }
+                        if (j < types.length)
+                        {
+                            i++;
                         }
                     }
 
-                    this.namedParams.put(label, values);
+                    this.namedParams.put(paramName, values);
                 }
                 else
                 {
-                    this.indexedParams.add(commandLine[0]);
+                    this.indexedParams.add(readString(i, commandLine));
                 }
             }
         }
@@ -211,12 +200,27 @@ public class CommandContext
 
     private static String readString(char quoteChar, Integer offset, String[] commandLine)
     {
-        return readString(quoteChar, offset, commandLine, new StringBuilder());
-    }
-
-    private static String readString(char quoteChar, Integer offset, String[] commandLine, StringBuilder builder)
-    {
-        return "";
+        String message = commandLine[offset++].substring(1);
+        if (message.charAt(message.length() - 1) == quoteChar)
+        {
+            return message.substring(0, message.length() - 1);
+        }
+            
+        StringBuilder builder = new StringBuilder(message);
+        
+        while (offset < commandLine.length)
+        {
+            builder.append(' ');
+            message = commandLine[offset];
+            if (message.charAt(message.length() - 1) == quoteChar)
+            {
+                return builder.append(message.substring(0, message.length() - 1)).toString();
+            }
+            builder.append(message);
+            ++offset;
+        }
+        
+        return builder.toString();
     }
 
     /**
@@ -257,10 +261,6 @@ public class CommandContext
      */
     public boolean hasFlag(String flag)
     {
-        if (this.flagLongnameMap.containsKey(flag))
-        {
-            flag = this.flagLongnameMap.get(flag);
-        }
         Boolean flagState = this.flags.get(flag);
         if (flagState == null)
         {
