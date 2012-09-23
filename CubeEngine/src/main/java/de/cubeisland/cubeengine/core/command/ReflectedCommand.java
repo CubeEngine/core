@@ -87,7 +87,12 @@ public class ReflectedCommand extends CubeCommand
             {
                 t = t.getCause();
             }
-            context.getSender().sendMessage(_("core", t.getMessage()));
+            String message = t.getMessage();
+            if (message == null)
+            {
+                message = t.getClass().getSimpleName() + " occurred while executing this command!";
+            }
+            context.getSender().sendMessage(_("core", message));
             t.printStackTrace(System.err); // TODO handle properly
             context.setResult(false);
         }

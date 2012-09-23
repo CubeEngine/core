@@ -160,6 +160,14 @@ public class I18n implements Cleanable
 
     public String translate(String language, String category, String message, Object... params)
     {
+        Validate.notNull(language, "The language must not be null!");
+        Validate.notNull(category, "The category must not be null!");
+        Validate.notNull(params, "The params must not be null!");
+        if (message == null)
+        {
+            return null;
+        }
+        
         String translation = null;
         if (SOURCE_LANGUAGE.equals(language))
         {
