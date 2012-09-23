@@ -41,6 +41,8 @@ public class Convert
         registerConverter(Role.class, new RoleConverter());
         registerConverter(Date.class, new DateConverter());
         registerConverter(Level.class, new LevelConverter());
+        registerConverter(Float.class, converter = new FloatConverter());
+        registerConverter(float.class, converter);
             
 
         registerGenericConverter(Collection.class, new ColletionConverter());

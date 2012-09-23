@@ -18,14 +18,14 @@ public class FlyCommand
     UserManager cuManager = CubeEngine.getCore().getUserManager();
 
     @Command(
-            desc="Lets you fly away",
-            max=1)
+            desc = "Lets you fly away",
+            max = 1)
     public void fly(CommandContext context)
     {
         CommandSender sender = context.getSender();
         if (sender instanceof User)
         {
-            User user = (User)context.getSender();
+            User user = (User) context.getSender();
             //PermissionCheck
             if (Perm.COMMAND_FLY_BYPASS.isAuthorized(user));
             {
@@ -45,26 +45,45 @@ public class FlyCommand
                 }
             }
             //I Believe I Can Fly ...     
-            user.setAllowFlight(!user.getAllowFlight());
-            if (user.getAllowFlight())
+            if (context.getIndexed().size() > 0)
             {
                 try
                 {
-                    user.setFlySpeed(context.getIndexed(0, float.class));
+                    float speed = context.getIndexed(0, Float.class);
+                    if (speed > 0 && speed <= 10)
+                    {
+                        user.setFlySpeed(speed / 10f);
+                        user.sendMessage("fly", "You can now fly at %.2f", speed);
+                    }
+                    else if (speed > 9000)
+                    {
+                        user.sendMessage("fly", "&cIt's over 9000!");
+                    }
+                    else
+                    {
+                        user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
+                    }
                 }
                 catch (ConversionException ex)
                 {
-                    user.setFlySpeed(1);
+                    user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
                 }
-                catch (IndexOutOfBoundsException ex)
-                {
-                    user.setFlySpeed(1);
-                }
-                user.sendMessage("fly", "You can now fly!");
+                user.setAllowFlight(true);
+                user.setFlying(true);
             }
             else
-            {//or not
-                user.sendMessage("fly", "You cannot fly anymore!");
+            {
+                user.setAllowFlight(!user.getAllowFlight());
+                if (user.getAllowFlight())
+                {
+                    user.setFlySpeed(0.1f);
+                    user.sendMessage("fly", "You can now fly!");
+                }
+                else
+                {//or not
+                    user.sendMessage("fly", "You cannot fly anymore!");
+                }
+
             }
         }
         else

@@ -160,14 +160,16 @@ public class I18n implements Cleanable
 
     public String translate(String language, String category, String message, Object... params)
     {
+
         Validate.notNull(language, "The language must not be null!");
         Validate.notNull(category, "The category must not be null!");
         Validate.notNull(params, "The params must not be null!");
+        Locale locale = SOURCE_LANGUAGE.getLocale();
         if (message == null)
         {
             return null;
         }
-        
+
         String translation = null;
         if (SOURCE_LANGUAGE.equals(language))
         {
@@ -178,6 +180,7 @@ public class I18n implements Cleanable
             Language lang = this.languageMap.get(language);
             if (lang != null)
             {
+                locale = lang.getLocale();
                 translation = lang.getTranslation(category, message);
             }
 
@@ -188,7 +191,7 @@ public class I18n implements Cleanable
             }
         }
 
-        return String.format(translation, params);
+        return String.format(locale, translation, params);
     }
 
     @Override
