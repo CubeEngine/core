@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.basics.cheat;
 
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -17,8 +19,12 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CheatCommands
 {
-    UserManager cuManager = CubeEngine.getUserManager();
-    Cheat cheat = new Cheat();
+    UserManager cuManager;
+
+    public CheatCommands(Basics module)
+    {
+        cuManager = module.getUserManager();
+    }
 
     //@Flag({"unsafe","u"})
     //@Param(type=String.class)
