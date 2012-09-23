@@ -1922,7 +1922,7 @@ public class UserBase implements Player
         Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            return this.isValid();
+            return player.isValid();
         }
         return false;
     }
@@ -1933,7 +1933,7 @@ public class UserBase implements Player
         Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            this.setFlySpeed(value);
+            player.setFlySpeed(value);
         }
     }
 
@@ -1943,7 +1943,7 @@ public class UserBase implements Player
         Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            this.setWalkSpeed(value);
+            player.setWalkSpeed(value);
         }
     }
 
@@ -1953,7 +1953,7 @@ public class UserBase implements Player
         Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            return this.getFlySpeed();
+            return player.getFlySpeed();
         }
         return 0;
     }
@@ -1964,7 +1964,7 @@ public class UserBase implements Player
         Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            return this.getWalkSpeed();
+            return player.getWalkSpeed();
         }
         return 0;
     }
