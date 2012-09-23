@@ -15,8 +15,8 @@ public enum Perm implements Permission
     FLY_FEAHTER("fly.feather", PermissionDefault.OP),
     FLY_BYPASS("fly.bypass", PermissionDefault.OP),
     ;
-    private String BASE = "cubeengine.fly.";
-    private String permission;
+    private final String BASE = "cubeengine.fly.";
+    private final String permission;
     private PermissionDefault permissionDefault;
 
     private Perm(String permission, PermissionDefault permissionDefault)

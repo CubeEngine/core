@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
@@ -119,6 +121,26 @@ public abstract class Module
     public ModuleManager getModuleManager()
     {
         return this.core.getModuleManager();
+    }
+    
+    /**
+     * Returns the command manager
+     *
+     * @return the command manager
+     */
+    public CommandManager getCommandManager()
+    {
+        return this.core.getCommandManager();
+    }
+    
+    /**
+     * Returns the event manager
+     *
+     * @return the event manager
+     */
+    public EventManager getEventManager()
+    {
+        return this.core.getEventManager();
     }
 
     /**

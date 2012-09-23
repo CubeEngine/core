@@ -16,7 +16,10 @@ public class FlyCommand
 {
     UserManager cuManager = CubeEngine.getCore().getUserManager();
 
-    @Command(desc="Lets you fly away")
+    @Command(
+            names= {"fly"},
+            desc="Lets you fly away"
+            )
     public void fly(CommandSender sender, Object[] args)
     {
         if (sender instanceof Player)
