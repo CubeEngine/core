@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.basics.cheat;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -14,20 +13,6 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Cheat
 {
-    /**
-     * Sets the GameMode of Player
-     * 
-     * @param player the player to set its gamemode
-     * @param bln true=CREATIVE false=SURVIVAL
-     */
-    public void gamemode(Player player, boolean bln)
-    {
-        if (bln)
-            player.setGameMode(GameMode.CREATIVE);
-        else
-            player.setGameMode(GameMode.SURVIVAL);
-    }
-    
     public void item(Player player, ItemStack item)
     {
         player.getInventory().addItem(item);
