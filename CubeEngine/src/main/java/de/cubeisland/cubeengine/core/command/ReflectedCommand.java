@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
-import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
+import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
+import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.map.hash.THashMap;
 import java.lang.reflect.Method;
@@ -67,7 +68,7 @@ public class ReflectedCommand extends CubeCommand
     {
         try
         {
-            if (context.size() < this.min || context.size() > this.max)
+            if (context.size() < this.min || (this.max != -1 && context.size() > this.max))
             {
                 throw new InvalidUsageException(this.min, this.max);
             }
@@ -80,6 +81,8 @@ public class ReflectedCommand extends CubeCommand
         }
         catch (Exception e)
         {
+            context.getSender().sendMessage(_("core", e.getMessage()));
+            e.printStackTrace(System.err); // TODO handle properly
             context.setResult(false);
         }
     }

@@ -40,7 +40,7 @@ public abstract class CubeCommand extends Command
 
     public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases, CubeCommand parent)
     {
-        super("/" + name, description, usageMessage, aliases);
+        super(name, description, usageMessage, aliases);
         this.module = module;
 
         this.children = new LinkedHashMap<String, CubeCommand>();
@@ -103,7 +103,7 @@ public abstract class CubeCommand extends Command
             CubeCommand child = this.getChild(args[0].toLowerCase(Locale.ENGLISH));
             if (child != null)
             {
-                return child.execute(sender, label, Arrays.copyOfRange(args, 1, args.length - 1));
+                return child.execute(sender, args[0], Arrays.copyOfRange(args, 1, args.length - 1));
             }
         }
 

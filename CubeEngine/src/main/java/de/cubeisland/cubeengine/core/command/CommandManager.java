@@ -1,16 +1,19 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
@@ -22,6 +25,8 @@ import org.bukkit.plugin.Plugin;
 @BukkitDependend("Injects into Bukkit's command API")
 public class CommandManager
 {
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    
     private CommandMap commandMap;
     private Map<String, Command> knownCommands;
     private static final String[] NO_PARENTS = {};
@@ -116,15 +121,17 @@ public class CommandManager
             {
                 continue;
             }
-            Class<?>[] params = method.getParameterTypes();
-            if (params.length == 1 && params[0] == CommandContext.class)
-            {
-                continue;
-            }
 
             commandAnnotation = method.getAnnotation(de.cubeisland.cubeengine.core.command.annotation.Command.class);
             if (commandAnnotation == null)
             {
+                continue;
+            }
+            
+            Class<?>[] params = method.getParameterTypes();
+            if (params.length != 1 || params[0] != CommandContext.class)
+            {
+                LOGGER.warning("The method '" + commandHolder.getClass().getSimpleName() + "." + method.getName() + "' does not match the required method signature: public void " + method.getName() + "(CommandContext context)");
                 continue;
             }
             
@@ -136,20 +143,10 @@ public class CommandManager
             }
 
             String name = names[0].trim().toLowerCase(Locale.ENGLISH);
-            List<String> aliases;
-            if (names.length > 1)
+            List<String> aliases = new ArrayList<String>(names.length - 1);
+            for (int i = 1; i < aliases.size(); ++i)
             {
-                aliases = Arrays.asList(Arrays.copyOfRange(names, 1, names.length - 1));
-                
-                // make sure the aliases are lowercased
-                for (int i = 0; i < aliases.size(); ++i)
-                {
-                    aliases.set(i, aliases.get(i).toLowerCase(Locale.ENGLISH));
-                }
-            }
-            else
-            {
-                aliases = Collections.EMPTY_LIST;
+                aliases.add(names[i].toLowerCase(Locale.ENGLISH));
             }
 
             this.registerCommand(new ReflectedCommand(

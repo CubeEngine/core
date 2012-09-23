@@ -28,7 +28,7 @@ public class CommandContext
     private Core core;
     private final CommandSender sender;
     private final CubeCommand command;
-    private String label;
+    private final String label;
     private final Map<String, Boolean> flags;
     private final LinkedList<String> indexedParams;
     private final Map<String, Object[]> namedParams;
@@ -53,6 +53,8 @@ public class CommandContext
         }
         this.sender = sender;
         this.command = command;
+        this.label = label;
+        
         this.flags = new THashMap<String, Boolean>(0);
         this.indexedParams = new LinkedList<String>();
         this.namedParams = new THashMap<String, Object[]>(0);
@@ -71,14 +73,11 @@ public class CommandContext
 
     public void parseCommandArgs(String[] commandLine, Flag[] flags, Param[] params)
     {
-        Validate.notEmpty(commandLine, "There needs to be at least 1 argument!");
-
-        this.label = commandLine[0];
-        if (this.label.charAt(0) == '/')
+        if (commandLine.length == 0)
         {
-            this.label = this.label.substring(1);
+            return;
         }
-
+        
         Map<String, String> flagLongnameMap = new THashMap<String, String>(flags.length);
         for (Flag flag : flags)
         {
@@ -108,7 +107,7 @@ public class CommandContext
             }
         }
 
-        Integer i = new Integer(1);
+        Integer i = new Integer(0);
         for (;i < commandLine.length; ++i)
         {
             if (commandLine[i].charAt(0) == '-')
