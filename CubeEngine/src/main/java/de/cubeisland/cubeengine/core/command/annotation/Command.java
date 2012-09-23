@@ -20,7 +20,7 @@ public @interface Command
     public String desc();
     public boolean checkPerm() default true;
     public String permNode() default "";
-    public PermissionDefault permDefault() default PermissionDefault.FALSE;
+    public PermissionDefault permDefault() default PermissionDefault.OP;
     public String usage() default "";
     public Flag[] flags() default {};
     public Param[] params() default {};
