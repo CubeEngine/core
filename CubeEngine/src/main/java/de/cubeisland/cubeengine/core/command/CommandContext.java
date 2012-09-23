@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -317,11 +316,7 @@ public class CommandContext
      */
     public String getString(int i, String def)
     {
-        if (i >= 0 && this.size > i)
-        {
-            return this.indexedParams.get(i);
-        }
-        return def;
+        return this.getIndexed(i, String.class, def);
     }
 
     /**
@@ -378,6 +373,18 @@ public class CommandContext
     public CubeCommand getCommand()
     {
         return this.command;
+    }
+    
+    public <T> T getIndexed(int index, Class<T> type, T def)
+    {
+        try
+        {
+            return this.getIndexed(index, type);
+        }
+        catch (ConversionException e)
+        {
+            return def;
+        }
     }
 
     public <T> T getIndexed(int index, Class<T> type) throws ConversionException
