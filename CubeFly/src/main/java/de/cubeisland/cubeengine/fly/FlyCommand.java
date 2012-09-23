@@ -48,14 +48,18 @@ public class FlyCommand
             user.setAllowFlight(!user.getAllowFlight());
             if (user.getAllowFlight())
             {
-//                try
-//                {
-//                    user.setFlySpeed(context.getIndexed(1, float.class));
-//                }
-//                catch (ConversionException ex)
-//                {
-//                    user.setFlySpeed(1);
-//                }
+                try
+                {
+                    user.setFlySpeed(context.getIndexed(0, float.class));
+                }
+                catch (ConversionException ex)
+                {
+                    user.setFlySpeed(1);
+                }
+                catch (IndexOutOfBoundsException ex)
+                {
+                    user.setFlySpeed(1);
+                }
                 user.sendMessage("fly", "You can now fly!");
             }
             else
