@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -95,6 +96,22 @@ public class ReflectedCommand extends CubeCommand
             context.getSender().sendMessage(_("core", message));
             t.printStackTrace(System.err); // TODO handle properly
             context.setResult(false);
+        }
+    }
+    
+    @Override
+    public void showHelp(CommandContext context)
+    {
+        String commandLine = "/" + StringUtils.implode(" ", context.getLabels());
+        
+        /*for (Param param : context.getParams())
+        {
+            TODO implement
+        }*/
+        
+        for (String flag : context.getDeclaredFlags())
+        {
+            
         }
     }
     

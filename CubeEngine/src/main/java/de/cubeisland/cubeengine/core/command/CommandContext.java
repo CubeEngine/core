@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -27,13 +29,14 @@ public class CommandContext
     private Core core;
     private final CommandSender sender;
     private final CubeCommand command;
-    private final String label;
+    private final Stack<String> labels;
     private final Map<String, Boolean> flags;
     private final LinkedList<String> indexedParams;
     private final Map<String, Object[]> namedParams;
     private boolean empty;
     private int size;
     private boolean result;
+    private boolean helpCall;
 
     /**
      * Initializes the CommandContext object with an array of arguments
@@ -43,7 +46,7 @@ public class CommandContext
      * @param commandLine the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
-    public CommandContext(Core core, CommandSender sender, CubeCommand command, String label)
+    public CommandContext(Core core, CommandSender sender, CubeCommand command, Stack<String> labels)
     {
         this.core = core;
         if (sender instanceof Player)
@@ -52,12 +55,13 @@ public class CommandContext
         }
         this.sender = sender;
         this.command = command;
-        this.label = label;
+        this.labels = labels;
         
         this.flags = new THashMap<String, Boolean>(0);
         this.indexedParams = new LinkedList<String>();
         this.namedParams = new THashMap<String, Object[]>(0);
         this.result = true;
+        this.helpCall = false;
     }
 
     public void parseCommandArgs(String[] commandLine)
@@ -73,6 +77,12 @@ public class CommandContext
     public void parseCommandArgs(String[] commandLine, Flag[] flags, Param[] params)
     {
         if (commandLine.length == 0)
+        {
+            return;
+        }
+        
+        this.helpCall = ("?".equals(commandLine[0]));
+        if (this.isHelpCall())
         {
             return;
         }
@@ -248,7 +258,12 @@ public class CommandContext
      */
     public String getLabel()
     {
-        return this.label;
+        return this.labels.peek();
+    }
+    
+    public Stack<String> getLabels()
+    {
+        return this.labels;
     }
 
     /**
@@ -265,6 +280,11 @@ public class CommandContext
             throw new IllegalArgumentException("The requested flag was not declared!");
         }
         return flagState.booleanValue();
+    }
+    
+    public Set<String> getDeclaredFlags()
+    {
+        return this.flags.keySet();
     }
 
     /**
@@ -420,5 +440,10 @@ public class CommandContext
             return type.cast(values[i]);
         }
         return null;
+    }
+    
+    public boolean isHelpCall()
+    {
+        return this.helpCall;
     }
 }

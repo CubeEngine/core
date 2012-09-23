@@ -27,6 +27,7 @@ import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Stack;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -158,7 +159,10 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this, pm);
         
-        CommandContext context = new CommandContext(this, new User("test"), new CubeCommand(null,"test"){public void run(CommandContext c){}}, "testrr");
+        
+        Stack<String> labels = new Stack<String>();
+        labels.push("testrr");
+        CommandContext context = new CommandContext(this, new User("test"), new CubeCommand(null,"test"){public void run(CommandContext c){}}, labels);
         try
         {
             Flag[] flags = this.getClass().getMethod("onEnable").getAnnotation(Command.class).flags();

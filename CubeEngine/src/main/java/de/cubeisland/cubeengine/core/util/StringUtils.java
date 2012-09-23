@@ -90,7 +90,7 @@ public final class StringUtils
      * @param strings the strings to implode
      * @return the imploded string
      */
-    public static String implode(CharSequence delim, CharSequence[] strings)
+    public static String implode(String delim, String[] strings)
     {
         return implode(delim, Arrays.asList(strings));
     }
@@ -102,9 +102,9 @@ public final class StringUtils
      * @param strings the strings to implode
      * @return the imploded string
      */
-    public static String implode(CharSequence delim, Iterable<CharSequence> strings)
+    public static String implode(String delim, Iterable<String> strings)
     {
-        Iterator<CharSequence> iterator = strings.iterator();
+        Iterator<String> iterator = strings.iterator();
         if (!iterator.hasNext())
         {
             return "";
