@@ -127,10 +127,7 @@ public class CheatCommands
     //@Usage("[Player]")
     //@Description("Changes the gamemode")
     @Command(
-    names =
-    {
-        "gamemode", "gm"
-    },
+    names ={"gamemode", "gm"},
     max = 2,
     desc = "Changes the gamemode")
     public void gamemode(CommandContext context)
@@ -143,7 +140,7 @@ public class CheatCommands
             context.getSender().sendMessage("You do not not have any gamemode!");
             return;
         }
-        if (context.getIndexed().size() == 2)
+        if (context.hasIndexed(2))
         {
             user = context.getIndexed(1, User.class, null);
             if (user == null)
@@ -153,7 +150,7 @@ public class CheatCommands
             }
             changeOther = true;
         }
-        if (context.getIndexed().size() > 0)
+        if (context.hasIndexed(0))
         {
             try
             {
@@ -208,10 +205,7 @@ public class CheatCommands
     //@Usage("<Player> <Material[:Data]> [amount]")
     @Command(
     desc = "Gives the specified Item to a player",
-    flags =
-    {
-        @Flag(name = "b", longName = "blacklist")
-    },
+    flags ={@Flag(name = "b", longName = "blacklist")},
     min = 2, max = 3)
     public void give(CommandContext context)
     {
@@ -239,7 +233,7 @@ public class CheatCommands
         }
 
         int amount = item.getMaxStackSize();
-        if (context.getIndexed().size() == 3)
+        if (context.hasIndexed(3))
         {
             amount = context.getIndexed(2, int.class, 0);
             if (amount == 0)
@@ -290,17 +284,11 @@ public class CheatCommands
     //@Param(type=Integer.class)
     //@Usage("<Material[:Data]> [amount]")
     @Command(
-            names =
-    {
-        "item", "i"
-    },
+    names ={"item", "i"},
     desc = "Gives the specified Item to you",
     max = 2,
     min = 1,
-    flags =
-    {
-        @Flag(longName = "blacklist", name = "b")
-    })
+    flags ={@Flag(longName = "blacklist", name = "b")})
     public void item(CommandContext context)
     {
         User sender = context.getIndexed(0, User.class, null);
@@ -326,7 +314,7 @@ public class CheatCommands
         }
 
         int amount = item.getMaxStackSize();
-        if (context.size() == 2)
+        if (context.hasIndexed(2))
         {
             amount = context.getIndexed(1, int.class, 0);
             if (amount == 0)
@@ -358,13 +346,10 @@ public class CheatCommands
     //@Param(type=User.class)
     //@Usage("<day|night|dawn|even> [player] [-all]")
     @Command(
-            desc = "Changes the time for a player",
+    desc = "Changes the time for a player",
     min = 1,
     max = 2,
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    })
+    flags ={@Flag(longName = "all", name = "a")})
     public void ptime(CommandContext context)
     {
         //TODO
@@ -405,10 +390,9 @@ public class CheatCommands
     //@Flag({"all","a"})
     //@Usage("[-all]")
     //@Description("Repairs your items")
-    @Command(desc = "Repairs your items", flags =
-    {
-        @Flag(longName = "all", name = "a")
-    })//min=0,//max=0
+    @Command(
+    desc = "Repairs your items", 
+    flags ={@Flag(longName = "all", name = "a")})//min=0,//max=0
     public void repair(CommandContext context)
     {
         //TODO
