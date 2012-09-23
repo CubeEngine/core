@@ -4,11 +4,11 @@ import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -90,14 +90,9 @@ public class CommandManager
         }
     }
     
-    public void registerCommand(Module module, ContainerCommand command)
+    public void registerCommand(ContainerCommand command)
     {
-        
-    }
-
-    public void registerCommands(Module module, Object commandHolder)
-    {
-        this.registerCommands(module, commandHolder, NO_PARENTS);
+        this.registerCommand(command, NO_PARENTS);
     }
     
     public void registerCommand(ContainerCommand command, String... parents)
@@ -109,6 +104,11 @@ public class CommandManager
         System.arraycopy(parents, 0, newParents, 1, parents.length);
         
         this.registerCommands(command.getModule(), command, newParents);
+    }
+
+    public void registerCommands(Module module, Object commandHolder)
+    {
+        this.registerCommands(module, commandHolder, NO_PARENTS);
     }
 
     public void registerCommands(Module module, Object commandHolder, String... parents)
@@ -148,8 +148,8 @@ public class CommandManager
             {
                 aliases.add(names[i].toLowerCase(Locale.ENGLISH));
             }
-
-            this.registerCommand(new ReflectedCommand(
+            
+            ReflectedCommand cmd = new ReflectedCommand(
                 module,
                 commandHolder,
                 method,
@@ -158,7 +158,28 @@ public class CommandManager
                 commandAnnotation.desc(),
                 commandAnnotation.usage(),
                 aliases
-            ));
+            );
+
+            this.registerCommand(cmd);
+            
+            Alias aliasAnnotation = method.getAnnotation(Alias.class);
+            if (aliasAnnotation != null && aliasAnnotation.names().length > 0)
+            {
+                names = aliasAnnotation.names();
+                if (names.length > 1)
+                {
+                    aliases = new ArrayList<String>(names.length - 1);
+                    for (int i = 1; i < names.length; ++i)
+                    {
+                        aliases.add(names[i]);
+                    }
+                }
+                else
+                {
+                    aliases = Collections.<String>emptyList();
+                }
+                this.registerCommand(new AliasCommand(names[0], aliases, cmd));
+            }
         }
     }
 

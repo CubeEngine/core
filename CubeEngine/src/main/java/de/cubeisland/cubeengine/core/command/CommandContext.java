@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.THashMap;
@@ -26,15 +26,14 @@ import org.bukkit.entity.Player;
 @BukkitDependend("Uses Bukkit's CommandSender")
 public class CommandContext
 {
-    private Core core;
     private final CommandSender sender;
     private final CubeCommand command;
     private final Stack<String> labels;
     private final Map<String, Boolean> flags;
     private final LinkedList<String> indexedParams;
     private final Map<String, Object[]> namedParams;
+    private int flagCount;
     private boolean empty;
-    private int size;
     private boolean result;
     private boolean helpCall;
 
@@ -46,18 +45,18 @@ public class CommandContext
      * @param commandLine the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
-    public CommandContext(Core core, CommandSender sender, CubeCommand command, Stack<String> labels)
+    public CommandContext(CommandSender sender, CubeCommand command, Stack<String> labels)
     {
-        this.core = core;
         if (sender instanceof Player)
         {
-            sender = core.getUserManager().getUser(sender);
+            sender = command.getModule().getUserManager().getUser(sender);
         }
         this.sender = sender;
         this.command = command;
         this.labels = labels;
         
         this.flags = new THashMap<String, Boolean>(0);
+        this.flagCount = 0;
         this.indexedParams = new LinkedList<String>();
         this.namedParams = new THashMap<String, Object[]>(0);
         this.result = true;
@@ -116,12 +115,12 @@ public class CommandContext
             }
         }
 
-        Integer i = new Integer(0);
-        for (;i < commandLine.length; ++i)
+        Integer offset = new Integer(0);
+        for (;offset < commandLine.length; ++offset)
         {
-            if (commandLine[i].charAt(0) == '-')
+            if (commandLine[offset].charAt(0) == '-')
             {
-                String flag = commandLine[i];
+                String flag = commandLine[offset];
                 while (!flag.isEmpty() && flag.charAt(0) == '-')
                 {
                     flag = flag.substring(1);
@@ -129,7 +128,7 @@ public class CommandContext
 
                 if (flag.isEmpty())
                 {
-                    this.indexedParams.add(commandLine[i]);
+                    this.indexedParams.add(commandLine[offset]);
                 }
 
                 flag = flag.toLowerCase(Locale.ENGLISH);
@@ -141,15 +140,16 @@ public class CommandContext
                 if (flag != null && this.flags.containsKey(flag))
                 {
                     this.flags.put(flag, true);
+                    this.flagCount++;
                 }
                 else
                 {
-                    this.indexedParams.add(commandLine[i]);
+                    this.indexedParams.add(commandLine[offset]);
                 }
             }
             else
             {
-                String paramName = commandLine[i].toLowerCase(Locale.ENGLISH);
+                String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
                 if (paramAliasMap.containsKey(paramName))
                 {
                     paramName = paramAliasMap.get(paramName);
@@ -161,28 +161,28 @@ public class CommandContext
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
 
-                    i++;
-                    int j = 0;
-                    for (; j < types.length && i < commandLine.length; j++)
+                    offset++;
+                    int typeOffset = 0;
+                    for (; typeOffset < types.length && offset < commandLine.length; typeOffset++)
                     {
                         try
                         {
-                            if (String.class.isAssignableFrom(types[j]))
+                            if (String.class.isAssignableFrom(types[typeOffset]))
                             {
-                                values[j] = readString(i, commandLine);
+                                values[typeOffset] = readString(offset, commandLine);
                             }
                             else
                             {
-                                values[j] = Convert.fromString(types[j], commandLine[i]);
+                                values[typeOffset] = Convert.fromString(types[typeOffset], commandLine[offset]);
                             }
                         }
                         catch (ConversionException e)
                         {
-                            throw new IllegalParameterValue(paramName, j, commandLine[i], types[j]);
+                            throw new IllegalParameterValue(paramName, typeOffset, commandLine[offset], types[typeOffset]);
                         }
-                        if (j < types.length)
+                        if (typeOffset < types.length)
                         {
-                            i++;
+                            offset++;
                         }
                     }
 
@@ -190,7 +190,7 @@ public class CommandContext
                 }
                 else
                 {
-                    this.indexedParams.add(readString(i, commandLine));
+                    this.indexedParams.add(readString(offset, commandLine));
                 }
             }
         }
@@ -240,15 +240,25 @@ public class CommandContext
     {
         return this.empty;
     }
+    
+    public int flagCount()
+    {
+        return this.flagCount;
+    }
 
     /**
      * Returns the number of parameters
      *
      * @return the numbers of parameters
      */
-    public int size()
+    public int indexedCount()
     {
-        return this.size;
+        return this.indexedParams.size();
+    }
+    
+    public int namedCount()
+    {
+        return this.namedParams.size();
     }
 
     /**
@@ -338,20 +348,20 @@ public class CommandContext
     {
         return this.getIndexed(i, String.class, def);
     }
-
-    /**
-     * Returns the list of Params
-     *
-     * @return the Params in a List of Strings
-     */
-    public List<String> getIndexed()
+    
+    public User getUser(int i) throws ConversionException
     {
-        return Collections.unmodifiableList(this.indexedParams);
+        return this.getIndexed(i, User.class);
     }
-
-    public Map<String, Object[]> getNamed()
+    
+    public User getUser(String name)
     {
-        return Collections.unmodifiableMap(this.namedParams);
+        return this.getUser(name, 0);
+    }
+    
+    public User getUser(String name, int i)
+    {
+        return this.getNamed(name, User.class, i);
     }
 
     /**
@@ -395,6 +405,21 @@ public class CommandContext
         return this.command;
     }
     
+    public boolean hasIndexed(int index)
+    {
+        return (index >= 0 && index < this.indexedCount());
+    }
+
+    /**
+     * Returns the list of Params
+     *
+     * @return the Params in a List of Strings
+     */
+    public List<String> getIndexed()
+    {
+        return Collections.unmodifiableList(this.indexedParams);
+    }
+    
     public <T> T getIndexed(int index, Class<T> type, T def)
     {
         try
@@ -409,13 +434,28 @@ public class CommandContext
 
     public <T> T getIndexed(int index, Class<T> type) throws ConversionException
     {
-        // TODO bounds checks: IndexOutOfBoundsException of > max or < min, otherwise null
-        return Convert.fromString(type, this.indexedParams.get(index));
+        if (index < this.command.getMinimumParams() || index < 0 || (this.command.getMaximumParams() > -1 && index > this.command.getMaximumParams()))
+        {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+        }
+        try
+        {
+            return Convert.fromString(type, this.indexedParams.get(index));
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            return null;
+        }
     }
 
     public boolean hasNamed(String name)
     {
         return this.namedParams.containsKey(name.toLowerCase(Locale.ENGLISH));
+    }
+
+    public Map<String, Object[]> getNamed()
+    {
+        return Collections.unmodifiableMap(this.namedParams);
     }
 
     public <T> T getNamed(String name, Class<T> type)

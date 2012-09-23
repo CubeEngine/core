@@ -39,4 +39,16 @@ public class AliasCommand extends CubeCommand
     {
         return this.command.hasChild(name);
     }
+    
+    @Override
+    public boolean hasChildren()
+    {
+        return this.command.hasChildren();
+    }
+
+    @Override
+    public void showHelp(CommandContext context)
+    {
+        this.command.showHelp(context);
+    }
 }

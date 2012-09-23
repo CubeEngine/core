@@ -3,9 +3,7 @@ package de.cubeisland.cubeengine.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandManager;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -20,14 +18,11 @@ import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Stack;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -158,25 +153,6 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this, pm);
-        
-        
-        Stack<String> labels = new Stack<String>();
-        labels.push("testrr");
-        CommandContext context = new CommandContext(this, new User("test"), new CubeCommand(null,"test"){public void run(CommandContext c){}}, labels);
-        try
-        {
-            Flag[] flags = this.getClass().getMethod("onEnable").getAnnotation(Command.class).flags();
-            Param[] params = this.getClass().getMethod("onEnable").getAnnotation(Command.class).params();
-
-            context.parseCommandArgs((String[])Arrays.asList("/testrr", "a", "b", "c", "-a", "p", "\"x'", "'y\"", "asdg").toArray(), flags, params);
-            
-            System.out.println(context.toString());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace(System.err);
-        }
-        
     }
 
     @Override

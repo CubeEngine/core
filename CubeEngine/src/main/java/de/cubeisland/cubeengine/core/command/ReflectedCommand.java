@@ -8,11 +8,12 @@ import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import gnu.trove.map.hash.THashMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
 
 /**
@@ -25,7 +26,6 @@ public class ReflectedCommand extends CubeCommand
     private final Method commandMethod;
     private final int min;
     private final int max;
-    private Map<String[], Class<?>> namedParameters;
     private final boolean checkPermision;
     private final String permissionNode;
     private final PermissionDefault permissionDefault;
@@ -41,7 +41,6 @@ public class ReflectedCommand extends CubeCommand
         this.min = annotation.min();
         this.max = annotation.max();
         this.checkPermision = annotation.checkPerm();
-        this.namedParameters = new THashMap<String[], Class<?>>();
         
         this.flags = annotation.flags();
         this.params = annotation.params();
@@ -66,11 +65,23 @@ public class ReflectedCommand extends CubeCommand
     }
 
     @Override
+    public int getMinimumParams()
+    {
+        return this.min;
+    }
+
+    @Override
+    public int getMaximumParams()
+    {
+        return this.max;
+    }
+
+    @Override
     public void run(CommandContext context)
     {
         try
         {
-            if (context.size() < this.min || (this.max != -1 && context.size() > this.max))
+            if (context.indexedCount() < this.min || (this.max != -1 && context.indexedCount() > this.max))
             {
                 throw new InvalidUsageException(this.min, this.max);
             }
@@ -102,21 +113,40 @@ public class ReflectedCommand extends CubeCommand
     @Override
     public void showHelp(CommandContext context)
     {
+        CommandSender sender = context.getSender();
         String commandLine = "/" + StringUtils.implode(" ", context.getLabels());
         
-        /*for (Param param : context.getParams())
-        {
-            TODO implement
-        }*/
         
-        for (String flag : context.getDeclaredFlags())
+        
+        sender.sendMessage(commandLine + " " + this.getUsage());
+        
+        sender.sendMessage(_(sender, "core", "Description: %s", _(sender, this.getModule().getName(), this.getDescription())));
+        sender.sendMessage(_(sender, "core", "Aliases: %s", this.getAliases().isEmpty() ? _(sender, "core", "none") : StringUtils.implode(", ", this.getAliases())));
+        
+        
+        if (this.hasChildren())
         {
-            
+            sender.sendMessage(_(sender, "core", "Sub commands:"));
+            for (CubeCommand child : this.getChildren())
+            {
+                sender.sendMessage(commandLine + " " + child.getName());
+            }
         }
     }
     
-    protected String generatePermissionNode()
+    private String generatePermissionNode()
     {
-        return ""; // TODO implement me
+        String permission = "cubeengine." + this.getModule() + ".";
+        
+        LinkedList<String> cmds = new LinkedList<String>();
+        CubeCommand cmd = this;
+        do
+        {
+            cmds.add(cmd.getName());
+        }
+        while ((cmd = this.getParent()) != null);
+        Collections.reverse(cmds);
+        
+        return permission + StringUtils.implode(".", cmds);
     }
 }

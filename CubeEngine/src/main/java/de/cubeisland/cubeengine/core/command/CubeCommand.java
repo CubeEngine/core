@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,19 +20,19 @@ import org.bukkit.command.CommandSender;
  */
 public abstract class CubeCommand extends Command
 {
-    private Command parent;
+    private CubeCommand parent;
     private final Module module;
     private Map<String, CubeCommand> children;
     private Map<String, String> childrenAliases;
 
-    public CubeCommand(Module module, String name)
+    public CubeCommand(Module module, String name, String description)
     {
-        this(module, name, null);
+        this(module, name, description, null);
     }
 
-    public CubeCommand(Module module, String name, CubeCommand parent)
+    public CubeCommand(Module module, String name, String description, CubeCommand parent)
     {
-        this(module, name, "", "", new ArrayList<String>(0), parent);
+        this(module, name, "", description, new ArrayList<String>(0), parent);
     }
 
     public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases)
@@ -42,7 +40,7 @@ public abstract class CubeCommand extends Command
         this(module, name, description, usageMessage, aliases, null);
     }
 
-    public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases, Command parent)
+    public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases, CubeCommand parent)
     {
         super(name, description, usageMessage, aliases);
         this.parent = parent;
@@ -50,6 +48,16 @@ public abstract class CubeCommand extends Command
 
         this.children = new LinkedHashMap<String, CubeCommand>();
         this.childrenAliases = new THashMap<String, String>();
+    }
+    
+    public int getMinimumParams()
+    {
+        return 0;
+    }
+    
+    public int getMaximumParams()
+    {
+        return -1;
     }
 
     public CubeCommand getChild(String name)
@@ -118,7 +126,7 @@ public abstract class CubeCommand extends Command
             }
         }
 
-        CommandContext context = new CommandContext(this.module.getCore(), sender, this, labels);
+        CommandContext context = new CommandContext(sender, this, labels);
         context.parseCommandArgs(args);
 
         if (context.isHelpCall())
@@ -163,28 +171,12 @@ public abstract class CubeCommand extends Command
         }
     }
     
-    public Command getParent()
+    public CubeCommand getParent()
     {
         return this.parent;
     }
-    
-    public void showHelp(CommandContext context)
-    {
-        CommandSender sender = context.getSender();
-        StringBuilder commandLine = new StringBuilder('/').append(StringUtils.implode(" ", context.getLabels()));
-        if (this.hasChildren())
-        {
-            commandLine.append(' ').append('[').append(_(sender, "core", "sub command")).append(']');
-        }
-        sender.sendMessage(commandLine.toString());
-        
-        sender.sendMessage(_(sender, "core", "Description: %s", _(sender, this.getModule().getName(), this.getDescription())));
-        
-        for (Command child : this.getChildren())
-        {
-            // TODO implement
-        }
-    }
 
     public abstract void run(CommandContext context);
+    
+    public abstract void showHelp(CommandContext context);
 }

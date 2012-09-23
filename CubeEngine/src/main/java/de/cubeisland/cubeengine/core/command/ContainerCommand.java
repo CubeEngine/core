@@ -25,8 +25,14 @@ public class ContainerCommand extends CubeCommand
     @Override
     public void run(CommandContext context)
     {
+        this.showHelp(context);
+    }
+
+    @Override
+    public void showHelp(CommandContext context)
+    {
         CommandSender sender = context.getSender();
-        sender.sendMessage("The Following commands are available:");
+        sender.sendMessage(_(sender, "core", "The Following commands are available:"));
         sender.sendMessage(" ");
 
 
