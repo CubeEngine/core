@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -16,7 +17,9 @@ public class FlyCommand
 {
     UserManager cuManager = CubeEngine.getCore().getUserManager();
 
-    @Command(desc="Lets you fly away")
+    @Command(
+            desc="Lets you fly away",
+            max=1)
     public void fly(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -45,6 +48,14 @@ public class FlyCommand
             user.setAllowFlight(!user.getAllowFlight());
             if (user.getAllowFlight())
             {
+//                try
+//                {
+//                    user.setFlySpeed(context.getIndexed(1, float.class));
+//                }
+//                catch (ConversionException ex)
+//                {
+//                    user.setFlySpeed(1);
+//                }
                 user.sendMessage("fly", "You can now fly!");
             }
             else
@@ -54,8 +65,8 @@ public class FlyCommand
         }
         else
         {
-            sender.sendMessage(_("fly", "&6ProTip: &eIf your server flies away it'll go offline."));
-            sender.sendMessage(_("fly", "So... Stopping the Server in 3.."));
+            sender.sendMessage(_("fly", "&6ProTip: &eIf your server flies away it will go offline."));
+            sender.sendMessage(_("fly", "So... Stopping the Server in &c3.."));
         }
     }
 }

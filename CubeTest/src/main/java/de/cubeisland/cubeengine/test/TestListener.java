@@ -51,7 +51,7 @@ public class TestListener implements Listener
     @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
     {
-        test.getLogger().debug("Interact!");
+        
     }
 
     @EventHandler

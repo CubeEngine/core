@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 /**
  *
@@ -42,7 +43,7 @@ public class FlyListener implements Listener
             user.setFlying(true);
         }
     }
-    
+
     @EventHandler
     public void playerQuit(final PlayerQuitEvent event)
     {
@@ -58,7 +59,7 @@ public class FlyListener implements Listener
             fly.getFlyManager().remove(user.getKey());
         }
     }
-    
+
     @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
     {
@@ -100,6 +101,9 @@ public class FlyListener implements Listener
         {
             final ItemStack feather = new ItemStack(Material.FEATHER, 1);
             player.getInventory().removeItem(feather);
+            player.setVelocity(player.getVelocity().setY(player.getVelocity().getY() + 1));
+            player.teleport(player.getLocation().add(new Vector(0, 0.05, 0))); //make sure the player stays flying
+            player.setFlying(true);
             user.sendMessage("fly", "You can now fly!");
             Task flymore = new Task(fly)
             {
@@ -136,7 +140,7 @@ public class FlyListener implements Listener
         else
         {//or not
             player.setFallDistance(0);
-            user.sendMessage("fly","You cannot fly anymore!");
+            user.sendMessage("fly", "You cannot fly anymore!");
         }
     }
 }
