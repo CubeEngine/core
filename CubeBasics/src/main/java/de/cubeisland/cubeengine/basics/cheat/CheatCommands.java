@@ -452,7 +452,7 @@ public class CheatCommands
     }
     
     private boolean checkRepairableItem(ItemStack item)
-    {
+    {//TODO enum with this
         switch (item.getType())
         {
             case IRON_SPADE: case IRON_PICKAXE: case IRON_AXE: case IRON_SWORD:
