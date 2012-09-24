@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
