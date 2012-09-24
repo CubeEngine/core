@@ -108,14 +108,7 @@ public class CheatCommands
             user = context.getIndexed(0, User.class, null);
             if (user == null)
             {
-                try
-                {
-                    sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0)); //TODO why does this throw conversion Exception????
-                }
-                catch (ConversionException ex)
-                {
-                    return;
-                }
+                sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0));
                 return;
             }
             other = true;
@@ -154,14 +147,7 @@ public class CheatCommands
             user = context.getIndexed(1, User.class, null);
             if (user == null)
             {
-                try
-                {
-                    sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0)); //TODO why does this throw conversion Exception????
-                }
-                catch (ConversionException ex)
-                {
-                    return;
-                }
+                sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0));
                 return;
             }
             changeOther = true;
@@ -226,27 +212,13 @@ public class CheatCommands
         User user = context.getIndexed(0, User.class, null);
         if (user == null)
         {
-            try
-            {
-                sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0)); //TODO why does this throw conversion Exception????
-            }
-            catch (ConversionException ex)
-            {
-                return;
-            }
+            sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0));
             return;
         }
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
-            try
-            {
-                sender.sendMessage("", "&cUnknown Item: %s!", context.getString(1)); //TODO why does this throw conversion Exception????
-            }
-            catch (ConversionException ex)
-            {
-                return;
-            }
+            sender.sendMessage("", "&cUnknown Item: %s!", context.getString(1));
             return;
         }
 
@@ -298,14 +270,7 @@ public class CheatCommands
             user = context.getIndexed(0, User.class, null);
             if (user == null)
             {
-                try
-                {
-                    sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0)); //TODO why does this throw conversion Exception????
-                }
-                catch (ConversionException ex)
-                {
-                    return;
-                }
+                sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0));
                 return;
             }
             other = true;
@@ -345,14 +310,7 @@ public class CheatCommands
         ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
-            try
-            {
-                sender.sendMessage("", "&cUnknown Item: %s!", context.getString(1)); //TODO why does this throw conversion Exception????
-            }
-            catch (ConversionException ex)
-            {
-                return;
-            }
+            sender.sendMessage("", "&cUnknown Item: %s!", context.getString(1));
             return;
         }
 
@@ -554,14 +512,7 @@ public class CheatCommands
                 world = context.getSender().getServer().getWorld(worldname);
                 if (world == null)
                 {
-                    try
-                    {
-                        context.getSender().sendMessage(_("","&cThe World %s does not exist!", context.getString(1)));//TODO
-                    }
-                    catch (ConversionException ex)
-                    {
-                        return;
-                    }
+                    context.getSender().sendMessage(_("", "&cThe World %s does not exist!", context.getString(1)));
                     //TODO msg unknown world print worldlist
                     return;
                 }

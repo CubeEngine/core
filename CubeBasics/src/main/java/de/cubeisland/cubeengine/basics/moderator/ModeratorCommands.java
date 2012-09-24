@@ -50,45 +50,80 @@ public class ModeratorCommands
         }
         EntityType entityType = null;
         EntityType ridingEntityType = null;
-        try
-        {
-            String entityName = null;
-            String entityData = null;
-            String ridingEntityName = null;
-            String ridingEntityData = null;
-            String mobString = context.getString(0);
-            if (mobString.contains(","))
-            {
-                entityName = mobString.substring(0,mobString.indexOf(","));
-                ridingEntityName = mobString.substring(mobString.indexOf(","), mobString.length());
-            }
-            else
-            {
-                entityName = mobString;
-            }
-            if (entityName.contains(":"))
-            {
-                entityName = entityName.substring(0, entityName.indexOf(":"));
-                entityData = entityName.substring(entityName.indexOf(":"), entityName.length());
-                entityType = EntityMatcher.get().matchMob(entityName);
-            }
-            if (ridingEntityName != null && ridingEntityName.contains(":"))
-            {
-                ridingEntityName = ridingEntityName.substring(0, ridingEntityName.indexOf(":"));
-                ridingEntityData = ridingEntityName.substring(ridingEntityName.indexOf(":"), ridingEntityName.length());
-                ridingEntityType = EntityMatcher.get().matchMob(ridingEntityName);
-            }
-        }
-        catch (ConversionException ex)
-        {
-            //TODO handle me
-            return;
-        }
-        String data = null;//TODO set data
-        Location loc = sender.getTargetBlock(null, 200).getLocation(); // TODO check does this work?
-        Entity entity = sender.getWorld().spawnEntity(loc, entityType.getBukkitType());
-        //TODO apply data to entity
         
+        String entityName;
+        String entityData = null;
+        String ridingEntityName = null;
+        String ridingEntityData = null;
+        String mobString = context.getString(0);
+        if (mobString.contains(","))
+        {
+            entityName = mobString.substring(0, mobString.indexOf(","));
+            ridingEntityName = mobString.substring(mobString.indexOf(","), mobString.length());
+        }
+        else
+        {
+            entityName = mobString;
+        }
+        if (entityName.contains(":"))
+        {
+            entityName = entityName.substring(0, entityName.indexOf(":"));
+            entityData = entityName.substring(entityName.indexOf(":"), entityName.length());
+            entityType = EntityMatcher.get().matchMob(entityName);
+            if (entityType == null)
+            {
+                return; //TODO msg invalid mob
+            }
+        }
+        if (ridingEntityName != null && ridingEntityName.contains(":"))
+        {
+            ridingEntityName = ridingEntityName.substring(0, ridingEntityName.indexOf(":"));
+            ridingEntityData = ridingEntityName.substring(ridingEntityName.indexOf(":"), ridingEntityName.length());
+            ridingEntityType = EntityMatcher.get().matchMob(ridingEntityName);
+            if (ridingEntityType == null)
+            {
+                return; //TODO msg invalid ridingmob
+            }
+        }
+        Location loc;
+        if (context.hasIndexed(2))
+        {
+            User user = context.getUser(2);
+            if (user == null)
+            {
+                return;//TODO msg user not found
+            }
+            loc = user.getLocation();
+        }
+        else
+        {
+            loc = sender.getTargetBlock(null, 200).getLocation(); // TODO do Util method for this in core 
+        }
+        int amount = 1;
+        if (context.hasIndexed(1))
+        {
+            amount = context.getIndexed(1, int.class, 0);
+            if (amount == 0)
+            {
+                return; //TODO msg invalid amount
+            }
+        }
+
+        for (int i = 1; i <= amount; ++i)
+        { //TODO msg succes spawn
+            Entity entity = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
+            this.applyDataToMob(entityType, entity, entityData);
+            if (ridingEntityType != null)
+            {
+                Entity ridingentity = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
+                this.applyDataToMob(ridingEntityType, ridingentity, ridingEntityData);
+                entity.setPassenger(ridingentity);
+            }
+        }
+    }
+    
+    private void applyDataToMob(EntityType entityType, Entity entity, String data)
+    {
         if (data != null)
         {
             if (data.equalsIgnoreCase("baby"))
@@ -124,11 +159,11 @@ public class ModeratorCommands
                     ((Ocelot) entity).setTamed(true);
                 }
             }
-            else if (data.equalsIgnoreCase("powered")||data.equalsIgnoreCase("power"))
+            else if (data.equalsIgnoreCase("powered") || data.equalsIgnoreCase("power"))
             {
                 if (entityType.equals(EntityType.CREEPER))
                 {
-                    ((Creeper)entity).setPowered(true);
+                    ((Creeper) entity).setPowered(true);
                 }
             }
             else
@@ -162,10 +197,5 @@ public class ModeratorCommands
                 }
             }
         }
-    }
-    
-    private void applyDataToMob(EntityType type, Entity entity, String data)
-    {
-        
     }
 }
