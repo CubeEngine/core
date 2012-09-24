@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 import java.util.logging.Level;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -104,6 +105,12 @@ public class MaterialMatcher
             }
         }
         return item;
+    }
+
+    public DyeColor matchColorData(String data)
+    {
+        short dataVal = this.datavalues.get(351).get(StringUtils.matchString(data, this.datavalues.get(351).keySet()));
+        return DyeColor.getByData((byte)dataVal);
     }
 
     private ItemStack setData(ItemStack item, String data)
