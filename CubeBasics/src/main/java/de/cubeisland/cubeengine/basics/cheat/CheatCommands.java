@@ -461,7 +461,7 @@ public class CheatCommands
     @Command(
     desc = "Changes the time of a world",
     min = 1, max = 2,
-    flags={@Flag(longName="all",name="a")},
+    flags={@Flag(name="a",longName="all")},
     usage = "/time <day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
