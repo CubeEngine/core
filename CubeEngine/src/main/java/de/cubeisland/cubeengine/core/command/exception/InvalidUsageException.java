@@ -1,27 +1,21 @@
 package de.cubeisland.cubeengine.core.command.exception;
 
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import org.bukkit.command.CommandSender;
+
 /**
  *
  * @author CodeInfection
  */
-public class InvalidUsageException extends Exception
+public class InvalidUsageException extends CommandException
 {
-    private final int min;
-    private final int max;
-
-    public InvalidUsageException(int min, int max)
+    public InvalidUsageException(String message)
     {
-        this.min = min;
-        this.max = max;
+        super(message);
     }
     
-    public int getMin()
+    public static void invalidUsage(CommandSender sender, String category, String message, Object... params)
     {
-        return this.min;
-    }
-    
-    public int getMax()
-    {
-        return this.max;
+        throw new InvalidUsageException(_(sender, category, message, params));
     }
 }

@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import static de.cubeisland.cubeengine.core.CubeEngine._;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.util.Collections;
 import java.util.List;

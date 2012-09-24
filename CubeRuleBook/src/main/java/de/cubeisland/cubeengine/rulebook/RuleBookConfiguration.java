@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -53,7 +53,7 @@ public class RuleBookConfiguration
             try
             {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                writer.write(CubeEngine._(language, "rulebook", "You have to write down your rules here."));
+                writer.write(_(language, "rulebook", "You have to write down your rules here."));
                 writer.close();
             } 
             catch(IOException e)

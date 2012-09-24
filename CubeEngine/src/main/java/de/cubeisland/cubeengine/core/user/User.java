@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import static de.cubeisland.cubeengine.core.CubeEngine._;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;

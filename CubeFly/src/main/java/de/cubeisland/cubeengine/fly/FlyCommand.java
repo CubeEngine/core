@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;

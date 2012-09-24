@@ -1,8 +1,11 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import de.cubeisland.cubeengine.core.BukkitDependend;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.FileHandler;
@@ -20,6 +23,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
+import org.bukkit.command.CommandSender;
 
 /**
  *
@@ -230,5 +234,30 @@ public class I18n implements Cleanable
     private void logMissingTranslation(String language, String category, String message)
     {
         LOGGER.log(Level.INFO, "\"" + language + "\" - \"" + category + "\" - \"" + message + "\"");
+    }
+
+    @BukkitDependend("Uses Bukkit's CommandSender")
+    public static String _(CommandSender sender, String category, String text, Object... params)
+    {
+        if (sender instanceof User)
+        {
+            return _((User)sender, category, text, params);
+        }
+        return _(category, text, params);
+    }
+
+    public static String _(User user, String category, String text, Object... params)
+    {
+        return _(user.getLanguage(), category, text, params);
+    }
+
+    public static String _(String category, String text, Object... params)
+    {
+        return _(CubeEngine.getI18n().getDefaultLanguage(), category, text, params);
+    }
+
+    public static String _(String language, String category, String text, Object... params)
+    {
+        return CubeEngine.getI18n().translate(language, category, text, params);
     }
 }

@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -50,7 +50,7 @@ class RuleBookListener implements Listener, Runnable
             BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
             
             ruleBook.setAuthor(this.module.getCore().getServer().getServerName());
-            ruleBook.setTitle(CubeEngine._(language, "rulebook", "Rulebook"));
+            ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
             ruleBook.setPages(this.module.getConfig().getPages(language));
 
             user.setItemInHand(ruleBook.getItemStack());

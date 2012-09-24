@@ -199,31 +199,6 @@ public final class CubeEngine
         return getServer().getOfflinePlayer(name);
     }
 
-    @BukkitDependend("Uses Bukkit's CommandSender")
-    public static String _(CommandSender sender, String category, String text, Object... params)
-    {
-        if (sender instanceof User)
-        {
-            return _((User)sender, category, text, params);
-        }
-        return _(category, text, params);
-    }
-
-    public static String _(User user, String category, String text, Object... params)
-    {
-        return _(user.getLanguage(), category, text, params);
-    }
-
-    public static String _(String category, String text, Object... params)
-    {
-        return _(core.getI18n().getDefaultLanguage(), category, text, params);
-    }
-
-    public static String _(String language, String category, String text, Object... params)
-    {
-        return core.getI18n().translate(language, category, text, params);
-    }
-
     public static CoreConfiguration getConfiguration()
     {
         return core.getConfiguration();

@@ -1,11 +1,13 @@
 package de.cubeisland.cubeengine.core.command;
 
-import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.InvocationTargetException;
@@ -79,18 +81,34 @@ public class ReflectedCommand extends CubeCommand
     @Override
     public void run(CommandContext context)
     {
+        CommandSender sender = context.getSender();
         try
         {
-            if (context.indexedCount() < this.min || (this.max != -1 && context.indexedCount() > this.max))
+            if (context.indexedCount() < this.min)
             {
-                throw new InvalidUsageException(this.min, this.max);
+                invalidUsage(sender, "core", "This command needs at least %d parameters.", this.min);
+            }
+            else if (this.max != -1 && context.indexedCount() > this.max)
+            {
+                invalidUsage(sender, "core", "This command needs at most %d parameters.", this.min);
             }
             if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
             {
-                throw new PermissionDeniedException(context.getSender(), "You are not allowed to do this.");
+                denyAccess(sender, "core", "You are not allowed to do this.");
             }
 
             this.commandMethod.invoke(this.commandContainer, context);
+        }
+        catch (InvalidUsageException e)
+        {
+            sender.sendMessage(e.getMessage());
+            sender.sendMessage(_(sender, "core", "Proper usage: %s", context.getCommand().getUsage()));
+            context.setResult(false);
+        }
+        catch (PermissionDeniedException e)
+        {
+            sender.sendMessage(e.getMessage());
+            context.setResult(false);
         }
         catch (Exception e)
         {
