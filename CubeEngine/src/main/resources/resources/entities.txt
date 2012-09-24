@@ -85,10 +85,12 @@
     MushroomCow
 97:
     SnowMan
+    SnowGolem
 98:
     Ozelot
 99:
     VillagerGolem
+    IronGolem
 #NPCs
 120:
     Villager

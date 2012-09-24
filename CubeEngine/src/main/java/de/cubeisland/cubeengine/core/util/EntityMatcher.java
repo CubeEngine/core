@@ -75,7 +75,7 @@ public class EntityMatcher
         }
         return entity;
     }
-
+    
     public EntityType matchMob(String s)
     {
         EntityType type = this.matchEntity(s);

@@ -75,14 +75,15 @@ public class ModeratorCommands
             entityData = entityName.substring(entityName.indexOf(":") + 1, entityName.length());
             entityName = entityName.substring(0, entityName.indexOf(":"));
             entityType = EntityMatcher.get().matchMob(entityName);
-            if (entityType == null)
-            {
-                return; //TODO msg invalid mob
-            }
         }
         else
         {
             entityType = EntityMatcher.get().matchMob(entityName);
+
+        }
+        if (entityType == null)
+        {
+            return; //TODO msg invalid mob
         }
         if (ridingEntityName != null && ridingEntityName.contains(":"))
         {
@@ -161,7 +162,7 @@ public class ModeratorCommands
                     ((PigZombie) entity).setAngry(true);
                 }
             }
-            else if (data.equalsIgnoreCase("tamed"))
+            else if (data.equalsIgnoreCase("tamed")) //TODO set owner
             {
                 if (entityType.equals(EntityType.WOLF))
                 {
@@ -210,7 +211,7 @@ public class ModeratorCommands
                 }
                 else if (entityType.equals(EntityType.VILLAGER))
                 {
-                    //TODO professions better
+                    //TODO professions better now have to write in capslock :(
                     Profession profession = Profession.valueOf(data);
                     if (profession == null)
                     {
@@ -220,7 +221,6 @@ public class ModeratorCommands
                 }
                 else if (entityType.equals(EntityType.ENDERMAN))
                 {
-                    //TODO professions better
                     ItemStack item = MaterialMatcher.get().matchItemStack(data);
                     if (item == null)
                     {
@@ -288,5 +288,97 @@ public class ModeratorCommands
         world.setStorm(!sunny);
         world.setThundering(!noThunder);
         world.setWeatherDuration(duration);
+    }
+
+    @Command(
+    desc = "Changes the global respawnpoint",
+    usage = "/setspawn [world] [<x> <y> <z>]",
+    max = 4)
+    public void setSpawn(CommandContext context)
+    {
+        User sender = cuManager.getUser(context.getSender());
+        Integer x;
+        Integer y;
+        Integer z;
+        World world;
+        if (context.hasIndexed(0))
+        {
+            world = context.getSender().getServer().getWorld(context.getString(0));
+            if (world == null)
+            {
+                return; //TODO msg no such world
+            }
+        }
+        else
+        {
+            if (sender == null)
+            {
+                return; //TODO msg if not a player give world
+            }
+            world = sender.getWorld();
+        }
+        
+        if (context.hasIndexed(3))
+        {
+            x = context.getIndexed(1, Integer.class, null);
+            y = context.getIndexed(2, Integer.class, null);
+            z = context.getIndexed(3, Integer.class, null);
+            if (x==null || y == null || z == null)
+            {
+                return; //TODO msg invalid coords
+            }
+        }
+        else
+        {
+            if (sender == null)
+            {
+                return; //TODO msg if not a player give coords
+            }
+            x = sender.getLocation().getBlockX();
+            y = sender.getLocation().getBlockY();
+            z = sender.getLocation().getBlockZ();
+        }
+        world.setSpawnLocation(x,y,z);
+        //TODO msg spawn set.
+    }
+    
+    @Command(
+    desc = "Kills a player",
+    usage = "/kill <player>",
+    min = 1,
+    max = 1)
+    public void kill(CommandContext context)
+    {//TODO kill a player looking at
+        //TODO kill a player with cool effects :) e.g. lightning
+        User sender = cuManager.getUser(context.getSender());
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            return; //TODO msg player not found
+        }
+        user.setHealth(0);
+        //TODO broadcast Deathmsg etc
+        //TODO msg you killed ...
+    }
+    
+    @Command(
+    names={"ping","pong"},
+    desc = "Pong!",
+    usage = "/ping",
+    min = 1,
+    max = 1)
+    public void ping(CommandContext context)
+    {
+        //TODO if cmd was pong say smth funny
+        User sender = cuManager.getUser(context.getSender());
+        if (sender == null)
+        {
+            context.getSender().sendMessage(_("","Pong!")); //TODO
+        }
+        else
+        {
+            sender.sendMessage("","Pong!");
+        }
+        
     }
 }
