@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
@@ -49,6 +50,7 @@ public class Convert
         registerConverter(ItemStack.class, new ItemStackConverter());
         registerConverter(Enchantment.class, new EnchantmentConverter());
         registerConverter(User.class, new UserConverter());
+        registerConverter(World.class, new WorldConverter());
 
         registerGenericConverter(Collection.class, new ColletionConverter());
         registerGenericConverter(Map.class, new MapConverter());

@@ -4,11 +4,14 @@ import de.cubeisland.cubeengine.basics.Basics;
 import static de.cubeisland.cubeengine.core.CubeEngine._;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.EntityType;
 import de.cubeisland.cubeengine.core.util.MaterialMatcher;
+import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -349,7 +352,8 @@ public class ModeratorCommands
     max = 1)
     public void kill(CommandContext context)
     {//TODO kill a player looking at
-        //TODO kill a player with cool effects :) e.g. lightning
+        //TODO kill a player with cool effects :) e.g. lightnin
+        //TODO perm checks if user can be killed
         User sender = cuManager.getUser(context.getSender());
         User user = context.getUser(0);
         if (user == null)
@@ -381,4 +385,102 @@ public class ModeratorCommands
         }
         
     }
+    
+    @Command(
+    desc = "Removes entity",
+    usage = "/remove <entityType> [radius] [in <world>] [-a]",
+    flags = {@Flag(longName="all",name="a")},
+    params= {@Param(names={"in"},types=World.class)},
+    min = 1,
+    max = 1)
+    public void remove(CommandContext context)
+    {/*
+     Drops
+     Arrows
+     Boats
+     Minecarts
+     xp
+     paintings
+     
+     other non living possible too
+     TODO 
+     */
+        User sender = cuManager.getUser(context.getSender());
+        
+        World world;
+        if (context.hasNamed("in"))
+        {
+            world = context.getNamed("in", World.class);
+        }
+        else
+        {
+            if (sender == null)
+            {
+                return; //TODO msg no player or world :(
+            }
+            world = sender.getWorld();
+        }
+
+        int radius = 20; //TODO default radius in config!
+        if (context.hasFlag("a")) // remove all selected entities in world
+        {
+            radius = -1;
+        }
+        else
+        {
+            if (sender == null)
+            {
+                return; // no player -> no location TODO msg
+            }
+            if (context.hasIndexed(1))
+            {
+                radius = context.getIndexed(1, int.class, 0);
+                if (radius == 0)
+                {
+                    return; //TODO msg invalid radius
+                }
+            }
+        }
+        EntityType type = EntityMatcher.get().matchEntity(context.getString(0));
+        if (type.isAlive())
+        {
+            // TODO msg to remove livingentities use butcher
+            return;
+        }
+        Location loc = null;
+        if (sender != null)
+        {
+            loc = sender.getLocation();
+        }
+        this.removeEntityType(world.getEntities(), loc, radius, type);
+    }
+    
+    private int removeEntityType(List<Entity> list, Location loc, int radius, EntityType type)
+    {
+        if (loc == null && radius != -1)
+        {
+            throw new IllegalStateException("Unkown Location with Radius");
+        }
+        int removed = 0;
+        
+        for (Entity entity : list)
+        {
+            if (entity.getType().equals(type.getBukkitType()))
+            {
+                continue;
+            }
+            if (radius != -1)
+            {
+                int distance = (int) (entity.getLocation().subtract(loc)).lengthSquared();
+                if (radius * radius < distance)
+                {
+                    continue;
+                }
+            }
+            entity.remove();
+            removed++;
+        }
+        return removed;
+    }
+    
 }

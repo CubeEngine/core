@@ -294,10 +294,7 @@ public class CheatCommands
     desc = "Gives the specified Item to you",
     max = 2,
     min = 1,
-    flags =
-    {
-        @Flag(longName = "blacklist", name = "b")
-    },
+    flags = {@Flag(longName = "blacklist", name = "b")},
     usage = "/i <material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
@@ -362,10 +359,7 @@ public class CheatCommands
     desc = "Changes the time for a player",
     min = 1,
     max = 2,
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
+    flags = {@Flag(longName = "all", name = "a")},
     usage = "/ptime <day|night|dawn|even> [player] [-all]")
     public void ptime(CommandContext context)
     {
@@ -409,10 +403,7 @@ public class CheatCommands
     //@Description("Repairs your items")
     @Command(
     desc = "Repairs your items",
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
+    flags = {@Flag(longName = "all", name = "a")},
     usage = "/repair [-all]") // without item in hand
     public void repair(CommandContext context)
     {

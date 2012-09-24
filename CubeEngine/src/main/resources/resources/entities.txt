@@ -3,6 +3,7 @@
     item
 2:
     XPOrb
+    exp
 #Immobile
 9:
     Painting
