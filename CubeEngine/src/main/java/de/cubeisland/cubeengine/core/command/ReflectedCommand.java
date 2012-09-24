@@ -85,7 +85,7 @@ public class ReflectedCommand extends CubeCommand
             {
                 throw new InvalidUsageException(this.min, this.max);
             }
-            if (this.checkPermision && context.getSender().hasPermission(usageMessage))
+            if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
             {
                 throw new PermissionDeniedException(context.getSender(), "You are not allowed to do this.");
             }
