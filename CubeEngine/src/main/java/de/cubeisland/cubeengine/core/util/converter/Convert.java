@@ -81,7 +81,7 @@ public class Convert
      */
     public static <T> Converter<T> matchConverter(Class<? extends T> objectClass)
     {
-        if (CONVERTERS.contains(objectClass))
+        if (CONVERTERS.containsKey(objectClass))
         {
             return (Converter<T>)CONVERTERS.get(objectClass);
         }
