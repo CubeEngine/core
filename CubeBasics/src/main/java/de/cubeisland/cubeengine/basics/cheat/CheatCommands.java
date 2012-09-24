@@ -31,17 +31,14 @@ public class CheatCommands
     desc = "Adds an Enchantment to the item in your hand",
     min = 1,
     max = 2,
-    flags =
-    {
-        @Flag(longName = "unsafe", name = "u")
-    },
+    flags = {@Flag(longName = "unsafe", name = "u")},
     usage = "/enchant <enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
         User sender = cuManager.getUser(context.getSender());
         if (sender == null)
         {
-            context.getSender().sendMessage("&cThis command can only be used ingame!");
+            context.getSender().sendMessage(_("core","&cThis command can only be used by a player!"));
             return;
         }
         ItemStack item = sender.getItemInHand();
@@ -56,20 +53,21 @@ public class CheatCommands
         }
         if (ench == null)
         {
-            // TODO msg unknown ench
+            sender.sendMessage("basics", "Enchantment not found! Try one of those instead:");
+            // TODO list possible enchantments for item in hand
             return;
         }
         int level = ench.getMaxLevel();
         if (context.hasIndexed(2))
         {
             level = context.getIndexed(1, int.class, 0);
-            if (level == 0)
+            if (level <= 0)
             {
-                // TODO msg invalid lvl
+                sender.sendMessage("basics", "The EnchantmentLevel has to be a Number greater than 0!");
                 return;
             }
         }
-        if (context.hasFlag("u")) // Add unsafe enchantment //TODO permission
+        if (context.hasFlag("u") && (1 == 0)) // Add unsafe enchantment //TODO permission
         {
             item.addUnsafeEnchantment(ench, level);
             sender.sendMessage("bascics", "&aAdded unsafe Enchantment: &6%s&a to your item!", ench.toString()); //TODO use other than ench.toString AND add level
@@ -84,14 +82,13 @@ public class CheatCommands
                     sender.sendMessage("bascics", "&aAdded Enchantment: &6%s&a to your item!", ench.toString());//TODO use other than ench.toString  AND add level
                     return;
                 }
-                // invalid level msg
+                sender.sendMessage("basics", "This enchantmentlevel is not allowed!");
                 return;
             }
-            // invalid item msg
+            sender.sendMessage("basics", "This enchantment is not allowed for this item!");
         }
     }
 
-    //@Usage("[Player]")
     @Command(
     desc = "Refills your hunger bar",
     max = 1,
@@ -138,10 +135,7 @@ public class CheatCommands
     }
 
     @Command(
-    names =
-    {
-        "gamemode", "gm"
-    },
+    names = {"gamemode", "gm"},
     max = 2,
     desc = "Changes the gamemode",
     usage = "/gm <gamemode> [player]")
@@ -160,7 +154,14 @@ public class CheatCommands
             user = context.getIndexed(1, User.class, null);
             if (user == null)
             {
-                // TODO invalid User msg
+                try
+                {
+                    sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0)); //TODO why does this throw conversion Exception????
+                }
+                catch (ConversionException ex)
+                {
+                    return;
+                }
                 return;
             }
             changeOther = true;
@@ -216,10 +217,7 @@ public class CheatCommands
 
     @Command(
     desc = "Gives the specified Item to a player",
-    flags =
-    {
-        @Flag(name = "b", longName = "blacklist")
-    },
+    flags = {@Flag(name = "b", longName = "blacklist")},
     min = 2, max = 3,
     usage = "/give <player> <material[:data]> [amount] [-blacklist]")
     public void give(CommandContext context)
@@ -228,13 +226,27 @@ public class CheatCommands
         User user = context.getIndexed(0, User.class, null);
         if (user == null)
         {
-            // TODO no such player msg
+            try
+            {
+                sender.sendMessage("", "&cThe User %s does not exist!", context.getString(0)); //TODO why does this throw conversion Exception????
+            }
+            catch (ConversionException ex)
+            {
+                return;
+            }
             return;
         }
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
-            // TODO no such item msg
+            try
+            {
+                sender.sendMessage("", "&cUnknown Item: %s!", context.getString(1)); //TODO why does this throw conversion Exception????
+            }
+            catch (ConversionException ex)
+            {
+                return;
+            }
             return;
         }
 
@@ -253,12 +265,11 @@ public class CheatCommands
             amount = context.getIndexed(2, int.class, 0);
             if (amount == 0)
             {
-                // TODO invalid amount
+                sender.sendMessage("", "&cThe amount has to be a Number greater than 0!"); //TODO
                 return;
             }
         }
         item.setAmount(amount);
-
 
         user.getInventory().addItem(item);
         user.updateInventory();
@@ -313,15 +324,8 @@ public class CheatCommands
         }
     }
 
-    //@Param(type=User.class)
-    //@Param(type=ItemStack.class)
-    //@Param(type=Integer.class)
-    //@Usage("<Material[:Data]> [amount]")
     @Command(
-    names =
-    {
-        "item", "i"
-    },
+    names = {"item", "i"},
     desc = "Gives the specified Item to you",
     max = 2,
     min = 1,
@@ -335,13 +339,20 @@ public class CheatCommands
         User sender = context.getIndexed(0, User.class, null);
         if (sender == null)
         {
-            // TODO msg no player
+            context.getSender().sendMessage(_("core","&cThis command can only be used by a player!"));
             return;
         }
         ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
-            // TODO msg invalid item
+            try
+            {
+                sender.sendMessage("", "&cUnknown Item: %s!", context.getString(1)); //TODO why does this throw conversion Exception????
+            }
+            catch (ConversionException ex)
+            {
+                return;
+            }
             return;
         }
 
@@ -360,7 +371,7 @@ public class CheatCommands
             amount = context.getIndexed(1, int.class, 0);
             if (amount == 0)
             {
-                // TODO msg invalid amount
+                sender.sendMessage("", "&cThe amount has to be a Number greater than 0!"); //TODO
                 return;
             }
         }
@@ -379,7 +390,7 @@ public class CheatCommands
         User user = cuManager.getUser(context.getSender());
         if (user == null)
         {
-            // TODO msg no player
+            context.getSender().sendMessage(_("core","&cThis command can only be used by a player!"));
             return;
         }
         user.getItemInHand().setAmount(64);
@@ -489,18 +500,13 @@ public class CheatCommands
          }*/
     }
 
-    //@Param(type=String.class)
-    //@Param(type=World.class)
-    //@Flag({"all","a"})
-    //@Usage("<day|night|dawn|even> [world] [-all]")
-    //@Description("Changes the time of a world")
     @Command(
     desc = "Changes the time of a world",
     min = 1, max = 2,
     usage = "/time <day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
-        long time = 0;
+        long time;
         String timeString = context.getIndexed(0, String.class, null);
         if (timeString.equalsIgnoreCase("day"))
         {
@@ -543,12 +549,19 @@ public class CheatCommands
             User sender = cuManager.getUser(context.getSender());
             World world = null;
             if (context.hasIndexed(1))
-             {
-                String worldname = context.getIndexed(1, String.class, "world");
+            {
+                String worldname = context.getIndexed(1, String.class, "");
                 world = context.getSender().getServer().getWorld(worldname);
                 if (world == null)
                 {
-                    //user.sendTMessage("&cThe World %s does not exist!", args.getString(2));
+                    try
+                    {
+                        context.getSender().sendMessage(_("","&cThe World %s does not exist!", context.getString(1)));//TODO
+                    }
+                    catch (ConversionException ex)
+                    {
+                        return;
+                    }
                     //TODO msg unknown world print worldlist
                     return;
                 }
@@ -557,7 +570,7 @@ public class CheatCommands
             {
                 if (sender == null)
                 {
-                    //TODO msg no user and no world specified
+                    context.getSender().sendMessage(_("","If not used ingame you have to specify a world"));
                     return;
                 }
             }
@@ -566,7 +579,14 @@ public class CheatCommands
                 world = sender.getWorld();
             }
             world.setTime(time);
-            //TODO msg time set    
+            if (sender == null)
+            {
+                context.getSender().sendMessage(_("", "Time set to %d in world %s", time, world.getName()));
+            }
+            else
+            {
+                sender.sendMessage("", "Time set to %d in world %s", time, world.getName());
+            }
         }
     }
 
