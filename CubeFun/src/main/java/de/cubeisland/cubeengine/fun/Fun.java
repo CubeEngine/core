@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.fun;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.fun.commands.FunCommands;
 import java.util.logging.Logger;
 
 /**
@@ -18,8 +18,9 @@ public class Fun extends Module
     public void onEnable()
     {
         this.logger = this.getLogger();
-        CubeEngine.getFileManager().dropResources(FunResource.values());
-        
+        this.getCore().getFileManager().dropResources(FunResource.values());
         this.config = Configuration.load(FunConfiguration.class, this);
+        
+        this.getCommandManager().registerCommands(this, new FunCommands(this));
     }
 }
