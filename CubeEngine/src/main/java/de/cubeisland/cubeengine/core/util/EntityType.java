@@ -128,7 +128,12 @@ public enum EntityType
 
     public boolean isFriendly()
     {
-        return Animals.class.isAssignableFrom(this.getEntityClass()) || NPC.class.isAssignableFrom(this.getEntityClass());
+        return this.isAnimal() || NPC.class.isAssignableFrom(this.getEntityClass());
+    }
+    
+    public boolean isAnimal()
+    {
+        return Animals.class.isAssignableFrom(this.getEntityClass());
     }
 
     public boolean isProjectile()

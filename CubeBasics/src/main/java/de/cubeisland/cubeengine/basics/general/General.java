@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
  *
  * @author Anselm Brehme
  */
-public class General
+public class General  //TODO remove or at least reduce this class
 {
     public void me(Player player, String message)
     {

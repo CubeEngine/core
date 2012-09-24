@@ -26,7 +26,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Anselm Brehme
  */
-public class Moderator
+public class Moderator //TODO remove or at least reduce this class
 {
     public void broadcast(Player player, String message)
     {

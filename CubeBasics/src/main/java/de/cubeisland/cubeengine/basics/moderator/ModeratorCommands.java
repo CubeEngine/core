@@ -6,9 +6,15 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.EntityMatcher;
+import de.cubeisland.cubeengine.core.util.EntityType;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import javax.swing.plaf.metal.OceanTheme;
 import org.bukkit.Location;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Wolf;
 
 /**
  *
@@ -48,9 +54,46 @@ public class ModeratorCommands
             //TODO handle me
             return;
         }
-
+        String data = null;//TODO set data
         Location loc = user.getTargetBlock(null, 200).getLocation(); // TODO check does this work?
         Entity entity = user.getWorld().spawnEntity(loc, entityType.getBukkitType());
+        //TODO apply data to entity
+        if (data != null)
+        {
+            if (data.equalsIgnoreCase("baby"))
+            {
+                if (entityType.isAnimal())
+                {
+                    ((Animals) entity).setBaby();
+                }
+                else
+                {
+                    //could not apply data
+                }
+            }
+            else if (data.equalsIgnoreCase("angry"))
+            {
+                if (entityType.equals(EntityType.WOLF))
+                {
+                    ((Wolf) entity).setAngry(true);
+                }
+                else if (entityType.equals(EntityType.PIG_ZOMBIE))
+                {
+                    ((PigZombie) entity).setAngry(true);
+                }
+            }
+            else if (data.equalsIgnoreCase("tamed"))
+            {
+                if (entityType.equals(EntityType.WOLF))
+                {
+                    ((Wolf) entity).setTamed(true);
+                }
+                else if (entityType.equals(EntityType.OCELOT))
+                {
+                    ((Ocelot) entity).setTamed(true);
+                }
+            }
 
+        }
     }
 }

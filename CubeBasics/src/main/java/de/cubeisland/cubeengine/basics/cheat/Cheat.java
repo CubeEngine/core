@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Anselm Brehme
  */
-public class Cheat
+public class Cheat  //TODO remove or at least reduce this class
 {
     public void item(Player player, ItemStack item)
     {

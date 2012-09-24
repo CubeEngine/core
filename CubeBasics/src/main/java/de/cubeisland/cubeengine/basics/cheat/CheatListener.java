@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.basics.cheat;
 
 import de.cubeisland.cubeengine.basics.BasicUser;
-import de.cubeisland.cubeengine.basics.BasicUserManager;
-import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
