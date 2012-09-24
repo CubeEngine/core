@@ -83,17 +83,21 @@ public class Convert
      */
     public static <T> Converter<T> matchConverter(Class<? extends T> objectClass)
     {
-        if (CONVERTERS.containsKey(objectClass))
+        Converter converter = CONVERTERS.get(objectClass);
+        if (converter == null)
         {
-            return (Converter<T>)CONVERTERS.get(objectClass);
-        }
-        for (Map.Entry<Class<?>, Converter<?>> entry : CONVERTERS.entrySet())
-        {
-            if (entry.getKey().isAssignableFrom(objectClass))
+            for (Map.Entry<Class<?>, Converter<?>> entry : CONVERTERS.entrySet())
             {
-                registerConverter(objectClass, entry.getValue());
-                return (Converter<T>)entry.getValue();
+                if (entry.getKey().isAssignableFrom(objectClass))
+                {
+                    registerConverter(objectClass, converter = entry.getValue());
+                    break;
+                }
             }
+        }
+        if (converter != null)
+        {
+            return (Converter<T>)converter;
         }
         return null;
     }
