@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ import org.bukkit.command.CommandSender;
  */
 public abstract class CubeCommand extends Command
 {
+    protected static final Flag[] NO_FLAGS = new Flag[0];
+    protected static final Param[] NO_PARAMS = new Param[0];
     private CubeCommand parent;
     private final Module module;
     private Map<String, CubeCommand> children;
@@ -127,7 +131,7 @@ public abstract class CubeCommand extends Command
         }
 
         CommandContext context = new CommandContext(sender, this, labels);
-        context.parseCommandArgs(args);
+        context.parseCommandArgs(args, this.getFlags(), this.getParams());
 
         if (context.isHelpCall())
         {
@@ -174,6 +178,16 @@ public abstract class CubeCommand extends Command
     public CubeCommand getParent()
     {
         return this.parent;
+    }
+    
+    public Flag[] getFlags()
+    {
+        return NO_FLAGS;
+    }
+    
+    public Param[] getParams()
+    {
+        return NO_PARAMS;
     }
 
     public abstract void run(CommandContext context);

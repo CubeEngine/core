@@ -149,4 +149,16 @@ public class ReflectedCommand extends CubeCommand
         
         return permission + StringUtils.implode(".", cmds);
     }
+    
+    @Override
+    public Flag[] getFlags()
+    {
+        return this.flags;
+    }
+    
+    @Override
+    public Param[] getParams()
+    {
+        return this.params;
+    }
 }
