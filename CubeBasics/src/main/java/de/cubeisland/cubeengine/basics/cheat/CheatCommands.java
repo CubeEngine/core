@@ -8,6 +8,9 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -352,9 +355,6 @@ public class CheatCommands
         user.sendMessage("basics", "Refilled Stack in Hand!");
     }
 
-    //@Param(type=String.class)
-    //@Param(type=User.class)
-    //@Usage("<day|night|dawn|even> [player] [-all]")
     @Command(
     desc = "Changes the time for a player",
     min = 1,
@@ -407,46 +407,68 @@ public class CheatCommands
     usage = "/repair [-all]") // without item in hand
     public void repair(CommandContext context)
     {
-        //TODO
-        /*
-         * User user;
-         if (sender instanceof Player)
-         {
-         user = cuManager.getUser(sender);
-         }
-         else
-         {
-         sender.sendMessage(_("core", "&cThis command can only be used ingame!"));
-         return;
-         }
-         if (args.hasFlag("a"))
-         {
-         List<ItemStack> list = cheat.repairAll(user);
-         if (list.isEmpty())
-         {
-         user.sendTMessage("No items to repair!");
-         }
-         else
-         {
-         String items = "";
-         for (ItemStack item : list)
-         {
-         items += " " + item.toString();
-         }
-         user.sendTMessage("Repaired %d items:%s!", list.size(), items);
-         }
-         }
-         else
-         {
-         if (cheat.repairInHand(user))
-         {
-         user.sendTMessage("Item repaired!");
-         }
-         else
-         {
-         user.sendTMessage("Item cannot be repaired!");
-         }
-         }*/
+        User sender = cuManager.getUser(context.getSender());
+        if (sender == null)
+        {
+            context.getSender().sendMessage(_("core","&cThis command can only be used by a player!"));
+            return;
+        }
+        if (context.hasFlag("a"))
+        {
+            List<ItemStack> list = new ArrayList<ItemStack>();
+            list.addAll(Arrays.asList(sender.getInventory().getArmorContents()));
+            list.addAll(Arrays.asList(sender.getInventory().getContents()));
+            int repaired = 0;
+            for (ItemStack item : list)
+            {
+                if (this.checkRepairableItem(item))
+                {
+                    item.setDurability((short) 0);
+                    repaired++;
+                }
+            }
+            if (repaired == 0)
+            {
+                sender.sendMessage("No items to repair!");//TODO
+            }
+            else
+            {
+                sender.sendMessage("", "Repaired %d items!", repaired);//TODO
+            }
+        }
+        else
+        {
+            ItemStack item = sender.getItemInHand();
+            if (this.checkRepairableItem(item))
+            {
+                item.setDurability((short) 0);
+                sender.sendMessage("Item repaired!");//TODO
+            }
+            else
+            {
+                sender.sendMessage("Item cannot be repaired!");//TODO
+            }
+        }
+    }
+    
+    private boolean checkRepairableItem(ItemStack item)
+    {
+        switch (item.getType())
+        {
+            case IRON_SPADE: case IRON_PICKAXE: case IRON_AXE: case IRON_SWORD:
+            case WOOD_SPADE: case WOOD_PICKAXE: case WOOD_AXE: case WOOD_SWORD:
+            case STONE_SPADE: case STONE_PICKAXE: case STONE_AXE: case STONE_SWORD:
+            case DIAMOND_SPADE: case DIAMOND_PICKAXE: case DIAMOND_AXE: case DIAMOND_SWORD:
+            case GOLD_SPADE: case GOLD_PICKAXE: case GOLD_AXE: case GOLD_SWORD:
+            case WOOD_HOE: case STONE_HOE: case IRON_HOE: case DIAMOND_HOE: case GOLD_HOE:
+            case LEATHER_HELMET: case LEATHER_CHESTPLATE: case LEATHER_LEGGINGS: case LEATHER_BOOTS:    
+            case CHAINMAIL_HELMET: case CHAINMAIL_CHESTPLATE: case CHAINMAIL_LEGGINGS: case CHAINMAIL_BOOTS:   
+            case IRON_HELMET: case IRON_CHESTPLATE: case IRON_LEGGINGS: case IRON_BOOTS:   
+            case DIAMOND_HELMET: case DIAMOND_CHESTPLATE: case DIAMOND_LEGGINGS: case DIAMOND_BOOTS:   
+            case GOLD_HELMET: case GOLD_CHESTPLATE: case GOLD_LEGGINGS: case GOLD_BOOTS:
+            case FLINT_AND_STEEL: case BOW: case FISHING_ROD: case SHEARS: return true;
+            default: return false;
+        }
     }
 
     @Command(

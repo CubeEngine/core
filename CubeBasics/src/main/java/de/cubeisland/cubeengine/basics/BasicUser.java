@@ -72,5 +72,4 @@ public class BasicUser implements Model<Integer>
     {
         throw new UnsupportedOperationException("Not supported.");
     }
-    
 }

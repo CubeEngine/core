@@ -483,4 +483,46 @@ public class ModeratorCommands
         return removed;
     }
     
+    @Command(
+    desc = "Clears the inventory",
+    usage = "/ci [player]",
+    max = 1)
+    public void clearinventory(CommandContext context)
+    {
+        User sender = cuManager.getUser(context.getSender());
+        User user = sender;
+        boolean other = false;
+        if (context.hasIndexed(0))
+        {
+            user = context.getUser(0);
+            if (user == null)
+            {
+                return; //TODO msg invalid user
+            }
+            other = true;
+        }
+        user.getInventory().clear();
+        //TODO later save inventory to restore later ??
+        user.updateInventory();
+        user.sendMessage("basics","Cleared Inventory!");
+        if (other)
+        {
+            sender.sendMessage("basics", "Cleared Inventory of %s!", user.getName());
+        }
+    }
+    
+    @Command(
+    desc = "Broadcasts a message",
+    usage = "/broadcast <message>"
+    )
+    public void broadcast(CommandContext context)
+    {
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (context.hasIndexed(i))
+        {
+            sb.append(context.getString(i++));
+        }
+        context.getSender().getServer().broadcastMessage(sb.toString());
+    }
 }
