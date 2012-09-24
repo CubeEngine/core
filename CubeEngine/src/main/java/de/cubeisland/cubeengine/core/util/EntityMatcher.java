@@ -46,6 +46,10 @@ public class EntityMatcher
 
     public EntityType matchEntity(String name)
     {
+        if (name == null)
+        {
+            return null;
+        }
         Map<String, EntityType> entities = EntityType.getNameSets();
         String s = name.toLowerCase(Locale.ENGLISH);
         EntityType entity = entities.get(s);
@@ -75,7 +79,7 @@ public class EntityMatcher
     public EntityType matchMob(String s)
     {
         EntityType type = this.matchEntity(s);
-        if (type.isAlive())
+        if (type != null && type.isAlive())
         {
             return type;
         }
@@ -85,7 +89,7 @@ public class EntityMatcher
     public EntityType matchSpawnEggMobs(String s)
     {
         EntityType type = this.matchMob(s);
-        if (type.canBeSpawnedBySpawnEgg())
+        if (type != null && type.canBeSpawnedBySpawnEgg())
         {
             return type;
         }
@@ -95,7 +99,7 @@ public class EntityMatcher
     public EntityType matchMonster(String s)
     {
         EntityType type = this.matchEntity(s);
-        if (type.isMonster())
+        if (type != null && type.isMonster())
         {
             return type;
         }
@@ -105,7 +109,7 @@ public class EntityMatcher
     public EntityType matchFriendlyMob(String s)
     {
         EntityType type = this.matchEntity(s);
-        if (type.isFriendly())
+        if (type != null && type.isFriendly())
         {
             return type;
         }
@@ -115,7 +119,7 @@ public class EntityMatcher
     public EntityType matchProjectile(String s)
     {
         EntityType type = this.matchEntity(s);
-        if (type.isProjectile())
+        if (type != null && type.isProjectile())
         {
             return type;
         }

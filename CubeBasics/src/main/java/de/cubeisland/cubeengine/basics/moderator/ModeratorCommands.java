@@ -75,6 +75,10 @@ public class ModeratorCommands
                 return; //TODO msg invalid mob
             }
         }
+        else
+        {
+            entityType = EntityMatcher.get().matchMob(entityName);
+        }
         if (ridingEntityName != null && ridingEntityName.contains(":"))
         {
             ridingEntityName = ridingEntityName.substring(0, ridingEntityName.indexOf(":"));
@@ -84,6 +88,10 @@ public class ModeratorCommands
             {
                 return; //TODO msg invalid ridingmob
             }
+        }
+        else
+        {
+            ridingEntityType = EntityMatcher.get().matchMob(ridingEntityName);
         }
         Location loc;
         if (context.hasIndexed(2))

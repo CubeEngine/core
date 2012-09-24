@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.util.converter;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.Role;
+import de.cubeisland.cubeengine.core.user.User;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class Convert
         registerConverter(float.class, converter);
         registerConverter(ItemStack.class, new ItemStackConverter());
         registerConverter(Enchantment.class, new EnchantmentConverter());
+        registerConverter(User.class, new UserConverter());
 
         registerGenericConverter(Collection.class, new ColletionConverter());
         registerGenericConverter(Map.class, new MapConverter());
@@ -79,6 +81,10 @@ public class Convert
      */
     public static <T> Converter<T> matchConverter(Class<? extends T> objectClass)
     {
+        if (CONVERTERS.contains(objectClass))
+        {
+            return (Converter<T>)CONVERTERS.get(objectClass);
+        }
         for (Map.Entry<Class<?>, Converter<?>> entry : CONVERTERS.entrySet())
         {
             if (entry.getKey().isAssignableFrom(objectClass))

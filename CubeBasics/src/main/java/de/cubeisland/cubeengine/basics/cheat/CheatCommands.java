@@ -301,7 +301,7 @@ public class CheatCommands
     usage = "/i <material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
-        User sender = context.getIndexed(0, User.class, null);
+        User sender = cuManager.getUser(context.getSender());
         if (sender == null)
         {
             context.getSender().sendMessage(_("core","&cThis command can only be used by a player!"));
@@ -461,6 +461,7 @@ public class CheatCommands
     @Command(
     desc = "Changes the time of a world",
     min = 1, max = 2,
+    flags={@Flag(longName="all",name="a")},
     usage = "/time <day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
