@@ -322,9 +322,9 @@ public class CommandContext
      * @return the value as String
      * @throws IndexOutOfBoundsException if the index is out of range
      */
-    public String getString(int i) throws ConversionException
+    public String getString(int i)
     {
-        return this.getIndexed(i, String.class);
+        return this.getIndexed(i, String.class, null);
     }
 
     public String getString(String name)
@@ -349,9 +349,9 @@ public class CommandContext
         return this.getIndexed(i, String.class, def);
     }
     
-    public User getUser(int i) throws ConversionException
+    public User getUser(int i)
     {
-        return this.getIndexed(i, User.class);
+        return this.getIndexed(i, User.class, null);
     }
     
     public User getUser(String name)
@@ -434,16 +434,16 @@ public class CommandContext
 
     public <T> T getIndexed(int index, Class<T> type) throws ConversionException
     {
-        if (index < this.command.getMinimumParams() || index < 0 || (this.command.getMaximumParams() > -1 && index > this.command.getMaximumParams()))
-        {
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
-        }
         try
         {
             return Convert.fromString(type, this.indexedParams.get(index));
         }
         catch (IndexOutOfBoundsException e)
         {
+            if (index < this.command.getMinimumParams() - 1 || (this.command.getMaximumParams() > -1 && index >= this.command.getMaximumParams()))
+            {
+                throw e;
+            }
             return null;
         }
     }

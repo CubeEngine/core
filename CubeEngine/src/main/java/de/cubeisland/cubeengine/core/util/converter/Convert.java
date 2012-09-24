@@ -165,6 +165,10 @@ public class Convert
 
     public static <T> T fromString(Class<T> type, String string) throws ConversionException
     {
+        if (type == String.class)
+        {
+            return type.cast(string);
+        }
         Converter<T> converter = matchConverter(type);
         if (converter != null)
         {

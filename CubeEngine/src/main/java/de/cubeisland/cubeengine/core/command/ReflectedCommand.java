@@ -136,7 +136,7 @@ public class ReflectedCommand extends CubeCommand
     
     private String generatePermissionNode()
     {
-        String permission = "cubeengine." + this.getModule() + ".";
+        String permission = "cubeengine." + this.getModule() + ".command.";
         
         LinkedList<String> cmds = new LinkedList<String>();
         CubeCommand cmd = this;
