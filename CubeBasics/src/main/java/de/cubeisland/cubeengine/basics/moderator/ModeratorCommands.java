@@ -13,6 +13,8 @@ import de.cubeisland.cubeengine.core.util.EntityType;
 import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import java.util.List;
 import org.bukkit.DyeColor;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Animals;
@@ -524,5 +526,27 @@ public class ModeratorCommands
             sb.append(context.getString(i++));
         }
         context.getSender().getServer().broadcastMessage(sb.toString());
+    }
+    
+    @Command(
+    desc = "Makes a player execute a command",
+    usage = "/sudo <player> <command>"
+    )
+    public void sudo(CommandContext context)
+    {
+        StringBuilder sb = new StringBuilder();
+        User sender = cuManager.getUser(context.getSender());
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+        }
+        int i = 1;
+        while (context.hasIndexed(i))
+        {
+            sb.append(context.getString(i++));
+        }
+        user.chat("/" + sb.toString()); //TODO add flag for chat not cmd
+        //TODO msg to sender if cmd worked??
     }
 }

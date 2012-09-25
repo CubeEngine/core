@@ -107,7 +107,8 @@ public class CheatCommands
         User sender = cuManager.getUser(context.getSender());
         if (sender == null)
         {
-            invalidUsage(context.getSender(), "basics", "&cDon't feed the troll!");
+            invalidUsage(context.getSender(), "basics", "&cDon't feed the troll!");//TODO if not player given and
+            //TODO all flag
         }
         User user = sender;
         boolean other = false;
@@ -212,7 +213,8 @@ public class CheatCommands
         User sender = cuManager.getUser(context.getSender());
         if (sender == null)
         {
-            invalidUsage(context.getSender(), "basics", "&cOnly time can heal your wounds!");
+            invalidUsage(context.getSender(), "basics", "&cOnly time can heal your wounds!");//TODO if not player given and
+            //TODO all flag
         }
         User user = sender;
         boolean other = false;
@@ -556,8 +558,16 @@ public class CheatCommands
         }
     }
     
+    @Command(
+    desc = "The user can use unlimited items",
+    max = 1,
+    usage = "/unlimited [on|off]")
     public void unlimited(CommandContext context)
     {
-        //TODO
+        User sender = cuManager.getUser(context.getSender());
+        if (sender == null)
+        {
+            invalidUsage(context.getSender(), "core", "&cThis command can only be used by a player!");
+        }
     }
 }
