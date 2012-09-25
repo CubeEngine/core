@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -391,41 +392,70 @@ public class CheatCommands
         }
     }
 
+    private enum Time
+    {
+        DAY(6000, "day", "noon"),
+        NIGHT(18000, "night", "midnight"),
+        DAWN(0, "dawn", "morning"),
+        DUSK(12000, "dusk", "even");
+
+        private static final HashMap<String,Time> times = new  HashMap<String, Time>();
+        protected String[] names;
+        protected long longTime;
+        
+        static
+        {
+            for (Time time : values())
+            {
+                for (String name : time.names)
+                {
+                    times.put(name, time);
+                }
+            }
+        }
+        
+        private Time(long longTime, String... names)
+        {
+            this.names = names;
+            this.longTime = longTime;
+        }
+        
+        public static Long matchTime(String s)
+        {
+            if (s == null)
+            {
+                return null;
+            }
+            Time time = times.get(s);
+            if (time != null)
+            {
+                return time.longTime;
+            }
+            try //TODO time as 12:00 4pm/am etc.
+            {
+                return Long.parseLong(s); // this is time in ticks
+            }
+            catch (NumberFormatException e)
+            {
+                return null;
+            }
+        }
+    }
+
+    
     @Command(
     desc = "Changes the time of a world",
     min = 1, max = 2,
     flags={@Flag(name="a",longName="all")},
     usage = "/time <day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
-    {
-        long time = 0;
+    { //TODO time matcher to make this easier!
+        //TODO change output time set to %d to day|night etc..
         String timeString = context.getIndexed(0, String.class, null);
-        if (timeString.equalsIgnoreCase("day"))
+        Long time = Time.matchTime(timeString);
+        if (time == null)
         {
-            time = 12 * 1000;
-        }
-        else if (timeString.equalsIgnoreCase("night"))
-        {
-            time = 0;
-        }
-        else if (timeString.equalsIgnoreCase("dawn"))
-        {
-            time = 6 * 1000;
-        }
-        else if (timeString.equalsIgnoreCase("even"))
-        {
-            time = 18 * 1000;
-        }
-        else
-        {
-            try
-            {
-                time = Long.parseLong(timeString);
-            }
-            catch (NumberFormatException e)
-            {
-                invalidUsage(context.getSender(), "basics", "The time has to be a Number greater than 0!");
-            }
+            invalidUsage(context.getSender(), "basics", "Invalid Time format! Use those instead:");//TODO show usage hereafter
         }
         if (context.hasFlag("a"))
         {
@@ -433,6 +463,7 @@ public class CheatCommands
             {
                 world.setTime(time);
             }
+            context.getSender().sendMessage(_("", "Time set to %d in all worlds",time)); //TODO translate for user too
         }
         else
         {
@@ -478,44 +509,24 @@ public class CheatCommands
     usage = "/ptime <day|night|dawn|even> [player]")
     public void ptime(CommandContext context)
     {
-        long time = 0;
-        boolean other;
+        Long time = 0L;
+        boolean other = false;
         boolean reset = false;
         boolean relative = false; //TODO flag for setting this
         String timeString = context.getIndexed(0, String.class, null);
-        if (timeString.equalsIgnoreCase("day"))
-        {
-            time = 12 * 1000;
-        }
-        else if (timeString.equalsIgnoreCase("night"))
-        {
-            time = 0;
-        }
-        else if (timeString.equalsIgnoreCase("dawn"))
-        {
-            time = 6 * 1000;
-        }
-        else if (timeString.equalsIgnoreCase("even"))
-        {
-            time = 18 * 1000;
-        }
-        else if (timeString.equalsIgnoreCase("reset"))
+
+        if (timeString.equalsIgnoreCase("reset"))
         {
             reset = true;
         }
         else
         {
-            try
+            time = Time.matchTime(timeString);
+            if (time == null)
             {
-                time = Long.parseLong(timeString);
-            }
-            catch (NumberFormatException e)
-            {
-                invalidUsage(context.getSender(), "basics", "The time has to be a Number greater than 0!");
+                invalidUsage(context.getSender(), "basics", "Invalid Time format! Use those instead:");//TODO show usage hereafter
             }
         }
-        
-
         User sender = cuManager.getUser(context.getSender());
         User user = sender;
         if (context.hasIndexed(1))
@@ -543,41 +554,6 @@ public class CheatCommands
         {
             sender.sendMessage("", "Time set to %d for %s", time, user.getName());
         }
-
-        
-        //TODO
-        /*long time = 0;
-         if (args.getString(1).equalsIgnoreCase("day"))
-         {
-         time = 12 * 1000;
-         }
-         else if (args.getString(1).equalsIgnoreCase("night"))
-         {
-         time = 0;
-         }
-         else if (args.getString(1).equalsIgnoreCase("dawn"))
-         {
-         time = 6 * 1000;
-         }
-         else if (args.getString(1).equalsIgnoreCase("even"))
-         {
-         time = 18 * 1000;
-         }
-         User user;
-         if (args.size() > 1)
-         {
-         user = args.getUser(2);
-         }
-         else
-         {
-         user = cuManager.getUser(sender);
-         }
-         if (user == null)
-         {
-         user.sendTMessage("&cThe User %s does not exist!", args.getString(1));
-         return;
-         }
-         cheat.ptime(user, time);*/
     }
     
     public void unlimited(CommandContext context)
