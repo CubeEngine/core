@@ -37,6 +37,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     public Timestamp lastseen;
     
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
+    private ConcurrentHashMap<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
@@ -154,5 +155,20 @@ public class User extends UserBase implements LinkingModel<Integer>
             return 0;
         }
         return this.lastseen.getTime();
+    }
+    
+    public void setAttribute(String name, Object value)
+    {
+        this.attributes.put(name, value);
+    }
+    
+    public Object getAttribute(String name)
+    {
+        return this.attributes.get(name);
+    }
+    
+    public void removeAttribute(String name)
+    {
+        this.attributes.remove(name);
     }
 }

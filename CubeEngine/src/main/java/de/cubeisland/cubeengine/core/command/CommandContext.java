@@ -75,6 +75,16 @@ public class CommandContext
 
     public void parseCommandArgs(String[] commandLine, Flag[] flags, Param[] params)
     {
+        Map<String, String> flagLongnameMap = new THashMap<String, String>(flags.length);
+        for (Flag flag : flags)
+        {
+            this.flags.put(flag.name().toLowerCase(Locale.ENGLISH), false);
+            if (!"".equals(flag.longName()))
+            {
+                flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
+            }
+        }
+        
         if (commandLine.length == 0)
         {
             return;
@@ -84,16 +94,6 @@ public class CommandContext
         if (this.isHelpCall())
         {
             return;
-        }
-        
-        Map<String, String> flagLongnameMap = new THashMap<String, String>(flags.length);
-        for (Flag flag : flags)
-        {
-            this.flags.put(flag.name().toLowerCase(Locale.ENGLISH), false);
-            if (!"".equals(flag.longName()))
-            {
-                flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
-            }
         }
 
         Map<String, Param> paramMap = new THashMap<String, Param>(params.length);
