@@ -5,10 +5,9 @@ import de.cubeisland.cubeengine.basics.Perm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameterUser;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -21,6 +20,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -61,7 +61,7 @@ public class CheatCommands
         }
         if (ench == null)
         {
-            invalidUsage(context.getSender(), "basics", "Enchantment not found! Try one of those instead:");
+            illegalParameter(context.getSender(), "basics", "Enchantment not found! Try one of those instead:");
             // TODO list possible enchantments for item in hand
             return;
         }
@@ -71,7 +71,7 @@ public class CheatCommands
             level = context.getIndexed(1, int.class, 0);
             if (level <= 0)
             {
-                invalidUsage(context.getSender(), "basics", "The EnchantmentLevel has to be a Number greater than 0!");
+                illegalParameter(context.getSender(), "basics", "The EnchantmentLevel has to be a Number greater than 0!");
             }
         }
         if (context.hasFlag("u")) // Add unsafe enchantment //TODO permission
@@ -94,48 +94,64 @@ public class CheatCommands
                     sender.sendMessage("bascics", "&aAdded Enchantment: &6%s&a to your item!", ench.toString());//TODO use other than ench.toString  AND add level
                     return;
                 }
-                invalidUsage(context.getSender(), "basics", "This enchantmentlevel is not allowed!");
+                illegalParameter(context.getSender(), "basics", "This enchantmentlevel is not allowed!");
             }
-            invalidUsage(context.getSender(), "basics", "This enchantment is not allowed for this item!");
+            illegalParameter(context.getSender(), "basics", "This enchantment is not allowed for this item!");
         }
     }
 
     @Command(
     desc = "Refills your hunger bar",
     max = 1,
+    flags = {@Flag(longName = "all", name = "a")},
     usage = "/feed [player]")
     public void feed(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
-        if (sender == null)
+        if (context.hasFlag("a"))
         {
-            invalidUsage(context.getSender(), "basics", "&cDon't feed the troll!");//TODO if not player given and
-            //TODO all flag
-        }
-        User user = sender;
-        boolean other = false;
-        if (context.hasIndexed(0))
-        {
-            user = context.getIndexed(0, User.class, null);
-            if (user == null)
+            Player[] players = context.getSender().getServer().getOnlinePlayers();
+            for (Player player : players)
             {
-                invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
-                illegalParameterUser(context.getSender(), context.getString(0)); //like this ok?
-                //TODO invalidArgumentException or smth like that  with invalidUser() <- I do need this VERY often
+                player.setFoodLevel(20);
+                player.setSaturation(20);
+                player.setExhaustion(0);
             }
-            other = true;
-        }
-        user.setFoodLevel(20);
-        user.setSaturation(20);
-        user.setExhaustion(0);
-        if (other)
-        {
-            sender.sendMessage("basics", "&6Feeded %s", user.getName());
-            user.sendMessage("basics", "&6You got fed by %s", sender.getName());
+            //TODO msg fed all
         }
         else
         {
-            sender.sendMessage("basics", "&6You are now fed!");
+            User sender = cuManager.getUser(context.getSender());
+            User user = sender;
+            boolean other = false;
+            if (context.hasIndexed(0))
+            {
+                user = context.getIndexed(0, User.class, null);
+                if (user == null)
+                {
+                    illegalParameter(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+                    //TODO invalidArgumentException or smth like that  with invalidUser() <- I do need this VERY often
+                }
+                other = true;
+            }
+            else
+            {
+                if (sender == null)
+                {
+                    invalidUsage(context.getSender(), "basics", "&cDon't feed the troll!");//TODO if not player given and
+                }
+            }
+            user.setFoodLevel(20);
+            user.setSaturation(20);
+            user.setExhaustion(0);
+            if (other)
+            {
+                sender.sendMessage("basics", "&6Feeded %s", user.getName());
+                user.sendMessage("basics", "&6You got fed by %s", sender.getName());
+            }
+            else
+            {
+                sender.sendMessage("basics", "&6You are now fed!");
+            }
         }
     }
 
@@ -158,7 +174,7 @@ public class CheatCommands
             user = context.getIndexed(1, User.class, null);
             if (user == null)
             {
-                invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+                illegalParameter(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
             }
             changeOther = true;
         }
@@ -226,7 +242,7 @@ public class CheatCommands
             user = context.getUser(0);
             if (user == null)
             {
-                invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+                illegalParameter(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
                 return;
             }
             other = true;
@@ -256,12 +272,12 @@ public class CheatCommands
         User user = context.getIndexed(0, User.class, null);
         if (user == null)
         {
-            invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+            illegalParameter(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
         }
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
-            invalidUsage(context.getSender(), "core", "&cUnknown Item: %s!", context.getString(1));
+            illegalParameter(context.getSender(), "core", "&cUnknown Item: %s!", context.getString(1));
             //TODO invalidArgumentException or smth like that  with invalidItem() <- I do need this quite often
         }
         if (context.hasFlag("b") && Perm.COMMAND_GIVE_BLACKLIST.isAuthorized(sender))
@@ -277,7 +293,7 @@ public class CheatCommands
             amount = context.getIndexed(2, int.class, 0);
             if (amount == 0)
             {
-                invalidUsage(context.getSender(), "basics", "&cThe amount has to be a number greater than 0!");
+                illegalParameter(context.getSender(), "basics", "&cThe amount has to be a number greater than 0!");
             }
         }
         item.setAmount(amount);
@@ -307,7 +323,7 @@ public class CheatCommands
         ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
-            invalidUsage(context.getSender(), "core", "&cUnknown Item: %s!", context.getString(1));
+            illegalParameter(context.getSender(), "core", "&cUnknown Item: %s!", context.getString(1));
         }
 
         if (context.hasFlag("b") && Perm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender))
@@ -324,7 +340,7 @@ public class CheatCommands
             amount = context.getIndexed(1, int.class, 0);
             if (amount == 0)
             {
-                invalidUsage(context.getSender(), "basics", "The amount has to be a Number greater than 0!");
+                illegalParameter(context.getSender(), "basics", "The amount has to be a Number greater than 0!");
             }
         }
         item.setAmount(amount);
@@ -460,7 +476,7 @@ public class CheatCommands
         Long time = Time.matchTime(timeString);
         if (time == null)
         {
-            invalidUsage(context.getSender(), "basics", "Invalid Time format! Use those instead:");//TODO show usage hereafter
+            illegalParameter(context.getSender(), "basics", "Invalid Time format! Use those instead:");//TODO show usage hereafter
         }
         if (context.hasFlag("a"))
         {
@@ -480,7 +496,7 @@ public class CheatCommands
                 world = context.getSender().getServer().getWorld(worldname);
                 if (world == null)
                 {
-                    invalidUsage(context.getSender(), "basics", "&cThe World %s does not exist!", context.getString(1));
+                    illegalParameter(context.getSender(), "basics", "&cThe World %s does not exist!", context.getString(1));
                     //TODO msg unknown world print worldlist
                 }
             }
@@ -539,7 +555,7 @@ public class CheatCommands
             user = context.getUser(1);
             if (user == null)
             {
-                invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+                illegalParameter(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
             }
             other = true; //TODO permission
         }

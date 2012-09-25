@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
@@ -178,7 +178,7 @@ public class CommandContext
                         }
                         catch (ConversionException e)
                         {
-                            throw new IllegalParameterValue(paramName, typeOffset, commandLine[offset], types[typeOffset]);
+                            illegalParameter(this.getSender(), "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s",paramName,typeOffset,commandLine[offset],types[typeOffset].toString());
                         }
                         if (typeOffset < types.length)
                         {
