@@ -27,7 +27,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CheatCommands
 {
-    UserManager cuManager;
+    private UserManager cuManager;
 
     public CheatCommands(Basics module)
     {

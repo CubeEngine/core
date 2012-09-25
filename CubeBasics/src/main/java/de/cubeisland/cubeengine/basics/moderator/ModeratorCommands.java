@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -13,8 +15,6 @@ import de.cubeisland.cubeengine.core.util.EntityType;
 import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import java.util.List;
 import org.bukkit.DyeColor;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Animals;
@@ -37,7 +37,7 @@ import org.bukkit.util.Vector;
  */
 public class ModeratorCommands
 {
-    UserManager cuManager;
+    private UserManager cuManager;
 
     public ModeratorCommands(Basics module)
     {
@@ -534,13 +534,14 @@ public class ModeratorCommands
     )
     public void sudo(CommandContext context)
     {
-        StringBuilder sb = new StringBuilder();
+        
         User sender = cuManager.getUser(context.getSender());
         User user = context.getUser(0);
         if (user == null)
         {
             invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
         }
+        StringBuilder sb = new StringBuilder();
         int i = 1;
         while (context.hasIndexed(i))
         {

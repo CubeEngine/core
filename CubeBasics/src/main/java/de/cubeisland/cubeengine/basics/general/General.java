@@ -15,23 +15,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
  */
 public class General  //TODO remove or at least reduce this class
 {
-    public void me(Player player, String message)
-    {
-        player.getServer().broadcastMessage("*" + player.getName() + " " + message);
-    }
-
-    public boolean msg(Player sender, Player sendTo, String message)
-    {
-        if (sendTo == null)
-        {
-            return false;
-        }
-        sendTo.sendMessage(sender.getName() + " -> You " + message);
-        sendTo.sendMessage("You -> " + sendTo.getName() + " " + message);
-        //TODO translation
-        return true;
-    }
-
     public List<Player> near(Location loc, int radius)
     {
         List<Player> nearPlayers = new ArrayList<Player>();
@@ -47,17 +30,6 @@ public class General  //TODO remove or at least reduce this class
             }
         }
         return nearPlayers;
-    }
-
-    public double seen(Player player)
-    {
-        return player.getLastPlayed();
-    }
-
-    public void suicide(Player player)
-    {
-        player.setHealth(0);
-        player.getServer().broadcastMessage(player.getName() + " killed himself!");//TODO set LastDamageCause
     }
 
     public String randomDeathMessage(User user, EntityDamageByEntityEvent lastDmg)
