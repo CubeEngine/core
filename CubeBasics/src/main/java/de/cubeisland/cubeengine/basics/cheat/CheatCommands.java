@@ -7,6 +7,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameterUser;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -118,6 +120,7 @@ public class CheatCommands
             if (user == null)
             {
                 invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+                illegalParameterUser(context.getSender(), context.getString(0)); //like this ok?
                 //TODO invalidArgumentException or smth like that  with invalidUser() <- I do need this VERY often
             }
             other = true;
