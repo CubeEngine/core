@@ -8,8 +8,11 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import org.bukkit.DyeColor;
@@ -340,5 +343,46 @@ public class MaterialMatcher
         {
             throw new IllegalStateException("Error while reading datavalues.txt", ex);
         }
+    }
+   
+    public enum RepairableMaterials
+    {
+        IRON_SPADE, IRON_PICKAXE, IRON_AXE, IRON_SWORD,
+        WOOD_SPADE, WOOD_PICKAXE, WOOD_AXE, WOOD_SWORD,
+        STONE_SPADE, STONE_PICKAXE, STONE_AXE, STONE_SWORD,
+        DIAMOND_SPADE, DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SWORD,
+        GOLD_SPADE, GOLD_PICKAXE, GOLD_AXE, GOLD_SWORD,
+        WOOD_HOE, STONE_HOE, IRON_HOE, DIAMOND_HOE, GOLD_HOE,
+        LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS,
+        CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS,
+        IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS,
+        DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS,
+        GOLD_HELMET, GOLD_CHESTPLATE, GOLD_LEGGINGS, GOLD_BOOTS,
+        FLINT_AND_STEEL, BOW, FISHING_ROD, SHEARS;
+
+        private static final Set<Material> mats = Collections.synchronizedSet(EnumSet.noneOf(Material.class));
+        
+        static 
+        {
+            for (RepairableMaterials rMats : values())
+            {
+                mats.add(Material.matchMaterial(rMats.name()));
+            }
+           
+        }
+  
+        public static boolean isRepairable(ItemStack item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+            return mats.contains(item.getType());
+        }
+    }
+    
+    public boolean isRepairable(ItemStack item)
+    {
+        return RepairableMaterials.isRepairable(item);
     }
 }

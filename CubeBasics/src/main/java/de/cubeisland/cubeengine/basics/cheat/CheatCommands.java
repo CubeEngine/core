@@ -10,7 +10,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -343,13 +343,208 @@ public class CheatCommands
     }
 
     @Command(
+    desc = "Repairs your items",
+    flags = {@Flag(longName = "all", name = "a")},
+    usage = "/repair [-all]") // without item in hand
+    public void repair(CommandContext context)
+    {
+        User sender = cuManager.getUser(context.getSender());
+        if (sender == null)
+        {
+            invalidUsage(context.getSender(), "core", "&cThis command can only be used by a player!");
+        }
+        if (context.hasFlag("a"))
+        {
+            List<ItemStack> list = new ArrayList<ItemStack>();
+            list.addAll(Arrays.asList(sender.getInventory().getArmorContents()));
+            list.addAll(Arrays.asList(sender.getInventory().getContents()));
+            int repaired = 0;
+            for (ItemStack item : list)
+            {
+                if (MaterialMatcher.get().isRepairable(item))
+                {
+                    item.setDurability((short) 0);
+                    repaired++;
+                }
+            }
+            if (repaired == 0)
+            {
+                sender.sendMessage("No items to repair!");//TODO
+            }
+            else
+            {
+                sender.sendMessage("", "Repaired %d items!", repaired);//TODO
+            }
+        }
+        else
+        {
+            ItemStack item = sender.getItemInHand();
+            if (MaterialMatcher.get().isRepairable(item))
+            {
+                item.setDurability((short) 0);
+                sender.sendMessage("Item repaired!");//TODO
+            }
+            else
+            {
+                sender.sendMessage("Item cannot be repaired!");//TODO
+            }
+        }
+    }
+
+    @Command(
+    desc = "Changes the time of a world",
+    min = 1, max = 2,
+    flags={@Flag(name="a",longName="all")},
+    usage = "/time <day|night|dawn|even|<time>> [world] [-all]")
+    public void time(CommandContext context)
+    {
+        long time = 0;
+        String timeString = context.getIndexed(0, String.class, null);
+        if (timeString.equalsIgnoreCase("day"))
+        {
+            time = 12 * 1000;
+        }
+        else if (timeString.equalsIgnoreCase("night"))
+        {
+            time = 0;
+        }
+        else if (timeString.equalsIgnoreCase("dawn"))
+        {
+            time = 6 * 1000;
+        }
+        else if (timeString.equalsIgnoreCase("even"))
+        {
+            time = 18 * 1000;
+        }
+        else
+        {
+            try
+            {
+                time = Long.parseLong(timeString);
+            }
+            catch (NumberFormatException e)
+            {
+                invalidUsage(context.getSender(), "basics", "The time has to be a Number greater than 0!");
+            }
+        }
+        if (context.hasFlag("a"))
+        {
+            for (World world : context.getSender().getServer().getWorlds())
+            {
+                world.setTime(time);
+            }
+        }
+        else
+        {
+            User sender = cuManager.getUser(context.getSender());
+            World world = null;
+            if (context.hasIndexed(1))
+            {
+                String worldname = context.getIndexed(1, String.class, "");
+                world = context.getSender().getServer().getWorld(worldname);
+                if (world == null)
+                {
+                    invalidUsage(context.getSender(), "basics", "&cThe World %s does not exist!", context.getString(1));
+                    //TODO msg unknown world print worldlist
+                }
+            }
+            else
+            {
+                if (sender == null)
+                {
+                    invalidUsage(context.getSender(), "basics", "If not used by a player you have to specify a world!");
+                }
+            }
+            if (world == null)
+            {
+                world = sender.getWorld();
+            }
+            world.setTime(time);
+            if (sender == null)
+            {
+                context.getSender().sendMessage(_("", "Time set to %d in world %s", time, world.getName()));
+            }
+            else
+            {
+                sender.sendMessage("", "Time set to %d in world %s", time, world.getName());
+            }
+        }
+    }
+
+    @Command(
     desc = "Changes the time for a player",
     min = 1,
     max = 2,
-    flags = {@Flag(longName = "all", name = "a")},
-    usage = "/ptime <day|night|dawn|even> [player] [-all]")
+    usage = "/ptime <day|night|dawn|even> [player]")
     public void ptime(CommandContext context)
     {
+        long time = 0;
+        boolean other;
+        boolean reset = false;
+        boolean relative = false; //TODO flag for setting this
+        String timeString = context.getIndexed(0, String.class, null);
+        if (timeString.equalsIgnoreCase("day"))
+        {
+            time = 12 * 1000;
+        }
+        else if (timeString.equalsIgnoreCase("night"))
+        {
+            time = 0;
+        }
+        else if (timeString.equalsIgnoreCase("dawn"))
+        {
+            time = 6 * 1000;
+        }
+        else if (timeString.equalsIgnoreCase("even"))
+        {
+            time = 18 * 1000;
+        }
+        else if (timeString.equalsIgnoreCase("reset"))
+        {
+            reset = true;
+        }
+        else
+        {
+            try
+            {
+                time = Long.parseLong(timeString);
+            }
+            catch (NumberFormatException e)
+            {
+                invalidUsage(context.getSender(), "basics", "The time has to be a Number greater than 0!");
+            }
+        }
+        
+
+        User sender = cuManager.getUser(context.getSender());
+        User user = sender;
+        if (context.hasIndexed(1))
+        {
+            user = context.getUser(1);
+            if (user == null)
+            {
+                invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+            }
+            other = true; //TODO permission
+        }
+        if (reset)
+        {
+            user.resetPlayerTime();
+        }
+        else
+        {
+            user.setPlayerTime(time, relative);
+        }
+        if (sender == null)
+        {
+            context.getSender().sendMessage(_("", "Time set to %d for player %s", time, user.getName()));
+        }
+        else
+        {
+            sender.sendMessage("", "Time set to %d for %s", time, user.getName());
+        }
+
+        
         //TODO
         /*long time = 0;
          if (args.getString(1).equalsIgnoreCase("day"))
@@ -384,163 +579,7 @@ public class CheatCommands
          }
          cheat.ptime(user, time);*/
     }
-
-    //@Flag({"all","a"})
-    //@Usage("[-all]")
-    //@Description("Repairs your items")
-    @Command(
-    desc = "Repairs your items",
-    flags = {@Flag(longName = "all", name = "a")},
-    usage = "/repair [-all]") // without item in hand
-    public void repair(CommandContext context)
-    {
-        User sender = cuManager.getUser(context.getSender());
-        if (sender == null)
-        {
-            invalidUsage(context.getSender(), "core", "&cThis command can only be used by a player!");
-        }
-        if (context.hasFlag("a"))
-        {
-            List<ItemStack> list = new ArrayList<ItemStack>();
-            list.addAll(Arrays.asList(sender.getInventory().getArmorContents()));
-            list.addAll(Arrays.asList(sender.getInventory().getContents()));
-            int repaired = 0;
-            for (ItemStack item : list)
-            {
-                if (this.checkRepairableItem(item))
-                {
-                    item.setDurability((short) 0);
-                    repaired++;
-                }
-            }
-            if (repaired == 0)
-            {
-                sender.sendMessage("No items to repair!");//TODO
-            }
-            else
-            {
-                sender.sendMessage("", "Repaired %d items!", repaired);//TODO
-            }
-        }
-        else
-        {
-            ItemStack item = sender.getItemInHand();
-            if (this.checkRepairableItem(item))
-            {
-                item.setDurability((short) 0);
-                sender.sendMessage("Item repaired!");//TODO
-            }
-            else
-            {
-                sender.sendMessage("Item cannot be repaired!");//TODO
-            }
-        }
-    }
     
-    private boolean checkRepairableItem(ItemStack item)
-    {//TODO enum with this
-        switch (item.getType())
-        {
-            case IRON_SPADE: case IRON_PICKAXE: case IRON_AXE: case IRON_SWORD:
-            case WOOD_SPADE: case WOOD_PICKAXE: case WOOD_AXE: case WOOD_SWORD:
-            case STONE_SPADE: case STONE_PICKAXE: case STONE_AXE: case STONE_SWORD:
-            case DIAMOND_SPADE: case DIAMOND_PICKAXE: case DIAMOND_AXE: case DIAMOND_SWORD:
-            case GOLD_SPADE: case GOLD_PICKAXE: case GOLD_AXE: case GOLD_SWORD:
-            case WOOD_HOE: case STONE_HOE: case IRON_HOE: case DIAMOND_HOE: case GOLD_HOE:
-            case LEATHER_HELMET: case LEATHER_CHESTPLATE: case LEATHER_LEGGINGS: case LEATHER_BOOTS:    
-            case CHAINMAIL_HELMET: case CHAINMAIL_CHESTPLATE: case CHAINMAIL_LEGGINGS: case CHAINMAIL_BOOTS:   
-            case IRON_HELMET: case IRON_CHESTPLATE: case IRON_LEGGINGS: case IRON_BOOTS:   
-            case DIAMOND_HELMET: case DIAMOND_CHESTPLATE: case DIAMOND_LEGGINGS: case DIAMOND_BOOTS:   
-            case GOLD_HELMET: case GOLD_CHESTPLATE: case GOLD_LEGGINGS: case GOLD_BOOTS:
-            case FLINT_AND_STEEL: case BOW: case FISHING_ROD: case SHEARS: return true;
-            default: return false;
-        }
-    }
-
-    @Command(
-    desc = "Changes the time of a world",
-    min = 1, max = 2,
-    flags={@Flag(name="a",longName="all")},
-    usage = "/time <day|night|dawn|even|<time>> [world] [-all]")
-    public void time(CommandContext context)
-    {
-        long time;
-        String timeString = context.getIndexed(0, String.class, null);
-        if (timeString.equalsIgnoreCase("day"))
-        {
-            time = 12 * 1000;
-        }
-        else if (timeString.equalsIgnoreCase("night"))
-        {
-            time = 0;
-        }
-        else if (timeString.equalsIgnoreCase("dawn"))
-        {
-            time = 6 * 1000;
-        }
-        else if (timeString.equalsIgnoreCase("even"))
-        {
-            time = 18 * 1000;
-        }
-        else
-        {
-            try
-            {
-                time = Long.parseLong(timeString);
-            }
-            catch (NumberFormatException e)
-            {
-                // msg invalid time
-                return;
-            }
-        }
-
-        if (context.hasFlag("a"))
-        {
-            for (World world : context.getSender().getServer().getWorlds())
-            {
-                world.setTime(time);
-            }
-        }
-        else
-        {
-            User sender = cuManager.getUser(context.getSender());
-            World world = null;
-            if (context.hasIndexed(1))
-            {
-                String worldname = context.getIndexed(1, String.class, "");
-                world = context.getSender().getServer().getWorld(worldname);
-                if (world == null)
-                {
-                    context.getSender().sendMessage(_("", "&cThe World %s does not exist!", context.getString(1)));
-                    //TODO msg unknown world print worldlist
-                    return;
-                }
-            }
-            else
-            {
-                if (sender == null)
-                {
-                    context.getSender().sendMessage(_("","If not used ingame you have to specify a world"));
-                    return;
-                }
-            }
-            if (world == null)
-            {
-                world = sender.getWorld();
-            }
-            world.setTime(time);
-            if (sender == null)
-            {
-                context.getSender().sendMessage(_("", "Time set to %d in world %s", time, world.getName()));
-            }
-            else
-            {
-                sender.sendMessage("", "Time set to %d in world %s", time, world.getName());
-            }
-        }
-    }
-
     public void unlimited(CommandContext context)
     {
         //TODO
