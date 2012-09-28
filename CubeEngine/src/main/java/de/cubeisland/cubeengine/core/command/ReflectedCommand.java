@@ -13,7 +13,6 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Locale;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -95,24 +94,30 @@ public class ReflectedCommand extends CubeCommand
                 denyAccess(context, "core", "You are not allowed to do this.");
             }
 
-            this.commandMethod.invoke(this.commandContainer, context);
+            try
+            {
+                this.commandMethod.invoke(this.commandContainer, context);
+            }
+            catch (InvocationTargetException e)
+            {
+                if (e.getCause() instanceof Exception)
+                {
+                    throw (Exception)e.getCause();
+                }
+                throw e;
+            }
         }
         catch (InvalidUsageException e)
         {
             context.sendMessage(e.getMessage());
-            context.sendMessage("core", "Proper usage: %s", context.getCommand().getUsage(context));
+            if (e.showUsage())
+            {
+                context.sendMessage("core", "Proper usage: %s", this.getUsage(context));
+            }
         }
         catch (PermissionDeniedException e)
         {
             context.sendMessage(e.getMessage());
-        }
-        catch (InvocationTargetException e)
-        {
-            if (e.getCause() instanceof Exception)
-            {
-                throw (Exception)e.getCause();
-            }
-            throw e;
         }
     }
     
@@ -120,15 +125,15 @@ public class ReflectedCommand extends CubeCommand
     public void showHelp(CommandContext context)
     {
         CommandSender sender = context.getSender();
-        context.sendMessage(this.getUsage(context));
+        context.sendMessage(this.getUsage(sender));
         
         context.sendMessage("core", "Description: %s", _(sender, this.getModule().getId(), this.getDescription()));
         
         List<String> aliases = this.getAliases();
-        aliases.add(this.getName());
-        aliases.remove(context.getLabel().toLowerCase(Locale.ENGLISH));
-        
-        context.sendMessage("core", "Aliases: %s", this.getAliases().isEmpty() ? _(sender, "core", "none") : StringUtils.implode(", ", aliases));
+        if (!aliases.isEmpty())
+        {
+            context.sendMessage("core", "Aliases: %s", "/" + StringUtils.implode(", /", aliases));
+        }
         
         
         if (this.hasChildren())

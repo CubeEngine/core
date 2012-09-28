@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidSender;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
@@ -354,17 +354,7 @@ public class CommandContext
     
     public User getUser(int i)
     {
-        return this.getUser(i, false);
-    }
-    
-    public User getUser(int i, boolean throwException)
-    {
-        User user = this.getIndexed(i, User.class, null);
-        if (user == null && throwException)
-        {
-            invalidUsage(sender, "core", "&cThe User %s does not exist!", this.getString(i));
-        }
-        return user;
+        return this.getIndexed(i, User.class, null);
     }
     
     public User getUser(String name)
@@ -375,16 +365,6 @@ public class CommandContext
     public User getUser(String name, int i)
     {
         return this.getNamed(name, User.class, i);
-    }
-    
-    public User getUser(String name, int i, boolean throwException)
-    {
-        User user = this.getNamed(name, User.class, i);
-        if (user == null && throwException)
-        {
-            invalidUsage(sender, "core", "&cThe User %s does not exist!", this.getString(name, i));
-        }
-        return user;
     }
     
     public void sendMessage(String message)
@@ -425,12 +405,12 @@ public class CommandContext
      * @return the CommandSender as User or if not a player null or throws
      * InvalidUsageException
      */
-    public User getSenderAsUser(String category, String message)
+    public User getSenderAsUser(String category, String message, Object... params)
     {
         User user = this.getSenderAsUser();
         if (user == null)
         {
-            invalidUsage(this, category, message);
+            invalidSender(this.getSender(), category, message, params);
         }
         return user;
     }

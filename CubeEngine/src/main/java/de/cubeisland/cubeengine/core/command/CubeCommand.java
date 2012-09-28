@@ -94,6 +94,11 @@ public abstract class CubeCommand extends Command
     {
         return this.usageBase + _(this.module, super.getUsage());
     }
+
+    public String getUsage(CommandSender sender)
+    {
+        return this.usageBase + _(sender, this.module, super.getUsage());
+    }
     
     public String getUsage(CommandContext context)
     {
