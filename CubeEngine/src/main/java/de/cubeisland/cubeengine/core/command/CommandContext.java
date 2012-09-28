@@ -1,9 +1,12 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
@@ -351,7 +354,17 @@ public class CommandContext
     
     public User getUser(int i)
     {
-        return this.getIndexed(i, User.class, null);
+        return this.getUser(i, false);
+    }
+    
+    public User getUser(int i, boolean throwException)
+    {
+        User user = this.getIndexed(i, User.class, null);
+        if (user == null && throwException)
+        {
+            invalidUsage(sender, "core", "&cThe User %s does not exist!", this.getString(i));
+        }
+        return user;
     }
     
     public User getUser(String name)
@@ -362,6 +375,16 @@ public class CommandContext
     public User getUser(String name, int i)
     {
         return this.getNamed(name, User.class, i);
+    }
+    
+    public User getUser(String name, int i, boolean throwException)
+    {
+        User user = this.getNamed(name, User.class, i);
+        if (user == null && throwException)
+        {
+            invalidUsage(sender, "core", "&cThe User %s does not exist!", this.getString(name, i));
+        }
+        return user;
     }
 
     /**
@@ -383,6 +406,16 @@ public class CommandContext
     {
         this.result = result;
     }
+    
+    /**
+     * Sends this message to the sender
+     *
+     * @param result the result to send to the sender
+     */
+    public void sendMessage(String category, String message, Object... params)
+    {
+        this.sender.sendMessage(_(sender, category, message, params));
+    }
 
     /**
      * Returns the CommandSender
@@ -393,6 +426,33 @@ public class CommandContext
     public CommandSender getSender()
     {
         return this.sender;
+    }
+    
+    /**
+     * Returns the CommandSender as User or null
+     *
+     * @return the CommandSender as User or null
+     */
+    public User getSenderAsUser()
+    {
+        return this.getSenderAsUser(false);
+    }
+
+    /**
+     * Returns the CommandSender as User or if not a player null or throws
+     * InvalidUsageException
+     *
+     * @return the CommandSender as User or if not a player null or throws
+     * InvalidUsageException
+     */
+    public User getSenderAsUser(boolean throwException)
+    {
+        User user = CubeEngine.getUserManager().findOnlineUser(this.sender.getName());//TODO replace with core.getUM
+        if (user == null && throwException)
+        {
+            invalidUsage(this, "core", "&cThis command can only be used by a player!");
+        }
+        return user;
     }
 
     /**

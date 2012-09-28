@@ -32,7 +32,7 @@ public class GeneralCommands
         int i = 0;
         while (context.hasIndexed(i))
         {
-            sb.append(context.getString(i++));
+            sb.append(context.getString(i++)).append(" ");
         }
         context.getSender().getServer().broadcastMessage('*' + context.getSender().getName() + " " + sb.toString());
     }
@@ -44,20 +44,15 @@ public class GeneralCommands
     usage = "/msg <player> <message>")
     public void msg(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            invalidUsage(context, "core", "&cThe User %s does not exist!", context.getString(0));
-        }
+        User user = context.getUser(0, true);
         StringBuilder sb = new StringBuilder();
         int i = 0;
         while (context.hasIndexed(i))
         {
             sb.append(context.getString(i++));
         }
-        sender.sendMessage("basics","You -> %s &s", user.getName(), sb.toString());
-        user.sendMessage("basics","%s -> You %s", sender.getName(), sb.toString());
+        context.sendMessage("basics", "You -> %s &s", user.getName(), sb.toString());
+        user.sendMessage("basics","%s -> You %s", context.getSender().getName(), sb.toString());
         //TODO save last whispered to so i can implement /reply
     }
     
@@ -69,11 +64,7 @@ public class GeneralCommands
     public void seen(CommandContext context)
     {
         User sender = cuManager.getUser(context.getSender());
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            invalidUsage(context, "core", "&cThe User %s does not exist!", context.getString(0));
-        }
+        User user = context.getUser(0, true);
         long lastPlayed = user.getLastPlayed();
         //TODO ausgabe;       
     }

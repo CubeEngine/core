@@ -44,11 +44,7 @@ public class CheatCommands
     usage = "/enchant <enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
-        if (sender == null)
-        {
-            invalidUsage(context, "core", "&cThis command can only be used by a player!");
-        }
+        User sender = context.getSenderAsUser(true);
         ItemStack item = sender.getItemInHand();
         if (item.getType().equals(Material.AIR))
         {
@@ -79,7 +75,7 @@ public class CheatCommands
             if (Perm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
             {
                 item.addUnsafeEnchantment(ench, level);
-                sender.sendMessage("bascics", "&aAdded unsafe Enchantment: &6%s&a to your item!", ench.toString()); //TODO use other than ench.toString AND add level
+                context.sendMessage("bascics", null, "&aAdded unsafe Enchantment: &6%s&a to your item!", ench.toString()); //TODO use other than ench.toString AND add level
                 return;
             }
             denyAccess(sender, "basics", "You are not allowed to add unsafe enchantments!");
@@ -91,7 +87,7 @@ public class CheatCommands
                 if ((level < ench.getStartLevel()) || (level > ench.getMaxLevel()))
                 {
                     item.addUnsafeEnchantment(ench, level);
-                    sender.sendMessage("bascics", "&aAdded Enchantment: &6%s&a to your item!", ench.toString());//TODO use other than ench.toString  AND add level
+                    context.sendMessage("bascics", "&aAdded Enchantment: &6%s&a to your item!", ench.toString()); //TODO use other than ench.toString  AND add level
                     return;
                 }
                 illegalParameter(context, "basics", "This enchantmentlevel is not allowed!");
@@ -120,17 +116,12 @@ public class CheatCommands
         }
         else
         {
-            User sender = cuManager.getUser(context.getSender());
+            User sender = context.getSenderAsUser();
             User user = sender;
             boolean other = false;
             if (context.hasIndexed(0))
             {
-                user = context.getIndexed(0, User.class, null);
-                if (user == null)
-                {
-                    illegalParameter(context, "core", "&cThe User %s does not exist!", context.getString(0));
-                    //TODO invalidArgumentException or smth like that  with invalidUser() <- I do need this VERY often
-                }
+                user = context.getUser(0, true);
                 other = true;
             }
             else
@@ -145,12 +136,12 @@ public class CheatCommands
             user.setExhaustion(0);
             if (other)
             {
-                sender.sendMessage("basics", "&6Feeded %s", user.getName());
+                context.sendMessage("basics", "&6Feeded %s", user.getName());
                 user.sendMessage("basics", "&6You got fed by %s", sender.getName());
             }
             else
             {
-                sender.sendMessage("basics", "&6You are now fed!");
+                context.sendMessage("basics", "&6You are now fed!");
             }
         }
     }

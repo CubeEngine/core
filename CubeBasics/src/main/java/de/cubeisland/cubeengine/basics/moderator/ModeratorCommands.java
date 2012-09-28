@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -51,13 +50,7 @@ public class ModeratorCommands
     public void spawnMob(CommandContext context)
     {//TODO later more ridingmobs riding on the riding mob etc...
         // /spawnmob <mob>[:data][,<ridingmob>[:data]] [amount] [player]
-        User sender = cuManager.getUser(context.getSender());
-
-        if (sender == null)
-        {
-            context.getSender().sendMessage(_("core", "&cThis command can only be used by a player!"));
-            return;
-        }
+        User sender = context.getSenderAsUser(true);
         EntityType entityType;
         EntityType ridingEntityType;
 
@@ -244,7 +237,7 @@ public class ModeratorCommands
     usage = "/weather <sun|rain|storm> [world] [duration]")
     public void weather(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
+        User sender = context.getSenderAsUser();
         boolean sunny = true;
         boolean noThunder = true;
         int duration = 10000000;
@@ -301,7 +294,7 @@ public class ModeratorCommands
     max = 4)
     public void setSpawn(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
+        User sender = context.getSenderAsUser();
         Integer x;
         Integer y;
         Integer z;
@@ -356,12 +349,8 @@ public class ModeratorCommands
     {//TODO kill a player looking at
         //TODO kill a player with cool effects :) e.g. lightnin
         //TODO perm checks if user can be killed
-        User sender = cuManager.getUser(context.getSender());
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            return; //TODO msg player not found
-        }
+        User sender = context.getSenderAsUser();
+        User user = context.getUser(0, true);
         user.setHealth(0);
         //TODO broadcast Deathmsg etc
         //TODO msg you killed ...
@@ -375,17 +364,14 @@ public class ModeratorCommands
     max = 1)
     public void ping(CommandContext context)
     {
-        //TODO if cmd was pong say smth funny
-        User sender = cuManager.getUser(context.getSender());
-        if (sender == null)
+        if (context.getLabel().equalsIgnoreCase("ping"))
         {
-            context.getSender().sendMessage(_("","Pong!")); //TODO
+            context.sendMessage("basics", "Pong!");
         }
-        else
+        else if (context.getLabel().equalsIgnoreCase("pong"))
         {
-            sender.sendMessage("","Pong!");
+            context.sendMessage("basics", "Ping!");
         }
-        
     }
     
     @Command(
@@ -407,8 +393,7 @@ public class ModeratorCommands
      other non living possible too
      TODO 
      */
-        User sender = cuManager.getUser(context.getSender());
-        
+        User sender = context.getSenderAsUser();
         World world;
         if (context.hasNamed("in"))
         {
@@ -491,16 +476,12 @@ public class ModeratorCommands
     max = 1)
     public void clearinventory(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
+        User sender = context.getSenderAsUser();
         User user = sender;
         boolean other = false;
         if (context.hasIndexed(0))
         {
-            user = context.getUser(0);
-            if (user == null)
-            {
-                return; //TODO msg invalid user
-            }
+            user = context.getUser(0, true);
             other = true;
         }
         user.getInventory().clear();
@@ -535,12 +516,8 @@ public class ModeratorCommands
     public void sudo(CommandContext context)
     {
         
-        User sender = cuManager.getUser(context.getSender());
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            invalidUsage(context, "core", "&cThe User %s does not exist!", context.getString(0));
-        }
+        User sender = context.getSenderAsUser();
+        User user = context.getUser(0, true);
         StringBuilder sb = new StringBuilder();
         int i = 1;
         while (context.hasIndexed(i))
