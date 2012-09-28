@@ -16,6 +16,7 @@ import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -26,6 +27,8 @@ import org.bukkit.entity.Player;
 @Entity(name = "user")
 public class User extends UserBase implements LinkingModel<Integer>
 {
+    public static int NO_ID = -1;
+    
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
@@ -59,13 +62,13 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     public User(OfflinePlayer player)
     {
-        this(-1, player);
+        this(NO_ID, player);
     }
 
     @BukkitDependend("Uses the OfflinePlayer")
     public User(String playername)
     {
-        this(-1, CubeEngine.getOfflinePlayer(playername));
+        this(NO_ID, CubeEngine.getOfflinePlayer(playername));
     }
 
     /**
@@ -159,6 +162,9 @@ public class User extends UserBase implements LinkingModel<Integer>
     
     public void setAttribute(String name, Object value)
     {
+        Validate.notNull(name, "The attribute name must not be null!");
+        Validate.notNull(value, "Null-values are not allowed!");
+
         this.attributes.put(name, value);
     }
     
