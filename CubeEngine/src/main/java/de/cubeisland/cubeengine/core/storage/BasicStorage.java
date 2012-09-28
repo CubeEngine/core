@@ -54,12 +54,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.attributes = new ArrayList<String>();
         this.revision = revision;
         this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
-        
-        this.initialize();
     }
 
-    @Override
-    public void initialize()
+    protected void initialize()
     {
         if (this.initialized)
         {
@@ -433,6 +430,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void updateStructure()
     {
+        if (tableManager == null) //Tablemanager is null when creating TableManager
+        {
+            return;
+        }
         try
         {
             int dbRevision = tableManager.getRevision(this.table);

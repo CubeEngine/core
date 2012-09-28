@@ -54,6 +54,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
+        this.initialize();
     }
 
     @Override
@@ -392,5 +393,13 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 }
             }
         });
+    }
+    
+    public void broadast(String category, String message, Object... args)
+    {
+        for (Player player : this.server.getOnlinePlayers())
+        {
+            this.getUser(player).sendMessage(category, message, args);
+        }
     }
 }

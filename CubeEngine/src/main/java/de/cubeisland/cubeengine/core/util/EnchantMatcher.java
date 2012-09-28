@@ -18,16 +18,19 @@ import org.bukkit.enchantments.Enchantment;
 public class EnchantMatcher
 {
     private THashMap<String, Enchantment> enchantments;
+    private THashMap<Enchantment, String> enchantmentName;
     private static EnchantMatcher instance = null;
 
     private EnchantMatcher()
     {
         this.enchantments = new THashMap<String, Enchantment>();
+        this.enchantmentName = new THashMap<Enchantment, String>();
 
         TreeMap<Integer, List<String>> enchs = this.readEnchantments();
         for (int id : enchs.keySet())
         {
             this.registerEnchantment(Enchantment.getById(id), enchs.get(id));
+            this.enchantmentName.put(Enchantment.getById(id), enchs.get(id).get(0));
         }
     }
 
@@ -38,6 +41,11 @@ public class EnchantMatcher
             instance = new EnchantMatcher();
         }
         return instance;
+    }
+    
+    public String getNameFor(Enchantment ench)
+    {
+        return this.enchantmentName.get(ench);
     }
 
     public final void registerEnchantment(Enchantment ench, List<String> names)

@@ -20,6 +20,11 @@ public class InvalidUsageException extends CommandException
         invalidUsage(context.getSender(), category, message, params);
     }
     
+    public static void invalidUsage(CommandContext context)
+    {
+        invalidUsage(context, "core", "Invalid Usage!");
+    }
+    
     public static void invalidUsage(CommandSender sender, String category, String message, Object... params)
     {
         throw new InvalidUsageException(_(sender, category, message, params));

@@ -12,11 +12,6 @@ import java.util.Collection;
 public interface Storage<V extends Model>
 {
     /**
-     * Initializes the DataBase
-     */
-    public void initialize() throws SQLException;
-
-    /**
      * Returns the model by key
      *
      * @param key the key

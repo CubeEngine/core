@@ -83,7 +83,7 @@ public class Test extends Module
         {
         }
         manager = new TestManager(this.getDatabase());
-        manager.initialize();
+
     }
 
     @Override
