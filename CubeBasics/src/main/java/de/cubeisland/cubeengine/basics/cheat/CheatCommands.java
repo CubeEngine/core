@@ -154,19 +154,16 @@ public class CheatCommands
     public void gamemode(CommandContext context)
     {
         boolean changeOther = false;
-        User user = cuManager.getUser(context.getSender());
-        User sender = user;
+
+        User sender = context.getSenderAsUser();
+        User user = sender;
         if (user == null)
         {
             invalidUsage(context, "basics", "&cYou do not not have any gamemode!");
         }
         if (context.hasIndexed(1))
         {
-            user = context.getIndexed(1, User.class, null);
-            if (user == null)
-            {
-                illegalParameter(context, "core", "&cThe User %s does not exist!", context.getString(0));
-            }
+            user = context.getUser(1, true);
             changeOther = true;
         }
         if (!Perm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
@@ -204,13 +201,13 @@ public class CheatCommands
         }
         if (changeOther)
         {
-            sender.sendMessage("basics", "You changed the gamemode of %s to %s", user.getName(), _(sender, "basics", user.getGameMode().toString()));
+            context.sendMessage("basics", "You changed the gamemode of %s to %s", user.getName(), _(sender, "basics", user.getGameMode().toString()));
             // TODO later notify user who changed if flag set (permission)
             user.sendMessage("basics", "Your Gamemode has been changed to %s", _(user, "basics", user.getGameMode().toString()));
         }
         else
         {
-            user.sendMessage("basics", "You changed your gamemode to %s", _(user, "basics", user.getGameMode().toString()));
+            context.sendMessage("basics", "You changed your gamemode to %s", _(user, "basics", user.getGameMode().toString()));
         }
     }
 
@@ -220,7 +217,7 @@ public class CheatCommands
     usage = "/heal [player]")
     public void heal(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
+        User sender = context.getSenderAsUser();
         if (sender == null)
         {
             invalidUsage(context, "basics", "&cOnly time can heal your wounds!");//TODO if not player given and
@@ -230,12 +227,7 @@ public class CheatCommands
         boolean other = false;
         if (context.hasIndexed(0))
         {
-            user = context.getUser(0);
-            if (user == null)
-            {
-                illegalParameter(context, "core", "&cThe User %s does not exist!", context.getString(0));
-                return;
-            }
+            user = context.getUser(0, true);
             other = true;
         }
         user.setFoodLevel(20);
@@ -243,12 +235,12 @@ public class CheatCommands
         user.setExhaustion(0);
         if (other)
         {
-            sender.sendMessage("basics", "&6Healed %s", user.getName());
+            context.sendMessage("basics", "&6Healed %s", user.getName());
             user.sendMessage("basics", "&6You got healed by %s", sender.getName());
         }
         else
         {
-            sender.sendMessage("basics", "&6You are now healed!");
+            context.sendMessage("basics", "&6You are now healed!");
         }
     }
 
@@ -259,12 +251,8 @@ public class CheatCommands
     usage = "/give <player> <material[:data]> [amount] [-blacklist]")
     public void give(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
-        User user = context.getIndexed(0, User.class, null);
-        if (user == null)
-        {
-            illegalParameter(context, "core", "&cThe User %s does not exist!", context.getString(0));
-        }
+        User sender = context.getSenderAsUser();
+        User user = context.getUser(0,true);
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
@@ -291,7 +279,7 @@ public class CheatCommands
         
         user.getInventory().addItem(item);
         user.updateInventory();
-        sender.sendMessage("basics", "You gave %s %d %s", user.getName(), item.toString(), amount);
+        context.sendMessage("basics", "You gave %s %d %s", user.getName(), item.toString(), amount);
         // TODO other message so user do not know who gave the items
         // Flag for no message when giving items
         user.sendMessage("%s just gave you %d %s", sender.getName(), item.toString(), amount);
@@ -306,17 +294,12 @@ public class CheatCommands
     usage = "/i <material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
-        if (sender == null)
-        {
-            invalidUsage(context, "core", "&cThis command can only be used by a player!");
-        }
+        User sender = context.getSenderAsUser(true);
         ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
             illegalParameter(context, "core", "&cUnknown Item: %s!", context.getString(1));
         }
-
         if (context.hasFlag("b") && Perm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender))
         {
             if (1 == 0) // TODO Blacklist
@@ -324,7 +307,6 @@ public class CheatCommands
                 denyAccess(context, "basics", "&cThis item is blacklisted!");
             }
         }
-
         int amount = item.getMaxStackSize();
         if (context.hasIndexed(2))
         {
@@ -337,7 +319,7 @@ public class CheatCommands
         item.setAmount(amount);
         sender.getInventory().addItem(item);
         sender.updateInventory();
-        sender.sendMessage("Received: %d %s ", item.toString(), amount); // TODO item.toString is no good
+        sender.sendMessage("basics", "Received: %d %s ", item.toString(), amount); // TODO item.toString is no good
     }
 
     @Command(
@@ -346,13 +328,9 @@ public class CheatCommands
     usage = "/more")
     public void more(CommandContext context)
     {
-        User user = cuManager.getUser(context.getSender());
-        if (user == null)
-        {
-            invalidUsage(context, "core", "&cThis command can only be used by a player!");
-        }
-        user.getItemInHand().setAmount(64);
-        user.sendMessage("basics", "Refilled Stack in Hand!");
+        User sender = context.getSenderAsUser(true);
+        sender.getItemInHand().setAmount(64);
+        sender.sendMessage("basics", "Refilled Stack in Hand!");
     }
 
     @Command(
@@ -361,11 +339,7 @@ public class CheatCommands
     usage = "/repair [-all]") // without item in hand
     public void repair(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
-        if (sender == null)
-        {
-            invalidUsage(context, "core", "&cThis command can only be used by a player!");
-        }
+        User sender = context.getSenderAsUser(true);
         if (context.hasFlag("a"))
         {
             List<ItemStack> list = new ArrayList<ItemStack>();
@@ -479,7 +453,7 @@ public class CheatCommands
         }
         else
         {
-            User sender = cuManager.getUser(context.getSender());
+            User sender = context.getSenderAsUser();
             World world = null;
             if (context.hasIndexed(1))
             {
@@ -503,14 +477,7 @@ public class CheatCommands
                 world = sender.getWorld();
             }
             world.setTime(time);
-            if (sender == null)
-            {
-                context.getSender().sendMessage(_("", "Time set to %d in world %s", time, world.getName()));
-            }
-            else
-            {
-                sender.sendMessage("", "Time set to %d in world %s", time, world.getName());
-            }
+            context.sendMessage("basics", "Time set to %d in world %s", time, world.getName());
         }
     }
 
@@ -539,15 +506,11 @@ public class CheatCommands
                 invalidUsage(context, "basics", "Invalid Time format! Use those instead:");//TODO show usage hereafter
             }
         }
-        User sender = cuManager.getUser(context.getSender());
+        User sender = context.getSenderAsUser();
         User user = sender;
         if (context.hasIndexed(1))
         {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                illegalParameter(context, "core", "&cThe User %s does not exist!", context.getString(0));
-            }
+            user = context.getUser(1, true);
             other = true; //TODO permission
         }
         if (reset)
@@ -558,14 +521,7 @@ public class CheatCommands
         {
             user.setPlayerTime(time, relative);
         }
-        if (sender == null)
-        {
-            context.getSender().sendMessage(_("", "Time set to %d for player %s", time, user.getName()));
-        }
-        else
-        {
-            sender.sendMessage("", "Time set to %d for %s", time, user.getName());
-        }
+        context.sendMessage("basics", "Time set to %d for %s", time, user.getName());
     }
     
     @Command(
@@ -574,10 +530,15 @@ public class CheatCommands
     usage = "/unlimited [on|off]")
     public void unlimited(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
-        if (sender == null)
+        User sender = context.getSenderAsUser(true);
+        Object bln = sender.getAttribute("unlimitedItems");
+        if (bln == null)
         {
-            invalidUsage(context, "core", "&cThis command can only be used by a player!");
+            sender.setAttribute("unlimitedItems", true);
+        }
+        else
+        {
+            sender.removeAttribute("unlimitedItems");
         }
     }
 }

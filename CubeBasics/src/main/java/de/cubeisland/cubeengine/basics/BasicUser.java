@@ -23,8 +23,6 @@ public class BasicUser implements Model<Integer>
     
     @Attribute(type = AttrType.TEXT)
     public List<String> mailbox = new ArrayList<String>(); //PlayerName: message
-    
-    private boolean unlimitedItems = false; //no need to safe in DB -> reset on restart
 
     @DatabaseConstructor
     public BasicUser(List<Object> args) throws ConversionException
@@ -37,17 +35,7 @@ public class BasicUser implements Model<Integer>
     {
         this.key = user.getKey();
     }
-    
-    public boolean hasUnlimitedItems()
-    {
-        return unlimitedItems;
-    }
 
-    public void setUnlimitedItems(boolean unlimitedItems)
-    {
-        this.unlimitedItems = unlimitedItems;
-    }
-    
     public void addMail(User user, String message)
     {
         this.mailbox.add(user.getName()+": "+message);
