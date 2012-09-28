@@ -48,7 +48,7 @@ public class ModeratorCommands
     usage="<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {//TODO later more ridingmobs riding on the riding mob etc...
-        User sender = context.getSenderAsUser(true);
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         EntityType entityType;
         EntityType ridingEntityType;
 

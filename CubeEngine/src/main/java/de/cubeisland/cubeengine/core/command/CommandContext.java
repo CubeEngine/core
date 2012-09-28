@@ -181,7 +181,7 @@ public class CommandContext
                         }
                         catch (ConversionException e)
                         {
-                            illegalParameter(this.getSender(), "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s",paramName,typeOffset,commandLine[offset],types[typeOffset].toString());
+                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s",paramName,typeOffset,commandLine[offset],types[typeOffset].toString());
                         }
                         if (typeOffset < types.length)
                         {
@@ -415,7 +415,7 @@ public class CommandContext
      */
     public User getSenderAsUser()
     {
-        return this.getSenderAsUser(false);
+        return this.core.getUserManager().getUser(this.sender);
     }
 
     /**
@@ -425,12 +425,12 @@ public class CommandContext
      * @return the CommandSender as User or if not a player null or throws
      * InvalidUsageException
      */
-    public User getSenderAsUser(boolean throwException)
+    public User getSenderAsUser(String category, String message)
     {
-        User user = this.core.getUserManager().findOnlineUser(this.sender.getName());//TODO replace with core.getUM
-        if (user == null && throwException)
+        User user = this.getSenderAsUser();
+        if (user == null)
         {
-            invalidUsage(this, "core", "&cThis command can only be used by a player!");
+            invalidUsage(this, category, message);
         }
         return user;
     }

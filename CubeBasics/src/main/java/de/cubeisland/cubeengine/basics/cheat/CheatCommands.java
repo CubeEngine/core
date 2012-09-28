@@ -44,7 +44,7 @@ public class CheatCommands
     usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
-        User sender = context.getSenderAsUser(true);
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         ItemStack item = sender.getItemInHand();
         if (item.getType().equals(Material.AIR))
         {
