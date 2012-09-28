@@ -48,7 +48,7 @@ public class GeneralCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+            invalidUsage(context, "core", "&cThe User %s does not exist!", context.getString(0));
         }
         StringBuilder sb = new StringBuilder();
         int i = 0;
@@ -72,7 +72,7 @@ public class GeneralCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+            invalidUsage(context, "core", "&cThe User %s does not exist!", context.getString(0));
         }
         long lastPlayed = user.getLastPlayed();
         //TODO ausgabe;       
@@ -88,7 +88,7 @@ public class GeneralCommands
         User sender = cuManager.getUser(context.getSender());
         if (sender == null)
         {
-            invalidUsage(context.getSender(), "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
+            invalidUsage(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
         }
         sender.setHealth(0);
         sender.setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, 20));

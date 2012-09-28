@@ -539,7 +539,7 @@ public class ModeratorCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            invalidUsage(context.getSender(), "core", "&cThe User %s does not exist!", context.getString(0));
+            invalidUsage(context, "core", "&cThe User %s does not exist!", context.getString(0));
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;

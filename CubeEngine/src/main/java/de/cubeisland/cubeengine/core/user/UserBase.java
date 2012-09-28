@@ -341,8 +341,8 @@ public class UserBase implements Player
         }
     }
 
-    @Deprecated
     @Override
+    @SuppressWarnings("deprecation")
     public void updateInventory()
     {
         Player player = this.offlinePlayer.getPlayer();
