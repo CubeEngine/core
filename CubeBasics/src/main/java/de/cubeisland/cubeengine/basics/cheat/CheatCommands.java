@@ -294,7 +294,7 @@ public class CheatCommands
     usage = "<material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
-        User sender = context.getSenderAsUser(true);
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
@@ -327,7 +327,7 @@ public class CheatCommands
     max = 0)
     public void more(CommandContext context)
     {
-        User sender = context.getSenderAsUser(true);
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         sender.getItemInHand().setAmount(64);
         sender.sendMessage("basics", "Refilled Stack in Hand!");
     }
@@ -338,7 +338,7 @@ public class CheatCommands
     usage = "/repair [-all]") // without item in hand
     public void repair(CommandContext context)
     {
-        User sender = context.getSenderAsUser(true);
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         if (context.hasFlag("a"))
         {
             List<ItemStack> list = new ArrayList<ItemStack>();
@@ -530,7 +530,7 @@ public class CheatCommands
     public void unlimited(CommandContext context)
     {
         //TODO with param
-        User sender = context.getSenderAsUser(true);
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         Object bln = sender.getAttribute("unlimitedItems");
         if (bln == null)
         {

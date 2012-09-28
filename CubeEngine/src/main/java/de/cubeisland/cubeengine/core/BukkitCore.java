@@ -149,7 +149,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
 
         // depends on: finshed loading modules
-        this.getUserManager().cleanDB();
+        this.getUserManager().cleanup();
 
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this, pm);

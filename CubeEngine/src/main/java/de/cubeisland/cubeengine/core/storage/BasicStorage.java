@@ -54,6 +54,8 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.attributes = new ArrayList<String>();
         this.revision = revision;
         this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
+        
+        this.initialize();
     }
 
     @Override
@@ -147,7 +149,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
      * @param key the key
      * @param fields the fields
      */
-    protected void prepareStatements(String key, String[] fields)
+    private void prepareStatements(String key, String[] fields)
     {
         try
         {
@@ -355,11 +357,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while updating Model in Database", ex);
+            throw new StorageException("Error while updating Model in Database", ex);
         }
         catch (Exception ex)
         {
-            throw new IllegalStateException("Error while reading Model to update", ex);
+            throw new StorageException("Error while reading Model to update", ex);
         }
     }
 
@@ -383,11 +385,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while updating Model in Database", ex);
+            throw new StorageException("Error while updating Model in Database", ex);
         }
         catch (Exception ex)
         {
-            throw new IllegalStateException("Error while reading Model to update", ex);
+            throw new StorageException("Error while reading Model to update", ex);
         }
     }
 
