@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.basics.cheat.CheatCommands;
 import de.cubeisland.cubeengine.basics.general.GeneralCommands;
-import de.cubeisland.cubeengine.basics.moderator.ModeratorCommands;
+import de.cubeisland.cubeengine.basics.moderator.ModerationCommands;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Basics extends Module
@@ -12,7 +12,7 @@ public class Basics extends Module
     {
         this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
         this.getCommandManager().registerCommands(this, new CheatCommands(this));
-        this.getCommandManager().registerCommands(this, new ModeratorCommands(this));
+        this.getCommandManager().registerCommands(this, new ModerationCommands(this));
         this.getCommandManager().registerCommands(this, new GeneralCommands(this));
     }
 }

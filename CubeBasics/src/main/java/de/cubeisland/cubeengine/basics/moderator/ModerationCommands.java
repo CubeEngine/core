@@ -32,11 +32,11 @@ import org.bukkit.util.Vector;
  *
  * @author Anselm Brehme
  */
-public class ModeratorCommands
+public class ModerationCommands
 {
     private UserManager cuManager;
 
-    public ModeratorCommands(Basics module)
+    public ModerationCommands(Basics module)
     {
         cuManager = module.getUserManager();
     }
