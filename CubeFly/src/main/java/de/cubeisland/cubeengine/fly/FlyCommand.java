@@ -18,8 +18,9 @@ public class FlyCommand
     UserManager cuManager = CubeEngine.getCore().getUserManager();
 
     @Command(
-            desc = "Lets you fly away",
-            max = 1)
+    desc = "Lets you fly away",
+    max = 1,
+    usage = "[flyspeed]")
     public void fly(CommandContext context)
     {
         CommandSender sender = context.getSender();

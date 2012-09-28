@@ -5,8 +5,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.EntityMatcher;
@@ -46,10 +44,10 @@ public class ModeratorCommands
     @Command(
     desc = "Spawns the specified Mob",
     min = 1,
-    max = 3)
+    max = 3,
+    usage="<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {//TODO later more ridingmobs riding on the riding mob etc...
-        // /spawnmob <mob>[:data][,<ridingmob>[:data]] [amount] [player]
         User sender = context.getSenderAsUser(true);
         EntityType entityType;
         EntityType ridingEntityType;
@@ -234,7 +232,7 @@ public class ModeratorCommands
     desc = "Changes the weather",
     min = 1,
     max = 3,
-    usage = "/weather <sun|rain|storm> [world] [duration]")
+    usage = "<sun|rain|storm> [world] [duration]")
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -290,7 +288,7 @@ public class ModeratorCommands
 
     @Command(
     desc = "Changes the global respawnpoint",
-    usage = "/setspawn [world] [<x> <y> <z>]",
+    usage = "[world] [<x> <y> <z>]",
     max = 4)
     public void setSpawn(CommandContext context)
     {
@@ -342,7 +340,7 @@ public class ModeratorCommands
     
     @Command(
     desc = "Kills a player",
-    usage = "/kill <player>",
+    usage = "<player>",
     min = 1,
     max = 1)
     public void kill(CommandContext context)
@@ -359,7 +357,6 @@ public class ModeratorCommands
     @Command(
     names={"ping","pong"},
     desc = "Pong!",
-    usage = "/ping",
     min = 1,
     max = 1)
     public void ping(CommandContext context)
@@ -376,7 +373,7 @@ public class ModeratorCommands
     
     @Command(
     desc = "Removes entity",
-    usage = "/remove <entityType> [radius] [in <world>] [-a]",
+    usage = "<entityType> [radius] [in <world>] [-a]",
     flags = {@Flag(longName="all",name="a")},
     params= {@Param(names={"in"},types=World.class)},
     min = 1,
@@ -472,7 +469,7 @@ public class ModeratorCommands
     
     @Command(
     desc = "Clears the inventory",
-    usage = "/ci [player]",
+    usage = "[player]",
     max = 1)
     public void clearinventory(CommandContext context)
     {
@@ -496,7 +493,7 @@ public class ModeratorCommands
     
     @Command(
     desc = "Broadcasts a message",
-    usage = "/broadcast <message>"
+    usage = "<message>"
     )
     public void broadcast(CommandContext context)
     {
@@ -511,7 +508,7 @@ public class ModeratorCommands
     
     @Command(
     desc = "Makes a player execute a command",
-    usage = "/sudo <player> <command>"
+    usage = "<player> <command>"
     )
     public void sudo(CommandContext context)
     {

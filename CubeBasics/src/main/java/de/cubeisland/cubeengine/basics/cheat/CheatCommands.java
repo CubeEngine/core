@@ -41,7 +41,7 @@ public class CheatCommands
     min = 1,
     max = 2,
     flags = {@Flag(longName = "unsafe", name = "u")},
-    usage = "/enchant <enchantment> [level] [-unsafe]")
+    usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
         User sender = context.getSenderAsUser(true);
@@ -100,7 +100,7 @@ public class CheatCommands
     desc = "Refills your hunger bar",
     max = 1,
     flags = {@Flag(longName = "all", name = "a")},
-    usage = "/feed [player]")
+    usage = "[player]")
     public void feed(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -150,7 +150,7 @@ public class CheatCommands
     names = {"gamemode", "gm"},
     max = 2,
     desc = "Changes the gamemode",
-    usage = "/gm <gamemode> [player]")
+    usage = "<gamemode> [player]")
     public void gamemode(CommandContext context)
     {
         boolean changeOther = false;
@@ -214,7 +214,7 @@ public class CheatCommands
     @Command(
     desc = "Heals a Player",
     max = 1,
-    usage = "/heal [player]")
+    usage = "[player]")
     public void heal(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -248,7 +248,7 @@ public class CheatCommands
     desc = "Gives the specified Item to a player",
     flags = {@Flag(name = "b", longName = "blacklist")},
     min = 2, max = 3,
-    usage = "/give <player> <material[:data]> [amount] [-blacklist]")
+    usage = "<player> <material[:data]> [amount] [-blacklist]")
     public void give(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -291,7 +291,7 @@ public class CheatCommands
     max = 2,
     min = 1,
     flags = {@Flag(longName = "blacklist", name = "b")},
-    usage = "/i <material[:data]> [amount] [-blacklist]")
+    usage = "<material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
         User sender = context.getSenderAsUser(true);
@@ -324,8 +324,7 @@ public class CheatCommands
 
     @Command(
     desc = "Refills the Stack in hand",
-    max = 1,
-    usage = "/more")
+    max = 0)
     public void more(CommandContext context)
     {
         User sender = context.getSenderAsUser(true);
@@ -433,7 +432,7 @@ public class CheatCommands
     desc = "Changes the time of a world",
     min = 1, max = 2,
     flags={@Flag(name="a",longName="all")},
-    usage = "/time <day|night|dawn|even|<time>> [world] [-all]")
+    usage = "<day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     { //TODO time matcher to make this easier!
         //TODO change output time set to %d to day|night etc..
@@ -485,7 +484,7 @@ public class CheatCommands
     desc = "Changes the time for a player",
     min = 1,
     max = 2,
-    usage = "/ptime <day|night|dawn|even> [player]")
+    usage = "<day|night|dawn|even> [player]")
     public void ptime(CommandContext context)
     {
         Long time = 0L;
@@ -527,9 +526,10 @@ public class CheatCommands
     @Command(
     desc = "The user can use unlimited items",
     max = 1,
-    usage = "/unlimited [on|off]")
+    usage = "[on|off]")
     public void unlimited(CommandContext context)
     {
+        //TODO with param
         User sender = context.getSenderAsUser(true);
         Object bln = sender.getAttribute("unlimitedItems");
         if (bln == null)

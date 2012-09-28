@@ -51,6 +51,8 @@ public class Convert
         registerConverter(Enchantment.class, new EnchantmentConverter());
         registerConverter(User.class, new UserConverter());
         registerConverter(World.class, new WorldConverter());
+        registerConverter(boolean.class, converter = new BooleanConverter());
+        registerConverter(Boolean.class, converter);
 
         registerGenericConverter(Collection.class, new ColletionConverter());
         registerGenericConverter(Map.class, new MapConverter());

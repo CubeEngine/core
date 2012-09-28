@@ -25,7 +25,7 @@ public class GeneralCommands
     @Command(
     desc = "Allows you to emote",
     min = 1,
-    usage = "/me <message>")
+    usage = "<message>")
     public void me(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
@@ -41,7 +41,7 @@ public class GeneralCommands
     desc = "Sends a private message to someone",
     names={"msg","tell","pn","m","t","whisper"},
     min = 1,
-    usage = "/msg <player> <message>")
+    usage = "<player> <message>")
     public void msg(CommandContext context)
     {
         User user = context.getUser(0, true);
@@ -60,7 +60,7 @@ public class GeneralCommands
     desc = "Shows when given player was online the last time",
     min = 1,
     max= 1,
-    usage = "/seen <player>")
+    usage = "<player>")
     public void seen(CommandContext context)
     {
         User sender = cuManager.getUser(context.getSender());
@@ -72,8 +72,7 @@ public class GeneralCommands
         
     @Command(
     desc = "Kills yourself",
-    max= 0,
-    usage = "/suicide")
+    max= 0)
     public void suicide(CommandContext context)
     {
         User sender = cuManager.getUser(context.getSender());
