@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -99,7 +100,7 @@ public class ReflectedCommand extends CubeCommand
         catch (InvalidUsageException e)
         {
             context.sendMessage(e.getMessage());
-            context.sendMessage("core", "Proper usage: %s", context.getCommand().getUsage());
+            context.sendMessage("core", "Proper usage: %s", context.getCommand().getUsage(context));
         }
         catch (PermissionDeniedException e)
         {
@@ -122,7 +123,12 @@ public class ReflectedCommand extends CubeCommand
         context.sendMessage(this.getUsage(context));
         
         context.sendMessage("core", "Description: %s", _(sender, this.getModule().getId(), this.getDescription()));
-        context.sendMessage("core", "Aliases: %s", this.getAliases().isEmpty() ? _(sender, "core", "none") : StringUtils.implode(", ", this.getAliases()));
+        
+        List<String> aliases = this.getAliases();
+        aliases.add(this.getName());
+        aliases.remove(context.getLabel().toLowerCase(Locale.ENGLISH));
+        
+        context.sendMessage("core", "Aliases: %s", this.getAliases().isEmpty() ? _(sender, "core", "none") : StringUtils.implode(", ", aliases));
         
         
         if (this.hasChildren())

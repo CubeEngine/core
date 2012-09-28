@@ -144,7 +144,7 @@ public class CommandManager
 
             String name = names[0].trim().toLowerCase(Locale.ENGLISH);
             List<String> aliases = new ArrayList<String>(names.length - 1);
-            for (int i = 1; i < aliases.size(); ++i)
+            for (int i = 1; i < names.length; ++i)
             {
                 aliases.add(names[i].toLowerCase(Locale.ENGLISH));
             }
