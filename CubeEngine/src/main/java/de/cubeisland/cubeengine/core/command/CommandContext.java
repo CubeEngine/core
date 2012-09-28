@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.BukkitDependend;
-import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 @BukkitDependend("Uses Bukkit's CommandSender")
 public class CommandContext
 {
+    private final Core core;
     private final CommandSender sender;
     private final CubeCommand command;
     private final Stack<String> labels;
@@ -37,7 +38,6 @@ public class CommandContext
     private final Map<String, Object[]> namedParams;
     private int flagCount;
     private boolean empty;
-    private boolean result;
     private boolean helpCall;
 
     /**
@@ -48,8 +48,9 @@ public class CommandContext
      * @param commandLine the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
-    public CommandContext(CommandSender sender, CubeCommand command, Stack<String> labels)
+    public CommandContext(Core core, CommandSender sender, CubeCommand command, Stack<String> labels)
     {
+        this.core = core;
         if (sender instanceof Player)
         {
             sender = command.getModule().getUserManager().getUser(sender);
@@ -62,7 +63,6 @@ public class CommandContext
         this.flagCount = 0;
         this.indexedParams = new LinkedList<String>();
         this.namedParams = new THashMap<String, Object[]>(0);
-        this.result = true;
         this.helpCall = false;
     }
 
@@ -386,35 +386,15 @@ public class CommandContext
         }
         return user;
     }
-
-    /**
-     * Returns the result
-     *
-     * @return the result
-     */
-    public boolean getResult()
+    
+    public void sendMessage(String message)
     {
-        return this.result;
-    }
-
-    /**
-     * Sets the result
-     *
-     * @param result the result to set
-     */
-    public void setResult(boolean result)
-    {
-        this.result = result;
+        this.sender.sendMessage(message);
     }
     
-    /**
-     * Sends this message to the sender
-     *
-     * @param result the result to send to the sender
-     */
     public void sendMessage(String category, String message, Object... params)
     {
-        this.sender.sendMessage(_(sender, category, message, params));
+        this.sendMessage(_(this.sender, category, message, params));
     }
 
     /**
@@ -447,7 +427,7 @@ public class CommandContext
      */
     public User getSenderAsUser(boolean throwException)
     {
-        User user = CubeEngine.getUserManager().findOnlineUser(this.sender.getName());//TODO replace with core.getUM
+        User user = this.core.getUserManager().findOnlineUser(this.sender.getName());//TODO replace with core.getUM
         if (user == null && throwException)
         {
             invalidUsage(this, "core", "&cThis command can only be used by a player!");
@@ -545,5 +525,10 @@ public class CommandContext
     public boolean isHelpCall()
     {
         return this.helpCall;
+    }
+    
+    public Core getCore()
+    {
+        return this.core;
     }
 }

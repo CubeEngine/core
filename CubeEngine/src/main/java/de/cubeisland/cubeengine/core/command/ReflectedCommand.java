@@ -81,34 +81,31 @@ public class ReflectedCommand extends CubeCommand
     @Override
     public void run(CommandContext context)
     {
-        CommandSender sender = context.getSender();
         try
         {
             if (context.indexedCount() < this.min)
             {
-                invalidUsage(sender, "core", "This command needs at least %d parameters.", this.min);
+                invalidUsage(context, "core", "This command needs at least %d parameters.", this.min);
             }
             else if (this.max != -1 && context.indexedCount() > this.max)
             {
-                invalidUsage(sender, "core", "This command needs at most %d parameters.", this.min);
+                invalidUsage(context, "core", "This command needs at most %d parameters.", this.min);
             }
             if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
             {
-                denyAccess(sender, "core", "You are not allowed to do this.");
+                denyAccess(context, "core", "You are not allowed to do this.");
             }
 
             this.commandMethod.invoke(this.commandContainer, context);
         }
         catch (InvalidUsageException e)
         {
-            sender.sendMessage(e.getMessage());
-            sender.sendMessage(_(sender, "core", "Proper usage: %s", context.getCommand().getUsage()));
-            context.setResult(false);
+            context.sendMessage(e.getMessage());
+            context.sendMessage("core", "Proper usage: %s", context.getCommand().getUsage());
         }
         catch (PermissionDeniedException e)
         {
-            sender.sendMessage(e.getMessage());
-            context.setResult(false);
+            context.sendMessage(e.getMessage());
         }
         catch (Exception e)
         {
@@ -124,7 +121,6 @@ public class ReflectedCommand extends CubeCommand
             }
             context.getSender().sendMessage(_("core", message));
             t.printStackTrace(System.err); // TODO handle properly
-            context.setResult(false);
         }
     }
     

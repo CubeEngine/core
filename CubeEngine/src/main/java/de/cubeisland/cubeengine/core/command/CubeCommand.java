@@ -68,6 +68,11 @@ public abstract class CubeCommand extends Command
     {
         return this.getChild(name, false);
     }
+    
+    public String getUsage(CommandContext context)
+    {
+        return ""; // TODO implement me
+    }
 
     public CubeCommand getChild(String name, boolean ignoreAliases)
     {
@@ -130,7 +135,7 @@ public abstract class CubeCommand extends Command
             }
         }
 
-        CommandContext context = new CommandContext(sender, this, labels);
+        CommandContext context = new CommandContext(this.module.getCore(), sender, this, labels);
         context.parseCommandArgs(args, this.getFlags(), this.getParams());
 
         if (context.isHelpCall())
@@ -142,7 +147,7 @@ public abstract class CubeCommand extends Command
             this.run(context);
         }
 
-        return context.getResult();
+        return true;
     }
     
     public boolean hasChildren()
