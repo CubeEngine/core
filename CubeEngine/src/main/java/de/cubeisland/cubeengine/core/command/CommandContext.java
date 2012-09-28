@@ -284,7 +284,7 @@ public class CommandContext
      */
     public boolean hasFlag(String flag)
     {
-        Boolean flagState = this.flags.get(flag);
+        Boolean flagState = this.flags.get(flag.toLowerCase(Locale.ENGLISH));
         if (flagState == null)
         {
             throw new IllegalArgumentException("The requested flag was not declared!");
