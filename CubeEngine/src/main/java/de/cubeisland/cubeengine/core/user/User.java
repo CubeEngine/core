@@ -168,9 +168,24 @@ public class User extends UserBase implements LinkingModel<Integer>
         this.attributes.put(name, value);
     }
     
-    public Object getAttribute(String name)
+    public <T extends Object> T getAttribute(String name)
     {
-        return this.attributes.get(name);
+        return this.<T>getAttribute(name, null);
+    }
+
+    public <T extends Object> T getAttribute(String name, T def)
+    {
+        try
+        {
+            T value = (T)this.attributes.get(name);
+            if (value != null)
+            {
+                return value;
+            }
+        }
+        catch (ClassCastException ignored)
+        {}
+        return def;
     }
     
     public void removeAttribute(String name)
