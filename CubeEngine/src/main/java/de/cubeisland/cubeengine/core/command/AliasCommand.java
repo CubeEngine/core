@@ -17,7 +17,7 @@ public class AliasCommand extends CubeCommand
     }
 
     @Override
-    public void run(CommandContext context)
+    public void run(CommandContext context) throws Exception
     {
         this.command.run(context);
     }
@@ -47,7 +47,7 @@ public class AliasCommand extends CubeCommand
     }
 
     @Override
-    public void showHelp(CommandContext context)
+    public void showHelp(CommandContext context) throws Exception
     {
         this.command.showHelp(context);
     }

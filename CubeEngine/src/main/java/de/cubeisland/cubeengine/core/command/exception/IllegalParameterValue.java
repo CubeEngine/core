@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
  *
  * @author Phillip
  */
-public class IllegalParameterValue extends CommandException
+public class IllegalParameterValue extends InvalidUsageException
 {
     private IllegalParameterValue(String message)
     {

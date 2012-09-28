@@ -54,6 +54,16 @@ public abstract class Module
     }
 
     /**
+     * Returns the lower-cased name of the module
+     * 
+     * @return the lower-cased name of the module
+     */
+    public String getId()
+    {
+        return this.info.getId();
+    }
+
+    /**
      * Returns the name of this module
      *
      * @return the module name
@@ -229,19 +239,15 @@ public abstract class Module
     @Override
     public int hashCode()
     {
-        return this.getName().hashCode();
+        return this.info.hashCode();
     }
 
     @Override
     public boolean equals(Object obj)
     {
-        if (obj == null)
+        if (obj != null && obj instanceof Module)
         {
-            return false;
-        }
-        if (obj instanceof Module)
-        {
-            return this.getName().equals(((Module)obj).getName());
+            return this.info.equals(((Module)obj).info);
         }
         return false;
     }

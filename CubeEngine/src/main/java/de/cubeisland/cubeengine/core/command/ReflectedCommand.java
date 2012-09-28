@@ -12,8 +12,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
@@ -79,7 +77,7 @@ public class ReflectedCommand extends CubeCommand
     }
 
     @Override
-    public void run(CommandContext context)
+    public void run(CommandContext context) throws Exception
     {
         try
         {
@@ -107,20 +105,13 @@ public class ReflectedCommand extends CubeCommand
         {
             context.sendMessage(e.getMessage());
         }
-        catch (Exception e)
+        catch (InvocationTargetException e)
         {
-            Throwable t = e;
-            if (t instanceof InvocationTargetException)
+            if (e.getCause() instanceof Exception)
             {
-                t = t.getCause();
+                throw (Exception)e.getCause();
             }
-            String message = t.getMessage();
-            if (message == null)
-            {
-                message = t.getClass().getSimpleName() + " occurred while executing this command!";
-            }
-            context.getSender().sendMessage(_("core", message));
-            t.printStackTrace(System.err); // TODO handle properly
+            throw e;
         }
     }
     
@@ -128,40 +119,25 @@ public class ReflectedCommand extends CubeCommand
     public void showHelp(CommandContext context)
     {
         CommandSender sender = context.getSender();
-        String commandLine = "/" + StringUtils.implode(" ", context.getLabels());
+        context.sendMessage(this.getUsage(context));
         
-        
-        
-        sender.sendMessage(commandLine + " " + this.getUsage());
-        
-        sender.sendMessage(_(sender, "core", "Description: %s", _(sender, this.getModule().getName(), this.getDescription())));
-        sender.sendMessage(_(sender, "core", "Aliases: %s", this.getAliases().isEmpty() ? _(sender, "core", "none") : StringUtils.implode(", ", this.getAliases())));
+        context.sendMessage("core", "Description: %s", _(sender, this.getModule().getId(), this.getDescription()));
+        context.sendMessage("core", "Aliases: %s", this.getAliases().isEmpty() ? _(sender, "core", "none") : StringUtils.implode(", ", this.getAliases()));
         
         
         if (this.hasChildren())
         {
-            sender.sendMessage(_(sender, "core", "Sub commands:"));
+            context.sendMessage("core", "Sub commands:");
             for (CubeCommand child : this.getChildren())
             {
-                sender.sendMessage(commandLine + " " + child.getName());
+                context.sendMessage(child.getModule().getId(), child.getUsage(context.getSender(), context.getLabels()));
             }
         }
     }
     
     private String generatePermissionNode()
     {
-        String permission = "cubeengine." + this.getModule() + ".command.";
-        
-        LinkedList<String> cmds = new LinkedList<String>();
-        CubeCommand cmd = this;
-        do
-        {
-            cmds.add(cmd.getName());
-        }
-        while ((cmd = this.getParent()) != null);
-        Collections.reverse(cmds);
-        
-        return permission + StringUtils.implode(".", cmds);
+        return "cubeengine." + this.getModule() + ".command." + this.implodeParentNames(".");
     }
     
     @Override

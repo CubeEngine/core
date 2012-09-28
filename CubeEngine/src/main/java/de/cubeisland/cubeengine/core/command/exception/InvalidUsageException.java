@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
  */
 public class InvalidUsageException extends CommandException
 {
-    private InvalidUsageException(String message)
+    protected InvalidUsageException(String message)
     {
         super(message);
     }

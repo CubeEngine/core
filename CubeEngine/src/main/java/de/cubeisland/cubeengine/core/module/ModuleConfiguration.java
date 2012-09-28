@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -33,19 +34,4 @@ public class ModuleConfiguration extends Configuration
 
     @Option(value = "soft-dependencies", genericType = String.class)
     public Set<String> softDependencies = new HashSet<String>();
-
-    @Override
-    public void onLoaded()
-    {
-        this.dependencies.remove(this.name);
-        for (String dep : this.dependencies)
-        {
-            dep = dep.toLowerCase();
-        }
-        this.softDependencies.remove(this.name);
-        for (String dep : this.softDependencies)
-        {
-            dep = dep.toLowerCase();
-        }
-    }
 }

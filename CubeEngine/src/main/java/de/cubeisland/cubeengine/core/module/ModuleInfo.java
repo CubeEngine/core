@@ -14,6 +14,7 @@ public final class ModuleInfo
 {
     private final File file;
     private final String main;
+    private final String id;
     private final String name;
     private final int revision;
     private final String description;
@@ -30,7 +31,8 @@ public final class ModuleInfo
         Validate.notEmpty(config.name, "The module name seems to be empty.");
         
         this.file = file;
-        this.name = config.name.substring(0, 1).toUpperCase(Locale.ENGLISH) + config.name.substring(1).toLowerCase(Locale.ENGLISH);
+        this.id = config.name.toLowerCase(Locale.ENGLISH);
+        this.name = this.id.substring(0, 1).toUpperCase(Locale.ENGLISH) + this.id.substring(1);
         
         if (config.main == null)
         {
@@ -41,6 +43,19 @@ public final class ModuleInfo
         this.revision = config.revision;
         this.description = config.description;
         this.minCoreVersion = config.minCoreRevision;
+        
+        
+        config.dependencies.remove(this.id);
+        for (String dep : config.dependencies)
+        {
+            dep = dep.toLowerCase();
+        }
+        config.softDependencies.remove(this.id);
+        for (String dep : config.softDependencies)
+        {
+            dep = dep.toLowerCase();
+        }
+        
         this.dependencies = Collections.unmodifiableSet(config.dependencies);
         this.softDependencies = Collections.unmodifiableSet(config.softDependencies);
     }
@@ -53,6 +68,11 @@ public final class ModuleInfo
     public String getMain()
     {
         return this.main;
+    }
+    
+    public String getId()
+    {
+        return this.id;
     }
 
     public String getName()
@@ -83,5 +103,22 @@ public final class ModuleInfo
     public Set<String> getSoftDependencies()
     {
         return this.softDependencies;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj != null && obj instanceof ModuleInfo)
+        {
+            return this.id.equals(((ModuleInfo)obj).id);
+        }
+        
+        return false;
     }
 }

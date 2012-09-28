@@ -2,10 +2,13 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +31,7 @@ public abstract class CubeCommand extends Command
     private final Module module;
     private Map<String, CubeCommand> children;
     private Map<String, String> childrenAliases;
+    private final String usageBase;
 
     public CubeCommand(Module module, String name, String description)
     {
@@ -44,14 +48,30 @@ public abstract class CubeCommand extends Command
         this(module, name, description, usageMessage, aliases, null);
     }
 
-    public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases, CubeCommand parent)
+    public CubeCommand(Module module, String name, String description, String usage, List<String> aliases, CubeCommand parent)
     {
-        super(name, description, usageMessage, aliases);
+        super(name, description, usage.trim(), aliases);
         this.parent = parent;
         this.module = module;
 
         this.children = new LinkedHashMap<String, CubeCommand>();
         this.childrenAliases = new THashMap<String, String>();
+        
+        this.usageBase = "/" + this.implodeParentNames(" ") + " ";
+    }
+    
+    protected final String implodeParentNames(String delim)
+    {
+        LinkedList<String> cmds = new LinkedList<String>();
+        CubeCommand cmd = this;
+        do
+        {
+            cmds.add(cmd.getName());
+        }
+        while ((cmd = this.getParent()) != null);
+        Collections.reverse(cmds);
+        
+        return StringUtils.implode(delim, cmds);
     }
     
     public int getMinimumParams()
@@ -68,10 +88,21 @@ public abstract class CubeCommand extends Command
     {
         return this.getChild(name, false);
     }
+
+    @Override
+    public String getUsage()
+    {
+        return this.usageBase + _(this.module, super.getUsage());
+    }
     
     public String getUsage(CommandContext context)
     {
-        return ""; // TODO implement me
+        return "/" + StringUtils.implode(" ", context.getLabels()) + " " + _(context.getSender(), this.module, super.getUsage());
+    }
+    
+    public String getUsage(CommandSender sender, List<String> parentLabels)
+    {
+        return "/" + StringUtils.implode(" ", parentLabels) + " " + this.getName() + " " + _(sender, this.module, super.getUsage());
     }
 
     public CubeCommand getChild(String name, boolean ignoreAliases)
@@ -138,13 +169,22 @@ public abstract class CubeCommand extends Command
         CommandContext context = new CommandContext(this.module.getCore(), sender, this, labels);
         context.parseCommandArgs(args, this.getFlags(), this.getParams());
 
-        if (context.isHelpCall())
+        try
         {
-            this.showHelp(context);
+            if (context.isHelpCall())
+            {
+                this.showHelp(context);
+            }
+            else
+            {
+                this.run(context);
+            }
         }
-        else
+        catch (Exception e)
         {
-            this.run(context);
+            context.sendMessage("core", "&4An unknown error occurred while executing this command!");
+            context.sendMessage("core", "&4Please report this error to an administrator.");
+            this.module.getLogger().exception(e.getMessage(), e);
         }
 
         return true;
@@ -195,7 +235,7 @@ public abstract class CubeCommand extends Command
         return NO_PARAMS;
     }
 
-    public abstract void run(CommandContext context);
+    public abstract void run(CommandContext context) throws Exception;
     
-    public abstract void showHelp(CommandContext context);
+    public abstract void showHelp(CommandContext context) throws Exception;
 }

@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
@@ -237,27 +238,43 @@ public class I18n implements Cleanable
     }
 
     @BukkitDependend("Uses Bukkit's CommandSender")
-    public static String _(CommandSender sender, String category, String text, Object... params)
+    public static String _(CommandSender sender, Module module, String message, Object... params)
+    {
+        return _(sender, module.getId(), message, params);
+    }
+    
+    @BukkitDependend("Uses Bukkit's CommandSender")
+    public static String _(CommandSender sender, String category, String message, Object... params)
     {
         if (sender instanceof User)
         {
-            return _((User)sender, category, text, params);
+            return _((User)sender, category, message, params);
         }
-        return _(category, text, params);
+        return _(category, message, params);
     }
 
-    public static String _(User user, String category, String text, Object... params)
+    public static String _(User user, Module module, String message, Object... params)
     {
-        return _(user.getLanguage(), category, text, params);
+        return _(user, module.getId(), message, params);
     }
 
-    public static String _(String category, String text, Object... params)
+    public static String _(User user, String category, String message, Object... params)
     {
-        return _(CubeEngine.getI18n().getDefaultLanguage(), category, text, params);
+        return _(user.getLanguage(), category, message, params);
     }
 
-    public static String _(String language, String category, String text, Object... params)
+    public static String _(Module module, String message, Object... params)
     {
-        return CubeEngine.getI18n().translate(language, category, text, params);
+        return _(module.getId(), message, params);
+    }
+
+    public static String _(String category, String message, Object... params)
+    {
+        return _(CubeEngine.getI18n().getDefaultLanguage(), category, message, params);
+    }
+
+    public static String _(String language, String category, String messgae, Object... params)
+    {
+        return CubeEngine.getI18n().translate(language, category, messgae, params);
     }
 }

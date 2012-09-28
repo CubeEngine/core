@@ -32,13 +32,13 @@ public class ContainerCommand extends CubeCommand
     public void showHelp(CommandContext context)
     {
         CommandSender sender = context.getSender();
-        sender.sendMessage(_(sender, "core", "The Following commands are available:"));
-        sender.sendMessage(" ");
+        context.sendMessage("core", "The Following commands are available:");
+        context.sendMessage(" ");
 
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
-            sender.sendMessage(command.getName() + _(sender, command.getModule().getName(), command.getDescription()));
+            context.sendMessage(command.getName() + _(sender, command.getModule(), command.getDescription()));
         }
     }
 }
