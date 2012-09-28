@@ -87,7 +87,7 @@ public class CheatCommands
         {
             if (ench.canEnchantItem(item))
             {
-                if ((level < ench.getStartLevel()) || (level > ench.getMaxLevel()))
+                if ((level >= ench.getStartLevel()) && (level <= ench.getMaxLevel()))
                 {
                     item.addUnsafeEnchantment(ench, level);
                     context.sendMessage("bascics", "&aAdded Enchantment: &6%s %d&a to your item!", EnchantMatcher.get().getNameFor(ench), level);
@@ -110,7 +110,7 @@ public class CheatCommands
     private String getPossibleEnchantments(ItemStack item)
     {
         StringBuilder sb = new StringBuilder();
-        boolean first = false;
+        boolean first = true;
         for (Enchantment enchantment : Enchantment.values())
         {
             if (enchantment.canEnchantItem(item))
@@ -118,6 +118,7 @@ public class CheatCommands
                 if (first)
                 {
                     sb.append("\n").append(EnchantMatcher.get().getNameFor(enchantment));
+                    first = false;
                 }
                 else
                 {
@@ -323,7 +324,7 @@ public class CheatCommands
             }
         }
         int amount = item.getMaxStackSize();
-        if (context.hasIndexed(3))
+        if (context.hasIndexed(2))
         {
             amount = context.getIndexed(2, int.class, 0);
             if (amount == 0)
@@ -362,7 +363,7 @@ public class CheatCommands
             }
         }
         int amount = item.getMaxStackSize();
-        if (context.hasIndexed(2))
+        if (context.hasIndexed(1))
         {
             amount = context.getIndexed(1, int.class, 0);
             if (amount == 0)
@@ -421,8 +422,13 @@ public class CheatCommands
             ItemStack item = sender.getItemInHand();
             if (MaterialMatcher.get().isRepairable(item))
             {
+                if (item.getDurability() == 0)
+                {
+                    sender.sendMessage("basics","No need to repair this!");
+                    return;
+                }
                 item.setDurability((short) 0);
-                sender.sendMessage("basics","No items to repair!");
+                sender.sendMessage("basics","Item repaired!");
             }
             else
             {

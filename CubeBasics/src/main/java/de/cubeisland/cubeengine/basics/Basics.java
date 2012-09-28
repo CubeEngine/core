@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.basics.cheat.CheatCommands;
 import de.cubeisland.cubeengine.basics.general.GeneralCommands;
-import de.cubeisland.cubeengine.basics.moderator.ModerationCommands;
+import de.cubeisland.cubeengine.basics.moderation.ModerationCommands;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Basics extends Module

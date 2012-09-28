@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.basics.moderator;
+package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -47,6 +47,7 @@ public class ModerationCommands
     max = 3,
     usage="<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
+            //TODO config max spawn at one time
     {//TODO later more ridingmobs riding on the riding mob etc...
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         EntityType entityType;
