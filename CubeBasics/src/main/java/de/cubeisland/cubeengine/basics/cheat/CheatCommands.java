@@ -259,11 +259,7 @@ public class CheatCommands
         }
         if (context.hasIndexed(1))
         {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                invalidUsage(context, "basics", "User not found!");
-            }
+            user = context.getUser(1, true);
             changeOther = true;
         }
         if (!Perm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
@@ -326,9 +322,9 @@ public class CheatCommands
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
-             illegalParameter(context, "core", "&cUnknown Item: %s!", context.getString(1));
+            illegalParameter(context, "core", "&cUnknown Item: %s!", context.getString(1));
         }
-        if (context.hasFlag("b") && Perm.COMMAND_GIVE_BLACKLIST.isAuthorized(sender))
+        if (context.hasFlag("b") && Perm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender()))
         {
             if (1 == 0) // TODO Blacklist
             {
@@ -345,13 +341,13 @@ public class CheatCommands
             }
         }
         item.setAmount(amount);
-        
+
         user.getInventory().addItem(item);
         user.updateInventory();
-        context.sendMessage("basics", "You gave %s %d %s", user.getName(), item.toString(), amount);
-        user.sendMessage("%s just gave you %d %s", sender.getName(), item.toString(), amount);
-    }    
-    
+        context.sendMessage("basics", "You gave %s %d %s", user.getName(), amount, item.toString());
+        user.sendMessage("%s just gave you %d %s", context.getSender().getName(), item.toString(), amount);
+    }
+
     @Command(
     names = {"item", "i"},
     desc = "Gives the specified Item to you",
