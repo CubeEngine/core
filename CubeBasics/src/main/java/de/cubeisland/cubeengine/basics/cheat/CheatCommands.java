@@ -259,7 +259,11 @@ public class CheatCommands
         }
         if (context.hasIndexed(1))
         {
-            user = context.getUser(1, true);
+            user = context.getUser(1);
+            if (user == null)
+            {
+                invalidUsage(context, "basics", "User not found!");
+            }
             changeOther = true;
         }
         if (!Perm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
