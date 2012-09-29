@@ -12,7 +12,6 @@ import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.permission.Perm;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.TableManager;
@@ -119,9 +118,6 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: plugin manager
         this.permissionRegistration = new PermissionRegistration(pm);
-
-        // depends on: permission registration
-        this.registerPermissions(Perm.values());
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(pm);

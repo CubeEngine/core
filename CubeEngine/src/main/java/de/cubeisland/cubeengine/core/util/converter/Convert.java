@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.util.converter;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.permission.Role;
 import de.cubeisland.cubeengine.core.user.User;
 import java.sql.Date;
 import java.util.Collection;
@@ -42,7 +41,6 @@ public class Convert
         registerConverter(byte.class, converter);
         registerConverter(Double.class, converter = new DoubleConverter());
         registerConverter(double.class, converter);
-        registerConverter(Role.class, new RoleConverter());
         registerConverter(Date.class, new DateConverter());
         registerConverter(Level.class, new LevelConverter());
         registerConverter(Float.class, converter = new FloatConverter());
