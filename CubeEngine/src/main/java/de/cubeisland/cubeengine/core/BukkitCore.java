@@ -11,9 +11,10 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
+import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
@@ -38,7 +39,7 @@ public class BukkitCore extends JavaPlugin implements Core
 {
     private boolean debug = true;
     private Database database;
-    private PermissionRegistration permissionRegistration;
+    private PermissionManager permissionRegistration;
     private UserManager userManager;
     private FileManager fileManager;
     private ModuleManager moduleManager;
@@ -117,7 +118,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.tableManager = new TableManager(this);
 
         // depends on: plugin manager
-        this.permissionRegistration = new PermissionRegistration(pm);
+        this.permissionRegistration = new PermissionManager(pm);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(pm);
@@ -201,7 +202,7 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public PermissionRegistration getPermissionRegistration()
+    public PermissionManager getPermissionManager()
     {
         return this.permissionRegistration;
     }
@@ -218,9 +219,9 @@ public class BukkitCore extends JavaPlugin implements Core
         return this.fileManager;
     }
 
-    public void registerPermissions(Permission... values)
+    public void registerPermissions(Module module, Permission... perms)
     {
-        this.permissionRegistration.registerPermissions(values);
+        this.permissionRegistration.registerPermissions(module, perms);
     }
 
     @Override

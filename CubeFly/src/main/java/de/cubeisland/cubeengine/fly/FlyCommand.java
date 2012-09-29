@@ -15,7 +15,12 @@ import org.bukkit.command.CommandSender;
  */
 public class FlyCommand
 {
-    UserManager cuManager = CubeEngine.getCore().getUserManager();
+    UserManager um;
+    
+    public FlyCommand(Fly module)
+    {
+        this.um = module.getUserManager();
+    }
 
     @Command(
     desc = "Lets you fly away",

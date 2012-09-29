@@ -56,7 +56,7 @@ public class ReflectedCommand extends CubeCommand
             {
                 this.permissionNode = annotation.permNode();
             }
-            module.getCore().getPermissionRegistration().registerPermission(this.permissionNode, this.permissionDefault);
+            module.getCore().getPermissionManager().registerPermission(module, this.permissionNode, this.permissionDefault);
         }
         else
         {

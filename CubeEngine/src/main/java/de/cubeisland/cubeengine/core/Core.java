@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
+import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -41,7 +41,7 @@ public interface Core
      *
      * @return an instance of a permission registration
      */
-    public PermissionRegistration getPermissionRegistration();
+    public PermissionManager getPermissionManager();
 
     /**
      * The method returns the event manager

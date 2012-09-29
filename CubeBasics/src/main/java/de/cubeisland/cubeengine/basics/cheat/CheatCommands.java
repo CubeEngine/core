@@ -30,11 +30,11 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CheatCommands
 {
-    private UserManager uM;
+    private UserManager um;
 
     public CheatCommands(Basics module)
     {
-        uM = module.getUserManager();
+        this.um = module.getUserManager();
     }
 
     @Command(
@@ -151,7 +151,7 @@ public class CheatCommands
                 player.setExhaustion(0);
             }
             context.sendMessage("basics","You made everyone fat!");
-            uM.broadast("basics", "%s shared food with everyone.", context.getSender().getName());
+            this.um.broadast("basics", "%s shared food with everyone.", context.getSender().getName());
         }
         else
         {
@@ -204,7 +204,7 @@ public class CheatCommands
                 player.setExhaustion(0);
             }
             context.sendMessage("basics", "You healed everyone!");
-            uM.broadast("basics", "%s healed every player.", context.getSender().getName());
+            this.um.broadast("basics", "%s healed every player.", context.getSender().getName());
         }
         else
         {

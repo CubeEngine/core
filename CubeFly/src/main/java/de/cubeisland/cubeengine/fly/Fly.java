@@ -22,21 +22,16 @@ public class Fly extends Module
     @Override
     public void onEnable()
     {
-        this.getCommandManager().registerCommands(this, new FlyCommand());
-        this.getEventManager().registerListener(new FlyListener(this), this);
+        this.registerCommands(new FlyCommand(this));
+        this.registerListener(new FlyListener(this));
         this.config = Configuration.load(FlyConfiguration.class, this);
         this.getFileManager().dropResources(FlyResource.values());
-        this.getCore().getPermissionRegistration().registerPermissions(FlyPerm.values());
+        this.registerPermissions(FlyPerm.values());
         this.flyManager = new FlyManager(this.getDatabase(), this.getInfo().getRevision());
     }
     
     public FlyManager getFlyManager()
     {
         return this.flyManager;
-    }
-
-    @Override
-    public void onDisable()
-    {
     }
 }

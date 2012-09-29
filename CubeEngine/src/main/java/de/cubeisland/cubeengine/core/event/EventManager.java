@@ -20,7 +20,7 @@ public class EventManager
         this.pm = pm;
     }
 
-    public EventManager registerListener(Listener listener, Module module)
+    public EventManager registerListener(Module module, Listener listener)
     {
         //TODO this.pm.registerEvents(listener, module.getPluginWrapper());
         this.pm.registerEvents(listener, (Plugin)module.getCore());

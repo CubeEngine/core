@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -27,7 +28,6 @@ public class CommandManager
     
     private CommandMap commandMap;
     private Map<String, Command> knownCommands;
-    private static final String[] NO_PARENTS = {};
 
     public CommandManager(Core core)
     {
@@ -52,11 +52,6 @@ public class CommandManager
     public void clear()
     {
         this.commandMap.clearCommands();
-    }
-
-    public void registerCommand(CubeCommand command)
-    {
-        this.registerCommand(command, NO_PARENTS);
     }
 
     public void registerCommand(CubeCommand command, String... parents)
@@ -86,27 +81,15 @@ public class CommandManager
         {
             parentCommand.addChild(command);
         }
-    }
-    
-    public void registerCommand(ContainerCommand command)
-    {
-        this.registerCommand(command, NO_PARENTS);
-    }
-    
-    public void registerCommand(ContainerCommand command, String... parents)
-    {
-        this.registerCommand(command, parents);
         
-        String[] newParents = new String[parents.length + 1];
-        newParents[0] = command.getName();
-        System.arraycopy(parents, 0, newParents, 1, parents.length);
-        
-        this.registerCommands(command.getModule(), command, newParents);
-    }
+        if (command instanceof ContainerCommand)
+        {
+            String[] newParents = new String[parents.length + 1];
+            newParents[0] = command.getName();
+            System.arraycopy(parents, 0, newParents, 1, parents.length);
 
-    public void registerCommands(Module module, Object commandHolder)
-    {
-        this.registerCommands(module, commandHolder, NO_PARENTS);
+            this.registerCommands(command.getModule(), command, newParents);
+        }
     }
 
     public void registerCommands(Module module, Object commandHolder, String... parents)
@@ -129,7 +112,7 @@ public class CommandManager
             Class<?>[] params = method.getParameterTypes();
             if (params.length != 1 || params[0] != CommandContext.class)
             {
-                LOGGER.warning("The method '" + commandHolder.getClass().getSimpleName() + "." + method.getName() + "' does not match the required method signature: public void " + method.getName() + "(CommandContext context)");
+                LOGGER.log(Level.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", new Object[]{commandHolder.getClass().getSimpleName(), method.getName(), method.getName()});
                 continue;
             }
             

@@ -56,21 +56,20 @@ public class Test extends Module
         {
             this.getLogger().log(Level.SEVERE, "Error while adding the FileHandler", ex);
         }
-        this.getCore().getEventManager().registerListener(new TestListener(this), this);
+        this.registerListener(new TestListener(this));
 
         this.testUserManager();
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
 
-        this.getCore().getEventManager().registerListener(new Listener()
-        {
+        this.registerListener(new Listener() {
             @EventHandler
             public void onLanguageReceived(PlayerLanguageReceivedEvent event)
             {
                 System.out.print("Player: " + event.getPlayer().getName() + " Lang: " + event.getLanguage());
             }
-        }, this);
+        });
     }
 
     public void initializeDatabase() throws SQLException

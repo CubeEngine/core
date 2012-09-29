@@ -2,11 +2,13 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.event.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
@@ -16,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.lang.Validate;
+import org.bukkit.event.Listener;
 
 /**
  * module for CubeEngine
@@ -316,7 +319,7 @@ public abstract class Module
         {
             try
             {
-                this.logger.log(Level.FINER, "Enabling " + this.getInfo().getName() + "-r" + this.getInfo().getRevision());
+                this.logger.log(Level.FINER, "Enabling {0}-r{1}", new Object[]{this.getInfo().getName(), this.getInfo().getRevision()});
                 this.onEnable();
                 this.enabled = true;
                 this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, this));
@@ -324,7 +327,7 @@ public abstract class Module
             catch (Throwable t)
             {
                 this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
-                this.logger.log(Level.INFO, this.getInfo().getName() + " disabled");
+                this.logger.log(Level.INFO, "{0} disabled", this.getInfo().getName());
             }
         }
         return this.enabled;
@@ -353,5 +356,26 @@ public abstract class Module
     public ModuleLoader getLoader()
     {
         return this.loader;
+    }
+    
+    public void registerPermissions(Permission[] permissions)
+    {
+        this.core.getPermissionManager().registerPermissions(this, permissions);
+    }
+    
+
+    public void registerCommand(CubeCommand command)
+    {
+        this.core.getCommandManager().registerCommand(command);
+    }
+    
+    public void registerCommands(Object commandHolder, String... parents)
+    {
+        this.core.getCommandManager().registerCommands(this, commandHolder, parents);
+    }
+    
+    public void registerListener(Listener listener)
+    {
+        this.core.getEventManager().registerListener(this, listener);
     }
 }

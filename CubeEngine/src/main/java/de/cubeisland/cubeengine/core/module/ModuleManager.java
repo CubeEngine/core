@@ -169,6 +169,7 @@ public class ModuleManager
 //        }
         module.disable();
         this.core.getEventManager().unregisterListener(module);
+        this.core.getPermissionManager().unregisterPermissions(module);
 //        CommandManager.getInstance().unregisterAll(module);
 
         return this;
