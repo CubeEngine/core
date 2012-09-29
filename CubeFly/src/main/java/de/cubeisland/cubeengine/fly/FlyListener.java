@@ -78,9 +78,9 @@ public class FlyListener implements Listener
         {
             return;
         }
-        if (Perm.FLY_BYPASS.isAuthorized(player));
+        if (FlyPerm.FLY_BYPASS.isAuthorized(player));
         {
-            if (!Perm.FLY_FEAHTER.isAuthorized(player))
+            if (!FlyPerm.FLY_FEAHTER.isAuthorized(player))
             {
                 user.sendMessage("core", "You dont have permission to use this!");
                 player.setAllowFlight(false); //Disable when player is flying

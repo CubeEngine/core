@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.BukkitCore;
-import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
@@ -305,7 +304,6 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      * @param name the name
      * @return a User
      */
-    @BukkitDependend("Uses BukkitServer to get all OnlinePlayers")
     public User findUser(String name)
     {
         //Looking up loaded users

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -87,7 +86,7 @@ public class I18n implements Cleanable
             }
             else
             {
-                LOGGER.log(Level.SEVERE, "The language ''" + file.getName() + "'' has an invalid configation!");
+                LOGGER.log(Level.SEVERE, "The language ''{0}'' has an invalid configation!", file.getName());
             }
         }
 
@@ -106,7 +105,7 @@ public class I18n implements Cleanable
         }
         if (loadStack.contains(config.code))
         {
-            LOGGER.log(Level.SEVERE, "The language ''" + loadStack.peek() + "'' caused a circular dependency!");
+            LOGGER.log(Level.SEVERE, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
             return null;
         }
         Language language = null;
@@ -146,7 +145,7 @@ public class I18n implements Cleanable
         }
         catch (IllegalArgumentException e)
         {
-            LOGGER.log(Level.SEVERE, "Failed to load the language ''" + config.code + "'': " + e.getLocalizedMessage());
+            LOGGER.log(Level.SEVERE, "Failed to load the language ''{0}'': {1}", new Object[]{config.code, e.getLocalizedMessage()});
         }
         return null;
     }
@@ -234,16 +233,14 @@ public class I18n implements Cleanable
 
     private void logMissingTranslation(String language, String category, String message)
     {
-        LOGGER.log(Level.INFO, "\"" + language + "\" - \"" + category + "\" - \"" + message + "\"");
+        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[]{language, category, message});
     }
 
-    @BukkitDependend("Uses Bukkit's CommandSender")
     public static String _(CommandSender sender, Module module, String message, Object... params)
     {
         return _(sender, module.getId(), message, params);
     }
     
-    @BukkitDependend("Uses Bukkit's CommandSender")
     public static String _(CommandSender sender, String category, String message, Object... params)
     {
         if (sender instanceof User)

@@ -10,7 +10,7 @@ public class Basics extends Module
     @Override
     public void onEnable()
     {
-        this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
+        this.getCore().getPermissionRegistration().registerPermissions(BasicsPerm.values());
         this.getCommandManager().registerCommands(this, new CheatCommands(this));
         this.getCommandManager().registerCommands(this, new ModerationCommands(this));
         this.getCommandManager().registerCommands(this, new GeneralCommands(this));

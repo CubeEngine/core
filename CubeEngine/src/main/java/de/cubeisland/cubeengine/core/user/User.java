@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -65,7 +64,6 @@ public class User extends UserBase implements LinkingModel<Integer>
         this(NO_ID, player);
     }
 
-    @BukkitDependend("Uses the OfflinePlayer")
     public User(String playername)
     {
         this(NO_ID, CubeEngine.getOfflinePlayer(playername));

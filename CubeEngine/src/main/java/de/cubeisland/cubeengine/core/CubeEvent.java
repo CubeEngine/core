@@ -6,7 +6,6 @@ import org.bukkit.event.Event;
  *
  * @author Phillip Schichtel
  */
-@BukkitDependend("This extends the BukkitEvent")
 public abstract class CubeEvent extends Event
 {
     private final Core core;

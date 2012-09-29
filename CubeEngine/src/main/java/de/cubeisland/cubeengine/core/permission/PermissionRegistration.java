@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.permission;
 
-import de.cubeisland.cubeengine.core.BukkitDependend;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
@@ -9,7 +8,6 @@ import org.bukkit.plugin.PluginManager;
  *
  * @author Phillip Schichtel
  */
-@BukkitDependend("Uses Bukkit's permission API")
 public class PermissionRegistration
 {
     private final PluginManager pm;

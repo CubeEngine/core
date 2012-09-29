@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
@@ -22,7 +21,6 @@ import org.bukkit.plugin.Plugin;
  *
  * @author Phillip Schichtel
  */
-@BukkitDependend("Injects into Bukkit's command API")
 public class CommandManager
 {
     private static final Logger LOGGER = CubeEngine.getLogger();

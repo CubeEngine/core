@@ -9,13 +9,11 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionRegistration;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
 /**
  *
  * @author Phillip Schichtel
@@ -166,7 +164,6 @@ public final class CubeEngine
      *
      * @return the BukkitServer
      */
-    @BukkitDependend("Uses Bukkit's Server")
     public static Server getServer()
     {
         return core.getServer();
@@ -193,7 +190,6 @@ public final class CubeEngine
      * @param name the name of the player
      * @return the OfflinePlayer
      */
-    @BukkitDependend("Uses Bukkit's Server")
     public static OfflinePlayer getOfflinePlayer(String name)
     {
         return getServer().getOfflinePlayer(name);

@@ -28,10 +28,10 @@ public class FlyCommand
         {
             User user = (User) context.getSender();
             //PermissionCheck
-            if (Perm.COMMAND_FLY_BYPASS.isAuthorized(user));
+            if (FlyPerm.COMMAND_FLY_BYPASS.isAuthorized(user));
             {
 
-                if (!Perm.COMMAND_FLY.isAuthorized(user))
+                if (!FlyPerm.COMMAND_FLY.isAuthorized(user))
                 {
                     user.sendMessage("core", "You dont have permission to use this Command!");
                     user.setAllowFlight(false); //Disable when player is flying

@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
 import com.avaje.ebean.EbeanServer;
-import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import java.io.File;
 import java.io.InputStream;
@@ -19,7 +18,6 @@ import org.bukkit.plugin.PluginLoader;
  *
  * @author Phillip Schichtel
  */
-@BukkitDependend("This wraps the module in a Bukkit plugin")
 public class PluginWrapper implements Plugin
 {
     private final Module module;

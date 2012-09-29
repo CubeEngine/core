@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.basics.cheat;
 
 import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.Perm;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
@@ -75,7 +75,7 @@ public class CheatCommands
         }
         if (context.hasFlag("u"))
         {
-            if (Perm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
+            if (BasicsPerm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
             {
                 item.addUnsafeEnchantment(ench, level);
                 context.sendMessage("basics", "&aAdded unsafe Enchantment: &6%s %d&a to your item!", EnchantMatcher.get().getNameFor(ench), level);
@@ -266,7 +266,7 @@ public class CheatCommands
             }
             changeOther = true;
         }
-        if (!Perm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
+        if (!BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
             denyAccess(context, "basics", "You do not have permission to change the gamemode of an other player!");
         }
@@ -328,7 +328,7 @@ public class CheatCommands
         {
             illegalParameter(context, "core", "&cUnknown Item: %s!", context.getString(1));
         }
-        if (context.hasFlag("b") && Perm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender()))
+        if (context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender()))
         {
             if (1 == 0) // TODO Blacklist
             {
@@ -367,7 +367,7 @@ public class CheatCommands
         {
             illegalParameter(context, "core", "&cUnknown Item: %s!", context.getString(1));
         }
-        if (context.hasFlag("b") && Perm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender))
+        if (context.hasFlag("b") && BasicsPerm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender))
         {
             if (1 == 0) // TODO Blacklist
             {
@@ -613,7 +613,7 @@ public class CheatCommands
             {
                 invalidUsage(context, "basics", "User not found!");
             }
-            if (!Perm.COMMAND_PTIME_OTHER.isAuthorized(context.getSender()))
+            if (!BasicsPerm.COMMAND_PTIME_OTHER.isAuthorized(context.getSender()))
             {
                 denyAccess(context, "basics", "&cYou are not allowed to change the time of other players!");
             }

@@ -26,7 +26,7 @@ public class Fly extends Module
         this.getEventManager().registerListener(new FlyListener(this), this);
         this.config = Configuration.load(FlyConfiguration.class, this);
         this.getFileManager().dropResources(FlyResource.values());
-        this.getCore().getPermissionRegistration().registerPermissions(Perm.values());
+        this.getCore().getPermissionRegistration().registerPermissions(FlyPerm.values());
         this.flyManager = new FlyManager(this.getDatabase(), this.getInfo().getRevision());
     }
     

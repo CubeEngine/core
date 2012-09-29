@@ -35,7 +35,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author Phillip Schichtel
  */
-@BukkitDependend("This is the bukkit plugin")
 public class BukkitCore extends JavaPlugin implements Core
 {
     private boolean debug = true;

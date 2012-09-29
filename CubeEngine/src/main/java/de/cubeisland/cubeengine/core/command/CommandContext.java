@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.BukkitDependend;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -26,7 +25,6 @@ import org.bukkit.entity.Player;
  *
  * @author Phillip Schichtel
  */
-@BukkitDependend("Uses Bukkit's CommandSender")
 public class CommandContext
 {
     private final Core core;
@@ -386,7 +384,6 @@ public class CommandContext
      *
      * @return the CommandSender
      */
-    @BukkitDependend("This returns the CommandSender")
     public CommandSender getSender()
     {
         return this.sender;
