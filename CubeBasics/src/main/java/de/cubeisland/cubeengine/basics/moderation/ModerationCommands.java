@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.EntityMatcher;
@@ -349,7 +350,11 @@ public class ModerationCommands
         //TODO kill a player with cool effects :) e.g. lightnin
         //TODO perm checks if user can be killed
         User sender = context.getSenderAsUser();
-        User user = context.getUser(0, true);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            invalidUsage(context, "basics", "User not found!");
+        }
         user.setHealth(0);
         //TODO broadcast Deathmsg etc
         //TODO msg you killed ...
@@ -479,7 +484,11 @@ public class ModerationCommands
         boolean other = false;
         if (context.hasIndexed(0))
         {
-            user = context.getUser(0, true);
+            user = context.getUser(0);
+            if (user == null)
+            {
+                invalidUsage(context, "basics", "User not found!");
+            }
             other = true;
         }
         user.getInventory().clear();
@@ -515,7 +524,11 @@ public class ModerationCommands
     {
         
         User sender = context.getSenderAsUser();
-        User user = context.getUser(0, true);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            invalidUsage(context, "basics", "User not found!");
+        }
         StringBuilder sb = new StringBuilder();
         int i = 1;
         while (context.hasIndexed(i))

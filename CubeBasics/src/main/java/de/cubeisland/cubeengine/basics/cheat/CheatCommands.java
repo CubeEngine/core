@@ -160,15 +160,16 @@ public class CheatCommands
             boolean other = false;
             if (context.hasIndexed(0))
             {
-                user = context.getUser(0, true);
+                user = context.getUser(0);
+                if (user == null)
+                {
+                    invalidUsage(context, "basics", "User not found!");
+                }
                 other = true;
             }
-            else
+            else if (sender == null)
             {
-                if (sender == null)
-                {
-                    invalidUsage(context, "basics", "&cDon't feed the troll!");
-                }
+                invalidUsage(context, "basics", "&cDon't feed the troll!");
             }
             user.setFoodLevel(20);
             user.setSaturation(20);
@@ -212,7 +213,10 @@ public class CheatCommands
             boolean other = false;
             if (context.hasIndexed(0))
             {
-                user = context.getUser(0, true);
+                if (user == null)
+                {
+                    invalidUsage(context, "basics", "User not found!");
+                }
                 other = true;
             }
             else
@@ -248,14 +252,18 @@ public class CheatCommands
         boolean changeOther = false;
 
         User sender = context.getSenderAsUser();
-        User user = sender;
+        User user = sender ;
         if (user == null)
         {
             invalidUsage(context, "basics", "&cYou do not not have any gamemode!");
         }
         if (context.hasIndexed(1))
         {
-            user = context.getUser(1, true);
+            user = context.getUser(1);
+            if (user == null)
+            {
+                invalidUsage(context, "basics", "User not found!");
+            }
             changeOther = true;
         }
         if (!Perm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
@@ -310,7 +318,11 @@ public class CheatCommands
     public void give(CommandContext context)
     {
         User sender = context.getSenderAsUser();
-        User user = context.getUser(0,true);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            invalidUsage(context, "basics", "User not found!");
+        }
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
@@ -596,7 +608,11 @@ public class CheatCommands
         User user = sender;
         if (context.hasIndexed(1))
         {
-            user = context.getUser(1, true);
+            user = context.getUser(1);
+            if (user == null)
+            {
+                invalidUsage(context, "basics", "User not found!");
+            }
             if (!Perm.COMMAND_PTIME_OTHER.isAuthorized(context.getSender()))
             {
                 denyAccess(context, "basics", "&cYou are not allowed to change the time of other players!");

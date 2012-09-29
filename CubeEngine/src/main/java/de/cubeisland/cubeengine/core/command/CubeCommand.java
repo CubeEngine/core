@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
@@ -203,6 +204,11 @@ public abstract class CubeCommand extends Command
     public List<CubeCommand> getChildren()
     {
         return new LinkedList<CubeCommand>(this.children.values());
+    }
+    
+    public Set<String> getChildNames()
+    {
+        return this.children.keySet();
     }
 
     public final Module getModule()

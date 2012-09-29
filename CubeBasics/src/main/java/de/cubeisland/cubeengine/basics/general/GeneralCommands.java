@@ -44,7 +44,11 @@ public class GeneralCommands
     usage = "<player> <message>")
     public void msg(CommandContext context)
     {
-        User user = context.getUser(0, true);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            invalidUsage(context, "basics", "User not found!");
+        }
         StringBuilder sb = new StringBuilder();
         int i = 0;
         while (context.hasIndexed(i))
@@ -64,7 +68,7 @@ public class GeneralCommands
     public void seen(CommandContext context)
     {
         User sender = cuManager.getUser(context.getSender());
-        User user = context.getUser(0, true);
+        User user = context.getUser(0);
         long lastPlayed = user.getLastPlayed();
         //TODO ausgabe;       
     }

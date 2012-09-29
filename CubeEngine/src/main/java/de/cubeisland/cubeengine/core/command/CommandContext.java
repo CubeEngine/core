@@ -121,6 +121,10 @@ public class CommandContext
         Integer offset = new Integer(0);
         for (;offset < commandLine.length; ++offset)
         {
+            if (commandLine[offset].isEmpty())
+            {
+                continue;
+            }
             if (commandLine[offset].charAt(0) == '-')
             {
                 String flag = commandLine[offset];
