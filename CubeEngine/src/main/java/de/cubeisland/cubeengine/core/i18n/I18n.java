@@ -167,6 +167,10 @@ public class I18n implements Cleanable
 
         Validate.notNull(language, "The language must not be null!");
         Validate.notNull(category, "The category must not be null!");
+        if (category.isEmpty())
+        {
+            return message;
+        }
         Validate.notNull(params, "The params must not be null!");
         Locale locale = SOURCE_LANGUAGE.getLocale();
         if (message == null)

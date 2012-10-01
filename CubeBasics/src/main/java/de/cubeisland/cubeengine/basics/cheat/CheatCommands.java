@@ -151,7 +151,7 @@ public class CheatCommands
                 player.setExhaustion(0);
             }
             context.sendMessage("basics","You made everyone fat!");
-            this.um.broadast("basics", "%s shared food with everyone.", context.getSender().getName());
+            this.um.broadcastMessage("basics", "%s shared food with everyone.", context.getSender().getName());
         }
         else
         {
@@ -204,7 +204,7 @@ public class CheatCommands
                 player.setExhaustion(0);
             }
             context.sendMessage("basics", "You healed everyone!");
-            this.um.broadast("basics", "%s healed every player.", context.getSender().getName());
+            this.um.broadcastMessage("basics", "%s healed every player.", context.getSender().getName());
         }
         else
         {

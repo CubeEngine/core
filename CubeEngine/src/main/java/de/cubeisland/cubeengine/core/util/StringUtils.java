@@ -448,7 +448,7 @@ public final class StringUtils
                 }
                 if (ld <= firstLdCheck) // Match with ld <= 2 and searchString > 4
                 {
-                    if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1))
+                    if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1 && searchStringLength > 1))
                     {
                         CubeEngine.getLogger().fine("LD1: Found " + inList + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength);
                         if (ld < distance)
@@ -514,7 +514,7 @@ public final class StringUtils
                         ld = getDemerauLevenshteinDistance(subString, searchString);
                         if (ld <= secondLdCheck) // Found light Typo at start of String
                         {
-                            if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1))
+                            if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1 && searchStringLength > 1))
                             {
                                 CubeEngine.getLogger().fine("LD2: Found " + inList + "|" + subString + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength + " and behindindex " + (inList.length() - searchStringLength));
                                 if (ld < distance) // Compare to last match

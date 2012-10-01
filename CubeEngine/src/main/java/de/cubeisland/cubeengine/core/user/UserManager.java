@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -208,6 +209,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         if (user == null)
         {
             user = this.getFromStorage(name);
+            if (user != null)
+            {
+                this.users.put(name, user);
+            }
         }
         if (user == null)
         {
@@ -355,17 +360,34 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     @EventHandler(priority = EventPriority.MONITOR)
     private void onQuit(final PlayerQuitEvent event)
     {
-        event.getPlayer().getServer().getScheduler().scheduleAsyncDelayedTask((Plugin)core, new Runnable()
+        final User user = getUser(event.getPlayer());
+        final int id = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)core, new Runnable()
         {
             @Override
             public void run()
             {
-                User user = getUser(event.getPlayer());
                 user.lastseen = new Timestamp(System.currentTimeMillis());
-                update(user);
+                executor.submit(new Runnable()
+                    {@Override public void run(){ update(user); }});
+                if (user.isOnline())
+                {
+                    return;
+                }
                 users.remove(event.getPlayer().getName());
             }
-        }, 1L);
+        }, 300L); // TODO configurable default 15sec 300Tick
+        user.setAttribute("removingTaskId", id);
+    }
+    
+    @EventHandler()
+    private void onJoin(final PlayerJoinEvent event)
+    {
+        final User user = this.users.get(event.getPlayer().getName());
+        if (user != null)
+        {
+            user.offlinePlayer = event.getPlayer();
+            user.getServer().getScheduler().cancelTask((Integer)user.getAttribute("removingTaskId"));
+        }
     }
 
     public void cleanup()
@@ -393,7 +415,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         });
     }
     
-    public void broadast(String category, String message, Object... args)
+    public void broadcastMessage(String category, String message, Object... args)
     {
         for (Player player : this.server.getOnlinePlayers())
         {

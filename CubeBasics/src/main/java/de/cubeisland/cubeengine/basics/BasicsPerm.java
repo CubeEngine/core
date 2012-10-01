@@ -15,7 +15,9 @@ public enum BasicsPerm implements Permission
     COMMAND_GIVE_BLACKLIST,
     COMMAND_ITEM_BLACKLIST,
     COMMAND_GAMEMODE_OTHER,
-    COMMAND_PTIME_OTHER;
+    COMMAND_PTIME_OTHER,
+    COMMAND_CLEARINVENTORY_OTHER,
+    ;
     
     private String permission;
     private PermissionDefault def;

@@ -15,11 +15,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class GeneralCommands
 {
     
-    private UserManager cuManager;
+    private UserManager um;
 
     public GeneralCommands(Basics module)
     {
-        this.cuManager = module.getUserManager();
+        this.um = module.getUserManager();
     }
   
     @Command(
@@ -34,7 +34,7 @@ public class GeneralCommands
         {
             sb.append(context.getString(i++)).append(" ");
         }
-        context.getSender().getServer().broadcastMessage('*' + context.getSender().getName() + " " + sb.toString());
+        this.um.broadcastMessage("", "* %s %s", context.getSender().getName(), sb.toString()); // Here no category so -> no Translation
     }
     
     @Command(
@@ -67,7 +67,7 @@ public class GeneralCommands
     usage = "<player>")
     public void seen(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
+        User sender = um.getUser(context.getSender());
         User user = context.getUser(0);
         long lastPlayed = user.getLastPlayed();
         //TODO ausgabe;       
@@ -79,7 +79,7 @@ public class GeneralCommands
     max= 0)
     public void suicide(CommandContext context)
     {
-        User sender = cuManager.getUser(context.getSender());
+        User sender = um.getUser(context.getSender());
         if (sender == null)
         {
             invalidUsage(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");

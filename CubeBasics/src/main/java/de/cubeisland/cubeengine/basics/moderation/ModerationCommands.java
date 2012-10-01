@@ -1,11 +1,14 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.EntityMatcher;
@@ -35,11 +38,11 @@ import org.bukkit.util.Vector;
  */
 public class ModerationCommands
 {
-    private UserManager cuManager;
+    private UserManager um;
 
     public ModerationCommands(Basics module)
     {
-        cuManager = module.getUserManager();
+        um = module.getUserManager();
     }
 
     @Command(
@@ -474,8 +477,10 @@ public class ModerationCommands
     }
     
     @Command(
+    names= {"clearinventory","ci"},
     desc = "Clears the inventory",
     usage = "[player]",
+    flags= {@Flag(longName = "removeArmor", name = "ra")},
     max = 1)
     public void clearinventory(CommandContext context)
     {
@@ -491,8 +496,18 @@ public class ModerationCommands
             }
             other = true;
         }
+        if (other && BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(context.getSender()))
+        {
+            denyAccess(context, "basics", "&cYou are not allowed to clear the inventory of other User!");
+        }
         user.getInventory().clear();
-        //TODO later save inventory to restore later ??
+        if (context.hasFlag("ra"))
+        {
+            user.getInventory().setBoots(null);
+            user.getInventory().setLeggings(null);
+            user.getInventory().setChestplate(null);
+            user.getInventory().setHelmet(null);
+        }
         user.updateInventory();
         user.sendMessage("basics","Cleared Inventory!");
         if (other)
@@ -501,6 +516,43 @@ public class ModerationCommands
         }
     }
     
+    @Command(
+    desc = "Stashes or unstashes your inventory to reuse later",
+    max = 0)
+    public void stash(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        ItemStack[] stashedInv = sender.getAttribute("stash_Inventory");
+        ItemStack[] stashedArmor = sender.getAttribute("stash_Armor");
+        ItemStack[] InvToStash = sender.getInventory().getContents().clone();
+        ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().clone();
+        if (stashedInv != null)
+        {
+            sender.getInventory().setContents(stashedInv);
+        }
+        else
+        {
+            sender.getInventory().clear();
+        }
+        sender.setAttribute("stash_Inventory", InvToStash);
+        if (stashedArmor != null)
+        {
+            sender.getInventory().setBoots(stashedArmor[0]);
+            sender.getInventory().setLeggings(stashedArmor[1]);
+            sender.getInventory().setChestplate(stashedArmor[2]);
+            sender.getInventory().setHelmet(stashedArmor[3]);
+        }
+        else
+        {
+            sender.getInventory().setBoots(null);
+            sender.getInventory().setLeggings(null);
+            sender.getInventory().setChestplate(null);
+            sender.getInventory().setHelmet(null);
+        }
+        sender.setAttribute("stash_Armor", ArmorToStash);
+        sender.sendMessage("basics", "Swapped stashed Inventory!");
+    }    
+
     @Command(
     desc = "Broadcasts a message",
     usage = "<message>"
@@ -511,31 +563,36 @@ public class ModerationCommands
         int i = 0;
         while (context.hasIndexed(i))
         {
-            sb.append(context.getString(i++));
+            sb.append(context.getString(i++)).append(" ");
         }
-        context.getSender().getServer().broadcastMessage(sb.toString());
+        this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.toString());
     }
-    
+
     @Command(
     desc = "Makes a player execute a command",
-    usage = "<player> <command>"
-    )
+    usage = "<player> <command>",
+    flags= {@Flag(longName="chat",name="c")})
     public void sudo(CommandContext context)
     {
-        
-        User sender = context.getSenderAsUser();
+        //User sender = context.getSenderAsUser();
         User user = context.getUser(0);
         if (user == null)
         {
-            invalidUsage(context, "basics", "User not found!");
+            illegalParameter(context, "basics", "User not found!");
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;
         while (context.hasIndexed(i))
         {
-            sb.append(context.getString(i++));
+            sb.append(context.getString(i++)).append(" ");
         }
-        user.chat("/" + sb.toString()); //TODO add flag for chat not cmd
-        //TODO msg to sender if cmd worked??
+        if (context.hasFlag("c"))
+        {
+            user.chat(sb.toString());
+        }
+        else
+        { 
+            user.chat("/" + sb.toString()); //TODO later msg to sender if cmd worked??
+        }
     }
 }
