@@ -121,55 +121,57 @@ public class CommandContext
         { //TODO gucken obs geht :)
             if (commandLine[offset].isEmpty())
             {
-                continue;
+                continue; //no string at <offset> in cmdline
             }
-            if (commandLine[offset].charAt(0) == '-')
+            if (commandLine[offset].charAt(0) == '-') // is Flag?
             {
                 String flag = commandLine[offset];
-                while (!flag.isEmpty() && flag.charAt(0) == '-')
+                while (!flag.isEmpty() && flag.charAt(0) == '-') // remove all "-"
                 {
                     flag = flag.substring(1);
                 }
 
-                if (flag.isEmpty())
+                if (flag.isEmpty()) // ???
                 {
                     this.indexedParams.add(commandLine[offset]);
                 }
 
-                flag = flag.toLowerCase(Locale.ENGLISH);
+                flag = flag.toLowerCase(Locale.ENGLISH); // lowercase flag
 
-                if (flagLongnameMap.containsKey(flag))
+                if (flagLongnameMap.containsKey(flag)) // has longflag?
                 {
                     flag = flagLongnameMap.get(flag);
                 }
-                if (flag != null && this.flags.containsKey(flag))
+                if (flag != null && this.flags.containsKey(flag)) // has flag ?
                 {
-                    this.flags.put(flag, true);
+                    this.flags.put(flag, true); // added flag
                     this.flagCount++;
                 }
                 else
                 {
-                    this.indexedParams.add(commandLine[offset]);
+                    this.indexedParams.add(commandLine[offset]); // ???
                 }
             }
-            else
-            {
+            else //else named param or indexed param
+            {   
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
-                if (paramAliasMap.containsKey(paramName))
+                if (paramAliasMap.containsKey(paramName)) //has alias named Param ?
                 {
                     paramName = paramAliasMap.get(paramName);
                 }
                 Param param = paramMap.get(paramName);
-
-                if (param != null)
+                if (param != null) // is named Param?
                 {
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
-                    int typeOffset = 0;
-                    for (; typeOffset < types.length && offset < commandLine.length; typeOffset++)
+                    for (int typeOffset = 0; typeOffset < types.length && (offset) < commandLine.length; typeOffset++)
                     {
-                        try
+                        if (typeOffset < types.length)
                         {
+                            offset++; // mooving offset +1
+                        }
+                        try
+                        { // try to apply needed Type
                             if (String.class.isAssignableFrom(types[typeOffset]))
                             {
                                 values[typeOffset] = readString(offset, commandLine);
@@ -183,17 +185,12 @@ public class CommandContext
                         {
                             illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s",paramName,typeOffset,commandLine[offset],types[typeOffset].toString());
                         }
-                        if (typeOffset < types.length)
-                        {
-                            offset++;
-                        }
                     }
-
-                    this.namedParams.put(paramName, values);
+                    this.namedParams.put(paramName, values); //added named param
                 }
-                else
+                else // else is indexed param
                 {
-                    this.indexedParams.add(readString(offset, commandLine));
+                    this.indexedParams.add(readString(offset, commandLine)); // added indexed param
                 }
             }
         }
