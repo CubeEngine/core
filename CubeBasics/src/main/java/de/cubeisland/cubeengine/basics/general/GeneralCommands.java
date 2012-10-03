@@ -47,7 +47,7 @@ public class GeneralCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            invalidUsage(context, "basics", "User not found!");
+            invalidUsage(context, "core", "User not found!");
         }
         StringBuilder sb = new StringBuilder();
         int i = 0;

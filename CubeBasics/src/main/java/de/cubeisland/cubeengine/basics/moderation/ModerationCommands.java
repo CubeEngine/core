@@ -356,7 +356,7 @@ public class ModerationCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            invalidUsage(context, "basics", "User not found!");
+            invalidUsage(context, "core", "User not found!");
         }
         user.setHealth(0);
         //TODO broadcast Deathmsg etc
@@ -492,7 +492,7 @@ public class ModerationCommands
             user = context.getUser(0);
             if (user == null)
             {
-                invalidUsage(context, "basics", "User not found!");
+                invalidUsage(context, "core", "User not found!");
             }
             other = true;
         }
@@ -578,7 +578,7 @@ public class ModerationCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            illegalParameter(context, "basics", "User not found!");
+            illegalParameter(context, "core", "User not found!");
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;

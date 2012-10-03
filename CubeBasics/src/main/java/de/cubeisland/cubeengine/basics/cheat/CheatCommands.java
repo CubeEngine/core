@@ -163,7 +163,7 @@ public class CheatCommands
                 user = context.getUser(0);
                 if (user == null)
                 {
-                    invalidUsage(context, "basics", "User not found!");
+                    invalidUsage(context, "core", "User not found!");
                 }
                 other = true;
             }
@@ -215,7 +215,7 @@ public class CheatCommands
             {
                 if (user == null)
                 {
-                    invalidUsage(context, "basics", "User not found!");
+                    invalidUsage(context, "core", "User not found!");
                 }
                 other = true;
             }
@@ -262,7 +262,7 @@ public class CheatCommands
             user = context.getUser(1);
             if (user == null)
             {
-                invalidUsage(context, "basics", "User not found!");
+                invalidUsage(context, "core", "User not found!");
             }
             changeOther = true;
         }
@@ -321,7 +321,7 @@ public class CheatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            invalidUsage(context, "basics", "User not found!");
+            invalidUsage(context, "core", "User not found!");
         }
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
@@ -611,7 +611,7 @@ public class CheatCommands
             user = context.getUser(1);
             if (user == null)
             {
-                invalidUsage(context, "basics", "User not found!");
+                invalidUsage(context, "core", "User not found!");
             }
             if (!BasicsPerm.COMMAND_PTIME_OTHER.isAuthorized(context.getSender()))
             {

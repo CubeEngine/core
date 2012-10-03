@@ -386,7 +386,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         if (user != null)
         {
             user.offlinePlayer = event.getPlayer();
-            user.getServer().getScheduler().cancelTask((Integer)user.getAttribute("removingTaskId"));
+            Integer id = user.getAttribute("removingTaskId");
+            if (id == null)
+            {
+                return; // No task to cancel
+            }
+            user.getServer().getScheduler().cancelTask(id);
         }
     }
 

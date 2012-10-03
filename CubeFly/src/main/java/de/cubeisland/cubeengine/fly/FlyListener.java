@@ -78,22 +78,20 @@ public class FlyListener implements Listener
         {
             return;
         }
-        if (FlyPerm.FLY_BYPASS.isAuthorized(player));
+        // TODO other perms
+        if (!FlyPerm.FLY_FEAHTER.isAuthorized(player))
         {
-            if (!FlyPerm.FLY_FEAHTER.isAuthorized(player))
-            {
-                user.sendMessage("core", "You dont have permission to use this!");
-                player.setAllowFlight(false); //Disable when player is flying
-                return;
-            }
+            user.sendMessage("core", "You dont have permission to use this!");
+            player.setAllowFlight(false); //Disable when player is flying
+            return;
+        }
 
-            FlyStartEvent flyStartEvent = new FlyStartEvent(CubeEngine.getCore(), user);
-            if (flyStartEvent.isCancelled())
-            {
-                user.sendMessage("fly", "You are not allowed to fly now!");
-                player.setAllowFlight(false); //Disable when player is flying
-                return;
-            }
+        FlyStartEvent flyStartEvent = new FlyStartEvent(CubeEngine.getCore(), user);
+        if (flyStartEvent.isCancelled())
+        {
+            user.sendMessage("fly", "You are not allowed to fly now!");
+            player.setAllowFlight(false); //Disable when player is flying
+            return;
         }
         //I Believe I Can Fly ...     
         player.setAllowFlight(!player.getAllowFlight());

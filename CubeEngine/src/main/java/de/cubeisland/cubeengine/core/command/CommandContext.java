@@ -118,7 +118,7 @@ public class CommandContext
 
         Integer offset = new Integer(0);
         for (;offset < commandLine.length; ++offset)
-        {
+        { //TODO gucken obs geht :)
             if (commandLine[offset].isEmpty())
             {
                 continue;
@@ -165,8 +165,6 @@ public class CommandContext
                 {
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
-
-                    offset++;
                     int typeOffset = 0;
                     for (; typeOffset < types.length && offset < commandLine.length; typeOffset++)
                     {
