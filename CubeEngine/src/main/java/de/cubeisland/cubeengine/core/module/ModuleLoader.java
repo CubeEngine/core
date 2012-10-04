@@ -84,7 +84,7 @@ public class ModuleLoader
                     if (Configuration.class.isAssignableFrom(field.getType()))
                     {
                         field.setAccessible(true);
-                        Configuration.load(field.getType().asSubclass(Configuration.class), new File(module.getFolder(), field.getAnnotation(From.class).value()));
+                        field.set(module, Configuration.load(field.getType().asSubclass(Configuration.class), new File(module.getFolder(), field.getAnnotation(From.class).value())));
                     }
                 }
             }

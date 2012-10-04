@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
@@ -39,10 +40,12 @@ import org.bukkit.util.Vector;
 public class ModerationCommands
 {
     private UserManager um;
+    private BasicsConfiguration config;
 
     public ModerationCommands(Basics module)
     {
         um = module.getUserManager();
+        config = module.getConfiguration();
     }
 
     @Command(
@@ -51,9 +54,12 @@ public class ModerationCommands
     max = 3,
     usage="<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
-            //TODO config max spawn at one time
     {//TODO later more ridingmobs riding on the riding mob etc...
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.getSenderAsUser();
+        if (!context.hasIndexed(2) && sender == null)
+        {
+            invalidUsage(context, "basics", "&eSuccesfully spawned some &cbugs &einside your server!");
+        }
         EntityType entityType;
         EntityType ridingEntityType;
 
@@ -123,9 +129,12 @@ public class ModerationCommands
                 return; //TODO msg invalid amount
             }
         }
-
+        if (amount > config.spawnmobLimit)
+        {
+            illegalParameter(context, "basics", "The serverlimit is set to &d you cannot spawn more mobs at once!", config.spawnmobLimit);
+        }
         for (int i = 1; i <= amount; ++i)
-        { //TODO msg succes spawn
+        { 
             Entity entity = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
             this.applyDataToMob(entityType, entity, entityData);
             if (ridingEntityType != null)
@@ -135,6 +144,7 @@ public class ModerationCommands
                 entity.setPassenger(ridingentity);
             }
         }
+        context.sendMessage("basics", "Spawned %d entities!", amount);//TODO msg what entitiy / amount / where (if player given)
     }
 
     private void applyDataToMob(EntityType entityType, Entity entity, String data)
