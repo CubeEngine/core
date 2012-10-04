@@ -3,11 +3,12 @@ package de.cubeisland.cubeengine.basics.general;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import org.bukkit.event.entity.EntityDamageEvent;
-
 /**
  *
  * @author Anselm Brehme
@@ -16,6 +17,7 @@ public class GeneralCommands
 {
     
     private UserManager um;
+    private String lastWhisperOfConsole = null;
 
     public GeneralCommands(Basics module)
     {
@@ -44,21 +46,56 @@ public class GeneralCommands
     usage = "<player> <message>")
     public void msg(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            invalidUsage(context, "core", "User not found!");
-        }
         StringBuilder sb = new StringBuilder();
-        int i = 0;
+        int i = 1;
         while (context.hasIndexed(i))
         {
             sb.append(context.getString(i++));
         }
-        context.sendMessage("basics", "You -> %s &s", user.getName(), sb.toString());
-        user.sendMessage("basics","%s -> You %s", context.getSender().getName(), sb.toString());
-        //TODO save last whispered to so i can implement /reply
-    }
+        User sender = context.getSenderAsUser();
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            if (sender == null)
+            {
+                illegalParameter(context, "basics", "&eTalking to yourself?");
+            }
+            if (context.getString(0).equalsIgnoreCase("console"))
+            {   // TODO find why console does not get any message here:
+                context.getSender().getServer().getConsoleSender().sendMessage(_("basics", "You -> %s %s", context.getSender().getName(), sb.toString()));
+                context.sendMessage("basics", "You -> Console %s", sb.toString());
+            }
+            else
+            {
+                invalidUsage(context, "core", "User not found!");
+            }
+        }
+        else
+        {
+            if (sender == user)
+            {
+                illegalParameter(context, "basics", "&eTalking to yourself?");
+            }
+            user.sendMessage("basics","%s -> You %s", context.getSender().getName(), sb.toString());
+            context.sendMessage(_("basics", "You -> %s &s", user.getName()));
+        }
+   
+        if (sender == null)
+        {
+            this.lastWhisperOfConsole = user.getName();
+            user.setAttribute("lastWhisper", "console");
+        }
+        else if (user == null)
+        {
+            this.lastWhisperOfConsole = sender.getName();
+            sender.setAttribute("lastWhisper", "console");
+        }
+        else
+        {
+            sender.setAttribute("lastWhisper", user.getName());
+            user.setAttribute("lastWhisper", sender.getName());
+        }   
+    }//TODO reply cmd
     
     @Command(
     desc = "Shows when given player was online the last time",

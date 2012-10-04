@@ -19,14 +19,16 @@ import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.entity.Wolf;
@@ -50,9 +52,9 @@ public class ModerationCommands
 
     @Command(
     desc = "Spawns the specified Mob",
-    min = 1,
-    max = 3,
-    usage="<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
+             min = 1,
+             max = 3,
+             usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {//TODO later more ridingmobs riding on the riding mob etc...
         User sender = context.getSenderAsUser();
@@ -90,7 +92,7 @@ public class ModerationCommands
         }
         if (entityType == null)
         {
-            return; //TODO msg invalid mob
+            illegalParameter(context, "basics", "Entitiy-type not found!");
         }
         if (ridingEntityName != null && ridingEntityName.contains(":"))
         {
@@ -99,7 +101,7 @@ public class ModerationCommands
             ridingEntityType = EntityMatcher.get().matchMob(ridingEntityName);
             if (ridingEntityType == null)
             {
-                return; //TODO msg invalid ridingmob
+                illegalParameter(context, "basics", "Entity-type not found for riding mob!");
             }
         }
         else
@@ -112,7 +114,7 @@ public class ModerationCommands
             User user = context.getUser(2);
             if (user == null)
             {
-                return;//TODO msg user not found
+                illegalParameter(context, "core", "User not found!");
             }
             loc = user.getLocation();
         }
@@ -120,13 +122,17 @@ public class ModerationCommands
         {
             loc = sender.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0)); // TODO do Util method for this in core 
         }
-        int amount = 1;
+        Integer amount = 1;
         if (context.hasIndexed(1))
         {
-            amount = context.getIndexed(1, int.class, 0);
-            if (amount == 0)
+            amount = context.getIndexed(1, int.class, null);
+            if (amount == null)
             {
-                return; //TODO msg invalid amount
+                illegalParameter(context, "basics", "%s is not a number! Really!", context.getString(1));
+            }
+            if (amount <= 0)
+            {
+                illegalParameter(context, "basics", "&eAnd how am i supposed to know which mobs to despawn?");
             }
         }
         if (amount > config.spawnmobLimit)
@@ -134,20 +140,20 @@ public class ModerationCommands
             illegalParameter(context, "basics", "The serverlimit is set to %d you cannot spawn more mobs at once!", config.spawnmobLimit);
         }
         for (int i = 1; i <= amount; ++i)
-        { 
+        {
             Entity entity = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
-            this.applyDataToMob(entityType, entity, entityData);
+            this.applyDataToMob(context.getSender(), entityType, entity, entityData);
             if (ridingEntityType != null)
             {
                 Entity ridingentity = loc.getWorld().spawnEntity(loc, ridingEntityType.getBukkitType());
-                this.applyDataToMob(ridingEntityType, ridingentity, ridingEntityData);
+                this.applyDataToMob(context.getSender(), ridingEntityType, ridingentity, ridingEntityData);
                 entity.setPassenger(ridingentity);
             }
         }
         context.sendMessage("basics", "Spawned %d entities!", amount);//TODO msg what entitiy / amount / where (if player given)
     }
 
-    private void applyDataToMob(EntityType entityType, Entity entity, String data)
+    private void applyDataToMob(CommandSender sender, EntityType entityType, Entity entity, String data)
     {
         if (data != null)
         {
@@ -159,7 +165,7 @@ public class ModerationCommands
                 }
                 else
                 {
-                    //could not apply data
+                    illegalParameter(sender, "basics", "&eThis entity can not be a baby! Can you?");
                 }
             }
             else if (data.equalsIgnoreCase("angry"))
@@ -173,15 +179,19 @@ public class ModerationCommands
                     ((PigZombie) entity).setAngry(true);
                 }
             }
-            else if (data.equalsIgnoreCase("tamed")) //TODO set owner
+            else if (data.equalsIgnoreCase("tamed"))
             {
-                if (entityType.equals(EntityType.WOLF))
+                if (entity instanceof Tameable) // Wolf or Ocelot
                 {
-                    ((Wolf) entity).setTamed(true);
-                }
-                else if (entityType.equals(EntityType.OCELOT))
-                {
-                    ((Ocelot) entity).setTamed(true);
+                    ((Tameable) entity).setTamed(true);
+                    if (sender instanceof AnimalTamer)
+                    {
+                        ((Tameable) entity).setOwner((AnimalTamer) sender);
+                    }
+                    else
+                    {
+                        invalidUsage(sender, "basics", "&eYou can not own any Animals!");
+                    }
                 }
             }
             else if (data.equalsIgnoreCase("powered") || data.equalsIgnoreCase("power"))
@@ -198,8 +208,7 @@ public class ModerationCommands
                     DyeColor color = MaterialMatcher.get().matchColorData(data);
                     if (color == null)
                     {
-                        //TODO msg color not found
-                        return;
+                        illegalParameter(sender, "basics", "Color not found!");
                     }
                     ((Sheep) entity).setColor(color);
                 }
@@ -212,7 +221,8 @@ public class ModerationCommands
                     }
                     catch (NumberFormatException e)
                     {
-                        //TODO msg invalid size
+                        illegalParameter(sender, "basics", "The slime-size has to be a number!"); // TODO small etc slimes
+                        //sizes are: tiny: 0 ; small: 2 ; big: 4
                         return;
                     }
                     if (size > 0 && size <= 250)
@@ -226,7 +236,7 @@ public class ModerationCommands
                     Profession profession = Profession.valueOf(data);
                     if (profession == null)
                     {
-                        return; //TODO msg
+                        illegalParameter(sender, "basics", "Unknown villager-profession!");
                     }
                     ((Villager) entity).setProfession(profession);
                 }
@@ -235,7 +245,7 @@ public class ModerationCommands
                     ItemStack item = MaterialMatcher.get().matchItemStack(data);
                     if (item == null)
                     {
-                        return; //TODO msg
+                        illegalParameter(sender, "basics", "Material not found!");
                     }
                     ((Enderman) entity).setCarriedMaterial(item.getData());
                 }
@@ -245,9 +255,9 @@ public class ModerationCommands
 
     @Command(
     desc = "Changes the weather",
-    min = 1,
-    max = 3,
-    usage = "<sun|rain|storm> [world] [duration]")
+             min = 1,
+             max = 3,
+             usage = "<sun|rain|storm> [world] [duration]")
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -275,7 +285,7 @@ public class ModerationCommands
             duration = context.getIndexed(2, int.class, 0);
             if (duration == 0)
             {
-                return; //msg invalid time
+                illegalParameter(context, "basics", "The given time is invalid!");
             }
         }
         World world;
@@ -284,17 +294,16 @@ public class ModerationCommands
             world = context.getSender().getServer().getWorld(context.getString(1));
             if (world == null)
             {
-                return; //TODO msg no world
+                illegalParameter(context, "basics", "World %s not found!", context.getString(1));
             }
         }
         else
         {
             if (sender == null)
             {
-                return;//IF not a player need world
+                invalidUsage(context, "basics", "If not used ingame you have to specify a world!");
             }
             world = sender.getWorld();
-
         }
         world.setStorm(!sunny);
         world.setThundering(!noThunder);
@@ -303,8 +312,8 @@ public class ModerationCommands
 
     @Command(
     desc = "Changes the global respawnpoint",
-    usage = "[world] [<x> <y> <z>]",
-    max = 4)
+             usage = "[world] [<x> <y> <z>]",
+             max = 4)
     public void setSpawn(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -328,13 +337,13 @@ public class ModerationCommands
             }
             world = sender.getWorld();
         }
-        
+
         if (context.hasIndexed(3))
         {
             x = context.getIndexed(1, Integer.class, null);
             y = context.getIndexed(2, Integer.class, null);
             z = context.getIndexed(3, Integer.class, null);
-            if (x==null || y == null || z == null)
+            if (x == null || y == null || z == null)
             {
                 illegalParameter(context, "basics", "Coordinates are invalid!");
             }
@@ -349,15 +358,15 @@ public class ModerationCommands
             y = sender.getLocation().getBlockY();
             z = sender.getLocation().getBlockZ();
         }
-        world.setSpawnLocation(x,y,z);
-        context.sendMessage("bascics", "Spawn was in world %s set to %d %d %d", world.getName(),x,y,z);
+        world.setSpawnLocation(x, y, z);
+        context.sendMessage("bascics", "Spawn was in world %s set to %d %d %d", world.getName(), x, y, z);
     }
-    
+
     @Command(
     desc = "Kills a player",
-    usage = "<player>",
-    min = 1,
-    max = 1)
+             usage = "<player>",
+             min = 1,
+             max = 1)
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightnin
@@ -372,19 +381,19 @@ public class ModerationCommands
         }
         if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(user))
         {
-            context.sendMessage("basics","You cannot kill that player!");
+            context.sendMessage("basics", "You cannot kill that player!");
             return;
         }
         user.setHealth(0);
         //TODO broadcast alternative Deathmsgs
         context.sendMessage("basics", "You killed %s!", user.getName());
     }
-    
+
     @Command(
-    names={"ping","pong"},
-    desc = "Pong!",
-    min = 1,
-    max = 1)
+        names={"ping","pong"},
+        desc = "Pong!",
+        min = 1,
+        max = 1)
     public void ping(CommandContext context)
     {
         if (context.getLabel().equalsIgnoreCase("ping"))
@@ -396,26 +405,26 @@ public class ModerationCommands
             context.sendMessage("basics", "Ping!");
         }
     }
-    
+
     @Command(
-    desc = "Removes entity",
-    usage = "<entityType> [radius] [in <world>] [-a]",
-    flags = {@Flag(longName="all",name="a")},
-    params= {@Param(names={"in"},types=World.class)},
-    min = 1,
-    max = 1)
+        desc = "Removes entity",
+        usage = "<entityType> [radius] [in <world>] [-a]",
+        flags = {@Flag(longName="all",name="a")},
+        params= {@Param(names={"in"},types=World.class)},
+        min = 1,
+        max = 1)
     public void remove(CommandContext context)
     {/*
-     Drops
-     Arrows
-     Boats
-     Minecarts
-     xp
-     paintings
+         Drops
+         Arrows
+         Boats
+         Minecarts
+         xp
+         paintings
      
-     other non living possible too
-     TODO 
-     */
+         other non living possible too
+         TODO 
+         */
         User sender = context.getSenderAsUser();
         World world;
         if (context.hasNamed("in"))
@@ -462,7 +471,7 @@ public class ModerationCommands
         }
         this.removeEntityType(world.getEntities(), loc, radius, type);
     }
-    
+
     private int removeEntityType(List<Entity> list, Location loc, int radius, EntityType type)
     {
         if (loc == null && radius != -1)
@@ -470,7 +479,7 @@ public class ModerationCommands
             throw new IllegalStateException("Unkown Location with Radius");
         }
         int removed = 0;
-        
+
         for (Entity entity : list)
         {
             if (entity.getType().equals(type.getBukkitType()))
@@ -490,13 +499,13 @@ public class ModerationCommands
         }
         return removed;
     }
-    
+
     @Command(
-    names= {"clearinventory","ci"},
-    desc = "Clears the inventory",
-    usage = "[player]",
-    flags= {@Flag(longName = "removeArmor", name = "ra")},
-    max = 1)
+        names= {"clearinventory","ci"},
+        desc = "Clears the inventory",
+        usage = "[player]",
+        flags= {@Flag(longName = "removeArmor", name = "ra")},
+        max = 1)
     public void clearinventory(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -524,16 +533,16 @@ public class ModerationCommands
             user.getInventory().setHelmet(null);
         }
         user.updateInventory();
-        user.sendMessage("basics","Cleared Inventory!");
+        user.sendMessage("basics", "Cleared Inventory!");
         if (other)
         {
             sender.sendMessage("basics", "Cleared Inventory of %s!", user.getName());
         }
     }
-    
+
     @Command(
-    desc = "Stashes or unstashes your inventory to reuse later",
-    max = 0)
+        desc = "Stashes or unstashes your inventory to reuse later",
+        max = 0)
     public void stash(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -566,12 +575,11 @@ public class ModerationCommands
         }
         sender.setAttribute("stash_Armor", ArmorToStash);
         sender.sendMessage("basics", "Swapped stashed Inventory!");
-    }    
+    }
 
     @Command(
-    desc = "Broadcasts a message",
-    usage = "<message>"
-    )
+        desc = "Broadcasts a message",
+        usage = "<message>")
     public void broadcast(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
@@ -584,9 +592,9 @@ public class ModerationCommands
     }
 
     @Command(
-    desc = "Makes a player execute a command",
-    usage = "<player> <command>",
-    flags= {@Flag(longName="chat",name="c")})
+        desc = "Makes a player execute a command",
+        usage = "<player> <command>",
+        flags= {@Flag(longName="chat",name="c")})
     public void sudo(CommandContext context)
     {
         //User sender = context.getSenderAsUser();
@@ -606,7 +614,7 @@ public class ModerationCommands
             user.chat(sb.toString());
         }
         else
-        { 
+        {
             user.chat("/" + sb.toString()); //TODO later msg to sender if cmd worked??
         }
     }
