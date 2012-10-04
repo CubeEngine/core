@@ -15,7 +15,7 @@ public class Fly extends Module
     protected File dataFolder;
     
     @From("fly.yml")
-    protected FlyConfiguration config;
+    private FlyConfiguration config;
     
     private FlyManager flyManager;
 
@@ -33,5 +33,10 @@ public class Fly extends Module
     public FlyManager getFlyManager()
     {
         return this.flyManager;
+    }
+
+    public FlyConfiguration getConfiguration()
+    {
+        return this.config;
     }
 }

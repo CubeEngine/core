@@ -19,10 +19,12 @@ import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 public class FlyCommand
 {
     UserManager um;
+    FlyConfiguration config;
     
     public FlyCommand(Fly module)
     {
         this.um = module.getUserManager();
+        this.config = module.getConfiguration();
     }
 
     @Command(
@@ -32,6 +34,11 @@ public class FlyCommand
     usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {
+        if (!config.flycommand)
+        {
+            denyAccess(context, "fly", "The fly-command is disabled in the configuration!");
+            return;
+        }
         User sender = context.getSenderAsUser();
         User user = sender;
         boolean other = false;

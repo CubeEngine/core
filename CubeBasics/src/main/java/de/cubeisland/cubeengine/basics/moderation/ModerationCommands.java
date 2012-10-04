@@ -131,7 +131,7 @@ public class ModerationCommands
         }
         if (amount > config.spawnmobLimit)
         {
-            illegalParameter(context, "basics", "The serverlimit is set to &d you cannot spawn more mobs at once!", config.spawnmobLimit);
+            illegalParameter(context, "basics", "The serverlimit is set to %d you cannot spawn more mobs at once!", config.spawnmobLimit);
         }
         for (int i = 1; i <= amount; ++i)
         { 
@@ -317,14 +317,14 @@ public class ModerationCommands
             world = context.getSender().getServer().getWorld(context.getString(0));
             if (world == null)
             {
-                return; //TODO msg no such world
+                illegalParameter(context, "basics", "Nu such world: %s", context.getString(0));
             }
         }
         else
         {
             if (sender == null)
             {
-                return; //TODO msg if not a player give world
+                invalidUsage(context, "basics", "If not used ingame you have to specify a world and coordinates!");
             }
             world = sender.getWorld();
         }
@@ -336,21 +336,21 @@ public class ModerationCommands
             z = context.getIndexed(3, Integer.class, null);
             if (x==null || y == null || z == null)
             {
-                return; //TODO msg invalid coords
+                illegalParameter(context, "basics", "Coordinates are invalid!");
             }
         }
         else
         {
             if (sender == null)
             {
-                return; //TODO msg if not a player give coords
+                invalidUsage(context, "basics", "If not used ingame you have to specify a world and coordinates!");
             }
             x = sender.getLocation().getBlockX();
             y = sender.getLocation().getBlockY();
             z = sender.getLocation().getBlockZ();
         }
         world.setSpawnLocation(x,y,z);
-        //TODO msg spawn set.
+        context.sendMessage("bascics", "Spawn was in world %s set to %d %d %d", world.getName(),x,y,z);
     }
     
     @Command(
@@ -359,18 +359,25 @@ public class ModerationCommands
     min = 1,
     max = 1)
     public void kill(CommandContext context)
-    {//TODO kill a player looking at
+    {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightnin
-        //TODO perm checks if user can be killed
-        User sender = context.getSenderAsUser();
         User user = context.getUser(0);
         if (user == null)
         {
             invalidUsage(context, "core", "User not found!");
         }
+        if (!user.isOnline())
+        {
+            illegalParameter(context, "core", "%s currently not online", user.getName());
+        }
+        if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(user))
+        {
+            context.sendMessage("basics","You cannot kill that player!");
+            return;
+        }
         user.setHealth(0);
-        //TODO broadcast Deathmsg etc
-        //TODO msg you killed ...
+        //TODO broadcast alternative Deathmsgs
+        context.sendMessage("basics", "You killed %s!", user.getName());
     }
     
     @Command(
@@ -419,12 +426,11 @@ public class ModerationCommands
         {
             if (sender == null)
             {
-                return; //TODO msg no player or world :(
+                invalidUsage(context, "basics", "If not used ingame you have to specify a world!");
             }
             world = sender.getWorld();
         }
-
-        int radius = 20; //TODO default radius in config!
+        int radius = config.removeCmdDefaultRadius;
         if (context.hasFlag("a")) // remove all selected entities in world
         {
             radius = -1;
@@ -433,22 +439,21 @@ public class ModerationCommands
         {
             if (sender == null)
             {
-                return; // no player -> no location TODO msg
+                invalidUsage(context, "basics", "If not used ingame you can only remove all!");
             }
             if (context.hasIndexed(1))
             {
                 radius = context.getIndexed(1, int.class, 0);
                 if (radius == 0)
                 {
-                    return; //TODO msg invalid radius
+                    illegalParameter(context, "basics", "The radius has to be a number!");
                 }
             }
         }
         EntityType type = EntityMatcher.get().matchEntity(context.getString(0));
         if (type.isAlive())
         {
-            // TODO msg to remove livingentities use butcher
-            return;
+            invalidUsage(context, "basics", "To kill living entities use the butcher command!");
         }
         Location loc = null;
         if (sender != null)

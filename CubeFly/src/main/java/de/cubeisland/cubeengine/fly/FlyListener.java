@@ -79,6 +79,11 @@ public class FlyListener implements Listener
             return;
         }
         // TODO other perms
+        if (!fly.getConfiguration().flyfeather)
+        {
+            user.sendMessage("fly", "Feather-flying is disabled in the configuration!");
+        }
+        
         if (!FlyPerm.FLY_FEAHTER.isAuthorized(player))
         {
             user.sendMessage("core", "You dont have permission to use this!");

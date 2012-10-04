@@ -17,6 +17,7 @@ public enum BasicsPerm implements Permission
     COMMAND_GAMEMODE_OTHER,
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,
+    COMMAND_KILL_EXEMPT,
     ;
     
     private String permission;
