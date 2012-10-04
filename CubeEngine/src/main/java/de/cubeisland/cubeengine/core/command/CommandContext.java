@@ -118,22 +118,23 @@ public class CommandContext
 
         Integer offset = new Integer(0);
         for (;offset < commandLine.length; ++offset)
-        { //TODO gucken obs geht :)
+        {
             if (commandLine[offset].isEmpty())
             {
-                continue; //no string at <offset> in cmdline
+                continue; // part is empty, ignoring...
             }
-            if (commandLine[offset].charAt(0) == '-') // is Flag?
+            if (commandLine[offset].charAt(0) == '-') // is flag?
             {
-                String flag = commandLine[offset];
-                while (!flag.isEmpty() && flag.charAt(0) == '-') // remove all "-"
+                String flag = commandLine[offset].substring(1);
+                if (flag.charAt(0) == '-')
                 {
                     flag = flag.substring(1);
                 }
 
-                if (flag.isEmpty()) // ???
+                if (flag.isEmpty()) // is there still a name?
                 {
                     this.indexedParams.add(commandLine[offset]);
+                    continue;
                 }
 
                 flag = flag.toLowerCase(Locale.ENGLISH); // lowercase flag
@@ -149,18 +150,20 @@ public class CommandContext
                 }
                 else
                 {
-                    this.indexedParams.add(commandLine[offset]); // ???
+                    this.indexedParams.add(commandLine[offset]); // flag not found, adding it as an indexed param
                 }
             }
             else //else named param or indexed param
             {   
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
-                if (paramAliasMap.containsKey(paramName)) //has alias named Param ?
+                // has alias named Param ?
+                if (paramAliasMap.containsKey(paramName))
                 {
                     paramName = paramAliasMap.get(paramName);
                 }
                 Param param = paramMap.get(paramName);
-                if (param != null) // is named Param?
+                // is named Param?
+                if (param != null)
                 {
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
@@ -168,10 +171,12 @@ public class CommandContext
                     {
                         if (typeOffset < types.length)
                         {
-                            offset++; // mooving offset +1
+                            // moving offset +1
+                            offset++;
                         }
                         try
-                        { // try to apply needed Type
+                        {
+                            // try to apply needed type
                             if (String.class.isAssignableFrom(types[typeOffset]))
                             {
                                 values[typeOffset] = readString(offset, commandLine);
@@ -186,11 +191,13 @@ public class CommandContext
                             illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s",paramName,typeOffset,commandLine[offset],types[typeOffset].toString());
                         }
                     }
-                    this.namedParams.put(paramName, values); //added named param
+                    //added named param
+                    this.namedParams.put(paramName, values);
                 }
                 else // else is indexed param
                 {
-                    this.indexedParams.add(readString(offset, commandLine)); // added indexed param
+                    // added indexed param
+                    this.indexedParams.add(readString(offset, commandLine));
                 }
             }
         }
