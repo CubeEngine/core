@@ -2,10 +2,7 @@ package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
-import org.bukkit.entity.Projectile;
 
 /**
  *
