@@ -14,7 +14,7 @@ public class Fly extends Module
     protected Server server;
     protected File dataFolder;
     
-    @From("fly.yml")
+    @From
     private FlyConfiguration config;
     
     private FlyManager flyManager;

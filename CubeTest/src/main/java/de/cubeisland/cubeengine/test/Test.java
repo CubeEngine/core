@@ -30,7 +30,7 @@ public class Test extends Module
 {
     public TestManager manager;
     public UserManager uM;
-    @From("test.yml")
+    @From
     protected TestConfig config;
     public static List<String> aListOfPlayers;
 

@@ -28,6 +28,7 @@
         <module>CubeConomy</module>
         <module>CubeTest</module>
         <module>CubeBasics</module>
+        <module>CubeLog</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>

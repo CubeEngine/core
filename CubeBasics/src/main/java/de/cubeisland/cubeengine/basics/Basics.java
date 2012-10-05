@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 
 public class Basics extends Module
 {
-    @From("basics.yml")
+    @From
     protected BasicsConfiguration config;
     
     @Override

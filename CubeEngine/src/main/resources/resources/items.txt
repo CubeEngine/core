@@ -1126,7 +1126,7 @@
 371:0
   goldnugget
 372:0
-  nethwart
+  netherwart
   netherstalk
 373:0
   potion
