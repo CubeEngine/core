@@ -4,9 +4,11 @@
  */
 package de.cubeisland.cubeengine.fun.commands;
 
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
@@ -36,9 +38,9 @@ public class FunCommands
     
     @Command(
         names = {"lightning", "strike"},
-        desc = "strucks a player by lightning.",
+        desc = "strucks a player or the place you are looking at by lightning.",
         max = 1,
-        usage = "/lightning <player>"
+        usage = "[player]"
     )
     public void lightning(CommandContext context)
     {
@@ -56,8 +58,7 @@ public class FunCommands
             
             if(user == null)
             {
-                context.getSender().sendMessage("Do not know a player with that name");
-                return;
+                invalidUsage(context, "core", "User not found!");
             }
             
             location = user.getLocation();
@@ -76,17 +77,11 @@ public class FunCommands
         desc = "The CommandSender throws a certain amount of snowballs. Default is one.",
         min = 1,
         max = 2,
-        usage = "/throw <egg|snowball> [amount]"
+        usage = "<egg|snowball> [amount]"
     )
     public void throwItem(CommandContext context)
     {
-        User user = this.userManager.getUser(context.getSender());
-        
-        if(user == null)
-        {
-            context.getSender().sendMessage("This command can only be used by a player!");
-            return;
-        }
+        User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         
         String material = context.getString(0);
         int amount = 1;
@@ -107,7 +102,7 @@ public class FunCommands
         }
         else
         {
-            user.sendMessage("item " + material + " is not supported");
+            invalidUsage(context, "fun", "The Item %s is not supported", material);
             return;
         }
         
@@ -120,19 +115,13 @@ public class FunCommands
     
     @Command(
         desc = "The CommandSender throws a certain amount of fireballs. Default is one.",
-        max = 2,
-        //flags = {@Flag(longName = "small", name = "s")},
-        usage = "/fireball [amount] [small]"
+        max = 1,
+        flags = {@Flag(longName = "small", name = "s")},
+        usage = "[amount] [-small]"
     )
     public void fireball(CommandContext context)
     {
-        User user = this.userManager.getUser(context.getSender());
-        
-        if(user == null)
-        {
-            context.getSender().sendMessage("This command can only be used by a player!");
-            return;
-        }
+        User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         
         int amount = 1;
         Class material;
@@ -142,7 +131,7 @@ public class FunCommands
             amount = context.getIndexed(0, Integer.class, 1);
         }
         
-        if(context.hasIndexed(1) && context.getString(1).equalsIgnoreCase("small"))
+        if(context.hasFlag("s"))
         {
             material = SmallFireball.class;
         }
@@ -156,6 +145,62 @@ public class FunCommands
         {
             this.module.getCore().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.module.getCore(), throwItem, i * 10);
         }
+    }
+    
+    @Command(
+        desc = "slaps a player",
+        min = 1,
+        max = 2,
+        usage = "<player> [damage]"  
+    )
+    public void slap(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if(user != null)
+        {
+            int damage = 3;
+            if(context.hasIndexed(1))
+            {
+                damage = context.getIndexed(1, Integer.class, 3);
+            }
+            
+            if(damage < 1 || damage > 20)
+            {
+                invalidUsage(context, "fun", "only damagevalues between 1 and 20 are allowed!");
+                return;
+            }
+            
+            user.damage(damage);
+        }
+        else
+        {
+            invalidUsage(context, "core", "User not found!");
+        }
+    }
+    
+    @Command(
+            desc = "burns a player",
+            min = 1,
+            max = 2,
+            usage = "<player> [ticks]"
+    )
+    public void burn(CommandContext context)
+    {
+        //TODO unburn as flag
+        User user = context.getUser(0);
+        if(user == null)
+        {
+            invalidUsage(context, "core", "User not found!");
+        }
+        int ticks = 100;
+        
+        if(context.hasIndexed(1))
+        {
+            ticks = context.getIndexed(1, Integer.class, 100);
+        }
+        
+        user.setFireTicks(ticks);
+
     }
     
 }
