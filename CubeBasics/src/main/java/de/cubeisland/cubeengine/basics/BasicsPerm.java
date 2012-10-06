@@ -18,6 +18,8 @@ public enum BasicsPerm implements Permission
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,
     COMMAND_KILL_EXEMPT,
+    COMMAND_INVSEE_MODIFY,
+    COMMAND_INVSEE_PREVENTMODIFY,
     ;
     
     private String permission;

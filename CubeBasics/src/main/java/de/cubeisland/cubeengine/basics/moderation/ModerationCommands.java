@@ -43,11 +43,13 @@ public class ModerationCommands
 {
     private UserManager um;
     private BasicsConfiguration config;
+    private ModerationListener listener;
 
     public ModerationCommands(Basics module)
     {
         um = module.getUserManager();
         config = module.getConfiguration();
+        listener = new ModerationListener(module);
     }
 
     @Command(
@@ -390,10 +392,13 @@ public class ModerationCommands
     }
 
     @Command(
-        names={"ping","pong"},
-        desc = "Pong!",
-        min = 1,
-        max = 1)
+        names =
+    {
+        "ping", "pong"
+    },
+             desc = "Pong!",
+             min = 1,
+             max = 1)
     public void ping(CommandContext context)
     {
         if (context.getLabel().equalsIgnoreCase("ping"))
@@ -408,23 +413,22 @@ public class ModerationCommands
 
     @Command(
         desc = "Removes entity",
-        usage = "<entityType> [radius] [in <world>] [-a]",
-        flags = {@Flag(longName="all",name="a")},
-        params= {@Param(names={"in"},types=World.class)},
-        min = 1,
-        max = 1)
+             usage = "<entityType> [radius] [in <world>] [-a]",
+             flags =
+    {
+        @Flag(longName = "all", name = "a")
+    },
+             params =
+    {
+        @Param(names =
+        {
+            "in"
+        }, types = World.class)
+    },
+             min = 1,
+             max = 1)
     public void remove(CommandContext context)
-    {/*
-         Drops
-         Arrows
-         Boats
-         Minecarts
-         xp
-         paintings
-     
-         other non living possible too
-         TODO 
-         */
+    {//TODO test
         User sender = context.getSenderAsUser();
         World world;
         if (context.hasNamed("in"))
@@ -501,11 +505,17 @@ public class ModerationCommands
     }
 
     @Command(
-        names= {"clearinventory","ci"},
-        desc = "Clears the inventory",
-        usage = "[player]",
-        flags= {@Flag(longName = "removeArmor", name = "ra")},
-        max = 1)
+        names =
+    {
+        "clearinventory", "ci"
+    },
+             desc = "Clears the inventory",
+             usage = "[player]",
+             flags =
+    {
+        @Flag(longName = "removeArmor", name = "ra")
+    },
+             max = 1)
     public void clearinventory(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -542,7 +552,7 @@ public class ModerationCommands
 
     @Command(
         desc = "Stashes or unstashes your inventory to reuse later",
-        max = 0)
+             max = 0)
     public void stash(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -579,7 +589,7 @@ public class ModerationCommands
 
     @Command(
         desc = "Broadcasts a message",
-        usage = "<message>")
+             usage = "<message>")
     public void broadcast(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
@@ -593,8 +603,11 @@ public class ModerationCommands
 
     @Command(
         desc = "Makes a player execute a command",
-        usage = "<player> <command>",
-        flags= {@Flag(longName="chat",name="c")})
+             usage = "<player> <command>",
+             flags =
+    {
+        @Flag(longName = "chat", name = "c")
+    })
     public void sudo(CommandContext context)
     {
         //User sender = context.getSenderAsUser();
@@ -618,4 +631,32 @@ public class ModerationCommands
             user.chat("/" + sb.toString()); //TODO later msg to sender if cmd worked??
         }
     }
+
+    @Command(
+            desc = "Allows you to see into the inventory of someone else.",
+             max = 1)
+    public void invsee(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("bascics", "&cThis command can only be used by a player!");
+        User user = context.getIndexed(0, User.class, null);
+        if (user == null)
+        {
+            illegalParameter(context, "basics", "User not found!");
+        }
+        sender.openInventory(user.getInventory());
+        boolean allowModify = false;
+        if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
+        {
+            allowModify = true;
+        }
+        if (BasicsPerm.COMMAND_INVSEE_PREVENTMODIFY.isAuthorized(user))
+        {
+            allowModify = false;
+        }
+        listener.addInventory(sender, allowModify);
+    }
+
+    //kick -a
+    //ban
+    //unban 
 }
