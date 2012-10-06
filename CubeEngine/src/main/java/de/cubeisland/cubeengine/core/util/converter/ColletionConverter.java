@@ -20,15 +20,7 @@ public class ColletionConverter implements GenericConverter<Collection>
             Collection<Object> result = new LinkedList<Object>();
             for (Object o : collection)
             {
-                if (converter instanceof ConfigurationConverter)
-                {
-                    result.add(((ConfigurationConverter)converter).toObject((Configuration)o, basepath));
-                }
-                else
-                {
-                    result.add(converter.toObject(o));
-                }
-
+                result.add(converter.toObject(o));
             }
             return result;
         }
@@ -50,14 +42,7 @@ public class ColletionConverter implements GenericConverter<Collection>
             Collection<G> result = new LinkedList<G>();
             for (Object o : list)
             {
-                if (converter instanceof ConfigurationConverter)
-                {
-                    result.add((G)((ConfigurationConverter)converter).fromObject(o, (Configuration)fieldObject));
-                }
-                else
-                {
-                    result.add((G)converter.fromObject(o));
-                }
+                result.add((G)converter.fromObject(o));
             }
             return (Collection<G>)result;
         }

@@ -43,7 +43,7 @@ public class BlockBreakLogger extends LogListener
             this.actions.put(LogAction.PLAYER_BLOCKBREAK, true);
             this.enabled = true;
         }
-        @Option("actions")
+        @Option(value="actions",genericType=Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
         @Option("creeper.log-as-player")
         public boolean logAsPlayer = false;

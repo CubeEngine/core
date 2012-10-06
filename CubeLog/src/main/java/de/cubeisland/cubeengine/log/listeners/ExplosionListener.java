@@ -52,7 +52,7 @@ public class ExplosionListener extends LogListener
             this.actions.put(LogAction.EXPLOSION_MISC, false);
             this.enabled = true;
         }
-        @Option("actions")
+        @Option(value="actions",genericType=Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

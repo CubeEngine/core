@@ -1,10 +1,8 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
+import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
@@ -30,33 +28,9 @@ public class YamlCodec extends ConfigurationCodec
     }
 
     @Override
-    public Map<String, Object> loadFromString(String contents)
+    public Map<String, Object> loadFromInputStream(InputStream is)
     {
-        if (contents == null)
-        {
-            return new LinkedHashMap<String, Object>();
-        }
-        Map<String, Object> values = (Map<String, Object>)yaml.load(contents);
-        if (values == null)
-        {
-            return new LinkedHashMap<String, Object>();
-        }
-        this.loadedKeys = new HashMap<String, String>();
-        this.loadedKeys(values);
-        return values;
-    }
-
-    @Override
-    protected void loadedKeys(Map<String, Object> values)
-    {
-        for (String key : values.keySet())
-        {
-            this.loadedKeys.put(key.toLowerCase(Locale.ENGLISH), key);
-            if (values.get(key) instanceof Map)
-            {
-                this.loadedKeys((Map<String, Object>)values.get(key));
-            }
-        }
+        return (Map<String, Object>)yaml.load(is);
     }
 
     @Override
@@ -75,7 +49,7 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof Map)
             {
                 sb.append(LINEBREAK);
-                sb.append(this.convertMap(path, (Map<Object, Object>)value, off + 1));
+                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
                 return sb.toString();
             }
             else if (value instanceof String)
@@ -112,7 +86,7 @@ public class YamlCodec extends ConfigurationCodec
     }
 
     @Override
-    public String convertMap(String path, Map<Object, Object> values, int off)
+    public String convertMap(String path, Map<String, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
         if (values.isEmpty())
@@ -120,12 +94,12 @@ public class YamlCodec extends ConfigurationCodec
             return sb.append(this.offset(off)).append("{}").append(LINEBREAK).toString();
         }
         useLineBreak = false;
-        for (Map.Entry<Object, Object> entry : values.entrySet())
+        for (Map.Entry<String, Object> entry : values.entrySet())
         {
             if (off == 0)
             {
-                sb.append(this.buildComment(entry.getKey().toString(), off))
-                    .append(this.convertValue(entry.getKey().toString(), entry.getValue(), off));//path value off
+                sb.append(this.buildComment(entry.getKey(), off))
+                    .append(this.convertValue(entry.getKey(), entry.getValue(), off));//path value off
             }
             else
             {
@@ -137,7 +111,7 @@ public class YamlCodec extends ConfigurationCodec
                 useLineBreak = true;
             }
         }
-        if (!sb.toString().endsWith(LINEBREAK+LINEBREAK))
+        if (!sb.toString().endsWith(LINEBREAK + LINEBREAK))
         {
             sb.append(LINEBREAK);
         }
@@ -149,7 +123,7 @@ public class YamlCodec extends ConfigurationCodec
     @Override
     public String buildComment(String path, int off)
     {
-        String comment = this.comments.get(path);
+        String comment = this.getContainer().getComment(path);
         if (comment == null)
         {
             return ""; //No Comment

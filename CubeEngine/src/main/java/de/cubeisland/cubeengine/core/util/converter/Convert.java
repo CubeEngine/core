@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.util.converter;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.user.User;
 import java.sql.Date;
 import java.util.Collection;
@@ -25,7 +24,6 @@ public class Convert
     private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
     private final static ConcurrentHashMap<Class<?>, GenericConverter<?>> GENERICCONVERTERS = new ConcurrentHashMap<Class<?>, GenericConverter<?>>();
     private final static GenericConverter arrayConverter;
-    private final static ConfigurationConverter configConverter;
 
     static
     {
@@ -53,12 +51,10 @@ public class Convert
         registerConverter(World.class, new WorldConverter());
         registerConverter(boolean.class, converter = new BooleanConverter());
         registerConverter(Boolean.class, converter);
-        registerConverter(Configuration.class, new ConfigurationConverter());
 
         registerGenericConverter(Collection.class, new ColletionConverter());
         registerGenericConverter(Map.class, new MapConverter());
         arrayConverter = new ArrayConverter();
-        configConverter = new ConfigurationConverter();
     }
 
     public static void registerConverter(Class<?> clazz, Converter<?> converter)

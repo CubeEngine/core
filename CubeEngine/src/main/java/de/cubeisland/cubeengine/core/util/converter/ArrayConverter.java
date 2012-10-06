@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,14 +21,7 @@ public class ArrayConverter implements GenericConverter<Object[]>
             Collection<Object> result = new LinkedList<Object>();
             for (Object o : array)
             {
-                if (converter instanceof ConfigurationConverter)
-                {
-                    result.add(((ConfigurationConverter)converter).toObject((Configuration)o, basepath));
-                }
-                else
-                {
-                    result.add(converter.toObject(o));
-                }
+                result.add(converter.toObject(o));
             }
             return result;
         }
@@ -50,14 +42,7 @@ public class ArrayConverter implements GenericConverter<Object[]>
             Object o = Array.newInstance(genericType, coll.size());
             for (int i = 0; i < coll.size(); ++i)
             {
-                if (converter instanceof ConfigurationConverter)
-                {
-                    Array.set(o, i, ((ConfigurationConverter)converter).fromObject(Array.get(tmparray, i), (Configuration)fieldObject));
-                }
-                else
-                {
-                    Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
-                }
+                Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
             }
             return (G[])o;
         }

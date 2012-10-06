@@ -1,31 +1,26 @@
 package de.cubeisland.cubeengine.core.config;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
-import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.core.util.converter.Converter;
-import java.io.BufferedReader;
+import de.cubeisland.cubeengine.core.util.converter.GenericConverter;
+import de.cubeisland.cubeengine.core.util.converter.MapConverter;
+import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -33,391 +28,35 @@ import org.apache.commons.lang.Validate;
  */
 public abstract class ConfigurationCodec
 {
+    protected Integer revision = null;
     public String COMMENT_PREFIX;
     public String SPACES;
     public String LINEBREAK;
     public String QUOTE;
-    protected HashMap<String, String> comments;
+    private CodecContainer container = null;
     protected boolean first;
-    protected Integer revision = null;
-    private static final Logger logger = CubeEngine.getLogger();
-    protected HashMap<String, String> loadedKeys;
 
-    public ConfigurationCodec()
+    public void load(Configuration config, InputStream is)
     {
-        this.comments = new HashMap<String, String>();
-    }
-
-    /**
-     * Converts the object to fit into the field
-     *
-     * @param field the field
-     * @param object the object to deserialize
-     * @return the deserialized object
-     */
-    public Object convertTo(Configuration config, Field field, Object object)
-    {
-        Converter converter = Convert.matchConverter(field.getType());
+        container = new CodecContainer();
+        container.fillFromInputStream(is);
+        //TODO update config here
         try
         {
-            if (converter == null)
-            {
-                Class<?> genericType = field.getAnnotation(Option.class).genericType();
-                //Converts Collection / Map / Array  of genericType OR cast object into fieldClass
-                return Convert.fromObject(field.getType(), field.get(config), object, genericType);
-            }
-            return converter.fromObject(object);
-        }
-        catch (ConversionException ex)
-        {
-            logger.log(Level.WARNING, "Error while converting", ex);
+            container.dumpIntoFields(config, container.values);
         }
         catch (Exception e)
         {
-            throw new IllegalStateException("Error while converting", e);
+            throw new InvalidConfigurationException("Error while dumping loaded Config into fields!", e);
         }
-        return object;
+        container = null;
     }
 
-    /**
-     * Converts the field to fit into the object
-     *
-     * @param field the field to serialize
-     * @param object the object
-     * @return the serialized fieldvalue
-     */
-    public Object convertFrom(Field field, Object object, String basepath)
+    public CodecContainer getContainer()
     {
-        try
-        {
-            if (Configuration.class.isAssignableFrom(field.getType()))
-            {
-                return this.saveIntoMap((Configuration)object, field.getAnnotation(Option.class).value());
-            }
-            if (object == null)
-            {
-                return null;
-            }
-            Converter converter = Convert.matchConverter(object.getClass());
-            if (converter == null)
-            {
-                Class<?> genericType = field.getAnnotation(Option.class).genericType();
-                //Converts Collection / Map / Array  of genericType OR returns object
-                return Convert.toObject(object, genericType, basepath);
-            }
-            return converter.toObject(object);
-        }
-        catch (IllegalAccessException ex)
-        {
-            logger.log(Level.SEVERE, "Error while converting SubConfiguration", ex);
-        }
-        catch (ConversionException e)
-        {
-            logger.log(Level.WARNING, "Error while Converting", e);
-        }
-        return object;
+        return this.container;
     }
 
-    /**
-     * Loads the Configuration from a InputStream
-     *
-     * @param is the InputStream
-     * @throws IOException
-     */
-    public void load(Configuration config, InputStream is) throws IOException
-    {
-        Map<String, Object> values = this.loadIntoMap(is);//load config into Codec
-        values = this.updateConfig(values, config.getClass()); //update loaded config in Codec if needed
-        this.loadIntoFields(config, values);//update Fields with loaded values
-        this.clear(); //clear Codec
-    }
-
-    /**
-     * Reads the InputStream to load the config into this Codec
-     *
-     * @param is the InputStream
-     * @throws IOException
-     */
-    private Map<String, Object> loadIntoMap(InputStream is) throws IOException
-    {
-        if (is == null)
-        {
-            return new HashMap<String, Object>();
-        }
-        StringBuilder builder = new StringBuilder();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-        try
-        {
-            String line;
-            line = input.readLine();
-            if (line != null)
-            {
-                if (!line.startsWith("#Revision:"))//Detect Revision
-                {
-                    builder.append(line).append(LINEBREAK);
-                }
-                else
-                {
-                    int rev = Integer.parseInt(line.substring(line.indexOf(' ')));
-                    this.revision = rev;
-                }
-                while ((line = input.readLine()) != null)
-                {
-                    builder.append(line);
-                    builder.append(LINEBREAK);
-                }
-            }
-        }
-        catch (NumberFormatException ex)
-        {
-            logger.warning("Invalid RevisionNumber");
-        }
-        finally
-        {
-            input.close();
-        }
-        return loadFromString(builder.toString());
-    }
-
-    /**
-     * Converts the inputString into ConfigurationMaps
-     *
-     * @param contents
-     */
-    public abstract Map<String, Object> loadFromString(String contents);
-
-    private Map<String, Object> updateConfig(Map<String, Object> values, Class<? extends Configuration> clazz)
-    {
-        Revision revis = clazz.getAnnotation(Revision.class);
-        if (revis != null && this.revision != null)
-        {
-            if (revis.value() > this.revision)
-            {
-                logger.log(Level.INFO, "Updating Configuration from Revision " + this.revision);
-                Updater annotation = clazz.getClass().getAnnotation(Updater.class);
-                if (annotation != null)
-                {
-                    Class<? extends ConfigurationUpdater> updaterClass = annotation.value();
-                    ConfigurationUpdater updater;
-                    try
-                    {
-                        updater = updaterClass.newInstance();
-                        values = updater.update(values, this.revision);
-                    }
-                    catch (Exception e)
-                    {
-                    }
-                }
-            }
-        }
-        return values;
-    }
-
-    /**
-     * Writes loaded values from the Codec into the fields of the Configuration
-     *
-     * @param config the Configuration
-     */
-    public void loadIntoFields(Configuration config, Map<String, Object> values)
-    {
-        for (Field field : config.getClass().getFields())
-        {
-            try
-            {
-                if (field.isAnnotationPresent(Option.class))
-                {
-                    int mask = field.getModifiers();
-                    if ((mask & Modifier.STATIC) == Modifier.STATIC)
-                    {
-                        continue;
-                    }
-                    Object configElem = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), values);//Get savedValue or default
-                    if (configElem != null)
-                    {
-                        if (Configuration.class.isAssignableFrom(field.getType()))
-                        {
-                            Configuration subConfig = (Configuration)field.get(config);
-                            subConfig.setCodec(config.codec);
-                            subConfig.codec.loadIntoFields(subConfig, (Map)configElem);
-                            field.set(config, subConfig);//Set loaded Configuration into Field
-                        }
-                        else
-                        {
-                            field.set(config, convertTo(config, field, configElem));//Set loaded Value into Field
-                        }
-                    }
-                }
-            }
-            catch (IllegalAccessException ex)
-            {
-                throw new IllegalStateException("Error while loading a Configuration-Element!", ex);
-            }
-        }
-    }
-
-    /**
-     * Converts the Configutaion with this Codec and saves into given File
-     *
-     * @param config the Configutaion
-     * @param file the File
-     */
-    public void save(Configuration config, File file)
-    {
-        try
-        {
-            if (file == null)
-            {
-                throw new IllegalStateException("Tried to save config without File.");
-            }
-            Map<Object, Object> values = this.saveIntoMap(config, "");//Get Map & Comments
-            Revision a_revision = config.getClass().getAnnotation(Revision.class);
-            if (a_revision != null)
-            {
-                this.revision = a_revision.value();
-            }
-            this.save(config, file, values);
-            this.clear();
-        }
-        catch (IOException e)
-        {
-            logger.warning("Error while saving a Configuration-File!");
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalStateException("Error while saving a Configuration-Element!", e);
-        }
-    }
-
-    /**
-     * Converts the Configuration into Map String->Object
-     *
-     * @param config the Configuration
-     * @throws IllegalAccessException
-     */
-    public Map<Object, Object> saveIntoMap(Configuration config, String basePath) throws IllegalAccessException
-    {
-        Map<Object, Object> values = new LinkedHashMap<Object, Object>();
-        Class<? extends Configuration> clazz = config.getClass();
-        if (clazz.isAnnotationPresent(MapComments.class))
-        {
-            MapComment[] mapcomments = clazz.getAnnotation(MapComments.class).value();
-            for (MapComment comment : mapcomments)
-            {
-                if ("".equals(basePath))
-                {
-                    this.addComment(comment.path(), comment.text());
-                }
-                else
-                {
-                    this.addComment(basePath + "." + comment.path(), comment.text());
-                }
-            }
-        }
-        for (Field field : clazz.getFields())
-        {
-            if (field.isAnnotationPresent(Option.class))
-            {
-                int mask = field.getModifiers();
-                if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
-                {
-                    continue;
-                }
-                String path = field.getAnnotation(Option.class).value();
-                if (field.isAnnotationPresent(Comment.class))
-                {
-                    Comment comment = field.getAnnotation(Comment.class);
-                    if ("".equals(basePath))
-                    {
-                        this.addComment(path, comment.value());
-                    }
-                    else
-                    {
-                        this.addComment(basePath + "." + path, comment.value());
-                    }
-                }
-                this.set(path.toLowerCase(Locale.ENGLISH), convertFrom(field, field.get(config), basePath), values);
-            }
-        }
-        return values;
-    }
-
-    /**
-     * Saves the configuration to a File
-     *
-     * @param file the File
-     * @throws IOException
-     */
-    public void save(Configuration config, File file, Map<Object, Object> values) throws IOException
-    {
-        Validate.notNull(file, "File for saving is null");
-        String data = this.convertMapToString(config, values);
-        FileWriter writer = new FileWriter(file);
-        try
-        {
-            writer.write(data);
-        }
-        finally
-        {
-            writer.close();
-        }
-    }
-
-    /**
-     * Converts the Configuration into a String for saving
-     *
-     * @return the config as String
-     */
-    public String convertMapToString(Configuration config, Map<Object, Object> values)
-    {
-        StringBuilder sb = new StringBuilder();
-        first = true;
-        sb.append(this.revision());
-        if (config.head() != null)
-        {
-            sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
-        }
-        sb.append(this.convertMap("", values, 0));
-        if (config.tail() != null)
-        {
-            sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Converts a whole Section/Map into String for saving
-     *
-     * @param path the current path
-     * @param values the values saved in the Section/Map
-     * @param off the offset
-     * @return the Section/Map as String
-     */
-    public abstract String convertMap(String path, Map<Object, Object> values, int off);
-
-    /**
-     * Converts a Value into String for saving
-     *
-     * @param path the current path
-     * @param value the value saved at given path
-     * @param off the offset
-     * @return the Value as String
-     */
-    public abstract String convertValue(String path, Object value, int off);
-
-    /**
-     * Builds a Comment for the given path
-     *
-     * @param path the path
-     * @return the comment for path
-     */
-    public abstract String buildComment(String path, int off);
-
-    /**
-     * Gets the offset as String
-     *
-     * @param offset the offset
-     * @return the offset as String
-     */
     protected String offset(int offset)
     {
         StringBuilder off = new StringBuilder("");
@@ -428,157 +67,39 @@ public abstract class ConfigurationCodec
         return off.toString();
     }
 
-    /**
-     * Gets the value saved under this path in given section
-     *
-     * @param path the path
-     * @param section the section
-     * @return the value saved under path in section
-     */
-    private Object get(String path, Map<String, Object> section)
+    public void save(Configuration config, File file)
     {
-        if (section == null)
+        try
         {
-            return null;
+            if (file == null)
+            {
+                throw new IllegalStateException("Tried to save config without File.");
+            }
+            container = new CodecContainer();
+            container.values = container.fillFromFields(config, "", container.values);
+
+            Revision a_revision = config.getClass().getAnnotation(Revision.class);
+            if (a_revision != null)
+            {
+                this.revision = a_revision.value();
+            }
+            container.saveIntoFile(file);
         }
-        if (path.contains("."))
+        catch (Exception ex)
         {
-            return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.findKey(this.getBasePath(path))));
+            throw new InvalidConfigurationException("Error while saving Configuration!", ex);
         }
-        return section.get(this.findKey(path));
+        container = null;
     }
 
-    /**
-     * Gets the loaded Key for given lowercase Key
-     *
-     * @param key the key
-     * @return the loadedKey
-     */
-    private String findKey(String key)
-    {
-        return this.loadedKeys.get(key);
-    }
+    public abstract String convertMap(String path, Map<String, Object> values, int off);
 
-    /**
-     * Fills LowerCaseKey -> LoadedKey Map
-     */
-    protected abstract void loadedKeys(Map<String, Object> values);
+    public abstract String convertValue(String path, Object value, int off);
 
-    /**
-     * Sets a value at a specified path
-     *
-     * @param path the path
-     * @param value the value to set
-     */
-    public Map<Object, Object> set(String path, Object value, Map<Object, Object> values)
-    {
-        if (path.contains("."))
-        {
-            Map<Object, Object> subsection = this.createSection(values, this.getBasePath(path));
-            this.set(subsection, this.getSubPath(path), value);
-        }
-        else
-        {
-            values.put(path, value);
-        }
-        return values;
-    }
+    public abstract String buildComment(String path, int off);
 
-    /**
-     * Sets the value at the path in the specified section
-     *
-     * @param section the section
-     * @param path the path
-     * @param value the value to set
-     */
-    private void set(Map<Object, Object> section, String path, Object value)
-    {
-        if (path.contains("."))
-        {
-            Map<Object, Object> subsection = this.createSection(section, this.getBasePath(path));
-            this.set(subsection, this.getSubPath(path), value);
-        }
-        else
-        {
-            section.put(path, value);
-        }
-    }
+    public abstract String getExtension();
 
-    /**
-     * Gets or create the section with the path in the basesection
-     *
-     * @param basesection the basesection
-     * @param path the path of the section
-     * @return the section
-     */
-    private Map<Object, Object> createSection(Map<Object, Object> basesection, String path)
-    {
-        Map<Object, Object> subsection = (Map<Object, Object>)basesection.get(path);
-        if (subsection == null)
-        {
-            subsection = new LinkedHashMap<Object, Object>();
-            basesection.put(path, subsection);
-        }
-        return subsection;
-    }
-
-    /**
-     * Splits up the path and returns the basepath
-     *
-     * @param path the path
-     * @return the basepath
-     */
-    public String getBasePath(String path)
-    {
-        return path.substring(0, path.indexOf('.'));
-    }
-
-    /**
-     * Splits up the path and returns the subpath
-     *
-     * @param path the path
-     * @return the subpath
-     */
-    public String getSubPath(String path)
-    {
-        return path.substring(path.indexOf('.') + 1);
-    }
-
-    /**
-     * Splits up the path and returns the key
-     *
-     * @param path the path
-     * @return the key
-     */
-    public String getSubKey(String path)
-    {
-        return path.substring(path.lastIndexOf('.') + 1);
-    }
-
-    /**
-     * Adds a Comment to the specified path
-     *
-     * @param path the path
-     * @param comment the comment
-     */
-    public void addComment(String path, String comment)
-    {
-        this.comments.put(path.toLowerCase(Locale.ENGLISH), comment);
-    }
-
-    /**
-     * Resets the value & comments Map
-     */
-    public void clear()
-    {
-        this.comments.clear();
-    }
-
-    /**
-     * Gets the revision as String to put infront of the File
-     *
-     * @return
-     */
     public String revision()
     {
         if (revision != null)
@@ -588,5 +109,337 @@ public abstract class ConfigurationCodec
         return "";
     }
 
-    public abstract String getExtension();
+    public abstract Map<String, Object> loadFromInputStream(InputStream is);
+
+    public String getSubKey(String path)
+    {
+        return path.substring(path.lastIndexOf('.') + 1);
+    }
+
+    public class CodecContainer
+    {
+        protected Map<String, Object> values;
+        protected Map<String, String> comments;
+        protected Map<String, String> loadedKeys;
+        protected Configuration config;
+        protected String currentPath;
+
+        public CodecContainer()
+        {
+            this.comments = new THashMap<String, String>();
+            this.loadedKeys = new THashMap<String, String>();
+            this.values = new LinkedHashMap<String, Object>();
+        }
+
+        public void fillFromInputStream(InputStream is)
+        {
+            if (is == null)
+            {
+                this.values = new LinkedHashMap<String, Object>(); // InputStream null -> config was not existent
+            }
+            else
+            {
+                this.values = loadFromInputStream(is); // Load from InputStream
+            }
+            if (this.values == null)
+            {
+                this.values = new LinkedHashMap<String, Object>(); // loadValues null -> config exists but was empty
+            }
+            this.loadKeys(this.values);
+        }
+
+        public Object convertFromObjectToFieldValue(Object object, Field field, String path) throws ConversionException, IllegalArgumentException, IllegalAccessException
+        {
+            Class fieldClass = field.getType();
+            if (!String.class.isAssignableFrom(fieldClass)) //TODO other types without conversion?
+            {
+                Converter converter = Convert.matchConverter(fieldClass);
+                if (converter == null)
+                {
+                    Class genericType = field.getAnnotation(Option.class).genericType();
+                    GenericConverter gConverter = Convert.matchGenericConverter(fieldClass);
+                    if (Configuration.class.isAssignableFrom(genericType))
+                    {
+                        if (gConverter instanceof MapConverter) // config in maps IMPORTANT: key.toString() is the key in the config
+                        {
+                            Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
+                            Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
+                            for (Object key : fieldMap.keySet())
+                            {
+                                new CodecContainer().dumpIntoFields(fieldMap.get(key),
+                                    this.getOrCreateSubSection(key.toString(), subvalues));
+                            }
+                            return fieldMap;
+                        }
+                        else
+                        {
+                            throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
+                        }
+                    }
+                    if (gConverter != null)
+                    {
+                        return gConverter.fromObject(object, field.get(this.config), genericType);
+                    }
+                }
+                else
+                {
+                    return converter.fromObject(object);
+                }
+            }
+            return object;
+
+        }
+
+        private void dumpIntoFields(Configuration config, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
+        {
+            this.config = config;
+            for (Field field : config.getClass().getFields()) // ONLY public fields are allowed
+            {
+                if (field.isAnnotationPresent(Option.class))
+                {
+                    String path = field.getAnnotation(Option.class).value();
+                    if (Configuration.class.isAssignableFrom(field.getType()))
+                    {
+                        Configuration subConfig = (Configuration)field.get(this.config);
+                        CodecContainer subContainer = new CodecContainer();
+                        subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section));
+                        continue;
+                    }
+                    int mask = field.getModifiers();
+                    if ((mask & Modifier.STATIC) == Modifier.STATIC) //skip static fields //TODO final fields too
+                    {
+                        continue;
+                    }
+                    Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), section);//Get savedValue or default
+                    if (object != null)
+                    {
+                        field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
+                    }
+                }
+            }
+        }
+
+        private void saveIntoFile(File file) throws IOException
+        {
+            FileWriter writer = new FileWriter(file);
+            try
+            {
+                writer.write(this.dumpIntoString());
+            }
+            finally
+            {
+                writer.close();
+            }
+        }
+
+        private String dumpIntoString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append(this.revision());
+            if (config.head() != null)
+            {
+                sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
+            }
+            first = true;
+            sb.append(convertMap("", values, 0));
+            if (config.tail() != null)
+            {
+                sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
+            }
+            return sb.toString();
+        }
+
+        public String revision()
+        {
+            if (revision != null)
+            {
+                return new StringBuilder("#Revision: ").append(revision).append(LINEBREAK).toString();
+            }
+            return "";
+        }
+
+        private Object get(String path, Map<String, Object> section)
+        {
+            if (section == null || section.isEmpty())
+            {
+                return null;
+            }
+            if (path.contains("."))
+            {
+                return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.findKey(this.getBasePath(path))));
+            }
+            return section.get(this.findKey(path));
+        }
+
+        private void set(String path, Object value, Map<String, Object> section)
+        {
+            if (path.contains("."))
+            {
+                Map<String, Object> subsection = this.getOrCreateSubSection(this.getBasePath(path), section);
+                this.set(this.getSubPath(path), value, subsection);
+            }
+            else
+            {
+                section.put(path, value);
+            }
+        }
+
+        private Map<String, Object> getOrCreateSubSection(String path, Map<String, Object> basesection)
+        {
+            if (path.contains("."))
+            {
+                Map<String, Object> subsection = this.getOrCreateSubSection(this.getBasePath(path), basesection);
+                basesection.put(this.getBasePath(path), subsection);
+                return this.getOrCreateSubSection(this.getSubPath(path), subsection);
+            }
+            else
+            {
+                Map<String, Object> subsection = (Map<String, Object>)basesection.get(path);
+                if (subsection == null)
+                {
+                    subsection = new LinkedHashMap<String, Object>();
+                    basesection.put(path, subsection);
+                }
+                return subsection;
+            }
+        }
+
+        private String findKey(String key)
+        {
+            String foundKey = this.loadedKeys.get(key);
+            if (foundKey == null)
+            {
+                return key;
+            }
+            return foundKey;
+        }
+
+        private void loadKeys(Map<String, Object> section)
+        {
+            for (String key : section.keySet())
+            {
+                this.loadedKeys.put(key.toLowerCase(Locale.ENGLISH), key);
+                if (section.get(key) instanceof Map)
+                {
+                    this.loadKeys((Map<String, Object>)section.get(key));
+                }
+            }
+        }
+
+        public String getSubPath(String path)
+        {
+            return path.substring(path.indexOf('.') + 1);
+        }
+
+        public String getBasePath(String path)
+        {
+            return path.substring(0, path.indexOf('.'));
+        }
+
+        private void addComment(String path, String comment)
+        {
+            this.comments.put(path.toLowerCase(Locale.ENGLISH), comment);
+        }
+
+        public String getComment(String path)
+        {
+            return this.comments.get(path);
+        }
+
+        public Map<String, Object> fillFromFields(Configuration config, String basePath, Map<String, Object> section) throws IllegalArgumentException, ConversionException, IllegalAccessException
+        {
+            this.config = config;
+            Class<? extends Configuration> clazz = config.getClass();
+            if (clazz.isAnnotationPresent(MapComments.class))
+            {
+                MapComment[] mapcomments = clazz.getAnnotation(MapComments.class).value();
+                for (MapComment comment : mapcomments)
+                {
+                    if ("".equals(basePath))
+                    {
+                        this.addComment(comment.path(), comment.text());
+                    }
+                    else
+                    {
+                        this.addComment(basePath + "." + comment.path(), comment.text());
+                    }
+                }
+            }
+            for (Field field : clazz.getFields())
+            {
+                if (field.isAnnotationPresent(Option.class))
+                {
+                    int mask = field.getModifiers();
+                    if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
+                    {
+                        continue;
+                    }
+                    String path = field.getAnnotation(Option.class).value();
+                    if (field.isAnnotationPresent(Comment.class))
+                    {
+                        Comment comment = field.getAnnotation(Comment.class);
+                        if ("".equals(basePath))
+                        {
+                            this.addComment(path, comment.value());
+                        }
+                        else
+                        {
+                            this.addComment(basePath + "." + path, comment.value());
+                        }
+                    }
+                    this.set(path.toLowerCase(Locale.ENGLISH), this.convertFromFieldValueToObject(field, field.get(config), path, this.getOrCreateSubSection(path, section)), section);
+                }
+            }
+            return section;
+        }
+
+        public Object convertFromFieldValueToObject(Field field, Object fieldValue, String path, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
+        {
+            if (fieldValue == null)
+            {
+                return null;
+            }
+            Class fieldClass = fieldValue.getClass();
+            if (!String.class.isAssignableFrom(fieldClass))
+            {
+                if (fieldValue instanceof Configuration)
+                {
+                    return this.fillFromFields((Configuration)fieldValue, path, this.getOrCreateSubSection(path, section));
+                }
+                Converter converter = Convert.matchConverter(fieldClass);
+                if (converter == null)
+                {
+                    Class genericType = field.getAnnotation(Option.class).genericType();
+                    GenericConverter gConverter = Convert.matchGenericConverter(fieldClass);
+                    if (Configuration.class.isAssignableFrom(genericType))
+                    {
+                        if (gConverter instanceof MapConverter)
+                        {
+                            Map<Object, ? extends Configuration> fieldMap = (Map)fieldValue;
+                            Map<String, Object> map = new LinkedHashMap<String, Object>();
+                            for (Object key : fieldMap.keySet())
+                            {
+                                map.put(key.toString(), new CodecContainer().fillFromFields(fieldMap.get(key), key.toString(), this.getOrCreateSubSection(key.toString(), map)));
+                            }
+                            return map;
+                        }
+                        else
+                        {
+                            throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
+                        }
+                    }
+                    if (gConverter != null)
+                    {
+                        return gConverter.toObject(fieldValue, genericType, null);
+                    }
+                }
+                else
+                {
+                    return converter.toObject(fieldValue);
+                }
+            }
+            return fieldValue;
+
+        }
+    }
 }
