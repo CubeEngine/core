@@ -36,6 +36,7 @@ public class PlayerInteractListener extends LogListener
             this.actions.put(LogAction.CAKEEAT, false);
             this.actions.put(LogAction.NOTEBLOCKINTERACT, false);
             this.actions.put(LogAction.DIODEINTERACT, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

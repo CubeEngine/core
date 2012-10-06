@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 public class MapConverter implements GenericConverter<Map>
 {
     @Override
-    public Object toObject(Map object, Class<?> genericType) throws ConversionException
+    public Object toObject(Map object, Class<?> genericType, String basepath) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);
         if (converter != null)
@@ -19,7 +20,14 @@ public class MapConverter implements GenericConverter<Map>
             Map<String, Object> result = new LinkedHashMap<String, Object>();
             for (String key : map.keySet())
             {
-                result.put(key, converter.toObject(map.get(key)));
+                if (converter instanceof ConfigurationConverter)
+                {
+                    result.put(key, ((ConfigurationConverter)converter).toObject((Configuration)map.get(key), basepath));
+                }
+                else
+                {
+                    result.put(key, converter.toObject(map.get(key)));
+                }
             }
             return result;
         }
@@ -28,7 +36,7 @@ public class MapConverter implements GenericConverter<Map>
     }
 
     @Override
-    public <G> Map fromObject(Object object, Class<G> genericType) throws ConversionException
+    public <G> Map fromObject(Object object, Object fieldObject, Class<G> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);
         if (converter != null)
@@ -41,7 +49,14 @@ public class MapConverter implements GenericConverter<Map>
             Map<String, G> result = new LinkedHashMap<String, G>();
             for (Map.Entry<String, ?> entry : map.entrySet())
             {
-                result.put(entry.getKey(), (G)converter.fromObject(entry.getValue()));
+                if (converter instanceof ConfigurationConverter)
+                {
+                    result.put(entry.getKey(), (G)((ConfigurationConverter)converter).fromObject(entry.getValue(), (Configuration)((Map)fieldObject).get(entry.getKey())));
+                }
+                else
+                {
+                    result.put(entry.getKey(), (G)converter.fromObject(entry.getValue()));
+                }
             }
             return result;
         }

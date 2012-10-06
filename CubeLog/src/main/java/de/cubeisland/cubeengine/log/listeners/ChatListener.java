@@ -46,6 +46,7 @@ public class ChatListener extends LogListener
             this.actions.put(LogAction.CHAT, false);
             this.actions.put(LogAction.COMMAND, false);
             this.actions.put(LogAction.CONSOLE, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

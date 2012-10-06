@@ -32,6 +32,7 @@ public class LeavesDecayListener extends LogListener
         public DecayConfig()
         {
             this.actions.put(LogAction.LEAVESDECAY, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

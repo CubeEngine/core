@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.listeners.LogListener;
@@ -34,9 +33,8 @@ public class LogConfiguration extends Configuration
     
     public Map<LogAction,String> configNames = new EnumMap<LogAction, String>(LogAction.class);
     
-    @Option(value="configs")
+    @Option(value = "configs", genericType = Configuration.class)
     public Map<String,LogSubConfiguration> configs = new THashMap<String, LogSubConfiguration>();
-
 
     public boolean isLogging(LogAction name)
     {

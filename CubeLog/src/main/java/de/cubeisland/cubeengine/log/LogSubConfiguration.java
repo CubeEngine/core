@@ -11,6 +11,11 @@ public abstract class LogSubConfiguration extends Configuration
 {
     @Option(value="enabled")
     public boolean enabled;
+
+    public LogSubConfiguration()
+    {
+        this.setCodec(Configuration.resolveCodec("yml"));
+    }
     
     public abstract String getName();
 }

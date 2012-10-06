@@ -33,8 +33,9 @@ public class BlockBurnListener extends LogListener
         public BurnConfig()
         {
             this.actions.put(LogAction.FIRE, true);
+            this.enabled = false;
         }
-        @Option("burn-actions")
+        @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

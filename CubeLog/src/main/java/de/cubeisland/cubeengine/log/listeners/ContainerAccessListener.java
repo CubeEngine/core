@@ -41,6 +41,7 @@ public class ContainerAccessListener extends LogListener
             this.actions.put(LogAction.CHESTACCESS, false);
             this.actions.put(LogAction.FURNACEACCESS, false);
             this.actions.put(LogAction.BREWINGSTANDACCESS, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

@@ -39,6 +39,7 @@ public class EndermanListener extends LogListener
         public EndermanConfig()
         {
             this.actions.put(LogAction.ENDERMEN, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

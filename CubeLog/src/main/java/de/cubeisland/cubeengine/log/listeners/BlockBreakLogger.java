@@ -41,7 +41,7 @@ public class BlockBreakLogger extends LogListener
         public BreakConfig()
         {
             this.actions.put(LogAction.PLAYER_BLOCKBREAK, true);
-
+            this.enabled = true;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

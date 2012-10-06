@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -10,7 +11,7 @@ import java.util.LinkedList;
 public class ColletionConverter implements GenericConverter<Collection>
 {
     @Override
-    public Object toObject(Collection object, Class<?> genericType) throws ConversionException
+    public Object toObject(Collection object, Class<?> genericType, String basepath) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);
         if (converter != null)
@@ -19,7 +20,15 @@ public class ColletionConverter implements GenericConverter<Collection>
             Collection<Object> result = new LinkedList<Object>();
             for (Object o : collection)
             {
-                result.add(converter.toObject(o));
+                if (converter instanceof ConfigurationConverter)
+                {
+                    result.add(((ConfigurationConverter)converter).toObject((Configuration)o, basepath));
+                }
+                else
+                {
+                    result.add(converter.toObject(o));
+                }
+
             }
             return result;
         }
@@ -27,7 +36,7 @@ public class ColletionConverter implements GenericConverter<Collection>
     }
 
     @Override
-    public <G> Collection fromObject(Object object, Class<G> genericType) throws ConversionException
+    public <G> Collection fromObject(Object object, Object fieldObject, Class<G> genericType) throws ConversionException
     {
         Converter converter = Convert.matchConverter(genericType);
 
@@ -41,11 +50,17 @@ public class ColletionConverter implements GenericConverter<Collection>
             Collection<G> result = new LinkedList<G>();
             for (Object o : list)
             {
-                result.add((G)converter.fromObject(o));
+                if (converter instanceof ConfigurationConverter)
+                {
+                    result.add((G)((ConfigurationConverter)converter).fromObject(o, (Configuration)fieldObject));
+                }
+                else
+                {
+                    result.add((G)converter.fromObject(o));
+                }
             }
             return (Collection<G>)result;
         }
         return (Collection)object;//No Converter for GenericType -> is already a Collection
     }
-
 }

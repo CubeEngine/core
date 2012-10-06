@@ -75,7 +75,7 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof Map)
             {
                 sb.append(LINEBREAK);
-                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
+                sb.append(this.convertMap(path, (Map<Object, Object>)value, off + 1));
                 return sb.toString();
             }
             else if (value instanceof String)
@@ -112,7 +112,7 @@ public class YamlCodec extends ConfigurationCodec
     }
 
     @Override
-    public String convertMap(String path, Map<String, Object> values, int off)
+    public String convertMap(String path, Map<Object, Object> values, int off)
     {
         StringBuilder sb = new StringBuilder();
         if (values.isEmpty())
@@ -120,12 +120,12 @@ public class YamlCodec extends ConfigurationCodec
             return sb.append(this.offset(off)).append("{}").append(LINEBREAK).toString();
         }
         useLineBreak = false;
-        for (Map.Entry<String, Object> entry : values.entrySet())
+        for (Map.Entry<Object, Object> entry : values.entrySet())
         {
             if (off == 0)
             {
-                sb.append(this.buildComment(entry.getKey(), off))
-                    .append(this.convertValue(entry.getKey(), entry.getValue(), off));//path value off
+                sb.append(this.buildComment(entry.getKey().toString(), off))
+                    .append(this.convertValue(entry.getKey().toString(), entry.getValue(), off));//path value off
             }
             else
             {

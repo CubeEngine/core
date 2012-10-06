@@ -33,6 +33,7 @@ public class FluidFlowListener extends LogListener
         {
             this.actions.put(LogAction.LAVAFLOW, false);
             this.actions.put(LogAction.WATERFLOW, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

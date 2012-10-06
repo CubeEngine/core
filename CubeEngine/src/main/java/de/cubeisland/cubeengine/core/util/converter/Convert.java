@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util.converter;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.user.User;
 import java.sql.Date;
 import java.util.Collection;
@@ -24,6 +25,7 @@ public class Convert
     private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
     private final static ConcurrentHashMap<Class<?>, GenericConverter<?>> GENERICCONVERTERS = new ConcurrentHashMap<Class<?>, GenericConverter<?>>();
     private final static GenericConverter arrayConverter;
+    private final static ConfigurationConverter configConverter;
 
     static
     {
@@ -51,10 +53,12 @@ public class Convert
         registerConverter(World.class, new WorldConverter());
         registerConverter(boolean.class, converter = new BooleanConverter());
         registerConverter(Boolean.class, converter);
+        registerConverter(Configuration.class, new ConfigurationConverter());
 
         registerGenericConverter(Collection.class, new ColletionConverter());
         registerGenericConverter(Map.class, new MapConverter());
         arrayConverter = new ArrayConverter();
+        configConverter = new ConfigurationConverter();
     }
 
     public static void registerConverter(Class<?> clazz, Converter<?> converter)
@@ -135,14 +139,14 @@ public class Convert
         return object;
     }
 
-    public static <T> Object toObject(T object, Class<?> genericType) throws ConversionException
+    public static <T> Object toObject(T object, Class<?> genericType, String basepath) throws ConversionException
     {
         if (genericType == Object.class)
         {
             return object;//no GenericType
         }
         GenericConverter genericConverter = matchGenericConverter(object.getClass());
-        return genericConverter.toObject(object, genericType);
+        return genericConverter.toObject(object, genericType, basepath);
     }
 
     public static <T> T fromObject(Class<T> type, Object object) throws ConversionException
@@ -162,7 +166,7 @@ public class Convert
             return (T)object;//no GenericType
         }
         GenericConverter genericConverter = matchGenericConverter(fieldClass);
-        return (T)genericConverter.fromObject(object, genericType);
+        return (T)genericConverter.fromObject(object, fieldObject, genericType);
     }
 
     public static <T> String toString(T object) throws ConversionException

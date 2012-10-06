@@ -20,7 +20,6 @@ public class BasicUser implements Model<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true)
     public final int key; // User Key
-    
     @Attribute(type = AttrType.TEXT)
     public List<String> mailbox = new ArrayList<String>(); //PlayerName: message
 
@@ -28,9 +27,9 @@ public class BasicUser implements Model<Integer>
     public BasicUser(List<Object> args) throws ConversionException
     {
         this.key = Convert.fromObject(Integer.class, args.get(0));
-        this.mailbox = Convert.matchGenericConverter(List.class).fromObject(args.get(1), String.class);
+        this.mailbox = Convert.matchGenericConverter(List.class).fromObject(args.get(1), this.mailbox, String.class);
     }
-    
+
     public BasicUser(User user)
     {
         this.key = user.getKey();
@@ -38,14 +37,14 @@ public class BasicUser implements Model<Integer>
 
     public void addMail(User user, String message)
     {
-        this.mailbox.add(user.getName()+": "+message);
+        this.mailbox.add(user.getName() + ": " + message);
     }
-    
+
     public String readMail()
     {
         return this.mailbox.remove(0);
     }
-    
+
     public int countMail()
     {
         return this.mailbox.size();

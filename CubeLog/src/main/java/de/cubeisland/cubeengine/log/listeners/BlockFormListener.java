@@ -33,6 +33,7 @@ public class BlockFormListener extends LogListener
         {
             this.actions.put(LogAction.SNOWFORM, false);
             this.actions.put(LogAction.ICEFORM, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

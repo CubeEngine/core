@@ -50,6 +50,7 @@ public class ExplosionListener extends LogListener
             this.actions.put(LogAction.EXPLOSION_GHASTFIREBALL, true);
             this.actions.put(LogAction.EXPLOSION_ENDERDRAGON, true);
             this.actions.put(LogAction.EXPLOSION_MISC, false);
+            this.enabled = true;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

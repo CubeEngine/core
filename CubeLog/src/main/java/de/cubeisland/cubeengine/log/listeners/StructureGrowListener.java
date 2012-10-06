@@ -33,6 +33,7 @@ public class StructureGrowListener extends LogListener
         {
             this.actions.put(LogAction.NATURALSTRUCTUREGROW, false);
             this.actions.put(LogAction.BONEMEALSTRUCTUREGROW, false);
+            this.enabled = true;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

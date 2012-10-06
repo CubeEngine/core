@@ -86,7 +86,7 @@ public abstract class ConfigurationCodec
      * @param object the object
      * @return the serialized fieldvalue
      */
-    public Object convertFrom(Field field, Object object)
+    public Object convertFrom(Field field, Object object, String basepath)
     {
         try
         {
@@ -103,7 +103,7 @@ public abstract class ConfigurationCodec
             {
                 Class<?> genericType = field.getAnnotation(Option.class).genericType();
                 //Converts Collection / Map / Array  of genericType OR returns object
-                return Convert.toObject(object, genericType);
+                return Convert.toObject(object, genericType, basepath);
             }
             return converter.toObject(object);
         }
@@ -218,7 +218,7 @@ public abstract class ConfigurationCodec
      *
      * @param config the Configuration
      */
-    private void loadIntoFields(Configuration config, Map<String, Object> values)
+    public void loadIntoFields(Configuration config, Map<String, Object> values)
     {
         for (Field field : config.getClass().getFields())
         {
@@ -269,7 +269,7 @@ public abstract class ConfigurationCodec
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            Map<String, Object> values = this.saveIntoMap(config, "");//Get Map & Comments
+            Map<Object, Object> values = this.saveIntoMap(config, "");//Get Map & Comments
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
@@ -294,9 +294,9 @@ public abstract class ConfigurationCodec
      * @param config the Configuration
      * @throws IllegalAccessException
      */
-    private Map<String, Object> saveIntoMap(Configuration config, String basePath) throws IllegalAccessException
+    public Map<Object, Object> saveIntoMap(Configuration config, String basePath) throws IllegalAccessException
     {
-        Map<String, Object> values = new LinkedHashMap<String, Object>();
+        Map<Object, Object> values = new LinkedHashMap<Object, Object>();
         Class<? extends Configuration> clazz = config.getClass();
         if (clazz.isAnnotationPresent(MapComments.class))
         {
@@ -335,7 +335,7 @@ public abstract class ConfigurationCodec
                         this.addComment(basePath + "." + path, comment.value());
                     }
                 }
-                this.set(path.toLowerCase(Locale.ENGLISH), convertFrom(field, field.get(config)), values);
+                this.set(path.toLowerCase(Locale.ENGLISH), convertFrom(field, field.get(config), basePath), values);
             }
         }
         return values;
@@ -347,7 +347,7 @@ public abstract class ConfigurationCodec
      * @param file the File
      * @throws IOException
      */
-    public void save(Configuration config, File file, Map<String, Object> values) throws IOException
+    public void save(Configuration config, File file, Map<Object, Object> values) throws IOException
     {
         Validate.notNull(file, "File for saving is null");
         String data = this.convertMapToString(config, values);
@@ -367,7 +367,7 @@ public abstract class ConfigurationCodec
      *
      * @return the config as String
      */
-    public String convertMapToString(Configuration config, Map<String, Object> values)
+    public String convertMapToString(Configuration config, Map<Object, Object> values)
     {
         StringBuilder sb = new StringBuilder();
         first = true;
@@ -392,7 +392,7 @@ public abstract class ConfigurationCodec
      * @param off the offset
      * @return the Section/Map as String
      */
-    public abstract String convertMap(String path, Map<String, Object> values, int off);
+    public abstract String convertMap(String path, Map<Object, Object> values, int off);
 
     /**
      * Converts a Value into String for saving
@@ -470,11 +470,11 @@ public abstract class ConfigurationCodec
      * @param path the path
      * @param value the value to set
      */
-    public Map<String, Object> set(String path, Object value, Map<String, Object> values)
+    public Map<Object, Object> set(String path, Object value, Map<Object, Object> values)
     {
         if (path.contains("."))
         {
-            Map<String, Object> subsection = this.createSection(values, this.getBasePath(path));
+            Map<Object, Object> subsection = this.createSection(values, this.getBasePath(path));
             this.set(subsection, this.getSubPath(path), value);
         }
         else
@@ -491,11 +491,11 @@ public abstract class ConfigurationCodec
      * @param path the path
      * @param value the value to set
      */
-    private void set(Map<String, Object> section, String path, Object value)
+    private void set(Map<Object, Object> section, String path, Object value)
     {
         if (path.contains("."))
         {
-            Map<String, Object> subsection = this.createSection(section, this.getBasePath(path));
+            Map<Object, Object> subsection = this.createSection(section, this.getBasePath(path));
             this.set(subsection, this.getSubPath(path), value);
         }
         else
@@ -511,12 +511,12 @@ public abstract class ConfigurationCodec
      * @param path the path of the section
      * @return the section
      */
-    private Map<String, Object> createSection(Map<String, Object> basesection, String path)
+    private Map<Object, Object> createSection(Map<Object, Object> basesection, String path)
     {
-        Map<String, Object> subsection = (Map<String, Object>)basesection.get(path);
+        Map<Object, Object> subsection = (Map<Object, Object>)basesection.get(path);
         if (subsection == null)
         {
-            subsection = new LinkedHashMap<String, Object>();
+            subsection = new LinkedHashMap<Object, Object>();
             basesection.put(path, subsection);
         }
         return subsection;
@@ -587,6 +587,6 @@ public abstract class ConfigurationCodec
         }
         return "";
     }
-    
+
     public abstract String getExtension();
 }

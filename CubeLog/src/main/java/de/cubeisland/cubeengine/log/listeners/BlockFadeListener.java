@@ -33,6 +33,7 @@ public class BlockFadeListener extends LogListener
         {
             this.actions.put(LogAction.SNOWFADE, false);
             this.actions.put(LogAction.ICEFADE, false);
+            this.enabled = false;
         }
         @Option("actions")
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);

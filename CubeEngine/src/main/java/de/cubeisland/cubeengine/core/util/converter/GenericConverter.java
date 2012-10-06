@@ -13,7 +13,7 @@ public interface GenericConverter<T extends Object>
      * @param genericType the genricType of the object
      * @return the serialized fieldvalue
      */
-    public Object toObject(T object, Class<?> genericType) throws ConversionException;
+    public Object toObject(T object, Class<?> genericType, String basepath) throws ConversionException;
 
     /**
      * Converts the given object to this class
@@ -22,5 +22,5 @@ public interface GenericConverter<T extends Object>
      * @param genericType the genricType of the object
      * @return the deserialized fieldvalue
      */
-    public <G> T fromObject(Object object, Class<G> genericType) throws ConversionException;
+    public <G> T fromObject(Object object, Object fieldObject, Class<G> genericType) throws ConversionException;
 }
