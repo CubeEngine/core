@@ -167,4 +167,10 @@ public class YamlCodec extends ConfigurationCodec
         }
         return comment;
     }
+
+    @Override
+    public String getExtension()
+    {
+        return "yml";
+    }
 }

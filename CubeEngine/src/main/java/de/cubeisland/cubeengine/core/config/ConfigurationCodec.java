@@ -587,4 +587,6 @@ public abstract class ConfigurationCodec
         }
         return "";
     }
+    
+    public abstract String getExtension();
 }

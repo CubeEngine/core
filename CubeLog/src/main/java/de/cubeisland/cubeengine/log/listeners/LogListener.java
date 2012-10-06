@@ -27,7 +27,18 @@ public abstract class LogListener implements Listener
     {
         return (T)subConfig;
     }
-            
+    
+    public static <T extends LogListener> T getInstance(Class<T> clazz, Log module)
+    {
+        try
+        {
+            return clazz.getConstructor(Log.class).newInstance(module);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Could not create new instance of LogListener!");
+        }
+    }
 //BlockFormEvent & BlockFadeEvent for SnowCover and Ice
     //
 //BlockBurnEvent for destroyed by fire

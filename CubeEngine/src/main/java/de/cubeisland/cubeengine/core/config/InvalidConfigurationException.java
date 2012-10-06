@@ -13,7 +13,7 @@ public class InvalidConfigurationException extends RuntimeException
         super(message);
     }
     
-    InvalidConfigurationException(String msg, Throwable t)
+    public InvalidConfigurationException(String msg, Throwable t)
     {
         super(msg, t);
     }

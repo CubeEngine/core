@@ -1,16 +1,20 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.config.annotations.From;
-import de.cubeisland.cubeengine.log.listeners.LogListener;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Log extends Module
 {
     private LogManager lm;
+    private static Log instance;
     
     @From("config")
     protected LogConfiguration config;
-    
+
+    public Log()
+    {
+        instance = this;
+    }
     
     @Override
     public void onEnable()
@@ -34,5 +38,10 @@ public class Log extends Module
     public LogConfiguration getConfiguration()
     {
         return this.config;
+    }
+    
+    public static Log getInstance()
+    {
+        return instance;
     }
 }

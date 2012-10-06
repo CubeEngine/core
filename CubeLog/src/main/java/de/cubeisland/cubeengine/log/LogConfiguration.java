@@ -1,8 +1,10 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.log.listeners.LogListener;
 import gnu.trove.map.hash.THashMap;
 import java.util.EnumMap;
 import java.util.Map;
@@ -19,9 +21,15 @@ public class LogConfiguration extends Configuration
     {
         for (LogAction action : LogAction.values())
         {
-            
+            LogListener listener = LogListener.getInstance(action.getListenerClass(), Log.getInstance());
+            this.configs.put(listener.getConfiguration().getName(), listener.getConfiguration());
         }
-        
+    }
+
+    @Override
+    public void onLoaded()
+    {
+        //TODO register needed Listener
     }
     
     public Map<LogAction,String> configNames = new EnumMap<LogAction, String>(LogAction.class);

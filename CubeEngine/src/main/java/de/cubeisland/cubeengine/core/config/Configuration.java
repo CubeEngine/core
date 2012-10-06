@@ -203,6 +203,11 @@ public abstract class Configuration
     {
         this.codec = codec;
     }
+    
+    public String getCodecExtension()
+    {
+        return this.codec.getExtension();
+    }
 
     /**
      * Sets the file to load from

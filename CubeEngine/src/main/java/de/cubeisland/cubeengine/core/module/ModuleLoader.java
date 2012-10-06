@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
@@ -84,7 +85,8 @@ public class ModuleLoader
                     if (Configuration.class.isAssignableFrom(field.getType()))
                     {
                         field.setAccessible(true);
-                        field.set(module, Configuration.load(field.getType().asSubclass(Configuration.class), new File(module.getFolder(), field.getAnnotation(From.class).value())));
+                        field.set(module, Configuration.load(field.getType().asSubclass(Configuration.class),
+                            new File(module.getFolder(), field.getAnnotation(From.class).value() + "." + field.getType().getAnnotation(Codec.class).value())));
                     }
                 }
             }
