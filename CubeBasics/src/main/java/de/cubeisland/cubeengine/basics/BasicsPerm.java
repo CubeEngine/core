@@ -20,6 +20,7 @@ public enum BasicsPerm implements Permission
     COMMAND_KILL_EXEMPT,
     COMMAND_INVSEE_MODIFY,
     COMMAND_INVSEE_PREVENTMODIFY,
+    COMMAND_KICK_ALL,
     ;
     
     private String permission;

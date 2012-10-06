@@ -26,6 +26,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Tameable;
@@ -656,6 +657,54 @@ public class ModerationCommands
         listener.addInventory(sender, allowModify);
     }
 
+    @Command(
+        desc = "Kicks a player from the server",
+             usage = "<player> [message]",
+             flags =
+    {
+        @Flag(
+        longName = "all", name = "a")
+    })
+    public void kick(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            illegalParameter(context, "basics", "User not found!");
+        }
+        int i = 1;
+        String message = "Kicked!";
+        StringBuilder sb = new StringBuilder();
+        while (context.hasIndexed(i))
+        {
+            sb.append(context.getString(i++)).append(" ");
+        }
+        if (sb.length() != 0)
+        {
+            message = sb.toString();
+        }
+        if (context.hasFlag("a"))
+        {
+            if (BasicsPerm.COMMAND_KICK_ALL.isAuthorized(context.getSender()))
+            {
+                String sendername = context.getSender().getName();
+                for (Player player : context.getSender().getServer().getOnlinePlayers())
+                {
+                    if (!sendername.equalsIgnoreCase(player.getName()))
+                    {
+                        player.kickPlayer(message);
+                    }
+                }
+            }
+        }
+        else
+        {
+            user.kickPlayer(message);
+        }
+
+
+
+    }
     //kick -a
     //ban
     //unban 
