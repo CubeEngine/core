@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Fireball;
@@ -182,11 +183,11 @@ public class FunCommands
             desc = "burns a player",
             min = 1,
             max = 2,
-            usage = "<player> [ticks]"
+            flags = {@Flag(longName = "unset", name = "u")},
+            usage = "<player> [ticks] [-unset]"
     )
     public void burn(CommandContext context)
     {
-        //TODO unburn as flag
         User user = context.getUser(0);
         if(user == null)
         {
@@ -199,8 +200,57 @@ public class FunCommands
             ticks = context.getIndexed(1, Integer.class, 100);
         }
         
+        if(context.hasFlag("u"))
+        {
+            ticks = 0;
+        }
+        else if(ticks < 20 || ticks > 520)
+        {
+            invalidUsage(context, "fun", "only ticks between 20 and 520 are permitted!");
+        }
+        
         user.setFireTicks(ticks);
-
+    }
+    
+    @Command(
+        desc = "",
+        min = 2,
+        max = 2,
+        usage = "<player> <distance>"
+    )
+    public void rocket(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if(user == null)
+        {
+            invalidUsage(context, "core", "User not found!");
+        }
+        
+        int distance = context.getIndexed(1, Integer.class, 10);
+        
+        if(distance > 100)
+        {
+            invalidUsage(context, "fun", "Do you never wanna see %s again?", user.getName());
+        }
+        else if(distance < 0)
+        {
+            invalidUsage(context, "fun", "The distance has to be greater than 0");
+        }
+        
+        for(int i = 0; i < distance * 10; i++)
+        {
+            Location location = user.getLocation().add(0, 0.1, 0);
+            if(user.getWorld().getBlockAt(location.add(0, 2, 0)).getType() == Material.AIR)
+            {
+                user.teleport(location);
+            }
+            else
+            {
+                break;
+            }
+            
+        }
+        
     }
     
 }
