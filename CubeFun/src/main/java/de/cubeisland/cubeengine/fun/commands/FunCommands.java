@@ -12,6 +12,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
+import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Snowball;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 /**
  *
@@ -184,7 +186,7 @@ public class FunCommands
             min = 1,
             max = 2,
             flags = {@Flag(longName = "unset", name = "u")},
-            usage = "<player> [ticks] [-unset]"
+            usage = "<player> [seconds] [-unset]"
     )
     public void burn(CommandContext context)
     {
@@ -193,23 +195,23 @@ public class FunCommands
         {
             invalidUsage(context, "core", "User not found!");
         }
-        int ticks = 100;
+        int seconds = 5;
         
         if(context.hasIndexed(1))
         {
-            ticks = context.getIndexed(1, Integer.class, 100);
+            seconds = context.getIndexed(1, Integer.class, 5);
         }
         
         if(context.hasFlag("u"))
         {
-            ticks = 0;
+            seconds = 0;
         }
-        else if(ticks < 20 || ticks > 520)
+        else if(seconds < 1 || seconds > 26)
         {
-            invalidUsage(context, "fun", "only ticks between 20 and 520 are permitted!");
+            invalidUsage(context, "fun", "only 1 to 26 seconds are permitted!");
         }
         
-        user.setFireTicks(ticks);
+        user.setFireTicks(seconds * 20);
     }
     
     @Command(
@@ -226,7 +228,7 @@ public class FunCommands
             invalidUsage(context, "core", "User not found!");
         }
         
-        int distance = context.getIndexed(1, Integer.class, 10);
+        int distance = context.getIndexed(1, Integer.class, 8);
         
         if(distance > 100)
         {
@@ -237,20 +239,8 @@ public class FunCommands
             invalidUsage(context, "fun", "The distance has to be greater than 0");
         }
         
-        for(int i = 0; i < distance * 10; i++)
-        {
-            Location location = user.getLocation().add(0, 0.1, 0);
-            if(user.getWorld().getBlockAt(location.add(0, 2, 0)).getType() == Material.AIR)
-            {
-                user.teleport(location);
-            }
-            else
-            {
-                break;
-            }
-            
-        }
-        
+        user.setVelocity(new Vector(0.0, (double)distance / 10, 0.0));
+        RocketListener.addPlayer(user);
     }
     
 }
