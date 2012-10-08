@@ -62,8 +62,8 @@ public class GeneralCommands
             }
             if (context.getString(0).equalsIgnoreCase("console"))
             {   // TODO find why console does not get any message here:
-                context.getSender().getServer().getConsoleSender().sendMessage(_("basics", "%s -> You %s", context.getSender().getName(), sb.toString()));
-                context.sendMessage("basics", "You -> Console %s", sb.toString());
+                context.getSender().getServer().getConsoleSender().sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb));
+                context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", sb);
             }
             else
             {
@@ -76,8 +76,8 @@ public class GeneralCommands
             {
                 illegalParameter(context, "basics", "&eTalking to yourself?");
             }
-            user.sendMessage("basics", "%s -> You %s", context.getSender().getName(), sb.toString());
-            context.sendMessage(_("basics", "You -> %s &s", user.getName()));
+            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb);
+            context.sendMessage(_("basics", "&eYou -> %s &f%s", user.getName(),sb));
         }
 
         if (sender == null)
@@ -106,47 +106,45 @@ public class GeneralCommands
         User sender = context.getSenderAsUser();
         boolean replyToConsole = false;
         User user;
+        String lastWhisperer;
         if (sender == null)
         {
             if (this.lastWhisperOfConsole == null)
             {
                 invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
             }
-            user = um.findUser(lastWhisperOfConsole);
+            lastWhisperer = lastWhisperOfConsole;
         }
         else
         {
-            String lastwhisper = sender.getAttribute("lastWhisper");
-            if (lastwhisper == null)
+            lastWhisperer = sender.getAttribute("lastWhisper");
+            if (lastWhisperer == null)
             {
                 invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
                 return;
             }
-            replyToConsole = "console".equalsIgnoreCase(lastWhisperOfConsole);
-            user = um.findUser(lastwhisper);
+            replyToConsole = "console".equalsIgnoreCase(lastWhisperer);
         }
-        if (user == null || !user.isOnline())
+        user = um.findUser(lastWhisperer);
+        if (!replyToConsole && (user == null || !user.isOnline()))
         {
-            if (!replyToConsole)
-            {
-                invalidUsage(context, "basics", "Could not find the player to reply too. Is he offline?");
-            }
+            invalidUsage(context, "basics", "Could not find the player to reply too. Is he offline?");
         }
         StringBuilder sb = new StringBuilder(); //TODO absolutly need this in cmdContext i am using it way too often
-        int i = 1;
+        int i = 0;
         while (context.hasIndexed(i))
         {
             sb.append(context.getString(i++));
         }
         if (replyToConsole)
         {
-            sender.getServer().getConsoleSender().sendMessage(_("basics", "%s -> You %s", context.getSender().getName(), sb.toString()));
-            context.sendMessage("basics", "You -> Console %s", sb.toString());
+            sender.getServer().getConsoleSender().sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb.toString()));
+            context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", sb.toString());
         }
         else
         {
-            user.sendMessage("basics", "%s -> You %s", context.getSender().getName(), sb.toString());
-            context.sendMessage(_("basics", "You -> %s &s", user.getName()));
+            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb);
+            context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), sb));
         }
     }
 

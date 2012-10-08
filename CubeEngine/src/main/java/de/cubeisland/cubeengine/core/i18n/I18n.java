@@ -261,7 +261,7 @@ public class I18n implements Cleanable
 
     public static String _(User user, String category, String message, Object... params)
     {
-        return _(user.getLanguage(), category, message, params);
+        return __(user.getLanguage(), category, message, params);
     }
 
     public static String _(Module module, String message, Object... params)
@@ -271,11 +271,11 @@ public class I18n implements Cleanable
 
     public static String _(String category, String message, Object... params)
     {
-        return _(CubeEngine.getI18n().getDefaultLanguage(), category, message, params);
+        return __(CubeEngine.getI18n().getDefaultLanguage(), category, message, params);
     }
 
-    public static String _(String language, String category, String messgae, Object... params)
+    public static String __(String language, String category, String message, Object... params)
     {
-        return CubeEngine.getI18n().translate(language, category, messgae, params);
+        return CubeEngine.getI18n().translate(language, category, message, params);
     }
 }
