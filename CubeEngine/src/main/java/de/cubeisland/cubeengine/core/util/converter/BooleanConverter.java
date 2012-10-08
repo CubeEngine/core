@@ -9,14 +9,7 @@ public class BooleanConverter implements Converter<Boolean>
     @Override
     public Object toObject(Boolean object) throws ConversionException
     {
-        if (object)
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
+        return object;
     }
 
     @Override

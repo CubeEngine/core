@@ -62,7 +62,7 @@ public class GeneralCommands
             }
             if (context.getString(0).equalsIgnoreCase("console"))
             {   // TODO find why console does not get any message here:
-                context.getSender().getServer().getConsoleSender().sendMessage(_("basics", "You -> %s %s", context.getSender().getName(), sb.toString()));
+                context.getSender().getServer().getConsoleSender().sendMessage(_("basics", "%s -> You %s", context.getSender().getName(), sb.toString()));
                 context.sendMessage("basics", "You -> Console %s", sb.toString());
             }
             else
@@ -76,10 +76,10 @@ public class GeneralCommands
             {
                 illegalParameter(context, "basics", "&eTalking to yourself?");
             }
-            user.sendMessage("basics","%s -> You %s", context.getSender().getName(), sb.toString());
+            user.sendMessage("basics", "%s -> You %s", context.getSender().getName(), sb.toString());
             context.sendMessage(_("basics", "You -> %s &s", user.getName()));
         }
-   
+
         if (sender == null)
         {
             this.lastWhisperOfConsole = user.getName();
@@ -94,13 +94,65 @@ public class GeneralCommands
         {
             sender.setAttribute("lastWhisper", user.getName());
             user.setAttribute("lastWhisper", sender.getName());
-        }   
-    }//TODO reply cmd
-    
+        }
+    }
+
     @Command(
-    desc = "Shows when given player was online the last time",
+    names={"reply","r"},
+    desc = "Replies to the last person that whispered to you.",
+    usage = "<message>")
+    public void reply(CommandContext context)
+    {
+        User sender = context.getSenderAsUser();
+        boolean replyToConsole = false;
+        User user;
+        if (sender == null)
+        {
+            if (this.lastWhisperOfConsole == null)
+            {
+                invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
+            }
+            user = um.findUser(lastWhisperOfConsole);
+        }
+        else
+        {
+            String lastwhisper = sender.getAttribute("lastWhisper");
+            if (lastwhisper == null)
+            {
+                invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
+                return;
+            }
+            replyToConsole = "console".equalsIgnoreCase(lastWhisperOfConsole);
+            user = um.findUser(lastwhisper);
+        }
+        if (user == null || !user.isOnline())
+        {
+            if (!replyToConsole)
+            {
+                invalidUsage(context, "basics", "Could not find the player to reply too. Is he offline?");
+            }
+        }
+        StringBuilder sb = new StringBuilder(); //TODO absolutly need this in cmdContext i am using it way too often
+        int i = 1;
+        while (context.hasIndexed(i))
+        {
+            sb.append(context.getString(i++));
+        }
+        if (replyToConsole)
+        {
+            sender.getServer().getConsoleSender().sendMessage(_("basics", "%s -> You %s", context.getSender().getName(), sb.toString()));
+            context.sendMessage("basics", "You -> Console %s", sb.toString());
+        }
+        else
+        {
+            user.sendMessage("basics", "%s -> You %s", context.getSender().getName(), sb.toString());
+            context.sendMessage(_("basics", "You -> %s &s", user.getName()));
+        }
+    }
+
+    @Command(desc = "Shows when given player was online the last time",
     min = 1,
-    max= 1,
+    max = 1,
     usage = "<player>")
     public void seen(CommandContext context)
     {
@@ -109,11 +161,9 @@ public class GeneralCommands
         long lastPlayed = user.getLastPlayed();
         //TODO ausgabe;       
     }
-    
-        
-    @Command(
-    desc = "Kills yourself",
-    max= 0)
+
+    @Command(desc = "Kills yourself",
+    max = 0)
     public void suicide(CommandContext context)
     {
         User sender = um.getUser(context.getSender());

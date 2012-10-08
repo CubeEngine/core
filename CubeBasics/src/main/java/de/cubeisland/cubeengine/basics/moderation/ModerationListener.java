@@ -6,11 +6,9 @@ import gnu.trove.map.hash.THashMap;
 import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
 
 /**
  *
@@ -53,7 +51,7 @@ public class ModerationListener implements Listener
             if (user.getName().equals(event.getPlayer().getName()))
             {
                 openedInventories.remove(user);
-                HandlerList.unregisterAll(this);
+                module.getEventManager().unregisterListener(this);
                 return;
             }
         }

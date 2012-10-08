@@ -312,6 +312,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     public User findUser(String name)
     {
         //Looking up loaded users
+        if (name == null)
+        {
+            return null;
+        }
         User user = this.users.get(name);
         if (user == null)
         {
@@ -368,7 +372,13 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             {
                 user.lastseen = new Timestamp(System.currentTimeMillis());
                 executor.submit(new Runnable()
-                    {@Override public void run(){ update(user); }});
+                {
+                    @Override
+                    public void run()
+                    {
+                        update(user);
+                    }
+                });
                 if (user.isOnline())
                 {
                     return;
@@ -404,9 +414,9 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             {
                 try
                 {
-                    ResultSet result = database.preparedQuery(User.class, "cleanup", 
+                    ResultSet result = database.preparedQuery(User.class, "cleanup",
                         new Timestamp(System.currentTimeMillis() - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
-                    
+
                     while (result.next())
                     {
                         deleteByKey(result.getInt("key"));
@@ -419,7 +429,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             }
         });
     }
-    
+
     public void broadcastMessage(String category, String message, Object... args)
     {
         for (Player player : this.server.getOnlinePlayers())
