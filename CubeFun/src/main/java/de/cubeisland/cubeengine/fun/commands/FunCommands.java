@@ -215,7 +215,7 @@ public class FunCommands
     }
     
     @Command(
-        desc = "",
+        desc = "rockets a player",
         min = 2,
         max = 2,
         usage = "<player> <distance>"
