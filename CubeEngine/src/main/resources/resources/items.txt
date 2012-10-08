@@ -771,14 +771,19 @@
   stoneaxe
 276:0
   diamondsword
+  diasword
 277:0
   diamondshovel
   diamondspade
+  diashovel
+  diaspade
 278:0
   diamondpickaxe
   diamondpick
+  diapick
 279:0
   diamondaxe
+  diaaxe
 280:0
   stick
 281:0
@@ -1418,7 +1423,6 @@
   writtenbook
   readablebook
   sealedbook
-  diary
   ownedbook
 388:0
   emerald

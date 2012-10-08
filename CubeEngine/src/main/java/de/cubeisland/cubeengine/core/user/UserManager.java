@@ -71,7 +71,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 .end()
                 .end());
             
-            this.database.prepareAndStoreStatement(modelClass, "cleanup", database.getQueryBuilder()
+            this.database.prepareAndStoreStatement(User.class, "cleanup", database.getQueryBuilder()
                 .select(key).from(table)
                 .where().field("lastseen").is(LESS).value()
                 .and().field("nogc").is(EQUAL).value(false)
@@ -404,7 +404,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             {
                 try
                 {
-                    ResultSet result = database.preparedQuery(modelClass, table, 
+                    ResultSet result = database.preparedQuery(User.class, "cleanup", 
                         new Timestamp(System.currentTimeMillis() - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
                     
                     while (result.next())
