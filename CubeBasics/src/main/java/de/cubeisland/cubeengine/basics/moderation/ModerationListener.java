@@ -51,7 +51,7 @@ public class ModerationListener implements Listener
             if (user.getName().equals(event.getPlayer().getName()))
             {
                 openedInventories.remove(user);
-                module.getEventManager().unregisterListener(this);
+                module.getEventManager().unregisterListener(this.module, this);
                 return;
             }
         }

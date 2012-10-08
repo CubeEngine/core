@@ -121,7 +121,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.permissionRegistration = new PermissionManager(pm);
 
         // depends on: plugin manager
-        this.eventRegistration = new EventManager(pm);
+        this.eventRegistration = new EventManager(this);
 
         // depends on: core config
         this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);

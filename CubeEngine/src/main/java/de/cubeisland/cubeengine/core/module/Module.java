@@ -36,9 +36,8 @@ public abstract class Module
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
-    private PluginWrapper pluginWrapper;
 
-    protected final void initialize(Core core, ModuleInfo info, PluginWrapper pluginWrapper, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
+    protected final void initialize(Core core, ModuleInfo info, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {
         if (!this.initialized)
         {
@@ -48,7 +47,6 @@ public abstract class Module
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
-            this.pluginWrapper = pluginWrapper;
 
             this.logger = logger;
 
@@ -275,17 +273,6 @@ public abstract class Module
     public final boolean isEnabled()
     {
         return this.enabled;
-    }
-
-    /**
-     * This method returns a wrapper to use the module as a plugin for server
-     * specific stuff
-     *
-     * @return the PluginWrapper of this module
-     */
-    public PluginWrapper getPluginWrapper()
-    {
-        return this.pluginWrapper;
     }
 
     /**

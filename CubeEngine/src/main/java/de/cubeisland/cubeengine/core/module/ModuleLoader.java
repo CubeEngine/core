@@ -72,7 +72,6 @@ public class ModuleLoader
             module.initialize(
                 this.core,
                 info,
-                new PluginWrapper(this.core, module),
                 new File(info.getFile().getParentFile(), name),
                 new ModuleLogger(this.core, info),
                 this,

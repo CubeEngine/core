@@ -20,7 +20,7 @@ public abstract class Task implements Runnable
 
     public Task(Module module)
     {
-        this((Plugin)module.getPluginWrapper());
+        this((Plugin)null); // TODO module tasks needed to be registered with CubeEngine, but still need to be managed independent
     }
 
     public void setTaskId(int taskid)

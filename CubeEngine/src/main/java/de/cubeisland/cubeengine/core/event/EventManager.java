@@ -1,10 +1,16 @@
 package de.cubeisland.cubeengine.core.event;
 
+import de.cubeisland.cubeengine.core.BukkitCore;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
+import gnu.trove.set.hash.THashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang.Validate;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -13,35 +19,69 @@ import org.bukkit.plugin.PluginManager;
  */
 public class EventManager
 {
+    private final BukkitCore corePlugin;
     private final PluginManager pm;
+    private final Map<Module, Set<Listener>> listenerMap;
 
-    public EventManager(PluginManager pm)
+    public EventManager(Core core)
     {
-        this.pm = pm;
+        this.corePlugin = (BukkitCore)core;
+        this.pm = this.corePlugin.getServer().getPluginManager();
+        this.listenerMap = new ConcurrentHashMap<Module, Set<Listener>>();
     }
 
     public EventManager registerListener(Module module, Listener listener)
     {
-        //TODO this.pm.registerEvents(listener, module.getPluginWrapper());
-        this.pm.registerEvents(listener, (Plugin)module.getCore());
+        Set<Listener> listeners = this.listenerMap.get(module);
+        if (listeners == null)
+        {
+            this.listenerMap.put(module, listeners = new THashSet<Listener>(1));
+        }
+        listeners.add(listener);
+        
+        this.pm.registerEvents(listener, this.corePlugin);
         return this;
     }
 
-    public EventManager unregisterListener(Listener listener)
+    public EventManager unregisterListener(Module module, Listener listener)
     {
-        HandlerList.unregisterAll(listener);
+        Validate.notNull(module, "The module must not be null!");
+        Validate.notNull(listener, "The listener must not be null!");
+        
+        Set<Listener> listeners = this.listenerMap.get(module);
+        if (listeners != null && listeners.remove(listener))
+        {
+            HandlerList.unregisterAll(listener);
+        }
         return this;
     }
 
     public EventManager unregisterListener(Module module)
     {
-        HandlerList.unregisterAll(module.getPluginWrapper());
+        Validate.notNull(module, "The module must not be null!");
+        
+        Set<Listener> listeners = this.listenerMap.get(module);
+        if (listeners != null)
+        {
+            for (Listener listener : listeners)
+            {
+                HandlerList.unregisterAll(listener);
+            }
+            this.listenerMap.clear();
+        }
         return this;
     }
 
     public EventManager unregisterListener()
     {
-        HandlerList.unregisterAll();
+        for (Set<Listener> listeners : this.listenerMap.values())
+        {
+            for (Listener listener : listeners)
+            {
+                HandlerList.unregisterAll(listener);
+            }
+        }
+        HandlerList.unregisterAll(this.corePlugin);
         return this;
     }
 
