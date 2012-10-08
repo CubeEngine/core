@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -136,9 +137,13 @@ public class NormalLanguage implements Cleanable, Language
                 return catMessages;
             }
         }
+        catch (FileNotFoundException ignored)
+        {
+            LOGGER.log(Level.WARNING, "The translation category {0} was not found for the language ''{1}'' !", new Object[]{cat, this.code});
+        }
         catch (IOException e)
         {
-            e.printStackTrace(System.err);
+            LOGGER.log(Level.SEVERE, String.valueOf(e), e);
         }
         return null;
     }
@@ -182,5 +187,15 @@ public class NormalLanguage implements Cleanable, Language
     public int hashCode()
     {
         return this.code.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null || getClass() != obj.getClass() || !(obj instanceof NormalLanguage))
+        {
+            return false;
+        }
+        return this.code.equals(((NormalLanguage)obj).code);
     }
 }
