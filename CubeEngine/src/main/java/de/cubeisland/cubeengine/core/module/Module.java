@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.event.EventManager;
+import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;

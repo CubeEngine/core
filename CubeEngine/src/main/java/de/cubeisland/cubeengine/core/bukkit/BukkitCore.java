@@ -1,14 +1,18 @@
-package de.cubeisland.cubeengine.core;
+package de.cubeisland.cubeengine.core.bukkit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CoreConfiguration;
+import de.cubeisland.cubeengine.core.CoreResource;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.event.EventManager;
+import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.Module;

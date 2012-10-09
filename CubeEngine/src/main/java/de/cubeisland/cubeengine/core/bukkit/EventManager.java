@@ -1,8 +1,6 @@
-package de.cubeisland.cubeengine.core.event;
+package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.BukkitCore;
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.set.hash.THashSet;
 import java.util.Map;

@@ -1,5 +1,6 @@
-package de.cubeisland.cubeengine.core;
+package de.cubeisland.cubeengine.core.bukkit;
 
+import de.cubeisland.cubeengine.core.Core;
 import org.bukkit.event.Event;
 
 /**
