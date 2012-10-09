@@ -2,3 +2,6 @@ build/
 dist/
 nbproject/
 target/
+dependency-reduced-pom.xml
+nb-configuration.xml
+nb-actions.xml
