@@ -5,6 +5,7 @@
 package de.cubeisland.cubeengine.fun.commands;
 
 
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
@@ -14,14 +15,12 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Snowball;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 /**
@@ -30,13 +29,17 @@ import org.bukkit.util.Vector;
  */
 public class FunCommands 
 {
-    Fun module;
     UserManager userManager;
+    TaskManager taskManager;
+    
+    RocketListener rocketListener;
     
     public FunCommands(Fun module) 
     {
         this.userManager = module.getUserManager();
-        this.module = module;
+        this.taskManager = module.getCore().getTaskManager();
+        
+        this.rocketListener = module.getRocketListener();
     }
     
     @Command(
@@ -112,7 +115,7 @@ public class FunCommands
         ThrowItem throwItem = new ThrowItem(this.userManager, user.getName(), materialClass);        
         for(int i = 0; i < amount; i++)
         {
-            this.module.getCore().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.module.getCore(), throwItem, i * 10);
+            this.taskManager.scheduleSyncDelayedTask(throwItem, i * 10);
         }
     }
     
@@ -146,7 +149,7 @@ public class FunCommands
         ThrowItem throwItem = new ThrowItem(this.userManager, user.getName(), material);        
         for(int i = 0; i < amount; i++)
         {
-            this.module.getCore().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.module.getCore(), throwItem, i * 10);
+            this.taskManager.scheduleSyncDelayedTask(throwItem, i * 10);
         }
     }
     
@@ -240,7 +243,9 @@ public class FunCommands
         }
         
         user.setVelocity(new Vector(0.0, (double)distance / 10, 0.0));
-        RocketListener.addPlayer(user);
+        
+        this.rocketListener.addPlayer(user);
+        this.taskManager.scheduleSyncDelayedTask(this.rocketListener, 110);
     }
     
 }

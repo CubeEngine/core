@@ -3,35 +3,40 @@ package de.cubeisland.cubeengine.fun.listeners;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  *
  * @author Wolfi
  */
-public class RocketListener implements Listener
+public class RocketListener implements Listener, Runnable
 {
-    public static Set<String> rocketPlayers = new HashSet<String>();
+    private Set<String> players = new HashSet<String>();
+    private List<String> rocketPlayers = new ArrayList<String>();
+    private UserManager userManager;
     
-    public UserManager userManager;
-    
-    public static void addPlayer(User user)
+    public void addPlayer(User user)
     {
-        rocketPlayers.add(user.getName());
+        String name = user.getName();
+        rocketPlayers.add(name);
+        players.add(name);
     }
     
-    public static void removePlayer(String name)
+    public void removePlayer(String name)
     {
-        rocketPlayers.remove(name);
+        players.remove(name);
+        while(this.getNumberOf(name) > 0)
+        {
+            rocketPlayers.remove(name);
+        }
     }
 
     public RocketListener(Fun module) 
@@ -49,7 +54,7 @@ public class RocketListener implements Listener
             {
                 return;
             }
-            if(rocketPlayers.contains(user.getName()))
+            if(players.contains(user.getName()))
             {
                 event.setCancelled(true);
                 removePlayer(user.getName());
@@ -57,23 +62,34 @@ public class RocketListener implements Listener
         }
     }
     
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event)
+    public int getNumberOf(String name)
     {
-        /*
-         * DOES NOT WORK!!
-        if(rocketPlayers.contains(event.getPlayer().getName()))
+        int number = 0;
+        for(String entryName : this.rocketPlayers)
         {
-            Block fromBlock = event.getFrom().subtract(0, 1, 0).getBlock();
-            Block toBlock = event.getTo().subtract(0, 1, 0).getBlock();
-            
-            if(fromBlock.getType() != Material.AIR && toBlock.getType() != Material.AIR)
+            if(entryName.equals(name))
             {
-                String name = event.getPlayer().getName();
-                removePlayer(name);
-                System.out.println(name + " removed");
+                number++;
             }
         }
-        */
+        return number;
+    }
+
+    public void run() 
+    {
+        if(!this.rocketPlayers.isEmpty())
+        {
+            String name = this.rocketPlayers.get(0);
+            if(this.getNumberOf(name) > 1)
+            {
+                this.rocketPlayers.remove(name);
+                System.out.println("removed one instance of " + name);
+            }
+            else
+            {
+                this.removePlayer(name);
+                System.out.println("removed " + name);
+            }
+        }
     }
 }
