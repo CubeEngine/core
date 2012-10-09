@@ -20,9 +20,9 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    private static ScheduledExecutorService executor;
-    private static Queue<Runnable> asyncTaskQueue = new ConcurrentLinkedQueue<Runnable>();
-    private static boolean running;
+    private final ScheduledExecutorService executorService = CubeEngine.getTaskManager().getExecutorService();
+    private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<Runnable>();
+    private boolean running = false;
 
     @Override
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
@@ -145,17 +145,13 @@ public abstract class AbstractDatabase implements Database
     @Override
     public void doAsync(final Runnable runnable)
     {
-        if (executor == null)
-        {
-            executor = CubeEngine.getExecutor();
-        }
-        asyncTaskQueue.offer(new Runnable()
+        this.taskQueue.offer(new Runnable()
         {
             @Override
             public void run()
             {
                 runnable.run();
-                Runnable next = asyncTaskQueue.poll();
+                Runnable next = taskQueue.poll();
                 if (next == null)
                 {
                     running = false;
@@ -166,10 +162,10 @@ public abstract class AbstractDatabase implements Database
                 }
             }
         });
-        if (!running)
+        if (!this.running)
         {
-            running = true;
-            executor.submit(asyncTaskQueue.poll());
+            this.running = true;
+            this.executorService.submit(this.taskQueue.poll());
         }                
     }
 }
