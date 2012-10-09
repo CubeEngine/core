@@ -33,7 +33,7 @@ public class FlyManager extends BasicStorage<FlyModel>
 
     public void save(final FlyModel model)
     {
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             public void run()
             {
@@ -44,7 +44,7 @@ public class FlyManager extends BasicStorage<FlyModel>
 
     public void remove(final int key)
     {
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             public void run()
             {

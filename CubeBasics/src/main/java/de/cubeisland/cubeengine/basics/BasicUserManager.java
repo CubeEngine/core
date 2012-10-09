@@ -33,7 +33,7 @@ public class BasicUserManager extends BasicStorage<BasicUser>
 
     public void save(final BasicUser model)
     {
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             public void run()
             {
@@ -44,7 +44,7 @@ public class BasicUserManager extends BasicStorage<BasicUser>
 
     public void remove(final int key)
     {
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             public void run()
             {

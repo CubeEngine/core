@@ -1,16 +1,13 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Storage;
+import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  *
@@ -20,9 +17,7 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    private final ScheduledExecutorService executorService = CubeEngine.getTaskManager().getExecutorService();
-    private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<Runnable>();
-    private boolean running = false;
+    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue();
 
     @Override
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
@@ -143,29 +138,8 @@ public abstract class AbstractDatabase implements Database
     }
 
     @Override
-    public void doAsync(final Runnable runnable)
+    public void queueOperation(Runnable operation)
     {
-        this.taskQueue.offer(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                runnable.run();
-                Runnable next = taskQueue.poll();
-                if (next == null)
-                {
-                    running = false;
-                }
-                else
-                {
-                    next.run();
-                }
-            }
-        });
-        if (!this.running)
-        {
-            this.running = true;
-            this.executorService.submit(this.taskQueue.poll());
-        }                
+        this.taskQueue.addTask(operation);         
     }
 }

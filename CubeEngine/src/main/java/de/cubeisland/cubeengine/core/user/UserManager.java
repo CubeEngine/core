@@ -148,7 +148,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             return this;
         }
         this.users.put(user.getName(), user);
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             @Override
             public void run()
@@ -163,7 +163,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
     public void updateUser(final User user)
     {
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             @Override
             public void run()
@@ -181,7 +181,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      */
     public UserManager removeUser(final User user)
     {
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             @Override
             public void run()
@@ -371,7 +371,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             public void run()
             {
                 user.lastseen = new Timestamp(System.currentTimeMillis());
-                database.doAsync(new Runnable()
+                database.queueOperation(new Runnable()
                 {
                     @Override
                     public void run()
@@ -407,7 +407,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
     public void cleanup()
     {
-        this.database.doAsync(new Runnable()
+        this.database.queueOperation(new Runnable()
         {
             @Override
             public void run()
