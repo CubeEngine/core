@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.test;
 
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.annotations.From;
@@ -33,6 +34,8 @@ public class Test extends Module
     @From
     protected TestConfig config;
     public static List<String> aListOfPlayers;
+    
+    public Basics basicsModule;
 
     @Override
     public void onEnable()
@@ -70,6 +73,8 @@ public class Test extends Module
                 System.out.print("Player: " + event.getPlayer().getName() + " Lang: " + event.getLanguage());
             }
         });
+        
+        this.getLogger().info("Basics-Module: " + String.valueOf(basicsModule));
     }
 
     public void initializeDatabase() throws SQLException

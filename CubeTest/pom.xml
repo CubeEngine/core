@@ -20,6 +20,11 @@
             <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.cubeisland</groupId>
+            <artifactId>basics</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

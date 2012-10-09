@@ -7,7 +7,11 @@ import de.cubeisland.cubeengine.core.module.exception.*;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.*;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,18 +23,21 @@ import org.apache.commons.lang.Validate;
  */
 public class ModuleManager
 {
-    private final Map<String, Module> modules;
-    private final Map<Class<? extends Module>, Module> classMap;
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    
     private final Core core;
     private final ModuleLoader loader;
-    private static final Logger logger = CubeEngine.getLogger();
+    private final Map<String, Module> modules;
+    private final Map<String, ModuleInfo> moduleInfos;
+    private final Map<Class<? extends Module>, Module> classMap;
 
     public ModuleManager(Core core)
     {
-        this.modules = new ConcurrentHashMap<String, Module>();
-        this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.core = core;
         this.loader = new ModuleLoader(core);
+        this.modules = new ConcurrentHashMap<String, Module>();
+        this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
+        this.classMap = new THashMap<Class<? extends Module>, Module>();
     }
 
     public Module getModule(String name)
@@ -47,6 +54,29 @@ public class ModuleManager
     {
         return this.modules.values();
     }
+    
+    public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
+    {
+        Validate.notNull(moduleFile, "The file must not be null!");
+        if (!moduleFile.isFile())
+        {
+            throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
+        }
+        
+        ModuleInfo info = this.loader.loadModuleInfo(moduleFile);
+        
+        info = this.moduleInfos.put(info.getId(), info);
+        if (info != null)
+        {
+            Module oldModule = this.modules.get(info.getId());
+            if (oldModule != null)
+            {
+                this.unloadModule(oldModule);
+            }
+        }
+        
+        return this.loadModule(info.getName(), this.moduleInfos);
+    }
 
     public synchronized void loadModules(File directory)
     {
@@ -58,63 +88,63 @@ public class ModuleManager
 
         Module module;
         ModuleInfo info;
-        Map<String, ModuleInfo> moduleInfos = new HashMap<String, ModuleInfo>();
-        logger.info("Loading modules...");
+        LOGGER.info("Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
             try
             {
                 info = this.loader.loadModuleInfo(file);
-                module = this.getModule(info.getName());
+                module = this.getModule(info.getId());
                 if (module != null)
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        logger.warning(new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        LOGGER.warning(new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
                         continue;
                     }
                     else
                     {
-                        this.disableModule(module);
-                        this.modules.remove(module.getName());
-                        logger.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
+                        this.unloadModule(module);
+                        LOGGER.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
                     }
                 }
-                moduleInfos.put(info.getName().toLowerCase(Locale.ENGLISH), info);
+                this.moduleInfos.put(info.getId(), info);
             }
             catch (InvalidModuleException e)
             {
-                logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+                LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
             }
         }
 
-        for (String moduleName : moduleInfos.keySet())
+        for (String moduleName : this.moduleInfos.keySet())
         {
             try
             {
-                this.loadModule(moduleName, moduleInfos);
+                this.loadModule(moduleName, this.moduleInfos);
             }
             catch (ModuleException e)
             {
-                moduleInfos.remove(moduleName);
-                logger.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
+                this.moduleInfos.remove(moduleName);
+                LOGGER.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
             }
         }
-        logger.info("Finished loading modules!");
+        LOGGER.info("Finished loading modules!");
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
+    private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
     {
-        return this.loadModule(name, moduleInfos, new Stack<String>(), false);
+        return this.loadModule(name, moduleInfos, new Stack<String>());
     }
 
-    private boolean loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, boolean soft) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
+    private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException
     {
         name = name.toLowerCase(Locale.ENGLISH);
-        if (this.modules.containsKey(name))
+        Module module = this.modules.get(name);
+        if (module != null)
         {
-            return true;
+            return module;
         }
+        
         if (loadStack.contains(name))
         {
             throw new CircularDependencyException(loadStack.pop(), name);
@@ -122,34 +152,94 @@ public class ModuleManager
         ModuleInfo info = moduleInfos.get(name);
         if (info == null)
         {
-            return soft;
+            return null;
         }
         loadStack.push(name);
-        for (String dep : info.getSoftDependencies())
+        
+        Module depModule;
+        for (Map.Entry<String, Integer> dep : info.getSoftDependencies().entrySet())
         {
-            this.loadModule(dep, moduleInfos, loadStack, true);
-        }
-        for (String dep : info.getDependencies())
-        {
-            if (!this.loadModule(dep, moduleInfos, loadStack, false))
+            depModule = this.loadModule(dep.getKey(), moduleInfos, loadStack);
+            if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
             {
-                throw new MissingDependencyException(dep);
+                LOGGER.log(Level.WARNING, "The module {0} requested a newer revision of {1}!", new Object[]{name, dep.getKey()});
             }
         }
-        Module module = this.loader.loadModule(info);
+        for (Map.Entry<String, Integer> dep : info.getDependencies().entrySet())
+        {
+            depModule = this.loadModule(dep.getKey(), moduleInfos, loadStack);
+            if (depModule == null)
+            {
+                throw new MissingDependencyException(dep.getKey());
+            }
+            else if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
+            {
+                throw new IncompatibleDependencyException(name, dep.getKey(), dep.getValue(), depModule.getInfo().getRevision());
+            }
+        }
+        module = this.loader.loadModule(info);
         loadStack.pop();
+        
+        Integer requiredVersion;
+        Module injectedModule;
+        for (Field field : module.getClass().getDeclaredFields())
+        {
+            if (!Module.class.isAssignableFrom(field.getType()))
+            {
+                continue;
+            }
+            injectedModule = this.classMap.get((Class<? extends Module>)field.getType());
+            if (injectedModule == null)
+            {
+                continue;
+            }
+            if (field.getType() == module.getClass())
+            {
+                continue;
+            }
+            requiredVersion = module.getInfo().getSoftDependencies().get(injectedModule.getId());
+            if (requiredVersion != null && requiredVersion > -1 && injectedModule.getInfo().getRevision() < requiredVersion)
+            {
+               continue;
+            }
+            field.setAccessible(true);
+            try
+            {
+                field.set(module, injectedModule);
+            }
+            catch (Exception e)
+            {
+                LOGGER.log(Level.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]{name, injectedModule.getName()});
+            }
+        }
+        
+        
         if (!module.enable())
         {
-            return false;
+            return null;
         }
-        logger.log(Level.FINE, "Module " + info.getName() + "-r" + info.getRevision() + " successfully loaded!");
-        this.modules.put(module.getName().toLowerCase(Locale.ENGLISH), module);
-        return true;
+        
+        this.classMap.put(module.getClass(), module);
+        
+        LOGGER.log(Level.FINE, "Module {0}-r{1} successfully loaded!", new Object[]{info.getName(), info.getRevision()});
+        this.modules.put(module.getId(), module);
+        
+        return module;
     }
 
     public ModuleManager disableModule(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
+        module.disable();
+        this.core.getEventManager().unregisterListener(module);
+        this.core.getPermissionManager().unregisterPermissions(module);
+//        this.core.getCommandManager().unregisterAll(module);
+
+        return this;
+    }
+    
+    public ModuleManager unloadModule(Module module)
+    {
 //        Set<String> dependingModules = module.getDependingModules();
 //        for (String moduleName : dependingModules)
 //        {
@@ -158,11 +248,10 @@ public class ModuleManager
 //                this.disableModule(name);
 //            }
 //        }
-        module.disable();
-        this.core.getEventManager().unregisterListener(module);
-        this.core.getPermissionManager().unregisterPermissions(module);
-//        CommandManager.getInstance().unregisterAll(module);
-
+        this.disableModule(module);
+        this.loader.unloadModule(module);
+        this.modules.remove(module.getName());
+        
         return this;
     }
 

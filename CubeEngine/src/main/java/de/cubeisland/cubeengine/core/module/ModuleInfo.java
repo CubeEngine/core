@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core.module;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -12,6 +12,8 @@ import org.apache.commons.lang.Validate;
  */
 public final class ModuleInfo
 {
+    private static final char DEP_VERSION_DELIM = '/';
+    
     private final File file;
     private final String main;
     private final String id;
@@ -19,8 +21,8 @@ public final class ModuleInfo
     private final int revision;
     private final String description;
     private final int minCoreVersion;
-    private final Set<String> dependencies;
-    private final Set<String> softDependencies;
+    private final Map<String, Integer> dependencies;
+    private final Map<String, Integer> softDependencies;
 
     public ModuleInfo(File file, ModuleConfiguration config)
     {
@@ -45,19 +47,50 @@ public final class ModuleInfo
         this.minCoreVersion = config.minCoreRevision;
         
         
+        int delimOffset;
+        int version;
+        
+        this.dependencies = new HashMap<String, Integer>(config.dependencies.size());
         config.dependencies.remove(this.id);
         for (String dep : config.dependencies)
         {
             dep = dep.toLowerCase();
+            version = -1;
+            
+            delimOffset = dep.indexOf(DEP_VERSION_DELIM);
+            if (delimOffset > -1)
+            {
+                try
+                {
+                    version = Integer.parseInt(dep.substring(delimOffset + 1));
+                }
+                catch (NumberFormatException ignored)
+                {}
+                dep = dep.substring(0, delimOffset);
+            }
+            this.dependencies.put(dep, version);
         }
+        
+        this.softDependencies = new HashMap<String, Integer>(config.softDependencies.size());
         config.softDependencies.remove(this.id);
         for (String dep : config.softDependencies)
         {
             dep = dep.toLowerCase();
+            version = -1;
+            
+            delimOffset = dep.indexOf(DEP_VERSION_DELIM);
+            if (delimOffset > -1)
+            {
+                try
+                {
+                    version = Integer.parseInt(dep.substring(delimOffset + 1));
+                }
+                catch (NumberFormatException ignored)
+                {}
+                dep = dep.substring(0, delimOffset);
+            }
+            this.softDependencies.put(dep, version);
         }
-        
-        this.dependencies = Collections.unmodifiableSet(config.dependencies);
-        this.softDependencies = Collections.unmodifiableSet(config.softDependencies);
     }
 
     public File getFile()
@@ -95,12 +128,12 @@ public final class ModuleInfo
         return this.minCoreVersion;
     }
 
-    public Set<String> getDependencies()
+    public Map<String, Integer> getDependencies()
     {
         return this.dependencies;
     }
 
-    public Set<String> getSoftDependencies()
+    public Map<String, Integer> getSoftDependencies()
     {
         return this.softDependencies;
     }
@@ -116,7 +149,47 @@ public final class ModuleInfo
     {
         if (obj != null && obj instanceof ModuleInfo)
         {
-            return this.id.equals(((ModuleInfo)obj).id);
+            return this.equals((ModuleInfo)obj);
+        }
+        
+        return false;
+    }
+    
+    public boolean equals(ModuleInfo other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+        
+        if (!this.id.equals(other.id))
+        {
+            return false;
+        }
+        
+        if (!this.main.equals(other.main))
+        {
+            return false;
+        }
+        
+        if (this.minCoreVersion != other.minCoreVersion)
+        {
+            return false;
+        }
+        
+        if (!this.dependencies.equals(other.dependencies))
+        {
+            return false;
+        }
+        
+        if (!this.softDependencies.equals(other.softDependencies))
+        {
+            return false;
+        }
+        
+        if (!this.file.equals(other.file))
+        {
+            return false;
         }
         
         return false;

@@ -36,7 +36,7 @@ public class ModuleLoader
     protected String classPrefix = "Cube";
     protected final String infoFileName = "module.yml";
 
-    public ModuleLoader(Core core)
+    protected ModuleLoader(Core core)
     {
         this.core = core;
         this.libClassLoader = new LibraryClassLoader(this.getClass().getClassLoader());
@@ -55,14 +55,6 @@ public class ModuleLoader
         if (info.getMinimumCoreRevision() > Core.REVISION)
         {
             throw new IncompatibleCoreException(name, info.getMinimumCoreRevision());
-        }
-
-        for (String dep : info.getDependencies())
-        {
-            if (!this.classLoaders.containsKey(dep))
-            {
-                throw new MissingDependencyException(dep);
-            }
         }
 
         try
@@ -94,7 +86,7 @@ public class ModuleLoader
 
             module.onLoad();
 
-            this.classLoaders.put(name, classLoader);
+            this.classLoaders.put(info.getId(), classLoader);
             return module;
         }
         catch (Exception e)
@@ -107,7 +99,7 @@ public class ModuleLoader
     {
         Validate.notNull(module, "The module must not be null!");
 
-        // TODO actually implement this 
+        this.classLoaders.remove(module.getId());
     }
 
     public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
@@ -178,7 +170,7 @@ public class ModuleLoader
         Set<String> alreadyChecked = new THashSet<String>(this.classLoaders.size() / 2);
         alreadyChecked.add(info.getName());
 
-        for (String dep : info.getSoftDependencies())
+        for (String dep : info.getSoftDependencies().keySet())
         {
             alreadyChecked.add(dep);
             try
@@ -194,7 +186,7 @@ public class ModuleLoader
             }
         }
 
-        for (String dep : info.getDependencies())
+        for (String dep : info.getDependencies().keySet())
         {
             if (alreadyChecked.contains(dep))
             {
@@ -226,7 +218,7 @@ public class ModuleLoader
                         return clazz;
                     }
                 }
-                catch (ClassNotFoundException e)
+                catch (ClassNotFoundException ignored)
                 {
                 }
             }
