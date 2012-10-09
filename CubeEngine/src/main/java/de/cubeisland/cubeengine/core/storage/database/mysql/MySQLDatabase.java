@@ -41,7 +41,7 @@ public class MySQLDatabase extends AbstractDatabase
         this.pass = configuration.pass;
         this.database = configuration.database;
         this.tablePrefix = configuration.tablePrefix;
-        DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.database, this.user, this.pass);
+        this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.database, this.user, this.pass);
         this.queryBuilder = new MySQLQueryBuilder(this);
     }
 
