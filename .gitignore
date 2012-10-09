@@ -5,3 +5,8 @@ target/
 dependency-reduced-pom.xml
 nb-configuration.xml
 nb-actions.xml
+*/.classpath
+*/.project
+*/.settings**
+*/.externalToolBuilders**
+*/maven-eclipse.xml
