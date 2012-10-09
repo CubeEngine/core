@@ -32,7 +32,7 @@ public abstract class LogListener implements Listener
     {
         try
         {
-            return clazz.getConstructor(LogListener.class).newInstance(module);
+            return clazz.getConstructor(Log.class).newInstance(module);
         }
         catch (Exception ex)
         {
