@@ -333,56 +333,83 @@ public class BasicStorage<V extends Model> implements Storage<V>
             throw new IllegalStateException("Error while reading Model to store", ex);
         }
     }
+   
+    @Override 
+    public void update(final V model)
+    {
+        this.update(model, true);
+    }
 
     @Override
-    public void update(V model)
+    public void update(V model, boolean async)
     {
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(modelClass.getDeclaredField(name).get(model)));
+                values.add(Convert.toObject(this.modelClass.getDeclaredField(name).get(model)));
             }
-            values.add(Convert.toObject(modelClass.getDeclaredField(key).get(model)));
-            this.database.preparedExecute(modelClass, "update", values.toArray());
+            values.add(Convert.toObject(this.modelClass.getDeclaredField(this.key).get(model)));
+            if (async)
+            {
+                this.database.asyncPreparedExecute(this.modelClass, "update", values.toArray());
+            }
+            else
+            {
+                this.database.preparedExecute(this.modelClass, "update", values.toArray());
+            }
 
-            for (Callback cb : updateCallbacks)
+            for (Callback cb : this.updateCallbacks)
             {
                 cb.call(model.getKey());
             }
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while updating Model in Database", ex);
+            throw new StorageException("An SQL related error occurred while updating the Model", ex);
         }
         catch (Exception ex)
         {
-            throw new StorageException("Error while reading Model to update", ex);
+            throw new StorageException("An unknown error occurred while updating the Model", ex);
         }
     }
 
     @Override
-    public void merge(V model)
+    public void merge(final V model)
+    {
+        this.merge(model, true);
+    }
+    
+    @Override
+    public void merge(V model, boolean async)
     {
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
-            values.add(Convert.toObject(modelClass.getDeclaredField(key).get(model)));
+            values.add(Convert.toObject(this.modelClass.getDeclaredField(this.key).get(model)));
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(modelClass.getDeclaredField(name).get(model)));
+                values.add(Convert.toObject(this.modelClass.getDeclaredField(name).get(model)));
             }
-            this.database.preparedExecute(modelClass, "merge", values.toArray());
+            
+            if (async)
+            {
+                this.database.asyncPreparedExecute(this.modelClass, "merge", values.toArray());
+            }
+            else
+            {
+                this.database.preparedExecute(this.modelClass, "merge", values.toArray());
+            }
 
-            for (Callback cb : updateCallbacks)
+            for (Callback cb : this.updateCallbacks)
             {
                 cb.call(model.getKey());
             }
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while updating Model in Database", ex);
+            throw new StorageException("An unknown error occurred while merging the Model", ex);
         }
         catch (Exception ex)
         {
@@ -393,17 +420,36 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void delete(V model)
     {
-        this.deleteByKey(model.getKey());
+        this.delete(model, true);
     }
-
+    
+    @Override
+    public void delete(V model, boolean async)
+    {
+        this.deleteByKey(model.getKey(), async);
+    }
+    
     @Override
     public void deleteByKey(Object key)
     {
+        this.deleteByKey(key, true);
+    }
+
+    @Override
+    public void deleteByKey(Object key, boolean async)
+    {
         try
         {
-            this.database.preparedExecute(modelClass, "delete", key);
+            if (async)
+            {
+                this.database.asyncPreparedExecute(this.modelClass, "delete", key);
+            }
+            else
+            {
+                this.database.preparedExecute(this.modelClass, "delete", key);
+            }
 
-            for (Callback cb : createCallbacks)
+            for (Callback cb : this.createCallbacks)
             {
                 cb.call(key);
             }

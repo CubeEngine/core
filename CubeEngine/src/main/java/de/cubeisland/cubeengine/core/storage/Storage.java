@@ -40,11 +40,25 @@ public interface Storage<V extends Model>
     public void update(V model);
 
     /**
+     * Updates the model in the DataBase asynchonous
+     *
+     * @param model the model to update
+     */
+    public void update(V model, boolean async);
+
+    /**
      * Merges the model into the DataBase
      *
      * @param model the model to merge in
      */
     public void merge(V model);
+
+    /**
+     * Merges the model into the DataBase asynchonous
+     *
+     * @param model the model to merge in
+     */
+    public void merge(V model, boolean async);
 
     /**
      * Deletes the model from DataBase
@@ -55,12 +69,27 @@ public interface Storage<V extends Model>
     public void delete(V model);
 
     /**
+     * Deletes the model from DataBase asynchonous
+     *
+     * @param model the model to delete
+     * @return whether the model got deleted
+     */
+    public void delete(V model, boolean async);
+
+    /**
      * Deletes the model by ID from DataBase
      *
      * @param id the id to delete
      * @return whether the model got deleted
      */
     public void deleteByKey(Object key);
+    /**
+     * Deletes the model by ID from DataBase asynchonous
+     *
+     * @param id the id to delete
+     * @return whether the model got deleted
+     */
+    public void deleteByKey(Object key, boolean async);
 
     /**
      * Clears the Table

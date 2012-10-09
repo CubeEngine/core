@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import java.sql.Connection;
@@ -8,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,6 +18,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class AbstractDatabase implements Database
 {
+    protected static final Logger LOGGER = CubeEngine.getLogger();
+    
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     private final AsyncTaskQueue taskQueue = new AsyncTaskQueue();
@@ -51,9 +56,47 @@ public abstract class AbstractDatabase implements Database
     }
 
     @Override
+    public void asyncUpdate(final String query, final Object... params)
+    {
+        this.taskQueue.addTask(new Runnable() {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    update(query, params);
+                }
+                catch (SQLException e)
+                {
+                    LOGGER.log(Level.SEVERE, "An asynchronous query failed!", e);
+                }
+            }
+        });
+    }
+
+    @Override
     public int preparedUpdate(Class owner, String name, Object... params) throws SQLException
     {
         return this.bindValues(getStoredStatement(owner, name), params).executeUpdate();
+    }
+
+    @Override
+    public void asnycPreparedUpdate(final Class owner, final String name, final Object... params)
+    {
+        this.taskQueue.addTask(new Runnable() {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    preparedUpdate(owner, name, params);
+                }
+                catch (SQLException e)
+                {
+                    LOGGER.log(Level.SEVERE, "An asynchronous query failed!", e);
+                }
+            }
+        });
     }
 
     @Override
@@ -61,11 +104,50 @@ public abstract class AbstractDatabase implements Database
     {
         return this.createAndBindValues(query, params).execute();
     }
+    
+    @Override
+    public void asyncExecute(final String query, final Object... params)
+    {
+        this.taskQueue.addTask(new Runnable() {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    execute(query, params);
+                }
+                catch (SQLException e)
+                {
+                    LOGGER.log(Level.SEVERE, "An asynchronous query failed!", e);
+                }
+            }
+        });
+    }
 
     @Override
     public boolean preparedExecute(Class owner, String name, Object... params) throws SQLException
     {
         return this.bindValues(getStoredStatement(owner, name), params).execute();
+    }
+
+    @Override
+    public void asyncPreparedExecute(final Class owner, final String name, final Object... params)
+    {
+        
+        this.taskQueue.addTask(new Runnable() {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    preparedExecute(owner, name, params);
+                }
+                catch (SQLException e)
+                {
+                    LOGGER.log(Level.SEVERE, "An asynchronous query failed!", e);
+                }
+            }
+        });
     }
 
     @Override

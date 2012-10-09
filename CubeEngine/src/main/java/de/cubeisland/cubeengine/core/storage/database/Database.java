@@ -12,27 +12,37 @@ import java.sql.SQLException;
  */
 public interface Database
 {
-    public String getName();
-    public String prepareName(String name);
-    public String prepareFieldName(String name);
-    public String prepareString(String name);
-    public QueryBuilder getQueryBuilder();
-    public PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException;
-    public PreparedStatement createAndBindValues(String query, Object... params) throws SQLException;
-    public boolean execute(String query, Object... params) throws SQLException;
-    public PreparedStatement getStoredStatement(Class owner, String name);
-    public void prepareAndStoreStatement(Class owner, String name, String statement) throws SQLException;
-    public PreparedStatement prepareStatement(String statement) throws SQLException;
-    public boolean preparedExecute(Class owner, String name, Object... params) throws SQLException;
-    public ResultSet preparedQuery(Class owner, String name, Object... params) throws SQLException;
-    public int preparedUpdate(Class owner, String name, Object... params) throws SQLException;
-    public ResultSet query(String query, Object... params) throws SQLException;
-    public void storePreparedStatement(Class owner, String name, PreparedStatement statement);
-    public int update(String query, Object... params) throws SQLException;
-    public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException;
-    public void startTransaction() throws SQLException;
-    public void commmit() throws SQLException;
-    public void rollback() throws SQLException;
-    public void update(Storage manager);
-    public void queueOperation(Runnable runnable);
+    String getName();
+    String prepareName(String name);
+    String prepareFieldName(String name);
+    String prepareString(String name);
+    QueryBuilder getQueryBuilder();
+    
+    PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException;
+    PreparedStatement createAndBindValues(String query, Object... params) throws SQLException;
+    PreparedStatement getStoredStatement(Class owner, String name);
+    void prepareAndStoreStatement(Class owner, String name, String statement) throws SQLException;
+    PreparedStatement prepareStatement(String statement) throws SQLException;
+    void storePreparedStatement(Class owner, String name, PreparedStatement statement);
+    
+    ResultSet query(String query, Object... params) throws SQLException;
+    ResultSet preparedQuery(Class owner, String name, Object... params) throws SQLException;
+    
+    boolean execute(String query, Object... params) throws SQLException;
+    boolean preparedExecute(Class owner, String name, Object... params) throws SQLException;
+    void asyncExecute(String query, Object... params);
+    void asyncPreparedExecute(Class owner, String name, Object... params);
+    
+    int update(String query, Object... params) throws SQLException;
+    int preparedUpdate(Class owner, String name, Object... params) throws SQLException;
+    void asyncUpdate(String query, Object... params);
+    void asnycPreparedUpdate(Class owner, String name, Object... params);
+    
+    void startTransaction() throws SQLException;
+    void commmit() throws SQLException;
+    void rollback() throws SQLException;
+    void update(Storage manager);
+    int getLastInsertedId(Class owner, String name, Object... params) throws SQLException;
+    
+    void queueOperation(Runnable runnable);
 }

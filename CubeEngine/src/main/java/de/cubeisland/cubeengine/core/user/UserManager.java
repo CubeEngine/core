@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
-import de.cubeisland.cubeengine.core.user.event.UserCreatedEvent;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.sql.ResultSet;

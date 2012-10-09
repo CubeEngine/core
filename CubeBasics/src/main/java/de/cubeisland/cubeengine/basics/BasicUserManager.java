@@ -30,26 +30,4 @@ public class BasicUserManager extends BasicStorage<BasicUser>
         }
         return model;
     }
-
-    public void save(final BasicUser model)
-    {
-        this.database.queueOperation(new Runnable()
-        {
-            public void run()
-            {
-                merge(model);
-            }
-        });
-    }
-
-    public void remove(final int key)
-    {
-        this.database.queueOperation(new Runnable()
-        {
-            public void run()
-            {
-                deleteByKey(key);
-            }
-        });
-    }
 }

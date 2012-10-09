@@ -52,11 +52,11 @@ public class FlyListener implements Listener
         {
             FlyModel model = fly.getFlyManager().getFlyModel(user);
             model.flying = true;
-            fly.getFlyManager().save(model);
+            fly.getFlyManager().merge(model);
         }
         else
         {
-            fly.getFlyManager().remove(user.getKey());
+            fly.getFlyManager().deleteByKey(user.getKey());
         }
     }
 

@@ -29,28 +29,6 @@ public class FlyManager extends BasicStorage<FlyModel>
             user.attach(model);
         }
         return model;
-    }
-
-    public void save(final FlyModel model)
-    {
-        this.database.queueOperation(new Runnable()
-        {
-            public void run()
-            {
-                merge(model);
-            }
-        });
-    }
-
-    public void remove(final int key)
-    {
-        this.database.queueOperation(new Runnable()
-        {
-            public void run()
-            {
-                deleteByKey(key);
-            }
-        });
-    }    
+    }  
 }
 

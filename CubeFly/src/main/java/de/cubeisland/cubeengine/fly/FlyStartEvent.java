@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.event.UserEvent;
+import de.cubeisland.cubeengine.core.user.UserEvent;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 

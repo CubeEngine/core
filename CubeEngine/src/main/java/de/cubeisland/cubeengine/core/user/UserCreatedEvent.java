@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.user.event;
+package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.user.User;
