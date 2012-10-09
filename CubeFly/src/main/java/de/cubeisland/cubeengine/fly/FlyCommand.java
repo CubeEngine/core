@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
@@ -54,8 +53,8 @@ public class FlyCommand
         { // Sender is console and no player given!
             if (sender == null)
             {
-                context.sendMessage(_("fly", "&6ProTip: &eIf your server flies away it will go offline."));
-                context.sendMessage(_("fly", "So... Stopping the Server in &c3.."));
+                context.sendMessage("fly", "&6ProTip: &eIf your server flies away it will go offline.");
+                context.sendMessage("fly", "So... Stopping the Server in &c3..");
                 invalidUsage(context);
             }
         }
