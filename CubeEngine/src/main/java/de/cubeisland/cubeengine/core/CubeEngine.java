@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
@@ -10,7 +11,6 @@ import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -179,9 +179,9 @@ public final class CubeEngine
      * 
      * @return the ExecutorService
      */
-    public static ScheduledExecutorService getExecutor()
+    public static TaskManager getTaskManager()
     {
-        return core.getExecutor();
+        return core.getTaskManager();
     }
     
     /**

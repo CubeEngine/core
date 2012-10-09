@@ -6,13 +6,11 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -28,7 +26,6 @@ import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import org.bukkit.Server;
@@ -53,7 +50,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private EventManager eventRegistration;
     private Server server;
     private CommandManager commandManager;
-    private ScheduledExecutorService executor;
+    private TaskManager taskManager;
     private TableManager tableManager;
     private ObjectMapper jsonObjectMapper;
 
@@ -127,8 +124,8 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
 
-        // depends on: core config
-        this.executor = Executors.newScheduledThreadPool(this.config.executorThreads);
+        // depends on: core config, server
+        this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
 
         // depends on: executor, database, Server, core config and event registration
         this.userManager = new UserManager(this);
@@ -181,12 +178,12 @@ public class BukkitCore extends JavaPlugin implements Core
             this.i18n.clean();
             this.i18n = null;
         }
-        if (this.executor != null)
+        if (this.taskManager != null)
         {
             try
             {
-                this.executor.shutdown();
-                this.executor.awaitTermination(config.executorTermination, TimeUnit.SECONDS);
+                this.taskManager.getExecutorService().shutdown();
+                this.taskManager.getExecutorService().awaitTermination(config.executorTermination, TimeUnit.SECONDS);
             }
             catch (InterruptedException ex)
             {
@@ -194,7 +191,7 @@ public class BukkitCore extends JavaPlugin implements Core
             }
             finally
             {
-                this.executor = null;
+                this.taskManager = null;
             }
         }
     }
@@ -265,9 +262,9 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public ScheduledExecutorService getExecutor()
+    public TaskManager getTaskManager()
     {
-        return executor;
+        return taskManager;
     }
 
     @Override

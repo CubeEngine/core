@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
@@ -104,7 +105,7 @@ public interface Core
      * 
      * @return the ExecutorService
      */
-    public ScheduledExecutorService getExecutor();
+    public TaskManager getTaskManager();
     
     /**
      * This method returns the DebugMode
