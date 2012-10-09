@@ -35,7 +35,7 @@ public class FlyManager extends BasicStorage<FlyModel>
 
     public void save(final FlyModel model)
     {
-        CubeEngine.getExecutor().submit(new Runnable()
+        this.database.doAsync(new Runnable()
         {
             public void run()
             {
@@ -46,7 +46,7 @@ public class FlyManager extends BasicStorage<FlyModel>
 
     public void remove(final int key)
     {
-        CubeEngine.getExecutor().submit(new Runnable()
+        this.database.doAsync(new Runnable()
         {
             public void run()
             {

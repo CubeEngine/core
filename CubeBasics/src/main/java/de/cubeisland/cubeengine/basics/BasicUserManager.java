@@ -34,7 +34,7 @@ public class BasicUserManager extends BasicStorage<BasicUser>
 
     public void save(final BasicUser model)
     {
-        CubeEngine.getExecutor().submit(new Runnable()
+        this.database.doAsync(new Runnable()
         {
             public void run()
             {
@@ -45,7 +45,7 @@ public class BasicUserManager extends BasicStorage<BasicUser>
 
     public void remove(final int key)
     {
-        CubeEngine.getExecutor().submit(new Runnable()
+        this.database.doAsync(new Runnable()
         {
             public void run()
             {

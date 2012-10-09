@@ -34,4 +34,5 @@ public interface Database
     public void commmit() throws SQLException;
     public void rollback() throws SQLException;
     public void update(Storage manager);
+    public void doAsync(Runnable runnable);
 }

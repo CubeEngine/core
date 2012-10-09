@@ -1,12 +1,16 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Storage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  *
@@ -16,6 +20,9 @@ public abstract class AbstractDatabase implements Database
 {
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
+    private static ScheduledExecutorService executor;
+    private static Queue<Runnable> asyncTaskQueue = new ConcurrentLinkedQueue<Runnable>();
+    private static boolean running;
 
     @Override
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
@@ -133,5 +140,36 @@ public abstract class AbstractDatabase implements Database
     public void update(Storage manager)
     {
         manager.updateStructure();
+    }
+
+    @Override
+    public void doAsync(final Runnable runnable)
+    {
+        if (executor == null)
+        {
+            executor = CubeEngine.getExecutor();
+        }
+        asyncTaskQueue.offer(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                runnable.run();
+                Runnable next = asyncTaskQueue.poll();
+                if (next == null)
+                {
+                    running = false;
+                }
+                else
+                {
+                    next.run();
+                }
+            }
+        });
+        if (!running)
+        {
+            running = true;
+            executor.submit(asyncTaskQueue.poll());
+        }                
     }
 }
