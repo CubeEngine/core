@@ -16,9 +16,9 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
  *
  * @author Anselm Brehme
  */
-public class BlockBreakLogger extends LogListener
+public class BlockBreak extends LogListener
 {
-    public BlockBreakLogger(Log module)
+    public BlockBreak(Log module)
     {
         super(module, new BreakConfig());
     }

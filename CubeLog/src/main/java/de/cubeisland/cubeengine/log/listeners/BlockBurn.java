@@ -3,39 +3,36 @@ package de.cubeisland.cubeengine.log.listeners;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.LogManager.BlockBreakCause;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
 import java.util.EnumMap;
 import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class PlayerInteractListener extends LogListener
+public class BlockBurn extends LogListener
 {
-    public PlayerInteractListener(Log module)
+    public BlockBurn(Log module)
     {
-        super(module, new InteractConfig());
+        super(module, new BurnConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event)
+    public void onBlockBurn(BlockBurnEvent event)
     {
-        //TODO
+        lm.logBreakBlock(BlockBreakCause.FIRE, null, event.getBlock().getState());
     }
 
-    public static class InteractConfig extends LogSubConfiguration
+    public static class BurnConfig extends LogSubConfiguration
     {
-        public InteractConfig()
+        public BurnConfig()
         {
-            this.actions.put(LogAction.DOORINTERACT, false);
-            this.actions.put(LogAction.SWITCHINTERACT, false);
-            this.actions.put(LogAction.CAKEEAT, false);
-            this.actions.put(LogAction.NOTEBLOCKINTERACT, false);
-            this.actions.put(LogAction.DIODEINTERACT, false);
+            this.actions.put(LogAction.FIRE, true);
             this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
@@ -44,7 +41,7 @@ public class PlayerInteractListener extends LogListener
         @Override
         public String getName()
         {
-            return "interact";
+            return "burn";
         }
     }
 }

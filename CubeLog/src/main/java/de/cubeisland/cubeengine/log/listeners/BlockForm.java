@@ -8,30 +8,31 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.block.BlockFormEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class LeavesDecayListener extends LogListener
+public class BlockForm extends LogListener
 {
-    public LeavesDecayListener(Log module)
+    public BlockForm(Log module)
     {
-        super(module, new DecayConfig());
+        super(module, new FormConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onLeavesDecay(LeavesDecayEvent event)
+    public void onBlockForm(BlockFormEvent event)
     {
         //TODO
     }
 
-    public static class DecayConfig extends LogSubConfiguration
+    public static class FormConfig extends LogSubConfiguration
     {
-        public DecayConfig()
+        public FormConfig()
         {
-            this.actions.put(LogAction.LEAVESDECAY, false);
+            this.actions.put(LogAction.SNOWFORM, false);
+            this.actions.put(LogAction.ICEFORM, false);
             this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
@@ -40,7 +41,7 @@ public class LeavesDecayListener extends LogListener
         @Override
         public String getName()
         {
-            return "decay";
+            return "form";
         }
     }
 }

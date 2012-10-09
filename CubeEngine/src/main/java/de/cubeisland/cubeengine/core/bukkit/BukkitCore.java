@@ -54,16 +54,6 @@ public class BukkitCore extends JavaPlugin implements Core
     private TableManager tableManager;
     private ObjectMapper jsonObjectMapper;
 
-    @Command(
-        names={"test", "testrr"},
-        desc="test!",
-        flags={
-            @Flag(name = "a")
-        },
-        params={
-            @Param(names={"player", "p"}, types={String.class})
-        }
-    )
     @Override
     public void onEnable()
     {

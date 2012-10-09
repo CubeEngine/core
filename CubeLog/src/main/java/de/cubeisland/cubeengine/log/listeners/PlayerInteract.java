@@ -8,32 +8,34 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class KillListener extends LogListener
+public class PlayerInteract extends LogListener
 {
-    public KillListener(Log module)
+    public PlayerInteract(Log module)
     {
-        super(module, new KillConfig());
+        super(module, new InteractConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onEntityDamageEvent(EntityDamageEvent event)
+    public void onPlayerInteract(PlayerInteractEvent event)
     {
         //TODO
     }
 
-    public static class KillConfig extends LogSubConfiguration
+    public static class InteractConfig extends LogSubConfiguration
     {
-        public KillConfig()
+        public InteractConfig()
         {
-            this.actions.put(LogAction.KILL, false);
-            this.actions.put(LogAction.ICEFORM, false);
+            this.actions.put(LogAction.DOORINTERACT, false);
+            this.actions.put(LogAction.SWITCHINTERACT, false);
+            this.actions.put(LogAction.CAKEEAT, false);
+            this.actions.put(LogAction.NOTEBLOCKINTERACT, false);
+            this.actions.put(LogAction.DIODEINTERACT, false);
             this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
@@ -42,7 +44,7 @@ public class KillListener extends LogListener
         @Override
         public String getName()
         {
-            return "kill";
+            return "interact";
         }
     }
 }

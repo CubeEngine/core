@@ -6,39 +6,32 @@ import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
 import java.util.EnumMap;
 import java.util.Map;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Enderman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.block.SignChangeEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class EndermanListener extends LogListener
+public class SignChange extends LogListener
 {
-    public EndermanListener(Log module)
+    public SignChange(Log module)
     {
-        super(module, new EndermanConfig());
+        super(module, new SignChangeConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onEntityChangeBlock(EntityChangeBlockEvent event)
+    public void onSignChange(SignChangeEvent event)
     {
-        if (event.getEntity() instanceof Enderman)
-        {
-            BlockState newState = event.getBlock().getState();
-            newState.setType(event.getTo());
-            lm.logEnderGrief(event.getBlock().getState(), newState);
-        }
+        //TODO
     }
 
-    public static class EndermanConfig extends LogSubConfiguration
+    public static class SignChangeConfig extends LogSubConfiguration
     {
-        public EndermanConfig()
+        public SignChangeConfig()
         {
-            this.actions.put(LogAction.ENDERMEN, false);
+            this.actions.put(LogAction.SIGNTEXT, false);
             this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
@@ -47,7 +40,7 @@ public class EndermanListener extends LogListener
         @Override
         public String getName()
         {
-            return "enderman";
+            return "signchange";
         }
     }
 }

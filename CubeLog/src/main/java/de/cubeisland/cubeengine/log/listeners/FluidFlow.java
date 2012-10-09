@@ -8,31 +8,31 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class BlockFadeListener extends LogListener
+public class FluidFlow extends LogListener
 {
-    public BlockFadeListener(Log module)
+    public FluidFlow(Log module)
     {
-        super(module, new FadeConfig());
+        super(module, new FluidConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockFade(BlockFadeEvent event)
+    public void onBlockFromTo(BlockFromToEvent event)
     {
         //TODO
     }
 
-    public static class FadeConfig extends LogSubConfiguration
+    public static class FluidConfig extends LogSubConfiguration
     {
-        public FadeConfig()
+        public FluidConfig()
         {
-            this.actions.put(LogAction.SNOWFADE, false);
-            this.actions.put(LogAction.ICEFADE, false);
+            this.actions.put(LogAction.LAVAFLOW, false);
+            this.actions.put(LogAction.WATERFLOW, false);
             this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
@@ -41,7 +41,7 @@ public class BlockFadeListener extends LogListener
         @Override
         public String getName()
         {
-            return "fade";
+            return "fluid";
         }
     }
 }

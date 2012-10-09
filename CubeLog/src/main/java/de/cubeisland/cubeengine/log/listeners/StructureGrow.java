@@ -8,32 +8,32 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class BlockFormListener extends LogListener
+public class StructureGrow extends LogListener
 {
-    public BlockFormListener(Log module)
+    public StructureGrow(Log module)
     {
-        super(module, new FormConfig());
+        super(module, new StructureGrowConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockForm(BlockFormEvent event)
+    public void onStructureGrow(StructureGrowEvent event)
     {
         //TODO
     }
 
-    public static class FormConfig extends LogSubConfiguration
+    public static class StructureGrowConfig extends LogSubConfiguration
     {
-        public FormConfig()
+        public StructureGrowConfig()
         {
-            this.actions.put(LogAction.SNOWFORM, false);
-            this.actions.put(LogAction.ICEFORM, false);
-            this.enabled = false;
+            this.actions.put(LogAction.NATURALSTRUCTUREGROW, false);
+            this.actions.put(LogAction.BONEMEALSTRUCTUREGROW, false);
+            this.enabled = true;
         }
         @Option(value="actions",genericType=Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
@@ -41,7 +41,7 @@ public class BlockFormListener extends LogListener
         @Override
         public String getName()
         {
-            return "form";
+            return "grow";
         }
     }
 }

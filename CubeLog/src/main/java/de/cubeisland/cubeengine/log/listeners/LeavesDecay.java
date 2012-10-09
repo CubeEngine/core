@@ -8,30 +8,30 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class SignChangeListener extends LogListener
+public class LeavesDecay extends LogListener
 {
-    public SignChangeListener(Log module)
+    public LeavesDecay(Log module)
     {
-        super(module, new SignChangeConfig());
+        super(module, new DecayConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onSignChange(SignChangeEvent event)
+    public void onLeavesDecay(LeavesDecayEvent event)
     {
         //TODO
     }
 
-    public static class SignChangeConfig extends LogSubConfiguration
+    public static class DecayConfig extends LogSubConfiguration
     {
-        public SignChangeConfig()
+        public DecayConfig()
         {
-            this.actions.put(LogAction.SIGNTEXT, false);
+            this.actions.put(LogAction.LEAVESDECAY, false);
             this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
@@ -40,7 +40,7 @@ public class SignChangeListener extends LogListener
         @Override
         public String getName()
         {
-            return "signchange";
+            return "decay";
         }
     }
 }

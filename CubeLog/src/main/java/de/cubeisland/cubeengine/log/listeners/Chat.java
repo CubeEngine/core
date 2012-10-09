@@ -16,9 +16,9 @@ import org.bukkit.event.server.ServerCommandEvent;
  *
  * @author Anselm Brehme
  */
-public class ChatListener extends LogListener
+public class Chat extends LogListener
 {
-    public ChatListener(Log module)
+    public Chat(Log module)
     {
         super(module, new ChatConfig());
     }

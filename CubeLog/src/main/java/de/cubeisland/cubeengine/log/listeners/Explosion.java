@@ -18,9 +18,9 @@ import org.bukkit.event.entity.EntityExplodeEvent;
  *
  * @author Anselm Brehme
  */
-public class ExplosionListener extends LogListener
+public class Explosion extends LogListener
 {
-    public ExplosionListener(Log module)
+    public Explosion(Log module)
     {
         super(module, new ExplosionConfig());
     }

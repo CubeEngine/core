@@ -65,7 +65,7 @@ public class FlyListener implements Listener
     {
         Player player = event.getPlayer();
         if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR)
-                || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
+            || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
         {
             return;
         }
@@ -83,7 +83,7 @@ public class FlyListener implements Listener
         {
             user.sendMessage("fly", "Feather-flying is disabled in the configuration!");
         }
-        
+
         if (!FlyPerm.FLY_FEAHTER.isAuthorized(player))
         {
             user.sendMessage("core", "You dont have permission to use this!");

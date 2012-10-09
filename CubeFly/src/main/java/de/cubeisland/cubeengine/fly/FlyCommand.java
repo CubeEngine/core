@@ -4,12 +4,13 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  *
@@ -19,7 +20,7 @@ public class FlyCommand
 {
     UserManager um;
     FlyConfiguration config;
-    
+
     public FlyCommand(Fly module)
     {
         this.um = module.getUserManager();
@@ -29,7 +30,7 @@ public class FlyCommand
     @Command(
     desc = "Lets you fly away",
     max = 1,
-    params= { @Param(names = "player", types = User.class)},
+    params = { @Param(names = "player", types = User.class) },
     usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {
@@ -46,7 +47,7 @@ public class FlyCommand
             user = context.getNamed("player", User.class);
             if (user != sender)
             {
-               other = true; 
+                other = true;
             }
         }
         else
@@ -106,13 +107,16 @@ public class FlyCommand
                     user.setFlySpeed(speed / 10f);
                     user.sendMessage("fly", "You can now fly at %.2f", speed);
                 }
-                else if (speed > 9000)
-                {
-                    user.sendMessage("fly", "&cIt's over 9000!");
-                }
                 else
                 {
-                    user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
+                    if (speed > 9000)
+                    {
+                        user.sendMessage("fly", "&cIt's over 9000!");
+                    }
+                    else
+                    {
+                        user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
+                    }
                 }
             }
             catch (ConversionException ex)

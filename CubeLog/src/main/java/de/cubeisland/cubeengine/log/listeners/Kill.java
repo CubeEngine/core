@@ -8,31 +8,31 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class FluidFlowListener extends LogListener
+public class Kill extends LogListener
 {
-    public FluidFlowListener(Log module)
+    public Kill(Log module)
     {
-        super(module, new FluidConfig());
+        super(module, new KillConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockFromTo(BlockFromToEvent event)
+    public void onEntityDamageEvent(EntityDamageEvent event)
     {
         //TODO
     }
 
-    public static class FluidConfig extends LogSubConfiguration
+    public static class KillConfig extends LogSubConfiguration
     {
-        public FluidConfig()
+        public KillConfig()
         {
-            this.actions.put(LogAction.LAVAFLOW, false);
-            this.actions.put(LogAction.WATERFLOW, false);
+            this.actions.put(LogAction.KILL, false);
+            this.actions.put(LogAction.ICEFORM, false);
             this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
@@ -41,7 +41,7 @@ public class FluidFlowListener extends LogListener
         @Override
         public String getName()
         {
-            return "fluid";
+            return "kill";
         }
     }
 }

@@ -22,17 +22,17 @@ public abstract class LogListener implements Listener
         this.config = module.getConfiguration();
         this.subConfig = subConfig;
     }
-    
+
     public <T extends LogSubConfiguration> T getConfiguration()
     {
-        return (T)subConfig;
+        return (T) subConfig;
     }
-    
+
     public static <T extends LogListener> T getInstance(Class<T> clazz, Log module)
     {
         try
         {
-            return clazz.getConstructor(Log.class).newInstance(module);
+            return clazz.getConstructor(LogListener.class).newInstance(module);
         }
         catch (Exception ex)
         {
@@ -45,7 +45,6 @@ public abstract class LogListener implements Listener
 //LeavesDecayEvent for natural leaves decay
 //BlockIgniteEvent for setting fire with fireball flint_and_steel || ?? lava , lightning , spread
 //SignChangeEvent for when sign is changed //TODO find when this is fired perhaps after finished editing the sign
-
 //BlockPistonEvent or BlockPistonExtendEvent / BlockPistonRetractEvent piston movements ??   
 //BlockFromToEvent ?? water lava dragoneggs
 //BlockGrowEvent ?? for wheat sugarcane cactus watermelon pumpkin
@@ -55,5 +54,4 @@ public abstract class LogListener implements Listener
 //FurnaceBurnEvent ?? when fuel burned
 //FurnaceSmeltEvent ?? when block smelted
 //NotePlayEvent ?? noteblock by player or redstone
-    
 }

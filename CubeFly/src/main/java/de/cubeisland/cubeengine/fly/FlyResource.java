@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
@@ -12,7 +8,7 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
  */
 public enum FlyResource implements Resource
 {
-
+    
     GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/fly.json");
     private final String target;
     private final String source;
@@ -32,5 +28,4 @@ public enum FlyResource implements Resource
     {
         return this.target;
     }
-    
 }

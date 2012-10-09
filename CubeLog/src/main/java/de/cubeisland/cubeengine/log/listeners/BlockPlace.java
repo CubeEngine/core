@@ -16,9 +16,9 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
  *
  * @author Anselm Brehme
  */
-public class BlockPlaceListener extends LogListener
+public class BlockPlace extends LogListener
 {
-    public BlockPlaceListener(Log module)
+    public BlockPlace(Log module)
     {
         super(module, new PlaceConfig());
     }

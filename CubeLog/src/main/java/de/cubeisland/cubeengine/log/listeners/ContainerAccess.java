@@ -15,9 +15,9 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
  *
  * @author Anselm Brehme
  */
-public class ContainerAccessListener extends LogListener
+public class ContainerAccess extends LogListener
 {
-    public ContainerAccessListener(Log module)
+    public ContainerAccess(Log module)
     {
         super(module, new ContainerAccessConfig());
     }

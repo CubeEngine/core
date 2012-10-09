@@ -6,34 +6,39 @@ import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
 import java.util.EnumMap;
 import java.util.Map;
+import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.world.StructureGrowEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 /**
  *
  * @author Anselm Brehme
  */
-public class StructureGrowListener extends LogListener
+public class Enderman extends LogListener
 {
-    public StructureGrowListener(Log module)
+    public Enderman(Log module)
     {
-        super(module, new StructureGrowConfig());
+        super(module, new EndermanConfig());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onStructureGrow(StructureGrowEvent event)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event)
     {
-        //TODO
+        if (event.getEntity() instanceof Enderman)
+        {
+            BlockState newState = event.getBlock().getState();
+            newState.setType(event.getTo());
+            lm.logEnderGrief(event.getBlock().getState(), newState);
+        }
     }
 
-    public static class StructureGrowConfig extends LogSubConfiguration
+    public static class EndermanConfig extends LogSubConfiguration
     {
-        public StructureGrowConfig()
+        public EndermanConfig()
         {
-            this.actions.put(LogAction.NATURALSTRUCTUREGROW, false);
-            this.actions.put(LogAction.BONEMEALSTRUCTUREGROW, false);
-            this.enabled = true;
+            this.actions.put(LogAction.ENDERMEN, false);
+            this.enabled = false;
         }
         @Option(value="actions",genericType=Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
@@ -41,7 +46,7 @@ public class StructureGrowListener extends LogListener
         @Override
         public String getName()
         {
-            return "grow";
+            return "enderman";
         }
     }
 }
