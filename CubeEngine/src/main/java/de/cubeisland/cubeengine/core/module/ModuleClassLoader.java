@@ -45,13 +45,17 @@ public class ModuleClassLoader extends URLClassLoader
             {
                 clazz = super.findClass(name);
             }
-            catch (ClassNotFoundException e)
+            catch (ClassNotFoundException ignored)
             {
             }
 
             if (clazz == null && global)
             {
                 clazz = this.moduleLoader.getClazz(this.moduleInfo, name);
+                if (clazz == null)
+                {
+                    clazz = this.moduleLoader.getLibraryClass(name);
+                }
             }
 
             if (clazz == null)

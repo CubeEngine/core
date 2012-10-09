@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -232,9 +234,30 @@ public class ModuleLoader
 
         return null;
     }
-
-    public LibraryClassLoader getLibraryClassLoader()
+    
+    public void registerLibraryClassPath(File file) throws MalformedURLException
     {
-        return this.libClassLoader;
+        Validate.notNull(file, "The file must not be null!");
+        
+        this.registerLibraryClassPath(file.toURI().toURL());
+    }
+    
+    public void registerLibraryClassPath(URL url)
+    {
+        Validate.notNull(url, "The url must not be null!");
+        
+        this.libClassLoader.addURL(url);
+    }
+
+    public Class<?> getLibraryClass(String name)
+    {
+        try
+        {
+            return this.libClassLoader.findClass(name);
+        }
+        catch (ClassNotFoundException ignored)
+        {
+            return null;
+        }
     }
 }

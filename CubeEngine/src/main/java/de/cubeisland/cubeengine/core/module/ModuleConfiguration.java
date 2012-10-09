@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 /**

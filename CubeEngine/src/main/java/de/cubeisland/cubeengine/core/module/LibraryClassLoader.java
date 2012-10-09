@@ -25,10 +25,4 @@ public class LibraryClassLoader extends URLClassLoader
     {
         return super.findClass(name);
     }
-
-    @Override
-    public String findLibrary(String libname)
-    {
-        return super.findLibrary(libname);
-    }
 }
