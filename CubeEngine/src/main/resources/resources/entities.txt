@@ -65,6 +65,7 @@
     Blaze
 62:
     LavaSlime
+    MagmaSlime
 63:
     EnderDragon
 #64:
@@ -90,8 +91,8 @@
 98:
     Ozelot
 99:
-    VillagerGolem
     IronGolem
+    VillagerGolem
 #NPCs
 120:
     Villager

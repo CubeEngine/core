@@ -349,8 +349,9 @@ public class CheatCommands
 
         user.getInventory().addItem(item);
         user.updateInventory();
-        context.sendMessage("basics", "You gave %s %d %s", user.getName(), amount, item.toString());
-        user.sendMessage("%s just gave you %d %s", context.getSender().getName(), item.toString(), amount);
+        String matname = MaterialMatcher.get().getNameFor(item);
+        context.sendMessage("basics", "You gave %s %d %s", user.getName(), amount, matname);
+        user.sendMessage("%s just gave you %d %s", context.getSender().getName(), matname, amount);
     }
 
     @Command(
@@ -387,7 +388,7 @@ public class CheatCommands
         item.setAmount(amount);
         sender.getInventory().addItem(item);
         sender.updateInventory();
-        sender.sendMessage("basics", "Received: %d %s ", amount, item.toString()); // TODO item.toString is no good
+        sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
     }
 
     @Command(

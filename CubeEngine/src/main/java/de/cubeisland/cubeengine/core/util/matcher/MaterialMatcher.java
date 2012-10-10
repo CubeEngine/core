@@ -23,12 +23,14 @@ import org.bukkit.inventory.ItemStack;
 public class MaterialMatcher
 {
     private THashMap<String, ItemStack> items;
+    private THashMap<ItemStack, String> itemnames;
     private TIntObjectHashMap<THashMap<String, Short>> datavalues;
     private static MaterialMatcher instance = null;
 
     private MaterialMatcher()
     {
         this.items = new THashMap<String, ItemStack>();
+        this.itemnames = new THashMap<ItemStack, String>();
         TreeMap<Integer, TreeMap<Short, List<String>>> readItems = this.readItems();
         this.readDataValues();
         for (Integer item : readItems.keySet())
@@ -51,6 +53,11 @@ public class MaterialMatcher
 
     public final void registerItemStack(ItemStack item, List<String> names)
     {
+        if (names.isEmpty())
+        {
+            return;
+        }
+        this.itemnames.put(new ItemStack(item.getType(),1,item.getDurability()), names.get(0));
         for (String s : names)
         {
             this.items.put(s.toLowerCase(Locale.ENGLISH), item);
@@ -381,5 +388,10 @@ public class MaterialMatcher
     public boolean isRepairable(ItemStack item)
     {
         return RepairableMaterials.isRepairable(item);
+    }
+    
+    public String getNameFor(ItemStack item)
+    {
+        return this.itemnames.get(new ItemStack(item.getType(), 1, item.getDurability()));
     }
 }

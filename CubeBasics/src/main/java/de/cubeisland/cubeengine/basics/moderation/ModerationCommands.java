@@ -159,7 +159,7 @@ public class ModerationCommands
         }
         if (ridingEntityType != null)
         {
-            context.sendMessage("basics", "Spawned %d %s riding %s!", amount, entityType, ridingEntityType);
+            context.sendMessage("basics", "Spawned %d %s riding %s!", amount, ridingEntityType, entityType);
         }
         else
         {
