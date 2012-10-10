@@ -7,8 +7,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class is just a container for other commands that provides a help command
  */
 public class ContainerCommand extends CubeCommand
 {

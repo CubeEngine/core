@@ -11,13 +11,13 @@ import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 
 /**
- *
- * @author Phillip Schichtel
+ * This interface specifies all the methods the core of the CubeEngine has to provide.
+ * The core provides essential APIs like the I18n API and all the managers like
+ * the CommandManager or the TaskManager
  */
 public interface Core
 {

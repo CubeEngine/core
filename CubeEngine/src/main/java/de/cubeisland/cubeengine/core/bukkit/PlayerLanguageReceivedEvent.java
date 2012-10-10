@@ -5,8 +5,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
 /**
- *
- * @author Phillip Schichtel
+ * The event gets called when ever a player receives the paket 204.
+ * This is the case right after the player joins the server
+ * and when the user changes his language or view distance settings
  */
 public class PlayerLanguageReceivedEvent extends PlayerEvent
 {
@@ -19,6 +20,11 @@ public class PlayerLanguageReceivedEvent extends PlayerEvent
         this.language = language;
     }
     
+    /**
+     * Returns the locale string of the player
+     *
+     * @return the locale string
+     */
     public String getLanguage()
     {
         return this.language;

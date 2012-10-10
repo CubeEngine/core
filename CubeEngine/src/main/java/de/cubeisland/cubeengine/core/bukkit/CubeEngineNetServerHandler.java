@@ -1,10 +1,7 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.INetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetServerHandler;
-import net.minecraft.server.Packet;
 import net.minecraft.server.Packet204LocaleAndViewDistance;
 import org.bukkit.plugin.PluginManager;
 

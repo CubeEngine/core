@@ -7,8 +7,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.bukkit.scheduler.BukkitScheduler;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class provides methods to register and unregister tasks and the global
+ * ScheduledExecutorService is provided by this class.
+ * 
+ * TODO method documentation not possible as the API is not final yet
  */
 public class TaskManager
 {
@@ -23,6 +25,11 @@ public class TaskManager
         this.bukkitScheduler = bukkitScheduler;
     }
 
+    /**
+     * Returns the global ScheduledExecutorService
+     *
+     * @return the global ScheduledExecutorService
+     */
     public ScheduledExecutorService getExecutorService()
     {
         return this.executorService;
@@ -68,13 +75,24 @@ public class TaskManager
         this.bukkitScheduler.cancelTask(i);
     }
 
-    public boolean isCurrentlyRunning(int i)
+    /**
+     * Checks whether the given task ID revers to a task that's currently running
+     *
+     * @param taskID the task ID
+     * @return true if there is a running task for this ID
+     */
+    public boolean isCurrentlyRunning(int taskID)
     {
-        return this.bukkitScheduler.isCurrentlyRunning(i);
+        return this.bukkitScheduler.isCurrentlyRunning(taskID);
     }
 
-    public boolean isQueued(int i)
+    /**
+     * Checks whether the given task ID is 
+     * @param taskID the task ID
+     * @return true if there is a task for this ID
+     */
+    public boolean isQueued(int taskID)
     {
-        return this.bukkitScheduler.isQueued(i);
+        return this.bukkitScheduler.isQueued(taskID);
     }
 }

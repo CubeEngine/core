@@ -28,6 +28,13 @@ public class EventManager
         this.listenerMap = new ConcurrentHashMap<Module, Set<Listener>>();
     }
 
+    /**
+     * Registers an event listener with a module
+     *
+     * @param module the module
+     * @param listener the listener
+     * @return fluent interface
+     */
     public EventManager registerListener(Module module, Listener listener)
     {
         Set<Listener> listeners = this.listenerMap.get(module);
@@ -41,6 +48,13 @@ public class EventManager
         return this;
     }
 
+    /**
+     * Unregisters an event listener from a module
+     *
+     * @param module the module
+     * @param listener the listener
+     * @return fluent interface
+     */
     public EventManager unregisterListener(Module module, Listener listener)
     {
         Validate.notNull(module, "The module must not be null!");
@@ -54,6 +68,12 @@ public class EventManager
         return this;
     }
 
+    /**
+     * Unregisters all listeners of the given module
+     *
+     * @param module te module
+     * @return fluent interface
+     */
     public EventManager unregisterListener(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
@@ -70,6 +90,11 @@ public class EventManager
         return this;
     }
 
+    /**
+     * Unregisteres all listeners registered by the CubeEngine
+     *
+     * @return fluent interface
+     */
     public EventManager unregisterListener()
     {
         for (Set<Listener> listeners : this.listenerMap.values())
@@ -83,6 +108,13 @@ public class EventManager
         return this;
     }
 
+    /**
+     * Fires an event
+     *
+     * @param <T> the event type
+     * @param event the event instance
+     * @return the event instance
+     */
     public <T extends CubeEvent> T fireEvent(T event)
     {
         this.pm.callEvent(event);

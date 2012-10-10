@@ -54,7 +54,13 @@ public class BukkitUtils
 
     private BukkitUtils()
     {}
-    
+
+    /**
+     * Returns the locale string of a player.
+     *
+     * @param player the Player instance
+     * @return the locale string of the player
+     */
     public static String getLanguage(Player player)
     {
         if (player.getClass() == CraftPlayer.class)
@@ -68,7 +74,13 @@ public class BukkitUtils
         }
         return null;
     }
-    
+
+    /**
+     * Gets the CommandMap from the PluginManager
+     *
+     * @param pluginManager the PluginManager
+     * @return the CommandMap instance
+     */
     public static CommandMap getCommandMap(PluginManager pluginManager)
     {
         if (pluginManager.getClass() == SimplePluginManager.class)
@@ -89,7 +101,13 @@ public class BukkitUtils
         }
         return null;
     }
-    
+
+    /**
+     * Gets the known command map from a CommandMap instance
+     *
+     * @param commandMap the CommandMap instance
+     * @return the known command map
+     */
     public static Map<String, Command> getKnownCommandMap(CommandMap commandMap)
     {
         if (commandMap.getClass() == SimpleCommandMap.class)
@@ -110,7 +128,13 @@ public class BukkitUtils
         }
         return null;
     }
-    
+
+    /**
+     * Registers the packet hook injector
+     * 
+     * @param plugin a Plugin to register the injector with
+     * @param pluginManager a PluginManager
+     */
     public static void registerPacketHookInjector(Plugin plugin, PluginManager pluginManager)
     {
         if (!PacketHookInjector.injected)
@@ -127,6 +151,12 @@ public class BukkitUtils
         private PacketHookInjector()
         {}
         
+        /**
+         * The event listener swaps the joining player's NetServerHandler instance with a custom one
+         * including all the magic to make the new NetServerHandler work.
+         * 
+         * @param event 
+         */
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerJoin(PlayerJoinEvent event)
         {

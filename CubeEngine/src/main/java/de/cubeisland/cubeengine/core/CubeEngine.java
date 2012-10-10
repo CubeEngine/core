@@ -28,7 +28,12 @@ public final class CubeEngine
     private CubeEngine()
     {
     }
-    
+
+    /**
+     * Checks whether the CubeEngine class has been initialized.
+     *
+     * @return true if the class is initilized
+     */
     public static boolean isInitialized()
     {
         return core != null;
@@ -168,7 +173,12 @@ public final class CubeEngine
     {
         return core.getServer();
     }
-    
+
+    /**
+     * Returns the I18n API
+     *
+     * @return the I18 API
+     */
     public static I18n getI18n()
     {
         return core.getI18n();
@@ -195,16 +205,31 @@ public final class CubeEngine
         return getServer().getOfflinePlayer(name);
     }
 
+    /**
+     * Returns the core configuration.
+     *
+     * @return the core configuration
+     */
     public static CoreConfiguration getConfiguration()
     {
         return core.getConfiguration();
     }
-    
+
+    /**
+     * Checks whether the core is in debug mode.
+     *
+     * @return true if the core is in debug mode
+     */
     public static boolean isDebug()
     {
         return core.isDebug();
     }
     
+    /**
+     * Returns the global instance of the jackson object mapper.
+     *
+     * @return the global instance of the jackson object mapper.
+     */
     public static ObjectMapper getJsonObjectMapper()
     {
         return core.getJsonObjectMapper();

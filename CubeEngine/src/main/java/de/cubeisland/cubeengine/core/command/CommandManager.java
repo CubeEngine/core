@@ -35,25 +35,93 @@ public class CommandManager
         this.knownCommands = BukkitUtils.getKnownCommandMap(this.commandMap);
     }
 
+    /**
+     * Injects a command instance into the CommandMap
+     *
+     * @param command the command to inject
+     */
     private void injectIntoRoot(Command command)
     {
         this.commandMap.register(command.getLabel(), command);
     }
 
-    public void remove(String name)
+    /**
+     * Removes a command by its name
+     *
+     * @param name the name of the command to remove
+     */
+    public void unregister(String... names)
     {
-        Command command = this.knownCommands.remove(name.toLowerCase());
-        if (command != null)
+        for (String name : names)
         {
-            command.unregister(this.commandMap);
+            Command command = this.knownCommands.remove(name.toLowerCase());
+            if (command != null)
+            {
+                command.unregister(this.commandMap);
+            }
+        }
+    }
+    
+    /**
+     * Unregisters all commands of a module
+     *
+     * @param module the module
+     */
+    public void unregister(Module module)
+    {
+        CubeCommand command;
+        List<String> rootCommandsToRemove = new ArrayList<String>();
+        for (Map.Entry<String, Command> entry : this.knownCommands.entrySet())
+        {
+            if (entry.getValue() instanceof CubeCommand)
+            {
+                command = (CubeCommand)entry.getValue();
+                if (command.getModule() == module)
+                {
+                    rootCommandsToRemove.add(entry.getKey());
+                }
+                else
+                {
+                    // TODO go recursively through the child commands
+                }
+                this.unregister(entry.getKey());
+            }
+        }
+        
+        for (String name : rootCommandsToRemove)
+        {
+            this.unregister(name);
+        }
+    }
+ 
+    /**
+     * Unregisters all commands of the CubeEngine
+     */
+    public void unregister()
+    {
+        for (Map.Entry<String, Command> entry : this.knownCommands.entrySet())
+        {
+            if (entry.getValue() instanceof CubeCommand)
+            {
+                this.unregister(entry.getKey());
+            }
         }
     }
 
+    /**
+     * Clears the server's command map (unregisters all commands)
+     */
     public void clear()
     {
         this.commandMap.clearCommands();
     }
 
+    /**
+     * Registers a command
+     *
+     * @param command the command to register
+     * @param parents the path under which the command should be registered
+     */
     public void registerCommand(CubeCommand command, String... parents)
     {
         CubeCommand parentCommand = null;
@@ -92,6 +160,13 @@ public class CommandManager
         }
     }
 
+    /**
+     * Registers all methods annotated as a command in the given command holder object
+     *
+     * @param module the module to register them for
+     * @param commandHolder the command holder containing the commands
+     * @param parents the path under which the command should be registered
+     */
     public void registerCommands(Module module, Object commandHolder, String... parents)
     {
         Method[] methods = commandHolder.getClass().getDeclaredMethods();
@@ -164,14 +239,12 @@ public class CommandManager
         }
     }
 
-    public void removeCommand(String... names)
-    {
-        for (String name : names)
-        {
-            this.knownCommands.remove(name);
-        }
-    }
-
+    /**
+     * Gets a CubeCommand by its name
+     *
+     * @param name the name
+     * @return the CubeCommand instance or null if not found
+     */
     public CubeCommand getCommand(String name)
     {
         Command command = this.knownCommands.get(name);
