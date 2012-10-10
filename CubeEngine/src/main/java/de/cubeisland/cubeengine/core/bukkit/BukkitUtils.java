@@ -22,27 +22,25 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class contains various methods to access bukkit-related stuff.
  */
 public class BukkitUtils
 {
     private static final Field localeStringField;
     private static Field nshListField = null;
-    
+
     static
     {
         try
         {
             localeStringField = LocaleLanguage.class.getDeclaredField("d");
             localeStringField.setAccessible(true);
-            
+
         }
         catch (Exception e)
         {
             throw new RuntimeException("Failed to initialize the Bukkit-Language-Hack!");
         }
-
         try
         {
             nshListField = ServerConnection.class.getDeclaredField("d");
@@ -131,8 +129,8 @@ public class BukkitUtils
 
     /**
      * Registers the packet hook injector
-     * 
-     * @param plugin a Plugin to register the injector with
+     *
+     * @param plugin        a Plugin to register the injector with
      * @param pluginManager a PluginManager
      */
     public static void registerPacketHookInjector(Plugin plugin, PluginManager pluginManager)
@@ -142,20 +140,21 @@ public class BukkitUtils
             pluginManager.registerEvents(PacketHookInjector.INSTANCE, plugin);
         }
     }
-    
+
     private static class PacketHookInjector implements Listener
     {
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();
         public static boolean injected = false;
-        
+
         private PacketHookInjector()
         {}
-        
+
         /**
-         * The event listener swaps the joining player's NetServerHandler instance with a custom one
-         * including all the magic to make the new NetServerHandler work.
-         * 
-         * @param event 
+         * The event listener swaps the joining player's NetServerHandler
+         * instance with a custom one including all the magic to make the new
+         * NetServerHandler work.
+         *
+         * @param event
          */
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerJoin(PlayerJoinEvent event)
@@ -173,14 +172,14 @@ public class BukkitUtils
                 if (oldHandler.getClass() != CubeEngineNetServerHandler.class)
                 {
                     CubeEngineNetServerHandler handler = new CubeEngineNetServerHandler(playerEntity);
-                    
+
                     Location loc = player.getLocation();
                     handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-                    
+
                     ServerConnection sc = playerEntity.server.ac();
                     ((List<NetServerHandler>)nshListField.get(sc)).remove(oldHandler);
                     sc.a(handler);
-                    System.out.print("Replaced the NetServerHandler of player '" + player.getName() + "'");
+                    System.out.print("Replaced the NetServerHandler of player '" + player.getName() + "'"); // TODO log this as debug or smt like this
                     oldHandler.disconnected = true;
                 }
             }

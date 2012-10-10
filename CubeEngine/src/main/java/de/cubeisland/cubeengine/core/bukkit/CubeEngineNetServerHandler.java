@@ -6,13 +6,13 @@ import net.minecraft.server.Packet204LocaleAndViewDistance;
 import org.bukkit.plugin.PluginManager;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class is used to replace the original NetServerHandler and calling an
+ * Events when receiving packets.
  */
 public class CubeEngineNetServerHandler extends NetServerHandler
 {
     private final PluginManager pm;
-    
+
     public CubeEngineNetServerHandler(EntityPlayer player)
     {
         super(player.server, player.netServerHandler.networkManager, player);

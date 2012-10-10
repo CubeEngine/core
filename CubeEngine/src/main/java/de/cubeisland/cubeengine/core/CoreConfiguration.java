@@ -7,8 +7,8 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import java.util.logging.Level;
 
 /**
- *
- * @author Anselm Brehme
+ * This Configuration holds all basic settings for CubeEngine.
+ * Changes in this configuration can/will affect all modules.
  */
 @Codec("yml")
 public class CoreConfiguration extends Configuration

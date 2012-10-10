@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.command;
 import java.util.List;
 
 /**
- * This class is a simple alias command the revers to a single command on ANY level
+ * This class is a simple alias command the revers to a single command on ANY level.
  */
 public class AliasCommand extends CubeCommand
 {

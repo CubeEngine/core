@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.core.command;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.CommandSender;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  * This class is just a container for other commands that provides a help command

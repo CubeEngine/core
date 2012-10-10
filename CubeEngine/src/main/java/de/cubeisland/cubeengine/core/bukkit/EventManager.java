@@ -12,8 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class manages all Event-(Un-)Registration and fires Events.
  */
 public class EventManager
 {

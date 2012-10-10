@@ -18,9 +18,7 @@ import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
- *
- * @author Anselm Brehme
- * @author Phillip Schichtel
+ * This abstract class represents a configuration.
  */
 public abstract class Configuration
 {
@@ -48,25 +46,30 @@ public abstract class Configuration
         }
     }
 
-    public final void save(File targetFile)
-    {
-        if (this.file == null)
-        {
-            throw new IllegalStateException("A configuration cannot be saved without a valid file!");
-        }
-        this.codec.save(this, targetFile);
-        this.onSaved(targetFile);
-    }
-
     /**
-     * Saves the Configuration to given file
+     * Saves this configuration into given File
+     * 
+     * @param targetFile the File to save to
      */
-    public final void save()
+    public final void save(File targetFile)
     {
         if (this.codec == null)
         {
             throw new IllegalStateException("A configuration cannot be saved without a valid codec!");
         }
+        if (this.file == null)
+        {
+            throw new IllegalStateException("A configuration cannot be saved without a valid file!");
+        }        
+        this.codec.save(this, targetFile);
+        this.onSaved(targetFile);
+    }
+
+    /**
+     * Saves the Configuration.
+     */
+    public final void save()
+    {
         this.save(this.file);
     }
 
@@ -75,7 +78,7 @@ public abstract class Configuration
      *
      * @param fileExtension
      * @return the Codec
-     * @throws IllegalStateException if no Codec is found given FileExtension
+     * @throws IllegalStateException if no Codec is found for given FileExtension
      */
     public static ConfigurationCodec resolveCodec(String fileExtension)
     {
@@ -194,21 +197,42 @@ public abstract class Configuration
         return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + type.value()));
     }
 
+    /**
+     * Sets the Codec for this Confguration
+     * 
+     * @param fileExtension 
+   
+     */
     public void setCodec(String fileExtension)
     {
-        this.codec = resolveCodec(fileExtension);
+        this.setCodec(resolveCodec(fileExtension));
     }
 
+    /**
+     * Sets the Codec for this Configuration
+     * 
+     * @param codec 
+     */
     public void setCodec(ConfigurationCodec codec)
     {
         this.codec = codec;
     }
-    
+
+    /**
+     * Returns the extension for the current Codec
+     * 
+     * @return the fileExtension
+     */
     public String getCodecExtension()
     {
         return this.codec.getExtension();
     }
     
+    /**
+     * Returns the current Codec
+     * 
+     * @return the ConfigurationCodec
+     */
     public ConfigurationCodec getCodec()
     {
         return this.codec;
@@ -236,21 +260,23 @@ public abstract class Configuration
     }
 
     /**
-     * This method is called right after the configuration got loaded
+     * This method is called right after the configuration got loaded.
      */
     public void onLoaded()
     {
     }
 
     /**
-     * This method gets called right after the configration get saved
+     * This method gets called right after the configration get saved.
      */
     public void onSaved(File file)
     {
     }
 
     /**
-     * Returns the lines to be added in front of the Configuration
+     * Returns the lines to be added in front of the Configuration.
+     * 
+     * @return the head
      */
     public String[] head()
     {
@@ -258,7 +284,9 @@ public abstract class Configuration
     }
 
     /**
-     * Returns the lines to be added at the end of the Configuration
+     * Returns the lines to be added at the end of the Configuration.
+     * 
+     * @return the head
      */
     public String[] tail()
     {

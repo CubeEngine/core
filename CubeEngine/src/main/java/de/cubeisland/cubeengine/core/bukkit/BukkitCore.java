@@ -30,8 +30,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- *
- * @author Phillip Schichtel
+ * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
 public class BukkitCore extends JavaPlugin implements Core
 {

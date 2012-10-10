@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
@@ -19,6 +18,8 @@ import java.util.Stack;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  *
@@ -63,7 +64,7 @@ public abstract class CubeCommand extends Command
     
     protected final String implodeParentNames(String delim)
     {
-        LinkedList<String> cmds = new LinkedList<String>();
+        List<String> cmds = new LinkedList<String>();
         CubeCommand cmd = this;
         do
         {

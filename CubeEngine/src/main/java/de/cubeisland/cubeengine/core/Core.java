@@ -101,9 +101,9 @@ public interface Core
     public CommandManager getCommandManager();
     
     /**
-     * This method returns the Worker/ExecutorService
+     * This method returns the TaskManager
      * 
-     * @return the ExecutorService
+     * @return the TaskManager
      */
     public TaskManager getTaskManager();
     

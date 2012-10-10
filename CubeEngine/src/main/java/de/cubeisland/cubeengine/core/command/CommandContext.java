@@ -3,9 +3,6 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidSender;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
@@ -19,6 +16,10 @@ import java.util.Set;
 import java.util.Stack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidSender;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  * This class holds all the information about a single command call.

@@ -19,8 +19,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class manages the registration of commands.
  */
 public class CommandManager
 {

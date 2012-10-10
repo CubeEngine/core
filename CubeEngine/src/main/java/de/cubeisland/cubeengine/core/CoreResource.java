@@ -4,8 +4,6 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
 
 /**
  * Holds all the resource of the core
- *
- * @author Phillip Schichtel
  */
 public enum CoreResource implements Resource
 {
