@@ -7,15 +7,15 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.EntityMatcher;
-import de.cubeisland.cubeengine.core.util.EntityType;
-import de.cubeisland.cubeengine.core.util.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.EntityType;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.ProfessionMatcher;
 import java.util.List;
+import java.util.Locale;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -31,10 +31,14 @@ import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
-import org.bukkit.entity.Villager.Profession;
 import org.bukkit.entity.Wolf;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  *
@@ -131,7 +135,7 @@ public class ModerationCommands
             amount = context.getIndexed(1, int.class, null);
             if (amount == null)
             {
-                illegalParameter(context, "basics", "%s is not a number! Really!", context.getString(1));
+                illegalParameter(context, "basics", "&e%s is not a number! Really!", context.getString(1));
             }
             if (amount <= 0)
             {
@@ -140,7 +144,7 @@ public class ModerationCommands
         }
         if (amount > config.spawnmobLimit)
         {
-            illegalParameter(context, "basics", "The serverlimit is set to %d you cannot spawn more mobs at once!", config.spawnmobLimit);
+            illegalParameter(context, "basics", "&cThe serverlimit is set to &e%d &cyou cannot spawn more mobs at once!", config.spawnmobLimit);
         }
         for (int i = 1; i <= amount; ++i)
         {
@@ -153,14 +157,23 @@ public class ModerationCommands
                 entity.setPassenger(ridingentity);
             }
         }
-        context.sendMessage("basics", "Spawned %d entities!", amount);//TODO msg what entitiy / amount / where (if player given)
+        if (ridingEntityType != null)
+        {
+            context.sendMessage("basics", "Spawned %d %s riding %s!", amount, entityType, ridingEntityType);
+        }
+        else
+        {
+            context.sendMessage("basics", "Spawned %d %s!", amount, entityType.toString());
+        }
     }
-
+    
     private void applyDataToMob(CommandSender sender, EntityType entityType, Entity entity, String data)
     {
         if (data != null)
         {
-            if (data.equalsIgnoreCase("baby"))
+            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby","angry","tamed","power","charged");
+                
+            if (match.equals("baby"))
             {
                 if (entityType.isAnimal())
                 {
@@ -171,7 +184,7 @@ public class ModerationCommands
                     illegalParameter(sender, "basics", "&eThis entity can not be a baby! Can you?");
                 }
             }
-            else if (data.equalsIgnoreCase("angry"))
+            else if (match.equals("angry"))
             {
                 if (entityType.equals(EntityType.WOLF))
                 {
@@ -182,7 +195,7 @@ public class ModerationCommands
                     ((PigZombie) entity).setAngry(true);
                 }
             }
-            else if (data.equalsIgnoreCase("tamed"))
+            else if (match.equals("tamed"))
             {
                 if (entity instanceof Tameable) // Wolf or Ocelot
                 {
@@ -197,77 +210,91 @@ public class ModerationCommands
                     }
                 }
             }
-            else if (data.equalsIgnoreCase("powered") || data.equalsIgnoreCase("power"))
+            else if (match.equals("charged") || data.equalsIgnoreCase("power"))
             {
                 if (entityType.equals(EntityType.CREEPER))
                 {
                     ((Creeper) entity).setPowered(true);
                 }
             }
-            else
+            else if (entityType.equals(EntityType.SHEEP))
             {
-                if (entityType.equals(EntityType.SHEEP))
+                DyeColor color = MaterialMatcher.get().matchColorData(data);
+                if (color == null)
                 {
-                    DyeColor color = MaterialMatcher.get().matchColorData(data);
-                    if (color == null)
-                    {
-                        illegalParameter(sender, "basics", "Color not found!");
-                    }
-                    ((Sheep) entity).setColor(color);
+                    illegalParameter(sender, "basics", "Color not found!");
                 }
-                else if (entityType.equals(EntityType.SLIME) || entityType.equals(EntityType.MAGMA_CUBE))
+                ((Sheep) entity).setColor(color);
+            }
+            else if (entityType.equals(EntityType.SLIME) || entityType.equals(EntityType.MAGMA_CUBE))
+            {
+                int size = 4;
+                match = StringUtils.matchString(data, "tiny", "small", "big");
+                if (match.equals("tiny"))
                 {
-                    int size;
+                    size = 0;
+                }
+                else if (match.equals("small"))
+                {
+                    size = 2;
+                }
+                else if (match.equals("big"))
+                {
+                    size = 4;
+                }
+                else
+                {
                     try
                     {
                         size = Integer.parseInt(data);
                     }
                     catch (NumberFormatException e)
                     {
-                        illegalParameter(sender, "basics", "The slime-size has to be a number!"); // TODO small etc slimes
-                        //sizes are: tiny: 0 ; small: 2 ; big: 4
-                        return;
-                    }
-                    if (size > 0 && size <= 250)
-                    {
-                        ((Slime) entity).setSize(size);
+                        illegalParameter(sender, "basics", "The slime-size has to be a number or tiny, small or big!");
                     }
                 }
-                else if (entityType.equals(EntityType.VILLAGER))
+                if (size >= 0 && size <= 250)
                 {
-                    //TODO professions better now have to write in capslock :(
-                    Profession profession = Profession.valueOf(data);
-                    if (profession == null)
-                    {
-                        illegalParameter(sender, "basics", "Unknown villager-profession!");
-                    }
-                    ((Villager) entity).setProfession(profession);
+                    ((Slime)entity).setSize(size);
                 }
-                else if (entityType.equals(EntityType.ENDERMAN))
+                else
                 {
-                    ItemStack item = MaterialMatcher.get().matchItemStack(data);
-                    if (item == null)
-                    {
-                        illegalParameter(sender, "basics", "Material not found!");
-                    }
-                    ((Enderman) entity).setCarriedMaterial(item.getData());
+                    illegalParameter(sender, "basics", "The slime-size can not be smaller than 0 or bigger than 250!");
                 }
+            }
+            else if (entityType.equals(EntityType.VILLAGER))
+            {
+                Profession profession =ProfessionMatcher.get().matchProfession(data);
+                if (profession == null)
+                {
+                    illegalParameter(sender, "basics", "Unknown villager-profession!");
+                }
+                ((Villager) entity).setProfession(profession);
+            }
+            else if (entityType.equals(EntityType.ENDERMAN))
+            {
+                ItemStack item = MaterialMatcher.get().matchItemStack(data);
+                if (item == null)
+                {
+                    illegalParameter(sender, "basics", "Material not found!");
+                }
+                ((Enderman) entity).setCarriedMaterial(item.getData());
             }
         }
     }
 
     @Command(
     desc = "Changes the weather",
-             min = 1,
-             max = 3,
-             usage = "<sun|rain|storm> [world] [duration]")
+    min = 1,
+    max = 3,
+    usage = "<sun|rain|storm> [world] [duration]")
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
         boolean sunny = true;
         boolean noThunder = true;
         int duration = 10000000;
-        String weather = context.getString(0);
+        String weather = StringUtils.matchString(context.getString(0), "sun", "rain", "storm");
         if (weather.equalsIgnoreCase("sun"))
         {
             sunny = true;
@@ -315,8 +342,8 @@ public class ModerationCommands
 
     @Command(
     desc = "Changes the global respawnpoint",
-             usage = "[world] [<x> <y> <z>]",
-             max = 4)
+    usage = "[world] [<x> <y> <z>]",
+    max = 4)
     public void setSpawn(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -367,9 +394,9 @@ public class ModerationCommands
 
     @Command(
     desc = "Kills a player",
-             usage = "<player>",
-             min = 1,
-             max = 1)
+    usage = "<player>",
+    min = 1,
+    max = 1)
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightnin
@@ -393,13 +420,10 @@ public class ModerationCommands
     }
 
     @Command(
-        names =
-    {
-        "ping", "pong"
-    },
-             desc = "Pong!",
-             min = 1,
-             max = 1)
+    names = {"ping", "pong"},
+    desc = "Pong!",
+    min = 1,
+    max = 1)
     public void ping(CommandContext context)
     {
         if (context.getLabel().equalsIgnoreCase("ping"))
@@ -413,21 +437,12 @@ public class ModerationCommands
     }
 
     @Command(
-        desc = "Removes entity",
-             usage = "<entityType> [radius] [in <world>] [-a]",
-             flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
-             params =
-    {
-        @Param(names =
-        {
-            "in"
-        }, types = World.class)
-    },
-             min = 1,
-             max = 1)
+    desc = "Removes entity",
+    usage = "<entityType> [radius] [in <world>] [-a]",
+    flags = {@Flag(longName = "all", name = "a")},
+    params = {@Param(names ={"in"}, types = World.class)},
+    min = 1,
+    max = 1)
     public void remove(CommandContext context)
     {//TODO test
         User sender = context.getSenderAsUser();
@@ -506,17 +521,11 @@ public class ModerationCommands
     }
 
     @Command(
-        names =
-    {
-        "clearinventory", "ci"
-    },
-             desc = "Clears the inventory",
-             usage = "[player]",
-             flags =
-    {
-        @Flag(longName = "removeArmor", name = "ra")
-    },
-             max = 1)
+    names = {"clearinventory", "ci"},
+    desc = "Clears the inventory",
+    usage = "[player]",
+    flags = {@Flag(longName = "removeArmor", name = "ra")},
+    max = 1)
     public void clearinventory(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -552,8 +561,8 @@ public class ModerationCommands
     }
 
     @Command(
-        desc = "Stashes or unstashes your inventory to reuse later",
-             max = 0)
+    desc = "Stashes or unstashes your inventory to reuse later",
+    max = 0)
     public void stash(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -589,8 +598,8 @@ public class ModerationCommands
     }
 
     @Command(
-        desc = "Broadcasts a message",
-             usage = "<message>")
+    desc = "Broadcasts a message",
+    usage = "<message>")
     public void broadcast(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
@@ -603,12 +612,9 @@ public class ModerationCommands
     }
 
     @Command(
-        desc = "Makes a player execute a command",
-             usage = "<player> <command>",
-             flags =
-    {
-        @Flag(longName = "chat", name = "c")
-    })
+    desc = "Makes a player execute a command",
+    usage = "<player> <command>",
+    flags = {@Flag(longName = "chat", name = "c")})
     public void sudo(CommandContext context)
     {
         //User sender = context.getSenderAsUser();
@@ -634,8 +640,8 @@ public class ModerationCommands
     }
 
     @Command(
-            desc = "Allows you to see into the inventory of someone else.",
-             max = 1)
+    desc = "Allows you to see into the inventory of someone else.",
+    max = 1)
     public void invsee(CommandContext context)
     {
         User sender = context.getSenderAsUser("bascics", "&cThis command can only be used by a player!");
@@ -658,13 +664,9 @@ public class ModerationCommands
     }
 
     @Command(
-        desc = "Kicks a player from the server",
-             usage = "<player> [message]",
-             flags =
-    {
-        @Flag(
-        longName = "all", name = "a")
-    })
+    desc = "Kicks a player from the server",
+    usage = "<player> [message]",
+    flags = {@Flag(longName = "all", name = "a")})
     public void kick(CommandContext context)
     {
         User user = context.getUser(0);
@@ -701,9 +703,6 @@ public class ModerationCommands
         {
             user.kickPlayer(message);
         }
-
-
-
     }
     //kick -a
     //ban

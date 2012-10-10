@@ -1,7 +1,8 @@
-package de.cubeisland.cubeengine.core.util;
+package de.cubeisland.cubeengine.core.util.matcher;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -76,7 +77,8 @@ public enum EntityType
 
     private org.bukkit.entity.EntityType type;
     private boolean spawnEgg;
-    private static final THashMap<String, EntityType> NAME_MAP = new THashMap<String, EntityType>();
+    private static final Map<EntityType, String> REVERSE_NAME_MAP = new EnumMap<EntityType, String>(EntityType.class);
+    private static final Map<String, EntityType> NAME_MAP = new THashMap<String, EntityType>();
     private static final TShortObjectHashMap<EntityType> ID_MAP = new TShortObjectHashMap<EntityType>();
 
     static
@@ -128,9 +130,10 @@ public enum EntityType
 
     public boolean isFriendly()
     {
-        return this.isAnimal() || NPC.class.isAssignableFrom(this.getEntityClass());
+        return this.isAnimal() || NPC.class.isAssignableFrom(this.
+            getEntityClass());
     }
-    
+
     public boolean isAnimal()
     {
         return Animals.class.isAssignableFrom(this.getEntityClass());
@@ -143,6 +146,11 @@ public enum EntityType
 
     public void registerName(List<String> names)
     {
+        if (names.isEmpty())
+        {
+            return;
+        }
+        REVERSE_NAME_MAP.put(this, names.get(0));
         for (String name : names)
         {
             NAME_MAP.put(name.toLowerCase(Locale.ENGLISH), this);
@@ -152,5 +160,11 @@ public enum EntityType
     public static Map<String, EntityType> getNameSets()
     {
         return NAME_MAP;
+    }
+
+    @Override
+    public String toString()
+    {
+         return REVERSE_NAME_MAP.get(this);
     }
 }

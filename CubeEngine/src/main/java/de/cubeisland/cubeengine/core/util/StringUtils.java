@@ -385,6 +385,11 @@ public final class StringUtils
     {
         return matchString(string, stringlist, true, 1, string.length(), 20, 2, 40, true);
     }
+    
+    public static String matchString(String string, String... stringlist)
+    {
+        return matchString(string, Arrays.asList(stringlist));
+    }
 
     public static String matchString(String string, Collection<String> stringlist, boolean ignoreLdPerLengthOnLD1)
     {

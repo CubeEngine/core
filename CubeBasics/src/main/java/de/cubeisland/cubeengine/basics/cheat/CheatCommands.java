@@ -5,14 +5,10 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.EnchantMatcher;
-import de.cubeisland.cubeengine.core.util.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +19,11 @@ import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  *

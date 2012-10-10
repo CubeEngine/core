@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-import de.cubeisland.cubeengine.core.util.EnchantMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import org.bukkit.enchantments.Enchantment;
 
 public class EnchantmentConverter implements Converter<Enchantment>

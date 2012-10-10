@@ -1,7 +1,9 @@
-package de.cubeisland.cubeengine.core.util;
+package de.cubeisland.cubeengine.core.util.matcher;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.util.AliasMapFormat;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -10,10 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class EntityMatcher
 {
     private static EntityMatcher instance = null;

@@ -1,7 +1,9 @@
-package de.cubeisland.cubeengine.core.util;
+package de.cubeisland.cubeengine.core.util.matcher;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.util.AliasMapFormat;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +13,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import org.bukkit.enchantments.Enchantment;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class EnchantMatcher
 {
     private THashMap<String, Enchantment> enchantments;

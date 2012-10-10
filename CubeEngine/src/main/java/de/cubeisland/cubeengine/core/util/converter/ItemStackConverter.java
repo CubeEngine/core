@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-import de.cubeisland.cubeengine.core.util.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemStackConverter implements Converter<ItemStack>
