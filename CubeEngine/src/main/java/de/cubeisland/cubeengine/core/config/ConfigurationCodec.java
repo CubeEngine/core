@@ -23,8 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- *
- * @author Anselm Brehme
+ * This abstract Codec can be implemented to read and write configuratons.
  */
 public abstract class ConfigurationCodec
 {
@@ -36,6 +35,12 @@ public abstract class ConfigurationCodec
     private CodecContainer container = null;
     protected boolean first;
 
+    /**
+     * Loads in the given configuration using the inputstream
+     * 
+     * @param config the config to load
+     * @param is the inputstream to load from
+     */
     public void load(Configuration config, InputStream is)
     {
         container = new CodecContainer();
@@ -52,11 +57,22 @@ public abstract class ConfigurationCodec
         container = null;
     }
 
+    /**
+     * Returns the current CodecContainer
+     * 
+     * @return the CodecContainer
+     */
     public CodecContainer getContainer()
     {
         return this.container;
     }
 
+    /**
+     * Returns the offset as String
+     * 
+     * @param offset
+     * @return the offset
+     */
     protected String offset(int offset)
     {
         StringBuilder off = new StringBuilder("");
@@ -67,6 +83,12 @@ public abstract class ConfigurationCodec
         return off.toString();
     }
 
+    /**
+     * Saves the configuration into given file
+     * 
+     * @param config the configuration to save
+     * @param file the file to save into
+     */
     public void save(Configuration config, File file)
     {
         try
@@ -92,30 +114,89 @@ public abstract class ConfigurationCodec
         container = null;
     }
 
+    /**
+     * Serializes the values in the map
+     * 
+     * @param path the path of the map
+     * @param values the values at given path
+     * @param off the current offset
+     * @return the serialized map
+     */
     public abstract String convertMap(String path, Map<String, Object> values, int off);
 
+    /**
+     * Serializes a single value
+     * 
+     * @param path the path of the value
+     * @param value the value at given path
+     * @param off the current offest
+     * @return the serialized value
+     */
     public abstract String convertValue(String path, Object value, int off);
 
+    /**
+     * Builds a the comment for given path
+     * 
+     * @param path the path
+     * @param off the current offset
+     * @return the comment
+     */
     public abstract String buildComment(String path, int off);
 
+    /**
+     * Returns the FileExtension as String
+     * 
+     * @return the fileExtension
+     */
     public abstract String getExtension();
 
-    public String revision()
-    {
-        if (revision != null)
-        {
-            return new StringBuilder("#Revision: ").append(this.revision).append(LINEBREAK).toString();
-        }
-        return "";
-    }
+    // TODO revision and update stuff
+    public abstract String revision();
 
+    /**
+     * Converts the inputStream into a String->Object map
+     * 
+     * @param is the inputstream
+     * @return the loaded values
+     */
     public abstract Map<String, Object> loadFromInputStream(InputStream is);
 
+    /**
+     * Returns the last subKey of this path
+     * @param path
+     * @return the last subKey
+     */
     public String getSubKey(String path)
     {
         return path.substring(path.lastIndexOf('.') + 1);
     }
 
+    /**
+     * Returns the subPath of this path
+     * 
+     * @param path
+     * @return the subPath
+     */
+    public String getSubPath(String path)
+    {
+        return path.substring(path.indexOf('.') + 1);
+    }
+
+    /**
+     * Returns the baseParh of this path
+     * 
+     * @param path
+     * @return the basePath
+     */
+    public String getBasePath(String path)
+    {
+        return path.substring(0, path.indexOf('.'));
+    }
+
+    /**
+     * This class temporarily holds the values/comments of the configuration to
+     * save or load them.
+     */
     public class CodecContainer
     {
         protected Map<String, Object> values;
@@ -131,6 +212,10 @@ public abstract class ConfigurationCodec
             this.values = new LinkedHashMap<String, Object>();
         }
 
+        /**
+         * Fills the map with values form the inputStream
+         * @param is 
+         */
         public void fillFromInputStream(InputStream is)
         {
             if (is == null)
@@ -148,6 +233,17 @@ public abstract class ConfigurationCodec
             this.loadKeys(this.values);
         }
 
+        /**
+         * Converts given object at path to fit into to the field
+         * 
+         * @param object
+         * @param field
+         * @param path
+         * @return the converted object
+         * @throws ConversionException
+         * @throws IllegalArgumentException
+         * @throws IllegalAccessException 
+         */
         public Object convertFromObjectToFieldValue(Object object, Field field, String path) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
             Class fieldClass = field.getType();
@@ -190,6 +286,15 @@ public abstract class ConfigurationCodec
 
         }
 
+        /**
+         * Sets the fields with the loaded values
+         * 
+         * @param config
+         * @param section
+         * @throws ConversionException
+         * @throws IllegalArgumentException
+         * @throws IllegalAccessException 
+         */
         private void dumpIntoFields(Configuration config, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
             this.config = config;
@@ -219,6 +324,12 @@ public abstract class ConfigurationCodec
             }
         }
 
+        /**
+         * Saves the values into a file
+         * 
+         * @param file
+         * @throws IOException 
+         */
         private void saveIntoFile(File file) throws IOException
         {
             FileWriter writer = new FileWriter(file);
@@ -232,14 +343,19 @@ public abstract class ConfigurationCodec
             }
         }
 
+        /**
+         * Converts the values into a String to save
+         * 
+         * @return the converted map
+         */
         private String dumpIntoString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.append(this.revision());
             if (config.head() != null)
             {
                 sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
             }
+            sb.append(revision());
             first = true;
             sb.append(convertMap("", values, 0));
             if (config.tail() != null)
@@ -249,15 +365,13 @@ public abstract class ConfigurationCodec
             return sb.toString();
         }
 
-        public String revision()
-        {
-            if (revision != null)
-            {
-                return new StringBuilder("#Revision: ").append(revision).append(LINEBREAK).toString();
-            }
-            return "";
-        }
-
+        /**
+         * Gets the value at given path in the section
+         * 
+         * @param path
+         * @param section
+         * @return the requested value
+         */
         private Object get(String path, Map<String, Object> section)
         {
             if (section == null || section.isEmpty())
@@ -266,17 +380,24 @@ public abstract class ConfigurationCodec
             }
             if (path.contains("."))
             {
-                return this.get(this.getSubPath(path), (Map<String, Object>)section.get(this.findKey(this.getBasePath(path))));
+                return this.get(getSubPath(path), (Map<String, Object>)section.get(this.findKey(getBasePath(path))));
             }
             return section.get(this.findKey(path));
         }
 
+        /**
+         * Sets the value to given path in the section
+         * 
+         * @param path
+         * @param value
+         * @param section 
+         */
         private void set(String path, Object value, Map<String, Object> section)
         {
             if (path.contains("."))
             {
-                Map<String, Object> subsection = this.getOrCreateSubSection(this.getBasePath(path), section);
-                this.set(this.getSubPath(path), value, subsection);
+                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
+                this.set(getSubPath(path), value, subsection);
             }
             else
             {
@@ -284,13 +405,20 @@ public abstract class ConfigurationCodec
             }
         }
 
+        /**
+         * Returns the subSection in the baseSection for given path
+         * 
+         * @param path
+         * @param basesection
+         * @return the requested subSection
+         */
         private Map<String, Object> getOrCreateSubSection(String path, Map<String, Object> basesection)
         {
             if (path.contains("."))
             {
-                Map<String, Object> subsection = this.getOrCreateSubSection(this.getBasePath(path), basesection);
-                basesection.put(this.getBasePath(path), subsection);
-                return this.getOrCreateSubSection(this.getSubPath(path), subsection);
+                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), basesection);
+                basesection.put(getBasePath(path), subsection);
+                return this.getOrCreateSubSection(getSubPath(path), subsection);
             }
             else
             {
@@ -304,6 +432,12 @@ public abstract class ConfigurationCodec
             }
         }
 
+        /**
+         * Returns the loadedKey coressponding to a lowercased key
+         * 
+         * @param key
+         * @return the coressponding key
+         */
         private String findKey(String key)
         {
             String foundKey = this.loadedKeys.get(key);
@@ -314,6 +448,11 @@ public abstract class ConfigurationCodec
             return foundKey;
         }
 
+        /**
+         * saves the loaded keys into a map lowerCaseKey->Key
+         * 
+         * @param section 
+         */
         private void loadKeys(Map<String, Object> section)
         {
             for (String key : section.keySet())
@@ -326,26 +465,39 @@ public abstract class ConfigurationCodec
             }
         }
 
-        public String getSubPath(String path)
-        {
-            return path.substring(path.indexOf('.') + 1);
-        }
-
-        public String getBasePath(String path)
-        {
-            return path.substring(0, path.indexOf('.'));
-        }
-
+        /**
+         * adds a comment to later save
+         * 
+         * @param path
+         * @param comment 
+         */
         private void addComment(String path, String comment)
         {
             this.comments.put(path.toLowerCase(Locale.ENGLISH), comment);
         }
 
+        /**
+         * gets the comment for given path
+         * 
+         * @param path
+         * @return 
+         */
         public String getComment(String path)
         {
             return this.comments.get(path);
         }
 
+        /**
+         * Fills the map with values from the Fields to save
+         * 
+         * @param config
+         * @param basePath
+         * @param section
+         * @return the filled map
+         * @throws IllegalArgumentException
+         * @throws ConversionException
+         * @throws IllegalAccessException 
+         */
         public Map<String, Object> fillFromFields(Configuration config, String basePath, Map<String, Object> section) throws IllegalArgumentException, ConversionException, IllegalAccessException
         {
             this.config = config;
@@ -394,6 +546,18 @@ public abstract class ConfigurationCodec
             return section;
         }
 
+        /**
+         * Converts a field value into a serializable Object
+         * 
+         * @param field
+         * @param fieldValue
+         * @param path
+         * @param section
+         * @return the converted fieldvalue
+         * @throws ConversionException
+         * @throws IllegalArgumentException
+         * @throws IllegalAccessException 
+         */
         public Object convertFromFieldValueToObject(Field field, Object fieldValue, String path, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
             if (fieldValue == null)
@@ -440,7 +604,6 @@ public abstract class ConfigurationCodec
                 }
             }
             return fieldValue;
-
         }
     }
 }

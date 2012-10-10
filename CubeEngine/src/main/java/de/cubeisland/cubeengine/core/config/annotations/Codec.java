@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Anselm Brehme
+ * This annotation indicates which Codec to use for a Configuration.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

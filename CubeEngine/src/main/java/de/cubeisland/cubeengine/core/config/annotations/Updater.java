@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Anselm Brehme
+ * This annotation is used to declare a configuration-updater to use when the
+ * configs revision is too old.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Updater
+public @interface Updater // TODO this got never tested
 {
     Class<? extends ConfigurationUpdater> value();
 }

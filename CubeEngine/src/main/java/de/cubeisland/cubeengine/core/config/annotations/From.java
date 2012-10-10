@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Anselm Brehme
+ * This annotation is used to indicate where the Configuration is loaded from
+ * when loaded automaticly by the Module.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

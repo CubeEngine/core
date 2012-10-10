@@ -1,15 +1,15 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * A YamlConfiguration without bukkit
- *
- * @author Anselm Brehme
+ * This class acts as a codec for yaml-configurations.
  */
 public class YamlCodec extends ConfigurationCodec
 {
@@ -30,7 +30,14 @@ public class YamlCodec extends ConfigurationCodec
     @Override
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
-        return (Map<String, Object>)yaml.load(is);
+        Map<String,Object> map = (Map<String,Object>)yaml.load(is);
+        try
+        {
+            this.revision = Convert.fromObject(Integer.class, map.get("revision"));
+        }
+        catch (ConversionException ex)
+        {} // invalid revision //TODO handle this?
+        return map;
     }
 
     @Override
@@ -147,4 +154,17 @@ public class YamlCodec extends ConfigurationCodec
     {
         return "yml";
     }
+
+    @Override
+    public String revision()
+    {
+        {
+            if (revision != null)
+            {
+                return new StringBuilder("revision: ").append(this.revision).
+                    append(LINEBREAK).toString();
+            }
+            return "";
+        }
+     }
 }

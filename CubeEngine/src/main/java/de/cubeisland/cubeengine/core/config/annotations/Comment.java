@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Anselm Brehme
+ * This annotation is used to add a comment to a value in a configuration
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

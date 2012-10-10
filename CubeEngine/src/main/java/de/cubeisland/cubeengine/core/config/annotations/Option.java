@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Anselm Brehme
+ * This annotation is used declare a field to be loaded by the configuration.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
