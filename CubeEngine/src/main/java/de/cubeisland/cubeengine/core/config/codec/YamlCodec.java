@@ -30,13 +30,18 @@ public class YamlCodec extends ConfigurationCodec
     @Override
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
-        Map<String,Object> map = (Map<String,Object>)yaml.load(is);
+        Map<String, Object> map = (Map<String, Object>)yaml.load(is);
         try
         {
-            this.revision = Convert.fromObject(Integer.class, map.get("revision"));
+            Object rev = map.get("revision");
+            if (rev != null)
+            {
+                this.revision = Convert.fromObject(Integer.class, rev);
+            }
         }
         catch (ConversionException ex)
-        {} // invalid revision //TODO handle this?
+        {
+        } // invalid revision //TODO handle this?
         return map;
     }
 
@@ -56,35 +61,44 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof Map)
             {
                 sb.append(LINEBREAK);
-                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
+                sb.append(this.
+                    convertMap(path, (Map<String, Object>)value, off + 1));
                 return sb.toString();
-            }
-            else if (value instanceof String)
-            {
-                sb.append(" ").append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
-            }
-            else if (value instanceof Collection<?>)
-            {
-                if (((Collection<?>)value).isEmpty())
-                {
-                    return sb.append(" []").append(LINEBREAK).toString();
-                }
-                for (Object o : (Collection<?>)value) //Convert Collection
-                {
-                    sb.append(LINEBREAK).append(offset).append("- ");
-                    if (o instanceof String)
-                    {
-                        sb.append(QUOTE).append(o.toString()).append(QUOTE);
-                    }
-                    else
-                    {
-                        sb.append(o.toString());
-                    }
-                }
             }
             else
             {
-                sb.append(" ").append(value.toString());
+                if (value instanceof String)
+                {
+                    sb.append(" ").append(QUOTE).append(value.toString()).
+                        append(QUOTE); //Quoting Strings
+                }
+                else
+                {
+                    if (value instanceof Collection<?>)
+                    {
+                        if (((Collection<?>)value).isEmpty())
+                        {
+                            return sb.append(" []").append(LINEBREAK).toString();
+                        }
+                        for (Object o : (Collection<?>)value) //Convert Collection
+                        {
+                            sb.append(LINEBREAK).append(offset).append("- ");
+                            if (o instanceof String)
+                            {
+                                sb.append(QUOTE).append(o.toString()).
+                                    append(QUOTE);
+                            }
+                            else
+                            {
+                                sb.append(o.toString());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        sb.append(" ").append(value.toString());
+                    }
+                }
             }
         }
         sb.append(LINEBREAK);
@@ -98,7 +112,8 @@ public class YamlCodec extends ConfigurationCodec
         StringBuilder sb = new StringBuilder();
         if (values.isEmpty())
         {
-            return sb.append(this.offset(off)).append("{}").append(LINEBREAK).toString();
+            return sb.append(this.offset(off)).append("{}").append(LINEBREAK).
+                toString();
         }
         useLineBreak = false;
         for (Map.Entry<String, Object> entry : values.entrySet())
@@ -106,12 +121,14 @@ public class YamlCodec extends ConfigurationCodec
             if (off == 0)
             {
                 sb.append(this.buildComment(entry.getKey(), off))
-                    .append(this.convertValue(entry.getKey(), entry.getValue(), off));//path value off
+                    .append(this.
+                    convertValue(entry.getKey(), entry.getValue(), off));//path value off
             }
             else
             {
                 sb.append(this.buildComment(path + "." + entry.getKey(), off))
-                    .append(this.convertValue(path + "." + entry.getKey(), entry.getValue(), off));
+                    .append(this.
+                    convertValue(path + "." + entry.getKey(), entry.getValue(), off));
             }
             if (!first)
             {
@@ -136,7 +153,8 @@ public class YamlCodec extends ConfigurationCodec
             return ""; //No Comment
         }
         String offset = this.offset(off);
-        comment = comment.replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
+        comment = comment.
+            replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
         comment = offset + COMMENT_PREFIX + comment + LINEBREAK;
         if (this.first)
         {
@@ -166,5 +184,5 @@ public class YamlCodec extends ConfigurationCodec
             }
             return "";
         }
-     }
+    }
 }

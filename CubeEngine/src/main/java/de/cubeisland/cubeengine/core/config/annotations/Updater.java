@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Updater // TODO this got never tested
+public @interface Updater
 {
     Class<? extends ConfigurationUpdater> value();
 }

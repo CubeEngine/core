@@ -1,10 +1,6 @@
 package de.cubeisland.cubeengine.core.config;
 
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComments;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.core.config.annotations.Revision;
+import de.cubeisland.cubeengine.core.config.annotations.*;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
@@ -27,11 +23,12 @@ import java.util.Map;
  */
 public abstract class ConfigurationCodec
 {
+    protected String COMMENT_PREFIX;
+    protected String SPACES;
+    protected String LINEBREAK;
+    protected String QUOTE;
+    
     protected Integer revision = null;
-    public String COMMENT_PREFIX;
-    public String SPACES;
-    public String LINEBREAK;
-    public String QUOTE;
     private CodecContainer container = null;
     protected boolean first;
 
@@ -41,11 +38,25 @@ public abstract class ConfigurationCodec
      * @param config the config to load
      * @param is the inputstream to load from
      */
-    public void load(Configuration config, InputStream is)
+    public void load(Configuration config, InputStream is) throws InstantiationException, IllegalAccessException
     {
         container = new CodecContainer();
         container.fillFromInputStream(is);
-        //TODO update config here
+        Revision a_revision = config.getClass().getAnnotation(Revision.class);
+        if (a_revision != null)
+        {
+            if (revision != null)
+            {
+                if (config.getClass().isAnnotationPresent(Updater.class))
+                {
+                    if (a_revision.value() > revision)
+                    {
+                        Updater updater = config.getClass().getAnnotation(Updater.class);
+                        updater.value().newInstance().update(container.values, revision);
+                    }
+                }
+            }
+        }
         try
         {
             container.dumpIntoFields(config, container.values);
@@ -55,6 +66,7 @@ public abstract class ConfigurationCodec
             throw new InvalidConfigurationException("Error while dumping loaded Config into fields!", e);
         }
         container = null;
+        revision = null;
     }
 
     /**
@@ -150,7 +162,6 @@ public abstract class ConfigurationCodec
      */
     public abstract String getExtension();
 
-    // TODO revision and update stuff
     public abstract String revision();
 
     /**
@@ -247,7 +258,7 @@ public abstract class ConfigurationCodec
         public Object convertFromObjectToFieldValue(Object object, Field field, String path) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
             Class fieldClass = field.getType();
-            if (!String.class.isAssignableFrom(fieldClass)) //TODO other types without conversion?
+            if (!String.class.isAssignableFrom(fieldClass))
             {
                 Converter converter = Convert.matchConverter(fieldClass);
                 if (converter == null)
@@ -311,7 +322,7 @@ public abstract class ConfigurationCodec
                         continue;
                     }
                     int mask = field.getModifiers();
-                    if ((mask & Modifier.STATIC) == Modifier.STATIC) //skip static fields //TODO final fields too
+                    if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static and final fields
                     {
                         continue;
                     }

@@ -27,7 +27,6 @@ public class EntityMatcher
             {
                 EntityType.fromId((short)id).registerName(entityList.get(id));
             }
-            // TODO catch Exception if id is not a short
             catch (NullPointerException e)
             {
                 CubeEngine.getLogger().log(Level.WARNING, "Unknown Entity ID: " + id + " " + entityList.get(id).get(0));

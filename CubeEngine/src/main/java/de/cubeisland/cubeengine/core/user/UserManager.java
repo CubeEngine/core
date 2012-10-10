@@ -384,7 +384,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 }
                 users.remove(event.getPlayer().getName());
             }
-        }, 300L); // TODO configurable default 15sec 300Tick
+        }, this.core.getConfiguration().userManagerKeepUserLoaded);
         user.setAttribute("removingTaskId", id);
     }
     

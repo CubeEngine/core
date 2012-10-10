@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * This annotation is used to specify a configs revision.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 public @interface Revision
 {
     /**

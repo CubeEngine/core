@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import java.util.logging.Level;
 
 /**
@@ -11,14 +12,15 @@ import java.util.logging.Level;
  * Changes in this configuration can/will affect all modules.
  */
 @Codec("yml")
+@Revision(1)
 public class CoreConfiguration extends Configuration
 {
     @Option("debug")
     @Comment("If enabled shows debug-messages")
     public boolean debugMode = false;
     
-    @Option("defaultLanguage")
-    @Comment("Sets the language to choose by default")
+    @Option("default-Language")
+    @Comment("Sets the language to choose by default.\nCurrently supported en_US de_DE fr_FR")
     public String defaultLanguage = "en_US";
     
     @Option("executor.threads")
@@ -34,8 +36,12 @@ public class CoreConfiguration extends Configuration
     public Integer userManagerCleanup = 10;
     
     @Option("usermanager.garbagecollection")
-    @Comment("After which time should CubeEngine delete all of a Users data from Database")
+    @Comment("After which time should CubeEngine delete all of a users data from database")
     public String userManagerCleanupDatabase = "3M";
+    
+    @Option("usermanager.keepInMemory")
+    @Comment("How many Ticks after disconecting a user should stay in the usermanager")
+    public Long userManagerKeepUserLoaded = 300L;
     
     @Option("database")
     @Comment("Currently available: mysql")
