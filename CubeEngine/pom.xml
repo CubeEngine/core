@@ -78,7 +78,7 @@
 
     <build>
         <finalName>${project.name}</finalName>
-        <defaultGoal>clean install</defaultGoal>
+        <defaultGoal>${defaultGoal}</defaultGoal>
         <resources>
             <resource>
                 <targetPath>.</targetPath>
