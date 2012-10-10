@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.test;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -40,6 +41,7 @@ public class Test extends Module
     @Override
     public void onEnable()
     {
+        Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
         this.getFileManager().dropResources(TestRecource.values());
         this.uM = this.getUserManager();
         try

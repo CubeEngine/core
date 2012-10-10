@@ -41,7 +41,7 @@ public class CoreConfiguration extends Configuration
     
     @Option("usermanager.keepInMemory")
     @Comment("How many Ticks after disconecting a user should stay in the usermanager")
-    public Long userManagerKeepUserLoaded = 300L;
+    public Integer userManagerKeepUserLoaded = 300;
     
     @Option("database")
     @Comment("Currently available: mysql")
