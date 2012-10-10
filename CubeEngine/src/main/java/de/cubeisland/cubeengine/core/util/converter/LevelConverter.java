@@ -1,18 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.core.util.converter;
 
 import java.util.logging.Level;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class LevelConverter implements Converter<Level>
 {
-
     @Override
     public Object toObject(Level object) throws ConversionException
     {
@@ -36,5 +27,4 @@ public class LevelConverter implements Converter<Level>
     {
         return Level.parse(string);
     }
-    
 }

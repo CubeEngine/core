@@ -18,8 +18,7 @@ import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
 /**
- *
- * @author Anselm Brehme
+ * This configuration is used to test a lot of configstuff.
  */
 @MapComments(
 {

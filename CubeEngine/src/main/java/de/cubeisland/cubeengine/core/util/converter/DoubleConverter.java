@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class DoubleConverter extends BasicConverter<Double>
 {
     @Override

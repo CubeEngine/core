@@ -8,7 +8,6 @@ import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.EnchantMatcher;
@@ -27,6 +26,8 @@ import java.util.List;
 import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.GREATER;
 
 public class Test extends Module
 {

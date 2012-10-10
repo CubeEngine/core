@@ -4,20 +4,16 @@ import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class TestManager extends BasicStorage<TestModel>
 {
     public TestManager(Database database)
     {
-        super(database, TestModel.class, 42);//TODO
+        super(database, TestModel.class, 42);
         this.registerUpdater(new DatabaseUpdater()
         {
             public void update(Database database)
             {
-                //update blubb
+                //TODO update test if someone wants to do it (it worked already with Usermanager)
             }
         }, 1, 2, 3);
         this.initialize();

@@ -1,13 +1,13 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-public class FloatConverter extends BasicConverter<Float>
+public class LongConverter extends BasicConverter<Long>
 {
     @Override
-    public Float fromString(String string) throws ConversionException
+    public Long fromString(String string) throws ConversionException
     {
         try
         {
-            return Float.parseFloat(string);
+            return Long.parseLong(string);
         }
         catch (NumberFormatException e)
         {

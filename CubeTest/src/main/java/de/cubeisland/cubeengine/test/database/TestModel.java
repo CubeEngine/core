@@ -11,10 +11,6 @@ import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.sql.Date;
 import java.util.List;
 
-/**
- *
- * @author Anselm Brehme
- */
 @Entity(name = "Orders")
 public class TestModel implements Model<Integer>
 {

@@ -5,10 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ArrayConverter implements GenericConverter<Object[]>
 {
     @Override
@@ -52,6 +48,5 @@ public class ArrayConverter implements GenericConverter<Object[]>
             Array.set(o, i, Array.get(tmparray, i));
         }
         return (G[])o;
-
     }
 }

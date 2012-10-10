@@ -3,13 +3,8 @@ package de.cubeisland.cubeengine.core.util.converter;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import org.bukkit.World;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class WorldConverter implements Converter<World>
 {
-
     @Override
     public Object toObject(World object) throws ConversionException
     {
@@ -33,5 +28,4 @@ public class WorldConverter implements Converter<World>
     {
         return CubeEngine.getServer().getWorld(string);
     }
-    
 }

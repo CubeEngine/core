@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public abstract class BasicConverter<T> implements Converter<T>
 {
     @Override

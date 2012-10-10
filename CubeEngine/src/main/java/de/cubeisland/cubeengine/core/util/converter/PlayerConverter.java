@@ -5,10 +5,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class PlayerConverter implements Converter<OfflinePlayer>
 {
     private Server server;

@@ -7,8 +7,7 @@ import de.cubeisland.cubeengine.test.TestConfig2.TestConfig2Updater;
 import java.util.Map;
 
 /**
- *
- * @author Anselm Brehme
+ * This TestConfig is used for testing the updating process of configurations.
  */
 @Codec("yml")
 @Revision(2)

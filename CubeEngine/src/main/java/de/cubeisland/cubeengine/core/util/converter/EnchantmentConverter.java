@@ -3,13 +3,8 @@ package de.cubeisland.cubeengine.core.util.converter;
 import de.cubeisland.cubeengine.core.util.EnchantMatcher;
 import org.bukkit.enchantments.Enchantment;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class EnchantmentConverter implements Converter<Enchantment>
 {
-
     @Override
     public Object toObject(Enchantment object) throws ConversionException
     {
@@ -33,7 +28,4 @@ public class EnchantmentConverter implements Converter<Enchantment>
     {
         return EnchantMatcher.get().matchEnchantment(string);
     }
-
-    
-    
 }

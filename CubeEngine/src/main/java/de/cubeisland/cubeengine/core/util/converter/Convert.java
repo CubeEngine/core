@@ -16,8 +16,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class provides the conveters.
  */
 public class Convert
 {
@@ -57,6 +56,12 @@ public class Convert
         arrayConverter = new ArrayConverter();
     }
 
+    /**
+     * registers a converter to check for when converting
+     * 
+     * @param clazz
+     * @param converter 
+     */
     public static void registerConverter(Class<?> clazz, Converter<?> converter)
     {
         if (clazz == null || converter == null)
@@ -66,6 +71,12 @@ public class Convert
         CONVERTERS.put(clazz, converter);
     }
 
+    /**
+     * registers a genericConverter to check for when converting
+     * 
+     * @param clazz
+     * @param converter 
+     */
     public static void registerGenericConverter(Class<?> clazz, GenericConverter<?> converter)
     {
         if (clazz == null || converter == null)

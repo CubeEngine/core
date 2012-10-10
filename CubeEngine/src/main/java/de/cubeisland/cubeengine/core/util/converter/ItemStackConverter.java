@@ -3,10 +3,6 @@ package de.cubeisland.cubeengine.core.util.converter;
 import de.cubeisland.cubeengine.core.util.MaterialMatcher;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ItemStackConverter implements Converter<ItemStack>
 {
     @Override

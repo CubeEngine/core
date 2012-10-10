@@ -1,13 +1,8 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
 import java.util.Collection;
 import java.util.LinkedList;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ColletionConverter implements GenericConverter<Collection>
 {
     @Override

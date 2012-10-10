@@ -4,10 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- *
- * @author Anselm
- */
 public class SetConverter implements Converter<Set<?>>
 {
     @Override

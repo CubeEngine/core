@@ -1,15 +1,11 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-/**
- *
- * @author Anselm Brehme
- */
 public interface GenericConverter<T extends Object>
 {
     /**
      * Converts this class to an serializable object
      *
-     * @param object the fieldvalue
+     * @param object      the fieldvalue
      * @param genericType the genricType of the object
      * @return the serialized fieldvalue
      */
@@ -18,7 +14,7 @@ public interface GenericConverter<T extends Object>
     /**
      * Converts the given object to this class
      *
-     * @param object the object to deserialize
+     * @param object      the object to deserialize
      * @param genericType the genricType of the object
      * @return the deserialized fieldvalue
      */

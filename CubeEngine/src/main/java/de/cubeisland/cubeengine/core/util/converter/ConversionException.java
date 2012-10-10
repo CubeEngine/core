@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class ConversionException extends Exception
 {
     public ConversionException(String message)

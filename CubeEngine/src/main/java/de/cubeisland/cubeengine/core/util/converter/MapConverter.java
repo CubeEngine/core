@@ -3,10 +3,6 @@ package de.cubeisland.cubeengine.core.util.converter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class MapConverter implements GenericConverter<Map>
 {
     @Override
@@ -40,7 +36,8 @@ public class MapConverter implements GenericConverter<Map>
             Map<String, G> result = new LinkedHashMap<String, G>();
             for (Map.Entry<String, ?> entry : map.entrySet())
             {
-                result.put(entry.getKey(), (G)converter.fromObject(entry.getValue()));
+                result.put(entry.getKey(), (G)converter.fromObject(entry.
+                    getValue()));
             }
             return result;
         }

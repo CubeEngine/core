@@ -3,13 +3,8 @@ package de.cubeisland.cubeengine.core.util.converter;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class UserConverter implements Converter<User>
 {
-
     @Override
     public Object toObject(User object) throws ConversionException
     {
@@ -33,5 +28,4 @@ public class UserConverter implements Converter<User>
     {
         return CubeEngine.getUserManager().findUser(string);
     }
-    
 }
