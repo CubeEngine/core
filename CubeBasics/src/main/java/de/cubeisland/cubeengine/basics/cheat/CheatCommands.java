@@ -25,10 +25,6 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class CheatCommands
 {
     private UserManager um;

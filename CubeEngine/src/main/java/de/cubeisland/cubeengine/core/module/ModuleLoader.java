@@ -24,10 +24,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.apache.commons.lang.Validate;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class ModuleLoader
 {
     private final Core core;
@@ -126,6 +122,7 @@ public class ModuleLoader
             }
             InputStream configStream = jarFile.getInputStream(entry);
             info = new ModuleInfo(file, Configuration.load(ModuleConfiguration.class, configStream));
+            configStream.close();
         }
         catch (IOException e)
         {

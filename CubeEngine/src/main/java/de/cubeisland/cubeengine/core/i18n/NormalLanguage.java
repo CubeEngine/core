@@ -16,10 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class NormalLanguage implements Cleanable, Language
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
@@ -163,6 +159,7 @@ public class NormalLanguage implements Cleanable, Language
                     this.objectMapper.writeValue(messageFile, newMessages);
                 }
             }
+            resource.close();
         }
         catch (IOException e)
         {

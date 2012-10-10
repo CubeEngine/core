@@ -12,10 +12,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FileUtil
 {
     public static List<String> readStringList(InputStream stream) throws IOException
@@ -47,11 +43,16 @@ public class FileUtil
             {
                 list.add(line);
             }
+            breader.close();
             return list;
         }
         catch (FileNotFoundException e)
         {
             throw new IllegalStateException("Could not find the File!", e);
+        }
+        finally
+        {
+            reader.close();
         }
     }
 

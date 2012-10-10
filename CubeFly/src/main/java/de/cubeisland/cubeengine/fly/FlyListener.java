@@ -17,10 +17,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FlyListener implements Listener
 {
     private UserManager usermanager;
@@ -84,7 +80,7 @@ public class FlyListener implements Listener
             user.sendMessage("fly", "Feather-flying is disabled in the configuration!");
         }
 
-        if (!FlyPerm.FLY_FEAHTER.isAuthorized(player))
+        if (!FlyPerm.FLY_FEATHER.isAuthorized(player))
         {
             user.sendMessage("core", "You dont have permission to use this!");
             player.setAllowFlight(false); //Disable when player is flying

@@ -12,10 +12,6 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Projectile;
 
-/**
- *
- * @author Anselm Brehme
- */
 public enum EntityType
 {
     DROPPED_ITEM(org.bukkit.entity.EntityType.DROPPED_ITEM, false),
