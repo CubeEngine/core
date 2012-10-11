@@ -347,7 +347,7 @@ public class CheatCommands
         user.updateInventory();
         String matname = MaterialMatcher.get().getNameFor(item);
         context.sendMessage("basics", "You gave %s %d %s", user.getName(), amount, matname);
-        user.sendMessage("%s just gave you %d %s", context.getSender().getName(), matname, amount);
+        user.sendMessage("%s just gave you %d %s", context.getSender().getName(), amount, matname);
     }
 
     @Command(

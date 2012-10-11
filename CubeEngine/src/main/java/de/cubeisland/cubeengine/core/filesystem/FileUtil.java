@@ -32,28 +32,37 @@ public class FileUtil
         return readStringList(new FileReader(file));
     }
 
-    public static List<String> readStringList(Reader reader) throws IOException
+    public static List<String> readStringList(Reader reader)
     {
+        if (reader == null)
+        {
+            return null;
+        }
+        ArrayList<String> list = new ArrayList<String>();
+        BufferedReader breader = new BufferedReader(reader);
+        String line;
         try
         {
-            ArrayList<String> list = new ArrayList<String>();
-            BufferedReader breader = new BufferedReader(reader);
-            String line;
             while ((line = breader.readLine()) != null)
             {
                 list.add(line);
             }
             breader.close();
-            return list;
         }
         catch (FileNotFoundException e)
         {
             throw new IllegalStateException("Could not find the File!", e);
         }
-        finally
+        catch (IOException ex)
         {
-            reader.close();
+            try
+            {
+                breader.close();
+            }
+            catch (IOException ex1)
+            {}
         }
+        return list;
     }
 
     public static void saveFile(String string, File file) throws IOException

@@ -146,24 +146,35 @@ public class NormalLanguage implements Cleanable, Language
 
     private Map<String, String> updateMessages(File messageFile, Map<String, String> catMessages)
     {
+        InputStream resource = CubeEngine.getFileManager().getSourceOf(messageFile);
+        if (resource == null)
+        {
+            return catMessages;
+        }
         try
         {
-            InputStream resource = CubeEngine.getFileManager().getSourceOf(messageFile);
-            if (resource != null)
+            Map<String, String> newMessages = this.objectMapper.readValue(resource, Map.class);
+            newMessages.putAll(catMessages);
+            if (newMessages.size() != catMessages.size())
             {
-                Map<String, String> newMessages = this.objectMapper.readValue(resource, Map.class);
-                newMessages.putAll(catMessages);
-
-                if (newMessages.size() != catMessages.size())
-                {
-                    this.objectMapper.writeValue(messageFile, newMessages);
-                }
+                this.objectMapper.writeValue(messageFile, newMessages);
             }
             resource.close();
         }
         catch (IOException e)
         {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+        }
+        finally
+        {
+            try
+            {
+                resource.close();
+            }
+            catch (IOException e)
+            {
+                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+            }
         }
         return catMessages;
     }
