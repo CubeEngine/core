@@ -12,11 +12,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+/**
+ * This Matcher provides methods to match Entities.
+ */
 public class EntityMatcher
 {
     private static EntityMatcher instance = null;
 
-    public EntityMatcher()
+    private EntityMatcher()
     {
         TreeMap<Integer, List<String>> entityList = this.readEntities();
         for (int id : entityList.keySet())
@@ -32,6 +35,11 @@ public class EntityMatcher
         }
     }
 
+    /**
+     * Returns an instance of the matcher
+     * 
+     * @return 
+     */
     public static EntityMatcher get()
     {
         if (instance == null)
@@ -41,6 +49,12 @@ public class EntityMatcher
         return instance;
     }
 
+    /**
+     * Tries to match an EntityType for given string
+     * 
+     * @param s the string to match
+     * @return the found EntityType
+     */
     public EntityType matchEntity(String name)
     {
         if (name == null)
@@ -73,6 +87,12 @@ public class EntityMatcher
         return entity;
     }
     
+    /**
+     * Tries to match an EntityType that is a Mob for given string
+     * 
+     * @param s the string to match
+     * @return the found Mob
+     */
     public EntityType matchMob(String s)
     {
         EntityType type = this.matchEntity(s);
@@ -83,6 +103,12 @@ public class EntityMatcher
         return null;
     }
 
+    /**
+     * Tries to match an EntityType that is a Mob that can be spawned by spawneggs for given string
+     * 
+     * @param s the string to match
+     * @return the found Mob
+     */
     public EntityType matchSpawnEggMobs(String s)
     {
         EntityType type = this.matchMob(s);
@@ -93,6 +119,12 @@ public class EntityMatcher
         return null;
     }
 
+    /**
+     * Tries to match an EntityType that is a Monster for given string
+     * 
+     * @param s the string to match
+     * @return the found Monster
+     */
     public EntityType matchMonster(String s)
     {
         EntityType type = this.matchEntity(s);
@@ -103,6 +135,12 @@ public class EntityMatcher
         return null;
     }
 
+    /**
+     * Tries to match an EntityType that is a friendly Mob for given string
+     * 
+     * @param s the string to match
+     * @return the found friendly Mob
+     */
     public EntityType matchFriendlyMob(String s)
     {
         EntityType type = this.matchEntity(s);
@@ -113,6 +151,12 @@ public class EntityMatcher
         return null;
     }
 
+    /**
+     * Tries to match an EntityType that is a Projectile for given string
+     * 
+     * @param s the string to match
+     * @return the found Projectile
+     */
     public EntityType matchProjectile(String s)
     {
         EntityType type = this.matchEntity(s);
@@ -123,6 +167,11 @@ public class EntityMatcher
         return null;
     }
 
+    /**
+     * Loads in the file with the saved entitiy-names
+     * 
+     * @return the loaded entities with corresponding names
+     */
     private TreeMap<Integer, List<String>> readEntities()
     {
         try

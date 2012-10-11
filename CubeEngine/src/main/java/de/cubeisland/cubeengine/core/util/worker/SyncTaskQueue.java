@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import org.apache.commons.lang.Validate;
 
+/**
+ * This TaskQueue will execute one task every serverTick.
+ */
 public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();

@@ -5,8 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Phillip Schichtel
+ * This TaskQueue will execute all tasks in an async thread.
  */
 public class AsyncTaskQueue implements TaskQueue
 {

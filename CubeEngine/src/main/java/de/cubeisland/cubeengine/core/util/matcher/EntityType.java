@@ -12,6 +12,9 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Projectile;
 
+/**
+ * This class extends the bukkit EntityType.
+ */
 public enum EntityType
 {
     DROPPED_ITEM(org.bukkit.entity.EntityType.DROPPED_ITEM, false),
@@ -94,52 +97,101 @@ public enum EntityType
         this.spawnEgg = spawnEgg;
     }
 
+    /**
+     * Returns if this EntityType can be spawned via SpawnEgg.
+     */
     public boolean canBeSpawnedBySpawnEgg()
     {
         return spawnEgg;
     }
 
+    /**
+     * Returns the corresponding Bukkit-EntityType
+     * 
+     * @return the EntityType
+     */
     public org.bukkit.entity.EntityType getBukkitType()
     {
         return this.type;
     }
 
+    /**
+     * Gets the EntityType by id
+     * 
+     * @param id
+     * @return the EntityType corresponding to the id
+     */
     public static EntityType fromId(short id)
     {
         return ID_MAP.get(id);
     }
 
+    /**
+     * Gets the class of the bukkit EntityType
+     * 
+     * @return the entityClass
+     */
     public Class<? extends Entity> getEntityClass()
     {
         return this.type.getEntityClass();
     }
 
+    /**
+     * Returns whether this Entity is alive
+     * 
+     * @return 
+     */
     public boolean isAlive()
     {
         return this.type.isAlive();
     }
 
+    /**
+     * Returns whether this Entity is a monster
+     * 
+     * @return 
+     */
     public boolean isMonster()
     {
         return Monster.class.isAssignableFrom(this.getEntityClass());
     }
 
+    /**
+     * Returns whether this Entity is a friendly mob
+     * 
+     * @return 
+     */
     public boolean isFriendly()
     {
         return this.isAnimal() || NPC.class.isAssignableFrom(this.
             getEntityClass());
     }
 
+    /**
+     * Returns whether this Entity is an animal
+     * 
+     * @return 
+     */
     public boolean isAnimal()
     {
         return Animals.class.isAssignableFrom(this.getEntityClass());
     }
 
+    /**
+     * Returns whether this Entity is a projectile
+     * 
+     * @return 
+     */
     public boolean isProjectile()
     {
         return Projectile.class.isAssignableFrom(this.getEntityClass());
     }
 
+    /**
+     * Registers a list of names for this entityType
+     * 
+     * @param names 
+     */
     public void registerName(List<String> names)
     {
         if (names.isEmpty())
@@ -153,11 +205,21 @@ public enum EntityType
         }
     }
 
+    /**
+     * Returns a map of names -> EntitiyType
+     * 
+     * @return 
+     */
     public static Map<String, EntityType> getNameSets()
     {
         return NAME_MAP;
     }
 
+    /**
+     * Returns the name of this EntityType
+     * 
+     * @return 
+     */
     @Override
     public String toString()
     {

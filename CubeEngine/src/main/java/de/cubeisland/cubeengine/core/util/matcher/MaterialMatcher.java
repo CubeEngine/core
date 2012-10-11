@@ -20,6 +20,9 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * This Matcher provides methods to match Material or Items.
+ */
 public class MaterialMatcher
 {
     private THashMap<String, ItemStack> items;
@@ -42,6 +45,11 @@ public class MaterialMatcher
         }
     }
 
+    /**
+     * Returns an instance of the matcher
+     * 
+     * @return 
+     */
     public static MaterialMatcher get()
     {
         if (instance == null)
@@ -51,7 +59,13 @@ public class MaterialMatcher
         return instance;
     }
 
-    public final void registerItemStack(ItemStack item, List<String> names)
+    /**
+     * Registers an Itemstack for the matcher with a list of names
+     * 
+     * @param item the Item
+     * @param names the corresponding names
+     */
+    private void registerItemStack(ItemStack item, List<String> names)
     {
         if (names.isEmpty())
         {
@@ -64,6 +78,12 @@ public class MaterialMatcher
         }
     }
 
+    /**
+     * Tries to match a Itemstack for given name
+     * 
+     * @param name
+     * @return the found ItemStack
+     */
     public ItemStack matchItemStack(String name)
     {
         String s = name.toLowerCase(Locale.ENGLISH);
@@ -114,12 +134,25 @@ public class MaterialMatcher
         return item;
     }
 
+    /**
+     * Matches a DyeColor
+     * 
+     * @param data
+     * @return 
+     */
     public DyeColor matchColorData(String data)
     {
         short dataVal = this.datavalues.get(351).get(StringUtils.matchString(data, this.datavalues.get(351).keySet()));
         return DyeColor.getByData((byte)dataVal);
     }
 
+    /**
+     * Sets the data for an ItemStack
+     * 
+     * @param item
+     * @param data
+     * @return 
+     */
     private ItemStack setData(ItemStack item, String data)
     {
         if (item == null)
@@ -177,6 +210,12 @@ public class MaterialMatcher
         return null;
     }
 
+    /**
+     * Tries to match a Material for given name
+     * 
+     * @param name
+     * @return 
+     */
     public Material matchMaterial(String name)
     {
         String s = name.toLowerCase(Locale.ENGLISH);
@@ -196,6 +235,14 @@ public class MaterialMatcher
         return null;
     }
 
+    /**
+     * Loads in the file with the saved item-names.
+     * 
+     * @param map
+     * @param input
+     * @param update
+     * @return 
+     */
     private boolean readItems(TreeMap<Integer, TreeMap<Short, List<String>>> map, List<String> input, boolean update)
     {
         boolean updated = false;
@@ -267,6 +314,9 @@ public class MaterialMatcher
         return updated;
     }
 
+    /**
+     * Loads in the file with the saved item-names.
+     */ 
     private TreeMap<Integer, TreeMap<Short, List<String>>> readItems()
     {
         try
@@ -308,6 +358,9 @@ public class MaterialMatcher
         }
     }
 
+    /**
+     * Loads in the file with the saved item-datavalues
+     */
     private void readDataValues()
     {
         this.datavalues = new TIntObjectHashMap<THashMap<String, Short>>();
@@ -349,6 +402,9 @@ public class MaterialMatcher
         }
     }
    
+    /**
+     * This enum contains all repairable items
+     */
     public enum RepairableMaterials
     {
         IRON_SPADE, IRON_PICKAXE, IRON_AXE, IRON_SWORD,
@@ -375,6 +431,9 @@ public class MaterialMatcher
            
         }
   
+        /**
+         * Returns whether the given ItemStack is repairable
+         */
         public static boolean isRepairable(ItemStack item)
         {
             if (item == null)
@@ -385,11 +444,20 @@ public class MaterialMatcher
         }
     }
     
+    /**
+     * Returns whether the given ItemStack is repairable
+     */
     public boolean isRepairable(ItemStack item)
     {
         return RepairableMaterials.isRepairable(item);
     }
     
+    /**
+     * Returns the name for given ItemStack
+     * 
+     * @param item
+     * @return 
+     */
     public String getNameFor(ItemStack item)
     {
         return this.itemnames.get(new ItemStack(item.getType(), 1, item.getDurability()));
