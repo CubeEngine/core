@@ -4,8 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.PermissionDefault;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
@@ -21,7 +19,6 @@ public class EditCommand
 			min = 1,
 			max = 4,
 			usage = "Look at a sign and excecute command. Example:\n /edit Line1 This is line one 2 \"this line contains a number 2\" 3 This is line three",
-			permDefault = PermissionDefault.OP,
 			params = {
 					@Param(
 							names = {"Line1", "1"}, 
@@ -60,7 +57,7 @@ public class EditCommand
 			return;
 		}
 		
-		if (context.indexedCount() < 0){
+		if (context.namedCount() < 0){
 			user.sendMessage(ChatColor.RED + "You need to speccify at least one parameter");
 			return;
 		}
