@@ -126,14 +126,21 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: database
         this.moduleManager = new ModuleManager(this);
 
-        // depends on: file manager
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());
-
-        // depends on: finshed loading modules
-        this.getUserManager().cleanup();
-
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this, pm);
+
+        
+        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run()
+            {
+                // depends on: file manager
+                BukkitCore.this.moduleManager.loadModules(BukkitCore.this.fileManager.getModulesDir());
+
+                // depends on: finshed loading modules
+                BukkitCore.this.userManager.cleanup();
+            }
+        });
     }
 
     @Override
