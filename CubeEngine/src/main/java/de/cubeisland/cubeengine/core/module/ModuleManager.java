@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -195,36 +197,61 @@ public class ModuleManager
         module = this.loader.loadModule(info);
         loadStack.pop();
         
+        Plugin[] plugins = this.pluginManager.getPlugins();
+        Map<Class, Plugin> pluginClassMap = new HashMap<Class, Plugin>(plugins.length);
+        for (Plugin plugin : plugins)
+        {
+            pluginClassMap.put(plugin.getClass(), plugin);
+        }
+        
         Integer requiredVersion;
         Module injectedModule;
+        Class fieldType;
         for (Field field : module.getClass().getDeclaredFields())
         {
-            if (!Module.class.isAssignableFrom(field.getType()))
+            fieldType = field.getType();
+            if (Module.class.isAssignableFrom(fieldType))
             {
-                continue;
+                injectedModule = this.classMap.get((Class<? extends Module>)fieldType);
+                if (injectedModule == null)
+                {
+                    continue;
+                }
+                if (fieldType == module.getClass())
+                {
+                    continue;
+                }
+                requiredVersion = module.getInfo().getSoftDependencies().get(injectedModule.getId());
+                if (requiredVersion != null && requiredVersion > -1 && injectedModule.getInfo().getRevision() < requiredVersion)
+                {
+                   continue;
+                }
+                field.setAccessible(true);
+                try
+                {
+                    field.set(module, injectedModule);
+                }
+                catch (Exception e)
+                {
+                    LOGGER.log(Level.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]{name, injectedModule.getName()});
+                }
             }
-            injectedModule = this.classMap.get((Class<? extends Module>)field.getType());
-            if (injectedModule == null)
+            else if (Plugin.class.isAssignableFrom(fieldType))
             {
-                continue;
-            }
-            if (field.getType() == module.getClass())
-            {
-                continue;
-            }
-            requiredVersion = module.getInfo().getSoftDependencies().get(injectedModule.getId());
-            if (requiredVersion != null && requiredVersion > -1 && injectedModule.getInfo().getRevision() < requiredVersion)
-            {
-               continue;
-            }
-            field.setAccessible(true);
-            try
-            {
-                field.set(module, injectedModule);
-            }
-            catch (Exception e)
-            {
-                LOGGER.log(Level.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]{name, injectedModule.getName()});
+                Plugin plugin = pluginClassMap.get(fieldType);
+                if (plugin == null)
+                {
+                    continue;
+                }
+                field.setAccessible(true);
+                try
+                {
+                    field.set(module, plugin);
+                }
+                catch (Exception e)
+                {
+                    LOGGER.log(Level.WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]{name, plugin.getName()});
+                }
             }
         }
         

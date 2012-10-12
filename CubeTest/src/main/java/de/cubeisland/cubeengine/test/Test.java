@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.From;
@@ -38,6 +39,7 @@ public class Test extends Module
     public static List<String> aListOfPlayers;
     
     public Basics basicsModule;
+    private BukkitCore core;
 
     @Override
     public void onEnable()
@@ -77,7 +79,8 @@ public class Test extends Module
             }
         });
         
-        this.getLogger().info("Basics-Module: " + String.valueOf(basicsModule));
+        this.getLogger().log(Level.INFO, "Basics-Module: {0}", String.valueOf(basicsModule));
+        this.getLogger().log(Level.INFO, "BukkitCore-Plugin: {0}", String.valueOf(core));
     }
 
     public void initializeDatabase() throws SQLException
