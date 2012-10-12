@@ -159,7 +159,6 @@ public class NormalLanguage implements Cleanable, Language
             {
                 this.objectMapper.writeValue(messageFile, newMessages);
             }
-            resource.close();
         }
         catch (IOException e)
         {
@@ -171,10 +170,8 @@ public class NormalLanguage implements Cleanable, Language
             {
                 resource.close();
             }
-            catch (IOException e)
-            {
-                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-            }
+            catch (IOException ignored)
+            {}
         }
         return catMessages;
     }
