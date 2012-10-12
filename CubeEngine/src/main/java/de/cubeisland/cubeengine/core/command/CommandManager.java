@@ -152,8 +152,8 @@ public class CommandManager
         if (command instanceof ContainerCommand)
         {
             String[] newParents = new String[parents.length + 1];
-            newParents[0] = command.getName();
-            System.arraycopy(parents, 0, newParents, 1, parents.length);
+            newParents[parents.length] = command.getName();
+            System.arraycopy(parents, 0, newParents, 0, parents.length);
 
             this.registerCommands(command.getModule(), command, newParents);
         }
@@ -215,11 +215,15 @@ public class CommandManager
                 aliases
             );
 
-            this.registerCommand(cmd);
+            this.registerCommand(cmd, parents);
             
             Alias aliasAnnotation = method.getAnnotation(Alias.class);
             if (aliasAnnotation != null && aliasAnnotation.names().length > 0)
             {
+                if (aliasAnnotation.parentPath().length != parents.length)
+                {
+                    continue;
+                }
                 names = aliasAnnotation.names();
                 if (names.length > 1)
                 {
@@ -233,7 +237,7 @@ public class CommandManager
                 {
                     aliases = Collections.<String>emptyList();
                 }
-                this.registerCommand(new AliasCommand(names[0], aliases, cmd));
+                this.registerCommand(new AliasCommand(names[0], aliases, cmd), aliasAnnotation.parentPath());
             }
         }
     }
