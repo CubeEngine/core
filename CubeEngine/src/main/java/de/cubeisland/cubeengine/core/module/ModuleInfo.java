@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -23,6 +24,7 @@ public final class ModuleInfo
     private final int minCoreVersion;
     private final Map<String, Integer> dependencies;
     private final Map<String, Integer> softDependencies;
+    private final Set<String> pluginDependencies;
 
     public ModuleInfo(File file, ModuleConfiguration config)
     {
@@ -91,6 +93,8 @@ public final class ModuleInfo
             }
             this.softDependencies.put(dep, version);
         }
+        
+        this.pluginDependencies = config.pluginDependencies;
     }
 
     public File getFile()
@@ -136,6 +140,11 @@ public final class ModuleInfo
     public Map<String, Integer> getSoftDependencies()
     {
         return this.softDependencies;
+    }
+    
+    public Set<String> getPluginDependencies()
+    {
+        return this.pluginDependencies;
     }
 
     @Override
@@ -183,6 +192,11 @@ public final class ModuleInfo
         }
         
         if (!this.softDependencies.equals(other.softDependencies))
+        {
+            return false;
+        }
+        
+        if (this.pluginDependencies.equals(other.pluginDependencies))
         {
             return false;
         }
