@@ -116,28 +116,25 @@ public abstract class Configuration
         {
             return null;
         }
-        T config = null;
         InputStream inputStream = null;
         try
         {
             inputStream = new FileInputStream(file);
-            config = load(clazz, inputStream); //loading config from InputSream or Default
         }
         catch (FileNotFoundException e)
         {
             logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
         }
-        finally
+        T config = load(clazz, inputStream); //loading config from InputSream or Default
+        
+        if (inputStream != null)
         {
-            if (inputStream != null)
+            try
             {
-                try
-                {
-                    inputStream.close();
-                }
-                catch (IOException ignored)
-                {}
+                inputStream.close();
             }
+            catch (IOException ignored)
+            {}
         }
         
         config.file = file;

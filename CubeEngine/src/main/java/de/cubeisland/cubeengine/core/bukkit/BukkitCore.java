@@ -91,7 +91,10 @@ public class BukkitCore extends JavaPlugin implements Core
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
         this.debug = this.config.debugMode;
 
-        // depends on: core config and file manager
+        // depends on: core config, server
+        this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
+
+        // depends on: core config, file manager, task manager
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
@@ -107,9 +110,6 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
-
-        // depends on: core config, server
-        this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
 
         // depends on: executor, database, Server, core config and event registration
         this.userManager = new UserManager(this);
