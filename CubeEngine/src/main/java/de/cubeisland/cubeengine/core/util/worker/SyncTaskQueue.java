@@ -59,6 +59,12 @@ public class SyncTaskQueue implements TaskQueue
     @Override
     public synchronized void stop()
     {
+        this.stop(false);
+    }
+    
+    @Override
+    public synchronized void stop(boolean interupt)
+    {
         if (this.isRunning())
         {
             this.taskManager.cancelTask(this.taskID);

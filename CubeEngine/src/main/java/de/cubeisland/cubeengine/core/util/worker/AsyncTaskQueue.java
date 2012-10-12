@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.core.util.worker;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -11,18 +14,20 @@ public class AsyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
     
-    private Thread worker;
+    private final ExecutorService executorService;
     private final BlockingQueue<Runnable> taskQueue;
+    private final AtomicReference<Future<?>> exectorFuture;
     
-    public AsyncTaskQueue()
+    public AsyncTaskQueue(ExecutorService executorService)
     {
-        this(new LinkedBlockingQueue<Runnable>());
+        this(executorService, new LinkedBlockingQueue<Runnable>());
     }
 
-    public AsyncTaskQueue(BlockingQueue<Runnable> taskQueue)
+    public AsyncTaskQueue(ExecutorService executorService, BlockingQueue<Runnable> taskQueue)
     {
-        this.worker = null;
+        this.executorService = executorService;
         this.taskQueue = taskQueue;
+        this.exectorFuture = new AtomicReference<Future<?>>();
     }
     
     @Override
@@ -31,27 +36,44 @@ public class AsyncTaskQueue implements TaskQueue
         Validate.notNull(runnable, "The task must not be null!");
         
         this.taskQueue.offer(runnable);
+        this.start();
     }
 
     @Override
     public void start()
     {
-        if (!this.isRunning())
+        if (this.exectorFuture.get() == null)
         {
-            this.worker = new Thread(this.workerTask, "AsyncTaskQueue");
+            this.exectorFuture.set(this.executorService.submit(this.workerTask));
         }
     }
 
     @Override
     public void stop()
     {
-        this.worker = null;
+        this.stop(false);
+    }
+
+    @Override
+    public void stop(boolean interupt)
+    {
+        Future<?> future = this.exectorFuture.get();
+        if (future != null)
+        {
+            future.cancel(interupt);
+            this.exectorFuture.set(null);
+        }
     }
 
     @Override
     public boolean isRunning()
     {
-        return worker != null;
+        Future<?> future = this.exectorFuture.get();
+        if (future != null)
+        {
+            return !future.isDone();
+        }
+        return false;
     }
     
     @Override
@@ -65,7 +87,7 @@ public class AsyncTaskQueue implements TaskQueue
         @Override
         public void run()
         {
-            while (worker != null)
+            while (exectorFuture.get() != null)
             {
                 taskQueue.poll().run();
             }
