@@ -10,9 +10,7 @@ import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -204,11 +202,6 @@ public class BukkitCore extends JavaPlugin implements Core
     public FileManager getFileManager()
     {
         return this.fileManager;
-    }
-
-    public void registerPermissions(Module module, Permission... perms)
-    {
-        this.permissionRegistration.registerPermissions(module, perms);
     }
 
     @Override
