@@ -59,6 +59,7 @@ public class ApiRequestException extends RuntimeException implements ApiSerializ
         return this.getMessage();
     }
 
+    @Override
     public Object serialize()
     {
         HashMap<String, Object> data = new HashMap<String, Object>(2);

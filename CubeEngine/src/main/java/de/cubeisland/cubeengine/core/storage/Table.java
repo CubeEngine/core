@@ -45,11 +45,13 @@ public class Table implements Model<Integer>
         this.revision = revision;
     }
 
+    @Override
     public Integer getKey()
     {
         return key;
     }
 
+    @Override
     public void setKey(Integer key)
     {
         this.key = key;

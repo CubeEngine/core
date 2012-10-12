@@ -48,11 +48,13 @@ public class ApiCommandSender implements CommandSender
         }
     }
 
+    @Override
     public String getName()
     {
         return this.name;
     }
 
+    @Override
     public void sendMessage(String message)
     {
         if (active)
@@ -61,6 +63,7 @@ public class ApiCommandSender implements CommandSender
         }
     }
 
+    @Override
     public void sendMessage(String[] strings)
     {
         for (String string : strings)
@@ -78,71 +81,85 @@ public class ApiCommandSender implements CommandSender
         return null;
     }
 
+    @Override
     public boolean isOp()
     {
         return true;
     }
 
+    @Override
     public Server getServer()
     {
         return this.server;
     }
 
+    @Override
     public boolean isPermissionSet(String name)
     {
         return true;
     }
 
+    @Override
     public boolean isPermissionSet(Permission perm)
     {
         return true;
     }
 
+    @Override
     public boolean hasPermission(String name)
     {
         return true;
     }
 
+    @Override
     public boolean hasPermission(Permission perm)
     {
         return true;
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value)
     {
         return null;
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin)
     {
         return null;
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks)
     {
         return null;
     }
 
+    @Override
     public PermissionAttachment addAttachment(Plugin plugin, int ticks)
     {
         return null;
     }
 
+    @Override
     public void removeAttachment(PermissionAttachment attachment)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void recalculatePermissions()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Set<PermissionAttachmentInfo> getEffectivePermissions()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void setOp(boolean value)
     {
         throw new UnsupportedOperationException("Not supported yet.");

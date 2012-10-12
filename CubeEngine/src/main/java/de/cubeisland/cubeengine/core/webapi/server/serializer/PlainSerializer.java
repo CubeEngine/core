@@ -8,16 +8,19 @@ import java.util.Map;
 
 public class PlainSerializer implements ApiResponseSerializer
 {
+    @Override
     public String getName()
     {
         return "plain";
     }
 
+    @Override
     public MimeType getMime()
     {
         return MimeType.PLAIN;
     }
 
+    @Override
     public String serialize(Object o)
     {
         StringBuilder buffer = new StringBuilder();

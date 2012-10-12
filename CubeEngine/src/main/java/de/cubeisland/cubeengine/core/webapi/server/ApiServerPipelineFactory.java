@@ -13,6 +13,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
  */
 public class ApiServerPipelineFactory implements ChannelPipelineFactory
 {
+    @Override
     public ChannelPipeline getPipeline() throws Exception
     {
         ChannelPipeline pipeline = Channels.pipeline();

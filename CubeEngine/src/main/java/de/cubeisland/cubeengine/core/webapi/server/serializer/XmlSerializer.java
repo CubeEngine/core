@@ -10,16 +10,19 @@ public class XmlSerializer implements ApiResponseSerializer
 {
     private final static String XMLDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 
+    @Override
     public String getName()
     {
         return "xml";
     }
 
+    @Override
     public MimeType getMime()
     {
         return MimeType.XML;
     }
 
+    @Override
     public String serialize(Object o)
     {
         StringBuilder buffer = new StringBuilder(XMLDeclaration);

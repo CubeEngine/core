@@ -8,16 +8,19 @@ import java.util.Map;
 
 public class JsonSerializer implements ApiResponseSerializer
 {
+    @Override
     public String getName()
     {
         return "json";
     }
 
+    @Override
     public MimeType getMime()
     {
         return MimeType.JSON;
     }
 
+    @Override
     public String serialize(Object o)
     {
         StringBuilder buffer = new StringBuilder();
