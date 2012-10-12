@@ -1,9 +1,11 @@
 package de.cubeisland.cubeengine.core.util.worker;
 
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import java.util.LinkedList;
 import java.util.Queue;
 import org.apache.commons.lang.Validate;
+import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  * This TaskQueue will execute one task every serverTick.
@@ -12,18 +14,20 @@ public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
     
-    private final TaskManager taskManager;
+    private final BukkitCore corePlugin;
+    private final BukkitScheduler scheduler;
     private final Queue<Runnable> taskQueue;
     private int taskID;
 
-    public SyncTaskQueue(TaskManager taskManager)
+    public SyncTaskQueue(Core core)
     {
-        this(taskManager, new LinkedList<Runnable>());
+        this(core, new LinkedList<Runnable>());
     }
     
-    public SyncTaskQueue(TaskManager taskManager, Queue<Runnable> taskQueue)
+    public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
     {
-        this.taskManager = taskManager;
+        this.corePlugin = (BukkitCore)core;
+        this.scheduler = core.getServer().getScheduler();
         this.taskQueue = taskQueue;
         this.taskID = -1;
     }
@@ -32,7 +36,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.taskQueue.isEmpty())
         {
-            taskManager.cancelTask(this.taskID);
+            this.scheduler.cancelTask(this.taskID);
             return;
         }
         this.taskQueue.poll().run();
@@ -52,7 +56,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (!this.isRunning())
         {
-            this.taskID = this.taskManager.scheduleSyncRepeatingTask(this.workerTask, 0, 1);
+            this.taskID = this.scheduler.scheduleSyncRepeatingTask(this.corePlugin, this.workerTask, 0, 1);
         }
     }
     
@@ -67,7 +71,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.isRunning())
         {
-            this.taskManager.cancelTask(this.taskID);
+            this.scheduler.cancelTask(this.taskID);
             this.taskID = -1;
         }
     }
