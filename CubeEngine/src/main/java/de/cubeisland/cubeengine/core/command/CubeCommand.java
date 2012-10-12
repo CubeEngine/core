@@ -207,7 +207,7 @@ public abstract class CubeCommand extends Command
         return new LinkedList<CubeCommand>(this.children.values());
     }
     
-    public Set<String> getChildNames()
+    public Set<String> getChildrenNames()
     {
         return this.children.keySet();
     }
@@ -246,7 +246,7 @@ public abstract class CubeCommand extends Command
     {
         return NO_PARAMS;
     }
-
+    
     public abstract void run(CommandContext context) throws Exception;
     
     public abstract void showHelp(CommandContext context) throws Exception;

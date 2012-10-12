@@ -276,7 +276,7 @@ public class ModuleManager
         this.core.getEventManager().unregisterListener(module);
         this.core.getPermissionManager().unregisterPermissions(module);
         this.core.getTaskManager().cancelTasks(module);
-//        this.core.getCommandManager().unregisterAll(module);
+        this.core.getCommandManager().unregister(module);
 
         return this;
     }

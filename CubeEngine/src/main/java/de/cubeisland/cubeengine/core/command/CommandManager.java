@@ -68,28 +68,40 @@ public class CommandManager
      */
     public void unregister(Module module)
     {
-        CubeCommand command;
-        List<String> rootCommandsToRemove = new ArrayList<String>();
-        for (Map.Entry<String, Command> entry : this.knownCommands.entrySet())
+        Command command;
+        CubeCommand cubeCommand;
+        for (String name : this.knownCommands.keySet())
         {
-            if (entry.getValue() instanceof CubeCommand)
+            command = this.knownCommands.get(name);
+            if (command instanceof CubeCommand)
             {
-                command = (CubeCommand)entry.getValue();
-                if (command.getModule() == module)
+                cubeCommand = (CubeCommand)command;
+                if (cubeCommand.getModule() == module)
                 {
-                    rootCommandsToRemove.add(entry.getKey());
+                    this.unregister(name);
                 }
                 else
                 {
-                    // TODO go recursively through the child commands
+                    this.removeSubCommands(module, cubeCommand);
                 }
-                this.unregister(entry.getKey());
             }
         }
-        
-        for (String name : rootCommandsToRemove)
+    }
+    
+    private void removeSubCommands(Module module, CubeCommand command)
+    {
+        CubeCommand child;
+        for (String name : command.getChildrenNames())
         {
-            this.unregister(name);
+            child = command.getChild(name);
+            if (child.getModule() == module)
+            {
+                command.removeChild(name);
+            }
+            else
+            {
+                this.removeSubCommands(module, child);
+            }
         }
     }
  
@@ -98,11 +110,13 @@ public class CommandManager
      */
     public void unregister()
     {
-        for (Map.Entry<String, Command> entry : this.knownCommands.entrySet())
+        Command command;
+        for (String name : this.knownCommands.keySet())
         {
-            if (entry.getValue() instanceof CubeCommand)
+            command = this.knownCommands.get(name);
+            if (command instanceof CubeCommand)
             {
-                this.unregister(entry.getKey());
+                this.unregister(name);
             }
         }
     }
