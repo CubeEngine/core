@@ -149,7 +149,7 @@ public class ReflectedCommand extends CubeCommand
     
     private String generatePermissionNode()
     {
-        return "cubeengine." + this.getModule().getId() + ".command." + this.implodeParentNames(".");
+        return "cubeengine." + this.getModule().getId() + ".command." + this.implodeParentNames(".") + "." + this.getName();
     }
     
     @Override
