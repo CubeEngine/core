@@ -19,6 +19,7 @@ public class EditCommand
     usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ",
     params =
     {
+        @Param(names = {"1", "Line1"},types = {String.class}),
         @Param(names = {"2", "Line2"},types = {String.class}),
         @Param(names = {"3", "Line3"},types = {String.class}),
         @Param(names = {"4", "Line4"},types = {String.class})
