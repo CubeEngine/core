@@ -135,7 +135,7 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (FileNotFoundException ignored)
         {
-            LOGGER.log(Level.WARNING, "The translation category {0} was not found for the language ''{1}'' !", new Object[]{cat, this.code});
+            LOGGER.warning("The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
         }
         catch (IOException e)
         {
