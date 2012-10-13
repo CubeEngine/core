@@ -13,15 +13,15 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Confirms a requested action
- * 
+ *
  * @author Anselm Brehme
  */
 public class ConfirmCommand
 {
     public ConfirmCommand()
     {
-
     }
+
     @Command(usage = "")
     public boolean confirm(CommandSender sender, CommandArgs args)
     {
@@ -33,14 +33,14 @@ public class ConfirmCommand
             int max = manager.size();
             if (max == 0)
             {
-                sender.sendMessage(t("i")+" "+t("no_detect"));
+                sender.sendMessage(t("i") + " " + t("no_detect"));
                 return true;
             }
             for (int i = max - 1; i >= 0; --i)
             {
                 manager.cancelAuction(manager.getIndexAuction(i), false);
             }
-            sender.sendMessage(t("i")+" "+t("confirm_del"));
+            sender.sendMessage(t("i") + " " + t("confirm_del"));
             return true;
         }
         if (manager.getBidderConfirm().containsKey(bidder))
@@ -50,7 +50,7 @@ public class ConfirmCommand
                 int max = Bidder.getInstance(1).getAuctions().size();
                 if (max == 0)
                 {
-                    sender.sendMessage(t("i")+" "+t("confirm_no_serv"));
+                    sender.sendMessage(t("i") + " " + t("confirm_no_serv"));
                     manager.getBidderConfirm().remove(bidder);
                     return true;
                 }
@@ -58,35 +58,37 @@ public class ConfirmCommand
                 {
                     manager.cancelAuction(Bidder.getInstance(0).getAuctions().get(i), false);
                 }
-                sender.sendMessage(t("i")+" "+t("confirm_del_serv"));
+                sender.sendMessage(t("i") + " " + t("confirm_del_serv"));
                 manager.getBidderConfirm().remove(bidder);
                 return true;
             }
             else
             {
                 Bidder player = manager.getBidderConfirm().get(bidder);
-                ArrayList<Auction> auctions = (ArrayList<Auction>)player.getActiveBids().clone();
+                ArrayList<Auction> auctions = (ArrayList<Auction>) player.getActiveBids().clone();
                 int max = auctions.size();
                 for (Auction auction : auctions)
                 {
                     if (auction.getOwner() == player)
                     {
-                        if (CubeAuctions.getConfiguration().auction_removeTime <
-                            System.currentTimeMillis() - auction.getBids().firstElement().getTime())
+                        if (CubeAuctions.getConfiguration().auction_removeTime
+                                < System.currentTimeMillis() - auction.getBids().firstElement().getTime())
                         {
                             if (!sender.hasPermission("aucionhouse.delete.player.other"))
-                                {
-                                     sender.sendMessage(t("i")+" "+t("rem_time"));
-                                     --max;
-                                     continue;
-                                }
-                           
+                            {
+                                sender.sendMessage(t("i") + " " + t("rem_time"));
+                                --max;
+                                continue;
+                            }
+
                         }
-                        manager.cancelAuction(auction , false);
+                        manager.cancelAuction(auction, false);
                     }
                 }
-                if (max!=0)
-                    sender.sendMessage(t("i")+" "+t("confirm_rem",max,player.getName()));
+                if (max != 0)
+                {
+                    sender.sendMessage(t("i") + " " + t("confirm_rem", max, player.getName()));
+                }
                 manager.getBidderConfirm().remove(bidder);
                 return true;
             }
@@ -95,11 +97,11 @@ public class ConfirmCommand
         {
             ItemStack item = Manager.getInstance().getAuction(manager.getSingleConfirm().get(bidder)).getItemStack();
             manager.cancelAuction(manager.getAuction(manager.getSingleConfirm().get(bidder)), false);
-            sender.sendMessage(t("i")+" "+t("rem_id",manager.getSingleConfirm().get(bidder),item.getType().toString()+"x"+item.getAmount()));
+            sender.sendMessage(t("i") + " " + t("rem_id", manager.getSingleConfirm().get(bidder), item.getType().toString() + "x" + item.getAmount()));
             manager.getBidderConfirm().remove(bidder);
             return true;
         }
-        sender.sendMessage(t("e")+" "+t("confirm_no_req"));
+        sender.sendMessage(t("e") + " " + t("confirm_no_req"));
         return true;
     }
 

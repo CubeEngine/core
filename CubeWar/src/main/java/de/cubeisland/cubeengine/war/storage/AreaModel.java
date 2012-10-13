@@ -12,41 +12,40 @@ import org.bukkit.World;
 public class AreaModel implements Model<Integer>
 {
     private int key;
-    
     private Chunk chunk;
     private Group group;
-    
+
     public AreaModel(Chunk chunk, Group group)
     {
         this.chunk = chunk;
         this.group = group;
     }
-    
+
     public Integer getKey()
     {
         return key;
     }
-    
+
     public int getX()
     {
         return this.chunk.getX();
     }
-    
+
     public int getZ()
     {
         return this.chunk.getZ();
     }
-    
+
     public World getWorld()
     {
         return this.chunk.getWorld();
     }
-    
+
     public Group getGroup()
     {
         return this.group;
     }
-    
+
     public void setGroup(Group group)
     {
         this.group = group;
@@ -56,10 +55,9 @@ public class AreaModel implements Model<Integer>
     {
         return this.chunk;
     }
-    
+
     public void setKey(Integer key)
     {
         this.key = key;
     }
-    
 }

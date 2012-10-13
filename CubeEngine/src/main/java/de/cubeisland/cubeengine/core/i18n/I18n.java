@@ -145,7 +145,10 @@ public class I18n implements Cleanable
         }
         catch (IllegalArgumentException e)
         {
-            LOGGER.log(Level.SEVERE, "Failed to load the language ''{0}'': {1}", new Object[]{config.code, e.getLocalizedMessage()});
+            LOGGER.log(Level.SEVERE, "Failed to load the language ''{0}'': {1}", new Object[]
+                {
+                    config.code, e.getLocalizedMessage()
+                });
         }
         return null;
     }
@@ -227,9 +230,12 @@ public class I18n implements Cleanable
             {
                 return name.toLowerCase(Locale.ENGLISH) + "_" + name.toUpperCase(Locale.ENGLISH);
             }
-            else if (delimPos == 2 && length == 5)
+            else
             {
-                return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).replace("_", "").toUpperCase(Locale.ENGLISH);
+                if (delimPos == 2 && length == 5)
+                {
+                    return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).replace("_", "").toUpperCase(Locale.ENGLISH);
+                }
             }
         }
         return null;
@@ -237,14 +243,17 @@ public class I18n implements Cleanable
 
     private void logMissingTranslation(String language, String category, String message)
     {
-        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[]{language, category, message});
+        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[]
+            {
+                language, category, message
+            });
     }
 
     public static String _(CommandSender sender, Module module, String message, Object... params)
     {
         return _(sender, module.getId(), message, params);
     }
-    
+
     public static String _(CommandSender sender, String category, String message, Object... params)
     {
         if (sender instanceof User)

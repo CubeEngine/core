@@ -16,7 +16,7 @@ public class ContainerCommand extends CubeCommand
     {
         super(module, name, description, "[command]", Collections.<String>emptyList());
     }
-    
+
     public ContainerCommand(Module module, String name, String description, String... aliases)
     {
         super(module, name, description, "[command]", Arrays.asList(aliases));

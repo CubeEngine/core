@@ -25,7 +25,7 @@ public abstract class LogListener implements Listener
 
     public <T extends LogSubConfiguration> T getConfiguration()
     {
-        return (T) subConfig;
+        return (T)subConfig;
     }
 
     public static <T extends LogListener> T getInstance(Class<T> clazz, Log module)

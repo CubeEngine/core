@@ -35,7 +35,7 @@ public class StructureGrow extends LogListener
             this.actions.put(LogAction.BONEMEALSTRUCTUREGROW, false);
             this.enabled = true;
         }
-        @Option(value="actions",genericType=Boolean.class)
+        @Option(value = "actions", genericType = Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

@@ -38,7 +38,7 @@ public class AliasCommand extends CubeCommand
     {
         return this.command.hasChild(name);
     }
-    
+
     @Override
     public boolean hasChildren()
     {

@@ -20,7 +20,6 @@ import org.apache.commons.lang.Validate;
 public class FileManager
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
-    
     private final File dataFolder;
     private final File languageDir;
     private final File logDir;
@@ -34,9 +33,12 @@ public class FileManager
         {
             dataFolder.mkdirs();
         }
-        else if (!dataFolder.isDirectory())
+        else
         {
-            throw new IllegalArgumentException("The data folder was found, but it doesn't seem to be directoy!");
+            if (!dataFolder.isDirectory())
+            {
+                throw new IllegalArgumentException("The data folder was found, but it doesn't seem to be directoy!");
+            }
         }
         this.dataFolder = dataFolder;
 
@@ -57,7 +59,7 @@ public class FileManager
         {
             throw new IOException("Failed to create the modules folder");
         }
-        
+
         this.fileSources = new ConcurrentHashMap<File, Resource>();
     }
 
@@ -80,7 +82,7 @@ public class FileManager
     {
         return this.modulesDir;
     }
-    
+
     private static String getSaneSource(Resource resource)
     {
         String source = resource.getSource();
@@ -91,7 +93,7 @@ public class FileManager
         }
         return source;
     }
-    
+
     public InputStream getResourceStream(Resource resource)
     {
         if (resource == null)
@@ -165,14 +167,15 @@ public class FileManager
             {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
-            finally 
+            finally
             {
                 try
                 {
                     reader.close();
                 }
                 catch (IOException ignored)
-                {}
+                {
+                }
                 if (writer != null)
                 {
                     try
@@ -180,7 +183,8 @@ public class FileManager
                         writer.close();
                     }
                     catch (IOException ignored)
-                    {}
+                    {
+                    }
                 }
             }
         }

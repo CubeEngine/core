@@ -27,16 +27,15 @@ public abstract class ConfigurationCodec
     protected String SPACES;
     protected String LINEBREAK;
     protected String QUOTE;
-    
     protected Integer revision = null;
     private CodecContainer container = null;
     protected boolean first;
 
     /**
      * Loads in the given configuration using the inputstream
-     * 
+     *
      * @param config the config to load
-     * @param is the inputstream to load from
+     * @param is     the inputstream to load from
      */
     public void load(Configuration config, InputStream is) throws InstantiationException, IllegalAccessException
     {
@@ -71,7 +70,7 @@ public abstract class ConfigurationCodec
 
     /**
      * Returns the current CodecContainer
-     * 
+     *
      * @return the CodecContainer
      */
     public CodecContainer getContainer()
@@ -81,7 +80,7 @@ public abstract class ConfigurationCodec
 
     /**
      * Returns the offset as String
-     * 
+     *
      * @param offset
      * @return the offset
      */
@@ -97,9 +96,9 @@ public abstract class ConfigurationCodec
 
     /**
      * Saves the configuration into given file
-     * 
+     *
      * @param config the configuration to save
-     * @param file the file to save into
+     * @param file   the file to save into
      */
     public void save(Configuration config, File file)
     {
@@ -128,36 +127,36 @@ public abstract class ConfigurationCodec
 
     /**
      * Serializes the values in the map
-     * 
-     * @param path the path of the map
+     *
+     * @param path   the path of the map
      * @param values the values at given path
-     * @param off the current offset
+     * @param off    the current offset
      * @return the serialized map
      */
     public abstract String convertMap(String path, Map<String, Object> values, int off);
 
     /**
      * Serializes a single value
-     * 
-     * @param path the path of the value
+     *
+     * @param path  the path of the value
      * @param value the value at given path
-     * @param off the current offest
+     * @param off   the current offest
      * @return the serialized value
      */
     public abstract String convertValue(String path, Object value, int off);
 
     /**
      * Builds a the comment for given path
-     * 
+     *
      * @param path the path
-     * @param off the current offset
+     * @param off  the current offset
      * @return the comment
      */
     public abstract String buildComment(String path, int off);
 
     /**
      * Returns the FileExtension as String
-     * 
+     *
      * @return the fileExtension
      */
     public abstract String getExtension();
@@ -166,7 +165,7 @@ public abstract class ConfigurationCodec
 
     /**
      * Converts the inputStream into a String->Object map
-     * 
+     *
      * @param is the inputstream
      * @return the loaded values
      */
@@ -174,6 +173,7 @@ public abstract class ConfigurationCodec
 
     /**
      * Returns the last subKey of this path
+     *
      * @param path
      * @return the last subKey
      */
@@ -184,7 +184,7 @@ public abstract class ConfigurationCodec
 
     /**
      * Returns the subPath of this path
-     * 
+     *
      * @param path
      * @return the subPath
      */
@@ -195,7 +195,7 @@ public abstract class ConfigurationCodec
 
     /**
      * Returns the baseParh of this path
-     * 
+     *
      * @param path
      * @return the basePath
      */
@@ -225,7 +225,8 @@ public abstract class ConfigurationCodec
 
         /**
          * Fills the map with values form the inputStream
-         * @param is 
+         *
+         * @param is
          */
         public void fillFromInputStream(InputStream is)
         {
@@ -246,14 +247,14 @@ public abstract class ConfigurationCodec
 
         /**
          * Converts given object at path to fit into to the field
-         * 
+         *
          * @param object
          * @param field
          * @param path
          * @return the converted object
          * @throws ConversionException
          * @throws IllegalArgumentException
-         * @throws IllegalAccessException 
+         * @throws IllegalAccessException
          */
         public Object convertFromObjectToFieldValue(Object object, Field field, String path) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
@@ -299,12 +300,12 @@ public abstract class ConfigurationCodec
 
         /**
          * Sets the fields with the loaded values
-         * 
+         *
          * @param config
          * @param section
          * @throws ConversionException
          * @throws IllegalArgumentException
-         * @throws IllegalAccessException 
+         * @throws IllegalAccessException
          */
         private void dumpIntoFields(Configuration config, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
@@ -337,9 +338,9 @@ public abstract class ConfigurationCodec
 
         /**
          * Saves the values into a file
-         * 
+         *
          * @param file
-         * @throws IOException 
+         * @throws IOException
          */
         private void saveIntoFile(File file) throws IOException
         {
@@ -356,7 +357,7 @@ public abstract class ConfigurationCodec
 
         /**
          * Converts the values into a String to save
-         * 
+         *
          * @return the converted map
          */
         private String dumpIntoString()
@@ -378,7 +379,7 @@ public abstract class ConfigurationCodec
 
         /**
          * Gets the value at given path in the section
-         * 
+         *
          * @param path
          * @param section
          * @return the requested value
@@ -398,10 +399,10 @@ public abstract class ConfigurationCodec
 
         /**
          * Sets the value to given path in the section
-         * 
+         *
          * @param path
          * @param value
-         * @param section 
+         * @param section
          */
         private void set(String path, Object value, Map<String, Object> section)
         {
@@ -418,7 +419,7 @@ public abstract class ConfigurationCodec
 
         /**
          * Returns the subSection in the baseSection for given path
-         * 
+         *
          * @param path
          * @param basesection
          * @return the requested subSection
@@ -445,7 +446,7 @@ public abstract class ConfigurationCodec
 
         /**
          * Returns the loadedKey coressponding to a lowercased key
-         * 
+         *
          * @param key
          * @return the coressponding key
          */
@@ -461,8 +462,8 @@ public abstract class ConfigurationCodec
 
         /**
          * saves the loaded keys into a map lowerCaseKey->Key
-         * 
-         * @param section 
+         *
+         * @param section
          */
         private void loadKeys(Map<String, Object> section)
         {
@@ -478,9 +479,9 @@ public abstract class ConfigurationCodec
 
         /**
          * adds a comment to later save
-         * 
+         *
          * @param path
-         * @param comment 
+         * @param comment
          */
         private void addComment(String path, String comment)
         {
@@ -489,9 +490,9 @@ public abstract class ConfigurationCodec
 
         /**
          * gets the comment for given path
-         * 
+         *
          * @param path
-         * @return 
+         * @return
          */
         public String getComment(String path)
         {
@@ -500,14 +501,14 @@ public abstract class ConfigurationCodec
 
         /**
          * Fills the map with values from the Fields to save
-         * 
+         *
          * @param config
          * @param basePath
          * @param section
          * @return the filled map
          * @throws IllegalArgumentException
          * @throws ConversionException
-         * @throws IllegalAccessException 
+         * @throws IllegalAccessException
          */
         public Map<String, Object> fillFromFields(Configuration config, String basePath, Map<String, Object> section) throws IllegalArgumentException, ConversionException, IllegalAccessException
         {
@@ -559,7 +560,7 @@ public abstract class ConfigurationCodec
 
         /**
          * Converts a field value into a serializable Object
-         * 
+         *
          * @param field
          * @param fieldValue
          * @param path
@@ -567,7 +568,7 @@ public abstract class ConfigurationCodec
          * @return the converted fieldvalue
          * @throws ConversionException
          * @throws IllegalArgumentException
-         * @throws IllegalAccessException 
+         * @throws IllegalAccessException
          */
         public Object convertFromFieldValueToObject(Field field, Object fieldValue, String path, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {

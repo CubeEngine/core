@@ -14,6 +14,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+
 /**
  *
  * @author Phillip Schichtel
@@ -96,14 +97,14 @@ public final class CubeEngine
 
     /**
      * Returns the TableManager
-     * 
+     *
      * @return the TableManager
      */
     public static TableManager getTableManager()
     {
         return core.getTableManger();
     }
-    
+
     /**
      * Returns the UserManager
      *
@@ -163,7 +164,7 @@ public final class CubeEngine
     {
         return core.getCommandManager();
     }
-    
+
     /**
      * Returns the BukkitServer
      *
@@ -183,20 +184,20 @@ public final class CubeEngine
     {
         return core.getI18n();
     }
-    
+
     /**
      * This method returns the Worker/ExecutorService
-     * 
+     *
      * @return the ExecutorService
      */
     public static TaskManager getTaskManager()
     {
         return core.getTaskManager();
     }
-    
+
     /**
      * Returns the OfflinePlayer
-     * 
+     *
      * @param name the name of the player
      * @return the OfflinePlayer
      */
@@ -224,7 +225,7 @@ public final class CubeEngine
     {
         return core.isDebug();
     }
-    
+
     /**
      * Returns the global instance of the jackson object mapper.
      *

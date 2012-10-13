@@ -8,5 +8,6 @@ package de.cubeisland.cubeengine.core.filesystem;
 public interface Resource
 {
     public String getSource();
+
     public String getTarget();
 }

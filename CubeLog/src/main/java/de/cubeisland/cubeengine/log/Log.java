@@ -8,7 +8,6 @@ public class Log extends Module
 {
     private LogManager lm;
     private static Log instance;
-    
     @From("config")
     protected LogConfiguration config;
 
@@ -16,7 +15,7 @@ public class Log extends Module
     {
         instance = this;
     }
-    
+
     @Override
     public void onEnable()
     {
@@ -35,12 +34,12 @@ public class Log extends Module
     {
         return this.lm;
     }
-    
+
     public LogConfiguration getConfiguration()
     {
         return this.config;
     }
-    
+
     public static Log getInstance()
     {
         return instance;

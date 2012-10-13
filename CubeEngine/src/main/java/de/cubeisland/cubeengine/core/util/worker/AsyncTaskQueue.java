@@ -13,11 +13,10 @@ import org.apache.commons.lang.Validate;
 public class AsyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
-    
     private final ExecutorService executorService;
     private final BlockingQueue<Runnable> taskQueue;
     private final AtomicReference<Future<?>> exectorFuture;
-    
+
     public AsyncTaskQueue(ExecutorService executorService)
     {
         this(executorService, new LinkedBlockingQueue<Runnable>());
@@ -29,12 +28,12 @@ public class AsyncTaskQueue implements TaskQueue
         this.taskQueue = taskQueue;
         this.exectorFuture = new AtomicReference<Future<?>>();
     }
-    
+
     @Override
     public void addTask(Runnable runnable)
     {
         Validate.notNull(runnable, "The task must not be null!");
-        
+
         this.taskQueue.offer(runnable);
         this.start();
     }
@@ -75,13 +74,13 @@ public class AsyncTaskQueue implements TaskQueue
         }
         return false;
     }
-    
+
     @Override
     public int size()
     {
         return this.taskQueue.size();
     }
-    
+
     private class Worker implements Runnable
     {
         @Override

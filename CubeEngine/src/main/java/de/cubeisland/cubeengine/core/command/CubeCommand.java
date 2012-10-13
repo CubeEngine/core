@@ -58,10 +58,10 @@ public abstract class CubeCommand extends Command
 
         this.children = new LinkedHashMap<String, CubeCommand>();
         this.childrenAliases = new THashMap<String, String>();
-        
+
         this.usageBase = "/" + this.implodeParentNames(" ") + " ";
     }
-    
+
     protected final String implodeParentNames(String delim)
     {
         List<String> cmds = new LinkedList<String>();
@@ -72,15 +72,15 @@ public abstract class CubeCommand extends Command
         }
         while ((cmd = this.getParent()) != null);
         Collections.reverse(cmds);
-        
+
         return StringUtils.implode(delim, cmds);
     }
-    
+
     public int getMinimumParams()
     {
         return 0;
     }
-    
+
     public int getMaximumParams()
     {
         return -1;
@@ -101,12 +101,12 @@ public abstract class CubeCommand extends Command
     {
         return this.usageBase + _(sender, this.module, super.getUsage());
     }
-    
+
     public String getUsage(CommandContext context)
     {
         return "/" + StringUtils.implode(" ", context.getLabels()) + " " + _(context.getSender(), this.module, super.getUsage());
     }
-    
+
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
         return "/" + StringUtils.implode(" ", parentLabels) + " " + this.getName() + " " + _(sender, this.module, super.getUsage());
@@ -196,7 +196,7 @@ public abstract class CubeCommand extends Command
 
         return true;
     }
-    
+
     public boolean hasChildren()
     {
         return !this.children.isEmpty();
@@ -206,7 +206,7 @@ public abstract class CubeCommand extends Command
     {
         return new LinkedList<CubeCommand>(this.children.values());
     }
-    
+
     public Set<String> getChildrenNames()
     {
         return this.children.keySet();
@@ -231,23 +231,23 @@ public abstract class CubeCommand extends Command
             }
         }
     }
-    
+
     public CubeCommand getParent()
     {
         return this.parent;
     }
-    
+
     public Flag[] getFlags()
     {
         return NO_FLAGS;
     }
-    
+
     public Param[] getParams()
     {
         return NO_PARAMS;
     }
-    
+
     public abstract void run(CommandContext context) throws Exception;
-    
+
     public abstract void showHelp(CommandContext context) throws Exception;
 }

@@ -19,7 +19,7 @@ public class ApiRequestException extends RuntimeException implements ApiSerializ
      * Initializes the exception with a message and a reason. The given message
      * won't be send to the client, it's just used to inform the console
      *
-     * @param msg the message
+     * @param msg  the message
      * @param code the reason for this error
      */
     public ApiRequestException(String msg, int code)
@@ -34,8 +34,8 @@ public class ApiRequestException extends RuntimeException implements ApiSerializ
      * inform the console
      *
      * @param message the message
-     * @param code the reason for this error
-     * @param cause the cause of te error
+     * @param code    the reason for this error
+     * @param cause   the cause of te error
      */
     public ApiRequestException(String message, int code, Throwable cause)
     {

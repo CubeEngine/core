@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PvP
 {
-
     private UserManager cuManager = CubeCore.getInstance().getUserManager();
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
     private GroupControl groups = GroupControl.get();
@@ -185,13 +184,13 @@ public class PvP
         stopFly(player);
         player.setAllowFlight(false);
     }
-
     private static HashSet<User> blockFly = new HashSet<User>();
+
     public static boolean isFlyBlocked(User user)
     {
         return blockFly.contains(user);
     }
-    
+
     public void stopFly(final Player player)
     {
         CubeWar.debug("Fall");
@@ -203,7 +202,6 @@ public class PvP
             plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
                     new Runnable()
                     {
-
                         public void run()
                         {
                             blockFly.remove(cuManager.getUser(player));
@@ -224,7 +222,6 @@ public class PvP
         plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
                 new Runnable()
                 {
-
                     public void run()
                     {
                         killer.closeInventory();

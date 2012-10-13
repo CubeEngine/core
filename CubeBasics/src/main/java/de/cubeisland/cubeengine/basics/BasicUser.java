@@ -27,7 +27,8 @@ public class BasicUser implements Model<Integer>
     public BasicUser(List<Object> args) throws ConversionException
     {
         this.key = Convert.fromObject(Integer.class, args.get(0));
-        this.mailbox = Convert.matchGenericConverter(List.class).fromObject(args.get(1), this.mailbox, String.class);
+        this.mailbox = Convert.matchGenericConverter(List.class).
+            fromObject(args.get(1), this.mailbox, String.class);
     }
 
     public BasicUser(User user)

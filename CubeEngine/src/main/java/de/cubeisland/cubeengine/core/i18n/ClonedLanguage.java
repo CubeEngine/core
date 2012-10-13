@@ -19,12 +19,12 @@ public class ClonedLanguage implements Language
         code = I18n.normalizeLanguage(code);
         Validate.notNull(code, "The code must not be null!");
         Validate.notNull(original, "The original must not be null!");
-        
+
         this.code = code;
         this.locale = new Locale(code.substring(0, 2), code.substring(3, 5));
         this.original = original;
     }
-    
+
     public static ClonedLanguage clone(Language original, String code)
     {
         try

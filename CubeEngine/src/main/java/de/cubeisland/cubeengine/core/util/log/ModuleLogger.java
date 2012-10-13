@@ -14,7 +14,7 @@ import java.util.logging.LogRecord;
 public class ModuleLogger extends CubeLogger
 {
     private final String prefix;
-    
+
     public ModuleLogger(Core core, ModuleInfo info)
     {
         super(info.getName(), core.getCoreLogger());

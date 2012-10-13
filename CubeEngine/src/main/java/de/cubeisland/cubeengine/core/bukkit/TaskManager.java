@@ -31,12 +31,12 @@ public class TaskManager
         this.bukkitScheduler = bukkitScheduler;
         this.moduleTasks = new ConcurrentHashMap<Module, TIntSet>();
     }
-    
+
     private TIntSet getModuleIDs(Module module)
     {
         return this.getModuleIDs(module, true);
     }
-    
+
     private TIntSet getModuleIDs(Module module, boolean create)
     {
         TIntSet IDs = this.moduleTasks.get(module);
@@ -59,17 +59,17 @@ public class TaskManager
 
     /**
      * Schedules a delayed task for a module with the given delay
-     * 
-     * @param module the module
+     *
+     * @param module   the module
      * @param runnable the task
-     * @param delay the delay in ticks
+     * @param delay    the delay in ticks
      * @return the ID of the task
      */
     public int scheduleSyncDelayedTask(Module module, Runnable runnable, long delay)
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(runnable, "The runnable must not be null!");
-        
+
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.scheduleSyncDelayedTask(this.corePlugin, task, delay);
@@ -83,8 +83,8 @@ public class TaskManager
 
     /**
      * Schedules a delayed task for a module
-     * 
-     * @param module the module
+     *
+     * @param module   the module
      * @param runnable the task
      * @return the ID of the task
      */
@@ -93,13 +93,12 @@ public class TaskManager
         return this.scheduleSyncDelayedTask(module, runnable, 0);
     }
 
-
     /**
      * Schedules a repeating task for a module with the given delay and interval
-     * 
-     * @param module the module
+     *
+     * @param module   the module
      * @param runnable the task
-     * @param delay the delay in ticks in ticks
+     * @param delay    the delay in ticks in ticks
      * @param interval the interval in ticks
      * @return the ID of the task
      */
@@ -107,7 +106,7 @@ public class TaskManager
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(runnable, "The runnable must not be null!");
-        
+
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.scheduleSyncRepeatingTask(this.corePlugin, task, delay, interval);
@@ -122,16 +121,16 @@ public class TaskManager
     /**
      * Schedules a asynchonous delayed task for a module with the given delay
      *
-     * @param module the module
+     * @param module   the module
      * @param runnable the task
-     * @param delay the delay in ticks
+     * @param delay    the delay in ticks
      * @return the ID of the task
      */
     public int scheduleAsyncDelayedTask(Module module, Runnable runnable, long delay)
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(runnable, "The runnable must not be null!");
-        
+
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.scheduleAsyncDelayedTask(this.corePlugin, task, delay);
@@ -143,11 +142,10 @@ public class TaskManager
         return taskID;
     }
 
-
     /**
      * Schedules a asynchonous delayed task for a module
      *
-     * @param module the module
+     * @param module   the module
      * @param runnable the task
      * @return the ID of the task
      */
@@ -156,13 +154,12 @@ public class TaskManager
         return this.scheduleAsyncDelayedTask(module, runnable, 0);
     }
 
-
     /**
      * Schedules a asynchonous repeating task for a module with the given delay and interval
      *
-     * @param module the module
+     * @param module   the module
      * @param runnable the task
-     * @param delay the delay in ticks
+     * @param delay    the delay in ticks
      * @param interval the interval in ticks
      * @return the ID of the task
      */
@@ -170,7 +167,7 @@ public class TaskManager
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(runnable, "The runnable must not be null!");
-        
+
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.scheduleAsyncRepeatingTask(this.corePlugin, task, delay, interval);
@@ -185,7 +182,7 @@ public class TaskManager
     /**
      * Schedules a method for execution on the main server thread
      *
-     * @param <T> the return type of the method
+     * @param <T>      the return type of the method
      * @param callable the method to call
      * @return a future object
      */
@@ -196,9 +193,9 @@ public class TaskManager
 
     /**
      * Cancels a task of a module
-     * 
+     *
      * @param module the module
-     * @param ID the taskID
+     * @param ID     the taskID
      */
     public void cancelTask(Module module, int ID)
     {
@@ -209,7 +206,7 @@ public class TaskManager
             IDs.remove(ID);
         }
     }
-    
+
     public void cancelTasks(Module module)
     {
         TIntSet taskIDs = this.moduleTasks.remove(module);
@@ -235,7 +232,8 @@ public class TaskManager
     }
 
     /**
-     * Checks whether the given task ID is 
+     * Checks whether the given task ID is
+     *
      * @param taskID the task ID
      * @return true if there is a task for this ID
      */
@@ -243,7 +241,7 @@ public class TaskManager
     {
         return this.bukkitScheduler.isQueued(taskID);
     }
-    
+
     private class Task implements Runnable
     {
         protected int taskID;
@@ -255,7 +253,7 @@ public class TaskManager
             this.task = task;
             this.taskIDs = taskIDs;
         }
-        
+
         @Override
         public void run()
         {

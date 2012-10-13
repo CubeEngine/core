@@ -59,9 +59,9 @@ public class ModerationCommands
 
     @Command(
     desc = "Spawns the specified Mob",
-             min = 1,
-             max = 3,
-             usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
+    min = 1,
+    max = 3,
+    usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {//TODO later more ridingmobs riding on the riding mob etc...
         User sender = context.getSenderAsUser();
@@ -80,7 +80,8 @@ public class ModerationCommands
         if (mobString.contains(","))
         {
             entityName = mobString.substring(0, mobString.indexOf(","));
-            ridingEntityName = mobString.substring(mobString.indexOf(",") + 1, mobString.length());
+            ridingEntityName = mobString.
+                substring(mobString.indexOf(",") + 1, mobString.length());
         }
         else
         {
@@ -88,7 +89,8 @@ public class ModerationCommands
         }
         if (entityName.contains(":"))
         {
-            entityData = entityName.substring(entityName.indexOf(":") + 1, entityName.length());
+            entityData = entityName.
+                substring(entityName.indexOf(":") + 1, entityName.length());
             entityName = entityName.substring(0, entityName.indexOf(":"));
             entityType = EntityMatcher.get().matchMob(entityName);
         }
@@ -103,8 +105,10 @@ public class ModerationCommands
         }
         if (ridingEntityName != null && ridingEntityName.contains(":"))
         {
-            ridingEntityData = ridingEntityName.substring(ridingEntityName.indexOf(":") + 1, ridingEntityName.length());
-            ridingEntityName = ridingEntityName.substring(0, ridingEntityName.indexOf(":"));
+            ridingEntityData = ridingEntityName.substring(ridingEntityName.
+                indexOf(":") + 1, ridingEntityName.length());
+            ridingEntityName = ridingEntityName.substring(0, ridingEntityName.
+                indexOf(":"));
             ridingEntityType = EntityMatcher.get().matchMob(ridingEntityName);
             if (ridingEntityType == null)
             {
@@ -127,7 +131,8 @@ public class ModerationCommands
         }
         else
         {
-            loc = sender.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0)); // TODO do Util method for this in core 
+            loc = sender.getTargetBlock(null, 200).getLocation().
+                add(new Vector(0, 1, 0)); // TODO do Util method for this in core 
         }
         Integer amount = 1;
         if (context.hasIndexed(1))
@@ -135,7 +140,8 @@ public class ModerationCommands
             amount = context.getIndexed(1, int.class, null);
             if (amount == null)
             {
-                illegalParameter(context, "basics", "&e%s is not a number! Really!", context.getString(1));
+                illegalParameter(context, "basics", "&e%s is not a number! Really!", context.
+                    getString(1));
             }
             if (amount <= 0)
             {
@@ -148,137 +154,185 @@ public class ModerationCommands
         }
         for (int i = 1; i <= amount; ++i)
         {
-            Entity entity = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
-            this.applyDataToMob(context.getSender(), entityType, entity, entityData);
+            Entity entity = loc.getWorld().spawnEntity(loc, entityType.
+                getBukkitType());
+            this.
+                applyDataToMob(context.getSender(), entityType, entity, entityData);
             if (ridingEntityType != null)
             {
-                Entity ridingentity = loc.getWorld().spawnEntity(loc, ridingEntityType.getBukkitType());
-                this.applyDataToMob(context.getSender(), ridingEntityType, ridingentity, ridingEntityData);
+                Entity ridingentity = loc.getWorld().
+                    spawnEntity(loc, ridingEntityType.getBukkitType());
+                this.
+                    applyDataToMob(context.getSender(), ridingEntityType, ridingentity, ridingEntityData);
                 entity.setPassenger(ridingentity);
             }
         }
         if (ridingEntityType != null)
         {
-            context.sendMessage("basics", "Spawned %d %s riding %s!", amount, ridingEntityType, entityType);
+            context.
+                sendMessage("basics", "Spawned %d %s riding %s!", amount, ridingEntityType, entityType);
         }
         else
         {
-            context.sendMessage("basics", "Spawned %d %s!", amount, entityType.toString());
+            context.sendMessage("basics", "Spawned %d %s!", amount, entityType.
+                toString());
         }
     }
-    
+
     private void applyDataToMob(CommandSender sender, EntityType entityType, Entity entity, String data)
     {
         if (data != null)
         {
-            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby","angry","tamed","power","charged");
-                
+            String match = StringUtils.matchString(data.
+                toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged");
+
             if (match.equals("baby"))
             {
                 if (entityType.isAnimal())
                 {
-                    ((Animals) entity).setBaby();
+                    ((Animals)entity).setBaby();
                 }
                 else
                 {
                     illegalParameter(sender, "basics", "&eThis entity can not be a baby! Can you?");
                 }
             }
-            else if (match.equals("angry"))
+            else
             {
-                if (entityType.equals(EntityType.WOLF))
+                if (match.equals("angry"))
                 {
-                    ((Wolf) entity).setAngry(true);
-                }
-                else if (entityType.equals(EntityType.PIG_ZOMBIE))
-                {
-                    ((PigZombie) entity).setAngry(true);
-                }
-            }
-            else if (match.equals("tamed"))
-            {
-                if (entity instanceof Tameable) // Wolf or Ocelot
-                {
-                    ((Tameable) entity).setTamed(true);
-                    if (sender instanceof AnimalTamer)
+                    if (entityType.equals(EntityType.WOLF))
                     {
-                        ((Tameable) entity).setOwner((AnimalTamer) sender);
+                        ((Wolf)entity).setAngry(true);
                     }
                     else
                     {
-                        invalidUsage(sender, "basics", "&eYou can not own any Animals!");
+                        if (entityType.equals(EntityType.PIG_ZOMBIE))
+                        {
+                            ((PigZombie)entity).setAngry(true);
+                        }
                     }
-                }
-            }
-            else if (match.equals("charged") || data.equalsIgnoreCase("power"))
-            {
-                if (entityType.equals(EntityType.CREEPER))
-                {
-                    ((Creeper) entity).setPowered(true);
-                }
-            }
-            else if (entityType.equals(EntityType.SHEEP))
-            {
-                DyeColor color = MaterialMatcher.get().matchColorData(data);
-                if (color == null)
-                {
-                    illegalParameter(sender, "basics", "Color not found!");
-                }
-                ((Sheep) entity).setColor(color);
-            }
-            else if (entityType.equals(EntityType.SLIME) || entityType.equals(EntityType.MAGMA_CUBE))
-            {
-                int size = 4;
-                match = StringUtils.matchString(data, "tiny", "small", "big");
-                if (match.equals("tiny"))
-                {
-                    size = 0;
-                }
-                else if (match.equals("small"))
-                {
-                    size = 2;
-                }
-                else if (match.equals("big"))
-                {
-                    size = 4;
                 }
                 else
                 {
-                    try
+                    if (match.equals("tamed"))
                     {
-                        size = Integer.parseInt(data);
+                        if (entity instanceof Tameable) // Wolf or Ocelot
+                        {
+                            ((Tameable)entity).setTamed(true);
+                            if (sender instanceof AnimalTamer)
+                            {
+                                ((Tameable)entity).setOwner((AnimalTamer)sender);
+                            }
+                            else
+                            {
+                                invalidUsage(sender, "basics", "&eYou can not own any Animals!");
+                            }
+                        }
                     }
-                    catch (NumberFormatException e)
+                    else
                     {
-                        illegalParameter(sender, "basics", "The slime-size has to be a number or tiny, small or big!");
+                        if (match.equals("charged") || data.
+                            equalsIgnoreCase("power"))
+                        {
+                            if (entityType.equals(EntityType.CREEPER))
+                            {
+                                ((Creeper)entity).setPowered(true);
+                            }
+                        }
+                        else
+                        {
+                            if (entityType.equals(EntityType.SHEEP))
+                            {
+                                DyeColor color = MaterialMatcher.get().
+                                    matchColorData(data);
+                                if (color == null)
+                                {
+                                    illegalParameter(sender, "basics", "Color not found!");
+                                }
+                                ((Sheep)entity).setColor(color);
+                            }
+                            else
+                            {
+                                if (entityType.equals(EntityType.SLIME) || entityType.
+                                    equals(EntityType.MAGMA_CUBE))
+                                {
+                                    int size = 4;
+                                    match = StringUtils.
+                                        matchString(data, "tiny", "small", "big");
+                                    if (match.equals("tiny"))
+                                    {
+                                        size = 0;
+                                    }
+                                    else
+                                    {
+                                        if (match.equals("small"))
+                                        {
+                                            size = 2;
+                                        }
+                                        else
+                                        {
+                                            if (match.equals("big"))
+                                            {
+                                                size = 4;
+                                            }
+                                            else
+                                            {
+                                                try
+                                                {
+                                                    size = Integer.
+                                                        parseInt(data);
+                                                }
+                                                catch (NumberFormatException e)
+                                                {
+                                                    illegalParameter(sender, "basics", "The slime-size has to be a number or tiny, small or big!");
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (size >= 0 && size <= 250)
+                                    {
+                                        ((Slime)entity).setSize(size);
+                                    }
+                                    else
+                                    {
+                                        illegalParameter(sender, "basics", "The slime-size can not be smaller than 0 or bigger than 250!");
+                                    }
+                                }
+                                else
+                                {
+                                    if (entityType.equals(EntityType.VILLAGER))
+                                    {
+                                        Profession profession = ProfessionMatcher.
+                                            get().matchProfession(data);
+                                        if (profession == null)
+                                        {
+                                            illegalParameter(sender, "basics", "Unknown villager-profession!");
+                                        }
+                                        ((Villager)entity).
+                                            setProfession(profession);
+                                    }
+                                    else
+                                    {
+                                        if (entityType.
+                                            equals(EntityType.ENDERMAN))
+                                        {
+                                            ItemStack item = MaterialMatcher.
+                                                get().matchItemStack(data);
+                                            if (item == null)
+                                            {
+                                                illegalParameter(sender, "basics", "Material not found!");
+                                            }
+                                            ((Enderman)entity).
+                                                setCarriedMaterial(item.
+                                                getData());
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-                if (size >= 0 && size <= 250)
-                {
-                    ((Slime)entity).setSize(size);
-                }
-                else
-                {
-                    illegalParameter(sender, "basics", "The slime-size can not be smaller than 0 or bigger than 250!");
-                }
-            }
-            else if (entityType.equals(EntityType.VILLAGER))
-            {
-                Profession profession =ProfessionMatcher.get().matchProfession(data);
-                if (profession == null)
-                {
-                    illegalParameter(sender, "basics", "Unknown villager-profession!");
-                }
-                ((Villager) entity).setProfession(profession);
-            }
-            else if (entityType.equals(EntityType.ENDERMAN))
-            {
-                ItemStack item = MaterialMatcher.get().matchItemStack(data);
-                if (item == null)
-                {
-                    illegalParameter(sender, "basics", "Material not found!");
-                }
-                ((Enderman) entity).setCarriedMaterial(item.getData());
             }
         }
     }
@@ -294,21 +348,28 @@ public class ModerationCommands
         boolean sunny = true;
         boolean noThunder = true;
         int duration = 10000000;
-        String weather = StringUtils.matchString(context.getString(0), "sun", "rain", "storm");
+        String weather = StringUtils.
+            matchString(context.getString(0), "sun", "rain", "storm");
         if (weather.equalsIgnoreCase("sun"))
         {
             sunny = true;
             noThunder = true;
         }
-        else if (weather.equalsIgnoreCase("rain"))
+        else
         {
-            sunny = false;
-            noThunder = true;
-        }
-        else if (weather.equalsIgnoreCase("storm"))
-        {
-            sunny = false;
-            noThunder = false;
+            if (weather.equalsIgnoreCase("rain"))
+            {
+                sunny = false;
+                noThunder = true;
+            }
+            else
+            {
+                if (weather.equalsIgnoreCase("storm"))
+                {
+                    sunny = false;
+                    noThunder = false;
+                }
+            }
         }
         if (context.hasIndexed(2))
         {
@@ -321,10 +382,12 @@ public class ModerationCommands
         World world;
         if (context.hasIndexed(1))
         {
-            world = context.getSender().getServer().getWorld(context.getString(1));
+            world = context.getSender().getServer().getWorld(context.
+                getString(1));
             if (world == null)
             {
-                illegalParameter(context, "basics", "World %s not found!", context.getString(1));
+                illegalParameter(context, "basics", "World %s not found!", context.
+                    getString(1));
             }
         }
         else
@@ -353,10 +416,12 @@ public class ModerationCommands
         World world;
         if (context.hasIndexed(0))
         {
-            world = context.getSender().getServer().getWorld(context.getString(0));
+            world = context.getSender().getServer().getWorld(context.
+                getString(0));
             if (world == null)
             {
-                illegalParameter(context, "basics", "Nu such world: %s", context.getString(0));
+                illegalParameter(context, "basics", "Nu such world: %s", context.
+                    getString(0));
             }
         }
         else
@@ -389,7 +454,9 @@ public class ModerationCommands
             z = sender.getLocation().getBlockZ();
         }
         world.setSpawnLocation(x, y, z);
-        context.sendMessage("bascics", "Spawn was in world %s set to %d %d %d", world.getName(), x, y, z);
+        context.
+            sendMessage("bascics", "Spawn was in world %s set to %d %d %d", world.
+            getName(), x, y, z);
     }
 
     @Command(
@@ -407,7 +474,8 @@ public class ModerationCommands
         }
         if (!user.isOnline())
         {
-            illegalParameter(context, "core", "%s currently not online", user.getName());
+            illegalParameter(context, "core", "%s currently not online", user.
+                getName());
         }
         if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(user))
         {
@@ -420,7 +488,10 @@ public class ModerationCommands
     }
 
     @Command(
-    names = {"ping", "pong"},
+    names =
+    {
+        "ping", "pong"
+    },
     desc = "Pong!",
     min = 1,
     max = 1)
@@ -430,17 +501,29 @@ public class ModerationCommands
         {
             context.sendMessage("basics", "Pong!");
         }
-        else if (context.getLabel().equalsIgnoreCase("pong"))
+        else
         {
-            context.sendMessage("basics", "Ping!");
+            if (context.getLabel().equalsIgnoreCase("pong"))
+            {
+                context.sendMessage("basics", "Ping!");
+            }
         }
     }
 
     @Command(
     desc = "Removes entity",
     usage = "<entityType> [radius] [in <world>] [-a]",
-    flags = {@Flag(longName = "all", name = "a")},
-    params = {@Param(names ={"in"}, types = World.class)},
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    },
+    params =
+    {
+        @Param(names =
+        {
+            "in"
+        }, types = World.class)
+    },
     min = 1,
     max = 1)
     public void remove(CommandContext context)
@@ -508,7 +591,8 @@ public class ModerationCommands
             }
             if (radius != -1)
             {
-                int distance = (int) (entity.getLocation().subtract(loc)).lengthSquared();
+                int distance = (int)(entity.getLocation().subtract(loc)).
+                    lengthSquared();
                 if (radius * radius < distance)
                 {
                     continue;
@@ -521,10 +605,16 @@ public class ModerationCommands
     }
 
     @Command(
-    names = {"clearinventory", "ci"},
+    names =
+    {
+        "clearinventory", "ci"
+    },
     desc = "Clears the inventory",
     usage = "[player]",
-    flags = {@Flag(longName = "removeArmor", name = "ra")},
+    flags =
+    {
+        @Flag(longName = "removeArmor", name = "ra")
+    },
     max = 1)
     public void clearinventory(CommandContext context)
     {
@@ -540,7 +630,8 @@ public class ModerationCommands
             }
             other = true;
         }
-        if (other && BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(context.getSender()))
+        if (other && BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.
+            isAuthorized(context.getSender()))
         {
             denyAccess(context, "basics", "&cYou are not allowed to clear the inventory of other User!");
         }
@@ -556,7 +647,8 @@ public class ModerationCommands
         user.sendMessage("basics", "Cleared Inventory!");
         if (other)
         {
-            sender.sendMessage("basics", "Cleared Inventory of %s!", user.getName());
+            sender.sendMessage("basics", "Cleared Inventory of %s!", user.
+                getName());
         }
     }
 
@@ -565,11 +657,13 @@ public class ModerationCommands
     max = 0)
     public void stash(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.
+            getSenderAsUser("core", "&cThis command can only be used by a player!");
         ItemStack[] stashedInv = sender.getAttribute("stash_Inventory");
         ItemStack[] stashedArmor = sender.getAttribute("stash_Armor");
         ItemStack[] InvToStash = sender.getInventory().getContents().clone();
-        ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().clone();
+        ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().
+            clone();
         if (stashedInv != null)
         {
             sender.getInventory().setContents(stashedInv);
@@ -608,13 +702,17 @@ public class ModerationCommands
         {
             sb.append(context.getString(i++)).append(" ");
         }
-        this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.toString());
+        this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.
+            toString());
     }
 
     @Command(
     desc = "Makes a player execute a command",
     usage = "<player> <command>",
-    flags = {@Flag(longName = "chat", name = "c")})
+    flags =
+    {
+        @Flag(longName = "chat", name = "c")
+    })
     public void sudo(CommandContext context)
     {
         //User sender = context.getSenderAsUser();
@@ -644,7 +742,8 @@ public class ModerationCommands
     max = 1)
     public void invsee(CommandContext context)
     {
-        User sender = context.getSenderAsUser("bascics", "&cThis command can only be used by a player!");
+        User sender = context.
+            getSenderAsUser("bascics", "&cThis command can only be used by a player!");
         User user = context.getIndexed(0, User.class, null);
         if (user == null)
         {
@@ -666,7 +765,10 @@ public class ModerationCommands
     @Command(
     desc = "Kicks a player from the server",
     usage = "<player> [message]",
-    flags = {@Flag(longName = "all", name = "a")})
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    })
     public void kick(CommandContext context)
     {
         User user = context.getUser(0);
@@ -690,7 +792,8 @@ public class ModerationCommands
             if (BasicsPerm.COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {
                 String sendername = context.getSender().getName();
-                for (Player player : context.getSender().getServer().getOnlinePlayers())
+                for (Player player : context.getSender().getServer().
+                    getOnlinePlayers())
                 {
                     if (!sendername.equalsIgnoreCase(player.getName()))
                     {

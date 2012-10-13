@@ -37,14 +37,14 @@ public class Test extends Module
     @From
     protected TestConfig config;
     public static List<String> aListOfPlayers;
-    
     public Basics basicsModule;
     private BukkitCore core;
 
     @Override
     public void onEnable()
     {
-        Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
+        Configuration.
+            load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
         this.getFileManager().dropResources(TestRecource.values());
         this.uM = this.getUserManager();
         try
@@ -54,15 +54,19 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLogger().log(Level.SEVERE, "Error while Enabling the TestModule", ex);
+            this.getLogger().
+                log(Level.SEVERE, "Error while Enabling the TestModule", ex);
         }
         try
         {
-            this.getLogger().addHandler(new FileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
+            this.getLogger().
+                addHandler(new FileHandler(Level.ALL, new File(this.
+                getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
         {
-            this.getLogger().log(Level.SEVERE, "Error while adding the FileHandler", ex);
+            this.getLogger().
+                log(Level.SEVERE, "Error while adding the FileHandler", ex);
         }
         this.registerListener(new TestListener(this));
 
@@ -71,23 +75,29 @@ public class Test extends Module
         this.testMatchers();
         this.testsomeUtils();
 
-        this.registerListener(new Listener() {
+        this.registerListener(new Listener()
+        {
             @EventHandler
             public void onLanguageReceived(PlayerLanguageReceivedEvent event)
             {
-                System.out.print("Player: " + event.getPlayer().getName() + " Lang: " + event.getLanguage());
+                System.out.
+                    print("Player: " + event.getPlayer().getName() + " Lang: " + event.
+                    getLanguage());
             }
         });
-        
-        this.getLogger().log(Level.INFO, "Basics-Module: {0}", String.valueOf(basicsModule));
-        this.getLogger().log(Level.INFO, "BukkitCore-Plugin: {0}", String.valueOf(core));
+
+        this.getLogger().log(Level.INFO, "Basics-Module: {0}", String.
+            valueOf(basicsModule));
+        this.getLogger().log(Level.INFO, "BukkitCore-Plugin: {0}", String.
+            valueOf(core));
     }
 
     public void initializeDatabase() throws SQLException
     {
         try
         {
-            this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").end());
+            this.getDatabase().execute(this.getDatabase().getQueryBuilder().
+                dropTable("Orders").end());
         }
         catch (Exception e)
         {
@@ -135,7 +145,7 @@ public class Test extends Module
         try
         {
             database.execute(database.getQueryBuilder()
-                    .clearTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
+                .clearTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
         }
         catch (Exception e)
         {
@@ -143,10 +153,12 @@ public class Test extends Module
 
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
         this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
-        this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
+        this.manager.
+            store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"));
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"));
-        this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"));
+        this.manager.
+            store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"));
         this.manager.get(2);
         this.manager.getAll();
         TestModel model = this.manager.get(3);
@@ -156,113 +168,129 @@ public class Test extends Module
         this.manager.update(model);
 
         database.query(
-                database.getQueryBuilder()
-                .select()
-                .beginFunction("AVG")
-                .field("OrderPrice")
-                .endFunction()
-                .as("OrderAverage")
-                .from("Orders")
-                .end()
-                .end());
+            database.getQueryBuilder()
+            .select()
+            .beginFunction("AVG")
+            .field("OrderPrice")
+            .endFunction()
+            .as("OrderAverage")
+            .from("Orders")
+            .end()
+            .end());
 
         database.query(
-                database.getQueryBuilder()
-                .select().cols("id", "Customer")
-                .rawSQL(",")
-                .beginFunction("SUM")
-                .field("OrderPrice")
-                .endFunction()
-                .as("OrderAverage")
-                .from("Orders")
-                .groupBy("Customer")
-                .having()
-                .beginFunction("sum")
-                .field("OrderPrice")
-                .endFunction()
-                .is(GREATER)
-                .value(100)
-                .end()
-                .end());
+            database.getQueryBuilder()
+            .select().cols("id", "Customer")
+            .rawSQL(",")
+            .beginFunction("SUM")
+            .field("OrderPrice")
+            .endFunction()
+            .as("OrderAverage")
+            .from("Orders")
+            .groupBy("Customer")
+            .having()
+            .beginFunction("sum")
+            .field("OrderPrice")
+            .endFunction()
+            .is(GREATER)
+            .value(100)
+            .end()
+            .end());
 
         //SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
         database.getQueryBuilder()
-                .select()
-                .beginFunction("round")
-                .beginFunction("avg")
-                .wildcard()
-                .endFunction()
-                .endFunction()
-                .from("table")
-                .beginFunction("where")
-                .field("dob_year")
-                .is(GREATER)
-                .value("1920")
-                .endFunction()
-                .end()
-                .end();
+            .select()
+            .beginFunction("round")
+            .beginFunction("avg")
+            .wildcard()
+            .endFunction()
+            .endFunction()
+            .from("table")
+            .beginFunction("where")
+            .field("dob_year")
+            .is(GREATER)
+            .value("1920")
+            .endFunction()
+            .end()
+            .end();
 
         //SELECT ProductName, ROUND(UnitPrice,0) as UnitPrice FROM Products
         database.getQueryBuilder()
-                .select()
-                .cols("ProductName")
-                .rawSQL(",")
-                .beginFunction("round")
-                .field("UnitPrice")
-                .rawSQL(",").value("0")
-                .endFunction()
-                .as("UnitPrice")
-                .from("Products")
-                .end()
-                .end();
+            .select()
+            .cols("ProductName")
+            .rawSQL(",")
+            .beginFunction("round")
+            .field("UnitPrice")
+            .rawSQL(",").value("0")
+            .endFunction()
+            .as("UnitPrice")
+            .from("Products")
+            .end()
+            .end();
 
         //SELECT LCASE(LastName) as LastName,FirstName FROM Persons
         database.getQueryBuilder()
-                .select()
-                .beginFunction("lcase")
-                .field("LastName")
-                .endFunction()
-                .as("LastName")
-                .rawSQL(",")
-                .field("FirstName")
-                .from("Persons")
-                .end()
-                .end();
+            .select()
+            .beginFunction("lcase")
+            .field("LastName")
+            .endFunction()
+            .as("LastName")
+            .rawSQL(",")
+            .field("FirstName")
+            .from("Persons")
+            .end()
+            .end();
     }
 
     public void testl18n()
     {
-        this.getLogger().debug(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
-        this.getLogger().debug(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
+        this.getLogger().debug(CubeEngine.getCore().getI18n().
+            translate("de_DE", "test", "english TEST"));
+        this.getLogger().debug(CubeEngine.getCore().getI18n().
+            translate("fr_FR", "test", "english TEST"));
     }
 
     private void testMatchers()
     {
-        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infinity"));
+        this.getLogger().
+            debug(EnchantMatcher.get().matchEnchantment("infinity"));
         this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infini"));
-        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("hablablubb") + " is null");
+        this.getLogger().debug(EnchantMatcher.get().
+            matchEnchantment("hablablubb") + " is null");
         this.getLogger().debug(EnchantMatcher.get().matchEnchantment("protect"));
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stone").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stoned").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("hablablubb") + " is null");
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wool:red").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:15").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:red").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wood:birch").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("leves:pine").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("spawnegg:pig").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stone").
+            serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stoned").
+            serialize());
+        this.getLogger().debug(MaterialMatcher.get().
+            matchItemStack("hablablubb") + " is null");
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wool:red").
+            serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35").
+            serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:15").
+            serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:red").
+            serialize());
+        this.getLogger().debug(MaterialMatcher.get().
+            matchItemStack("wood:birch").serialize());
+        this.getLogger().debug(MaterialMatcher.get().
+            matchItemStack("leves:pine").serialize());
+        this.getLogger().debug(MaterialMatcher.get().
+            matchItemStack("spawnegg:pig").serialize());
         this.getLogger().debug(EntityMatcher.get().matchEntity("pig"));
         this.getLogger().debug(EntityMatcher.get().matchMonster("zombi"));
         this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("shep"));
-        this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("ghast") + " is null");
+        this.getLogger().
+            debug(EntityMatcher.get().matchFriendlyMob("ghast") + " is null");
     }
 
     private void testsomeUtils()
     {
         try
         {
-            aListOfPlayers = FileUtil.readStringList(new File(this.getFolder(), "testdata/player.txt"));
+            aListOfPlayers = FileUtil.
+                readStringList(new File(this.getFolder(), "testdata/player.txt"));
         }
         catch (Exception ex)
         {

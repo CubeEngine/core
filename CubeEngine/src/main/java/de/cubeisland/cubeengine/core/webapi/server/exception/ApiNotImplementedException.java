@@ -8,4 +8,5 @@ package de.cubeisland.cubeengine.core.webapi.server.exception;
  * @since 1.0.0
  */
 public class ApiNotImplementedException extends RuntimeException
-{}
+{
+}

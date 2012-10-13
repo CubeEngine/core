@@ -14,7 +14,10 @@ import java.lang.annotation.Target;
 public @interface Controller
 {
     public String name();
+
     public boolean authenticate() default true;
+
     public String serializer() default "plain";
+
     public boolean unknownToDefault() default false;
 }

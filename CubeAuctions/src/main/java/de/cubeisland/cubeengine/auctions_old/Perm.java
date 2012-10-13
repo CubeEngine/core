@@ -6,10 +6,10 @@ import org.bukkit.permissions.Permissible;
 
 /**
  * Check permissions and send message to ths User
- * 
+ *
  * @author Anselm Brehme
  */
-public enum Perm 
+public enum Perm
 {
     command_add("add_Auc_perm"),
     command_add_multi("add_multi_perm"),
@@ -35,7 +35,6 @@ public enum Perm
     command_sub("sub_perm"),
     command_bid_infinite(null),
     command_add_cheatItems(null);
-  
     private final String text;
     private final String permission;
 
@@ -44,49 +43,51 @@ public enum Perm
         this.text = text;
         this.permission = "auctionhouse." + this.name().toLowerCase().replace("_", ".");
     }
-    
+
     /**
      * Transform perm to String and check for auctionhouse permission
+     *
      * @param sender
      * @param perm
      * @return true if sender has the perm permission
      */
-    private boolean checkPerm (Permissible sender)
+    private boolean checkPerm(Permissible sender)
     {
         return sender.hasPermission(this.permission);
     }
- 
+
     /**
      * Check for permission
+     *
      * @param sender
      * @param perm
      * @return true if sender has the perm permission
      */
-    public boolean check (CommandSender sender)
+    public boolean check(CommandSender sender)
     {
         if (this.checkPerm(sender))
+        {
             return true;
+        }
         else
         {
             this.send(sender);
             return false;
         }
-            
+
     }
-    
+
     /**
      * Send permission message if needed
-     * 
-     * @param sender
-     * to check permission from
-     * @param perm
-     * permission in the enum
+     *
+     * @param sender to check permission from
+     * @param perm permission in the enum
      */
-    private void send (CommandSender sender)
+    private void send(CommandSender sender)
     {
-        if (this.text!=null)
+        if (this.text != null)
         {
-            sender.sendMessage(t("perm")+" "+t(this.text));
+            sender.sendMessage(t("perm") + " " + t(this.text));
         }
     }
 }

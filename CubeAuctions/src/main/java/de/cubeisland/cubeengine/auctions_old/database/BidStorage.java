@@ -30,8 +30,8 @@ public class BidStorage implements Storage<Integer, Bid>
             this.database.prepareStatement("bid_getall_auction", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}} WHERE auctionid=? ORDER BY timestamp ASC");
             this.database.prepareStatement("bid_getall", "SELECT id,auctionid,cubeuserid,amount,timestamp FROM {{" + TABLE + "}}");
             this.database.prepareStatement("bid_store", "INSERT INTO {{" + TABLE + "}} (auctionid,cubeuserid,amount,timestamp) VALUES (?,?,?,?)");
-            this.database.prepareStatement("bid_get_exact", "SELECT id FROM {{" + TABLE + "}}"+
-                                                            " WHERE auctionid=? && cubeuserid=? && amount=? && timestamp=? LIMIT 1");
+            this.database.prepareStatement("bid_get_exact", "SELECT id FROM {{" + TABLE + "}}"
+                    + " WHERE auctionid=? && cubeuserid=? && amount=? && timestamp=? LIMIT 1");
             this.database.prepareStatement("bid_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("bid_delete_auction", "DELETE FROM {{" + TABLE + "}} WHERE auctionid=?");
             this.database.prepareStatement("bid_delete_auction_user", "DELETE FROM {{" + TABLE + "}} WHERE auctionid=? && cubeuserid=?");
@@ -133,15 +133,15 @@ public class BidStorage implements Storage<Integer, Bid>
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `bids` ("
-                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
-                + "`auctionid` int(11) NOT NULL,"
-                + "`cubeuserid` int(11) NOT NULL,"
-                + "`amount` decimal(11,2) NOT NULL,"
-                + "`timestamp` timestamp NOT NULL,"
-                + "PRIMARY KEY (`id`),"
-                + "FOREIGN KEY (auctionid) REFERENCES auctions(id),"
-                + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+                    + "`id` int(11) NOT NULL AUTO_INCREMENT,"
+                    + "`auctionid` int(11) NOT NULL,"
+                    + "`cubeuserid` int(11) NOT NULL,"
+                    + "`amount` decimal(11,2) NOT NULL,"
+                    + "`timestamp` timestamp NOT NULL,"
+                    + "PRIMARY KEY (`id`),"
+                    + "FOREIGN KEY (auctionid) REFERENCES auctions(id),"
+                    + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
         }
         catch (SQLException ex)
         {

@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author Anselm Brehme
  */
-@Entity(name="fly")
+@Entity(name = "fly")
 public class FlyModel implements Model<Integer>
 {
     @Key
@@ -28,7 +28,7 @@ public class FlyModel implements Model<Integer>
     public FlyModel(List<Object> args) throws ConversionException
     {
         this.key = Convert.fromObject(Integer.class, args.get(0));
-        this.flying = (Boolean) args.get(1);
+        this.flying = (Boolean)args.get(1);
     }
 
     public FlyModel(User user)

@@ -188,7 +188,7 @@ public class Vector2
     /**
      * Returns the angle of the other Vector to this one
      *
-     * @param other the other Vector2 to calculate the angle to
+     * @param other  the other Vector2 to calculate the angle to
      * @param degree whether to return the angle in degree or not
      * @return the angle between the vectors
      */

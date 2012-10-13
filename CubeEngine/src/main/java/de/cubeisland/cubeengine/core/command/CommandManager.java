@@ -24,7 +24,6 @@ import org.bukkit.plugin.Plugin;
 public class CommandManager
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
-    
     private CommandMap commandMap;
     private Map<String, Command> knownCommands;
 
@@ -60,7 +59,7 @@ public class CommandManager
             }
         }
     }
-    
+
     /**
      * Unregisters all commands of a module
      *
@@ -87,7 +86,7 @@ public class CommandManager
             }
         }
     }
-    
+
     private void removeSubCommands(Module module, CubeCommand command)
     {
         CubeCommand child;
@@ -104,7 +103,7 @@ public class CommandManager
             }
         }
     }
- 
+
     /**
      * Unregisters all commands of the CubeEngine
      */
@@ -162,7 +161,7 @@ public class CommandManager
         {
             parentCommand.addChild(command);
         }
-        
+
         if (command instanceof ContainerCommand)
         {
             String[] newParents = new String[parents.length + 1];
@@ -176,9 +175,9 @@ public class CommandManager
     /**
      * Registers all methods annotated as a command in the given command holder object
      *
-     * @param module the module to register them for
+     * @param module        the module to register them for
      * @param commandHolder the command holder containing the commands
-     * @param parents the path under which the command should be registered
+     * @param parents       the path under which the command should be registered
      */
     public void registerCommands(Module module, Object commandHolder, String... parents)
     {
@@ -196,19 +195,25 @@ public class CommandManager
             {
                 continue;
             }
-            
+
             Class<?>[] params = method.getParameterTypes();
             if (params.length != 1 || params[0] != CommandContext.class)
             {
-                LOGGER.log(Level.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", new Object[]{commandHolder.getClass().getSimpleName(), method.getName(), method.getName()});
+                LOGGER.log(Level.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", new Object[]
+                    {
+                        commandHolder.getClass().getSimpleName(), method.getName(), method.getName()
+                    });
                 continue;
             }
-            
-            
+
+
             String[] names = commandAnnotation.names();
             if (names.length == 0)
             {
-                names = new String[] {method.getName()};
+                names = new String[]
+                {
+                    method.getName()
+                };
             }
 
             String name = names[0].trim().toLowerCase(Locale.ENGLISH);
@@ -217,7 +222,7 @@ public class CommandManager
             {
                 aliases.add(names[i].toLowerCase(Locale.ENGLISH));
             }
-            
+
             ReflectedCommand cmd = new ReflectedCommand(
                 module,
                 commandHolder,
@@ -226,11 +231,10 @@ public class CommandManager
                 name,
                 commandAnnotation.desc(),
                 commandAnnotation.usage(),
-                aliases
-            );
+                aliases);
 
             this.registerCommand(cmd, parents);
-            
+
             Alias aliasAnnotation = method.getAnnotation(Alias.class);
             if (aliasAnnotation != null && aliasAnnotation.names().length > 0)
             {

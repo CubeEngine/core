@@ -18,7 +18,10 @@ public class ModuleClassLoader extends URLClassLoader
 
     public ModuleClassLoader(ModuleLoader moduleLoader, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {
-        super(new URL[] {info.getFile().toURI().toURL()}, parent);
+        super(new URL[]
+            {
+                info.getFile().toURI().toURL()
+            }, parent);
         this.moduleLoader = moduleLoader;
         this.classMap = new HashMap<String, Class<?>>();
         this.moduleInfo = info;
@@ -77,7 +80,7 @@ public class ModuleClassLoader extends URLClassLoader
         {
             return super.getResource(name);
         }
-        
+
         return url;
     }
 }

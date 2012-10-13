@@ -15,6 +15,8 @@ public class FlyListener implements Listener
     public void onFlyStart(final FlyStartEvent event)
     {
         if (PvP.isFlyBlocked(event.getUser()))
+        {
             event.setCancelled(true);
+        }
     }
 }

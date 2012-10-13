@@ -10,7 +10,6 @@ import org.bukkit.Material;
  */
 public class Util
 {
-
     public Util()
     {
     }

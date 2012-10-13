@@ -33,7 +33,8 @@ public class BlockBreak extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBucketFill(PlayerBucketFillEvent event)
     {
-        lm.logBreakBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getState());
+        lm.logBreakBlock(PLAYER, event.getPlayer(), event.getBlockClicked().
+            getState());
     }
 
     public static class BreakConfig extends LogSubConfiguration
@@ -43,7 +44,7 @@ public class BlockBreak extends LogListener
             this.actions.put(LogAction.PLAYER_BLOCKBREAK, true);
             this.enabled = true;
         }
-        @Option(value="actions",genericType=Boolean.class)
+        @Option(value = "actions", genericType = Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
         @Option("creeper.log-as-player")
         public boolean logAsPlayer = false;

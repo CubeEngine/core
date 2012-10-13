@@ -56,7 +56,7 @@ public abstract class Module
 
     /**
      * Returns the lower-cased name of the module
-     * 
+     *
      * @return the lower-cased name of the module
      */
     public String getId()
@@ -133,7 +133,7 @@ public abstract class Module
     {
         return this.core.getModuleManager();
     }
-    
+
     /**
      * Returns the command manager
      *
@@ -143,7 +143,7 @@ public abstract class Module
     {
         return this.core.getCommandManager();
     }
-    
+
     /**
      * Returns the event manager
      *
@@ -196,13 +196,15 @@ public abstract class Module
      * registration
      */
     public void install()
-    {}
+    {
+    }
 
     /**
      * This method will be called if a module gets uninstalled
      */
     public void uninstall()
-    {}
+    {
+    }
 
     /**
      * This method will be called if the currently loaded module revision is
@@ -211,31 +213,36 @@ public abstract class Module
      * @param oldRevision the old revision form the database
      */
     public void update(int oldRevision)
-    {}
+    {
+    }
 
     /**
      * This method gets called right after the module initialization
      */
     public void onLoad()
-    {}
+    {
+    }
 
     /**
      * This method gets called when the module got enabled
      */
     public void onEnable()
-    {}
+    {
+    }
 
     /**
      * This method gets called when the module got disabled
      */
     public void onDisable()
-    {}
+    {
+    }
 
     /**
      * This method should be overridden to do reloading
      */
     public void reload()
-    {}
+    {
+    }
 
     @Override
     public int hashCode()
@@ -306,7 +313,10 @@ public abstract class Module
         {
             try
             {
-                this.logger.log(Level.FINER, "Enabling {0}-r{1}", new Object[]{this.getInfo().getName(), this.getInfo().getRevision()});
+                this.logger.log(Level.FINER, "Enabling {0}-r{1}", new Object[]
+                    {
+                        this.getInfo().getName(), this.getInfo().getRevision()
+                    });
                 this.onEnable();
                 this.enabled = true;
                 this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, this));
@@ -344,23 +354,22 @@ public abstract class Module
     {
         return this.loader;
     }
-    
+
     public void registerPermissions(Permission[] permissions)
     {
         this.core.getPermissionManager().registerPermissions(this, permissions);
     }
-    
 
     public void registerCommand(CubeCommand command)
     {
         this.core.getCommandManager().registerCommand(command);
     }
-    
+
     public void registerCommands(Object commandHolder, String... parents)
     {
         this.core.getCommandManager().registerCommands(this, commandHolder, parents);
     }
-    
+
     public void registerListener(Listener listener)
     {
         this.core.getEventManager().registerListener(this, listener);

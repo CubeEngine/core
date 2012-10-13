@@ -1987,16 +1987,15 @@ public class UserBase implements Player
         }
         return null;
     }
-    
     /*
-    public String getLanguage()
-    {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            // TODO implement if Bukkit pulled https://github.com/Bukkit/Bukkit/pull/683
-            // return this.offlinePlayer.getLanguage();
-        }
-        return I18n.SOURCE_LANGUAGE;
-    }*/
+     * public String getLanguage()
+     * {
+     * Player player = this.offlinePlayer.getPlayer();
+     * if (player != null)
+     * {
+     * // TODO implement if Bukkit pulled https://github.com/Bukkit/Bukkit/pull/683
+     * // return this.offlinePlayer.getLanguage();
+     * }
+     * return I18n.SOURCE_LANGUAGE;
+     * } */
 }

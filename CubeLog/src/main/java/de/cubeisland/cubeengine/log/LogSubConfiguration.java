@@ -9,13 +9,13 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
  */
 public abstract class LogSubConfiguration extends Configuration
 {
-    @Option(value="enabled")
+    @Option(value = "enabled")
     public boolean enabled;
 
     public LogSubConfiguration()
     {
         this.setCodec(Configuration.resolveCodec("yml"));
     }
-    
+
     public abstract String getName();
 }

@@ -69,13 +69,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 .field("player").is(ComponentBuilder.EQUAL).value()
                 .end()
                 .end());
-            
+
             this.database.prepareAndStoreStatement(User.class, "cleanup", database.getQueryBuilder()
                 .select(key).from(table)
                 .where().field("lastseen").is(LESS).value()
                 .and().field("nogc").is(EQUAL).value(false)
-                .end().end()
-            );
+                .end().end());
         }
         catch (SQLException e)
         {
@@ -387,7 +386,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         }, this.core.getConfiguration().userManagerKeepUserLoaded);
         user.setAttribute("removingTaskId", id);
     }
-    
+
     @EventHandler()
     private void onJoin(final PlayerJoinEvent event)
     {

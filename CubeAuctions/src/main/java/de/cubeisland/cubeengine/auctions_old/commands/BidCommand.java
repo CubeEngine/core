@@ -198,7 +198,7 @@ public class BidCommand
     public void SendBidInfo(Auction auction, CommandSender sender)
     {
         sender.sendMessage(t("bid_out", econ.format(auction.getBids().peek().getAmount()),
-            auction.getItemType() + "x" + auction.getItemAmount(), auction.getKey()));
+                auction.getItemType() + "x" + auction.getItemAmount(), auction.getKey()));
         if (!(auction.getOwner().isServerBidder()) && auction.getOwner().isOnline())
         {
             if (auction.getOwner().hasNotifyState(Bidder.NOTIFY_STATUS))

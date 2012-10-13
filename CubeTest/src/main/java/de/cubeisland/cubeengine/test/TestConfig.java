@@ -30,7 +30,7 @@ import org.bukkit.plugin.Plugin;
 @Codec("yml")
 public class TestConfig extends Configuration
 {
-    private final Server server = ((Plugin) CubeEngine.getCore()).getServer();
+    private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
     @Option("location")
     @Comment("LocationTest")
     public Location location = new Location(server.getWorld("world"), 1, 2, 3, 0, 0);
@@ -48,8 +48,10 @@ public class TestConfig extends Configuration
     public String sql_username = "worldguard";
     @Option("regions.sql.password")
     public String sql_password = "worldguard";
-    @Option(value = "regions.max-region-count-per-player", genericType = Integer.class)
-    @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
+    @Option(value = "regions.max-region-count-per-player",
+    genericType = Integer.class)
+    @Comment(
+    "This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
         
@@ -125,10 +127,14 @@ public class TestConfig extends Configuration
     {
         {
             locs = new LinkedHashMap<String, Location>();
-            locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.
+                put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.
+                put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.
+                put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.
+                put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
         }
     }
     ;

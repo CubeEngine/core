@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.war.storage;
 
-
 import de.cubeisland.cubeengine.core.persistence.Model;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.war.CubeWar;
@@ -353,8 +352,7 @@ public class UserModel implements Model<User>
     {
         this.teampos = teampos;
     }
-    
-    
+
     public void setKey(User key)
     {
         throw new UnsupportedOperationException("Not supported yet.");

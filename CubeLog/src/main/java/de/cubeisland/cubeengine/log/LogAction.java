@@ -62,5 +62,4 @@ public enum LogAction
     {
         return listenerClass;
     }
-
 }

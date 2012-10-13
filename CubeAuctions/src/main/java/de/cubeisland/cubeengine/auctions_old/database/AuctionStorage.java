@@ -70,14 +70,14 @@ public class AuctionStorage implements Storage<Integer, Auction>
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `auctions` ("
-                + "`id` int(10) unsigned NOT NULL,"
-                + "`cubeuserid` int(11) NOT NULL,"
-                + "`item` varchar(42) NOT NULL,"
-                + "`amount` int(11) NOT NULL,"
-                + "`timestamp` timestamp NOT NULL,"
-                + "PRIMARY KEY (`id`),"
-                + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                    + "`id` int(10) unsigned NOT NULL,"
+                    + "`cubeuserid` int(11) NOT NULL,"
+                    + "`item` varchar(42) NOT NULL,"
+                    + "`amount` int(11) NOT NULL,"
+                    + "`timestamp` timestamp NOT NULL,"
+                    + "PRIMARY KEY (`id`),"
+                    + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
         {

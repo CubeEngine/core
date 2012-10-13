@@ -28,7 +28,6 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class CubeWarListener implements Listener
 {
-
     private AreaControl areas = AreaControl.get();
     private GroupControl groups = GroupControl.get();
     private PvP pvp = CubeWar.getInstance().getPvp();
@@ -49,7 +48,6 @@ public class CubeWarListener implements Listener
             plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,
                     new Runnable()
                     {
-
                         public void run()
                         {
                             users.getUser(event.getPlayer()).setRespawning(false);

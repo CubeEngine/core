@@ -26,7 +26,7 @@ public class GroupControl
     {
         return instance;
     }
-    
+
     public static void create(ConfigurationSection config)
     {
         instance = new GroupControl(config);
@@ -34,8 +34,8 @@ public class GroupControl
 
     private GroupControl(ConfigurationSection config)
     {
-        
-        
+
+
         groups = new HashMap<Integer, Group>();
 
         for (String name : config.getKeys(false))
@@ -182,7 +182,7 @@ public class GroupControl
     {
         return this.newGroup(tag, name, -2);
     }
-    
+
     public Group newGroup(String tag, String name, int parent)
     {
         GroupModel newModel = this.groups.get(parent).model.deepCopy();
@@ -196,7 +196,7 @@ public class GroupControl
         groupDB.store(newModel);
         return group;
     }
-    
+
     public void loadDataBase()
     {
         groupDB = GroupStorage.get();
@@ -225,33 +225,33 @@ public class GroupControl
             }
         }
     }
-    
+
     public Collection<Group> getGroups()
     {
         return groups.values();
     }
-    
+
     public Group getGroupAtLocation(Player player)
     {
         return getGroupAtLocation(player.getLocation());
     }
-    
+
     public Group getGroupAtLocation(Location loc)
     {
 
         return AreaControl.get().getGroup(loc);
     }
-    
+
     public Group getWildLand()
     {
         return groups.get(0);
     }
-    
+
     public Group getGroup(int id)
     {
         return groups.get(id);
     }
-    
+
     public Group getGroup(String tag)
     {
         for (Group group : groups.values())
@@ -263,7 +263,7 @@ public class GroupControl
         }
         return null;
     }
-    
+
     public boolean isTagFree(String tag)
     {
         if (this.getGroup(tag) == null)
@@ -275,7 +275,7 @@ public class GroupControl
             return false;
         }
     }
-    
+
     public int getRank(Group group)
     {
         int position = 1;
@@ -293,7 +293,7 @@ public class GroupControl
         }
         return position;
     }
-    
+
     public boolean isBalanced(Group group)
     {
         int users = 0;
@@ -316,13 +316,13 @@ public class GroupControl
         }
         return false;
     }
-    
+
     public void wipeArea()
     {
         for (Group g : groups.values())
         {
             g.resetInfluence_used();
-            
+
         }
         AreaControl.get().remAllAll();
     }

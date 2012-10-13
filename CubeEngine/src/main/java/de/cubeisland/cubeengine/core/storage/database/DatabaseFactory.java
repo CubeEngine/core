@@ -17,9 +17,8 @@ import org.apache.commons.lang.Validate;
  */
 public class DatabaseFactory
 {
-    
     private static final HashMap<String, Class<? extends DatabaseConfiguration>> databases = new HashMap<String, Class<? extends DatabaseConfiguration>>();
-    
+
     static
     {
         registerDatabase("mysql", MySQLDatabaseConfiguration.class);
@@ -29,7 +28,7 @@ public class DatabaseFactory
     {
         Validate.notNull(name, "The name must not be null!");
         Validate.notNull(configFile, "The config file must not be null!");
-        
+
         Class<? extends DatabaseConfiguration> configClazz = databases.get(name.toLowerCase(Locale.ENGLISH));
         if (configClazz != null)
         {

@@ -30,7 +30,7 @@ public class EventManager
     /**
      * Registers an event listener with a module
      *
-     * @param module the module
+     * @param module   the module
      * @param listener the listener
      * @return fluent interface
      */
@@ -42,7 +42,7 @@ public class EventManager
             this.listenerMap.put(module, listeners = new THashSet<Listener>(1));
         }
         listeners.add(listener);
-        
+
         this.pm.registerEvents(listener, this.corePlugin);
         return this;
     }
@@ -50,7 +50,7 @@ public class EventManager
     /**
      * Unregisters an event listener from a module
      *
-     * @param module the module
+     * @param module   the module
      * @param listener the listener
      * @return fluent interface
      */
@@ -58,7 +58,7 @@ public class EventManager
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(listener, "The listener must not be null!");
-        
+
         Set<Listener> listeners = this.listenerMap.get(module);
         if (listeners != null && listeners.remove(listener))
         {
@@ -76,7 +76,7 @@ public class EventManager
     public EventManager unregisterListener(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
-        
+
         Set<Listener> listeners = this.listenerMap.get(module);
         if (listeners != null)
         {
@@ -110,7 +110,7 @@ public class EventManager
     /**
      * Fires an event
      *
-     * @param <T> the event type
+     * @param <T>   the event type
      * @param event the event instance
      * @return the event instance
      */

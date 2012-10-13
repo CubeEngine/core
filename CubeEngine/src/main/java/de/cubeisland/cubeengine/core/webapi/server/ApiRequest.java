@@ -108,15 +108,18 @@ public final class ApiRequest
             this.controller = routeSegments[0];
             this.action = routeSegments[1];
         }
-        else if (routeSegments.length >= 1)
-        {
-            this.controller = routeSegments[0];
-            this.action = null;
-        }
         else
         {
-            this.controller = null;
-            this.action = null;
+            if (routeSegments.length >= 1)
+            {
+                this.controller = routeSegments[0];
+                this.action = null;
+            }
+            else
+            {
+                this.controller = null;
+                this.action = null;
+            }
         }
 
         this.ignoreResponseStatus = this.params.containsKey("ignoreResponseStatus");

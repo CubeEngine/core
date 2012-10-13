@@ -46,10 +46,13 @@ public class AliasMapFormat
                 {
                     map.put(id, names);
                 }
-                else if (map.get(id) == null || map.get(id).isEmpty())
+                else
                 {
-                    map.put(id, names);
-                    updated = true;
+                    if (map.get(id) == null || map.get(id).isEmpty())
+                    {
+                        map.put(id, names);
+                        updated = true;
+                    }
                 }
             }
             else

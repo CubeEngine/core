@@ -18,93 +18,95 @@ import java.util.Map;
  *
  * @author Wolfi
  */
-
 public class RuleBookConfiguration
 {
-   private final static int NumberOfCharsPerPage = 260;
-   private final static int NumberOfCharsPerLine = 20;
-   
-   Rulebook ruleBook;
-   Map<String, String> ruleMap = new HashMap<String,String>();
-   Map<String, List<String>> convertedRuleMap = new HashMap<String, List<String>>();
-   
-   public RuleBookConfiguration(Rulebook ruleBook)
-   {
-       this.ruleBook = ruleBook;
-       for(String language : this.ruleBook.getCore().getI18n().getLanguages())
-       {
-           try 
-           {
-               loadRules(language);
-               convertText(language);
-           } 
-           catch (Exception e) 
-           {
-               ruleBook.error("can't read the file " + language + ".txt", e);
-           }
-       }
-   }
+    private final static int NumberOfCharsPerPage = 260;
+    private final static int NumberOfCharsPerLine = 20;
+    Rulebook ruleBook;
+    Map<String, String> ruleMap = new HashMap<String, String>();
+    Map<String, List<String>> convertedRuleMap = new HashMap<String, List<String>>();
 
-    private void loadRules(String language) throws FileNotFoundException, IOException 
+    public RuleBookConfiguration(Rulebook ruleBook)
+    {
+        this.ruleBook = ruleBook;
+        for (String language : this.ruleBook.getCore().getI18n().getLanguages())
+        {
+            try
+            {
+                loadRules(language);
+                convertText(language);
+            }
+            catch (Exception e)
+            {
+                ruleBook.error("can't read the file " + language + ".txt", e);
+            }
+        }
+    }
+
+    private void loadRules(String language) throws FileNotFoundException, IOException
     {
         File file = new File(ruleBook.getFolder().getAbsolutePath() + File.separator + language + ".txt");
-        if(!file.exists())
+        if (!file.exists())
         {
             try
             {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                writer.write(_(language, "rulebook", "You have to write down your rules here."));
+                writer.
+                    write(_(language, "rulebook", "You have to write down your rules here."));
                 writer.close();
-            } 
-            catch(IOException e)
+            }
+            catch (IOException e)
             {
-                ruleBook.error("The languagefile \"" + language + "\" could not be created", e);
+                ruleBook.
+                    error("The languagefile \"" + language + "\" could not be created", e);
             }
         }
-        
+
         String text = "";
         String line = null;
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        while( (line = reader.readLine()) != null)
+        while ((line = reader.readLine()) != null)
         {
             text += (line + "\n");
         }
         reader.close();
-        
+
         this.ruleMap.put(language, text);
     }
-      
+
     private int getNumberOfLines(String string)
     {
-        return (int) Math.ceil((double)string.length() / (double)NumberOfCharsPerLine);
-    } 
-    
+        return (int)Math.
+            ceil((double)string.length() / (double)NumberOfCharsPerLine);
+    }
+
     private int getNumberOfLines(String[] strings)
     {
         int result = 0;
-        for(String string : strings)
+        for (String string : strings)
         {
             result += getNumberOfLines(string);
         }
         return result;
     }
-    
+
     private void convertText(String language)
     {
         List<String> lines = createLines(this.getText(language));
         this.convertedRuleMap.put(language, createPages(lines));
     }
-    
+
     private List<String> createLines(String text)
     {
         List<String> lines = new ArrayList<String>();
-        for(String line : text.split("\n"))
+        for (String line : text.split("\n"))
         {
             line = line.trim();
-            while(line.length() > NumberOfCharsPerPage)
+            while (line.length() > NumberOfCharsPerPage)
             {
-                int index = line.substring(0, NumberOfCharsPerPage).lastIndexOf(" ");
-                if(index == -1) 
+                int index = line.substring(0, NumberOfCharsPerPage).
+                    lastIndexOf(" ");
+                if (index == -1)
                 {
                     index = NumberOfCharsPerPage;
                 }
@@ -112,25 +114,25 @@ public class RuleBookConfiguration
                 line = line.substring(index).trim();
             }
             lines.add(line);
-        }    
+        }
         return lines;
     }
-    
-    private List<String> createPages(List<String> lines) 
+
+    private List<String> createPages(List<String> lines)
     {
         // TODO made to parts of the line and copy the first at the last page if there is enough space.  
         List<String> pages = new ArrayList<String>();
         pages.add("");
         int page = 0;
-        
-        for(String line : lines)
+
+        for (String line : lines)
         {
-            if( (getNumberOfLines(pages.get(page)) + getNumberOfLines(line) ) > 13)
+            if ((getNumberOfLines(pages.get(page)) + getNumberOfLines(line)) > 13)
             {
                 page++;
                 pages.add("");
             }
-            if(pages.get(page).length() == 0)
+            if (pages.get(page).length() == 0)
             {
                 pages.set(page, line);
             }
@@ -139,24 +141,24 @@ public class RuleBookConfiguration
                 pages.set(page, pages.get(page) + "\n" + line);
             }
         }
-        
+
         return pages;
     }
-    
+
     public Collection<String> getLanguages()
     {
         return this.ruleMap.keySet();
     }
-    
+
     public String getText(String language)
     {
         return this.ruleMap.get(language);
     }
-    
+
     public String[] getPages(String language)
-    { 
+    {
         List<String> pageList = this.convertedRuleMap.get(language);
-        if(pageList == null) 
+        if (pageList == null)
         {
             return null;
         }

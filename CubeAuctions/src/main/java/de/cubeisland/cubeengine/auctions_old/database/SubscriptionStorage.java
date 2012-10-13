@@ -108,12 +108,12 @@ public class SubscriptionStorage implements Storage<User, Bidder>
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `subscription` ("
-                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
-                + "`cubeuserid` int(11) NOT NULL,"
-                + "`sub` varchar(42) NOT NULL,"
-                + "PRIMARY KEY (`id`),"
-                + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+                    + "`id` int(11) NOT NULL AUTO_INCREMENT,"
+                    + "`cubeuserid` int(11) NOT NULL,"
+                    + "`sub` varchar(42) NOT NULL,"
+                    + "PRIMARY KEY (`id`),"
+                    + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
         }
         catch (SQLException ex)
         {

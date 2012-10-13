@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 public abstract class AbstractDatabase implements Database
 {
     protected static final Logger LOGGER = CubeEngine.getLogger();
-    
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
@@ -58,7 +57,8 @@ public abstract class AbstractDatabase implements Database
     @Override
     public void asyncUpdate(final String query, final Object... params)
     {
-        this.taskQueue.addTask(new Runnable() {
+        this.taskQueue.addTask(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -83,7 +83,8 @@ public abstract class AbstractDatabase implements Database
     @Override
     public void asnycPreparedUpdate(final Class owner, final String name, final Object... params)
     {
-        this.taskQueue.addTask(new Runnable() {
+        this.taskQueue.addTask(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -104,11 +105,12 @@ public abstract class AbstractDatabase implements Database
     {
         return this.createAndBindValues(query, params).execute();
     }
-    
+
     @Override
     public void asyncExecute(final String query, final Object... params)
     {
-        this.taskQueue.addTask(new Runnable() {
+        this.taskQueue.addTask(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -133,8 +135,9 @@ public abstract class AbstractDatabase implements Database
     @Override
     public void asyncPreparedExecute(final Class owner, final String name, final Object... params)
     {
-        
-        this.taskQueue.addTask(new Runnable() {
+
+        this.taskQueue.addTask(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -212,7 +215,7 @@ public abstract class AbstractDatabase implements Database
     {
         this.prepareStatement(this.getQueryBuilder().rollback().end()).execute();
     }
-    
+
     @Override
     public void update(Storage manager)
     {
@@ -222,6 +225,6 @@ public abstract class AbstractDatabase implements Database
     @Override
     public void queueOperation(Runnable operation)
     {
-        this.taskQueue.addTask(operation);         
+        this.taskQueue.addTask(operation);
     }
 }

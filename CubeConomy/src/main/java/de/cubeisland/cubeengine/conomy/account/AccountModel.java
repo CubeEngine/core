@@ -8,21 +8,22 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
  *
  * @author Anselm Brehme
  */
-
 public abstract class AccountModel implements IAccount, Model<Integer>
 {
-    @Attribute(type= AttrType.DOUBLE)
+    @Attribute(type = AttrType.DOUBLE)
     protected double balance;
-    
+
     /**
      * Returns the Name of this Account
      * Bank Accounts : #BankName
      * Player Account : PlayerName
-     * 
+     *
      * @return the AccountName
      */
     public abstract String getName();
+
     public abstract Integer getKey();
+
     public abstract void setKey(Integer id);
 
     public double give(double amount)

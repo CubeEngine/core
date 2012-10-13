@@ -11,5 +11,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Flag
 {
     public String name();
+
     public String longName() default "";
 }

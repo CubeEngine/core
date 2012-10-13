@@ -30,7 +30,10 @@ public class FlyCommand
     @Command(
     desc = "Lets you fly away",
     max = 1,
-    params = { @Param(names = "player", types = User.class) },
+    params =
+    {
+        @Param(names = "player", types = User.class)
+    },
     usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {

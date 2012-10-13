@@ -38,11 +38,15 @@ public class CheatCommands
     desc = "Adds an Enchantment to the item in your hand",
     min = 1,
     max = 2,
-    flags = {@Flag(longName = "unsafe", name = "u")},
+    flags =
+    {
+        @Flag(longName = "unsafe", name = "u")
+    },
     usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.
+            getSenderAsUser("core", "&cThis command can only be used by a player!");
         ItemStack item = sender.getItemInHand();
         if (item.getType().equals(Material.AIR))
         {
@@ -54,7 +58,8 @@ public class CheatCommands
             String possibleEnchs = this.getPossibleEnchantments(item);
             if (possibleEnchs != null)
             {
-                illegalParameter(context, "basics", "Enchantment %s not found! Try one of those instead:%s", context.getString(0), possibleEnchs);
+                illegalParameter(context, "basics", "Enchantment %s not found! Try one of those instead:%s", context.
+                    getString(0), possibleEnchs);
             }
             else
             {
@@ -75,7 +80,9 @@ public class CheatCommands
             if (BasicsPerm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
             {
                 item.addUnsafeEnchantment(ench, level);
-                context.sendMessage("basics", "&aAdded unsafe Enchantment: &6%s %d&a to your item!", EnchantMatcher.get().getNameFor(ench), level);
+                context.
+                    sendMessage("basics", "&aAdded unsafe Enchantment: &6%s %d&a to your item!", EnchantMatcher.
+                    get().getNameFor(ench), level);
                 return;
             }
             denyAccess(sender, "basics", "You are not allowed to add unsafe enchantments!");
@@ -84,10 +91,13 @@ public class CheatCommands
         {
             if (ench.canEnchantItem(item))
             {
-                if ((level >= ench.getStartLevel()) && (level <= ench.getMaxLevel()))
+                if ((level >= ench.getStartLevel()) && (level <= ench.
+                    getMaxLevel()))
                 {
                     item.addUnsafeEnchantment(ench, level);
-                    context.sendMessage("bascics", "&aAdded Enchantment: &6%s %d&a to your item!", EnchantMatcher.get().getNameFor(ench), level);
+                    context.
+                        sendMessage("bascics", "&aAdded Enchantment: &6%s %d&a to your item!", EnchantMatcher.
+                        get().getNameFor(ench), level);
                     return;
                 }
                 illegalParameter(context, "basics", "This enchantmentlevel is not allowed!");
@@ -114,14 +124,16 @@ public class CheatCommands
             {
                 if (first)
                 {
-                    sb.append("\n").append(EnchantMatcher.get().getNameFor(enchantment));
+                    sb.append("\n").append(EnchantMatcher.get().
+                        getNameFor(enchantment));
                     first = false;
                 }
                 else
                 {
-                    sb.append(",").append(EnchantMatcher.get().getNameFor(enchantment));
+                    sb.append(",").append(EnchantMatcher.get().
+                        getNameFor(enchantment));
                 }
-                        
+
             }
         }
         if (sb.length() == 0)
@@ -134,21 +146,27 @@ public class CheatCommands
     @Command(
     desc = "Refills your hunger bar",
     max = 1,
-    flags = {@Flag(longName = "all", name = "a")},
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    },
     usage = "[player]")
     public void feed(CommandContext context)
     {
         if (context.hasFlag("a"))
         {
-            Player[] players = context.getSender().getServer().getOnlinePlayers();
+            Player[] players = context.getSender().getServer().
+                getOnlinePlayers();
             for (Player player : players)
             {
                 player.setFoodLevel(20);
                 player.setSaturation(20);
                 player.setExhaustion(0);
             }
-            context.sendMessage("basics","You made everyone fat!");
-            this.um.broadcastMessage("basics", "%s shared food with everyone.", context.getSender().getName());
+            context.sendMessage("basics", "You made everyone fat!");
+            this.um.
+                broadcastMessage("basics", "%s shared food with everyone.", context.
+                getSender().getName());
         }
         else
         {
@@ -164,9 +182,12 @@ public class CheatCommands
                 }
                 other = true;
             }
-            else if (sender == null)
+            else
             {
-                invalidUsage(context, "basics", "&cDon't feed the troll!");
+                if (sender == null)
+                {
+                    invalidUsage(context, "basics", "&cDon't feed the troll!");
+                }
             }
             user.setFoodLevel(20);
             user.setSaturation(20);
@@ -174,7 +195,8 @@ public class CheatCommands
             if (other)
             {
                 context.sendMessage("basics", "&6Feeded %s", user.getName());
-                user.sendMessage("basics", "&6You got fed by %s", context.getSender().getName());
+                user.sendMessage("basics", "&6You got fed by %s", context.
+                    getSender().getName());
             }
             else
             {
@@ -182,17 +204,21 @@ public class CheatCommands
             }
         }
     }
-    
+
     @Command(
     desc = "Heals a Player",
     max = 1,
-    flags = {@Flag(longName = "all", name = "a")},
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    },
     usage = "[player]")
     public void heal(CommandContext context)
     {
         if (context.hasFlag("a"))
         {
-            Player[] players = context.getSender().getServer().getOnlinePlayers();
+            Player[] players = context.getSender().getServer().
+                getOnlinePlayers();
             for (Player player : players)
             {
                 player.setHealth(player.getMaxHealth());
@@ -201,7 +227,9 @@ public class CheatCommands
                 player.setExhaustion(0);
             }
             context.sendMessage("basics", "You healed everyone!");
-            this.um.broadcastMessage("basics", "%s healed every player.", context.getSender().getName());
+            this.um.
+                broadcastMessage("basics", "%s healed every player.", context.
+                getSender().getName());
         }
         else
         {
@@ -230,17 +258,21 @@ public class CheatCommands
             if (other)
             {
                 context.sendMessage("basics", "&6Healed %s", user.getName());
-                user.sendMessage("basics", "&6You got healed by %s", sender.getName());
+                user.sendMessage("basics", "&6You got healed by %s", sender.
+                    getName());
             }
             else
             {
                 context.sendMessage("basics", "&6You are now healed!");
             }
         }
-    }    
+    }
 
     @Command(
-    names = {"gamemode", "gm"},
+    names =
+    {
+        "gamemode", "gm"
+    },
     max = 2,
     desc = "Changes the gamemode",
     usage = "<gamemode> [player]")
@@ -249,7 +281,7 @@ public class CheatCommands
         boolean changeOther = false;
 
         User sender = context.getSenderAsUser();
-        User user = sender ;
+        User user = sender;
         if (user == null)
         {
             invalidUsage(context, "basics", "&cYou do not not have any gamemode!");
@@ -274,13 +306,19 @@ public class CheatCommands
             {
                 user.setGameMode(GameMode.SURVIVAL);
             }
-            else if (mode.equals("creative") || mode.equals("c"))
+            else
             {
-                user.setGameMode(GameMode.CREATIVE);
-            }
-            else if (mode.equals("adventure") || mode.equals("a"))
-            {
-                user.setGameMode(GameMode.ADVENTURE);
+                if (mode.equals("creative") || mode.equals("c"))
+                {
+                    user.setGameMode(GameMode.CREATIVE);
+                }
+                else
+                {
+                    if (mode.equals("adventure") || mode.equals("a"))
+                    {
+                        user.setGameMode(GameMode.ADVENTURE);
+                    }
+                }
             }
         }
         else
@@ -298,18 +336,27 @@ public class CheatCommands
         }
         if (changeOther)
         {
-            context.sendMessage("basics", "You changed the gamemode of %s to %s", user.getName(), _(sender, "basics", user.getGameMode().toString()));
-            user.sendMessage("basics", "Your Gamemode has been changed to %s", _(user, "basics", user.getGameMode().toString()));
+            context.
+                sendMessage("basics", "You changed the gamemode of %s to %s", user.
+                getName(), _(sender, "basics", user.getGameMode().toString()));
+            user.
+                sendMessage("basics", "Your Gamemode has been changed to %s", _(user, "basics", user.
+                getGameMode().toString()));
         }
         else
         {
-            context.sendMessage("basics", "You changed your gamemode to %s", _(user, "basics", user.getGameMode().toString()));
+            context.
+                sendMessage("basics", "You changed your gamemode to %s", _(user, "basics", user.
+                getGameMode().toString()));
         }
     }
 
     @Command(
     desc = "Gives the specified Item to a player",
-    flags = {@Flag(name = "b", longName = "blacklist")},
+    flags =
+    {
+        @Flag(name = "b", longName = "blacklist")
+    },
     min = 2, max = 3,
     usage = "<player> <material[:data]> [amount] [-blacklist]")
     public void give(CommandContext context)
@@ -323,9 +370,11 @@ public class CheatCommands
         ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
-            illegalParameter(context, "core", "&cUnknown Item: %s!", context.getString(1));
+            illegalParameter(context, "core", "&cUnknown Item: %s!", context.
+                getString(1));
         }
-        if (context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender()))
+        if (context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.
+            isAuthorized(context.getSender()))
         {
             if (1 == 0) // TODO Blacklist
             {
@@ -346,26 +395,37 @@ public class CheatCommands
         user.getInventory().addItem(item);
         user.updateInventory();
         String matname = MaterialMatcher.get().getNameFor(item);
-        context.sendMessage("basics", "You gave %s %d %s", user.getName(), amount, matname);
-        user.sendMessage("%s just gave you %d %s", context.getSender().getName(), amount, matname);
+        context.
+            sendMessage("basics", "You gave %s %d %s", user.getName(), amount, matname);
+        user.
+            sendMessage("%s just gave you %d %s", context.getSender().getName(), amount, matname);
     }
 
     @Command(
-    names = {"item", "i"},
+    names =
+    {
+        "item", "i"
+    },
     desc = "Gives the specified Item to you",
     max = 2,
     min = 1,
-    flags = {@Flag(longName = "blacklist", name = "b")},
+    flags =
+    {
+        @Flag(longName = "blacklist", name = "b")
+    },
     usage = "<material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.
+            getSenderAsUser("core", "&cThis command can only be used by a player!");
         ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
-            illegalParameter(context, "core", "&cUnknown Item: %s!", context.getString(1));
+            illegalParameter(context, "core", "&cUnknown Item: %s!", context.
+                getString(1));
         }
-        if (context.hasFlag("b") && BasicsPerm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender))
+        if (context.hasFlag("b") && BasicsPerm.COMMAND_ITEM_BLACKLIST.
+            isAuthorized(sender))
         {
             if (1 == 0) // TODO Blacklist
             {
@@ -384,7 +444,9 @@ public class CheatCommands
         item.setAmount(amount);
         sender.getInventory().addItem(item);
         sender.updateInventory();
-        sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
+        sender.
+            sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.
+            get().getNameFor(item));
     }
 
     @Command(
@@ -392,18 +454,23 @@ public class CheatCommands
     max = 0)
     public void more(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.
+            getSenderAsUser("core", "&cThis command can only be used by a player!");
         sender.getItemInHand().setAmount(64);
         sender.sendMessage("basics", "Refilled Stack in Hand!");
     }
 
     @Command(
     desc = "Repairs your items",
-    flags = {@Flag(longName = "all", name = "a")},
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    },
     usage = "/repair [-all]") // without item in hand
     public void repair(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.
+            getSenderAsUser("core", "&cThis command can only be used by a player!");
         if (context.hasFlag("a"))
         {
             List<ItemStack> list = new ArrayList<ItemStack>();
@@ -414,7 +481,7 @@ public class CheatCommands
             {
                 if (MaterialMatcher.get().isRepairable(item))
                 {
-                    item.setDurability((short) 0);
+                    item.setDurability((short)0);
                     repaired++;
                 }
             }
@@ -434,15 +501,15 @@ public class CheatCommands
             {
                 if (item.getDurability() == 0)
                 {
-                    sender.sendMessage("basics","No need to repair this!");
+                    sender.sendMessage("basics", "No need to repair this!");
                     return;
                 }
-                item.setDurability((short) 0);
-                sender.sendMessage("basics","Item repaired!");
+                item.setDurability((short)0);
+                sender.sendMessage("basics", "Item repaired!");
             }
             else
             {
-                sender.sendMessage("basics","Item cannot be repaired!");
+                sender.sendMessage("basics", "Item cannot be repaired!");
             }
         }
     }
@@ -453,12 +520,11 @@ public class CheatCommands
         NIGHT(18000, "night", "midnight"),
         DAWN(0, "dawn", "morning"),
         DUSK(12000, "dusk", "even");
-
-        private static final HashMap<String,Time> times = new  HashMap<String, Time>();
-        private static final HashMap<Long,String> timeNames = new  HashMap<Long, String>();
+        private static final HashMap<String, Time> times = new HashMap<String, Time>();
+        private static final HashMap<Long, String> timeNames = new HashMap<Long, String>();
         protected String[] names;
         protected long longTime;
-        
+
         static
         {
             for (Time time : values())
@@ -470,18 +536,18 @@ public class CheatCommands
                 timeNames.put(time.longTime, time.names[0]);
             }
         }
-        
+
         private Time(long longTime, String... names)
         {
             this.names = names;
             this.longTime = longTime;
         }
-        
+
         public static String getTimeName(Long time)
         {
             return timeNames.get(time);
         }
-        
+
         public static Long matchTime(String s)
         {
             if (s == null)
@@ -504,11 +570,13 @@ public class CheatCommands
         }
     }
 
-    
     @Command(
     desc = "Changes the time of a world",
     min = 1, max = 2,
-    flags={@Flag(name="a",longName="all")},
+    flags =
+    {
+        @Flag(name = "a", longName = "all")
+    },
     usage = "<day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
@@ -528,11 +596,13 @@ public class CheatCommands
             String timeName = Time.getTimeName(time);
             if (timeName == null)
             {
-                context.sendMessage("basics", "Time set to %d in all worlds",time);
+                context.
+                    sendMessage("basics", "Time set to %d in all worlds", time);
             }
             else
             {
-                context.sendMessage("basics", "Time set to %s in all worlds",timeName);
+                context.
+                    sendMessage("basics", "Time set to %s in all worlds", timeName);
             }
         }
         else
@@ -545,13 +615,15 @@ public class CheatCommands
                 world = context.getSender().getServer().getWorld(worldname);
                 if (world == null)
                 {
-                    List<World> worlds = context.getSender().getServer().getWorlds();
+                    List<World> worlds = context.getSender().getServer().
+                        getWorlds();
                     StringBuilder sb = new StringBuilder();
                     for (World w : worlds)
                     {
                         sb.append(" ").append(w.getName());
                     }
-                    illegalParameter(context, "basics", "&cThe World %s does not exist!\nUse one of those:%s", context.getString(1), sb.toString());
+                    illegalParameter(context, "basics", "&cThe World %s does not exist!\nUse one of those:%s", context.
+                        getString(1), sb.toString());
                 }
             }
             else
@@ -569,11 +641,15 @@ public class CheatCommands
             String timeName = Time.getTimeName(time);
             if (timeName == null)
             {
-                context.sendMessage("basics", "Time set to %d in world %s", time, world.getName());
+                context.
+                    sendMessage("basics", "Time set to %d in world %s", time, world.
+                    getName());
             }
             else
             {
-                context.sendMessage("basics", "Time set to %s in world %s", timeName, world.getName());
+                context.
+                    sendMessage("basics", "Time set to %s in world %s", timeName, world.
+                    getName());
             }
         }
     }
@@ -582,7 +658,10 @@ public class CheatCommands
     desc = "Changes the time for a player",
     min = 1,
     max = 2,
-    flags = { @Flag(longName="relative",name="rel")},
+    flags =
+    {
+        @Flag(longName = "relative", name = "rel")
+    },
     usage = "<day|night|dawn|even> [player]")
     public void ptime(CommandContext context)
     {
@@ -611,7 +690,8 @@ public class CheatCommands
             {
                 invalidUsage(context, "core", "User not found!");
             }
-            if (!BasicsPerm.COMMAND_PTIME_OTHER.isAuthorized(context.getSender()))
+            if (!BasicsPerm.COMMAND_PTIME_OTHER.
+                isAuthorized(context.getSender()))
             {
                 denyAccess(context, "basics", "&cYou are not allowed to change the time of other players!");
             }
@@ -620,7 +700,8 @@ public class CheatCommands
         if (reset)
         {
             user.resetPlayerTime();
-            context.sendMessage("basics", "Resetted the time for %s!", user.getName());
+            context.sendMessage("basics", "Resetted the time for %s!", user.
+                getName());
             if (other)
             {
                 user.sendMessage("basics", "Your time was resetted!");
@@ -632,11 +713,15 @@ public class CheatCommands
             String timeName = Time.getTimeName(time);
             if (timeName == null)
             {
-                context.sendMessage("basics", "Time set to %d for %s", time, user.getName());
+                context.
+                    sendMessage("basics", "Time set to %d for %s", time, user.
+                    getName());
             }
             else
             {
-                context.sendMessage("basics", "Time set to %s for %s", timeName, user.getName());
+                context.
+                    sendMessage("basics", "Time set to %s for %s", timeName, user.
+                    getName());
             }
             if (other)
             {
@@ -646,34 +731,41 @@ public class CheatCommands
                 }
                 else
                 {
-                    user.sendMessage("basics", "Your time was set to %s!", timeName);
+                    user.
+                        sendMessage("basics", "Your time was set to %s!", timeName);
                 }
             }
         }
     }
-    
+
     @Command(
     desc = "The user can use unlimited items",
     max = 1,
     usage = "[on|off]")
     public void unlimited(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.
+            getSenderAsUser("core", "&cThis command can only be used by a player!");
         if (context.hasIndexed(0))
         {
             if (context.getString(0).equalsIgnoreCase("on"))
             {
                 sender.setAttribute("unlimitedItems", true);
-                sender.sendMessage("basics", "You now have unlimited items to build!");
-            }
-            else if (context.getString(0).equalsIgnoreCase("off"))
-            {
-                sender.removeAttribute("unlimitedItems");
-                sender.sendMessage("basics", "You now no longer have unlimited items to build!");
+                sender.
+                    sendMessage("basics", "You now have unlimited items to build!");
             }
             else
             {
-                invalidUsage(context);
+                if (context.getString(0).equalsIgnoreCase("off"))
+                {
+                    sender.removeAttribute("unlimitedItems");
+                    sender.
+                        sendMessage("basics", "You now no longer have unlimited items to build!");
+                }
+                else
+                {
+                    invalidUsage(context);
+                }
             }
         }
         else

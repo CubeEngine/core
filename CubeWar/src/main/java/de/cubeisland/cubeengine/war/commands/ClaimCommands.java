@@ -25,7 +25,6 @@ import org.bukkit.entity.Player;
  */
 public class ClaimCommands
 {
-
     private AreaControl areas = AreaControl.get();
     private GroupControl groups = GroupControl.get();
     private UserControl users = UserControl.get();
@@ -54,7 +53,7 @@ public class ClaimCommands
                 }
                 return true;
             }
-            
+
             if (args.size() > 1)
             {
                 int rad;
@@ -169,7 +168,7 @@ public class ClaimCommands
         List<Chunk> chunks = new ArrayList<Chunk>();
         if (rad == 0)
         {
-            if (team.getInfluence_used()>=team.getInfluence_max())
+            if (team.getInfluence_used() >= team.getInfluence_max())
             {
                 player.sendMessage(t("claim_influence"));
                 return;
@@ -218,8 +217,8 @@ public class ClaimCommands
         boolean influence_low = false;
         for (Chunk chunk : chunks)
         {//TODO Check Money
-            
-            if (team.getInfluence_used()>=team.getInfluence_max())
+
+            if (team.getInfluence_used() >= team.getInfluence_max())
             {
                 influence_low = true;
                 continue;
@@ -248,7 +247,10 @@ public class ClaimCommands
                 ++enemy;
             }
         }
-        if (influence_low) player.sendMessage(t("claim_influence"));
+        if (influence_low)
+        {
+            player.sendMessage(t("claim_influence"));
+        }
         player.sendMessage(t("claim_more", sum, team.getTag(), wild, enemy, sum - own, own));
     }
 

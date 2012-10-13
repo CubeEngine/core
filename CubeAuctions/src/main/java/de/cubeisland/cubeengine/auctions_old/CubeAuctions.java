@@ -53,8 +53,6 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
         return instance;
     }
 
-
-
     public static Database getDB()
     {
         return database;
@@ -72,9 +70,9 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
         Configuration configuration = this.getConfig();
         configuration.options().copyDefaults(true);
         debugMode = configuration.getBoolean("debug");
- 
+
         this.saveConfig();
-        
+
 
 
         this.economy = this.setupEconomy();
@@ -162,13 +160,13 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
     {
         BidderStorage bidderDB = new BidderStorage();
         AuctionBoxStorage boxDB = new AuctionBoxStorage();
-        
+
         AuctionStorage auctionDB = new AuctionStorage();
         BidStorage bidDB = new BidStorage();
-        
+
         PriceStorage priceDB = new PriceStorage();
         //SubscriptionStorage subDB = new SubscriptionStorage();
-       
+
 
     }
 }

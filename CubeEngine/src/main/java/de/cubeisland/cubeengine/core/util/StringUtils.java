@@ -42,7 +42,7 @@ public final class StringUtils
     /**
      * This method splits a string without RegExes
      *
-     * @param delim the delimiter
+     * @param delim  the delimiter
      * @param string the string to split
      * @return an array containing the parts
      */
@@ -54,8 +54,8 @@ public final class StringUtils
     /**
      * This method splits a string without RegExes
      *
-     * @param delim the delimiter
-     * @param string the string to split
+     * @param delim          the delimiter
+     * @param string         the string to split
      * @param keepEmptyParts whether to keep empty parts
      * @return an array containing the parts
      */
@@ -86,7 +86,7 @@ public final class StringUtils
     /**
      * This method merges an array of strings to a single string
      *
-     * @param delim the delimiter
+     * @param delim   the delimiter
      * @param strings the strings to implode
      * @return the imploded string
      */
@@ -98,7 +98,7 @@ public final class StringUtils
     /**
      * This method merges an array of strings to a single string
      *
-     * @param delim the delimiter
+     * @param delim   the delimiter
      * @param strings the strings to implode
      * @return the imploded string
      */
@@ -126,7 +126,7 @@ public final class StringUtils
      * This method parses a query string
      *
      * @param queryString the query string
-     * @param params a map to put the values in
+     * @param params      a map to put the values in
      */
     public static void parseQueryString(String queryString, Map<String, String> params)
     {
@@ -248,9 +248,12 @@ public final class StringUtils
         {
             return m;
         }
-        else if (m == 0)
+        else
         {
-            return n;
+            if (m == 0)
+            {
+                return n;
+            }
         }
 
         if (n > m)
@@ -377,7 +380,7 @@ public final class StringUtils
      * string.length() maxBehind: 20 Second LD-Check 2 maxLength:
      * string.length()
      *
-     * @param string the string to search
+     * @param string     the string to search
      * @param stringlist the possible Strings to find
      * @return a found match or null
      */
@@ -385,7 +388,7 @@ public final class StringUtils
     {
         return matchString(string, stringlist, true, 1, string.length(), 20, 2, 40, true);
     }
-    
+
     public static String matchString(String string, String... stringlist)
     {
         return matchString(string, Arrays.asList(stringlist));
@@ -399,10 +402,10 @@ public final class StringUtils
     /**
      * Tries to match a String with - LD with distance
      *
-     * @param firstLdCheck - Index with
-     * @param maxIndex and
-     * @param maxbehindIndex - LD at start with distance
-     * @param secondLdCheck when longer than
+     * @param firstLdCheck        - Index with
+     * @param maxIndex            and
+     * @param maxbehindIndex      - LD at start with distance
+     * @param secondLdCheck       when longer than
      * @param maxLengthforLdCheck
      *
      * @param string

@@ -26,15 +26,19 @@ public class BlockPlace extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event)
     {
-        lm.logPlaceBlock(event.getPlayer(), event.getBlockPlaced().getState(), event.getBlockReplacedState());
+        lm.
+            logPlaceBlock(event.getPlayer(), event.getBlockPlaced().getState(), event.
+            getBlockReplacedState());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBucketEmpty(PlayerBucketEmptyEvent event)
     {
-        BlockState newState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
+        BlockState newState = event.getBlockClicked().getRelative(event.
+            getBlockFace()).getState();
         newState.setType(event.getBucket()); //TODO check does this work???
-        lm.logPlaceBlock(event.getPlayer(), newState, event.getBlockClicked().getRelative(event.getBlockFace()).getState());
+        lm.logPlaceBlock(event.getPlayer(), newState, event.getBlockClicked().
+            getRelative(event.getBlockFace()).getState());
     }
 
     public static class PlaceConfig extends LogSubConfiguration
@@ -44,7 +48,7 @@ public class BlockPlace extends LogListener
             this.actions.put(LogAction.BLOCKPLACE, true);
             this.enabled = true;
         }
-        @Option(value="actions",genericType=Boolean.class)
+        @Option(value = "actions", genericType = Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

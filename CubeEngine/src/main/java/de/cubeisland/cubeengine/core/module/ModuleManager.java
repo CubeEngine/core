@@ -28,7 +28,6 @@ import org.bukkit.plugin.PluginManager;
 public class ModuleManager
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
-    
     private final Core core;
     private final ModuleLoader loader;
     private final Map<String, Module> modules;
@@ -60,7 +59,7 @@ public class ModuleManager
     {
         return this.modules.values();
     }
-    
+
     public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
     {
         Validate.notNull(moduleFile, "The file must not be null!");
@@ -68,9 +67,9 @@ public class ModuleManager
         {
             throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
         }
-        
+
         ModuleInfo info = this.loader.loadModuleInfo(moduleFile);
-        
+
         info = this.moduleInfos.put(info.getId(), info);
         if (info != null)
         {
@@ -80,7 +79,7 @@ public class ModuleManager
                 this.unloadModule(oldModule);
             }
         }
-        
+
         return this.loadModule(info.getName(), this.moduleInfos);
     }
 
@@ -150,7 +149,7 @@ public class ModuleManager
         {
             return module;
         }
-        
+
         if (loadStack.contains(name))
         {
             throw new CircularDependencyException(loadStack.pop(), name);
@@ -161,7 +160,7 @@ public class ModuleManager
             return null;
         }
         loadStack.push(name);
-        
+
         for (String dep : info.getPluginDependencies())
         {
             if (this.pluginManager.getPlugin(dep) == null)
@@ -169,7 +168,7 @@ public class ModuleManager
                 throw new MissingPluginDependencyException(dep);
             }
         }
-        
+
         Module depModule;
         String depName;
         for (Map.Entry<String, Integer> dep : info.getSoftDependencies().entrySet())
@@ -178,7 +177,10 @@ public class ModuleManager
             depModule = this.loadModule(depName, moduleInfos, loadStack);
             if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
             {
-                LOGGER.log(Level.WARNING, "The module {0} requested a newer revision of {1}!", new Object[]{name, depName});
+                LOGGER.log(Level.WARNING, "The module {0} requested a newer revision of {1}!", new Object[]
+                    {
+                        name, depName
+                    });
             }
         }
         for (Map.Entry<String, Integer> dep : info.getDependencies().entrySet())
@@ -189,21 +191,24 @@ public class ModuleManager
             {
                 throw new MissingDependencyException(depName);
             }
-            else if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
+            else
             {
-                throw new IncompatibleDependencyException(name, depName, dep.getValue(), depModule.getInfo().getRevision());
+                if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
+                {
+                    throw new IncompatibleDependencyException(name, depName, dep.getValue(), depModule.getInfo().getRevision());
+                }
             }
         }
         module = this.loader.loadModule(info);
         loadStack.pop();
-        
+
         Plugin[] plugins = this.pluginManager.getPlugins();
         Map<Class, Plugin> pluginClassMap = new HashMap<Class, Plugin>(plugins.length);
         for (Plugin plugin : plugins)
         {
             pluginClassMap.put(plugin.getClass(), plugin);
         }
-        
+
         Integer requiredVersion;
         Module injectedModule;
         Class fieldType;
@@ -224,7 +229,7 @@ public class ModuleManager
                 requiredVersion = module.getInfo().getSoftDependencies().get(injectedModule.getId());
                 if (requiredVersion != null && requiredVersion > -1 && injectedModule.getInfo().getRevision() < requiredVersion)
                 {
-                   continue;
+                    continue;
                 }
                 field.setAccessible(true);
                 try
@@ -233,39 +238,51 @@ public class ModuleManager
                 }
                 catch (Exception e)
                 {
-                    LOGGER.log(Level.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]{name, injectedModule.getName()});
+                    LOGGER.log(Level.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]
+                        {
+                            name, injectedModule.getName()
+                        });
                 }
             }
-            else if (Plugin.class.isAssignableFrom(fieldType))
+            else
             {
-                Plugin plugin = pluginClassMap.get(fieldType);
-                if (plugin == null)
+                if (Plugin.class.isAssignableFrom(fieldType))
                 {
-                    continue;
-                }
-                field.setAccessible(true);
-                try
-                {
-                    field.set(module, plugin);
-                }
-                catch (Exception e)
-                {
-                    LOGGER.log(Level.WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]{name, plugin.getName()});
+                    Plugin plugin = pluginClassMap.get(fieldType);
+                    if (plugin == null)
+                    {
+                        continue;
+                    }
+                    field.setAccessible(true);
+                    try
+                    {
+                        field.set(module, plugin);
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.log(Level.WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]
+                            {
+                                name, plugin.getName()
+                            });
+                    }
                 }
             }
         }
-        
-        
+
+
         if (!module.enable())
         {
             return null;
         }
-        
+
         this.classMap.put(module.getClass(), module);
-        
-        LOGGER.log(Level.FINE, "Module {0}-r{1} successfully loaded!", new Object[]{info.getName(), info.getRevision()});
+
+        LOGGER.log(Level.FINE, "Module {0}-r{1} successfully loaded!", new Object[]
+            {
+                info.getName(), info.getRevision()
+            });
         this.modules.put(module.getId(), module);
-        
+
         return module;
     }
 
@@ -280,7 +297,7 @@ public class ModuleManager
 
         return this;
     }
-    
+
     public ModuleManager unloadModule(Module module)
     {
 //        Set<String> dependingModules = module.getDependingModules();
@@ -294,7 +311,7 @@ public class ModuleManager
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.modules.remove(module.getName());
-        
+
         return this;
     }
 

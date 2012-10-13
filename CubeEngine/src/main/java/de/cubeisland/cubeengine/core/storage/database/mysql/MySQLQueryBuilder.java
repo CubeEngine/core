@@ -156,7 +156,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         }
         return this;
     }
-    
+
     @Override
     public AlterTableBuilder alterTable(String table)
     {

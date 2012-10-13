@@ -36,5 +36,6 @@ public class RemoteHandler extends Handler
 
     @Override
     public void close() throws SecurityException
-    {}
+    {
+    }
 }

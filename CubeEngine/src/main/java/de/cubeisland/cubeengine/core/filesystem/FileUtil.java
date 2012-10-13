@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class FileUtil
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
-    
+
     public static List<String> readStringList(InputStream stream) throws IOException
     {
         if (stream == null)
@@ -69,7 +69,8 @@ public class FileUtil
                 bufferedReader.close();
             }
             catch (IOException ex1)
-            {}
+            {
+            }
         }
         return list;
     }

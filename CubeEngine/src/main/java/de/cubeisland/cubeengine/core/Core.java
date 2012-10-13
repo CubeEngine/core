@@ -22,14 +22,14 @@ import org.bukkit.Server;
 public interface Core
 {
     public static final int REVISION = 2;
-    
+
     /**
      * The method returns the Server
-     * 
-     * @return the server instance 
+     *
+     * @return the server instance
      */
     public Server getServer();
-    
+
     /**
      * The method returns the database
      *
@@ -99,28 +99,28 @@ public interface Core
      * @return the instance of the command manager
      */
     public CommandManager getCommandManager();
-    
+
     /**
      * This method returns the TaskManager
-     * 
+     *
      * @return the TaskManager
      */
     public TaskManager getTaskManager();
-    
+
     /**
      * This method returns the DebugMode
-     * 
+     *
      * @return the debugMode
      */
     public boolean isDebug();
 
     /**
      * This method returns the TableManager
-     * 
+     *
      * @return the TableManager
      */
     public TableManager getTableManger();
-    
+
     /**
      * The method returns
      *

@@ -64,8 +64,10 @@ public class GroupModel implements Model<Integer>
     {
         this.key = id;
     }
-    
-    public GroupModel(){}//for deepCopy
+
+    public GroupModel()
+    {
+    }//for deepCopy
 
     public void setRelations(List<Group> enemy, List<Group> ally)
     {
@@ -90,7 +92,7 @@ public class GroupModel implements Model<Integer>
     public void setIntVal(Integer influence_perm, int influence_boost, int respawnProtection,
             Integer dmg_mod_percent, Integer dmg_mod_set, Integer dmg_mod_add)
     {
-        
+
         this.setInfluence_perm(influence_perm);
         this.setInfluence_boost(influence_boost);
         this.setRespawnProtection(respawnProtection);
@@ -98,7 +100,7 @@ public class GroupModel implements Model<Integer>
         this.setDmg_mod_set(dmg_mod_set);
         this.setDmg_mod_add(dmg_mod_add);
     }
-    
+
     public void resetBitMask(int bitmask)
     {
         this.bits.reset(bitmask);
@@ -388,7 +390,7 @@ public class GroupModel implements Model<Integer>
     {
         this.type = type;
     }
-    
+
     public int getBitMaskValue()
     {
         return this.bits.get();
@@ -398,22 +400,22 @@ public class GroupModel implements Model<Integer>
     {
         this.bits.set(bit);
     }
-    
+
     public void unsetBit(int bit)
     {
         this.bits.unset(bit);
     }
-    
+
     public void toggleBit(int bit)
     {
         this.bits.toggle(bit);
     }
-    
+
     public boolean hasBit(int bit)
     {
         return this.bits.isset(bit);
     }
-    
+
     public GroupModel deepCopy()
     {
         GroupModel newModel = new GroupModel();//ID is NOT set
@@ -432,7 +434,7 @@ public class GroupModel implements Model<Integer>
     {
         this.tag = tag;
     }
-    
+
     public void addInfluence_used(int amount)
     {
         this.influence_used += amount;

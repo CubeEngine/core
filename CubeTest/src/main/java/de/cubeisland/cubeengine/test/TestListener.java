@@ -28,9 +28,9 @@ public class TestListener implements Listener
     @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
     {
-        
     }
     //TODO this as cmd or smth else
+
     private void testI18n(AsyncPlayerChatEvent event)
     {
         User user = CubeEngine.getUserManager().getUser(event.getPlayer());
@@ -39,7 +39,8 @@ public class TestListener implements Listener
 
         user.sendMessage("test", "english TEST");
         user.sendMessage("test", "&1color &2Test");
-        user.sendMessage(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "&1color &2Test"));
+        user.sendMessage(CubeEngine.getCore().getI18n().
+            translate("fr_FR", "test", "&1color &2Test"));
         user.sendMessage("test", "NotTranslatedMessageIsNotTranslated");
     }
 }
