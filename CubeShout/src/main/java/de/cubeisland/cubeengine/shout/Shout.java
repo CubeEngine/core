@@ -1,5 +1,19 @@
 package de.cubeisland.cubeengine.shout;
 
-public class Shout {
+import de.cubeisland.cubeengine.core.module.Module;
+
+public class Shout extends Module{
+	
+    @Override
+    public void onEnable()
+    {
+    	
+    }
+    
+    @Override
+    public void onDisable()
+    {
+    	
+    }
 	
 }
