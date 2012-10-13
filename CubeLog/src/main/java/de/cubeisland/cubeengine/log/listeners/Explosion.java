@@ -14,10 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Explosion extends LogListener
 {
     public Explosion(Log module)

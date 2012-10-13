@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.StructureGrowEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class StructureGrow extends LogListener
 {
     public StructureGrow(Log module)

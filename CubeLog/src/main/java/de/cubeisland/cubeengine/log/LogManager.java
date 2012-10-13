@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.log.listeners.LogListener;
-import gnu.trove.impl.hash.THash;
 import gnu.trove.map.hash.THashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +11,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class LogManager
 {
     private Map<LogAction, LogListener> loggers = new THashMap<LogAction, LogListener>();

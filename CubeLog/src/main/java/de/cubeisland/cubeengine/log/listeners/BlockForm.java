@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFormEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BlockForm extends LogListener
 {
     public BlockForm(Log module)

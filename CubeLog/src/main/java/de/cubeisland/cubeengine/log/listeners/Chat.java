@@ -12,10 +12,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Chat extends LogListener
 {
     public Chat(Log module)

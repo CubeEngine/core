@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.log.listeners;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
-import static de.cubeisland.cubeengine.log.LogManager.BlockBreakCause.PLAYER;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
 import java.util.EnumMap;
 import java.util.Map;
@@ -12,10 +11,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
+import static de.cubeisland.cubeengine.log.LogManager.BlockBreakCause.PLAYER;
+
 public class BlockBreak extends LogListener
 {
     public BlockBreak(Log module)

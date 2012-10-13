@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFadeEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BlockFade extends LogListener
 {
     public BlockFade(Log module)

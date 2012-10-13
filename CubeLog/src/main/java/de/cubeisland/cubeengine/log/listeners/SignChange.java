@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.SignChangeEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class SignChange extends LogListener
 {
     public SignChange(Log module)

@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FluidFlow extends LogListener
 {
     public FluidFlow(Log module)

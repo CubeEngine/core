@@ -6,10 +6,6 @@ import de.cubeisland.cubeengine.log.LogManager;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
 import org.bukkit.event.Listener;
 
-/**
- *
- * @author Anselm Brehme
- */
 public abstract class LogListener implements Listener
 {
     protected LogManager lm;

@@ -8,10 +8,6 @@ import gnu.trove.map.hash.THashMap;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- *
- * @author Anselm Brehme
- */
 @Codec("yml")
 public class LogConfiguration extends Configuration
 {

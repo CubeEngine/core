@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.LeavesDecayEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class LeavesDecay extends LogListener
 {
     public LeavesDecay(Log module)

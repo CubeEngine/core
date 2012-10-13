@@ -11,10 +11,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ContainerAccess extends LogListener
 {
     public ContainerAccess(Log module)

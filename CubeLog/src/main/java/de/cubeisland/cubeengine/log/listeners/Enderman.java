@@ -11,10 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Enderman extends LogListener
 {
     public Enderman(Log module)

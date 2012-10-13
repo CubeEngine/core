@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Kill extends LogListener
 {
     public Kill(Log module)

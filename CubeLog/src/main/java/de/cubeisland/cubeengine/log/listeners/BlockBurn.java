@@ -11,10 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBurnEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BlockBurn extends LogListener
 {
     public BlockBurn(Log module)

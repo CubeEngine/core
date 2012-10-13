@@ -10,10 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class PlayerInteract extends LogListener
 {
     public PlayerInteract(Log module)

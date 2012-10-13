@@ -9,14 +9,9 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.Date;
-import java.util.List;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class LogCommands extends ContainerCommand
 {
     public LogCommands(Module module)
