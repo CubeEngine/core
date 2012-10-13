@@ -86,9 +86,9 @@ public class ReflectedCommand extends CubeCommand
             {
                 invalidUsage(context, "core", "This command needs at least %d parameters.", this.min);
             }
-            else if (this.max != -1 && context.indexedCount() > this.max)
+            else if (this.max > -1 && context.indexedCount() > this.max)
             {
-                invalidUsage(context, "core", "This command needs at most %d parameters.", this.min);
+                invalidUsage(context, "core", "This command needs at most %d parameters.", this.max);
             }
             if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
             {
