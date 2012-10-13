@@ -164,11 +164,11 @@ public class CommandContext
                 }
                 Param param = paramMap.get(paramName);
                 // is named Param?
-                if (param != null)
+                if (param != null && offset + 1 < commandLine.length)
                 {
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
-                    for (int typeOffset = 0; typeOffset < types.length && (offset) < commandLine.length; typeOffset++)
+                    for (int typeOffset = 0; typeOffset < types.length && offset < commandLine.length; typeOffset++)
                     {
                         if (typeOffset < types.length)
                         {
