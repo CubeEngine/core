@@ -1,4 +1,6 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.converter.generic;
+
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 
 public interface GenericConverter<T extends Object>
 {

@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -17,9 +17,9 @@ public class ContainerCommand extends CubeCommand
         super(module, name, description, "[command]", Collections.<String>emptyList());
     }
     
-    public ContainerCommand(Module module, String name, String description, List<String> aliases)
+    public ContainerCommand(Module module, String name, String description, String... aliases)
     {
-        super(module, name, description, "[command]", aliases);
+        super(module, name, description, "[command]", Arrays.asList(aliases));
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ContainerCommand extends CubeCommand
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
-            context.sendMessage(command.getName() + _(sender, command.getModule(), command.getDescription()));
+            context.sendMessage(command.getName() + ": " + _(sender, command.getModule(), command.getDescription()));
         }
     }
 }

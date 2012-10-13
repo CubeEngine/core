@@ -653,6 +653,13 @@ public class CommandContext
         {
             return type.cast(values[i]);
         }
+        try
+        {
+            return Convert.fromObject(type, values[i]); // if it is an Array it the check above does not work
+        }
+        catch (Exception e)
+        {
+        }
         return null;
     }
 

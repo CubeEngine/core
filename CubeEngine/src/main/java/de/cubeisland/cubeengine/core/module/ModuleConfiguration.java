@@ -33,4 +33,7 @@ public class ModuleConfiguration extends Configuration
 
     @Option(value = "soft-dependencies", genericType = String.class)
     public Set<String> softDependencies = new HashSet<String>();
+    
+    @Option(value = "plugin-dependencies", genericType = String.class)
+    public Set<String> pluginDependencies = new HashSet<String>();
 }

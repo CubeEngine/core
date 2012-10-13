@@ -22,7 +22,7 @@ public abstract class AbstractDatabase implements Database
     
     protected Connection connection;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue();
+    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
 
     @Override
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException

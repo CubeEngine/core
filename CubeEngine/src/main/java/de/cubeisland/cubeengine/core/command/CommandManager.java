@@ -68,28 +68,40 @@ public class CommandManager
      */
     public void unregister(Module module)
     {
-        CubeCommand command;
-        List<String> rootCommandsToRemove = new ArrayList<String>();
-        for (Map.Entry<String, Command> entry : this.knownCommands.entrySet())
+        Command command;
+        CubeCommand cubeCommand;
+        for (String name : this.knownCommands.keySet())
         {
-            if (entry.getValue() instanceof CubeCommand)
+            command = this.knownCommands.get(name);
+            if (command instanceof CubeCommand)
             {
-                command = (CubeCommand)entry.getValue();
-                if (command.getModule() == module)
+                cubeCommand = (CubeCommand)command;
+                if (cubeCommand.getModule() == module)
                 {
-                    rootCommandsToRemove.add(entry.getKey());
+                    this.unregister(name);
                 }
                 else
                 {
-                    // TODO go recursively through the child commands
+                    this.removeSubCommands(module, cubeCommand);
                 }
-                this.unregister(entry.getKey());
             }
         }
-        
-        for (String name : rootCommandsToRemove)
+    }
+    
+    private void removeSubCommands(Module module, CubeCommand command)
+    {
+        CubeCommand child;
+        for (String name : command.getChildrenNames())
         {
-            this.unregister(name);
+            child = command.getChild(name);
+            if (child.getModule() == module)
+            {
+                command.removeChild(name);
+            }
+            else
+            {
+                this.removeSubCommands(module, child);
+            }
         }
     }
  
@@ -98,11 +110,13 @@ public class CommandManager
      */
     public void unregister()
     {
-        for (Map.Entry<String, Command> entry : this.knownCommands.entrySet())
+        Command command;
+        for (String name : this.knownCommands.keySet())
         {
-            if (entry.getValue() instanceof CubeCommand)
+            command = this.knownCommands.get(name);
+            if (command instanceof CubeCommand)
             {
-                this.unregister(entry.getKey());
+                this.unregister(name);
             }
         }
     }
@@ -152,8 +166,8 @@ public class CommandManager
         if (command instanceof ContainerCommand)
         {
             String[] newParents = new String[parents.length + 1];
-            newParents[0] = command.getName();
-            System.arraycopy(parents, 0, newParents, 1, parents.length);
+            newParents[parents.length] = command.getName();
+            System.arraycopy(parents, 0, newParents, 0, parents.length);
 
             this.registerCommands(command.getModule(), command, newParents);
         }
@@ -215,11 +229,15 @@ public class CommandManager
                 aliases
             );
 
-            this.registerCommand(cmd);
+            this.registerCommand(cmd, parents);
             
             Alias aliasAnnotation = method.getAnnotation(Alias.class);
             if (aliasAnnotation != null && aliasAnnotation.names().length > 0)
             {
+                if (aliasAnnotation.parentPath().length != parents.length)
+                {
+                    continue;
+                }
                 names = aliasAnnotation.names();
                 if (names.length > 1)
                 {
@@ -233,7 +251,7 @@ public class CommandManager
                 {
                     aliases = Collections.<String>emptyList();
                 }
-                this.registerCommand(new AliasCommand(names[0], aliases, cmd));
+                this.registerCommand(new AliasCommand(names[0], aliases, cmd), aliasAnnotation.parentPath());
             }
         }
     }

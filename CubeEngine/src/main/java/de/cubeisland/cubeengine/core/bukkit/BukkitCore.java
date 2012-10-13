@@ -10,9 +10,7 @@ import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -93,7 +91,10 @@ public class BukkitCore extends JavaPlugin implements Core
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
         this.debug = this.config.debugMode;
 
-        // depends on: core config and file manager
+        // depends on: core config, server
+        this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
+
+        // depends on: core config, file manager, task manager
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
@@ -110,9 +111,6 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
 
-        // depends on: core config, server
-        this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
-
         // depends on: executor, database, Server, core config and event registration
         this.userManager = new UserManager(this);
 
@@ -128,14 +126,21 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: database
         this.moduleManager = new ModuleManager(this);
 
-        // depends on: file manager
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());
-
-        // depends on: finshed loading modules
-        this.getUserManager().cleanup();
-
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this, pm);
+
+        
+        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run()
+            {
+                // depends on: file manager
+                BukkitCore.this.moduleManager.loadModules(BukkitCore.this.fileManager.getModulesDir());
+
+                // depends on: finshed loading modules
+                BukkitCore.this.userManager.cleanup();
+            }
+        });
     }
 
     @Override
@@ -204,11 +209,6 @@ public class BukkitCore extends JavaPlugin implements Core
     public FileManager getFileManager()
     {
         return this.fileManager;
-    }
-
-    public void registerPermissions(Module module, Permission... perms)
-    {
-        this.permissionRegistration.registerPermissions(module, perms);
     }
 
     @Override

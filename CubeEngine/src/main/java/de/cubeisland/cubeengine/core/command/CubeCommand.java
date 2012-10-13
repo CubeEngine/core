@@ -169,7 +169,7 @@ public abstract class CubeCommand extends Command
             CubeCommand child = this.getChild(args[0].toLowerCase(Locale.ENGLISH));
             if (child != null)
             {
-                return child.execute(sender, Arrays.copyOfRange(args, 1, args.length - 1), args[0], labels);
+                return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
             }
         }
 
@@ -207,7 +207,7 @@ public abstract class CubeCommand extends Command
         return new LinkedList<CubeCommand>(this.children.values());
     }
     
-    public Set<String> getChildNames()
+    public Set<String> getChildrenNames()
     {
         return this.children.keySet();
     }
@@ -246,7 +246,7 @@ public abstract class CubeCommand extends Command
     {
         return NO_PARAMS;
     }
-
+    
     public abstract void run(CommandContext context) throws Exception;
     
     public abstract void showHelp(CommandContext context) throws Exception;

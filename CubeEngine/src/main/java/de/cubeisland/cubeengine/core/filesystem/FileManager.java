@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,6 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -16,6 +19,8 @@ import org.apache.commons.lang.Validate;
  */
 public class FileManager
 {
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    
     private final File dataFolder;
     private final File languageDir;
     private final File logDir;
@@ -143,10 +148,11 @@ public class FileManager
         InputStream reader = clazz.getResourceAsStream(resPath);
         if (reader != null)
         {
+            OutputStream writer = null;
             try
             {
                 file.getParentFile().mkdirs();
-                OutputStream writer = new FileOutputStream(file);
+                writer = new FileOutputStream(file);
                 final byte[] buffer = new byte[4096];
                 int bytesRead;
                 while ((bytesRead = reader.read(buffer)) > 0)
@@ -154,12 +160,28 @@ public class FileManager
                     writer.write(buffer, 0, bytesRead);
                 }
                 writer.flush();
-                writer.close();
-                reader.close();
             }
             catch (IOException e)
             {
-                e.printStackTrace(System.err);
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+            finally 
+            {
+                try
+                {
+                    reader.close();
+                }
+                catch (IOException ignored)
+                {}
+                if (writer != null)
+                {
+                    try
+                    {
+                        writer.close();
+                    }
+                    catch (IOException ignored)
+                    {}
+                }
             }
         }
         else

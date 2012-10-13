@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.log.commands.LogCommands;
 
 public class Log extends Module
 {
@@ -27,7 +28,7 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         this.lm = new LogManager();
-
+        this.registerCommand(new LogCommands(this));
     }
 
     public LogManager getLogManager()

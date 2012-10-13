@@ -3,5 +3,6 @@ version: "${project.version}"
 main: "${project.groupId}.${project.artifactId}.core.bukkit.BukkitCore"
 website: "${project.parent.url}"
 description: "${project.parent.description}"
+load: STARTUP
 authors:
   - "Cube Island"

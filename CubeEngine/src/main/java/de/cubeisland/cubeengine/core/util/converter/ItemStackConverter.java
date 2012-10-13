@@ -14,8 +14,11 @@ public class ItemStackConverter implements Converter<ItemStack>
     @Override
     public ItemStack fromObject(Object object) throws ConversionException
     {
-
-        throw new UnsupportedOperationException("Not supported.");
+        if (object instanceof ItemStack)
+        {
+            return (ItemStack)object;
+        }
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

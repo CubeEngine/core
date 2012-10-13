@@ -123,19 +123,20 @@ public abstract class Configuration
         }
         catch (FileNotFoundException e)
         {
-            logger.log(Level.INFO, file.getName() + " not found! Creating new config...");
+            logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
         }
         T config = load(clazz, inputStream); //loading config from InputSream or Default
+        
         if (inputStream != null)
         {
             try
             {
                 inputStream.close();
             }
-            catch (IOException ex)
-            {
-            }
+            catch (IOException ignored)
+            {}
         }
+        
         config.file = file;
         if (save)
         {
