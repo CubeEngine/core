@@ -7,9 +7,11 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.Date;
-import org.bukkit.Material;
+import java.util.List;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
 
 /**
  *
@@ -49,7 +51,7 @@ public class LogCommands extends ContainerCommand
     {
         @Param(names = {"player", "p"}, types = {User[].class}),
         @Param(names = {"area"}, types = {int.class}),
-        @Param(names = {"block"}, types = {Material[].class}),
+        @Param(names = {"block"}, types = {ItemStack[].class}),
         @Param(names = {"since", "time"}, types = {Date.class}),
         @Param(names = {"before"}, types = {Date.class}),
         @Param(names = {"limit"}, types = {Date.class}),
@@ -58,6 +60,11 @@ public class LogCommands extends ContainerCommand
     public void lookup(CommandContext context)
     {
         context.sendMessage("You used the /log lookup command!");
+        if (context.hasNamed("block"))
+        {
+            // cl lookup block 18:2 <- will print birchleaves
+            context.sendMessage(MaterialMatcher.get().getNameFor(context.getNamed("block", ItemStack[].class)[0]));
+        }
     }
     
     

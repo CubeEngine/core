@@ -1,8 +1,13 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
+import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+import de.cubeisland.cubeengine.core.util.converter.generic.ColletionConverter;
+import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
+import de.cubeisland.cubeengine.core.util.converter.generic.GenericConverter;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.converter.generic.ItemStackArrayConverter;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Map;
@@ -10,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
@@ -50,6 +56,7 @@ public class Convert
         registerConverter(World.class, new WorldConverter());
         registerConverter(boolean.class, converter = new BooleanConverter());
         registerConverter(Boolean.class, converter);
+        registerConverter(ItemStack[].class, new ItemStackArrayConverter());
 
         registerGenericConverter(Collection.class, new ColletionConverter());
         registerGenericConverter(Map.class, new MapConverter());

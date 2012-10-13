@@ -1,5 +1,9 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.converter.generic;
 
+import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.converter.Converter;
+import de.cubeisland.cubeengine.core.util.converter.generic.GenericConverter;
 import java.util.Collection;
 import java.util.LinkedList;
 
