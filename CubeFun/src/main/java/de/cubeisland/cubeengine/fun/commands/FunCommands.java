@@ -9,17 +9,16 @@ import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.listeners.RocketListener;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Egg;
-import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
@@ -78,7 +77,7 @@ public class FunCommands
             sender.sendMessage("This command can only be used by a player!");
             return;
         }
-        
+
         user.getWorld().strikeLightning(location); 
     }
     
@@ -250,6 +249,49 @@ public class FunCommands
         
         this.rocketListener.addPlayer(user);
         this.taskManager.scheduleSyncDelayedTask(module, this.rocketListener, 110);
+    }
+    
+    @Command(
+        desc = "an tnt carpet is falling at a player or the place the player is looking at",
+        max = 2,
+        usage = "[radius] [height] [player <name>]",
+        params = {
+            @Param(
+                names = {"player", "p"},
+                types = {User.class}
+            )
+        }
+    )
+    public void nuke(CommandContext context)
+    {
+        context.sendMessage(ChatColor.RED + "not implemented yet");
+        /*
+        User user = null;
+        Location location = null;
+        int radius = 1;
+        
+        if(context.hasNamed("player"))
+        {
+            user = context.getNamed("player", User.class);
+            location = user.getTargetBlock(null, 40).getLocation();
+        }
+        else
+        {
+            user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+            if(user == null)
+            {
+                invalidUsage(context, "fun", "User not found");
+            }
+            location = user.getLocation();
+        }
+        
+        while(location.getBlock().getType() != Material.AIR)
+        {
+            location = location.add(0,1,0);
+        }
+        
+        user.getWorld().spawn(location, TNTPrimed.class);
+        * */
     }
     
 }
