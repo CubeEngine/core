@@ -2,13 +2,11 @@ package de.cubeisland.cubeengine.writer;
 
 import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -16,11 +14,6 @@ import de.cubeisland.cubeengine.core.user.User;
 
 public class EditCommand 
 {
-	Core core = null;
-	
-	public EditCommand(Core core){
-		this.core = core;
-	}
 	
 	@Command(
 			names = {"edit", "rewrite"}, 
@@ -48,7 +41,7 @@ public class EditCommand
 	public void edit(CommandContext context)
 	{
 		
-		User user = context.getSenderAsUser("writer", "This command can only be used from ingame");
+		User user = context.getSenderAsUser("writer", "This command can only be used by players");
 		
 		if (user.getItemInHand().getType() == Material.WRITTEN_BOOK)
 		{
@@ -61,7 +54,7 @@ public class EditCommand
 			item = unsigned.getItemStack();
 			item.setType(Material.BOOK_AND_QUILL);
 			
-			user.sendMessage("Your book is now unsigned and ready to be edited");
+			user.sendMessage("writer", "Your book is now unsigned and ready to be edited");
 			return;
 		}
 		else
@@ -71,7 +64,7 @@ public class EditCommand
 			if (target.getType() == Material.WALL_SIGN || target.getType() == Material.SIGN_POST)
 			{
 				if (context.namedCount() < 1){
-					user.sendMessage(ChatColor.RED + "You need to speccify at least one parameter");
+					user.sendMessage("writer", "&cYou need to specify at least one parameter");
 					return;
 				}
 				
@@ -85,15 +78,15 @@ public class EditCommand
 				
 				sign.update();
 				
-				user.sendMessage("The sign has been changed");	
+				user.sendMessage("writer", "The sign has been changed");	
 				return;
 			}
 			else
 			{
-				user.sendMessage(ChatColor.RED + "You need to have a signed book in hand or be looking at a sign less than 10 blocks away");
-				if (core.isDebug())
+				user.sendMessage("writer", "&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away");
+				if (context.getCore().isDebug())
 				{
-					user.sendMessage("You where looking at: " + target.getType().name());
+					user.sendMessage("writer", "You where looking at: %s", target.getType().name());
 				}
 			}
 		}
