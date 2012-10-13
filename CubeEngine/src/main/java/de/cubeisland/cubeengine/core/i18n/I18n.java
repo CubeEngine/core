@@ -167,9 +167,9 @@ public class I18n implements Cleanable
 
     public String translate(String language, String category, String message, Object... params)
     {
-
         Validate.notNull(language, "The language must not be null!");
         Validate.notNull(category, "The category must not be null!");
+        
         if (category.isEmpty())
         {
             return message;
@@ -198,9 +198,22 @@ public class I18n implements Cleanable
             if (translation == null)
             {
                 this.logMissingTranslation(language, category, message);
-                translation = SOURCE_LANGUAGE.getTranslation(category, message);
+                Language defLang = this.languageMap.get(this.defaultLanguage);
+                if (defLang != null)
+                {
+                    translation = defLang.getTranslation(category, message);
+                }
+                else
+                {
+                    LOGGER.warning("The configured default language was not found!");
+                }
+                if (translation == null)
+                {
+                    translation = SOURCE_LANGUAGE.getTranslation(category, message);
+                }
             }
         }
+        
         // Gets Formatted with this: http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html
         return String.format(locale, translation, params);
     }
