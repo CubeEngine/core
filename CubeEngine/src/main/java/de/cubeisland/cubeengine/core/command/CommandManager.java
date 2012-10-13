@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -69,15 +70,17 @@ public class CommandManager
     {
         Command command;
         CubeCommand cubeCommand;
-        for (String name : this.knownCommands.keySet())
+        Iterator<Command> iter = this.knownCommands.values().iterator();
+        while (iter.hasNext())
         {
-            command = this.knownCommands.get(name);
+            command = iter.next();
             if (command instanceof CubeCommand)
             {
                 cubeCommand = (CubeCommand)command;
                 if (cubeCommand.getModule() == module)
                 {
-                    this.unregister(name);
+                    iter.remove();
+                    command.unregister(this.commandMap);
                 }
                 else
                 {
@@ -89,13 +92,18 @@ public class CommandManager
 
     private void removeSubCommands(Module module, CubeCommand command)
     {
-        CubeCommand child;
-        for (String name : command.getChildrenNames())
+        if (!command.hasChildren())
         {
-            child = command.getChild(name);
+            return;
+        }
+        Iterator<CubeCommand> iter = command.getChildren().iterator();
+        CubeCommand child;
+        while (iter.hasNext())
+        {
+            child = iter.next();
             if (child.getModule() == module)
             {
-                command.removeChild(name);
+                iter.remove();
             }
             else
             {
