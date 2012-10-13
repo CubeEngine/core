@@ -1,0 +1,8 @@
+{
+    "This command can only be used by players": "Denne kommandoen kan bare brukes av spillere",
+    "Your book is now unsigned and ready to be edited": "Boken din er nå usignert og kan endres",
+    "&cYou need to specify at least one parameter": "&cDu må minst ha ett parameter",
+    "The sign has been changed": "Skiltet har blitt endret",
+    "&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away": "&cDu må ha en signert bok i hendene eller se på et skilt mindre enn 10 blokker unna",
+    "You where looking at: %s": "Du så på: %s"
+}

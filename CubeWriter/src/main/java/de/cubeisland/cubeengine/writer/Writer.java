@@ -7,6 +7,7 @@ public class Writer extends Module
     @Override
     public void onEnable()
     {
+        this.getFileManager().dropResources(WriterResource.values());
         registerCommands(new EditCommand());
     }
 
