@@ -2,16 +2,18 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.ServerConnection;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
+import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.help.SimpleHelpMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -75,61 +77,39 @@ public class BukkitUtils
         }
         return null;
     }
-
-    /**
-     * Gets the CommandMap from the PluginManager
-     *
-     * @param pluginManager the PluginManager
-     * @return the CommandMap instance
-     */
-    public static CommandMap getCommandMap(PluginManager pluginManager)
+    
+    private static Field findCommandMapField(Object o)
     {
-        if (pluginManager.getClass() == SimplePluginManager.class)
+        for (Field field : o.getClass().getDeclaredFields())
         {
-            try
+            if (CommandMap.class.isAssignableFrom(field.getType()))
             {
-                for (Field field : pluginManager.getClass().getDeclaredFields())
-                {
-                    if (CommandMap.class.isAssignableFrom(field.getType()))
-                    {
-                        field.setAccessible(true);
-                        return (CommandMap)field.get(pluginManager);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
+                field.setAccessible(true);
+                return field;
             }
         }
         return null;
     }
 
-    /**
-     * Gets the known command map from a CommandMap instance
-     *
-     * @param commandMap the CommandMap instance
-     * @return the known command map
-     */
-    public static Map<String, Command> getKnownCommandMap(CommandMap commandMap)
+    public static void swapCommandMap(Server server, PluginManager pm, CommandMap commandMap)
     {
-        if (commandMap.getClass() == SimpleCommandMap.class)
+        Validate.notNull(commandMap, "The command map must not be null!");
+        
+        if (pm.getClass() == SimplePluginManager.class && server.getClass() == CraftServer.class)
         {
-            try
+            Field serverField = findCommandMapField(server);
+            Field pmField = findCommandMapField(pm);
+            if (serverField != null && pmField != null)
             {
-                for (Field field : commandMap.getClass().getDeclaredFields())
+                try
                 {
-                    if (Map.class.isAssignableFrom(field.getType()))
-                    {
-                        field.setAccessible(true);
-                        return (Map<String, Command>)field.get(commandMap);
-                    }
+                    serverField.set(server, commandMap);
+                    pmField.set(pm, commandMap);
                 }
-            }
-            catch (Exception e)
-            {
+                catch (Exception ignored)
+                {}
             }
         }
-        return null;
     }
 
     /**
@@ -195,5 +175,14 @@ public class BukkitUtils
                 e.printStackTrace(System.err);
             }
         }
+    }
+    
+    public static void reloadHelpMap()
+    {
+        SimpleHelpMap helpMap = (SimpleHelpMap)Bukkit.getHelpMap();
+        
+        helpMap.clear();
+        helpMap.initializeGeneralTopics();
+        helpMap.initializeCommands();
     }
 }

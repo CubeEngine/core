@@ -2,7 +2,9 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.bukkit.CubeCommandMap;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.module.Module;
 import java.lang.reflect.Method;
@@ -15,9 +17,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.CraftServer;
 
 /**
  * This class manages the registration of commands.
@@ -25,23 +28,17 @@ import org.bukkit.plugin.Plugin;
 public class CommandManager
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
-    private CommandMap commandMap;
-    private Map<String, Command> knownCommands;
+    
+    private final CubeCommandMap commandMap;
+    private final Map<String, Command> knownCommands;
 
     public CommandManager(Core core)
     {
-        this.commandMap = BukkitUtils.getCommandMap(((Plugin)core).getServer().getPluginManager());
-        this.knownCommands = BukkitUtils.getKnownCommandMap(this.commandMap);
-    }
-
-    /**
-     * Injects a command instance into the CommandMap
-     *
-     * @param command the command to inject
-     */
-    private void injectIntoRoot(Command command)
-    {
-        this.commandMap.register(command.getLabel(), command);
+        Server server = ((BukkitCore)core).getServer();
+        SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
+        this.commandMap = new CubeCommandMap(server, oldMap);
+        this.knownCommands = this.commandMap.getKnownCommands();
+        BukkitUtils.swapCommandMap(server, server.getPluginManager(), this.commandMap);
     }
 
     /**
@@ -163,7 +160,7 @@ public class CommandManager
 
         if (parentCommand == null)
         {
-            this.injectIntoRoot(command);
+            this.commandMap.register(command.getModule().getId(), command);
         }
         else
         {
@@ -177,6 +174,12 @@ public class CommandManager
             System.arraycopy(parents, 0, newParents, 0, parents.length);
 
             this.registerCommands(command.getModule(), command, newParents);
+        }
+        
+        // if the module is already enabled we have to reload the help map
+        if (command.getModule().isEnabled())
+        {
+            BukkitUtils.reloadHelpMap();
         }
     }
 
@@ -246,7 +249,7 @@ public class CommandManager
             Alias aliasAnnotation = method.getAnnotation(Alias.class);
             if (aliasAnnotation != null && aliasAnnotation.names().length > 0)
             {
-                if (aliasAnnotation.parentPath().length != parents.length)
+                if (aliasAnnotation.parentPath().length == parents.length)
                 {
                     continue;
                 }

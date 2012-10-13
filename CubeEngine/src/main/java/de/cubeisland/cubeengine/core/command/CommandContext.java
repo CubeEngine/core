@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.THashMap;
@@ -448,7 +449,7 @@ public class CommandContext
      */
     public void sendMessage(String message)
     {
-        this.sender.sendMessage(message);
+        this.sender.sendMessage(ChatFormat.parseFormats(message));
     }
 
     /**

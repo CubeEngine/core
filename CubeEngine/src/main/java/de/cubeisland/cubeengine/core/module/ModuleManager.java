@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.exception.*;
 import gnu.trove.map.hash.THashMap;
@@ -42,6 +43,7 @@ public class ModuleManager
         this.modules = new ConcurrentHashMap<String, Module>();
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
+        
         this.pluginManager = ((BukkitCore)core).getServer().getPluginManager();
     }
 
@@ -134,6 +136,8 @@ public class ModuleManager
             }
         }
         LOGGER.info("Finished loading modules!");
+        
+        BukkitUtils.reloadHelpMap();
     }
 
     private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
@@ -285,8 +289,52 @@ public class ModuleManager
 
         return module;
     }
+    
+    public boolean enableModule(Module module)
+    {
+        return this.enableModule(module, true);
+    }
+    
+    private boolean enableModule(Module module, boolean reloadHelp)
+    {
+        boolean result = module.enable();
+        if (reloadHelp)
+        {
+            BukkitUtils.reloadHelpMap();
+        }
+        return result;
+    }
+    
+    public void enableWorldGeneratorModules()
+    {
+        for (Module module : this.modules.values())
+        {
+            if (module.getInfo().providesWorldGenerator())
+            {
+                module.enable();
+            }
+        }
+    }
+    
+    public void enableModules(boolean worldGenerators)
+    {
+        for (Module module : this.modules.values())
+        {
+            if (!module.getInfo().providesWorldGenerator() || worldGenerators)
+            {
+                module.enable();
+            }
+        }
+        
+        BukkitUtils.reloadHelpMap();
+    }
 
-    public ModuleManager disableModule(Module module)
+    public void disableModule(Module module)
+    {
+        this.disableModule(module, true);
+    }
+
+    public void disableModule(Module module, boolean reloadHelp)
     {
         Validate.notNull(module, "The module must not be null!");
         module.disable();
@@ -294,11 +342,9 @@ public class ModuleManager
         this.core.getPermissionManager().unregisterPermissions(module);
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().unregister(module);
-
-        return this;
     }
 
-    public ModuleManager unloadModule(Module module)
+    public void unloadModule(Module module)
     {
 //        Set<String> dependingModules = module.getDependingModules();
 //        for (String moduleName : dependingModules)
@@ -311,17 +357,15 @@ public class ModuleManager
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.modules.remove(module.getName());
-
-        return this;
     }
 
-    public ModuleManager disableModules()
+    public void disableModules()
     {
         for (Module module : this.modules.values())
         {
-            this.disableModule(module);
+            this.disableModule(module, false);
         }
-        return this;
+        BukkitUtils.reloadHelpMap();
     }
 
     public void clean()

@@ -21,6 +21,7 @@ public final class ModuleInfo
     private final int revision;
     private final String description;
     private final int minCoreVersion;
+    private final boolean providesWorldGenerator;
     private final Map<String, Integer> dependencies;
     private final Map<String, Integer> softDependencies;
     private final Set<String> pluginDependencies;
@@ -46,6 +47,7 @@ public final class ModuleInfo
         this.revision = config.revision;
         this.description = config.description;
         this.minCoreVersion = config.minCoreRevision;
+        this.providesWorldGenerator = config.provideWorldGenerator;
 
 
         int delimOffset;
@@ -131,6 +133,11 @@ public final class ModuleInfo
     public int getMinimumCoreRevision()
     {
         return this.minCoreVersion;
+    }
+    
+    public boolean providesWorldGenerator()
+    {
+        return this.providesWorldGenerator;
     }
 
     public Map<String, Integer> getDependencies()

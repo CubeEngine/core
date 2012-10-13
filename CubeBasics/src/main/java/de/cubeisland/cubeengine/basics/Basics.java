@@ -18,6 +18,7 @@ public class Basics extends Module
         this.registerCommands(new CheatCommands(this));
         this.registerCommands(new ModerationCommands(this));
         this.registerCommands(new GeneralCommands(this));
+        this.registerCommand(new ModuleCommands(this));
     }
 
     public BasicsConfiguration getConfiguration()

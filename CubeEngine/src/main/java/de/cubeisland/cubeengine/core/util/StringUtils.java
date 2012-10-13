@@ -374,6 +374,27 @@ public final class StringUtils
     {
         return Math.min(a, Math.min(b, Math.min(c, d)));
     }
+    
+    public static String getBestMatch(String search, Collection<String> strings, int maxDistance)
+    {
+        int searchLength = search.length();
+        String match = null;
+        int distance = maxDistance;
+        for (String string : strings)
+        {
+            if (Math.abs(searchLength - string.length()) > maxDistance)
+            {
+                continue;
+            }
+            int tmpDistance = getDemerauLevenshteinDistance(search, string);
+            if (tmpDistance <= distance)
+            {
+                distance = tmpDistance;
+                match = string;
+            }
+        }
+        return match;
+    }
 
     /**
      * CaseInsensitive StringMatching First LD-Check 1 IndexCheck maxIndex:

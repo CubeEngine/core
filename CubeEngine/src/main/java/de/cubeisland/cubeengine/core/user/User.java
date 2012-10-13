@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -10,6 +9,7 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.sql.Timestamp;
@@ -18,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  *
@@ -97,7 +99,7 @@ public class User extends UserBase implements LinkingModel<Integer>
                 CubeEngine.getLogger().warning("A module sent an untranslated message!");
             }
         }
-        super.sendMessage(string);
+        super.sendMessage(ChatFormat.parseFormats(string));
     }
 
     /**

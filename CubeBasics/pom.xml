@@ -13,12 +13,17 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>${bukkitVersion}</version>
+            <version>1.3.2-R1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>1.3.2-R1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
