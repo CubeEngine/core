@@ -25,7 +25,7 @@ public class EditCommand
 	@Command(
 			names = {"edit", "rewrite"}, 
 			desc = "Edit a sign or unsign a book",
-			usage = "Line1 \"This is line one\" 2 \"this line contains a number 2\" 3 \"This is line three\"",
+			usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ",
 			params = {
 					@Param(
 							names = {"1", "Line1"}, 
