@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
@@ -23,12 +22,16 @@ import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
 
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+
 /**
  *
  * @author Wolfi
  */
 public class FunCommands 
 {
+    Fun module;
+    
     UserManager userManager;
     TaskManager taskManager;
     
@@ -36,6 +39,7 @@ public class FunCommands
     
     public FunCommands(Fun module) 
     {
+        this.module = module;
         this.userManager = module.getUserManager();
         this.taskManager = module.getCore().getTaskManager();
         
@@ -115,7 +119,7 @@ public class FunCommands
         ThrowItem throwItem = new ThrowItem(this.userManager, user.getName(), materialClass);        
         for(int i = 0; i < amount; i++)
         {
-            this.taskManager.scheduleSyncDelayedTask(throwItem, i * 10);
+            this.taskManager.scheduleSyncDelayedTask(module, throwItem, i * 10);
         }
     }
     
@@ -149,7 +153,7 @@ public class FunCommands
         ThrowItem throwItem = new ThrowItem(this.userManager, user.getName(), material);        
         for(int i = 0; i < amount; i++)
         {
-            this.taskManager.scheduleSyncDelayedTask(throwItem, i * 10);
+            this.taskManager.scheduleSyncDelayedTask(module, throwItem, i * 10);
         }
     }
     
@@ -245,7 +249,7 @@ public class FunCommands
         user.setVelocity(new Vector(0.0, (double)distance / 10, 0.0));
         
         this.rocketListener.addPlayer(user);
-        this.taskManager.scheduleSyncDelayedTask(this.rocketListener, 110);
+        this.taskManager.scheduleSyncDelayedTask(module, this.rocketListener, 110);
     }
     
 }
