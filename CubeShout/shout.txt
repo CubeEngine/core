@@ -13,3 +13,10 @@ FEATURES:
 
 
 Messages will be stored in Announcer/messages/(message)/(localcode(en_US)).txt or just Announcer/messages/(message).txt if not translateable.
+
+HOW TO SCHEDULE THE MESSAGES:
+1. Player Joins
+2. Get all announcments for the player
+3. Get lowest common denominator of the delays
+4. Translate the delays of the messages to how many times the task should run
+5. Schedule a task that run at the lowest common denominator. And uses the new delays for the messages
