@@ -21,7 +21,7 @@ public class EditCommand
 			desc = "Edit a sign or a book",
 			min = 0,
 			max = 4,
-			usage = "Look at a sign and excecute command. Example:\n /edit Line1 This is line one 2 \"this line contains a number 2\" 3 This is line three",
+			usage = "/edit Line1 \"This is line one\" 2 \"this line contains a number 2\" 3 \"This is line three\"",
 			params = {
 					@Param(
 							names = {"1", "Line1"}, 
@@ -67,7 +67,7 @@ public class EditCommand
 				return;
 			}
 			
-			if (context.namedCount() < 0){
+			if (context.namedCount() < 1){
 				user.sendMessage(ChatColor.RED + "You need to speccify at least one parameter");
 				return;
 			}
@@ -80,7 +80,7 @@ public class EditCommand
 				sign.setLine(Integer.parseInt(key) - 1, context.getNamed(key, String.class));
 			}
 			
-			// TODO update the block to the sign..
+			sign.update();
 			
 			user.sendMessage("The sign has been changed");	
 		}
