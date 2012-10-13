@@ -107,7 +107,7 @@ public enum EntityType
 
     /**
      * Returns the corresponding Bukkit-EntityType
-     * 
+     *
      * @return the EntityType
      */
     public org.bukkit.entity.EntityType getBukkitType()
@@ -117,7 +117,7 @@ public enum EntityType
 
     /**
      * Gets the EntityType by id
-     * 
+     *
      * @param id
      * @return the EntityType corresponding to the id
      */
@@ -128,7 +128,7 @@ public enum EntityType
 
     /**
      * Gets the class of the bukkit EntityType
-     * 
+     *
      * @return the entityClass
      */
     public Class<? extends Entity> getEntityClass()
@@ -138,8 +138,8 @@ public enum EntityType
 
     /**
      * Returns whether this Entity is alive
-     * 
-     * @return 
+     *
+     * @return
      */
     public boolean isAlive()
     {
@@ -148,8 +148,8 @@ public enum EntityType
 
     /**
      * Returns whether this Entity is a monster
-     * 
-     * @return 
+     *
+     * @return
      */
     public boolean isMonster()
     {
@@ -158,8 +158,8 @@ public enum EntityType
 
     /**
      * Returns whether this Entity is a friendly mob
-     * 
-     * @return 
+     *
+     * @return
      */
     public boolean isFriendly()
     {
@@ -169,8 +169,8 @@ public enum EntityType
 
     /**
      * Returns whether this Entity is an animal
-     * 
-     * @return 
+     *
+     * @return
      */
     public boolean isAnimal()
     {
@@ -179,8 +179,8 @@ public enum EntityType
 
     /**
      * Returns whether this Entity is a projectile
-     * 
-     * @return 
+     *
+     * @return
      */
     public boolean isProjectile()
     {
@@ -189,8 +189,8 @@ public enum EntityType
 
     /**
      * Registers a list of names for this entityType
-     * 
-     * @param names 
+     *
+     * @param names
      */
     public void registerName(List<String> names)
     {
@@ -207,8 +207,8 @@ public enum EntityType
 
     /**
      * Returns a map of names -> EntitiyType
-     * 
-     * @return 
+     *
+     * @return
      */
     public static Map<String, EntityType> getNameSets()
     {
@@ -217,12 +217,12 @@ public enum EntityType
 
     /**
      * Returns the name of this EntityType
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public String toString()
     {
-         return REVERSE_NAME_MAP.get(this);
+        return REVERSE_NAME_MAP.get(this);
     }
 }

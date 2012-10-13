@@ -36,7 +36,7 @@ public abstract class Configuration
      * Registers a ConfigurationCodec for given extension
      *
      * @param extension the extension
-     * @param codec the codec
+     * @param codec     the codec
      */
     public static void registerCodec(ConfigurationCodec codec, String... extensions)
     {
@@ -48,7 +48,7 @@ public abstract class Configuration
 
     /**
      * Saves this configuration into given File
-     * 
+     *
      * @param targetFile the File to save to
      */
     public final void save(File targetFile)
@@ -60,7 +60,7 @@ public abstract class Configuration
         if (this.file == null)
         {
             throw new IllegalStateException("A configuration cannot be saved without a valid file!");
-        }        
+        }
         this.codec.save(this, targetFile);
         this.onSaved(targetFile);
     }
@@ -93,7 +93,7 @@ public abstract class Configuration
     /**
      * Loads and returns the loaded Configuration from File
      *
-     * @param file the configurationfile
+     * @param file  the configurationfile
      * @param clazz the configuration
      * @return the loaded configuration
      */
@@ -105,9 +105,9 @@ public abstract class Configuration
     /**
      * Loads and returns the loaded Configuration from File
      *
-     * @param file the configurationfile
+     * @param file  the configurationfile
      * @param clazz the configuration
-     * @param save whether to instantly save the config after it was loaded
+     * @param save  whether to instantly save the config after it was loaded
      * @return the loaded configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, File file, boolean save)
@@ -126,7 +126,7 @@ public abstract class Configuration
             logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
         }
         T config = load(clazz, inputStream); //loading config from InputSream or Default
-        
+
         if (inputStream != null)
         {
             try
@@ -134,9 +134,10 @@ public abstract class Configuration
                 inputStream.close();
             }
             catch (IOException ignored)
-            {}
+            {
+            }
         }
-        
+
         config.file = file;
         if (save)
         {
@@ -148,7 +149,7 @@ public abstract class Configuration
     /**
      * Loads and returns the loaded Configuration from InputStream
      *
-     * @param is the Inputstream to load the codec from
+     * @param is    the Inputstream to load the codec from
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
@@ -184,7 +185,7 @@ public abstract class Configuration
      * Returns the loaded Configuration
      *
      * @param module the module to load the configuration from
-     * @param clazz the configuration
+     * @param clazz  the configuration
      * @return the loaded configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, Module module)
@@ -200,9 +201,8 @@ public abstract class Configuration
 
     /**
      * Sets the Codec for this Confguration
-     * 
-     * @param fileExtension 
-   
+     *
+     * @param fileExtension *
      */
     public void setCodec(String fileExtension)
     {
@@ -211,8 +211,8 @@ public abstract class Configuration
 
     /**
      * Sets the Codec for this Configuration
-     * 
-     * @param codec 
+     *
+     * @param codec
      */
     public void setCodec(ConfigurationCodec codec)
     {
@@ -221,17 +221,17 @@ public abstract class Configuration
 
     /**
      * Returns the extension for the current Codec
-     * 
+     *
      * @return the fileExtension
      */
     public String getCodecExtension()
     {
         return this.codec.getExtension();
     }
-    
+
     /**
      * Returns the current Codec
-     * 
+     *
      * @return the ConfigurationCodec
      */
     public ConfigurationCodec getCodec()
@@ -276,7 +276,7 @@ public abstract class Configuration
 
     /**
      * Returns the lines to be added in front of the Configuration.
-     * 
+     *
      * @return the head
      */
     public String[] head()
@@ -286,7 +286,7 @@ public abstract class Configuration
 
     /**
      * Returns the lines to be added at the end of the Configuration.
-     * 
+     *
      * @return the head
      */
     public String[] tail()

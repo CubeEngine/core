@@ -38,14 +38,14 @@ public class ReflectedCommand extends CubeCommand
         super(module, name, description, usage, aliases);
         this.commandMethod = method;
         this.commandContainer = commandContainer;
-        
+
         this.min = annotation.min();
         this.max = annotation.max();
         this.checkPermision = annotation.checkPerm();
-        
+
         this.flags = annotation.flags();
         this.params = annotation.params();
-        
+
         this.permissionDefault = annotation.permDefault();
         if (this.checkPermision)
         {
@@ -86,9 +86,12 @@ public class ReflectedCommand extends CubeCommand
             {
                 invalidUsage(context, "core", "This command needs at least %d parameters.", this.min);
             }
-            else if (this.max > -1 && context.indexedCount() > this.max)
+            else
             {
-                invalidUsage(context, "core", "This command needs at most %d parameters.", this.max);
+                if (this.max > -1 && context.indexedCount() > this.max)
+                {
+                    invalidUsage(context, "core", "This command needs at most %d parameters.", this.max);
+                }
             }
             if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
             {
@@ -121,22 +124,22 @@ public class ReflectedCommand extends CubeCommand
             context.sendMessage(e.getMessage());
         }
     }
-    
+
     @Override
     public void showHelp(CommandContext context)
     {
         CommandSender sender = context.getSender();
         context.sendMessage(this.getUsage(sender));
-        
+
         context.sendMessage("core", "Description: %s", _(sender, this.getModule().getId(), this.getDescription()));
-        
+
         List<String> aliases = this.getAliases();
         if (!aliases.isEmpty())
         {
             context.sendMessage("core", "Aliases: %s", "/" + StringUtils.implode(", /", aliases));
         }
-        
-        
+
+
         if (this.hasChildren())
         {
             context.sendMessage("core", "Sub commands:");
@@ -146,7 +149,7 @@ public class ReflectedCommand extends CubeCommand
             }
         }
     }
-    
+
     private String generatePermissionNode()
     {
         String implodedParents = this.implodeParentNames(".");
@@ -156,13 +159,13 @@ public class ReflectedCommand extends CubeCommand
         }
         return "cubeengine." + this.getModule().getId() + ".command." + implodedParents + this.getName();
     }
-    
+
     @Override
     public Flag[] getFlags()
     {
         return this.flags;
     }
-    
+
     @Override
     public Param[] getParams()
     {

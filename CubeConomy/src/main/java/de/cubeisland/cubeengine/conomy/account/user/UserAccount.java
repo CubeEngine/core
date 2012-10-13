@@ -15,15 +15,15 @@ import de.cubeisland.cubeengine.core.user.User;
 public class UserAccount extends AccountModel
 {
     @Key
-    @Attribute(type= AttrType.INT)
+    @Attribute(type = AttrType.INT)
     protected final User user;
-    
+
     public UserAccount(User user, double start)
     {
         this.user = user;
         this.set(start);
     }
-    
+
     public UserAccount(User user)
     {
         this.user = user;

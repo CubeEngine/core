@@ -13,27 +13,34 @@ import org.bukkit.command.CommandSender;
  *
  * @author Anselm Brehme
  */
-public class UserCommands 
+public class UserCommands
 {
-
     private UserControl users = UserControl.get();
-    
-    public UserCommands() 
+
+    public UserCommands()
     {
-    
     }
-    
-    @Command(usage = "[Player]", aliases = {"show"})
+
+    @Command(usage = "[Player]", aliases =
+    {
+        "show"
+    })
     public boolean whois(CommandSender sender, CommandArgs args)
     {
-        if (Perm.command_whois.hasNotPerm(sender)) return true;
-        if (args.size() > 0)    
+        if (Perm.command_whois.hasNotPerm(sender))
         {
-            if (Perm.command_whois_other.hasNotPerm(sender)) return true;
+            return true;
+        }
+        if (args.size() > 0)
+        {
+            if (Perm.command_whois_other.hasNotPerm(sender))
+            {
+                return true;
+            }
             WarUser user = users.getUser(args.getString(0));
             if (user == null)
             {
-                sender.sendMessage(t("e")+t("g_noplayer"));
+                sender.sendMessage(t("e") + t("g_noplayer"));
                 return true;
             }
             user.showInfo(sender);
@@ -47,11 +54,11 @@ public class UserCommands
         }
         return false;
     }
-    
+
     @Command(usage = "buy <amount>")
     public boolean influence(CommandSender sender, CommandArgs args)
     {
-        if (args.size()>1)
+        if (args.size() > 1)
         {
             WarUser user = users.getUser(sender);
             int amount = args.getInt(1);
@@ -60,22 +67,20 @@ public class UserCommands
             //KP kaufen für IP ???
             user.addInfluence(amount);
         }
-       
-        
+
+
         return false;
     }
-    
-    
     //TODO Bounty auslagern in CubeBountyHunter oder CubeHunter
     //bounty adding etc
     /*
      * 
-    @Command(usage = "set <Player> <bounty>" )//aliases = {""}
-    public void bounty(CommandSender sender, CommandArgs args)
-    {
-        if (Perm.command_bounty.hasNotPerm(sender)) return;
+     @Command(usage = "set <Player> <bounty>" )//aliases = {""}
+     public void bounty(CommandSender sender, CommandArgs args)
+     {
+     if (Perm.command_bounty.hasNotPerm(sender)) return;
         
-    }
-    * 
-    */
+     }
+     * 
+     */
 }

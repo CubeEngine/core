@@ -143,7 +143,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     /**
      * Prepares the Default-Statements
      *
-     * @param key the key
+     * @param key    the key
      * @param fields the fields
      */
     private void prepareStatements(String key, String[] fields)
@@ -333,8 +333,8 @@ public class BasicStorage<V extends Model> implements Storage<V>
             throw new IllegalStateException("Error while reading Model to store", ex);
         }
     }
-   
-    @Override 
+
+    @Override
     public void update(final V model)
     {
         this.update(model, true);
@@ -380,7 +380,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     {
         this.merge(model, true);
     }
-    
+
     @Override
     public void merge(V model, boolean async)
     {
@@ -392,7 +392,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             {
                 values.add(Convert.toObject(this.modelClass.getDeclaredField(name).get(model)));
             }
-            
+
             if (async)
             {
                 this.database.asyncPreparedExecute(this.modelClass, "merge", values.toArray());
@@ -422,13 +422,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
     {
         this.delete(model, true);
     }
-    
+
     @Override
     public void delete(V model, boolean async)
     {
         this.deleteByKey(model.getKey(), async);
     }
-    
+
     @Override
     public void deleteByKey(Object key)
     {

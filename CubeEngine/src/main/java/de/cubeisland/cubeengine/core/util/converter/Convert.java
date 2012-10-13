@@ -65,9 +65,9 @@ public class Convert
 
     /**
      * registers a converter to check for when converting
-     * 
+     *
      * @param clazz
-     * @param converter 
+     * @param converter
      */
     public static void registerConverter(Class<?> clazz, Converter<?> converter)
     {
@@ -80,9 +80,9 @@ public class Convert
 
     /**
      * registers a genericConverter to check for when converting
-     * 
+     *
      * @param clazz
-     * @param converter 
+     * @param converter
      */
     public static void registerGenericConverter(Class<?> clazz, GenericConverter<?> converter)
     {

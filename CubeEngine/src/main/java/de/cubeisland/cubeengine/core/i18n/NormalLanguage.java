@@ -19,7 +19,6 @@ import org.apache.commons.lang.Validate;
 public class NormalLanguage implements Cleanable, Language
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
-    
     private final String code;
     private final String name;
     private final String localName;
@@ -75,7 +74,7 @@ public class NormalLanguage implements Cleanable, Language
     {
         Validate.notNull(cat, "The category must not be null!");
         Validate.notNull(messages, "The messages must not be null!");
-        
+
         this.messages.put(cat, messages);
     }
 
@@ -98,7 +97,7 @@ public class NormalLanguage implements Cleanable, Language
         }
         return translation;
     }
-    
+
     @Override
     public Map<String, String> getMessages(String cat)
     {
@@ -121,12 +120,12 @@ public class NormalLanguage implements Cleanable, Language
             final File messagesFile = new File(this.messageDir, cat + ".json");
             Map<String, String> catMessages = this.objectMapper.readValue(messagesFile, Map.class);
             catMessages = this.updateMessages(messagesFile, catMessages);
-            
+
             for (Map.Entry<String, String> translation : catMessages.entrySet())
             {
                 translation.setValue(ChatFormat.parseFormats(translation.getValue()));
             }
-            
+
             if (!catMessages.isEmpty())
             {
                 this.messages.put(cat, catMessages);
@@ -171,7 +170,8 @@ public class NormalLanguage implements Cleanable, Language
                 resource.close();
             }
             catch (IOException ignored)
-            {}
+            {
+            }
         }
         return catMessages;
     }

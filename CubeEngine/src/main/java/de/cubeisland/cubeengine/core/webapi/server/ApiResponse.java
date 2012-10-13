@@ -45,7 +45,7 @@ public final class ApiResponse
     /**
      * Sets an header
      *
-     * @param name the name of the param
+     * @param name  the name of the param
      * @param value the value of the header
      * @return fluent interface
      */

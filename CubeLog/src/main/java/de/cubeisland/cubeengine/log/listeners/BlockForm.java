@@ -35,7 +35,7 @@ public class BlockForm extends LogListener
             this.actions.put(LogAction.ICEFORM, false);
             this.enabled = false;
         }
-        @Option(value="actions",genericType=Boolean.class)
+        @Option(value = "actions", genericType = Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

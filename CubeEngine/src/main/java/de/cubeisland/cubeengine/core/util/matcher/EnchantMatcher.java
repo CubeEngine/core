@@ -37,8 +37,8 @@ public class EnchantMatcher
 
     /**
      * Returns an instance of the matcher
-     * 
-     * @return 
+     *
+     * @return
      */
     public static EnchantMatcher get()
     {
@@ -48,10 +48,10 @@ public class EnchantMatcher
         }
         return instance;
     }
-    
+
     /**
      * Gets the name for the given Enchantment
-     * 
+     *
      * @param ench the enchantment to get the name for
      * @return the name corresponding to the enchantment
      */
@@ -62,8 +62,8 @@ public class EnchantMatcher
 
     /**
      * Registers an enchantment for the matcher with a list of names
-     * 
-     * @param ench the enchantment
+     *
+     * @param ench  the enchantment
      * @param names the corresponding names
      */
     private void registerEnchantment(Enchantment ench, List<String> names)
@@ -76,7 +76,7 @@ public class EnchantMatcher
 
     /**
      * Tries to match an Enchantment for given string
-     * 
+     *
      * @param s the string to match
      * @return the found Enchantment
      */
@@ -108,7 +108,7 @@ public class EnchantMatcher
 
     /**
      * Loads in the file with the saved enchantment-names
-     * 
+     *
      * @return the loaded enchantments with corresponding names
      */
     private TreeMap<Integer, List<String>> readEnchantments()

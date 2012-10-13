@@ -47,11 +47,13 @@ public class BukkitUtils
             nshListField.setAccessible(true);
         }
         catch (Exception e)
-        {}
+        {
+        }
     }
 
     private BukkitUtils()
-    {}
+    {
+    }
 
     /**
      * Returns the locale string of a player.
@@ -68,7 +70,8 @@ public class BukkitUtils
                 return (String)localeStringField.get(((CraftPlayer)player).getHandle().getLocale());
             }
             catch (Exception e)
-            {}
+            {
+            }
         }
         return null;
     }
@@ -95,7 +98,8 @@ public class BukkitUtils
                 }
             }
             catch (Exception e)
-            {}
+            {
+            }
         }
         return null;
     }
@@ -122,7 +126,8 @@ public class BukkitUtils
                 }
             }
             catch (Exception e)
-            {}
+            {
+            }
         }
         return null;
     }
@@ -147,7 +152,8 @@ public class BukkitUtils
         public static boolean injected = false;
 
         private PacketHookInjector()
-        {}
+        {
+        }
 
         /**
          * The event listener swaps the joining player's NetServerHandler

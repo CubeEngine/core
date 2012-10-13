@@ -45,19 +45,21 @@ public class LogManager
     {
         //TODO
         /*
-         if (logCreeperExplosionsAsPlayerWhoTriggeredThese)
-         {
-         final Entity target = ((Creeper) event.getEntity()).getTarget();
-         name = target instanceof Player ? ((Player) target).getName() : "Creeper";
-         }
-         else
-         {
-         name = "Creeper";
-         }*/
+         * if (logCreeperExplosionsAsPlayerWhoTriggeredThese)
+         * {
+         * final Entity target = ((Creeper) event.getEntity()).getTarget();
+         * name = target instanceof Player ? ((Player) target).getName() :
+         * "Creeper";
+         * }
+         * else
+         * {
+         * name = "Creeper";
+         * } */
         Player player = null; //TODO getplayer if logCreeperExplosionsAsPlayerWhoTriggeredThese
         for (Block block : blockList)
         {
-            this.logBreakBlock(BlockBreakCause.EXPLOSION, player, block.getState());
+            this.logBreakBlock(BlockBreakCause.EXPLOSION, player, block.
+                getState());
         }
     }
 
@@ -84,7 +86,8 @@ public class LogManager
 
     public void logPlaceBlock(Player player, BlockState placedBlock, BlockState replacedBlock)
     {
-        if (placedBlock.getType() == Material.SAND || placedBlock.getType() == Material.GRAVEL || placedBlock.getType() == Material.DRAGON_EGG)
+        if (placedBlock.getType() == Material.SAND || placedBlock.getType() == Material.GRAVEL || placedBlock.
+            getType() == Material.DRAGON_EGG)
         {
 
             Location finalLoc = placedBlock.getLocation();
@@ -138,7 +141,8 @@ public class LogManager
             this.logPlaceBlock(player, placedBlock, replacedBlock, finalLoc);
         }
 
-        this.logPlaceBlock(player, placedBlock, replacedBlock, placedBlock.getLocation());
+        this.logPlaceBlock(player, placedBlock, replacedBlock, placedBlock.
+            getLocation());
     }
 
     public enum ExpSource

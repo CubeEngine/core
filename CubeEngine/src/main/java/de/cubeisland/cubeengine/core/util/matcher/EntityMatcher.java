@@ -37,8 +37,8 @@ public class EntityMatcher
 
     /**
      * Returns an instance of the matcher
-     * 
-     * @return 
+     *
+     * @return
      */
     public static EntityMatcher get()
     {
@@ -51,7 +51,7 @@ public class EntityMatcher
 
     /**
      * Tries to match an EntityType for given string
-     * 
+     *
      * @param s the string to match
      * @return the found EntityType
      */
@@ -86,10 +86,10 @@ public class EntityMatcher
         }
         return entity;
     }
-    
+
     /**
      * Tries to match an EntityType that is a Mob for given string
-     * 
+     *
      * @param s the string to match
      * @return the found Mob
      */
@@ -105,7 +105,7 @@ public class EntityMatcher
 
     /**
      * Tries to match an EntityType that is a Mob that can be spawned by spawneggs for given string
-     * 
+     *
      * @param s the string to match
      * @return the found Mob
      */
@@ -121,7 +121,7 @@ public class EntityMatcher
 
     /**
      * Tries to match an EntityType that is a Monster for given string
-     * 
+     *
      * @param s the string to match
      * @return the found Monster
      */
@@ -137,7 +137,7 @@ public class EntityMatcher
 
     /**
      * Tries to match an EntityType that is a friendly Mob for given string
-     * 
+     *
      * @param s the string to match
      * @return the found friendly Mob
      */
@@ -153,7 +153,7 @@ public class EntityMatcher
 
     /**
      * Tries to match an EntityType that is a Projectile for given string
-     * 
+     *
      * @param s the string to match
      * @return the found Projectile
      */
@@ -169,7 +169,7 @@ public class EntityMatcher
 
     /**
      * Loads in the file with the saved entitiy-names
-     * 
+     *
      * @return the loaded entities with corresponding names
      */
     private TreeMap<Integer, List<String>> readEntities()

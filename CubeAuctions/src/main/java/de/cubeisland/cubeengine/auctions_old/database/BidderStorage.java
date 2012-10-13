@@ -71,10 +71,10 @@ public class BidderStorage implements Storage<User, Bidder>
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `bidder` ("
-                + "`cubeuserid` int(11) NOT NULL,"
-                + "`notifystate` smallint(2) NOT NULL,"
-                + "PRIMARY KEY (`cubeuserid`)"
-                +") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                    + "`cubeuserid` int(11) NOT NULL,"
+                    + "`notifystate` smallint(2) NOT NULL,"
+                    + "PRIMARY KEY (`cubeuserid`)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1;");
         }
         catch (SQLException ex)
         {

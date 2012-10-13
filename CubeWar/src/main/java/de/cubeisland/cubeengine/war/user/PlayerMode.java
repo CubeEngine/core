@@ -4,7 +4,8 @@ package de.cubeisland.cubeengine.war.user;
  *
  * @author Anselm Brehme
  */
-public enum PlayerMode {
+public enum PlayerMode
+{
     NORMAL,//kill+1 death+1
     KILLRESET,//kill+1 death->kill=0
     HIGHLANDER,//kill+kills death perm

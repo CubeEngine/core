@@ -499,7 +499,7 @@ public final class ApiManager
      * Checks whether the given action of the given controller is disabled
      *
      * @param controller the name of the controller
-     * @param action the name of the action
+     * @param action     the name of the action
      * @return true if it is
      */
     public boolean isActionDisabled(String controller, String action)
@@ -539,7 +539,7 @@ public final class ApiManager
      * Disables the given action of the given controller
      *
      * @param controller the controller name
-     * @param action the action name
+     * @param action     the action name
      * @return fluent interface
      */
     public ApiManager disableAction(String controller, String action)
@@ -577,7 +577,7 @@ public final class ApiManager
      * Removes the given disabled action of the given controller
      *
      * @param controller the controller name
-     * @param action the action name
+     * @param action     the action name
      * @return fluent interface
      */
     public ApiManager removeDisabledAction(String controller, String action)

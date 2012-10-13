@@ -25,8 +25,8 @@ public final class ApiAction
      * Initializes the request action.
      *
      * @param controller the parent
-     * @param name the name of the action
-     * @param method the method to invoke
+     * @param name       the name of the action
+     * @param method     the method to invoke
      * @param authNeeded whether authentication is needed
      */
     public ApiAction(ApiController controller, String name, Method method, boolean authNeeded, String[] parameters, String serializer)

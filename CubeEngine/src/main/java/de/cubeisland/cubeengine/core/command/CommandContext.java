@@ -23,7 +23,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  * This class holds all the information about a single command call.
- * 
+ *
  * TODO extract the command line parsing into its own class
  */
 public class CommandContext
@@ -43,7 +43,7 @@ public class CommandContext
      * Initializes the CommandContext object with an array of arguments
      *
      * @param baseCommand the base command
-     * @param baseLabel the base label
+     * @param baseLabel   the base label
      * @param commandLine the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
@@ -57,7 +57,7 @@ public class CommandContext
         this.sender = sender;
         this.command = command;
         this.labels = labels;
-        
+
         this.flags = new THashMap<String, Boolean>(0);
         this.flagCount = 0;
         this.indexedParams = new LinkedList<String>();
@@ -86,12 +86,12 @@ public class CommandContext
                 flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
             }
         }
-        
+
         if (commandLine.length == 0)
         {
             return;
         }
-        
+
         this.helpCall = ("?".equals(commandLine[0]));
         if (this.isHelpCall())
         {
@@ -118,7 +118,7 @@ public class CommandContext
         }
 
         Integer offset = new Integer(0);
-        for (;offset < commandLine.length; ++offset)
+        for (; offset < commandLine.length; ++offset)
         {
             if (commandLine[offset].isEmpty())
             {
@@ -155,7 +155,7 @@ public class CommandContext
                 }
             }
             else //else named param or indexed param
-            {   
+            {
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
                 // has alias named Param ?
                 if (paramAliasMap.containsKey(paramName))
@@ -189,7 +189,7 @@ public class CommandContext
                         }
                         catch (ConversionException e)
                         {
-                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s",paramName,typeOffset,commandLine[offset],types[typeOffset].toString());
+                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s", paramName, typeOffset, commandLine[offset], types[typeOffset].toString());
                         }
                     }
                     //added named param
@@ -204,12 +204,11 @@ public class CommandContext
         }
     }
 
-
     /**
      * Reads a string from the splitted command line
      * This version will determine if a quote was used.
      *
-     * @param offset the current offset in the command line
+     * @param offset      the current offset in the command line
      * @param commandLine the command line
      * @return the read string
      */
@@ -226,8 +225,8 @@ public class CommandContext
     /**
      * Reads a string from the splitted command line
      *
-     * @param quoteChar the char used to quote this string
-     * @param offset the current offset in the command line
+     * @param quoteChar   the char used to quote this string
+     * @param offset      the current offset in the command line
      * @param commandLine the command line
      * @return the read string
      */
@@ -238,9 +237,9 @@ public class CommandContext
         {
             return message.substring(0, message.length() - 1);
         }
-            
+
         StringBuilder builder = new StringBuilder(message);
-        
+
         while (offset < commandLine.length)
         {
             builder.append(' ');
@@ -252,7 +251,7 @@ public class CommandContext
             builder.append(message);
             ++offset;
         }
-        
+
         return builder.toString();
     }
 
@@ -265,7 +264,7 @@ public class CommandContext
     {
         return this.empty;
     }
-    
+
     /**
      * Returns the number of specified flags
      *
@@ -285,7 +284,7 @@ public class CommandContext
     {
         return this.indexedParams.size();
     }
-    
+
     /**
      * Returns the number of named parameters
      *
@@ -305,7 +304,7 @@ public class CommandContext
     {
         return this.labels.peek();
     }
-    
+
     /**
      * Returns the Stack of labels used to call the command
      *
@@ -332,7 +331,7 @@ public class CommandContext
         }
         return flagState.booleanValue();
     }
-    
+
     /**
      * Returns a set of all declared flags
      *
@@ -388,7 +387,7 @@ public class CommandContext
      * Gets a value of a named parameter as a String
      *
      * @param name the parameter name
-     * @param i the value index
+     * @param i    the value index
      * @return the String or null if not found
      */
     public String getString(String name, int i)
@@ -399,7 +398,7 @@ public class CommandContext
     /**
      * Returns the requested value as a String
      *
-     * @param i the index of the flag
+     * @param i   the index of the flag
      * @param def the default value
      * @return the value as String or the given default value
      */
@@ -407,9 +406,10 @@ public class CommandContext
     {
         return this.getIndexed(i, String.class, def);
     }
-    
+
     /**
      * Gets a user from a indexed parameter
+     *
      * @param i the parameter index
      * @return the user or null if not found
      */
@@ -417,10 +417,10 @@ public class CommandContext
     {
         return this.getIndexed(i, User.class, null);
     }
-    
+
     /**
      * Gets the user from the first value of a named parameter
-     * 
+     *
      * @param name the parameter name
      * @return the user or null of not found
      */
@@ -428,19 +428,19 @@ public class CommandContext
     {
         return this.getUser(name, 0);
     }
-    
+
     /**
      * Gets a named parameter as a User
      *
      * @param name the parameter name
-     * @param i the value index
+     * @param i    the value index
      * @return the User or null if not found
      */
     public User getUser(String name, int i)
     {
         return this.getNamed(name, User.class, i);
     }
-    
+
     /**
      * Sends a message to the sender
      *
@@ -450,13 +450,13 @@ public class CommandContext
     {
         this.sender.sendMessage(message);
     }
-    
+
     /**
      * Sends a localized message to the command sender
      *
      * @param category the message category
-     * @param message the message
-     * @param params the message parameters
+     * @param message  the message
+     * @param params   the message parameters
      */
     public void sendMessage(String category, String message, Object... params)
     {
@@ -472,7 +472,7 @@ public class CommandContext
     {
         return this.sender;
     }
-    
+
     /**
      * Returns the CommandSender as User or null
      *
@@ -487,8 +487,8 @@ public class CommandContext
      * Returns the command sender as a User or throws an IllegalUsageException with the specified message
      *
      * @param category the category of the message
-     * @param message the message
-     * @param params the message parameters
+     * @param message  the message
+     * @param params   the message parameters
      * @return the User
      * @throws IllegalUsageException if the CommandSender is not a User
      */
@@ -511,7 +511,7 @@ public class CommandContext
     {
         return this.command;
     }
-    
+
     /**
      * Checks whether the given index is available
      *
@@ -532,14 +532,14 @@ public class CommandContext
     {
         return Collections.unmodifiableList(this.indexedParams);
     }
-    
+
     /**
      * Returns a indexed parameters or a default value if not found
      *
-     * @param <T> the type of the value
+     * @param <T>   the type of the value
      * @param index the index
-     * @param type the Class of the value
-     * @param def the default value
+     * @param type  the Class of the value
+     * @param def   the default value
      * @return returns the requested value or the specified default value if the conversion failt or the parameters was not available
      */
     public <T> T getIndexed(int index, Class<T> type, T def)
@@ -557,9 +557,9 @@ public class CommandContext
     /**
      * Returns a value of a indexed parameter
      *
-     * @param <T> the type of the value
+     * @param <T>   the type of the value
      * @param index the index of the value
-     * @param type the Class of the value
+     * @param type  the Class of the value
      * @return the value
      * @throws ConversionException if the value could not be converter to the requested type
      */
@@ -599,10 +599,10 @@ public class CommandContext
     {
         return Collections.unmodifiableMap(this.namedParams);
     }
-    
+
     /**
      * Returns all values of a named parameter
-     * 
+     *
      * @param name the name of the parameter
      * @return an array of values or null if the parameter was not found
      */
@@ -618,7 +618,7 @@ public class CommandContext
     /**
      * Returns a value of a named parameter
      *
-     * @param <T> the type of the value
+     * @param <T>  the type of the value
      * @param name the name of the parameter
      * @param type the Class of the value
      * @return the value or null if not found
@@ -631,10 +631,10 @@ public class CommandContext
     /**
      * Returns a value of a named parameter
      *
-     * @param <T> the type of the value
+     * @param <T>  the type of the value
      * @param name the name of the parameters
      * @param type the Class of the value
-     * @param i the index of the value
+     * @param i    the index of the value
      * @return the value or null if not available
      */
     public <T> T getNamed(String name, Class<T> type, int i)
@@ -672,7 +672,7 @@ public class CommandContext
     {
         return this.helpCall;
     }
-    
+
     /**
      * Returns the core instance
      *

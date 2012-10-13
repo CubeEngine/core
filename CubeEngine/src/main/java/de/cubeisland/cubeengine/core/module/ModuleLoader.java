@@ -132,7 +132,8 @@ public class ModuleLoader
                     configStream.close();
                 }
                 catch (IOException ignored)
-                {}
+                {
+                }
             }
         }
         catch (IOException e)
@@ -148,7 +149,8 @@ public class ModuleLoader
                     jarFile.close();
                 }
                 catch (IOException ignored)
-                {}
+                {
+                }
             }
         }
         return info;
@@ -233,18 +235,18 @@ public class ModuleLoader
 
         return null;
     }
-    
+
     public void registerLibraryClassPath(File file) throws MalformedURLException
     {
         Validate.notNull(file, "The file must not be null!");
-        
+
         this.registerLibraryClassPath(file.toURI().toURL());
     }
-    
+
     public void registerLibraryClassPath(URL url)
     {
         Validate.notNull(url, "The url must not be null!");
-        
+
         this.libClassLoader.addURL(url);
     }
 

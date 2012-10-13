@@ -58,6 +58,6 @@ public class Rectangle
         Vector2 max = this.getMaximumPoint();
 
         return (point.x >= min.x && point.x <= max.x
-             && point.y >= min.y && point.y <= max.y);
+            && point.y >= min.y && point.y <= max.y);
     }
 }

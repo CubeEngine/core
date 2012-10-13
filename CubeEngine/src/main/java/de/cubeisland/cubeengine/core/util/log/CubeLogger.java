@@ -26,7 +26,7 @@ public class CubeLogger extends Logger
     /**
      * Creates a new Logger by this name
      *
-     * @param name the name
+     * @param name            the name
      * @param useBukkitLogger log into console or not
      */
     public CubeLogger(String name, Logger parent)

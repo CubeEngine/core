@@ -40,92 +40,104 @@ public class JsonSerializer implements ApiResponseSerializer
         {
             buffer.append(firstLevel ? "[null]" : "null");
         }
-        else if (o instanceof ApiSerializable)
-        {
-            this.serialize(buffer, ((ApiSerializable)o).serialize());
-        }
-        else if (o instanceof Map)
-        {
-            Map<String, Object> data = (Map<String, Object>)o;
-            int dataSize = data.size();
-            int counter = 0;
-            buffer.append("{");
-            Object value;
-            String name;
-            for (Map.Entry entry : data.entrySet())
-            {
-                counter++;
-                name = "";
-                if (entry.getKey() != null)
-                {
-                    name = entry.getKey().toString();
-                }
-                value = entry.getValue();
-                buffer.append("\"").append(name).append("\":");
-                this.serialize(buffer, value);
-                if (counter < dataSize)
-                {
-                    buffer.append(",");
-                }
-            }
-            buffer.append("}");
-        }
-        else if (o instanceof Iterable)
-        {
-            Iterable<Object> data = (Iterable<Object>)o;
-            Iterator iter = data.iterator();
-            buffer.append("[");
-            Object value;
-            while (iter.hasNext())
-            {
-                value = iter.next();
-                this.serialize(buffer, value);
-                if (iter.hasNext())
-                {
-                    buffer.append(",");
-                }
-            }
-            buffer.append("]");
-        }
-        else if (o.getClass().isArray())
-        {
-            Object[] data = (Object[])o;
-            int end = data.length - 1;
-            buffer.append("[");
-            for (int i = 0; i < data.length; i++)
-            {
-                this.serialize(buffer, data[i]);
-                if (i < end)
-                {
-                    buffer.append(",");
-                }
-            }
-            buffer.append("]");
-        }
         else
         {
-            // TODO check this
-            if (o instanceof Iterable || o instanceof Map || o.getClass().isArray())
+            if (o instanceof ApiSerializable)
             {
-                this.serialize(buffer, o);
+                this.serialize(buffer, ((ApiSerializable)o).serialize());
             }
             else
             {
-                if (firstLevel)
+                if (o instanceof Map)
                 {
-                    buffer.append("[");
-                }
-                if (o instanceof Number || o instanceof Boolean)
-                {
-                    buffer.append(String.valueOf(o));
+                    Map<String, Object> data = (Map<String, Object>)o;
+                    int dataSize = data.size();
+                    int counter = 0;
+                    buffer.append("{");
+                    Object value;
+                    String name;
+                    for (Map.Entry entry : data.entrySet())
+                    {
+                        counter++;
+                        name = "";
+                        if (entry.getKey() != null)
+                        {
+                            name = entry.getKey().toString();
+                        }
+                        value = entry.getValue();
+                        buffer.append("\"").append(name).append("\":");
+                        this.serialize(buffer, value);
+                        if (counter < dataSize)
+                        {
+                            buffer.append(",");
+                        }
+                    }
+                    buffer.append("}");
                 }
                 else
                 {
-                    buffer.append("\"").append(escape(String.valueOf(o))).append("\"");
-                }
-                if (firstLevel)
-                {
-                    buffer.append("]");
+                    if (o instanceof Iterable)
+                    {
+                        Iterable<Object> data = (Iterable<Object>)o;
+                        Iterator iter = data.iterator();
+                        buffer.append("[");
+                        Object value;
+                        while (iter.hasNext())
+                        {
+                            value = iter.next();
+                            this.serialize(buffer, value);
+                            if (iter.hasNext())
+                            {
+                                buffer.append(",");
+                            }
+                        }
+                        buffer.append("]");
+                    }
+                    else
+                    {
+                        if (o.getClass().isArray())
+                        {
+                            Object[] data = (Object[])o;
+                            int end = data.length - 1;
+                            buffer.append("[");
+                            for (int i = 0; i < data.length; i++)
+                            {
+                                this.serialize(buffer, data[i]);
+                                if (i < end)
+                                {
+                                    buffer.append(",");
+                                }
+                            }
+                            buffer.append("]");
+                        }
+                        else
+                        {
+                            // TODO check this
+                            if (o instanceof Iterable || o instanceof Map || o.getClass().isArray())
+                            {
+                                this.serialize(buffer, o);
+                            }
+                            else
+                            {
+                                if (firstLevel)
+                                {
+                                    buffer.append("[");
+                                }
+                                if (o instanceof Number || o instanceof Boolean)
+                                {
+                                    buffer.append(String.valueOf(o));
+                                }
+                                else
+                                {
+                                    buffer.append("\"").append(escape(String.valueOf(o))).append("\"");
+                                }
+                                if (firstLevel)
+                                {
+                                    buffer.append("]");
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

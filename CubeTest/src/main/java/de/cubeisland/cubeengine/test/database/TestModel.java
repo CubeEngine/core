@@ -30,7 +30,7 @@ public class TestModel implements Model<Integer>
         try
         {
             this.id = Convert.fromObject(Integer.class, args.get(0));
-            this.orderDate = Convert.fromObject(Date.class,args.get(1));
+            this.orderDate = Convert.fromObject(Date.class, args.get(1));
             this.orderPrice = Convert.fromObject(Double.class, args.get(2));
             this.customer = (String)args.get(3);
         }
@@ -38,7 +38,7 @@ public class TestModel implements Model<Integer>
         {
             throw new IllegalStateException("Error while converting Objects for Modelcreation");
         }
-        
+
     }
 
     public TestModel(Date orderDate, double orderPrice, String customer)
@@ -48,7 +48,7 @@ public class TestModel implements Model<Integer>
         this.orderPrice = orderPrice;
         this.customer = customer;
     }
-    
+
     public Integer getKey()
     {
         return this.id;

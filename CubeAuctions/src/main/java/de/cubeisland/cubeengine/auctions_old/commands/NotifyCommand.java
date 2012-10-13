@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.auctions_old.commands;
 
-
-
 import de.cubeisland.cubeengine.auctions_old.CubeAuctions;
 import static de.cubeisland.cubeengine.auctions_old.CubeAuctions.t;
 import de.cubeisland.cubeengine.auctions_old.Perm;
@@ -15,17 +13,21 @@ import org.bukkit.entity.Player;
 
 /**
  * Changes notification
- * 
+ *
  * @author Anselm Brehme
  */
 public class NotifyCommand
 {
     private BidderStorage bidderDB = new BidderStorage();
+
     public NotifyCommand()
     {
     }
-    
-    @Command(usage = "toggle", aliases = {"n"})
+
+    @Command(usage = "toggle", aliases =
+    {
+        "n"
+    })
     public boolean notify(CommandSender sender, CommandArgs args)
     {
         if (args.isEmpty())
@@ -37,7 +39,10 @@ public class NotifyCommand
             sender.sendMessage("");
             return true;
         }
-        if (!Perm.command_notify.check(sender)) return true;
+        if (!Perm.command_notify.check(sender))
+        {
+            return true;
+        }
         if (args.getString(0) == null)
         {
             return true;
@@ -61,13 +66,16 @@ public class NotifyCommand
             bidder.toggleNotifyState(Bidder.NOTIFY_STATUS);
         }
         if (bidder.hasNotifyState(Bidder.NOTIFY_STATUS))
-            sender.sendMessage(t("i")+" "+t("note_on"));
+        {
+            sender.sendMessage(t("i") + " " + t("note_on"));
+        }
         else
-            sender.sendMessage(t("i")+" "+t("note_off"));
+        {
+            sender.sendMessage(t("i") + " " + t("note_off"));
+        }
         bidderDB.update(bidder);
         return true;
     }
-
 
     public String getDescription()
     {

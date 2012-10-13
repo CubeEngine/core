@@ -15,13 +15,14 @@ import java.util.Map;
 @Codec("yml")
 public class LogConfiguration extends Configuration
 {
-
     public LogConfiguration()
     {
         for (LogAction action : LogAction.values())
         {
-            LogListener listener = LogListener.getInstance(action.getListenerClass(), Log.getInstance());
-            this.configs.put(listener.getConfiguration().getName(), listener.getConfiguration());
+            LogListener listener = LogListener.getInstance(action.
+                getListenerClass(), Log.getInstance());
+            this.configs.put(listener.getConfiguration().getName(), listener.
+                getConfiguration());
         }
     }
 
@@ -30,17 +31,15 @@ public class LogConfiguration extends Configuration
     {
         //TODO register needed Listener
     }
-    
-    public Map<LogAction,String> configNames = new EnumMap<LogAction, String>(LogAction.class);
-    
+    public Map<LogAction, String> configNames = new EnumMap<LogAction, String>(LogAction.class);
     @Option(value = "configs", genericType = Configuration.class)
-    public Map<String,LogSubConfiguration> configs = new THashMap<String, LogSubConfiguration>();
+    public Map<String, LogSubConfiguration> configs = new THashMap<String, LogSubConfiguration>();
 
     public boolean isLogging(LogAction name)
     {
         return false; //TODO
     }
-    
+
     public <T extends LogSubConfiguration> T getConfiguration(LogAction action)
     {
         return (T)this.configs.get(this.configNames.get(action));

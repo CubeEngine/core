@@ -30,8 +30,8 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         {
             this.database.prepareStatement("box_getall", "SELECT id,cubeuserid,item,amount,price,timestamp,oldownerid FROM {{" + TABLE + "}}");
             this.database.prepareStatement("box_getall_user", "SELECT id,cubeuserid,item,amount,price,timestamp,oldownerid FROM {{" + TABLE + "}} WHERE cubeuserid=?");
-            this.database.prepareStatement("box_get_exact", "SELECT id FROM {{" + TABLE + "}} "+
-                                                            "WHERE cubeuserid=? && item=? && amount=? && price=? && timestamp=? && oldownerid=?");
+            this.database.prepareStatement("box_get_exact", "SELECT id FROM {{" + TABLE + "}} "
+                    + "WHERE cubeuserid=? && item=? && amount=? && price=? && timestamp=? && oldownerid=?");
             this.database.prepareStatement("box_store", "INSERT INTO {{" + TABLE + "}} (cubeuserid,item,amount,price,timestamp,oldownerid) VALUES (?,?,?,?,?,?)");
             this.database.prepareStatement("box_delete", "DELETE FROM {{" + TABLE + "}} WHERE id=?");
             this.database.prepareStatement("box_clear", "DELETE FROM {{" + TABLE + "}}");
@@ -106,16 +106,16 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `boxes` ("
-                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
-                + "`cubeuserid` int(11) NOT NULL,"
-                + "`item` varchar(42) NOT NULL,"
-                + "`amount` int(11) NOT NULL,"
-                + "`price` decimal(11,2) NOT NULL,"
-                + "`timestamp` timestamp NOT NULL,"
-                + "`oldownerid` int(11) NOT NULL,"
-                + "PRIMARY KEY (`id`),"
-                + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+                    + "`id` int(11) NOT NULL AUTO_INCREMENT,"
+                    + "`cubeuserid` int(11) NOT NULL,"
+                    + "`item` varchar(42) NOT NULL,"
+                    + "`amount` int(11) NOT NULL,"
+                    + "`price` decimal(11,2) NOT NULL,"
+                    + "`timestamp` timestamp NOT NULL,"
+                    + "`oldownerid` int(11) NOT NULL,"
+                    + "PRIMARY KEY (`id`),"
+                    + "FOREIGN KEY (`cubeuserid`) REFERENCES bidder(id)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
         }
         catch (SQLException ex)
         {
@@ -194,12 +194,12 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
             double price = model.getPrice();
             int oldownerid = model.getOwner().getKey().getKey();
             Timestamp time = model.getTimestamp();
-            
-            ResultSet result = this.database.preparedQuery("box_get_exact",cubeUserId,item,amount,price,time,oldownerid);
+
+            ResultSet result = this.database.preparedQuery("box_get_exact", cubeUserId, item, amount, price, time, oldownerid);
 
             if (result.next())
             {
-                
+
                 int id = result.getInt("id");
                 model.setKey(id);
             }
@@ -209,7 +209,7 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
             throw new StorageException("Failed to load the AuctionBoxes from the database!", e);
         }
     }
-    
+
     public void merge(AuctionItem model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -219,6 +219,4 @@ public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    
 }

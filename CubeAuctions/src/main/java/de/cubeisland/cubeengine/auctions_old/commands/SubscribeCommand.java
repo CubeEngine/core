@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Manages your Subscriptions
- * 
+ *
  * @author Anselm Brehme
  */
 public class SubscribeCommand
@@ -22,8 +22,11 @@ public class SubscribeCommand
     public SubscribeCommand()
     {
     }
-    
-    @Command(usage = "-m <Material>", aliases = {"sub"})
+
+    @Command(usage = "-m <Material>", aliases =
+    {
+        "sub"
+    })
     public boolean subscribe(CommandSender sender, CommandArgs args)
     {
         if (args.isEmpty())
@@ -44,21 +47,21 @@ public class SubscribeCommand
         Bidder bidder = Bidder.getInstance((Player) sender);
         if (args.hasFlag("m"))
         {
-            ItemStack item =  Util.convertItem(args.getString(0));
+            ItemStack item = Util.convertItem(args.getString(0));
             if (item != null)
             {
                 if (bidder.addSubscription(item.getType()))
                 {
-                    sender.sendMessage(t("i")+t("sub_add_mat",item.getType().toString()));
+                    sender.sendMessage(t("i") + t("sub_add_mat", item.getType().toString()));
                     if (!bidder.hasNotifyState(Bidder.NOTIFY_STATUS))
                     {
-                        sender.sendMessage(t("i")+t("sub_note"));
-                    } 
+                        sender.sendMessage(t("i") + t("sub_note"));
+                    }
                 }
-                sender.sendMessage(t("i")+t("sub_has_mat"));
+                sender.sendMessage(t("i") + t("sub_has_mat"));
                 return true;
             }
-            sender.sendMessage(t("i")+t("no_valid_item",args.getString(0)));
+            sender.sendMessage(t("i") + t("no_valid_item", args.getString(0)));
             return true;
         }
         else if (args.hasFlag("i"))
@@ -71,29 +74,27 @@ public class SubscribeCommand
                 {
                     if (bidder.addSubscription(manager.getAuction(id)))
                     {
-                        sender.sendMessage(t("i")+t("sub_add",id));
+                        sender.sendMessage(t("i") + t("sub_add", id));
                         if (!bidder.hasNotifyState(Bidder.NOTIFY_STATUS))
                         {
-                            sender.sendMessage(t("i")+t("sub_note"));
+                            sender.sendMessage(t("i") + t("sub_note"));
                         }
                     }
-                    sender.sendMessage(t("i")+t("sub_has"));
+                    sender.sendMessage(t("i") + t("sub_has"));
                     return true;
                 }
-                sender.sendMessage(t("e")+t("auction_no_exist",id));
+                sender.sendMessage(t("e") + t("auction_no_exist", id));
                 return true;
             }
             catch (NumberFormatException ex)
             {
-                sender.sendMessage(t("e")+t("invalid_id"));
+                sender.sendMessage(t("e") + t("invalid_id"));
                 return true;
             }
         }
-        sender.sendMessage(t("e")+t("invalid_com"));
+        sender.sendMessage(t("e") + t("invalid_com"));
         return true;
     }
-
-
 
     public String getDescription()
     {

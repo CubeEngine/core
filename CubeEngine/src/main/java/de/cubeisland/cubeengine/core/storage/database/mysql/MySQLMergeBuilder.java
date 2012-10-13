@@ -12,7 +12,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
 {
     private boolean updateColsSpecified;
     private String[] insertCols;
-    
+
     protected MySQLMergeBuilder(MySQLQueryBuilder parent)
     {
         super(parent);
@@ -31,7 +31,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
     public MySQLMergeBuilder cols(String... cols)
     {
         Validate.notEmpty(cols, "You have to specify at least one col to insert");
-        
+
         this.query.append('(').append(this.database.prepareFieldName(cols[0]));
         int i;
         for (i = 1; i < cols.length; ++i)
@@ -44,7 +44,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
             this.query.append(",?");
         }
         this.query.append(')');
-        
+
         this.insertCols = cols;
         return this;
     }
@@ -58,7 +58,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
         }
         Validate.notEmpty(updateCols, "You have to specify at least one col to update!");
         Validate.isTrue(this.insertCols.length >= updateCols.length, "More update cols than insert cols specified!");
-        
+
         String col = this.database.prepareFieldName(updateCols[0]);
         this.query.append(" ON DUPLICATE KEY UPDATE ").append(col).append("=VALUES(").append(col).append(')');
         for (int i = 1; i < updateCols.length; ++i)
@@ -66,7 +66,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
             col = this.database.prepareFieldName(updateCols[i]);
             this.query.append(',').append(col).append(col).append("=VALUES(").append(col).append(')');
         }
-        
+
         this.updateColsSpecified = true;
         return this;
     }

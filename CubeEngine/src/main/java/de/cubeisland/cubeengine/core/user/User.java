@@ -27,7 +27,6 @@ import org.bukkit.entity.Player;
 public class User extends UserBase implements LinkingModel<Integer>
 {
     public static int NO_ID = -1;
-    
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
@@ -37,7 +36,6 @@ public class User extends UserBase implements LinkingModel<Integer>
     public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
     public Timestamp lastseen;
-    
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 
@@ -157,7 +155,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
         return this.lastseen.getTime();
     }
-    
+
     public void setAttribute(String name, Object value)
     {
         Validate.notNull(name, "The attribute name must not be null!");
@@ -165,7 +163,7 @@ public class User extends UserBase implements LinkingModel<Integer>
 
         this.attributes.put(name, value);
     }
-    
+
     public <T extends Object> T getAttribute(String name)
     {
         return this.<T>getAttribute(name, null);
@@ -182,10 +180,11 @@ public class User extends UserBase implements LinkingModel<Integer>
             }
         }
         catch (ClassCastException ignored)
-        {}
+        {
+        }
         return def;
     }
-    
+
     public void removeAttribute(String name)
     {
         this.attributes.remove(name);

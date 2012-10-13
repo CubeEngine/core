@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.war.CubeWarConfiguration;
  */
 public class Rank
 {
-
     private String name;
     private int killmodifier;
     private int deathmodifier;
@@ -38,7 +37,7 @@ public class Rank
         }
         return config.cubewar_ranks.get(kp);
     }
-    
+
     public static Rank newRank(int userkp)
     {
         final CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();
@@ -62,7 +61,7 @@ public class Rank
     {
         return this.deathmodifier;
     }
-    
+
     public double getImod()
     {
         return this.influencemod;

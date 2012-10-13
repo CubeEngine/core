@@ -16,16 +16,14 @@ import org.bukkit.entity.Player;
 
 /**
  * Provides Info for Auctions
- * 
+ *
  * @author Anselm Brehme
  */
 public class InfoCommand
 {
-    
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
     private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
-    
-    
+
     public InfoCommand()
     {
     }
@@ -46,19 +44,22 @@ public class InfoCommand
             sender.sendMessage("");
             return true;
         }
-        if (!Perm.command_info.check(sender)) return true;
+        if (!Perm.command_info.check(sender))
+        {
+            return true;
+        }
         if (args.getString(0).equalsIgnoreCase("Bids"))//bidding
         {
             List<Auction> auctions = Bidder.getInstance((Player) sender).getAuctions();
             int max = auctions.size();
             if (max == 0)
             {
-                sender.sendMessage(t("i")+" "+t("info_no_bid"));
+                sender.sendMessage(t("i") + " " + t("info_no_bid"));
             }
             for (int i = 0; i < max; ++i)
             {
                 Auction auction = auctions.get(i);
-                if (!auction.getOwner().getPlayer().equals((Player)sender))
+                if (!auction.getOwner().getPlayer().equals((Player) sender))
                 {
                     Util.sendInfo(sender, auction);
                 }
@@ -72,7 +73,7 @@ public class InfoCommand
                 int max = auctions.size();
                 if (max == 0)
                 {
-                    sender.sendMessage(t("i")+" "+t("info_no_start"));
+                    sender.sendMessage(t("i") + " " + t("info_no_start"));
                 }
                 for (int i = 0; i < max; ++i)
                 {
@@ -86,11 +87,11 @@ public class InfoCommand
                 {
                     List<Auction> auctions = Bidder.getInstance((Player) sender).getSubs();
                     auctions.removeAll(Bidder.getInstance(sender).getOwnAuctions());
-                    
+
                     int max = auctions.size();
                     if (max == 0)
                     {
-                        sender.sendMessage(t("i")+" "+t("info_no_sub"));
+                        sender.sendMessage(t("i") + " " + t("info_no_sub"));
                     }
                     for (int i = 0; i < max; ++i)
                     {
@@ -98,7 +99,7 @@ public class InfoCommand
                         Util.sendInfo(sender, auction);
                     }
                 }
-                else    
+                else
                 {
 
                     if (args.getString(0).equalsIgnoreCase("lead"))
@@ -108,7 +109,7 @@ public class InfoCommand
                         int max = auctions.size();
                         if (max == 0)
                         {
-                            sender.sendMessage(t("i")+" "+t("info_no_lead"));
+                            sender.sendMessage(t("i") + " " + t("info_no_lead"));
                         }
                         for (int i = 0; i < max; ++i)
                         {
@@ -124,7 +125,7 @@ public class InfoCommand
                             int max = auctions.size();
                             if (max == 0)
                             {
-                                sender.sendMessage(t("i")+" "+t("info_no_serv"));
+                                sender.sendMessage(t("i") + " " + t("info_no_serv"));
                             }
                             for (int i = 0; i < max; ++i)
                             {
@@ -143,12 +144,15 @@ public class InfoCommand
                                 }
                                 else
                                 {
-                                    sender.sendMessage(t("i")+" "+t("auction_no_exist",id));
+                                    sender.sendMessage(t("i") + " " + t("auction_no_exist", id));
                                 }
                             }
                             else
                             {
-                                if (!Perm.command_info_others.check(sender)) return true;
+                                if (!Perm.command_info_others.check(sender))
+                                {
+                                    return true;
+                                }
                                 Bidder player = Bidder.getInstance(args.getString(0));
                                 if (player != null)
                                 {
@@ -156,7 +160,7 @@ public class InfoCommand
                                     int max = auctions.size();
                                     if (max == 0)
                                     {
-                                        sender.sendMessage(t("e")+t("info_no_auction",player.getName()));
+                                        sender.sendMessage(t("e") + t("info_no_auction", player.getName()));
                                     }
                                     for (int i = 0; i < max; ++i)
                                     {
@@ -166,7 +170,7 @@ public class InfoCommand
                                 }
                                 else
                                 {
-                                    sender.sendMessage(t("e")+" "+t("info_p_no_auction",args.getString(0)));
+                                    sender.sendMessage(t("e") + " " + t("info_p_no_auction", args.getString(0)));
                                 }
                             }
                         }
@@ -176,7 +180,6 @@ public class InfoCommand
         }
         return true;
     }
-
 
     public String getDescription()
     {

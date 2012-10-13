@@ -14,7 +14,6 @@ import org.bukkit.configuration.ConfigurationSection;
  */
 public class CubeWarConfiguration
 {
-
     public String cubewar_language;
     public TIntObjectHashMap<Rank> cubewar_ranks;
     public int killpoint_min;
@@ -45,8 +44,8 @@ public class CubeWarConfiguration
         for (String rankname : ranksection.getKeys(false))
         {
             ConfigurationSection cursection = ranksection.getConfigurationSection(rankname);
-            Rank rank = new Rank(rankname, cursection.getInt("deathmodifier"), cursection.getInt("killmodifier"), 
-                                           cursection.getInt("killpointlimit"), cursection.getDouble("influence"));
+            Rank rank = new Rank(rankname, cursection.getInt("deathmodifier"), cursection.getInt("killmodifier"),
+                    cursection.getInt("killpointlimit"), cursection.getDouble("influence"));
             this.cubewar_ranks.put(cursection.getInt("killpointlimit"), rank);
         }
         this.killpoint_min = config.getInt("cubewar.killpoint.min");
@@ -75,15 +74,15 @@ public class CubeWarConfiguration
         this.loosePerMin = config.getInt("cubewar.influence.loose.loosePerMin");
         this.influenceCost = config.getDouble("cubewar.influence.buy");
         /*
-        CubeWar.setDB(new Database(
-                        this.war_database_host,
-                        this.war_database_port,
-                        this.war_database_user,
-                        this.war_database_pass,
-                        this.war_database_name));
-                        * 
-                        */
-        
+         CubeWar.setDB(new Database(
+         this.war_database_host,
+         this.war_database_port,
+         this.war_database_user,
+         this.war_database_pass,
+         this.war_database_name));
+         * 
+         */
+
         GroupControl.create(config.getConfigurationSection("cubewar.area"));
     }
 }

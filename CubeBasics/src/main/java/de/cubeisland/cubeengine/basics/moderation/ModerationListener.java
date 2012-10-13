@@ -22,7 +22,6 @@ public class ModerationListener implements Listener
     {
         this.module = module;
     }
-    
     private Map<User, Boolean> openedInventories = new THashMap<User, Boolean>();
 
     public void addInventory(User sender, boolean canModify)
@@ -35,7 +34,8 @@ public class ModerationListener implements Listener
     {
         if (event.getWhoClicked() instanceof Player)
         {
-            User sender = module.getUserManager().getUser((Player)event.getWhoClicked());
+            User sender = module.getUserManager().getUser((Player)event.
+                getWhoClicked());
             if (openedInventories.containsKey(sender))
             {
                 event.setCancelled(!openedInventories.get(sender));

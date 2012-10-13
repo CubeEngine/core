@@ -7,5 +7,6 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 public interface InsertBuilder extends ComponentBuilder<InsertBuilder>
 {
     public InsertBuilder into(String table);
+
     public InsertBuilder cols(String... cols);
 }

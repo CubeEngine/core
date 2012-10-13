@@ -83,6 +83,7 @@ public interface Storage<V extends Model>
      * @return whether the model got deleted
      */
     public void deleteByKey(Object key);
+
     /**
      * Deletes the model by ID from DataBase asynchonous
      *
@@ -98,8 +99,8 @@ public interface Storage<V extends Model>
 
     /**
      * Subscribes for given SubscribeType
-     * 
-     * @param type the SubcribeType
+     *
+     * @param type     the SubcribeType
      * @param callback the Callback
      */
     public void subscribe(SubcribeType type, Callback callback);
@@ -111,8 +112,8 @@ public interface Storage<V extends Model>
 
     /**
      * Registers an updater
-     * 
-     * @param updater the updater
+     *
+     * @param updater      the updater
      * @param fromRevision the revision to update from with this updater
      */
     public void registerUpdater(DatabaseUpdater updater, int... fromRevision);

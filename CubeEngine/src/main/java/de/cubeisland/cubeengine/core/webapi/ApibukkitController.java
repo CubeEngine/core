@@ -27,7 +27,10 @@ public class ApibukkitController extends ApiController
         //this.parser = new JsonParser();
     }
 
-    @Action(authenticate = true, parameters = {"routes"})
+    @Action(authenticate = true, parameters =
+    {
+        "routes"
+    })
     public void combined(ApiRequest request, ApiResponse response)
     {
 //        JsonObject routes;

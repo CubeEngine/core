@@ -29,6 +29,5 @@ public class FlyManager extends BasicStorage<FlyModel>
             user.attach(model);
         }
         return model;
-    }  
+    }
 }
-

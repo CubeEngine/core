@@ -27,13 +27,16 @@ public class BooleanConverter implements Converter<Boolean>
         {
             return true;
         }
-        else if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("off") || s.equalsIgnoreCase("no") || s.equalsIgnoreCase("0"))
-        {
-            return false;
-        }
         else
         {
-            return null;
+            if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("off") || s.equalsIgnoreCase("no") || s.equalsIgnoreCase("0"))
+            {
+                return false;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

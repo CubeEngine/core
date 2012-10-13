@@ -20,9 +20,7 @@ public enum BasicsPerm implements Permission
     COMMAND_KILL_EXEMPT,
     COMMAND_INVSEE_MODIFY,
     COMMAND_INVSEE_PREVENTMODIFY,
-    COMMAND_KICK_ALL,
-    ;
-    
+    COMMAND_KICK_ALL,;
     private String permission;
     private PermissionDefault def;
 
@@ -33,7 +31,8 @@ public enum BasicsPerm implements Permission
 
     private BasicsPerm(PermissionDefault def)
     {
-        this.permission = "cubeengine.basics." + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
+        this.permission = "cubeengine.basics." + this.name().
+            toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
     }
 

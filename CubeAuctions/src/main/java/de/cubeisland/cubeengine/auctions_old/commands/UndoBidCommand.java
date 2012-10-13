@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 /**
  * Undoing Bids
- * 
+ *
  * @author Anselm Brehme
  */
 public class UndoBidCommand
@@ -23,7 +23,10 @@ public class UndoBidCommand
     @Command(usage = "last")
     public boolean undobid(CommandSender sender, CommandArgs args)
     {
-        if (!Perm.command_undobid.check(sender)) return true;
+        if (!Perm.command_undobid.check(sender))
+        {
+            return true;
+        }
         if (args.isEmpty())
         {
             sender.sendMessage(t("undo_title1"));
@@ -36,14 +39,14 @@ public class UndoBidCommand
         if (args.getString(0).equals("last"))
         {
             Bidder bidder = Bidder.getInstance(psender);
-            if (bidder.getlastAuction(bidder)==null)
+            if (bidder.getlastAuction(bidder) == null)
             {
-                sender.sendMessage(t("pro")+" "+t("undo_pro"));
+                sender.sendMessage(t("pro") + " " + t("undo_pro"));
                 return true;
             }
             if (bidder.getlastAuction(bidder).undobid(bidder))
             {
-                sender.sendMessage(t("i")+" "+t("undo_redeem"));
+                sender.sendMessage(t("i") + " " + t("undo_redeem"));
                 return true;
             }
             else
@@ -57,19 +60,22 @@ public class UndoBidCommand
             Manager manager = Manager.getInstance();
             if (manager.getAuction(id) == null)
             {
-                sender.sendMessage(t("e")+" "+t("auction_no_exist",id));
+                sender.sendMessage(t("e") + " " + t("auction_no_exist", id));
                 return true;
             }
             if (manager.getAuction(id).undobid(Bidder.getInstance(psender)))
             {
-                sender.sendMessage(t("i")+" "+t("undo_bid_n",id));
+                sender.sendMessage(t("i") + " " + t("undo_bid_n", id));
                 return true;
             }
-            else return true;
+            else
+            {
+                return true;
+            }
         }
         catch (NumberFormatException ex)
         {
-            sender.sendMessage(t("e")+" "+t("undo_fail"));
+            sender.sendMessage(t("e") + " " + t("undo_fail"));
             return true;
         }
     }

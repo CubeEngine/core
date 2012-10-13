@@ -22,52 +22,52 @@ public class RocketListener implements Listener, Runnable
     private Set<String> players = new HashSet<String>();
     private List<String> rocketPlayers = new ArrayList<String>();
     private UserManager userManager;
-    
+
     public void addPlayer(User user)
     {
         String name = user.getName();
         rocketPlayers.add(name);
         players.add(name);
     }
-    
+
     public void removePlayer(String name)
     {
         players.remove(name);
-        while(this.getNumberOf(name) > 0)
+        while (this.getNumberOf(name) > 0)
         {
             rocketPlayers.remove(name);
         }
     }
 
-    public RocketListener(Fun module) 
+    public RocketListener(Fun module)
     {
         this.userManager = module.getUserManager();
     }
-    
+
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event)
     {
-        if(event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL)
+        if (event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL)
         {
             User user = userManager.getUser((Player)event.getEntity());
-            if(user == null)
+            if (user == null)
             {
                 return;
             }
-            if(players.contains(user.getName()))
+            if (players.contains(user.getName()))
             {
                 event.setCancelled(true);
                 removePlayer(user.getName());
             }
         }
     }
-    
+
     public int getNumberOf(String name)
     {
         int number = 0;
-        for(String entryName : this.rocketPlayers)
+        for (String entryName : this.rocketPlayers)
         {
-            if(entryName.equals(name))
+            if (entryName.equals(name))
             {
                 number++;
             }
@@ -75,12 +75,12 @@ public class RocketListener implements Listener, Runnable
         return number;
     }
 
-    public void run() 
+    public void run()
     {
-        if(!this.rocketPlayers.isEmpty())
+        if (!this.rocketPlayers.isEmpty())
         {
             String name = this.rocketPlayers.get(0);
-            if(this.getNumberOf(name) > 1)
+            if (this.getNumberOf(name) > 1)
             {
                 this.rocketPlayers.remove(name);
                 System.out.println("removed one instance of " + name);

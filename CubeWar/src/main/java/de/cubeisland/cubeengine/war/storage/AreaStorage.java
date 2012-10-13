@@ -19,7 +19,6 @@ import org.bukkit.Server;
  */
 public class AreaStorage implements Storage<Integer, AreaModel>
 {
-
     private final Database database = CubeWar.getDB();
     private final String TABLE = "area";
     private Server server = CubeWar.getInstance().getServer();
@@ -33,7 +32,6 @@ public class AreaStorage implements Storage<Integer, AreaModel>
         }
         return instance;
     }
-    
 
     public AreaStorage()
     {
@@ -52,8 +50,7 @@ public class AreaStorage implements Storage<Integer, AreaModel>
             throw new StorageException("Failed to prepare the statements!", e);
         }
     }
-    
-    
+
     public void initialize()
     {
         try
@@ -83,7 +80,7 @@ public class AreaStorage implements Storage<Integer, AreaModel>
             {
                 Chunk chunk = server.getWorld("world").getChunkAt(result.getInt("x"), result.getInt("z"));
                 Group group = GroupControl.get().getGroup(result.getInt("groupid"));
-                areas.add(new AreaModel(chunk,group));
+                areas.add(new AreaModel(chunk, group));
             }
 
             return areas;
@@ -134,7 +131,7 @@ public class AreaStorage implements Storage<Integer, AreaModel>
             throw new StorageException("Failed to delete the Chunk!", e);
         }
     }
-    
+
     public void clear()
     {
         try
@@ -146,7 +143,7 @@ public class AreaStorage implements Storage<Integer, AreaModel>
             throw new StorageException("Failed to clear the database!", e);
         }
     }
-    
+
     public AreaModel get(Integer key)
     {
         try
@@ -158,19 +155,16 @@ public class AreaStorage implements Storage<Integer, AreaModel>
             }
             Chunk chunk = server.getWorld("world").getChunkAt(result.getInt("x"), result.getInt("z"));
             Group group = GroupControl.get().getGroup(result.getInt("groupid"));
-            return new AreaModel(chunk,group);
+            return new AreaModel(chunk, group);
         }
         catch (SQLException e)
         {
             throw new StorageException("Failed to load the area from the database!", e);
         }
     }
-    
+
     public void merge(AreaModel model)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    
-    
 }

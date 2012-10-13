@@ -29,11 +29,16 @@ public class Explosion extends LogListener
     public void onEntityExplode(EntityExplodeEvent event)
     {
         ExplosionConfig c = this.getConfiguration();
-        if ((event.getEntity() == null && !c.actions.get(LogAction.EXPLOSION_MISC))
-                || (event.getEntity() instanceof TNTPrimed && !c.actions.get(LogAction.EXPLOSION_TNT))
-                || (event.getEntity() instanceof Creeper && !c.actions.get(LogAction.EXPLOSION_CREEPER))
-                || (event.getEntity() instanceof Fireball && !c.actions.get(LogAction.EXPLOSION_GHASTFIREBALL))
-                || (event.getEntity() instanceof EnderDragon && !c.actions.get(LogAction.EXPLOSION_ENDERDRAGON)))
+        if ((event.getEntity() == null && !c.actions.
+            get(LogAction.EXPLOSION_MISC))
+            || (event.getEntity() instanceof TNTPrimed && !c.actions.
+            get(LogAction.EXPLOSION_TNT))
+            || (event.getEntity() instanceof Creeper && !c.actions.
+            get(LogAction.EXPLOSION_CREEPER))
+            || (event.getEntity() instanceof Fireball && !c.actions.
+            get(LogAction.EXPLOSION_GHASTFIREBALL))
+            || (event.getEntity() instanceof EnderDragon && !c.actions.
+            get(LogAction.EXPLOSION_ENDERDRAGON)))
         // TODO dont forget to check this later on|| (!c.actions.get(LogAction.EXPLOSION_MISC))
         {
             return;
@@ -52,7 +57,7 @@ public class Explosion extends LogListener
             this.actions.put(LogAction.EXPLOSION_MISC, false);
             this.enabled = true;
         }
-        @Option(value="actions",genericType=Boolean.class)
+        @Option(value = "actions", genericType = Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

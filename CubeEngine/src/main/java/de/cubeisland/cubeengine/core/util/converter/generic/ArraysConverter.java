@@ -37,20 +37,23 @@ public abstract class ArraysConverter<T> implements Converter<T[]>
             }
             return (T[])array;
         }
-        else if (object.getClass().isArray())
-        {
-            Object array = Array.newInstance(clazz, ((Object[])object).length);
-            int index = 0;
-            for (Object o : (Object[])object)
-            {
-                Array.set(array, index, converter.fromObject(o));
-                index++;
-            }
-            return (T[])array;
-        }
         else
         {
-            throw new ConversionException("Could not convert to an Array!");
+            if (object.getClass().isArray())
+            {
+                Object array = Array.newInstance(clazz, ((Object[])object).length);
+                int index = 0;
+                for (Object o : (Object[])object)
+                {
+                    Array.set(array, index, converter.fromObject(o));
+                    index++;
+                }
+                return (T[])array;
+            }
+            else
+            {
+                throw new ConversionException("Could not convert to an Array!");
+            }
         }
     }
 
@@ -58,7 +61,7 @@ public abstract class ArraysConverter<T> implements Converter<T[]>
     public String toString(T[] object)
     {
         List<String> strings = new LinkedList<String>();
-        for (T t: object)
+        for (T t : object)
         {
             strings.add(converter.toString(t));
         }

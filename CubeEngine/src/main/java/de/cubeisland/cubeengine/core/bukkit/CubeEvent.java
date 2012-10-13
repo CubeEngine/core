@@ -19,6 +19,7 @@ public abstract class CubeEvent extends Event implements Cancellable
 
     /**
      * Returns the CubeEngine-Core
+     *
      * @return the core
      */
     public Core getCore()

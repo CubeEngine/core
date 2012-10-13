@@ -12,7 +12,7 @@ public class InvalidConfigurationException extends RuntimeException
     {
         super(message);
     }
-    
+
     public InvalidConfigurationException(String msg, Throwable t)
     {
         super(msg, t);

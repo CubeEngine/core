@@ -77,12 +77,12 @@ public class PriceStorage implements Storage<Integer, PricedItemStack>
         try
         {
             this.database.exec("CREATE TABLE IF NOT EXISTS `priceditem` ("
-                + "`id` int(11) NOT NULL AUTO_INCREMENT,"
-                + "`item` varchar(42) NOT NULL,"
-                + "`price` decimal(11,2) NOT NULL,"
-                + "`timessold` int(11) NOT NULL,"
-                + "PRIMARY KEY (`id`)"
-                + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
+                    + "`id` int(11) NOT NULL AUTO_INCREMENT,"
+                    + "`item` varchar(42) NOT NULL,"
+                    + "`price` decimal(11,2) NOT NULL,"
+                    + "`timessold` int(11) NOT NULL,"
+                    + "PRIMARY KEY (`id`)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
         }
         catch (SQLException ex)
         {

@@ -112,18 +112,21 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
                         // ApiBukkit.debug("Action found: " + actionName); -- TODO fix logging
                         action.execute(request, response);
                     }
-                    else if (controller.isUnknownToDefaultRoutingAllowed())
-                    {
-                        authorized(request, controller);
-
-                        response.setSerializer(getSerializer(request, controller.getSerializer()));
-                        // ApiBukkit.debug("action not found, routing to default action"); -- TODO fix logging
-                        controller.defaultAction(request, response);
-                    }
                     else
                     {
-                        // ApiBukkit.log("Action not found"); -- TODO fix logging
-                        return toResponse(ApiError.ACTION_NOT_FOUND);
+                        if (controller.isUnknownToDefaultRoutingAllowed())
+                        {
+                            authorized(request, controller);
+
+                            response.setSerializer(getSerializer(request, controller.getSerializer()));
+                            // ApiBukkit.debug("action not found, routing to default action"); -- TODO fix logging
+                            controller.defaultAction(request, response);
+                        }
+                        else
+                        {
+                            // ApiBukkit.log("Action not found"); -- TODO fix logging
+                            return toResponse(ApiError.ACTION_NOT_FOUND);
+                        }
                     }
                 }
                 else

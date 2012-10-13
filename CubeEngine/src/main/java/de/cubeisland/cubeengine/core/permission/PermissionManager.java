@@ -19,7 +19,6 @@ import org.bukkit.plugin.PluginManager;
 public class PermissionManager
 {
     private static final String CUBEENGINE_WILDCARD = "cubeengine.*";
-    
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcardPermission;
     private final Map<Module, List<String>> modulePermissionMap;
@@ -31,10 +30,10 @@ public class PermissionManager
         this.wildcardPermission = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, List<String>>(0);
         this.mainThread = Thread.currentThread();
-        
+
         this.registerBukkitPermission(new org.bukkit.permissions.Permission("cubeengine.*"));
     }
-    
+
     private void registerBukkitPermission(org.bukkit.permissions.Permission permission)
     {
         try
@@ -46,13 +45,14 @@ public class PermissionManager
             }
         }
         catch (IllegalArgumentException ignored)
-        {}
+        {
+        }
     }
 
     /**
      * Registers a String as a permission
      *
-     * @param perm the permission node
+     * @param perm        the permission node
      * @param permDefault the default value
      * @return fluent interface
      */
@@ -65,7 +65,7 @@ public class PermissionManager
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(perm, "The permission must not be null!");
         Validate.notNull(permDefault, "The permission default must not be null!");
-        
+
         if (perm.equals(CUBEENGINE_WILDCARD))
         {
             return this;
@@ -75,9 +75,9 @@ public class PermissionManager
         String[] parts = StringUtils.explode(".", perm);
         if (parts.length < 3 || !"cubeengine".equals(parts[0]) || !module.getId().equals(parts[1]))
         {
-            throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !" );
+            throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
         }
-        
+
         List<String> modulePermissions = this.modulePermissionMap.get(module);
         if (modulePermissions == null)
         {
@@ -86,10 +86,10 @@ public class PermissionManager
         modulePermissions.add(perm);
         org.bukkit.permissions.Permission permission = new org.bukkit.permissions.Permission(perm, permDefault);
         this.registerBukkitPermission(permission);
-        
+
         org.bukkit.permissions.Permission oldPermission = permission;
         String base = "cubeengine.module.";
-        
+
         permission = this.wildcardPermission.get(base + "*");
         if (permission == null)
         {
@@ -97,14 +97,13 @@ public class PermissionManager
         }
         this.registerBukkitPermission(permission);
         oldPermission.addParent(permission, true);
-        
+
         for (int i = 2; i < parts.length; ++i)
         {
-            
         }
-        
+
         permission.addParent(permission, true);
-        
+
         return this;
     }
 
@@ -133,13 +132,13 @@ public class PermissionManager
         }
         return this;
     }
-    
+
     public PermissionManager unregisterPermission(Module module, String perm)
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(perm, "The permission must not be null!");
         Validate.isTrue(!perm.equals(CUBEENGINE_WILDCARD), "The CubeEngine wildcard permission must not be unregistered!");
-        
+
         List<String> perms = this.modulePermissionMap.get(module);
         if (perms != null && perms.remove(perm))
         {
@@ -149,10 +148,10 @@ public class PermissionManager
                 this.wildcardPermission.remove(perm);
             }
         }
-        
+
         return this;
     }
-    
+
     public PermissionManager unregisterPermissions(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
@@ -168,7 +167,7 @@ public class PermissionManager
                 }
             }
         }
-        
+
         return this;
     }
 }

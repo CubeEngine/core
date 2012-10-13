@@ -11,10 +11,16 @@ import java.util.Map;
 public interface Language extends Cleanable
 {
     public String getCode();
+
     public Locale getLocale();
+
     public String getName();
+
     public String getLocalName();
+
     public String getTranslation(String cat, String message);
+
     public Map<String, String> getMessages(String cat);
+
     public boolean equals(String code);
 }

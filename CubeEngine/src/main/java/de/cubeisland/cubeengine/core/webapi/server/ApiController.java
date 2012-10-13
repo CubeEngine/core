@@ -31,9 +31,9 @@ public abstract class ApiController
     /**
      * Initializes the controllers
      *
-     * @param plugin the plugin this controllers corresponds to
+     * @param plugin     the plugin this controllers corresponds to
      * @param authNeeded whether the controllers actions need authentication by
-     * default or not
+     *                   default or not
      */
     public ApiController(Plugin plugin)
     {
@@ -150,7 +150,7 @@ public abstract class ApiController
     /**
      * Sets an action for the given name.
      *
-     * @param name the name
+     * @param name   the name
      * @param action the action
      */
     public final void setAction(String name, ApiAction action)
@@ -191,7 +191,7 @@ public abstract class ApiController
     /**
      * This method will be called if the requested action was not found.
      *
-     * @param request the request
+     * @param request  the request
      * @param response the response
      */
     public void defaultAction(ApiRequest request, ApiResponse response)
@@ -204,7 +204,7 @@ public abstract class ApiController
      * default action
      *
      * @return true if this controller allows to route unknown actions to the
-     * default action
+     *         default action
      */
     public boolean isUnknownToDefaultRoutingAllowed()
     {

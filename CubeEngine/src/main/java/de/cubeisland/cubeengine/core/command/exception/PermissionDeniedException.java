@@ -14,12 +14,12 @@ public class PermissionDeniedException extends CommandException
     {
         super(message);
     }
-    
+
     public static void denyAccess(CommandContext context, String category, String message, Object... params)
     {
         denyAccess(context.getSender(), category, message, params);
     }
-    
+
     public static void denyAccess(CommandSender sender, String category, String message, Object... params)
     {
         throw new PermissionDeniedException(_(sender, category, message, params));

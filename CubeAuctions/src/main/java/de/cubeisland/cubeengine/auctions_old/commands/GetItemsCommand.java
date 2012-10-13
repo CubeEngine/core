@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 /**
  * Gives you the next Item from your auctionbox
- * 
+ *
  * @author Anselm Brehme
  */
 public class GetItemsCommand
@@ -20,17 +20,23 @@ public class GetItemsCommand
     public GetItemsCommand()
     {
     }
-    
-    @Command(usage = "", aliases = {"get"})
+
+    @Command(usage = "", aliases =
+    {
+        "get"
+    })
     public boolean getItems(CommandSender sender, CommandArgs args)
     {
-        if (!Perm.command_getItems.check(sender)) return true;
+        if (!Perm.command_getItems.check(sender))
+        {
+            return true;
+        }
         if (sender instanceof ConsoleCommandSender)
         {
             CubeAuctions.log("Console can not receive Items");
             return true;
         }
-                
+
         if (!(Bidder.getInstance((Player) sender).getBox().giveNextItem()))
         {
             sender.sendMessage(t("get_empty"));

@@ -9,24 +9,23 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.AlterTableBui
  */
 class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuilder> implements AlterTableBuilder
 {
-
     public MySQLAlterTableBuilder(MySQLQueryBuilder parent)
     {
         super(parent);
     }
-    
+
     @Override
     public AlterTableBuilder alterTable(String table)
     {
         this.query = new StringBuilder("ALTER TABLE ").append(this.database.prepareName(table)).append(' ');
         return this;
     }
-    
+
     @Override
     public AlterTableBuilder add(String field, AttrType type)
     {
         this.query.append("ADD ").append(this.database.prepareFieldName(field)).append(" ").append(type.getType());
-        return this;       
+        return this;
     }
 
     @Override
@@ -42,7 +41,4 @@ class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuilder> im
         this.query.append("ALTER COLUMN ").append(this.database.prepareFieldName(field)).append(" ").append(type.getType());
         return this;
     }
-
-    
-    
 }

@@ -25,7 +25,9 @@ public class BlockBurn extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event)
     {
-        lm.logBreakBlock(BlockBreakCause.FIRE, null, event.getBlock().getState());
+        lm.
+            logBreakBlock(BlockBreakCause.FIRE, null, event.getBlock().
+            getState());
     }
 
     public static class BurnConfig extends LogSubConfiguration
@@ -35,7 +37,7 @@ public class BlockBurn extends LogListener
             this.actions.put(LogAction.FIRE, true);
             this.enabled = false;
         }
-        @Option(value="actions",genericType=Boolean.class)
+        @Option(value = "actions", genericType = Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

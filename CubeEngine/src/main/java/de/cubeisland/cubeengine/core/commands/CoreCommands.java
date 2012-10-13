@@ -11,16 +11,18 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 public class CoreCommands
 {
     @Command(
-        names = {"modules", "mm"},
-        desc = "This command is used to manage the modules.",
-        flags = {
-            @Flag(name = "a", longName = "all"),
-            @Flag(name = "f", longName = "force")
-        },
-        checkPerm = false
-    )
+        names =
+    {
+        "modules", "mm"
+    },
+    desc = "This command is used to manage the modules.",
+    flags =
+    {
+        @Flag(name = "a", longName = "all"),
+        @Flag(name = "f", longName = "force")
+    },
+    checkPerm = false)
     public void modules(CommandContext context)
     {
-        
     }
 }

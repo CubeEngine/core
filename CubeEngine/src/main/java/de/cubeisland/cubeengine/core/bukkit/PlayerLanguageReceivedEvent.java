@@ -19,7 +19,7 @@ public class PlayerLanguageReceivedEvent extends PlayerEvent
         super(player);
         this.language = language;
     }
-    
+
     /**
      * Returns the locale string of the player
      *
@@ -31,11 +31,13 @@ public class PlayerLanguageReceivedEvent extends PlayerEvent
     }
 
     @Override
-    public HandlerList getHandlers() {
+    public HandlerList getHandlers()
+    {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    public static HandlerList getHandlerList()
+    {
         return handlers;
     }
 }

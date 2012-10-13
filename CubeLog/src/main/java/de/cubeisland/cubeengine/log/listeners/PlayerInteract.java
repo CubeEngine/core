@@ -38,7 +38,7 @@ public class PlayerInteract extends LogListener
             this.actions.put(LogAction.DIODEINTERACT, false);
             this.enabled = false;
         }
-        @Option(value="actions",genericType=Boolean.class)
+        @Option(value = "actions", genericType = Boolean.class)
         public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override

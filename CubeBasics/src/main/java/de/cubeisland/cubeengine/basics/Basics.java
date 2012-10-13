@@ -10,7 +10,7 @@ public class Basics extends Module
 {
     @From
     protected BasicsConfiguration config;
-    
+
     @Override
     public void onEnable()
     {

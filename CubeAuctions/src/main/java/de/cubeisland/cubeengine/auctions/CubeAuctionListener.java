@@ -80,7 +80,7 @@ public class CubeAuctionListener implements Listener
                 }
                 if (bidder.getNotifyState().isset(Bidder.NOTIFY_ITEMS))
                 {
-                    user.sendTMessage("You still have Items left in your auctionbox! Be aware Items get deleted after %s!",config.itemBoxLength);
+                    user.sendTMessage("You still have Items left in your auctionbox! Be aware Items get deleted after %s!", config.itemBoxLength);
                     bidder.getNotifyState().unset(Bidder.NOTIFY_ITEMS);
                 }
                 //TODO update bidder DB

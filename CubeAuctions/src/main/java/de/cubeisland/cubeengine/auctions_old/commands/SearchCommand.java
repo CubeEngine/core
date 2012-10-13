@@ -18,16 +18,15 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Searchs for auctions
- * 
+ *
  * @author Anselm Brehme
  */
 public class SearchCommand
 {
-    
     private static final CubeAuctions plugin = CubeAuctions.getInstance();
     private static final CubeAuctionsConfiguration config = CubeAuctions.getConfiguration();
     Economy econ = CubeAuctions.getInstance().getEconomy();
-    
+
     public SearchCommand()
     {
     }
@@ -35,7 +34,10 @@ public class SearchCommand
     @Command(usage = "<Item>")
     public boolean search(CommandSender sender, CommandArgs args)
     {
-        if (!Perm.command_search.check(sender)) return true;
+        if (!Perm.command_search.check(sender))
+        {
+            return true;
+        }
         if (args.isEmpty())
         {
             sender.sendMessage(t("search_title1"));
@@ -44,20 +46,20 @@ public class SearchCommand
             return true;
         }
         List<Auction> auctionlist;
-/*
-        if (args.getString(0) == null)
-        {
-            if (args.getString("s")!=null)
-               sender.sendMessage(t("pro")+" "+t("search_pro")); 
-            sender.sendMessage(t("e")+" "+t("invalid_com"));
-            return true;
-        }
-        * 
-        */
+        /*
+         if (args.getString(0) == null)
+         {
+         if (args.getString("s")!=null)
+         sender.sendMessage(t("pro")+" "+t("search_pro")); 
+         sender.sendMessage(t("e")+" "+t("invalid_com"));
+         return true;
+         }
+         * 
+         */
         ItemStack item = Util.convertItem(args.getString(0));
         if (item == null)
         {
-            sender.sendMessage(t("e")+" "+t("item_no_exist",args.getString(0)));
+            sender.sendMessage(t("e") + " " + t("item_no_exist", args.getString(0)));
             return true;
         }
         auctionlist = Manager.getInstance().getAuctionItem(item);
@@ -80,11 +82,15 @@ public class SearchCommand
                 Collections.reverse(auctionlist);
             }
         }
-        if (Manager.getInstance().getPrice(item)==0)
-            sender.sendMessage(t("search_item1",item.getType().toString())+" "+t("search_item2"));
+        if (Manager.getInstance().getPrice(item) == 0)
+        {
+            sender.sendMessage(t("search_item1", item.getType().toString()) + " " + t("search_item2"));
+        }
         else
-            sender.sendMessage(t("search_item1",item.getType().toString())+" "+
-                               t("search_item3",String.valueOf(Manager.getInstance().getPrice(item))));
+        {
+            sender.sendMessage(t("search_item1", item.getType().toString()) + " "
+                    + t("search_item3", String.valueOf(Manager.getInstance().getPrice(item))));
+        }
         Util.sendInfo(sender, auctionlist);
         return true;
     }

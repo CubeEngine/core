@@ -28,7 +28,7 @@ public class Group
     Group(GroupModel model)
     {
         this.model = model;
-        groupDB  = GroupStorage.get();
+        groupDB = GroupStorage.get();
         groups = GroupControl.get();
         users = UserControl.get();
     }

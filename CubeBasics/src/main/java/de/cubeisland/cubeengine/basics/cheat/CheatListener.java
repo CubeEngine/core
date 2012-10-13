@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 public class CheatListener implements Listener
 {
     private UserManager um = CubeEngine.getUserManager();
-    
+
     @EventHandler
     public void blockplace(final BlockPlaceEvent event)
     {
@@ -23,7 +23,7 @@ public class CheatListener implements Listener
         if (user.getAttribute("unlimitedItems"))
         {
             ItemStack itemInHand = event.getPlayer().getItemInHand();
-            itemInHand.setAmount(itemInHand.getAmount()+1);
+            itemInHand.setAmount(itemInHand.getAmount() + 1);
         }
     }
 }

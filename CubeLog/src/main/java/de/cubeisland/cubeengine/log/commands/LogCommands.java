@@ -21,20 +21,21 @@ public class LogCommands extends ContainerCommand
 {
     public LogCommands(Module module)
     {
-        super(module, "log", "Searches in the database for needed informations.","cl");
+        super(module, "log", "Searches in the database for needed informations.", "cl");
     }
 
     @Command(
-    desc = "Displays all possible parameters."
-        )
+    desc = "Displays all possible parameters.")
     public void params(CommandContext context)
     {
         context.sendMessage("You used the /log params command!");
     }
-    
-    
+
     @Command(
-    names = {"lookup"},
+    names =
+    {
+        "lookup"
+    },
     desc = "Lookups",
     usage = "<params>",
     flags =
@@ -49,13 +50,55 @@ public class LogCommands extends ContainerCommand
     },
     params =
     {
-        @Param(names = {"player", "p"}, types = {User[].class}),
-        @Param(names = {"area"}, types = {int.class}),
-        @Param(names = {"block"}, types = {ItemStack[].class}),
-        @Param(names = {"since", "time"}, types = {Date.class}),
-        @Param(names = {"before"}, types = {Date.class}),
-        @Param(names = {"limit"}, types = {Date.class}),
-        @Param(names = {"world"}, types = {World.class}),
+        @Param(names =
+        {
+            "player", "p"
+        }, types =
+        {
+            User[].class
+        }),
+        @Param(names =
+        {
+            "area"
+        }, types =
+        {
+            int.class
+        }),
+        @Param(names =
+        {
+            "block"
+        }, types =
+        {
+            ItemStack[].class
+        }),
+        @Param(names =
+        {
+            "since", "time"
+        }, types =
+        {
+            Date.class
+        }),
+        @Param(names =
+        {
+            "before"
+        }, types =
+        {
+            Date.class
+        }),
+        @Param(names =
+        {
+            "limit"
+        }, types =
+        {
+            Date.class
+        }),
+        @Param(names =
+        {
+            "world"
+        }, types =
+        {
+            World.class
+        }),
     })
     public void lookup(CommandContext context)
     {
@@ -63,9 +106,8 @@ public class LogCommands extends ContainerCommand
         if (context.hasNamed("block"))
         {
             // cl lookup block 18:2 <- will print birchleaves
-            context.sendMessage(MaterialMatcher.get().getNameFor(context.getNamed("block", ItemStack[].class)[0]));
+            context.sendMessage(MaterialMatcher.get().getNameFor(context.
+                getNamed("block", ItemStack[].class)[0]));
         }
     }
-    
-    
 }

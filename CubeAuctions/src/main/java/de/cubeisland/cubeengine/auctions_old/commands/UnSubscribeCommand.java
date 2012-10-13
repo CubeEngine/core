@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Manages your Subscriptions
- * 
+ *
  * @author Anselm Brehme
  */
 public class UnSubscribeCommand
@@ -22,8 +22,11 @@ public class UnSubscribeCommand
     public UnSubscribeCommand()
     {
     }
-    
-    @Command(usage = "-m <Material>", aliases = {"unsub"})
+
+    @Command(usage = "-m <Material>", aliases =
+    {
+        "unsub"
+    })
     public boolean unsubscribe(CommandSender sender, CommandArgs args)
     {
         if (args.isEmpty())
@@ -49,13 +52,13 @@ public class UnSubscribeCommand
             {
                 if (bidder.removeSubscription(item.getType()))
                 {
-                    sender.sendMessage(t("i")+t("sub_rem_mat",item.getType().toString()));
+                    sender.sendMessage(t("i") + t("sub_rem_mat", item.getType().toString()));
                     return true;
                 }
-                sender.sendMessage(t("e")+t("sub_rem_no_mat"));
+                sender.sendMessage(t("e") + t("sub_rem_no_mat"));
                 return true;
             }
-            sender.sendMessage(t("e")+t("no_valid_item",args.getString(0)));
+            sender.sendMessage(t("e") + t("no_valid_item", args.getString(0)));
             return true;
         }
         else if (args.hasFlag("i"))
@@ -68,22 +71,22 @@ public class UnSubscribeCommand
                 {
                     if (bidder.removeSubscription(manager.getAuction(id)))
                     {
-                        sender.sendMessage(t("i")+t("sub_rem",id));
+                        sender.sendMessage(t("i") + t("sub_rem", id));
                         return true;
                     }
-                    sender.sendMessage(t("e")+t("sub_rem_no"));
+                    sender.sendMessage(t("e") + t("sub_rem_no"));
                     return true;
                 }
-                sender.sendMessage(t("e")+t("auction_no_exist",id));
+                sender.sendMessage(t("e") + t("auction_no_exist", id));
                 return true;
             }
             catch (NumberFormatException ex)
             {
-                sender.sendMessage(t("e")+t("invalid_id"));
+                sender.sendMessage(t("e") + t("invalid_id"));
                 return true;
             }
         }
-        sender.sendMessage(t("e")+t("invalid_com"));
+        sender.sendMessage(t("e") + t("invalid_com"));
         return true;
     }
 

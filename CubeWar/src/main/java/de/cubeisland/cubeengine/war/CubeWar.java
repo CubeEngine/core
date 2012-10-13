@@ -103,13 +103,15 @@ public class CubeWar extends ModuleBase implements TranslatablePlugin
 
         this.baseCommand = new BaseCommand(this, PERMISSION_BASE);
         this.baseCommand.registerCommands(new ClaimCommands())
-                        .registerCommands(new GroupCommands())
-                        .registerCommands(new UserCommands())
-                        .registerCommands(new ByPassCommand());
+                .registerCommands(new GroupCommands())
+                .registerCommands(new UserCommands())
+                .registerCommands(new ByPassCommand());
         this.getCommand("cubewar").setExecutor(baseCommand);
         this.pm.registerEvents(new CubeWarListener(), this);
         if (CubeCore.getInstance().getModuleManager().getModule("fly") != null)
+        {
             this.pm.registerEvents(new FlyListener(), this);
+        }
 
         InfluenceControl.startTimer();
     }
@@ -124,7 +126,7 @@ public class CubeWar extends ModuleBase implements TranslatablePlugin
     {
         return database;
     }
-    
+
     public static void setDB(Database db)
     {
         database = db;
@@ -203,4 +205,3 @@ public class CubeWar extends ModuleBase implements TranslatablePlugin
         return pvp;
     }
 }
-

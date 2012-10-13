@@ -47,8 +47,8 @@ public class MaterialMatcher
 
     /**
      * Returns an instance of the matcher
-     * 
-     * @return 
+     *
+     * @return
      */
     public static MaterialMatcher get()
     {
@@ -61,8 +61,8 @@ public class MaterialMatcher
 
     /**
      * Registers an Itemstack for the matcher with a list of names
-     * 
-     * @param item the Item
+     *
+     * @param item  the Item
      * @param names the corresponding names
      */
     private void registerItemStack(ItemStack item, List<String> names)
@@ -71,7 +71,7 @@ public class MaterialMatcher
         {
             return;
         }
-        this.itemnames.put(new ItemStack(item.getType(),1,item.getDurability()), names.get(0));
+        this.itemnames.put(new ItemStack(item.getType(), 1, item.getDurability()), names.get(0));
         for (String s : names)
         {
             this.items.put(s.toLowerCase(Locale.ENGLISH), item);
@@ -80,7 +80,7 @@ public class MaterialMatcher
 
     /**
      * Tries to match a Itemstack for given name
-     * 
+     *
      * @param name
      * @return the found ItemStack
      */
@@ -136,9 +136,9 @@ public class MaterialMatcher
 
     /**
      * Matches a DyeColor
-     * 
+     *
      * @param data
-     * @return 
+     * @return
      */
     public DyeColor matchColorData(String data)
     {
@@ -148,10 +148,10 @@ public class MaterialMatcher
 
     /**
      * Sets the data for an ItemStack
-     * 
+     *
      * @param item
      * @param data
-     * @return 
+     * @return
      */
     private ItemStack setData(ItemStack item, String data)
     {
@@ -212,9 +212,9 @@ public class MaterialMatcher
 
     /**
      * Tries to match a Material for given name
-     * 
+     *
      * @param name
-     * @return 
+     * @return
      */
     public Material matchMaterial(String name)
     {
@@ -237,11 +237,11 @@ public class MaterialMatcher
 
     /**
      * Loads in the file with the saved item-names.
-     * 
+     *
      * @param map
      * @param input
      * @param update
-     * @return 
+     * @return
      */
     private boolean readItems(TreeMap<Integer, TreeMap<Short, List<String>>> map, List<String> input, boolean update)
     {
@@ -300,9 +300,12 @@ public class MaterialMatcher
 
                         updated = true;
                     }
-                    else if (map.get(id).get(data) == null || map.get(id).get(data).isEmpty()) // Known ID unkown DATA -> Create new DATA
+                    else
                     {
-                        map.get(id).put(data, names);
+                        if (map.get(id).get(data) == null || map.get(id).get(data).isEmpty()) // Known ID unkown DATA -> Create new DATA
+                        {
+                            map.get(id).put(data, names);
+                        }
                     }
                 }
             }
@@ -316,7 +319,7 @@ public class MaterialMatcher
 
     /**
      * Loads in the file with the saved item-names.
-     */ 
+     */
     private TreeMap<Integer, TreeMap<Short, List<String>>> readItems()
     {
         try
@@ -383,11 +386,14 @@ public class MaterialMatcher
                         this.datavalues.put(Integer.parseInt(key), data);
                     }
                 }
-                else if (line.contains(":"))
+                else
                 {
-                    for (String key : StringUtils.explode(",", line.substring(0, line.indexOf(":"))))
+                    if (line.contains(":"))
                     {
-                        data.put(key, Short.parseShort(line.substring(line.indexOf(":") + 1).trim()));
+                        for (String key : StringUtils.explode(",", line.substring(0, line.indexOf(":"))))
+                        {
+                            data.put(key, Short.parseShort(line.substring(line.indexOf(":") + 1).trim()));
+                        }
                     }
                 }
             }
@@ -401,7 +407,7 @@ public class MaterialMatcher
             throw new IllegalStateException("Error while reading datavalues.txt", ex);
         }
     }
-   
+
     /**
      * This enum contains all repairable items
      */
@@ -419,18 +425,17 @@ public class MaterialMatcher
         DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS,
         GOLD_HELMET, GOLD_CHESTPLATE, GOLD_LEGGINGS, GOLD_BOOTS,
         FLINT_AND_STEEL, BOW, FISHING_ROD, SHEARS;
-
         private static final Set<Material> mats = Collections.synchronizedSet(EnumSet.noneOf(Material.class));
-        
-        static 
+
+        static
         {
             for (RepairableMaterials rMats : values())
             {
                 mats.add(Material.matchMaterial(rMats.name()));
             }
-           
+
         }
-  
+
         /**
          * Returns whether the given ItemStack is repairable
          */
@@ -443,7 +448,7 @@ public class MaterialMatcher
             return mats.contains(item.getType());
         }
     }
-    
+
     /**
      * Returns whether the given ItemStack is repairable
      */
@@ -451,12 +456,12 @@ public class MaterialMatcher
     {
         return RepairableMaterials.isRepairable(item);
     }
-    
+
     /**
      * Returns the name for given ItemStack
-     * 
+     *
      * @param item
-     * @return 
+     * @return
      */
     public String getNameFor(ItemStack item)
     {

@@ -32,57 +32,70 @@ public class PlainSerializer implements ApiResponseSerializer
     private void serialize(StringBuilder buffer, Object o)
     {
         if (o == null)
-        {} // null => nothing
-        else if (o instanceof ApiSerializable)
         {
-            this.serialize(buffer, ((ApiSerializable)o).serialize());
-        }
-        else if (o instanceof Map)
-        {
-            Map<String, Object> data = (Map<String, Object>)o;
-            int dataSize = data.size();
-            int counter = 0;
-            for (Map.Entry entry : data.entrySet())
-            {
-                ++counter;
-                Object value = entry.getValue();
-                this.serialize(buffer, value);
-                if (counter < dataSize)
-                {
-                    buffer.append(',');
-                }
-            }
-        }
-        else if (o instanceof Iterable)
-        {
-            Iterable<Object> data = (Iterable<Object>)o;
-            Iterator iter = data.iterator();
-            while (iter.hasNext())
-            {
-                Object value = iter.next();
-                this.serialize(buffer, value);
-                if (iter.hasNext())
-                {
-                    buffer.append(',');
-                }
-            }
-        }
-        else if (o.getClass().isArray())
-        {
-            Object[] data = (Object[])o;
-            int end = data.length - 1;
-            for (int i = 0; i < data.length; i++)
-            {
-                this.serialize(buffer, data[i]);
-                if (i < end)
-                {
-                    buffer.append(',');
-                }
-            }
-        }
+        } // null => nothing
         else
         {
-            buffer.append(encode(String.valueOf(o)));
+            if (o instanceof ApiSerializable)
+            {
+                this.serialize(buffer, ((ApiSerializable)o).serialize());
+            }
+            else
+            {
+                if (o instanceof Map)
+                {
+                    Map<String, Object> data = (Map<String, Object>)o;
+                    int dataSize = data.size();
+                    int counter = 0;
+                    for (Map.Entry entry : data.entrySet())
+                    {
+                        ++counter;
+                        Object value = entry.getValue();
+                        this.serialize(buffer, value);
+                        if (counter < dataSize)
+                        {
+                            buffer.append(',');
+                        }
+                    }
+                }
+                else
+                {
+                    if (o instanceof Iterable)
+                    {
+                        Iterable<Object> data = (Iterable<Object>)o;
+                        Iterator iter = data.iterator();
+                        while (iter.hasNext())
+                        {
+                            Object value = iter.next();
+                            this.serialize(buffer, value);
+                            if (iter.hasNext())
+                            {
+                                buffer.append(',');
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (o.getClass().isArray())
+                        {
+                            Object[] data = (Object[])o;
+                            int end = data.length - 1;
+                            for (int i = 0; i < data.length; i++)
+                            {
+                                this.serialize(buffer, data[i]);
+                                if (i < end)
+                                {
+                                    buffer.append(',');
+                                }
+                            }
+                        }
+                        else
+                        {
+                            buffer.append(encode(String.valueOf(o)));
+                        }
+                    }
+                }
+            }
         }
     }
 

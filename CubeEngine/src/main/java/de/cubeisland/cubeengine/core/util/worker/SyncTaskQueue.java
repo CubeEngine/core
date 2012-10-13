@@ -13,7 +13,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
-    
     private final BukkitCore corePlugin;
     private final BukkitScheduler scheduler;
     private final Queue<Runnable> taskQueue;
@@ -23,7 +22,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         this(core, new LinkedList<Runnable>());
     }
-    
+
     public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
     {
         this.corePlugin = (BukkitCore)core;
@@ -59,13 +58,13 @@ public class SyncTaskQueue implements TaskQueue
             this.taskID = this.scheduler.scheduleSyncRepeatingTask(this.corePlugin, this.workerTask, 0, 1);
         }
     }
-    
+
     @Override
     public synchronized void stop()
     {
         this.stop(false);
     }
-    
+
     @Override
     public synchronized void stop(boolean interupt)
     {
@@ -75,19 +74,19 @@ public class SyncTaskQueue implements TaskQueue
             this.taskID = -1;
         }
     }
-    
+
     @Override
     public synchronized boolean isRunning()
     {
         return this.taskID > -1;
     }
-    
+
     @Override
     public synchronized int size()
     {
         return this.taskQueue.size();
     }
-    
+
     private class Worker implements Runnable
     {
         @Override

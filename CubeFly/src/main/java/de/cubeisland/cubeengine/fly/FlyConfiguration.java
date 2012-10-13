@@ -13,7 +13,6 @@ public class FlyConfiguration extends Configuration
 {
     @Option("enablemode.flycommand")
     public boolean flycommand = true; //if false fly command does not work
-    
     @Option("enablemode.flyfeather")
     public boolean flyfeather = true; //if false feather fly does not work
 }

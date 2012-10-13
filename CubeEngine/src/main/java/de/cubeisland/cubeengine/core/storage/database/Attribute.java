@@ -10,8 +10,12 @@ import java.lang.annotation.Target;
 public @interface Attribute
 {
     public AttrType type();
+
     public int length() default -1;
+
     public boolean notnull() default true;
+
     public boolean ai() default false;
+
     public boolean unsigned() default false;
 }

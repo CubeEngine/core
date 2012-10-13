@@ -26,36 +26,33 @@ public enum ChatFormat
     PINK('d'),
     YELLOW('e'),
     WHITE('f'),
-    
     MAGIC('k'),
     BOLD('l'),
     STRIKE('m'),
     UNDERLINE('n'),
     ITALIC('o'),
     RESET('r');
-    
     private static final char BASE_CHAR = '\u00A7';
     private static final TCharObjectMap<ChatFormat> FORMAT_CHARS_MAP;
     private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
     private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
-    
     private final char formatChar;
-    
+
     private ChatFormat(char formatChar)
     {
         this.formatChar = formatChar;
     }
-    
+
     public char getChar()
     {
         return this.formatChar;
     }
-    
+
     public static ChatFormat getByChar(char theChar)
     {
         return FORMAT_CHARS_MAP.get(theChar);
     }
-    
+
     public static String stripFormats(String string)
     {
         if (string == null)
@@ -64,7 +61,7 @@ public enum ChatFormat
         }
         return STRIP_FORMATS.matcher(string).replaceAll("");
     }
-    
+
     public static String parseFormats(String string)
     {
         if (string == null)
@@ -73,7 +70,7 @@ public enum ChatFormat
         }
         return parseFormats('&', string);
     }
-    
+
     public static String parseFormats(char baseChar, String string)
     {
         if (string == null)
@@ -93,7 +90,7 @@ public enum ChatFormat
 
         return new String(chars);
     }
-    
+
     static
     {
         ChatFormat[] values = values();
