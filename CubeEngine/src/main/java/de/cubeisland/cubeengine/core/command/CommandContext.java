@@ -647,7 +647,7 @@ public class CommandContext
 
         if (i >= values.length)
         {
-            throw new IndexOutOfBoundsException("The named parameter you requested has only " + values.length + " values.");
+            throw new IndexOutOfBoundsException("The named parameter you requested has only " + values.length + " " + (values.length == 1 ? "value" : "values") + " but you requested the " + (i + 1) + ".");
         }
         if (type.isAssignableFrom(values[i].getClass()))
         {
