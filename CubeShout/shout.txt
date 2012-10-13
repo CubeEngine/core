@@ -1,0 +1,15 @@
+CubeShout
+
+FEATURES:
+    - delays on per-announcement basis
+    - manual and automatic announcements
+    - group announcements
+    - role announcements (needs the Role module)
+    - multi language support
+    - variables
+    - delays should not be affected by lag (as good as possible)
+    - announcements and their config should be read from *.txt files
+    - announcements should not be posted if there are no players
+
+
+Messages will be stored in Announcer/messages/(message)/(localcode(en_US)).txt or just Announcer/messages/(message).txt if not translateable.
