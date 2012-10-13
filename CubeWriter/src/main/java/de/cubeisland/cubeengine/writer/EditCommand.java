@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -15,13 +16,16 @@ import de.cubeisland.cubeengine.core.user.User;
 
 public class EditCommand 
 {
+	Core core = null;
+	
+	public EditCommand(Core core){
+		this.core = core;
+	}
 	
 	@Command(
 			names = {"edit", "rewrite"}, 
-			desc = "Edit a sign or a book",
-			min = 0,
-			max = 4,
-			usage = "/edit Line1 \"This is line one\" 2 \"this line contains a number 2\" 3 \"This is line three\"",
+			desc = "Edit a sign or unsign a book",
+			usage = "Line1 \"This is line one\" 2 \"this line contains a number 2\" 3 \"This is line three\"",
 			params = {
 					@Param(
 							names = {"1", "Line1"}, 
@@ -50,42 +54,48 @@ public class EditCommand
 		{
 			ItemStack item = user.getItemInHand();
 			BookItem unsigned = new BookItem(item);
+			
 			unsigned.setAuthor("");
 			unsigned.setTitle("");
+			
 			item = unsigned.getItemStack();
 			item.setType(Material.BOOK_AND_QUILL);
-			user.sendMessage("Your book is now unsigned and ready to be edited");
 			
+			user.sendMessage("Your book is now unsigned and ready to be edited");
+			return;
 		}
 		else
 		{
 			Block target = user.getTargetBlock(null, 10);
 			
-			if (!(target.getType() == Material.SIGN || target.getType() == Material.SIGN_POST))
+			if (target.getType() == Material.WALL_SIGN || target.getType() == Material.SIGN_POST)
 			{
-				user.sendMessage(ChatColor.RED + "You need to be looking at a sign less than 10 blocks away");
+				if (context.namedCount() < 1){
+					user.sendMessage(ChatColor.RED + "You need to speccify at least one parameter");
+					return;
+				}
+				
+				Sign sign = (Sign)target.getState();
+				
+				Map<String, Object[]> params = context.getNamed();	
+				for (String key : params.keySet())
+				{
+					sign.setLine(Integer.parseInt(key) - 1, context.getNamed(key, String.class));
+				}
+				
+				sign.update();
+				
+				user.sendMessage("The sign has been changed");	
 				return;
 			}
-			
-			if (context.namedCount() < 1){
-				user.sendMessage(ChatColor.RED + "You need to speccify at least one parameter");
-				return;
-			}
-			
-			Sign sign = (Sign)target.getState();
-			
-			Map<String, Object[]> params = context.getNamed();
-			for (String key : params.keySet())
+			else
 			{
-				sign.setLine(Integer.parseInt(key) - 1, context.getNamed(key, String.class));
+				user.sendMessage(ChatColor.RED + "You need to have a signed book in hand or be looking at a sign less than 10 blocks away");
+				if (core.isDebug())
+				{
+					user.sendMessage("You where looking at: " + target.getType().name());
+				}
 			}
-			
-			sign.update();
-			
-			user.sendMessage("The sign has been changed");	
 		}
-		
-		
 	}
-	
 }

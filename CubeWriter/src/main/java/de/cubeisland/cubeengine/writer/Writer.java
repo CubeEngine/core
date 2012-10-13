@@ -8,7 +8,7 @@ public class Writer extends Module
     @Override
     public void onEnable()
     {
-    	registerCommands(new EditCommand());
+    	registerCommands(new EditCommand(this.getCore()));
     }
 
 
