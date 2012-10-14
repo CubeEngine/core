@@ -20,7 +20,14 @@ public enum BasicsPerm implements Permission
     COMMAND_KILL_EXEMPT,
     COMMAND_INVSEE_MODIFY,
     COMMAND_INVSEE_PREVENTMODIFY,
-    COMMAND_KICK_ALL,;
+    COMMAND_KICK_ALL,
+    COMMAND_TP_FORCE,
+    COMMAND_TP_OTHER,
+    COMMAND_TP_PREVENT_TP,
+    COMMAND_TP_PREVENT_TPTO,
+    COMMAND_TPALL_FORCE
+    
+    ;
     private String permission;
     private PermissionDefault def;
 
