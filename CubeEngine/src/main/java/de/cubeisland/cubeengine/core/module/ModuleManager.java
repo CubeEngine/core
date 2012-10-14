@@ -11,11 +11,7 @@ import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -420,14 +416,25 @@ public class ModuleManager implements Cleanable
      */
     public void unloadModule(Module module)
     {
-//        Set<String> dependingModules = module.getDependingModules();
-//        for (String moduleName : dependingModules)
-//        {
-//            if (!name.equals(moduleName))
-//            {
-//                this.disableModule(name);
-//            }
-//        }
+        if (!this.modules.containsValue(module))
+        {
+            return;
+        }
+        
+        Set<Module> disable = new HashSet<Module>();
+        for (Module m : this.modules.values())
+        {
+            if (m.getInfo().getDependencies().containsKey(module.getId()) || m.getInfo().getSoftDependencies().containsKey(module.getId()))
+            {
+                disable.add(m);
+            }
+        }
+        
+        for (Module m : disable)
+        {
+            this.unloadModule(m);
+        }
+        
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.modules.remove(module.getName());
