@@ -4,10 +4,6 @@ import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FlyManager extends BasicStorage<FlyModel>
 {
     public FlyManager(Database database, int revision)

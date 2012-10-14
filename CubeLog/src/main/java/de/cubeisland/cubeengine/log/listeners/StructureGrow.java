@@ -1,11 +1,8 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
-import java.util.EnumMap;
-import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.StructureGrowEvent;
@@ -31,8 +28,6 @@ public class StructureGrow extends LogListener
             this.actions.put(LogAction.BONEMEALSTRUCTUREGROW, false);
             this.enabled = true;
         }
-        @Option(value = "actions", genericType = Boolean.class)
-        public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override
         public String getName()

@@ -1,11 +1,9 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.LogManager;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
-import java.util.EnumMap;
-import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFormEvent;
@@ -20,7 +18,7 @@ public class BlockForm extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event)
     {
-        //TODO
+        lm.logChangeBlock(LogManager.BlockChangeCause.FORM, null, event.getBlock().getState(), event.getNewState());
     }
 
     public static class FormConfig extends LogSubConfiguration
@@ -31,8 +29,6 @@ public class BlockForm extends LogListener
             this.actions.put(LogAction.ICEFORM, false);
             this.enabled = false;
         }
-        @Option(value = "actions", genericType = Boolean.class)
-        public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override
         public String getName()

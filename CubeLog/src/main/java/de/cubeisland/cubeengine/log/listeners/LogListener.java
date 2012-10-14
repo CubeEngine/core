@@ -8,13 +8,17 @@ import org.bukkit.event.Listener;
 
 public abstract class LogListener implements Listener
 {
-    protected LogManager lm;
+    protected static LogManager lm;
     protected LogConfiguration config;
     protected LogSubConfiguration subConfig;
 
+    public static void initLogManager(LogManager logManager)
+    {
+        lm = logManager;
+    }
+    
     public LogListener(Log module, LogSubConfiguration subConfig)
     {
-        this.lm = module.getLogManager();
         this.config = module.getConfiguration();
         this.subConfig = subConfig;
     }
@@ -28,7 +32,9 @@ public abstract class LogListener implements Listener
     {
         try
         {
-            return clazz.getConstructor(Log.class).newInstance(module);
+            T t= clazz.getConstructor(Log.class).newInstance(module);
+            t.getConfiguration().listener = t;
+            return t;
         }
         catch (Exception ex)
         {

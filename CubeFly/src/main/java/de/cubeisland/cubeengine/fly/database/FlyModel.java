@@ -11,10 +11,6 @@ import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.util.List;
 
-/**
- *
- * @author Anselm Brehme
- */
 @Entity(name = "fly")
 public class FlyModel implements Model<Integer>
 {

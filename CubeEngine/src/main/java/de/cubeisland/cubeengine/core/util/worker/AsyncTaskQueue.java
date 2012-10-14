@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang.Validate;
 
 /**
- * This TaskQueue will execute all tasks in an async thread.
- */
+* This TaskQueue will execute all tasks in an async thread.
+*/
 public class AsyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();

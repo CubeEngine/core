@@ -39,8 +39,6 @@ public class ContainerAccess extends LogListener
             this.actions.put(LogAction.BREWINGSTANDACCESS, false);
             this.enabled = false;
         }
-        @Option(value = "actions", genericType = Boolean.class)
-        public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override
         public String getName()

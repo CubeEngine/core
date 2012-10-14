@@ -151,14 +151,12 @@ public class Test extends Module
         {
         }
 
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
-        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
-        this.manager.
-            store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"));
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"));
-        this.manager.
-            store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"),false);
+        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"),false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"),false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"),false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"),false);
+        this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"),false);
         this.manager.get(2);
         this.manager.getAll();
         TestModel model = this.manager.get(3);

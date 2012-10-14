@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
@@ -18,6 +17,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 /**
  * BasicStorage (1 Key only)
@@ -298,7 +299,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public void store(V model)
+    public void store(final V model)
+    {
+        this.store(model, true);
+    }
+
+    @Override
+    public void store(final V model, boolean async)
     {
         try
         {
@@ -313,11 +320,19 @@ public class BasicStorage<V extends Model> implements Storage<V>
             }
             if (keyIsAI)
             {
+                // This is never async
                 model.setKey(this.database.getLastInsertedId(modelClass, "store", values.toArray()));
             }
             else
             {
-                this.database.preparedExecute(modelClass, "store", values.toArray());
+                if (async)
+                {
+                    this.database.asyncPreparedExecute(modelClass, "store", values.toArray());
+                }
+                else
+                {
+                    this.database.preparedExecute(modelClass, "store", values.toArray());
+                }
             }
             for (Callback cb : createCallbacks)
             {

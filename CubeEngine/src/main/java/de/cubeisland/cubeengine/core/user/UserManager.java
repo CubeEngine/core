@@ -8,8 +8,6 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.sql.ResultSet;
@@ -30,10 +28,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-/**
- *
- * @author Anselm Brehme
- */
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
+
 public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
 {
     private final Core core;
@@ -146,14 +142,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             return this;
         }
         this.users.put(user.getName(), user);
-        this.database.queueOperation(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                store(user);
-            }
-        });
+        this.store(user);
         UserCreatedEvent event = new UserCreatedEvent(this.core, user);
         server.getPluginManager().callEvent(event);
         return this;

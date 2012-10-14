@@ -2,7 +2,10 @@ package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
+import de.cubeisland.cubeengine.log.storage.BlockData;
+import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
 
 public class Log extends Module
 {
@@ -10,6 +13,7 @@ public class Log extends Module
     private static Log instance;
     @From("config")
     protected LogConfiguration config;
+    
 
     public Log()
     {
@@ -26,8 +30,9 @@ public class Log extends Module
         // perhaps make possible to select this cuboid to rollback later
         //flag to ignore what block
         //possibility to select the region containing the last search results
-        this.lm = new LogManager();
+        this.lm = new LogManager(this);
         this.registerCommand(new LogCommands(this));
+        Convert.registerConverter(BlockData.class, new BlockDataConverter());
     }
 
     public LogManager getLogManager()
