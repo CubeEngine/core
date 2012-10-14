@@ -2,8 +2,6 @@ package de.cubeisland.cubeengine.core.util.math;
 
 /**
  * This class represents a 2D vector
- *
- * @author Phillip Schichtel
  */
 public class Vector2
 {

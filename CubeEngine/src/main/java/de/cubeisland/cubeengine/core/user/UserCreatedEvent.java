@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.event.HandlerList;
 
 /**

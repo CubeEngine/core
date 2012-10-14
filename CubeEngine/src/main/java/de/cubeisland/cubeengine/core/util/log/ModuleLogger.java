@@ -8,8 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
- *
- * @author Phillip Schichtel
+ * This logger is used to log module messages
  */
 public class ModuleLogger extends CubeLogger
 {
@@ -21,7 +20,7 @@ public class ModuleLogger extends CubeLogger
         this.prefix = "[" + info.getName() + "] ";
         try
         {
-            this.addHandler(new FileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), info.getName().toLowerCase(Locale.ENGLISH)).toString()));
+            this.addHandler(new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), info.getName().toLowerCase(Locale.ENGLISH)).toString()));
         }
         catch (Exception e)
         {

@@ -374,7 +374,7 @@ public final class StringUtils
     {
         return Math.min(a, Math.min(b, Math.min(c, d)));
     }
-    
+
     public static String getBestMatch(String search, Collection<String> strings, int maxDistance)
     {
         int searchLength = search.length();

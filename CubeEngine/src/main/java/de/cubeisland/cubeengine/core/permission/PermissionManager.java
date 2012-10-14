@@ -19,6 +19,7 @@ import org.bukkit.plugin.PluginManager;
 public class PermissionManager
 {
     private static final String CUBEENGINE_WILDCARD = "cubeengine.*";
+    
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcardPermission;
     private final Map<Module, List<String>> modulePermissionMap;
@@ -53,10 +54,9 @@ public class PermissionManager
      * Registers a String as a permission
      *
      * @param perm        the permission node
-     * @param permDefault the default value
-     * @return fluent interface
+     * @param permDefault the default valueW
      */
-    public PermissionManager registerPermission(Module module, String perm, PermissionDefault permDefault)
+    public void registerPermission(Module module, String perm, PermissionDefault permDefault)
     {
         if (Thread.currentThread() != this.mainThread)
         {
@@ -68,7 +68,7 @@ public class PermissionManager
 
         if (perm.equals(CUBEENGINE_WILDCARD))
         {
-            return this;
+            return;
         }
 
         perm = perm.toLowerCase(Locale.ENGLISH);
@@ -103,37 +103,32 @@ public class PermissionManager
         }
 
         permission.addParent(permission, true);
-
-        return this;
     }
 
     /**
      * Registeres a permission
      *
      * @param permission the permission
-     * @return fluent interface
      */
-    public PermissionManager registerPermission(Module module, Permission permission)
+    public void registerPermission(Module module, Permission permission)
     {
-        return this.registerPermission(module, permission.getPermission(), permission.getPermissionDefault());
+        this.registerPermission(module, permission.getPermission(), permission.getPermissionDefault());
     }
 
     /**
      * Registered an array of permissions
      *
      * @param permissions the array of permissions
-     * @return fluent interface
      */
-    public PermissionManager registerPermissions(Module module, Permission[] permissions)
+    public void registerPermissions(Module module, Permission[] permissions)
     {
         for (Permission permission : permissions)
         {
             this.registerPermission(module, permission);
         }
-        return this;
     }
 
-    public PermissionManager unregisterPermission(Module module, String perm)
+    public void unregisterPermission(Module module, String perm)
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(perm, "The permission must not be null!");
@@ -148,13 +143,17 @@ public class PermissionManager
                 this.wildcardPermission.remove(perm);
             }
         }
-
-        return this;
     }
 
-    public PermissionManager unregisterPermissions(Module module)
+    /**
+     * Unregisters all the permissions of the given module
+     *
+     * @param module the module
+     */
+    public void unregisterPermissions(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
+        
         List<String> removedPerms = this.modulePermissionMap.remove(module);
         if (removedPerms != null)
         {
@@ -167,7 +166,5 @@ public class PermissionManager
                 }
             }
         }
-
-        return this;
     }
 }

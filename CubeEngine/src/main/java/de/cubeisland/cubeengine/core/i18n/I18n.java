@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.FileHandler;
+import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
@@ -26,8 +26,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class provides functionality to translate messages
  */
 public class I18n implements Cleanable
 {
@@ -48,7 +47,7 @@ public class I18n implements Cleanable
         this.loadLanguages(fm.getLanguageDir());
         try
         {
-            LOGGER.addHandler(new FileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
+            LOGGER.addHandler(new CubeFileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
         }
         catch (IOException e)
         {
@@ -56,11 +55,21 @@ public class I18n implements Cleanable
         }
     }
 
+    /**
+     * Returns the default language
+     *
+     * @return the locale string of the default language
+     */
     public String getDefaultLanguage()
     {
         return this.defaultLanguage;
     }
 
+    /**
+     * Sets the default language
+     *
+     * @param language the new default language
+     */
     public void setDefaultLanguage(String language)
     {
         Validate.notNull(language, "The language must not be null!");
@@ -72,6 +81,11 @@ public class I18n implements Cleanable
         }
     }
 
+    /**
+     * This method load all languages from a directory
+     *
+     * @param languageDir the directory to load from
+     */
     private void loadLanguages(File languageDir)
     {
         Map<String, LanguageConfiguration> languages = new HashMap<String, LanguageConfiguration>();
@@ -153,6 +167,11 @@ public class I18n implements Cleanable
         return null;
     }
 
+    /**
+     * This method returns all languages
+     *
+     * @return a collection of languages
+     */
     public Collection<String> getLanguages()
     {
         Set<String> languages = new HashSet<String>(this.languageMap.keySet());
@@ -160,11 +179,26 @@ public class I18n implements Cleanable
         return languages;
     }
 
+    /**
+     * Returns a language by their locale string / name
+     *
+     * @param name the name / locale string
+     * @return the language or null if not found
+     */
     public Language getLanguage(String name)
     {
         return this.languageMap.get(name);
     }
 
+    /**
+     * This method translates a messages
+     *
+     * @param language the language to translate to
+     * @param category the category to load the messages from
+     * @param message the message to translate
+     * @param params the parameters to insert into the language after translation
+     * @return the translated language
+     */
     public String translate(String language, String category, String message, Object... params)
     {
         Validate.notNull(language, "The language must not be null!");
@@ -229,6 +263,12 @@ public class I18n implements Cleanable
         this.languageMap.clear();
     }
 
+    /**
+     * This method normalizes a locale string as good as possible
+     *
+     * @param name the locale string
+     * @return the normalized locale string
+     */
     public static String normalizeLanguage(String name)
     {
         if (name == null)

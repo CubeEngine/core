@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util;
 
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.module.Module;
-import org.bukkit.plugin.Plugin;
 
 /**
  * This Task can be cancelled from the inside
@@ -11,35 +11,62 @@ import org.bukkit.plugin.Plugin;
 public abstract class Task implements Runnable
 {
     private int taskid;
-    private Plugin plugin;
-
-    public Task(Plugin plugin)
-    {
-        this.plugin = plugin;
-    }
+    private final Module module;
+    private final TaskManager tm;
 
     public Task(Module module)
     {
-        this((Plugin)null); // TODO module tasks needed to be registered with CubeEngine, but still need to be managed independent
+        this.module = module;
+        this.tm = module.getTaskManger();
     }
 
-    public void setTaskId(int taskid)
-    {
-        this.taskid = taskid;
-    }
-
+    /**
+     * Cancels the task
+     */
     public void cancelTask()
     {
-        plugin.getServer().getScheduler().cancelTask(taskid);
+        this.tm.cancelTask(this.module, this.taskid);
     }
 
+    /**
+     * Schedules the task async repeating
+     *
+     * @param delay the delay
+     * @param repeat the interval
+     */
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
     {
-        taskid = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, delay, repeat);
+        this.taskid = this.tm.scheduleAsyncRepeatingTask(this.module, this, delay, repeat);
     }
 
+    /**
+     * Schedules the task async delayed
+     *
+     * @param delay the delay
+     */
     public void scheduleAsyncTask(int delay)
     {
-        taskid = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, delay);
+        this.taskid = this.tm.scheduleAsyncDelayedTask(this.module, this, delay);
+    }
+
+    /**
+     * Schedules the task sync repeating
+     *
+     * @param delay the delay
+     * @param repeat the interval
+     */
+    public void scheduleSyncRepeatingTask(int delay, int repeat)
+    {
+        this.taskid = this.tm.scheduleSyncRepeatingTask(this.module, this, delay, repeat);
+    }
+
+    /**
+     * Schedules the task sync delayed
+     *
+     * @param delay the delay
+     */
+    public void scheduleSyncTask(int delay)
+    {
+        this.taskid = this.tm.scheduleSyncDelayedTask(this.module, this, delay);
     }
 }

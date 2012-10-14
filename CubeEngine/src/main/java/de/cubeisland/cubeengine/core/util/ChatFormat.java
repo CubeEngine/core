@@ -5,8 +5,7 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 import java.util.regex.Pattern;
 
 /**
- *
- * @author Phillip Schichtel
+ * This enum contains all of MInecraft's chat format codes and some utility methods to parse them
  */
 public enum ChatFormat
 {
@@ -48,11 +47,23 @@ public enum ChatFormat
         return this.formatChar;
     }
 
+    /**
+     * Gets a chat format by it's char
+     *
+     * @param theChar the char to look for
+     * @return 
+     */
     public static ChatFormat getByChar(char theChar)
     {
         return FORMAT_CHARS_MAP.get(theChar);
     }
 
+    /**
+     * Removes all the format codes from a string
+     *
+     * @param string the string
+     * @return the stripped string
+     */
     public static String stripFormats(String string)
     {
         if (string == null)
@@ -62,6 +73,12 @@ public enum ChatFormat
         return STRIP_FORMATS.matcher(string).replaceAll("");
     }
 
+    /**
+     * Parses the chat format strings
+     * 
+     * @param string the string to parse
+     * @return the parsed string
+     */
     public static String parseFormats(String string)
     {
         if (string == null)
@@ -71,6 +88,13 @@ public enum ChatFormat
         return parseFormats('&', string);
     }
 
+    /**
+     * Parses the chat format strings
+     * 
+     * @param baseChar the char used to indicate a format code
+     * @param string the string to parse
+     * @return the parsed string
+     */
     public static String parseFormats(char baseChar, String string)
     {
         if (string == null)

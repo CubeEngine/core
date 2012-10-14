@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- *
- * @author Anselm Brehme
+ * This class represents a 2D vector with integer coordinates
  */
 public class BlockVector2
 {

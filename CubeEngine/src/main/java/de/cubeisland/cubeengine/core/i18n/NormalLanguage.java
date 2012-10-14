@@ -16,6 +16,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 
+/**
+ * This class is a generic language that loads its translations from  files
+ */
 public class NormalLanguage implements Cleanable, Language
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
@@ -70,6 +73,12 @@ public class NormalLanguage implements Cleanable, Language
         return this.localName;
     }
 
+    /**
+     * This method adds a map of translations to a category
+     *
+     * @param cat the category
+     * @param messages the translations
+     */
     public void addMessages(String cat, Map<String, String> messages)
     {
         Validate.notNull(cat, "The category must not be null!");
@@ -108,6 +117,11 @@ public class NormalLanguage implements Cleanable, Language
         return null;
     }
 
+    /**
+     * Returns the language's parent
+     *
+     * @return the parent language
+     */
     public Language getParent()
     {
         return this.parent;

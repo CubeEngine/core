@@ -63,21 +63,41 @@ public class FileManager
         this.fileSources = new ConcurrentHashMap<File, Resource>();
     }
 
+    /**
+     * Returns the data folder of the CubeEngine
+     *
+     * @return a file
+     */
     public File getDataFolder()
     {
         return this.dataFolder;
     }
 
+    /**
+     * Returns the language directory
+     *
+     * @return the directory
+     */
     public File getLanguageDir()
     {
         return this.languageDir;
     }
 
+    /**
+     * Returns the log directory
+     *
+     * @return the directory
+     */
     public File getLogDir()
     {
         return this.logDir;
     }
 
+    /**
+     * Returns the modules directory
+     *
+     * @return the directory
+     */
     public File getModulesDir()
     {
         return this.modulesDir;
@@ -94,6 +114,12 @@ public class FileManager
         return source;
     }
 
+    /**
+     * Returns a resource as a stream
+     *
+     * @param resource the resource
+     * @return a stream to read from
+     */
     public InputStream getResourceStream(Resource resource)
     {
         if (resource == null)
@@ -103,6 +129,12 @@ public class FileManager
         return resource.getClass().getResourceAsStream(getSaneSource(resource));
     }
 
+    /**
+     * Returns a resource as a file by first copying it to the file system
+     *
+     * @param resource the resource
+     * @return a file
+     */
     public File getResourceFile(Resource resource)
     {
         Validate.notNull(resource, "The resource must not be null!");
@@ -112,6 +144,11 @@ public class FileManager
         return file;
     }
 
+    /**
+     * Drops an array of resources (usually the values of an enum)
+     *
+     * @param resources the resources
+     */
     public void dropResources(Resource[] resources)
     {
         Validate.notNull(resources, "The resources must not be null!");
@@ -122,6 +159,15 @@ public class FileManager
         }
     }
 
+    /**
+     * Drops an resource
+     *
+     * @param clazz the class of the resource
+     * @param resPath the resource path
+     * @param filePath the target file path
+     * @param overwrite wheter to overwrite an existing file
+     * @return a file
+     */
     public File dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
     {
         Validate.notNull(filePath, "The file path must not be null!");
@@ -134,6 +180,15 @@ public class FileManager
         return this.dropResource(clazz, resPath, new File(this.dataFolder, filePath.replace('\\', File.separatorChar).replace('/', File.separatorChar)), overwrite);
     }
 
+    /**
+     * Drops an resource
+     *
+     * @param clazz the class of the resource
+     * @param resPath the resource path
+     * @param file the target file
+     * @param overwrite wheter to overwrite an existing file
+     * @return a file
+     */
     public File dropResource(Class clazz, String resPath, File file, boolean overwrite)
     {
         Validate.notNull(clazz, "The class must not be null!");
@@ -195,6 +250,12 @@ public class FileManager
         return file;
     }
 
+    /**
+     * Revers look up for resources by file
+     *
+     * @param file the file
+     * @return stream of the resource
+     */
     public InputStream getSourceOf(File file)
     {
         return this.getResourceStream(this.fileSources.get(file));

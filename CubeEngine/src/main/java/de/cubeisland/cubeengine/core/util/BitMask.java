@@ -2,8 +2,6 @@ package de.cubeisland.cubeengine.core.util;
 
 /**
  * Represents a bitmask with 32 bits
- *
- * @author Phillip Schichtel
  */
 public class BitMask
 {

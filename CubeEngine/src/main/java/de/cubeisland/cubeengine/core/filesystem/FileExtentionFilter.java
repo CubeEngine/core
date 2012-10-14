@@ -5,8 +5,7 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class can be used to creates file or filename filters
  */
 public class FileExtentionFilter implements FileFilter, FilenameFilter
 {
@@ -37,6 +36,11 @@ public class FileExtentionFilter implements FileFilter, FilenameFilter
         return name.endsWith(this.extention);
     }
 
+    /**
+     * Returns the extention this filter uses
+     *
+     * @return the extention
+     */
     public String getExtention()
     {
         return this.extention;

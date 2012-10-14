@@ -133,6 +133,11 @@ public class User extends UserBase implements LinkingModel<Integer>
         return (T)this.attachments.get(modelClass);
     }
 
+    /**
+     * Returns the users configured language
+     *
+     * @return a locale string
+     */
     public String getLanguage()
     {
         String language = null;
@@ -158,6 +163,12 @@ public class User extends UserBase implements LinkingModel<Integer>
         return this.lastseen.getTime();
     }
 
+    /**
+     * Adds an attribute to this user
+     *
+     * @param name the name/key
+     * @param value the value
+     */
     public void setAttribute(String name, Object value)
     {
         Validate.notNull(name, "The attribute name must not be null!");
@@ -166,11 +177,26 @@ public class User extends UserBase implements LinkingModel<Integer>
         this.attributes.put(name, value);
     }
 
+    /**
+     * Returns an attribute value
+     * 
+     * @param <T> the type of the value
+     * @param name the name/key
+     * @return the value or null
+     */
     public <T extends Object> T getAttribute(String name)
     {
         return this.<T>getAttribute(name, null);
     }
 
+    /**
+     * Gets an attribute value or the given default value
+     *
+     * @param <T> the value type
+     * @param name the name/key
+     * @param def the default value
+     * @return the attribute value or the default value
+     */
     public <T extends Object> T getAttribute(String name, T def)
     {
         try
@@ -187,6 +213,11 @@ public class User extends UserBase implements LinkingModel<Integer>
         return def;
     }
 
+    /**
+     * Removes an attribute
+     *
+     * @param name the name/key
+     */
     public void removeAttribute(String name)
     {
         this.attributes.remove(name);

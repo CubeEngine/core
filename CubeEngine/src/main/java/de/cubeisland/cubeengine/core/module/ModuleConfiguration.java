@@ -7,8 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
- * @author Phillip Schichtel
+ * This configuration is used to parse the module.yml file
  */
 @Codec("yml")
 public class ModuleConfiguration extends Configuration

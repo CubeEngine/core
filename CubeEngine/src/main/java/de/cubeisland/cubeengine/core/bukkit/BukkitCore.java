@@ -17,7 +17,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.FileHandler;
+import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -78,7 +78,7 @@ public class BukkitCore extends JavaPlugin implements Core
         try
         {
             // depends on: file manager
-            this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
+            this.logger.addHandler(new CubeFileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
         }
         catch (IOException e)
         {

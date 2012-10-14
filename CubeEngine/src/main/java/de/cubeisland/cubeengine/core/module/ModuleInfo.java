@@ -8,8 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class provides information about a module
  */
 public final class ModuleInfo
 {
@@ -100,56 +99,112 @@ public final class ModuleInfo
         this.pluginDependencies = config.pluginDependencies;
     }
 
+    /**
+     * Returns the file the module got loaded from
+     *
+     * @return the module file
+     */
     public File getFile()
     {
         return this.file;
     }
 
+    /**
+     * Returns the module's main class
+     *
+     * @return the fully qualified class name
+     */
     public String getMain()
     {
         return this.main;
     }
 
+    /**
+     * The module id (basicly the lowercased name)
+     * 
+     * @return the module name
+     */
     public String getId()
     {
         return this.id;
     }
 
+    /**
+     * The module name
+     *
+     * @return the name
+     */
     public String getName()
     {
         return this.name;
     }
 
+    /**
+     * Gets the module's revision
+     *
+     * @return the revision
+     */
     public int getRevision()
     {
         return this.revision;
     }
 
+    /**
+     * Gets the modules description
+     *
+     * @return the description
+     */
     public String getDescription()
     {
         return this.description;
     }
 
+    /**
+     * Returns the minimum core revision this module requires
+     *
+     * @return the minimum core revision
+     */
     public int getMinimumCoreRevision()
     {
         return this.minCoreVersion;
     }
-    
+
+    /**
+     * Returns whether the module provides world generators
+     * if true, this module is not allowed to depend on other module
+     *
+     * @return true if the module provides world generators
+     */
     public boolean providesWorldGenerator()
     {
         return this.providesWorldGenerator;
     }
 
+    /**
+     * Returns a map of the module's dependencies and dependency versions
+     *
+     * @return the dependencies
+     */
     public Map<String, Integer> getDependencies()
     {
         return this.dependencies;
     }
 
+    /**
+     * Returns a map of the module's soft dependencies and dependency versions
+     *
+     * @return the soft dependencies
+     */
     public Map<String, Integer> getSoftDependencies()
     {
         return this.softDependencies;
     }
 
+    /**
+     * Returns a set of the module's plugin dependencies
+     *
+     * @return the plugin dependencies
+     */
     public Set<String> getPluginDependencies()
     {
         return this.pluginDependencies;

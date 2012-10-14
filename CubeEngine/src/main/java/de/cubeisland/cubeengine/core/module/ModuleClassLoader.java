@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
- * @author Phillip Schichtel
+ * This is the classloader used by modules
  */
 public class ModuleClassLoader extends URLClassLoader
 {

@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.exception.*;
+import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
@@ -23,10 +24,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class manages the modules
  */
-public class ModuleManager
+public class ModuleManager implements Cleanable
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
     private final Core core;
@@ -57,11 +57,29 @@ public class ModuleManager
         return this.modules.get(name.toLowerCase(Locale.ENGLISH));
     }
 
+    /**
+     * This method returns a collection of the modules
+     *
+     * @return the modules
+     */
     public Collection<Module> getModules()
     {
         return this.modules.values();
     }
 
+    /**
+     * Loads a module
+     *
+     * @param moduleFile the file to load the module from
+     * @return the loaded module
+     * 
+     * @throws InvalidModuleException if the file is not a valid module
+     * @throws CircularDependencyException if the module defines a circular dependencies
+     * @throws MissingDependencyException if the module has a missing dependency
+     * @throws IncompatibleDependencyException if the module needs a newer dependency
+     * @throws IncompatibleCoreException if the module depends on a newer core
+     * @throws MissingPluginDependencyException if the module depends on a missing plugin
+     */
     public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
     {
         Validate.notNull(moduleFile, "The file must not be null!");
@@ -81,10 +99,18 @@ public class ModuleManager
                 this.unloadModule(oldModule);
             }
         }
+        
+        Module module = this.loadModule(info.getName(), this.moduleInfos);
+        BukkitUtils.reloadHelpMap();
 
-        return this.loadModule(info.getName(), this.moduleInfos);
+        return module;
     }
 
+    /**
+     * This method loads all modules from a directory
+     *
+     * @param directory the directory to load from
+     */
     public synchronized void loadModules(File directory)
     {
         Validate.notNull(directory, "The directoy must not be null!");
@@ -290,11 +316,24 @@ public class ModuleManager
         return module;
     }
     
+    /**
+     * Enables a module
+     *
+     * @param module the module
+     * @return true if it succeeded
+     */
     public boolean enableModule(Module module)
     {
         return this.enableModule(module, true);
     }
-    
+
+    /**
+     * Enables a module and reloads the Bukkit help map if wanted
+     *
+     * @param module the module
+     * @param reloadHelp whether to reload the help map
+     * @return true if it succeeded
+     */
     private boolean enableModule(Module module, boolean reloadHelp)
     {
         boolean result = module.enable();
@@ -304,7 +343,10 @@ public class ModuleManager
         }
         return result;
     }
-    
+
+    /**
+     * This method enables all modules that provide world generators
+     */
     public void enableWorldGeneratorModules()
     {
         for (Module module : this.modules.values())
@@ -315,7 +357,12 @@ public class ModuleManager
             }
         }
     }
-    
+
+    /**
+     * This method enables all modules or at least all that don't provide world generators
+     *
+     * @param worldGenerators whether to also load the world generator-providing modules
+     */
     public void enableModules(boolean worldGenerators)
     {
         for (Module module : this.modules.values())
@@ -329,21 +376,48 @@ public class ModuleManager
         BukkitUtils.reloadHelpMap();
     }
 
+    /**
+     * This method disables a module
+     *
+     * @param module the module
+     */
     public void disableModule(Module module)
     {
         this.disableModule(module, true);
     }
 
-    public void disableModule(Module module, boolean reloadHelp)
+    /**
+     * This method disables a module and reloads the Bukkit's help map
+     *
+     * @param module the module
+     * @param reloadHelp whether to reload help map
+     */
+    private void disableModule(Module module, boolean reloadHelp)
     {
         Validate.notNull(module, "The module must not be null!");
+        
         module.disable();
         this.core.getEventManager().unregisterListener(module);
         this.core.getPermissionManager().unregisterPermissions(module);
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().unregister(module);
+        
+        if (reloadHelp)
+        {
+            BukkitUtils.reloadHelpMap();
+        }
     }
 
+    /**
+     * This method tries to unload a module be remoing as many references as possible.
+     * this means:
+     * - disable all modules that depend in the given module
+     * - disable the module
+     * - remove its classloader and all the reference to it
+     * - remove the module from the module map 
+     *
+     * @param module the module to unload
+     */
     public void unloadModule(Module module)
     {
 //        Set<String> dependingModules = module.getDependingModules();
@@ -359,6 +433,9 @@ public class ModuleManager
         this.modules.remove(module.getName());
     }
 
+    /**
+     * This method disables all modules
+     */
     public void disableModules()
     {
         for (Module module : this.modules.values())
@@ -368,6 +445,7 @@ public class ModuleManager
         BukkitUtils.reloadHelpMap();
     }
 
+    @Override
     public void clean()
     {
         this.disableModules();

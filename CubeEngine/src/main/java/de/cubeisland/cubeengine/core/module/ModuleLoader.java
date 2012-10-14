@@ -24,6 +24,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.apache.commons.lang.Validate;
 
+/**
+ * This class is used to load modules and provide a centralized place for class lookups
+ */
 public class ModuleLoader
 {
     private final Core core;
@@ -39,11 +42,33 @@ public class ModuleLoader
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
     }
 
+    /**
+     * Loads a module from a file
+     * 
+     * @param file the file to load from
+     * @return the loaded module
+     * 
+     * @throws InvalidModuleException if the file is not a valid module
+     * @throws MissingDependencyException if the module has missing hard dependencies
+     * @throws IncompatibleDependencyException if the module depends on a newer version of a module
+     * @throws IncompatibleCoreException if the module depends on a newer core version
+     */
     public synchronized Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         return this.loadModule(this.loadModuleInfo(file));
     }
 
+    /**
+     * Loads a module from a ModuleInfo instance
+     * 
+     * @param info the module info
+     * @return the loaded module
+     * 
+     * @throws InvalidModuleException if the file is not a valid module
+     * @throws MissingDependencyException if the module has missing hard dependencies
+     * @throws IncompatibleDependencyException if the module depends on a newer version of a module
+     * @throws IncompatibleCoreException if the module depends on a newer core version
+     */
     public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         final String name = info.getName();
@@ -91,6 +116,11 @@ public class ModuleLoader
         }
     }
 
+    /**
+     * This method does some cleanup to be able to completely unload a module
+     *
+     * @param module the module
+     */
     public void unloadModule(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
@@ -98,9 +128,18 @@ public class ModuleLoader
         this.classLoaders.remove(module.getId());
     }
 
+    /**
+     * Loads a module info from a file
+     * 
+     * @param file the file to load from
+     * @return the loaded module info
+     * 
+     * @throws InvalidModuleException if the file is not a valid module
+     */
     public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
     {
         Validate.notNull(file, "The file most not be null!");
+
         if (!file.exists())
         {
             throw new IllegalArgumentException("The file must exist!");
@@ -156,6 +195,13 @@ public class ModuleLoader
         return info;
     }
 
+    /**
+     * Searches all known classloaders for the given class
+     *
+     * @param info the module info of the module that requested the class
+     * @param name the fully qualified class name
+     * @return the class or null
+     */
     public Class<?> getClazz(ModuleInfo info, String name)
     {
         if (name == null)
@@ -236,6 +282,12 @@ public class ModuleLoader
         return null;
     }
 
+    /**
+     * Adds a new file to the library classloader
+     * 
+     * @param file the file to add
+     * @throws MalformedURLException if the file is invalid
+     */
     public void registerLibraryClassPath(File file) throws MalformedURLException
     {
         Validate.notNull(file, "The file must not be null!");
@@ -243,6 +295,11 @@ public class ModuleLoader
         this.registerLibraryClassPath(file.toURI().toURL());
     }
 
+    /**
+     * Adds an URL to the library classloader
+     *
+     * @param url the URL to add
+     */
     public void registerLibraryClassPath(URL url)
     {
         Validate.notNull(url, "The url must not be null!");
@@ -250,6 +307,12 @@ public class ModuleLoader
         this.libClassLoader.addURL(url);
     }
 
+    /**
+     * Searches a class in the library classloader
+     *
+     * @param name the fully qualified class name
+     * @return the class or null if not found
+     */
     public Class<?> getLibraryClass(String name)
     {
         try
