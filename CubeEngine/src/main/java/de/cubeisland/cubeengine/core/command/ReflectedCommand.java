@@ -149,12 +149,7 @@ public class ReflectedCommand extends CubeCommand
 
     private String generatePermissionNode()
     {
-        String implodedParents = this.implodeParentNames(".");
-        if (!implodedParents.isEmpty())
-        {
-            implodedParents += ".";
-        }
-        return "cubeengine." + this.getModule().getId() + ".command." + implodedParents + this.getName();
+        return "cubeengine." + this.getModule().getId() + ".command." + this.implodeCommandPathNames(".");
     }
 
     @Override

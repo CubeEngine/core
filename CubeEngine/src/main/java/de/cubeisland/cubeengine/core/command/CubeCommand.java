@@ -44,10 +44,16 @@ public abstract class CubeCommand extends Command
 
         this.children = new LinkedHashMap<String, CubeCommand>();
 
-        this.usageBase = "/" + this.implodeParentNames(" ") + " ";
+        this.usageBase = "/" + this.implodeCommandPathNames(" ") + " ";
     }
 
-    protected final String implodeParentNames(String delim)
+    /**
+     * This method implodes the path of this command, so the name of the command and the name of every parent
+     *
+     * @param delim the delimiter
+     * @return the imploded path
+     */
+    protected final String implodeCommandPathNames(String delim)
     {
         List<String> cmds = new LinkedList<String>();
         CubeCommand cmd = this;
