@@ -3,10 +3,10 @@ package de.cubeisland.cubeengine.core.permission;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
-import java.util.ArrayList;
-import java.util.List;
+import gnu.trove.set.hash.THashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
@@ -18,21 +18,22 @@ import org.bukkit.plugin.PluginManager;
  */
 public class PermissionManager
 {
-    private static final String CUBEENGINE_WILDCARD = "cubeengine.*";
+    private static final String CUBEENGINE_BASE = "cubeengine";
+    private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(CUBEENGINE_BASE + ".*", PermissionDefault.OP);
     
     private final PluginManager pm;
-    private final Map<String, org.bukkit.permissions.Permission> wildcardPermission;
-    private final Map<Module, List<String>> modulePermissionMap;
+    private final Map<String, org.bukkit.permissions.Permission> wildcards;
+    private final Map<Module, Set<String>> modulePermissionMap;
     private final Thread mainThread;
 
     public PermissionManager(PluginManager pm)
     {
         this.pm = pm;
-        this.wildcardPermission = new THashMap<String, org.bukkit.permissions.Permission>(0);
-        this.modulePermissionMap = new THashMap<Module, List<String>>(0);
+        this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
+        this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
         this.mainThread = Thread.currentThread();
 
-        this.registerBukkitPermission(new org.bukkit.permissions.Permission("cubeengine.*"));
+        this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }
 
     private void registerBukkitPermission(org.bukkit.permissions.Permission permission)
@@ -42,7 +43,7 @@ public class PermissionManager
             this.pm.addPermission(permission);
             if (permission.getName().endsWith("*"))
             {
-                this.wildcardPermission.put(permission.getName(), permission);
+                this.wildcards.put(permission.getName(), permission);
             }
         }
         catch (IllegalArgumentException ignored)
@@ -66,7 +67,7 @@ public class PermissionManager
         Validate.notNull(perm, "The permission must not be null!");
         Validate.notNull(permDefault, "The permission default must not be null!");
 
-        if (perm.equals(CUBEENGINE_WILDCARD))
+        if (perm.equals(CUBEENGINE_WILDCARD.getName()))
         {
             return;
         }
@@ -78,31 +79,48 @@ public class PermissionManager
             throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
         }
 
-        List<String> modulePermissions = this.modulePermissionMap.get(module);
-        if (modulePermissions == null)
-        {
-            this.modulePermissionMap.put(module, modulePermissions = new ArrayList<String>(1));
-        }
+        Set<String> modulePermissions = this.getPermission(module);
         modulePermissions.add(perm);
+        
         org.bukkit.permissions.Permission permission = new org.bukkit.permissions.Permission(perm, permDefault);
         this.registerBukkitPermission(permission);
-
-        org.bukkit.permissions.Permission oldPermission = permission;
-        String base = "cubeengine.module.";
-
-        permission = this.wildcardPermission.get(base + "*");
-        if (permission == null)
+        
+        org.bukkit.permissions.Permission parent = CUBEENGINE_WILDCARD;
+        org.bukkit.permissions.Permission current = null;
+        String currentString = CUBEENGINE_BASE;
+        for (int i = 1; i < parts.length - 1; ++i)
         {
-            permission = new org.bukkit.permissions.Permission(base + "*", PermissionDefault.FALSE);
+            currentString += "." + parts[i];
+            current = this.getWildcard(module, currentString);
+            current.addParent(parent, true);
+            parent = current;
         }
-        this.registerBukkitPermission(permission);
-        oldPermission.addParent(permission, true);
-
-        for (int i = 2; i < parts.length; ++i)
+        
+        permission.addParent(parent, true);
+    }
+    
+    private org.bukkit.permissions.Permission getWildcard(Module module, String perm)
+    {
+        perm += ".*";
+        
+        org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
+        if (wildcard == null)
         {
+            this.registerBukkitPermission(new org.bukkit.permissions.Permission(perm, PermissionDefault.OP));
+            this.getPermission(module).add(perm);
         }
-
-        permission.addParent(permission, true);
+        
+        return wildcard;
+    }
+    
+    private Set<String> getPermission(Module module)
+    {
+        Set<String> perms = this.modulePermissionMap.get(module);
+        if (perms == null)
+        {
+            this.modulePermissionMap.put(module, perms = new THashSet<String>(1));
+        }
+        return perms;
     }
 
     /**
@@ -132,15 +150,15 @@ public class PermissionManager
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(perm, "The permission must not be null!");
-        Validate.isTrue(!perm.equals(CUBEENGINE_WILDCARD), "The CubeEngine wildcard permission must not be unregistered!");
+        Validate.isTrue(!perm.equals(CUBEENGINE_WILDCARD.getName()), "The CubeEngine wildcard permission must not be unregistered!");
 
-        List<String> perms = this.modulePermissionMap.get(module);
+        Set<String> perms = this.modulePermissionMap.get(module);
         if (perms != null && perms.remove(perm))
         {
             this.pm.removePermission(perm);
             if (perm.endsWith("*"))
             {
-                this.wildcardPermission.remove(perm);
+                this.wildcards.remove(perm);
             }
         }
     }
@@ -154,7 +172,7 @@ public class PermissionManager
     {
         Validate.notNull(module, "The module must not be null!");
         
-        List<String> removedPerms = this.modulePermissionMap.remove(module);
+        Set<String> removedPerms = this.modulePermissionMap.remove(module);
         if (removedPerms != null)
         {
             for (String perm : removedPerms)
@@ -162,7 +180,7 @@ public class PermissionManager
                 this.pm.removePermission(perm);
                 if (perm.endsWith("*"))
                 {
-                    this.wildcardPermission.remove(perm);
+                    this.wildcards.remove(perm);
                 }
             }
         }
