@@ -12,8 +12,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
+import de.cubeisland.cubeengine.fun.listeners.NukeListener;
 import de.cubeisland.cubeengine.fun.listeners.RocketListener;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -22,34 +22,25 @@ import org.bukkit.util.Vector;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 
-/**
- *
- * @author Wolfi
- */
 public class FunCommands
 {
     Fun module;
     UserManager userManager;
     TaskManager taskManager;
-    RocketListener rocketListener;
-
+    
     public FunCommands(Fun module)
     {
         this.module = module;
         this.userManager = module.getUserManager();
         this.taskManager = module.getCore().getTaskManager();
-
-        this.rocketListener = module.getRocketListener();
     }
 
     @Command(
-        names =
-    {
-        "lightning", "strike"
-    },
-    desc = "strucks a player or the place you are looking at by lightning.",
-    max = 1,
-    usage = "[player]")
+        names = {"lightning", "strike"},
+        desc = "strucks a player or the place you are looking at by lightning.",
+        max = 1,
+        usage = "[player]"
+    )
     public void lightning(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -84,14 +75,12 @@ public class FunCommands
     }
 
     @Command(
-        names =
-    {
-        "throw"
-    },
-    desc = "The CommandSender throws a certain amount of snowballs. Default is one.",
-    min = 1,
-    max = 2,
-    usage = "<egg|snowball> [amount]")
+        names = {"throw"},
+        desc = "The CommandSender throws a certain amount of snowballs. Default is one.",
+        min = 1,
+        max = 2,
+        usage = "<egg|snowball> [amount]"
+    )
     public void throwItem(CommandContext context)
     {
         User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -130,13 +119,11 @@ public class FunCommands
     }
 
     @Command(
-    desc = "The CommandSender throws a certain amount of fireballs. Default is one.",
-    max = 1,
-    flags =
-    {
-        @Flag(longName = "small", name = "s")
-    },
-    usage = "[amount] [-small]")
+        desc = "The CommandSender throws a certain amount of fireballs. Default is one.",
+        max = 1,
+        flags = {@Flag(longName = "small", name = "s")},
+        usage = "[amount] [-small]"
+    )
     public void fireball(CommandContext context)
     {
         User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -167,9 +154,10 @@ public class FunCommands
 
     @Command(
         desc = "slaps a player",
-    min = 1,
-    max = 2,
-    usage = "<player> [damage]")
+        min = 1,
+        max = 2,
+        usage = "<player> [damage]"
+    )
     public void slap(CommandContext context)
     {
         User user = context.getUser(0);
@@ -196,14 +184,12 @@ public class FunCommands
     }
 
     @Command(
-            desc = "burns a player",
-    min = 1,
-    max = 2,
-    flags =
-    {
-        @Flag(longName = "unset", name = "u")
-    },
-    usage = "<player> [seconds] [-unset]")
+        desc = "burns a player",
+        min = 1,
+        max = 2,
+        flags = {@Flag(longName = "unset", name = "u")},
+        usage = "<player> [seconds] [-unset]"
+    )
     public void burn(CommandContext context)
     {
         User user = context.getUser(0);
@@ -235,9 +221,10 @@ public class FunCommands
 
     @Command(
         desc = "rockets a player",
-    min = 2,
-    max = 2,
-    usage = "<player> <distance>")
+        min = 2,
+        max = 2,
+        usage = "<player> <distance>"
+    )
     public void rocket(CommandContext context)
     {
         User user = context.getUser(0);
@@ -261,57 +248,93 @@ public class FunCommands
         }
 
         user.setVelocity(new Vector(0.0, (double)distance / 10, 0.0));
-
-        this.rocketListener.addPlayer(user);
-        this.taskManager.scheduleSyncDelayedTask(module, this.rocketListener, 110);
+        
+        RocketListener rocketListener = this.module.getRocketListener();
+        rocketListener.addPlayer(user);
+        this.taskManager.scheduleSyncDelayedTask(module, rocketListener, 110);
     }
 
     @Command(
-    desc = "an tnt carpet is falling at a player or the place the player is looking at",
-    max = 2,
-    usage = "[radius] [height] [player <name>]",
-    params =
-    {
-        @Param(
-                names =
-        {
-            "player", "p"
-        },
-        types =
-        {
-            User.class
-        })
-    })
+        desc = "an tnt carpet is falling at a player or the place the player is looking at",
+        max = 1,
+        flags = {@Flag(longName = "unsafe", name = "u")},
+        usage = "[radius] [height <value>] [player <name>] [-unsafe]",
+        params = {
+            @Param(names = {"player", "p"}, types = {User.class}),
+            @Param(names = {"height", "h"}, types = {Integer.class})
+        }
+    )
     public void nuke(CommandContext context)
     {
-        context.sendMessage(ChatColor.RED + "not implemented yet");
-        /*
-         * User user = null;
-         * Location location = null;
-         * int radius = 1;
-         *
-         * if(context.hasNamed("player"))
-         * {
-         * user = context.getNamed("player", User.class);
-         * location = user.getTargetBlock(null, 40).getLocation();
-         * }
-         * else
-         * {
-         * user = context.getSenderAsUser("core", "&cThis command can only be
-         * used by a player!");
-         * if(user == null)
-         * {
-         * invalidUsage(context, "fun", "User not found");
-         * }
-         * location = user.getLocation();
-         * }
-         *
-         * while(location.getBlock().getType() != Material.AIR)
-         * {
-         * location = location.add(0,1,0);
-         * }
-         *
-         * user.getWorld().spawn(location, TNTPrimed.class);
-         * */
+        User user = null;
+        Location location = null;
+        int radius = 1;
+        Integer height = 5;
+        
+        int noBlock = 0;
+        
+        if(context.hasNamed("player"))
+        {
+            user = context.getNamed("player", User.class);
+            if(user == null)
+            {
+                invalidUsage(context, "fun", "User not found");
+            }
+            location = user.getLocation();
+            
+        }
+        else
+        {
+            user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+            location = user.getTargetBlock(null, 40).getLocation();
+        }
+        
+        if(context.hasIndexed(0))
+        {
+            radius = context.getIndexed(0, Integer.class, 1);
+            if(radius > 6)
+            {
+                invalidUsage(context, "fun", "&cThe radius should be not over 6");
+            }
+        }
+        if(context.hasNamed("height"))
+        {
+            height = context.getNamed("height", Integer.class);
+            if(height == null)
+            {
+                height = 5;
+            }
+            else if(height < 1)
+            {
+                invalidUsage(context, "fun", "&cThe height can't be less than 1");
+            }
+        }
+         
+        while(noBlock != height)
+        {
+            location = location.add(0,1,0);
+            if(location.getBlock().getType() == Material.AIR)
+            {
+                noBlock++;
+            }
+            else
+            {
+                noBlock = 0;
+            }
+        }
+        
+        NukeListener nukeListener = this.module.getNukeListener();
+        
+        for(int i = 0; i < radius; i++)
+        {
+            for(int j = 0; j < radius; j++)
+            {
+                TNTPrimed tnt = user.getWorld().spawn(location.add(i, 0, j), TNTPrimed.class);
+                if(!context.hasFlag("u"))
+                {
+                    nukeListener.add(tnt);
+                }
+            }
+        }
     }
 }
