@@ -106,7 +106,7 @@ public class PermissionManager
         org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
         if (wildcard == null)
         {
-            this.registerBukkitPermission(new org.bukkit.permissions.Permission(perm, PermissionDefault.OP));
+            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, PermissionDefault.OP));
             this.getPermission(module).add(perm);
         }
         
