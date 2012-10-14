@@ -10,10 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ModerationListener implements Listener
 {
     private Basics module;
