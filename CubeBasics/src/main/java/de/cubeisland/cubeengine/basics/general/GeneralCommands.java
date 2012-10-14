@@ -3,17 +3,14 @@ package de.cubeisland.cubeengine.basics.general;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
 public class GeneralCommands
 {
     private UserManager um;
@@ -37,15 +34,14 @@ public class GeneralCommands
             sb.append(context.getString(i++)).append(" ");
         }
         this.um.
-            broadcastMessage("", "* %s %s", context.getSender().getName(), sb.
-            toString()); // Here no category so -> no Translation
+            broadcastMessage("basics", "* %s %s", context.getSender().getName(), sb.toString()); // Here no category so -> no Translation
     }
 
     @Command(
     desc = "Sends a private message to someone",
     names =
     {
-        "msg", "tell", "pn", "m", "t", "whisper"
+        "message", "msg", "tell", "pn", "m", "t", "whisper"
     },
     min = 1,
     usage = "<player> <message>")
@@ -55,7 +51,7 @@ public class GeneralCommands
         int i = 1;
         while (context.hasIndexed(i))
         {
-            sb.append(context.getString(i++));
+            sb.append(context.getString(i++)).append(" ");
         }
         User sender = context.getSenderAsUser();
         User user = context.getUser(0);
@@ -67,11 +63,9 @@ public class GeneralCommands
             }
             if (context.getString(0).equalsIgnoreCase("console"))
             {   // TODO find why console does not get any message here:
-                context.getSender().getServer().getConsoleSender().
-                    sendMessage(_("basics", "&e%s -> You: &f%s", context.
-                    getSender().getName(), sb));
-                context.
-                    sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", sb);
+                context.getSender().getServer().getConsoleSender().sendMessage(
+                    _("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb));
+                context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", sb);
             }
             else
             {
@@ -84,10 +78,8 @@ public class GeneralCommands
             {
                 illegalParameter(context, "basics", "&eTalking to yourself?");
             }
-            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().
-                getName(), sb);
-            context.
-                sendMessage(_("basics", "&eYou -> %s &f%s", user.getName(), sb));
+            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb);
+            context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), sb));
         }
 
         if (sender == null)
@@ -150,7 +142,7 @@ public class GeneralCommands
         int i = 0;
         while (context.hasIndexed(i))
         {
-            sb.append(context.getString(i++));
+            sb.append(context.getString(i++)).append(" ");
         }
         if (replyToConsole)
         {

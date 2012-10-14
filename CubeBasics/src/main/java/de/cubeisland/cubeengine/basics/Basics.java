@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.basics;
 import de.cubeisland.cubeengine.basics.cheat.CheatCommands;
 import de.cubeisland.cubeengine.basics.general.GeneralCommands;
 import de.cubeisland.cubeengine.basics.moderation.ModerationCommands;
+import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 
@@ -10,7 +11,7 @@ public class Basics extends Module
 {
     @From
     protected BasicsConfiguration config;
-
+    
     @Override
     public void onEnable()
     {
@@ -19,8 +20,9 @@ public class Basics extends Module
         this.registerCommands(new ModerationCommands(this));
         this.registerCommands(new GeneralCommands(this));
         this.registerCommand(new ModuleCommands(this));
+        this.registerCommands(new TeleportCommands(this));
     }
-
+    
     public BasicsConfiguration getConfiguration()
     {
         return this.config;

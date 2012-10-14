@@ -482,8 +482,7 @@ public class ModerationCommands
         "ping", "pong"
     },
     desc = "Pong!",
-    min = 1,
-    max = 1)
+    max = 0)
     public void ping(CommandContext context)
     {
         if (context.getLabel().equalsIgnoreCase("ping"))

@@ -9,10 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class General  //TODO remove or at least reduce this class
 {
     public List<Player> near(Location loc, int radius)

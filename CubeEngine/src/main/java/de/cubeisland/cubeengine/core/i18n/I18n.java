@@ -7,19 +7,13 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
@@ -296,10 +290,7 @@ public class I18n implements Cleanable
 
     private void logMissingTranslation(String language, String category, String message)
     {
-        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[]
-            {
-                language, category, message
-            });
+        LOGGER.log(Level.INFO, String.format("\"%s\" - \"%s\" - \"%s\"", language, category, message));
     }
 
     public static String _(CommandSender sender, Module module, String message, Object... params)
