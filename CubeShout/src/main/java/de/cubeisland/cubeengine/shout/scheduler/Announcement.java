@@ -13,7 +13,7 @@ public class Announcement
 	
 	private String defaultLocale = "en_US";
 	private Map<String, String> messages = null;
-	private String permNode = null;
+	private List<String> receivers;
 	//in ticks
 	private int delay = 0;
 	
@@ -43,9 +43,9 @@ public class Announcement
 	 * 
 	 * @return 	All users that should receive this message
 	 */
-	public List<User> getReceivers()
+	public List<String> getReceivers()
 	{
-		return null;
+		return receivers;
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class Announcement
 	 */
 	public boolean isReciver(User user)
 	{
-		return (getReceivers().contains(user) || user.hasPermission(permNode));
+		return receivers.contains(user.getName());
 	}
 	
 }

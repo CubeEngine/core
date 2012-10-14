@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.shout.scheduler;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 
 /**
@@ -32,14 +31,13 @@ public class Scheduler
 		// TODO
 	}
 	
-	// Should this be synchronized?
 	/**
 	 * Queue a message to be displayed to an user.
 	 * 
 	 * @param	user		User to display this message to.
 	 * @param	message		the message to display to this user.
 	 */
-	public void queueMessage(User user, String message)
+	public void queueMessage(String user, String message)
 	{
 		messageQueue.add(new Message(user, message));
 	}
@@ -49,10 +47,10 @@ public class Scheduler
 	 */
 	public class Message
 	{
-		User user;
+		String user;
 		String message;
 		
-		public Message(User user, String message)
+		public Message(String user, String message)
 		{
 			this.user = user;
 			this.message = message;

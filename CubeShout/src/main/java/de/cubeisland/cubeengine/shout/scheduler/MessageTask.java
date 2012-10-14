@@ -7,7 +7,7 @@ public class MessageTask implements Runnable
 	
 	AnnouncementManager aManager;
 	Scheduler scheduler;
-	User user;
+	String user;
 	int runs;
 	int nextExcecution;
 	
@@ -15,7 +15,7 @@ public class MessageTask implements Runnable
 	{
 		this.aManager = aManager;
 		this.scheduler = scheduler;
-		this.user = user;
+		this.user = user.getName();
 		runs = 0;
 		nextExcecution = 0;
 	}
