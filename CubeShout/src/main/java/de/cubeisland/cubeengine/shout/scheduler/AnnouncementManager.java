@@ -74,7 +74,8 @@ public class AnnouncementManager
 	 * @param	user	User to get the next message of.
 	 * @return			The next message that should be displayed to the user.
 	 */
-	public String getNext(User user) {
+	public String getNext(User user)
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -85,9 +86,11 @@ public class AnnouncementManager
 	 * @return			The next delay that should be used from this users MessageTask.
 	 * @see		MessageTask
 	 */
-	public int getNextDelay(User user) {
+	public int getNextDelay(User user)
+	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
 	
 }

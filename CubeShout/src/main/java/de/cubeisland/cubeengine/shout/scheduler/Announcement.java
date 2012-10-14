@@ -8,7 +8,8 @@ import de.cubeisland.cubeengine.core.user.User;
 /*
  * Class to represent an announcement.
  */
-public class Announcement {
+public class Announcement
+{
 	
 	private String defaultLocale = "en_US";
 	private Map<String, String> messages = null;
@@ -21,7 +22,8 @@ public class Announcement {
 	 * 
 	 * @return 	The message for this announcement in default language
 	 */
-	public String getMessage(){
+	public String getMessage()
+	{
 		return this.getMessage(defaultLocale);
 	}
 	
@@ -31,7 +33,8 @@ public class Announcement {
 	 * @param 	locale	The language to get the message in
 	 * @return			The message in that language if exist.
 	 */
-	public String getMessage(String locale) {
+	public String getMessage(String locale)
+	{
 		return messages.get(locale);
 	}
 	
@@ -40,7 +43,8 @@ public class Announcement {
 	 * 
 	 * @return 	All users that should receive this message
 	 */
-	public List<User> getRecivers(){
+	public List<User> getReceivers()
+	{
 		return null;
 	}
 	
@@ -48,7 +52,8 @@ public class Announcement {
 	 * Get the delay after this message
 	 * @return The delay in ticks
 	 */
-	public int getDelay(){
+	public int getDelay()
+	{
 		return delay;
 	}
 	
@@ -58,8 +63,9 @@ public class Announcement {
 	 * @param 	user	User to check with
 	 * @return			If the user is a receiver of this message
 	 */
-	public boolean isReciver(User user){
-		return (getRecivers().contains(user) || user.hasPermission(permNode));
+	public boolean isReciver(User user)
+	{
+		return (getReceivers().contains(user) || user.hasPermission(permNode));
 	}
 	
 }

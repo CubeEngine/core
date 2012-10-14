@@ -6,7 +6,8 @@ import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.scheduler.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.scheduler.Scheduler;
 
-public class Shout extends Module{
+public class Shout extends Module
+{
 	
 	private AnnouncementManager aManager;
 	private ShoutListener listener;
@@ -39,11 +40,13 @@ public class Shout extends Module{
     	
     }
 
-	public AnnouncementManager getAManager() {
+	public AnnouncementManager getAManager()
+	{
 		return this.aManager;
 	}
 
-	public Scheduler getScheduler() {
+	public Scheduler getScheduler()
+	{
 		return scheduler;
 	}
 	

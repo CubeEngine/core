@@ -11,7 +11,8 @@ public class MessageTask implements Runnable
 	int runs;
 	int nextExcecution;
 	
-	public MessageTask(AnnouncementManager aManager,Scheduler scheduler, User user){
+	public MessageTask(AnnouncementManager aManager,Scheduler scheduler, User user)
+	{
 		this.aManager = aManager;
 		this.scheduler = scheduler;
 		this.user = user;
