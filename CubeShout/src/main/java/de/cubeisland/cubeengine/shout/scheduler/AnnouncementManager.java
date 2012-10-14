@@ -11,10 +11,10 @@ import de.cubeisland.cubeengine.shout.Shout;
 public class AnnouncementManager
 {
 	
-	private Shout instance;
+	private Shout module;
 	
-	public AnnouncementManager(){
-		this.instance = Shout.instance;
+	public AnnouncementManager(Shout module){
+		this.module = module;
 	}
 	
 	public List<Announcement> getAnnouncemets(User u)

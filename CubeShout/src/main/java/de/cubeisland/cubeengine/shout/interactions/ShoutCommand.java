@@ -4,10 +4,10 @@ import de.cubeisland.cubeengine.shout.Shout;
 
 public class ShoutCommand{
 	
-	private Shout instance;
+	private Shout module;
 	
-	public ShoutCommand(){
-		this.instance = Shout.instance;
+	public ShoutCommand(Shout module){
+		this.module = module;;
 	}
 	
 }

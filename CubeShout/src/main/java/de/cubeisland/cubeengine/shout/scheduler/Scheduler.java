@@ -7,10 +7,10 @@ import de.cubeisland.cubeengine.shout.Shout;
  */
 public class Scheduler {
 	
-	private Shout instance;
+	private Shout module;
 	
-	public Scheduler(){
-		this.instance = Shout.instance;
+	public Scheduler(Shout module){
+		this.module = module;
 	}
 	
 }
