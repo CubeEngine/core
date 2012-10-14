@@ -7,10 +7,10 @@ import de.cubeisland.cubeengine.shout.Shout;
 
 public class ShoutListener implements Listener{
 	
-	private Shout instance;
+	private Shout module;
 	
-	public ShoutListener(){
-		this.instance = Shout.instance;
+	public ShoutListener(Shout module){
+		this.module = module;
 	}
 	
 	public void PlayerJoinEvent(PlayerJoinEvent event)
