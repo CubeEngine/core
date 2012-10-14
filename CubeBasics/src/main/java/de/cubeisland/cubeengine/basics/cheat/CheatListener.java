@@ -8,10 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class CheatListener implements Listener
 {
     private UserManager um = CubeEngine.getUserManager();

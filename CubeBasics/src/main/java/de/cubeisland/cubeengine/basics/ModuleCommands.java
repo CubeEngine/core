@@ -7,10 +7,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class ModuleCommands extends ContainerCommand
 {
     private final ModuleManager mm;

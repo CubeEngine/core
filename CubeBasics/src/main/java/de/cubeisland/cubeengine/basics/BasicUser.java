@@ -11,10 +11,6 @@ import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BasicUser implements Model<Integer>
 {
     @Key

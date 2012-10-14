@@ -5,10 +5,6 @@ import java.util.Locale;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 
-/**
- *
- * @author Anselm Brehme
- */
 public enum BasicsPerm implements Permission
 {
     COMMAND_ENCHANT_UNSAFE,
@@ -26,7 +22,6 @@ public enum BasicsPerm implements Permission
     COMMAND_TP_PREVENT_TP, // can not be tped except forced
     COMMAND_TP_PREVENT_TPTO, // can not be tped to except forced
     COMMAND_TPALL_FORCE // ignore all other permissions
-    
     ;
     private String permission;
     private PermissionDefault def;

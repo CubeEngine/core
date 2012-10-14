@@ -91,7 +91,7 @@ public class CubeCommandMap extends SimpleCommandMap
             List<String> matches = StringUtils.getBestMatches(label, this.knownCommands.keySet(), 1);
             if (matches.size() == 1)
             {
-                sender.sendMessage(_(sender, "core", "I didn't find /%s, but /%s seems to be the one you searched...", label, matches.get(0)));
+                sender.sendMessage(_(sender, "core", "Couldn't find /%s, but /%s seems to be the one you searched...", label, matches.get(0)));
                 label = matches.get(0);
                 command = this.getCommand(label);
                 

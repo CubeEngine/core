@@ -438,12 +438,35 @@ public class TeleportCommands
         context.sendMessage("basics", "&aYou just jumped!");
     }
 
+    @Command(
+    desc = "Teleports you to your last location",
+    max = 0)
     public void back(CommandContext context)
     {
-        //TODO register onTeleportEvent for this
+        User sender = context.getSenderAsUser("basics", "You never teleported!");
+        Location loc = sender.getAttribute("lastLocation");
+        if (loc == null)
+        {
+            invalidUsage(context, "basics", "You never teleported!");
+        }
+        this.teleport(sender, loc);
     }
 
+    @Command(
+    desc = "Teleports you to the spawn of given world",
+    usage = "<world>",
+    min = 1,
+    max = 1)
     public void tpworld(CommandContext context)
     {
+        User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
+        World world = context.getIndexed(0, World.class, null);
+        if (world == null)
+        {
+            illegalParameter(context, "basics", "World not found!");
+        }
+        this.teleport(sender, world.getSpawnLocation());
     }
+    
+    // worldedit tp command
 }

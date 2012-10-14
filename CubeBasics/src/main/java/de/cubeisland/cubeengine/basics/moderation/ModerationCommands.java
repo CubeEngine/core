@@ -29,10 +29,6 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ModerationCommands
 {
     private UserManager um;

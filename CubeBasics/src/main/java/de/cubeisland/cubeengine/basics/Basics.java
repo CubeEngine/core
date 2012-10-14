@@ -11,7 +11,7 @@ public class Basics extends Module
 {
     @From
     protected BasicsConfiguration config;
-    
+
     @Override
     public void onEnable()
     {
@@ -22,7 +22,7 @@ public class Basics extends Module
         this.registerCommand(new ModuleCommands(this));
         this.registerCommands(new TeleportCommands(this));
     }
-    
+
     public BasicsConfiguration getConfiguration()
     {
         return this.config;

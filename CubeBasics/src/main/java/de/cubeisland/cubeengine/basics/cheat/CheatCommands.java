@@ -455,9 +455,9 @@ public class CheatCommands
     public void more(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
-        if (sender.getItemInHand() == null)
+        if (sender.getItemInHand() == null || sender.getItemInHand().getType() == Material.AIR)
         {
-            invalidUsage(context, "basics", "Dont you have enough hands?");
+            invalidUsage(context, "basics", "More nothing is still nothing.");
         }
         sender.getItemInHand().setAmount(64);
         sender.sendMessage("basics", "Refilled Stack in Hand!");
