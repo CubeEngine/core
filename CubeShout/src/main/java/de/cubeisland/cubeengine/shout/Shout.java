@@ -38,5 +38,13 @@ public class Shout extends Module{
     {
     	
     }
+
+	public AnnouncementManager getAManager() {
+		return this.aManager;
+	}
+
+	public Scheduler getScheduler() {
+		return scheduler;
+	}
 	
 }
