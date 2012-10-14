@@ -1,5 +1,13 @@
 {
     "You dont have permission to use this!":"Du hast keine Berechtigung dies zu nutzen!",
     "You dont have permission to use this Command!":"Du hast keine Berechtiung diesen Befehl zu nutzen!",
-    "Description: %s":"Beschreibung:"
+    "Description: %s":"Beschreibung: %s",
+    "Aliases: %s": "Aliasse: %s",
+    "&4An unknown error occurred while executing this command!": "&4Es ist ein unbekannter Fehler während der Ausführung des aufgetreten!",
+    "<player>": "<Spieler>",
+    "<player> [player]": "<Spieler> [Spieler]",
+    "[player]": "[Spieler]",
+    "User not found!":"Spieler nicht gefunden!",
+    "User not %s is not online!":"%s ist nicht online!",
+    
 }

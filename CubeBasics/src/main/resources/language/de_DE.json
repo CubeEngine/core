@@ -1,3 +1,12 @@
 {
-
+    "Stashes or unstashes your inventory to reuse later": "Packen und Entpacken deines Inventars für spätere Benutzung",
+    "Teleport directly to a player.": "Direkter Teleport zu einem Spieler.",
+    "Requests to teleport to a player.": "Anfragen zu einem Spieler zu teleportieren.",
+    "Requests to teleport a player to you.": "Anfragen einen Spieler zu dir zu teleportieren.",
+    "Accepts any pending teleport-request.":"Akzeptiert eine ausstehende Teleport-Anfrage.",
+    "Denies any pending teleport-request.": "Verweigert eine austehende Teleport-Anfrage.",
+    "<player> <message>": "<Spieler> <Nachricht>",
+    "Sends a private message to someone.": "Schickt eine private Nachricht an jemanden.",
+    "Heals a Player": "Heilt einen Spieler.",
+    "Refills the Stack in hand": "Füllt den Stack in deiner Hand auf."
 }
