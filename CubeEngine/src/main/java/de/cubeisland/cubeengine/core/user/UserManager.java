@@ -217,6 +217,14 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      */
     public User getUser(OfflinePlayer player)
     {
+        if (player == null)
+        {
+            return null;
+        }
+        if (player instanceof User)
+        {
+            return (User)player;
+        }
         if (!player.hasPlayedBefore())
         {
             return null;
@@ -232,6 +240,14 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      */
     public User getUser(Player player)
     {
+        if (player == null)
+        {
+            return null;
+        }
+        if (player instanceof User)
+        {
+            return (User)player;
+        }
         return this.getUser(player.getName());
     }
 
@@ -243,6 +259,14 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      */
     public User getUser(CommandSender sender)
     {
+        if (sender == null)
+        {
+            return null;
+        }
+        if (sender instanceof User)
+        {
+            return (User)sender;
+        }
         if (sender instanceof Player)
         {
             return this.getUser(sender.getName());

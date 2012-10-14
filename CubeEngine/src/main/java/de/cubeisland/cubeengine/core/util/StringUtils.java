@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -375,25 +376,23 @@ public final class StringUtils
         return Math.min(a, Math.min(b, Math.min(c, d)));
     }
 
-    public static String getBestMatch(String search, Collection<String> strings, int maxDistance)
+    public static List<String> getBestMatches(String search, Collection<String> strings, int maxDistance)
     {
+        List<String> matches = new LinkedList<String>();
         int searchLength = search.length();
-        String match = null;
-        int distance = maxDistance;
         for (String string : strings)
         {
             if (Math.abs(searchLength - string.length()) > maxDistance)
             {
                 continue;
             }
-            int tmpDistance = getDemerauLevenshteinDistance(search, string);
-            if (tmpDistance <= distance)
+            int distance = getDemerauLevenshteinDistance(search, string);
+            if (distance <= maxDistance)
             {
-                distance = tmpDistance;
-                match = string;
+                matches.add(string);
             }
         }
-        return match;
+        return matches;
     }
 
     /**

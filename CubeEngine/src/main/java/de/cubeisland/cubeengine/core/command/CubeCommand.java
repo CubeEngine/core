@@ -112,7 +112,11 @@ public abstract class CubeCommand extends Command
         CubeCommand child = this.children.get(name);
         if (correct && child == null)
         {
-            child = this.getChild(StringUtils.getBestMatch(name, this.children.keySet(), 1), false);
+            List<String> matches = StringUtils.getBestMatches(name, this.children.keySet(), 1);
+            if (matches.size() == 1)
+            {
+                child = this.getChild(matches.get(0), false);
+            }
         }
         
         return child;
