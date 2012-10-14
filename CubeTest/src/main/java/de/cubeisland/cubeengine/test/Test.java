@@ -14,7 +14,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import de.cubeisland.cubeengine.core.util.log.FileHandler;
+import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
@@ -60,7 +60,7 @@ public class Test extends Module
         try
         {
             this.getLogger().
-                addHandler(new FileHandler(Level.ALL, new File(this.
+                addHandler(new CubeFileHandler(Level.ALL, new File(this.
                 getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
