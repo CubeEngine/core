@@ -195,7 +195,7 @@ public abstract class CubeCommand extends Command
 
     public Set<CubeCommand> getChildren()
     {
-        return new TreeSet<CubeCommand>(this.children.values());
+        return new LinkedHashSet<CubeCommand>(this.children.values());
     }
 
     public Set<String> getChildrenNames()
