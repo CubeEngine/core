@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -13,7 +14,12 @@ import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
@@ -29,15 +35,11 @@ public class I18n implements Cleanable
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
 
-    public I18n(FileManager fm)
-    {
-        this(fm, SOURCE_LANGUAGE.getCode());
-    }
-
-    public I18n(FileManager fm, String defaultLanguage)
+    public I18n(Core core)
     {
         this.languageMap = new THashMap<String, Language>();
-        this.defaultLanguage = defaultLanguage;
+        this.defaultLanguage = core.getConfiguration().defaultLanguage;
+        FileManager fm = core.getFileManager();
         this.loadLanguages(fm.getLanguageDir());
         try
         {
@@ -164,9 +166,9 @@ public class I18n implements Cleanable
     /**
      * This method returns all languages
      *
-     * @return a collection of languages
+     * @return a set of languages
      */
-    public Collection<String> getLanguages()
+    public Set<String> getLanguages()
     {
         Set<String> languages = new HashSet<String>(this.languageMap.keySet());
         languages.add(SOURCE_LANGUAGE.getCode());

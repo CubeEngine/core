@@ -116,13 +116,12 @@ public class BukkitUtils
      * Registers the packet hook injector
      *
      * @param plugin        a Plugin to register the injector with
-     * @param pluginManager a PluginManager
      */
-    public static void registerPacketHookInjector(Plugin plugin, PluginManager pluginManager)
+    public static void registerPacketHookInjector(Plugin plugin)
     {
         if (!PacketHookInjector.injected)
         {
-            pluginManager.registerEvents(PacketHookInjector.INSTANCE, plugin);
+            plugin.getServer().getPluginManager().registerEvents(PacketHookInjector.INSTANCE, plugin);
         }
     }
 

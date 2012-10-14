@@ -106,7 +106,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.tableManager = new TableManager(this);
 
         // depends on: plugin manager
-        this.permissionRegistration = new PermissionManager(pm);
+        this.permissionRegistration = new PermissionManager(this);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
@@ -118,7 +118,7 @@ public class BukkitCore extends JavaPlugin implements Core
         pm.registerEvents(this.userManager, this);
 
         // depends on: file manager, core config
-        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
+        this.i18n = new I18n(this);
 
         // depends on: Server
         this.commandManager = new CommandManager(this);
@@ -127,7 +127,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.moduleManager = new ModuleManager(this);
 
         // depends on: server
-        BukkitUtils.registerPacketHookInjector(this, pm);
+        BukkitUtils.registerPacketHookInjector(this);
 
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()

@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.permission;
 
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
@@ -24,9 +26,9 @@ public class PermissionManager
     private final Map<Module, Set<String>> modulePermissionMap;
     private final Thread mainThread;
 
-    public PermissionManager(PluginManager pm)
+    public PermissionManager(Core core)
     {
-        this.pm = pm;
+        this.pm = ((BukkitCore)core).getServer().getPluginManager();
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
         this.mainThread = Thread.currentThread();
@@ -84,7 +86,7 @@ public class PermissionManager
         this.registerBukkitPermission(permission);
         
         org.bukkit.permissions.Permission parent = CUBEENGINE_WILDCARD;
-        org.bukkit.permissions.Permission current = null;
+        org.bukkit.permissions.Permission current;
         String currentString = CUBEENGINE_BASE;
         for (int i = 1; i < parts.length - 1; ++i)
         {
