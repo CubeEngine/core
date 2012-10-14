@@ -21,10 +21,7 @@ import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 @Entity(name = "user")
 public class User extends UserBase implements LinkingModel<Integer>
 {

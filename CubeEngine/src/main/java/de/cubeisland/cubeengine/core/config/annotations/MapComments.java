@@ -9,10 +9,7 @@ import java.lang.annotation.Target;
  * This annotation is used to attach Comments to values inside maps.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(
-{
-    ElementType.TYPE
-})
+@Target({ElementType.TYPE})
 public @interface MapComments
 {
     MapComment[] value();

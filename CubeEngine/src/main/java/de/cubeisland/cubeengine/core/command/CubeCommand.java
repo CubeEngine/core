@@ -11,10 +11,7 @@ import org.bukkit.command.CommandSender;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public abstract class CubeCommand extends Command
 {
     protected static final Flag[] NO_FLAGS = new Flag[0];

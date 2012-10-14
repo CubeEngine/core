@@ -8,13 +8,7 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.THashMap;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

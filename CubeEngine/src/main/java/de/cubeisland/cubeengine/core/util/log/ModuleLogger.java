@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
- * This logger is used to log module messages
+ * This logger is used to log module messages.
  */
 public class ModuleLogger extends CubeLogger
 {

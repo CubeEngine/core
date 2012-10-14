@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
- * This handler will post exceptions and other SEVERE messages to our log collector
+ * This handler will post exceptions and other SEVERE messages to our log collector.
  */
 public class RemoteHandler extends Handler
 {

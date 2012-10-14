@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
-/**
- *
- * @author CodeInfection
- */
+//TODO DOCU
 public class IncompatibleDependencyException extends ModuleException
 {
     public IncompatibleDependencyException(String module, String dep, int reqiredRev, int foundRev)

@@ -469,7 +469,7 @@ public class CheatCommands
     {
         @Flag(longName = "all", name = "a")
     },
-    usage = "/repair [-all]") // without item in hand
+    usage = "[-all]") // without item in hand
     public void repair(CommandContext context)
     {
         User sender = context.

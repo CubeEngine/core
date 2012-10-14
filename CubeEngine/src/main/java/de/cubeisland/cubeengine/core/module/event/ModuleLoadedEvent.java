@@ -4,10 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public class ModuleLoadedEvent extends ModuleEvent
 {
     private static final HandlerList handlers = new HandlerList();

@@ -9,10 +9,7 @@ import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.util.List;
 
-/**
- *
- * @author Anselm Brehme
- */
+//TODO DOCU
 @Entity(name = "tables")
 public class Table implements Model<Integer>
 {

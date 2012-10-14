@@ -4,8 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import gnu.trove.map.hash.THashMap;
 
 /**
- *
- * @author Anselm Brehme
+ * Manages the revision of tables in the database.
  */
 public class TableManager extends BasicStorage<Table>
 {
@@ -22,6 +21,12 @@ public class TableManager extends BasicStorage<Table>
         }
     }
 
+    /**
+     * Registers a table
+     * 
+     * @param table the table
+     * @param revision its revision
+     */
     public void registerTable(String table, Integer revision)
     {
         if ("tables".equals(table))

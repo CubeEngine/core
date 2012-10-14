@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 /**
- * This cofniguration is used to parse the language configurations
+ * This cofniguration is used to parse the language configurations.
  */
 @Codec("yaml")
 public class LanguageConfiguration extends Configuration

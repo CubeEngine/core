@@ -4,9 +4,7 @@ import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.module.Module;
 
 /**
- * This Task can be cancelled from the inside
- *
- * @author Anselm Brehme
+ * This Task can be cancelled from the inside.
  */
 public abstract class Task implements Runnable
 {

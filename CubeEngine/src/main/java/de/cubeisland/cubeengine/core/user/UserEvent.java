@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.CubeEvent;
 
 /**
- * This is a base for user related events
+ * This is a base for user related events.
  */
 public abstract class UserEvent extends CubeEvent
 {

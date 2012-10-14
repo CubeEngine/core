@@ -4,10 +4,7 @@ import de.cubeisland.cubeengine.core.util.Cleanable;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public interface Language extends Cleanable
 {
     /**

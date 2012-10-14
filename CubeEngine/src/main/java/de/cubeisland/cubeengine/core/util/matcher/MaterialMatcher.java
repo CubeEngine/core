@@ -8,13 +8,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -340,8 +334,8 @@ public class MaterialMatcher
                     for (short data : readItems.get(item).keySet())
                     {
                         sb.append(item).append(":").append(data).append("\n");
-                        List<String> itemnames = readItems.get(item).get(data);
-                        for (String itemname : itemnames)
+                        List<String> list = readItems.get(item).get(data);
+                        for (String itemname : list)
                         {
                             sb.append("  ").append(itemname).append("\n");
                         }
@@ -401,10 +395,6 @@ public class MaterialMatcher
         catch (NumberFormatException ex)
         {
             throw new IllegalStateException("datavalues.txt is corrupted!", ex);
-        }
-        catch (IOException ex)
-        {
-            throw new IllegalStateException("Error while reading datavalues.txt", ex);
         }
     }
 

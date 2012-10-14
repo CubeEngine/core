@@ -13,9 +13,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 
 /**
- * Manages all the configurations of the CubeEngine
- *
- * @author Phillip Schichtel
+ * Manages all the configurations of the CubeEngine.
  */
 public class FileManager
 {

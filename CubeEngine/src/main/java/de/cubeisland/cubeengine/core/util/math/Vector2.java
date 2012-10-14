@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- * This class represents a 2D vector
+ * This class represents a 2D vector.
  */
 public class Vector2
 {

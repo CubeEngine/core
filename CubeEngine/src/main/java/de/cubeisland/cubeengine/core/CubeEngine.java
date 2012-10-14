@@ -15,10 +15,7 @@ import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public final class CubeEngine
 {
     private static Core core = null;

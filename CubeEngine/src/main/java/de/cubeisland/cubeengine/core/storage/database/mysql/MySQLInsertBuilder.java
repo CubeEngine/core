@@ -4,8 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for inserting into tables.
  */
 public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> implements InsertBuilder
 {

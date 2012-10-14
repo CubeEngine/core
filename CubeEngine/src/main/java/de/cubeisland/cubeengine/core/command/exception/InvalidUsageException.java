@@ -1,13 +1,12 @@
 package de.cubeisland.cubeengine.core.command.exception;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import org.bukkit.command.CommandSender;
 
-/**
- *
- * @author CodeInfection
- */
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
+//TODO DOCU
+//TODO cmd excecption -> but later do not display the usage
 public class InvalidUsageException extends CommandException
 {
     private final boolean showUsage;

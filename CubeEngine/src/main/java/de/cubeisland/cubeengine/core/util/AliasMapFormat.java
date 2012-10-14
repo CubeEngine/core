@@ -10,8 +10,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * This class provides methods to convert the AliasMaps used for items.txt etc. into a TreeMap and back.
  */
 public class AliasMapFormat
 {

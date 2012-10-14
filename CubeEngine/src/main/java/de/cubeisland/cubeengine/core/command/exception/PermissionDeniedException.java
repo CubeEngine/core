@@ -1,13 +1,11 @@
 package de.cubeisland.cubeengine.core.command.exception;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import org.bukkit.command.CommandSender;
 
-/**
- *
- * @author CodeInfection
- */
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
+//TODO DOCU
 public class PermissionDeniedException extends CommandException
 {
     private PermissionDeniedException(String message)

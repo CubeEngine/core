@@ -20,7 +20,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 /**
- * This class manages the modules
+ * This class manages the modules.
  */
 public class ModuleManager implements Cleanable
 {

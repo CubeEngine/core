@@ -5,7 +5,7 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 
 /**
- * This class can be used to creates file or filename filters
+ * This class can be used to creates file or filename filters.
  */
 public class FileExtentionFilter implements FileFilter, FilenameFilter
 {

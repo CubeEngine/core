@@ -4,24 +4,12 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class contains some utillities to work with Strings
- *
- * @author Phillip Schichtel
- * @author Anselm Brehme
+ * This class contains some utillities to work with Strings.
  */
 public final class StringUtils
 {
@@ -178,7 +166,7 @@ public final class StringUtils
     private static final long DAY = (long)24 * 60 * 60 * 1000;
 
     /**
-     * Converts Time in y | M | w | d | h | m | s to Long default is m
+     * Converts Time in y | M | w | d | h | m | s to Long default is m.
      */
     public static long convertTimeToMillis(String str) throws ConversionException
     {
@@ -233,7 +221,12 @@ public final class StringUtils
     }
 
     /**
-     * Taken from org.apache.commons.lang.StringUtils
+     * Computes the LevenshteinDistance between s and t.
+     * (Taken from org.apache.commons.lang.StringUtils)
+     *
+     * @param s
+     * @param t
+     * @return the ld between s and t
      */
     public static int getLevenshteinDistance(String s, String t)
     {
@@ -309,13 +302,12 @@ public final class StringUtils
     static final int wd = 1, wi = 1, wc = 1, ws = 1;
 
     /**
-     * Taken from
-     * http://qqqqx.blogspot.de/2011/09/dameraulevenshtein-distance.html
-     * Computes the Demerau-LevenshteinDistance
+     * Computes the Demerau-LevenshteinDistance.
+     * (Taken from http://qqqqx.blogspot.de/2011/09/dameraulevenshtein-distance.html)
      *
      * @param a
      * @param b
-     * @return
+     * @return the DemerauLevenshteinDistance between a and b.
      */
     public static int getDemerauLevenshteinDistance(String a, String b)
     {
@@ -371,11 +363,22 @@ public final class StringUtils
         return H[a.length() + 1][b.length() + 1];
     }
 
+    /**
+     * Method used for DemerauLevenshteinDistance.
+     */
     private static int min(int a, int b, int c, int d)
     {
         return Math.min(a, Math.min(b, Math.min(c, d)));
     }
 
+    /**
+     * Returns the bestMatch for search in strings with maxDistance.
+     *
+     * @param search      the string to search
+     * @param strings     the strings to match to
+     * @param maxDistance the max DemerauLevenshteinDistance
+     * @return the best match
+     */
     public static List<String> getBestMatches(String search, Collection<String> strings, int maxDistance)
     {
         List<String> matches = new LinkedList<String>();
@@ -396,9 +399,10 @@ public final class StringUtils
     }
 
     /**
-     * CaseInsensitive StringMatching First LD-Check 1 IndexCheck maxIndex:
-     * string.length() maxBehind: 20 Second LD-Check 2 maxLength:
-     * string.length()
+     * CaseInsensitive StringMatching:
+     * First LD-Check 1
+     * IndexCheck maxIndex: string.length() maxBehind: 20
+     * Second LD-Check 2 maxLength: string.length()
      *
      * @param string     the string to search
      * @param stringlist the possible Strings to find
@@ -414,13 +418,28 @@ public final class StringUtils
         return matchString(string, Arrays.asList(stringlist));
     }
 
+    /**
+     * CaseInsensitive StringMatching:
+     * First LD-Check 1
+     * IndexCheck maxIndex: string.length() maxBehind: 20
+     * Second LD-Check 2 maxLength: string.length()
+     *
+     * @param string                 the string to search
+     * @param stringlist             the possible Strings to find
+     * @param ignoreLdPerLengthOnLD1 whether to ignore ldPerLength on the first LD-Check
+     * @return a found match or null
+     */
     public static String matchString(String string, Collection<String> stringlist, boolean ignoreLdPerLengthOnLD1)
     {
         return matchString(string, stringlist, true, 1, string.length(), 20, 2, 40, ignoreLdPerLengthOnLD1);
     }
 
     /**
-     * Tries to match a String with - LD with distance
+     * Tries to match a String with - with LD distance.
+     * In 3 attemps:
+     * First LD-Check: LD-Check with the whole string.
+     * Index-Chexk: if searchString is part of a result
+     * Second LD-Check: LD-Check with first part of the string
      *
      * @param firstLdCheck        - Index with
      * @param maxIndex            and

@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 
 /**
- * This class represents a clone of another language
+ * This class represents a clone of another language.
  */
 public class ClonedLanguage implements Language
 {

@@ -12,9 +12,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
 /**
- * Registrates Permissions to the server
- *
- * @author Phillip Schichtel
+ * Registrates Permissions to the server.
  */
 public class PermissionManager
 {

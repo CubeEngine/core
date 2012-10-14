@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public class StorageException extends RuntimeException
 {
     private static final long serialVersionUID = -3367478236326791833L;

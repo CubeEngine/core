@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public class CircularDependencyException extends ModuleException
 {
     private static final long serialVersionUID = -8766228903352920035L;

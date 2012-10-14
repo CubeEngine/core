@@ -4,8 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.AlterTableBuilder;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for altering tables.
  */
 class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuilder> implements AlterTableBuilder
 {

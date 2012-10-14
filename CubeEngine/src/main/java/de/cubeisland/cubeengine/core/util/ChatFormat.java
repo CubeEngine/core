@@ -5,7 +5,7 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 import java.util.regex.Pattern;
 
 /**
- * This enum contains all of MInecraft's chat format codes and some utility methods to parse them
+ * This enum contains all of Minecraft's chat format codes and some utility methods to parse them.
  */
 public enum ChatFormat
 {

@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 
 /**
- * This class provides information about a module
+ * This class provides information about a module.
  */
 public final class ModuleInfo
 {

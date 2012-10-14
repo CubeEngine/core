@@ -3,10 +3,9 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.Core;
 import org.bukkit.event.HandlerList;
 
-/**
- *
- * @author CubeIsland-Dev
- */
+//TODO DOCU
+//TODO do we use this ????? We have Callbacks
+
 public class UserCreatedEvent extends UserEvent
 {
     private static final HandlerList handlers = new HandlerList();

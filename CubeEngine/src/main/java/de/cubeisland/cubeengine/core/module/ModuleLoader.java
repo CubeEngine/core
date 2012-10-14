@@ -25,7 +25,7 @@ import java.util.jar.JarFile;
 import org.apache.commons.lang.Validate;
 
 /**
- * This class is used to load modules and provide a centralized place for class lookups
+ * This class is used to load modules and provide a centralized place for class lookups.
  */
 public class ModuleLoader
 {

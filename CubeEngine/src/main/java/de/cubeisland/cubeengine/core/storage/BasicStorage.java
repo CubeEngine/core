@@ -21,9 +21,7 @@ import java.util.Collection;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 /**
- * BasicStorage (1 Key only)
- *
- * @author Anselm Brehme
+ * Basic Storage-implementation (1 Key only)
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {

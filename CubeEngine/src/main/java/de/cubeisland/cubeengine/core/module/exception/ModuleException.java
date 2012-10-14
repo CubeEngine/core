@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public class ModuleException extends Exception
 {
     private static final long serialVersionUID = -4225079929008498906L;

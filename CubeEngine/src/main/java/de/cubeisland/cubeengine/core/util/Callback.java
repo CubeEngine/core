@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.util;
 import java.lang.reflect.Method;
 
 /**
- * This class is a wrapper for a method
+ * This class is a wrapper for a method.
  */
 public class Callback
 {

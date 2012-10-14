@@ -4,9 +4,7 @@ import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 
 /**
- * Represents a permission
- *
- * @author Phillip Schichtel
+ * Represents a permission.
  */
 public interface Permission
 {

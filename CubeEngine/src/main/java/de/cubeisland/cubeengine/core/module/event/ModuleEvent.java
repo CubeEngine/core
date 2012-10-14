@@ -4,10 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public abstract class ModuleEvent extends CubeEvent
 {
     private final Module module;

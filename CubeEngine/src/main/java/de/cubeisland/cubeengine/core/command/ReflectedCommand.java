@@ -17,10 +17,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public class ReflectedCommand extends CubeCommand
 {
     private final Object commandContainer;

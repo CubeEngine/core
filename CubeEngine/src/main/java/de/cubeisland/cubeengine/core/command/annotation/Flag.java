@@ -3,10 +3,7 @@ package de.cubeisland.cubeengine.core.command.annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Flag
 {

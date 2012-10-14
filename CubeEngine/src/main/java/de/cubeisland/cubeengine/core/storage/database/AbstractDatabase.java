@@ -12,10 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public abstract class AbstractDatabase implements Database
 {
     protected static final Logger LOGGER = CubeEngine.getLogger();

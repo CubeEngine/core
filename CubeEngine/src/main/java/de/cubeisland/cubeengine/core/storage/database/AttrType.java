@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
 /**
- *
- * @author Anselm Brehme
+ * The possible AttributeTypes for the database.
  */
 public enum AttrType
 {

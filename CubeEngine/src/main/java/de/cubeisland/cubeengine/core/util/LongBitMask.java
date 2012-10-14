@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util;
 
 /**
- * Represents a bitmask with 64 bits
+ * Represents a bitmask with 64 bits.
  */
 public class LongBitMask
 {

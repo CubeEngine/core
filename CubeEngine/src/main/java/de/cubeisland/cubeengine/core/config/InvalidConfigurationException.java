@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.core.config;
 
-/**
- *
- * @author Anselm Brehme
- */
+//TODO DOCU
 public class InvalidConfigurationException extends RuntimeException
 {
     private static final long serialVersionUID = -492268712863444129L;

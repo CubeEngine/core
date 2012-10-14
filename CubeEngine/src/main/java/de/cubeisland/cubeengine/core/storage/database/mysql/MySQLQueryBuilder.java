@@ -13,8 +13,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * QueryBuilder implementation for MYSQL.
  */
 public class MySQLQueryBuilder implements QueryBuilder
 {

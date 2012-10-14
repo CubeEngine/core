@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for updating tables.
  */
 public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> implements UpdateBuilder
 {

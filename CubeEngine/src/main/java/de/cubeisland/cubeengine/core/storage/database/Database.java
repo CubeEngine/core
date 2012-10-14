@@ -7,11 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- *
- * @author Phillip Schichtel
+ * The Database interface
  */
 public interface Database
-{
+{//TODO DOCU DOCU DOCU
     String getName();
 
     String prepareName(String name);

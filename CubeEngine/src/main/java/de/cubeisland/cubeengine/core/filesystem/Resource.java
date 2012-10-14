@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
 /**
- * Holds a resource
+ * Holds a resource.
  */
 public interface Resource
 {

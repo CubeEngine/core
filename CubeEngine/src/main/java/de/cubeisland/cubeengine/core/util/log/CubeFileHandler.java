@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
- * This class is a file handler that logs into CubeEngine's log directory
+ * This class is a file handler that logs into CubeEngine's log directory.
  */
 public class CubeFileHandler extends FileHandler
 {

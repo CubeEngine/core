@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- * Represents a Cube specified by a corner and size
+ * Represents a Cube specified by a corner and size.
  */
 public class Cube extends Cuboid
 {

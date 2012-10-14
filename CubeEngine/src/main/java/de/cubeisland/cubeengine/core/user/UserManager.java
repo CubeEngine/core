@@ -30,6 +30,9 @@ import org.bukkit.plugin.Plugin;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 
+/**
+ * This Manager provides methods to access the Users and saving/loading from database.
+ */
 public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
 {
     private final Core core;
@@ -146,18 +149,6 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         UserCreatedEvent event = new UserCreatedEvent(this.core, user);
         server.getPluginManager().callEvent(event);
         return this;
-    }
-
-    public void updateUser(final User user)
-    {
-        this.database.queueOperation(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                update(user);
-            }
-        });
     }
 
     /**
@@ -416,6 +407,9 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         }
     }
 
+    /**
+     * Searches for too old UserData and remove it.
+     */
     public void cleanup()
     {
         this.database.queueOperation(new Runnable()

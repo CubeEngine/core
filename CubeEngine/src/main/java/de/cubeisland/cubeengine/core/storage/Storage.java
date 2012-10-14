@@ -4,10 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.util.Callback;
 import java.util.Collection;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public interface Storage<V extends Model>
 {
     /**

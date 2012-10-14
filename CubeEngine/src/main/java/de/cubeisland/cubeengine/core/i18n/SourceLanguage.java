@@ -7,7 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * This class represents the source language
+ * This class represents the source language.
  */
 public final class SourceLanguage implements Language
 {

@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuil
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 /**
- *
- * @author Anselm Brehme
+ * Abstract MYSQLlQueryBuilder used by other builders.
  */
 public abstract class MySQLComponentBuilder<This extends ComponentBuilder> implements ComponentBuilder<This>
 {

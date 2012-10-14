@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for creating new tables.
  */
 public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> implements TableBuilder
 {

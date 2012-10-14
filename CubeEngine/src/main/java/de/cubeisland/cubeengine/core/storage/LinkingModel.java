@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
-/**
- *
- * @author Anselm Brehme
- */
+//TODO DOCU
 public interface LinkingModel<K> extends Model<K>
 {
     /**

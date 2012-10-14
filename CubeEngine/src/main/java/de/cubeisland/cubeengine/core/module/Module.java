@@ -22,9 +22,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
 
 /**
- * module for CubeEngine
- *
- * @author Phillip Schichtel
+ * Module for CubeEngine.
  */
 public abstract class Module
 {

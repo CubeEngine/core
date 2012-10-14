@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- * This class represents a §D vector with integer coordinates
+ * This class represents a §D vector with integer coordinates.
  */
 public class BlockVector3
 {

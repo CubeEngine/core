@@ -20,7 +20,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 
 /**
- * This class provides functionality to translate messages
+ * This class provides functionality to translate messages.
  */
 public class I18n implements Cleanable
 {

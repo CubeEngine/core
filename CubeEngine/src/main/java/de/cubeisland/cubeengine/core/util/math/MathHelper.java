@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- * This class provides some utility methods for maths
+ * This class provides some utility methods for maths.
  */
 public class MathHelper
 {
@@ -15,7 +15,7 @@ public class MathHelper
      * This method converts radians to degrees
      *
      * @param radians
-     * @return 
+     * @return
      */
     public static double radiansToDegree(double radians)
     {
@@ -26,7 +26,7 @@ public class MathHelper
      * This method converts degrees to radians
      *
      * @param degree
-     * @return 
+     * @return
      */
     public static double degreeToRadians(double degree)
     {
@@ -93,7 +93,7 @@ public class MathHelper
      *
      * @param x the base
      * @param n the exponent
-     * @return 
+     * @return
      */
     public static double pow(int x, int n)
     {

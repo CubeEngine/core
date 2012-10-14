@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 
 /**
- * This class is a generic language that loads its translations from  files
+ * This class is a generic language that loads its translations from files.
  */
 public class NormalLanguage implements Cleanable, Language
 {

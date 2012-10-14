@@ -4,8 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.LockBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for locking tables.
  */
 public class MySQLLockBuilder extends MySQLComponentBuilder<LockBuilder> implements LockBuilder
 {

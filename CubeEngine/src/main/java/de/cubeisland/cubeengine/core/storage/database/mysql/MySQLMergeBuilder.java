@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Phillip Schichtel
+ * MYSQLQueryBuilder for merging into tables.
  */
 public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> implements MergeBuilder
 {

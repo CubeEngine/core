@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,10 +16,7 @@ import org.bukkit.command.SimpleCommandMap;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Phillip Schichtel
- */
+//TODO DOCU
 public class CubeCommandMap extends SimpleCommandMap
 {
     private final UserManager um;
