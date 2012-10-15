@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
+import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.*;
@@ -274,10 +276,10 @@ public abstract class CubeCommand extends Command
         }
 
         CommandContext context = new CommandContext(this.module.getCore(), sender, this, labels);
-        context.parseCommandArgs(args, this.getFlags(), this.getParams());
-
         try
         {
+            context.parseCommandArgs(args, this.getFlags(), this.getParams());
+
             if (context.isHelpCall())
             {
                 this.showHelp(context);
@@ -286,6 +288,18 @@ public abstract class CubeCommand extends Command
             {
                 this.run(context);
             }
+        }
+        catch (InvalidUsageException e)
+        {
+            context.sendMessage(e.getMessage());
+            if (e.showUsage())
+            {
+                context.sendMessage("core", "Proper usage: %s", this.getUsage(context));
+            }
+        }
+        catch (PermissionDeniedException e)
+        {
+            context.sendMessage(e.getMessage());
         }
         catch (Exception e)
         {
