@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.CommandExecuteEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -22,11 +23,13 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class CubeCommandMap extends SimpleCommandMap
 {
+    private final Core core;
     private final UserManager um;
     
     public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
     {
         super(server);
+        this.core = core;
         this.um = core.getUserManager();
         for (Command command : oldMap.getCommands())
         {
@@ -103,8 +106,12 @@ public class CubeCommandMap extends SimpleCommandMap
             else
             {
                 sender.sendMessage(_(sender, "core", "I could not find any matching command for /%s ...", label));
-                return false;
             }
+        }
+        
+        if (command == null || this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command)).isCancelled())
+        {
+            return false;
         }
 
         try
