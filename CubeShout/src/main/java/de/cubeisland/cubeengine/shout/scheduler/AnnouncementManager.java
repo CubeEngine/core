@@ -1,21 +1,34 @@
 package de.cubeisland.cubeengine.shout.scheduler;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 
 /*
- * Class to manage all the announcements and their recivers
+ * Class to manage all the announcements and their receivers
  */
 public class AnnouncementManager
 {
 	
 	private Shout module;
+	private Map<String, Queue<Announcement>> users;
+	private Map<String, Queue<Integer>> delays;
+	private Set<Announcement> announcements;
 	
 	public AnnouncementManager(Shout module)
 	{
 		this.module = module;
+		this.users = new ConcurrentHashMap<String, Queue<Announcement>>();
+		this.delays = new ConcurrentHashMap<String, Queue<Integer>>();
+		this.announcements = new HashSet<Announcement>();
 	}
 	
 	/**
@@ -26,7 +39,7 @@ public class AnnouncementManager
 	 */
 	public List<Announcement> getAnnouncemets(User user)
 	{
-		return null;
+		return Arrays.asList((Announcement[])users.get(user.getName()).toArray());
 	}
 
 	/**
@@ -76,8 +89,11 @@ public class AnnouncementManager
 	 */
 	public String getNext(String user)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		//TODO add world support
+		Announcement returnn = users.get(user).poll();
+		users.get(user).add(returnn);
+		//TODO add language support
+		return returnn.getMessage();
 	}
 	
 	/**
@@ -88,17 +104,76 @@ public class AnnouncementManager
 	 */
 	public int getNextDelay(String user)
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		int returnn = delays.get(user).poll();
+		delays.get(user).add(returnn);
+		return returnn;
 	}
-	
-	public void addAnnouncement()
+
+	/**
+	 * Adds an announcement.
+	 * Most be done before ay player joins!
+	 * 
+	 * @param messages
+	 * @param world
+	 * @param delay
+	 * @param permNode
+	 * @param group
+	 */
+	public void addAnnouncement(Map<String, String> messages, String world, int delay, String permNode, String group)
 	{
+		if (module.getCore().getServer().getWorld(world) == null)
+		{
+			// TODO throw exception
+			return;
+		}
+		if (delay == 0)
+		{
+			// TODO throw exception
+			return;
+		}
+		if (messages == null || !messages.containsKey("en_US"))
+		{
+			// TODO throw exception
+			return;
+		}
+		if (permNode == null || permNode.isEmpty())
+		{
+			// TODO throw exception
+			return;
+		}
+		if (group == null || permNode.isEmpty())
+		{
+			// TODO throw exception
+			return;
+		}
 		
+		this.announcements.add(new Announcement("en_US", permNode, world, messages, delay));
 	}
 	
-	private class Receiver
-	{
+	/**
+	 * initialize this users announcements
+	 * 
+	 * @param user	The user
+	 */
+	public void initializeUser(User user) {
+		// Load what announcements should be displayed to the user
+		for (Announcement a : announcements)
+		{
+			if (user.hasPermission(a.getPermNode()))// TODO CubeRoles
+			{
+				if (!users.containsKey(user.getName()))
+				{
+					users.put(user.getName(), new LinkedList<Announcement>());
+				}
+				users.get(user.getName()).add(a);
+				
+				if(!delays.containsKey(user.getName()))
+				{
+					delays.put(user.getName(), new LinkedList<Integer>());
+				}
+				delays.get(user.getName()).add(a.getDelay());
+			}
+		}
 		
 	}
 	

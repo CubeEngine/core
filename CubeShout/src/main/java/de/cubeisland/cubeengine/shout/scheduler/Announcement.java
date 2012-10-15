@@ -1,9 +1,6 @@
 package de.cubeisland.cubeengine.shout.scheduler;
 
-import java.util.List;
 import java.util.Map;
-
-import de.cubeisland.cubeengine.core.user.User;
 
 /*
  * Class to represent an announcement.
@@ -12,10 +9,27 @@ public class Announcement
 {
 	
 	private String defaultLocale = "en_US";
-	private Map<String, String> messages = null;
-	private List<String> receivers;
+	private String permNode;
+	private String world;
+	private Map<String, String> messages;
 	//in ticks
 	private int delay = 0;
+	
+	/**
+	 * Constructor of Announcement
+	 * 
+	 * @param	defaultLocale	Default Locale for this message
+	 * @param	messages		The message in different languages
+	 * @param	delay			The delay after this message in ticks
+	 */
+	public Announcement(String defaultLocale, String permNode, String world, Map<String, String> messages, int delay)
+	{
+		this.defaultLocale = defaultLocale;
+		this.permNode = permNode;
+		this.world = world;
+		this.messages = messages;
+		this.delay = delay;
+	}
 	
 	/**
 	 * Get the message from this announcement in the default language, as specified by CubeEngine
@@ -39,16 +53,6 @@ public class Announcement
 	}
 	
 	/**
-	 * Get all users that should receive this message
-	 * 
-	 * @return 	All users that should receive this message
-	 */
-	public List<String> getReceivers()
-	{
-		return receivers;
-	}
-	
-	/**
 	 * Get the delay after this message
 	 * @return The delay in ticks
 	 */
@@ -56,16 +60,24 @@ public class Announcement
 	{
 		return delay;
 	}
-	
+
 	/**
-	 * Check if an user is a receiver of this message
+	 * Get the permission node for this announcement
 	 * 
-	 * @param 	user	User to check with
-	 * @return			If the user is a receiver of this message
+	 * @return	the permission node for this announcement
 	 */
-	public boolean isReciver(User user)
+	public String getPermNode()
 	{
-		return receivers.contains(user.getName());
+		return permNode;
 	}
-	
+
+	/**
+	 * Get the world this announcement should be displayed in
+	 * 
+	 * @return	The world this announcement should be displayed in.
+	 */
+	public String getWorld()
+	{
+		return world;
+	}
 }

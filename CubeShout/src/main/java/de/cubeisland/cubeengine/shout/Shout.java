@@ -16,6 +16,8 @@ public class Shout extends Module
 	
 	public static Shout instance;
 	
+	//TODO CubeRoles
+	
     @Override
     public void onEnable()
     {

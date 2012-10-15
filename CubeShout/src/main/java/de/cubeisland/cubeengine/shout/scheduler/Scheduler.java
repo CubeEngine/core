@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.shout.scheduler;
 
 import java.util.Queue;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.cubeisland.cubeengine.shout.Shout;
@@ -26,7 +27,7 @@ public class Scheduler
 	 * @param	task	The task to scheduler
 	 * @param	delay	Delay between each time this task in run, in ticks.
 	 */
-	public void scheduleTask(Runnable task, int delay)
+	public void scheduleTask(TimerTask task, int delay)
 	{
 		// TODO
 	}

@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.shout.scheduler;
 
 import de.cubeisland.cubeengine.core.user.User;
+import java.util.TimerTask;
 
-public class MessageTask implements Runnable
+public class MessageTask extends TimerTask
 {
 	
 	AnnouncementManager aManager;
