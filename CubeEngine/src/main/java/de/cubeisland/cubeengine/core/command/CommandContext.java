@@ -644,6 +644,10 @@ public class CommandContext
         {
             throw new IndexOutOfBoundsException("The named parameter you requested has only " + values.length + " " + (values.length == 1 ? "value" : "values") + " but you requested the " + (i + 1) + ".");
         }
+        if (values[i] == null)
+        {
+            return null;
+        }
         if (type.isAssignableFrom(values[i].getClass()))
         {
             return type.cast(values[i]);
