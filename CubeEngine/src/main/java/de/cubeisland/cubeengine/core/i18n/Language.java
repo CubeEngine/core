@@ -4,7 +4,9 @@ import de.cubeisland.cubeengine.core.util.Cleanable;
 import java.util.Locale;
 import java.util.Map;
 
-//TODO DOCU
+/**
+ * This interface represents a language containing translations.
+ */
 public interface Language extends Cleanable
 {
     /**

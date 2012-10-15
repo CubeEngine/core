@@ -4,7 +4,9 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
 
-//TODO DOCU
+/**
+ * This event is fired when a module finished loading.
+ */
 public class ModuleLoadedEvent extends ModuleEvent
 {
     private static final HandlerList handlers = new HandlerList();

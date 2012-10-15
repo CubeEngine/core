@@ -1,6 +1,10 @@
 package de.cubeisland.cubeengine.core.storage;
 
-//TODO DOCU
+/**
+ * A Model to save into the database with keytype K
+ * that can be linked to other models.
+ * @param <K> 
+ */
 public interface LinkingModel<K> extends Model<K>
 {
     /**

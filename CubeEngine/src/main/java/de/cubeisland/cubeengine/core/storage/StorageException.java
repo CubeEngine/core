@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.storage;
 
-//TODO DOCU
+/**
+ * This exception is thrown when an error occurs during the storage-process.
+ */
 public class StorageException extends RuntimeException
 {
     private static final long serialVersionUID = -3367478236326791833L;

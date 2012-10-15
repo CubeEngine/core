@@ -4,7 +4,10 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.util.Callback;
 import java.util.Collection;
 
-//TODO DOCU
+/**
+ * This interface provides basic access-methods for accessing the model V
+ * @param <V> 
+ */
 public interface Storage<V extends Model>
 {
     /**

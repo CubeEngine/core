@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
-//TODO DOCU
+/**
+ * This exception is thrown when modules have a circular dependency.
+ */
 public class CircularDependencyException extends ModuleException
 {
     private static final long serialVersionUID = -8766228903352920035L;

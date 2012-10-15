@@ -5,8 +5,10 @@ import org.bukkit.command.CommandSender;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-//TODO DOCU
-//TODO cmd excecption -> but later do not display the usage
+/**
+ * This exception is thrown when a user performed an invalid command.
+ * Use invalidUsage to throw an exception insinde a command. The exception will be caught.
+ */
 public class InvalidUsageException extends CommandException
 {
     private final boolean showUsage;
@@ -26,7 +28,7 @@ public class InvalidUsageException extends CommandException
     {
         return this.showUsage;
     }
-
+//TODO use this!!!
     public static void invalidSender(CommandSender sender, String category, String message, Object... params)
     {
         throw new InvalidUsageException(_(sender, category, message, params), false);

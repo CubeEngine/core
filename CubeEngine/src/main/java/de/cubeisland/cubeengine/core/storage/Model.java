@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.core.storage;
 
-//TODO DOCU
+/**
+ * A Model to save into the database with keytype K
+ * @param <K> 
+ */
 public interface Model<K>
 {
     /**

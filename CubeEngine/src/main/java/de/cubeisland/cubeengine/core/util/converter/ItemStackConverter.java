@@ -24,8 +24,7 @@ public class ItemStackConverter implements Converter<ItemStack>
     @Override
     public String toString(ItemStack object)
     {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+        return object.getType().getId() + ":" + object.getDurability();
     }
 
     @Override

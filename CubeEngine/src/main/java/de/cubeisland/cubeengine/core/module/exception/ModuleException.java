@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
-//TODO DOCU
+/**
+ * This exception is fired when an error occurs during the loading-process of modules.
+ */
 public class ModuleException extends Exception
 {
     private static final long serialVersionUID = -4225079929008498906L;

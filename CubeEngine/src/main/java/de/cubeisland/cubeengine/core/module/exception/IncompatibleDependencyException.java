@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
-//TODO DOCU
+/**
+ * This exception is thrown when the dependency was found but its revision is not correct.
+ */
 public class IncompatibleDependencyException extends ModuleException
 {
     public IncompatibleDependencyException(String module, String dep, int reqiredRev, int foundRev)

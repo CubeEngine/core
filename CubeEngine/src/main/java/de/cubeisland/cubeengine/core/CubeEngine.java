@@ -15,7 +15,9 @@ import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
-//TODO DOCU
+/**
+ * The CubeEngine provides static method to access all important Manager and the Core.
+ */
 public final class CubeEngine
 {
     private static Core core = null;

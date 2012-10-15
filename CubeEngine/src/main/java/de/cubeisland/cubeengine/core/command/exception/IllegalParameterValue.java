@@ -5,7 +5,10 @@ import org.bukkit.command.CommandSender;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-//TODO DOCU
+/**
+ * This exception is thrown when a user performed a command with invalid parameters.
+ * Use illegalParameter to throw an exception insinde a command. The exception will be caught.
+ */
 public class IllegalParameterValue extends InvalidUsageException
 {
     private IllegalParameterValue(String message)

@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
-//TODO DOCU
+/**
+ * This exception is thrown when a module is considered as invalid.
+ */
 public class InvalidModuleException extends ModuleException
 {
     private static final long serialVersionUID = 1530095056412810634L;
