@@ -23,6 +23,7 @@
         <module>CubeBasics</module>
         <module>CubeLog</module>
         <module>CubeWriter</module>
+        <module>CubeShout</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>
