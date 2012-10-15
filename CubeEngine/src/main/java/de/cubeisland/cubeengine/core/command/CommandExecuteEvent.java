@@ -24,12 +24,14 @@ public class CommandExecuteEvent extends CubeEvent implements Cancellable
         return handlers;
     }
     
-    private Command command;
+    private final Command command;
+    private final String commandLine;
 
-    public CommandExecuteEvent(Core core, Command command)
+    public CommandExecuteEvent(Core core, Command command, String commandLine)
     {
         super(core);
         this.command = command;
+        this.commandLine = commandLine;
     }
     
     /**
@@ -40,15 +42,5 @@ public class CommandExecuteEvent extends CubeEvent implements Cancellable
     public Command getCommand()
     {
         return this.command;
-    }
-
-    /**
-     * Sets the command to be executed
-     *
-     * @param command the new command
-     */
-    public void setCommand(Command command)
-    {
-        this.command = command;
     }
 }

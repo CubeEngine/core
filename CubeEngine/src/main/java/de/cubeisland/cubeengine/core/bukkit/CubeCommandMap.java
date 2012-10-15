@@ -109,7 +109,7 @@ public class CubeCommandMap extends SimpleCommandMap
             }
         }
         
-        if (command == null || this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command)).isCancelled())
+        if (command == null || this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command, commandLine)).isCancelled())
         {
             return false;
         }
