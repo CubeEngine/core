@@ -2,7 +2,10 @@ package de.cubeisland.cubeengine.log.listeners;
 
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.LogManager.BlockChangeCause;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,7 +22,10 @@ public class BlockPlace extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event)
     {
-        // TODO if replace water check for lilypad
+        if (event.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY))
+        {
+            lm.logBreakBlock(BlockChangeCause.PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState());;
+        }
         lm.logPlaceBlock(event.getPlayer(), event.getBlockPlaced().getState(), event.getBlockReplacedState());
     }
 

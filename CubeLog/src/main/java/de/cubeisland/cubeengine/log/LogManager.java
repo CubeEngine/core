@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log;
 
-import de.cubeisland.cubeengine.log.listeners.Explosion;
 import de.cubeisland.cubeengine.log.listeners.Explosion.ExplosionConfig;
 import de.cubeisland.cubeengine.log.listeners.LogListener;
 import de.cubeisland.cubeengine.log.storage.BlockLog;
@@ -29,17 +28,18 @@ public class LogManager
  * BlockPlace (sand stuff)
  * Enderman place&break
  * Explosion (misc / what explosion??? when creeper cause of player expl. -> loose info)
- * 
+ * StructureGrow 
+ * LeavesDecay
+ *
+ * TODO: ActionType detection / stopp logging in the listener.
  * 
  * MISSING:
  * Chat
  * ConatinerAccess
  * FluidFlow
  * Kill
- * LeavesDecay
  * PlayerInteract
  * SignChange
- * StructureGrow 
  */
     
     private Map<LogAction, LogListener> loggers = new EnumMap<LogAction, LogListener>(LogAction.class);
@@ -184,7 +184,7 @@ public class LogManager
 
     public static enum BlockChangeCause
     {
-        PLAYER, FIRE, ENDERMAN, EXPLOSION, FADE, FORM
+        PLAYER, FIRE, ENDERMAN, EXPLOSION, FADE, FORM, DECAY, GROW
     }
 
     //TODO move this into Util
