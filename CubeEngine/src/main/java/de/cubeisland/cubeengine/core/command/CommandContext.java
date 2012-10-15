@@ -542,19 +542,14 @@ public class CommandContext
         try
         {
             T value = this.getIndexed(index, type);
-            if(value == null)
-            {
-                return def;
-            }
-            else
+            if(value != null)
             {
                 return value;
             }
         }
-        catch (ConversionException e)
-        {
-            return def;
-        }
+        catch (ConversionException ignored)
+        {}
+        return def;
     }
 
     /**
