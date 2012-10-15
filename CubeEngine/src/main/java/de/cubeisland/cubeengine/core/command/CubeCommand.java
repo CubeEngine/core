@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-//TODO DOCU
+//TODO DOCU DOCU DOCU
 public abstract class CubeCommand extends Command
 {
     protected static final Flag[] NO_FLAGS = new Flag[0];

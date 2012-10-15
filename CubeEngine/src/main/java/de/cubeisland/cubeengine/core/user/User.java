@@ -21,7 +21,9 @@ import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-//TODO DOCU
+/**
+ * A CubeEngine User (can exist offline too).
+ */
 @Entity(name = "user")
 public class User extends UserBase implements LinkingModel<Integer>
 {

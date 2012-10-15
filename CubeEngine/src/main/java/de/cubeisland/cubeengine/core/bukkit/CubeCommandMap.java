@@ -16,7 +16,10 @@ import org.bukkit.command.SimpleCommandMap;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-//TODO DOCU
+/**
+ * Extends the Bukkit-CommandMap.
+ * Allows matching commands with LD-Distance = 1.
+ */
 public class CubeCommandMap extends SimpleCommandMap
 {
     private final UserManager um;
@@ -90,7 +93,7 @@ public class CubeCommandMap extends SimpleCommandMap
                 sender.sendMessage(_(sender, "core", "Couldn't find /%s, but /%s seems to be the one you searched...", label, matches.get(0)));
                 label = matches.get(0);
                 command = this.getCommand(label);
-                
+              
             }
             else if (matches.size() > 1 && matches.size() <= 5) // TODO maximum configurable
             {

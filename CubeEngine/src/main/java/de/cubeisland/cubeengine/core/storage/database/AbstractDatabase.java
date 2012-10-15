@@ -12,7 +12,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//TODO DOCU
+/**
+ * Abstract Database implementing most of the database methods.
+ * Extend this class and complement it to use the database.
+ */
 public abstract class AbstractDatabase implements Database
 {
     protected static final Logger LOGGER = CubeEngine.getLogger();
