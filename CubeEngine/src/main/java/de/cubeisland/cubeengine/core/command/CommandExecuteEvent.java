@@ -43,4 +43,14 @@ public class CommandExecuteEvent extends CubeEvent implements Cancellable
     {
         return this.command;
     }
+    
+    /**
+     * Returns the command line
+     *
+     * @return the command line
+     */
+    public String getCommandLine()
+    {
+        return this.commandLine;
+    }
 }

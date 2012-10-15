@@ -18,8 +18,9 @@ import org.bukkit.command.SimpleCommandMap;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
- * Extends the Bukkit-CommandMap.
- * Allows matching commands with LD-Distance = 1.
+ * This CommandMap extends the SimpleCommandMap to add some functionality:
+ * - an accessor for the known command map
+ * - typo correction for the command lookup via edit distance
  */
 public class CubeCommandMap extends SimpleCommandMap
 {
@@ -37,6 +38,11 @@ public class CubeCommandMap extends SimpleCommandMap
         }
     }
     
+    /**
+     * Returns a map of the known commands
+     *
+     * @return the known commands
+     */
     public Map<String, Command> getKnownCommands()
     {
         return this.knownCommands;
@@ -83,7 +89,7 @@ public class CubeCommandMap extends SimpleCommandMap
         String label = args[0].toLowerCase();
         Command command = getCommand(label);
 
-        if (command == null)
+        if (command == null && !"".equals(label))
         {
             User user = this.um.getUser(sender);
             if (user != null)

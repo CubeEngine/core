@@ -17,7 +17,9 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-//TODO DOCU
+/**
+ * The reflected command invokes a method that being parsed from a class
+ */
 public class ReflectedCommand extends CubeCommand
 {
     private final Object commandContainer;
