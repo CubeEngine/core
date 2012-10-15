@@ -8,5 +8,5 @@
     "<player> [player]": "<Spieler> [Spieler]",
     "[player]": "[Spieler]",
     "User not found!":"Spieler nicht gefunden!",
-    "User %s is not online!":"%s ist nicht online!",
+    "User %s is not online!":"%s ist nicht online!"
 }
