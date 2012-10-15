@@ -14,7 +14,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.OfflinePlayer;
@@ -25,6 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -36,6 +40,7 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
 {
     private final Core core;
+    private final List<Player> onlinePlayers;
     private final ConcurrentHashMap<String, User> users;
     private final Server server;
     private final ScheduledExecutorService executor;
@@ -49,6 +54,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
         this.server = ((BukkitCore)core).getServer();
         this.users = new ConcurrentHashMap<String, User>();
+        this.onlinePlayers = new CopyOnWriteArrayList<Player>(((BukkitCore)core).getServer().getOnlinePlayers());
 
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
@@ -283,6 +289,35 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         return savedUser;
     }
 
+    /**
+     * This is a thread safe version of Bukkit's Server.getOnlinePlayers()
+     *
+     * @return a unmodifiable List of players
+     */
+    public List<Player> getOnlinePlayers()
+    {
+        return Collections.unmodifiableList(this.onlinePlayers);
+    }
+
+    /**
+     * This method returns all users that are online at that moment.
+     * The method IS thread-safe as it does not rely on Bukkit's code
+     * but instead of our on internal player list.
+     *
+     * @return an array of users
+     */
+    public List<User> getOnlineUsers()
+    {
+        final List<User> onlineUsers = new ArrayList<User>();
+        
+        for (Player player : this.onlinePlayers)
+        {
+            onlineUsers.add(this.getUser(player));
+        }
+        
+        return onlineUsers;
+    }
+
     @Override
     public void clean()
     {
@@ -366,7 +401,8 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     @EventHandler(priority = EventPriority.MONITOR)
     private void onQuit(final PlayerQuitEvent event)
     {
-        final User user = getUser(event.getPlayer());
+        Player player = event.getPlayer();
+        final User user = getUser(player);
         final int id = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)core, new Runnable()
         {
             @Override
@@ -389,15 +425,23 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             }
         }, this.core.getConfiguration().userManagerKeepUserLoaded);
         user.setAttribute("removingTaskId", id);
+        this.onlinePlayers.remove(player);
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onLogin(final PlayerLoginEvent event)
+    {
+        this.onlinePlayers.add(event.getPlayer());
     }
 
-    @EventHandler()
+    @EventHandler(priority = EventPriority.LOWEST)
     private void onJoin(final PlayerJoinEvent event)
     {
-        final User user = this.users.get(event.getPlayer().getName());
+        Player player = event.getPlayer();
+        final User user = this.users.get(player.getName());
         if (user != null)
         {
-            user.offlinePlayer = event.getPlayer();
+            user.offlinePlayer = player;
             Integer id = user.getAttribute("removingTaskId");
             if (id == null)
             {
