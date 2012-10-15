@@ -15,7 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Fireball;
-import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.util.Vector;
@@ -79,18 +78,14 @@ public class FunCommands
         User user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
 
         String material = context.getString(0);
-        int amount = 1;
+        int amount = context.getIndexed(1, Integer.class, 1);
         Class materialClass = null;
 
-        if (context.hasIndexed(1))
+        if(amount > this.config.maxThrowNumber || amount < 1)
         {
-            amount = context.getIndexed(1, Integer.class, 1);
-            if(amount > this.config.maxThrowNumber)
-            {
-                invalidUsage(context, "fun", "The maximum amount is %d", this.config.maxThrowNumber);
-            }
+            invalidUsage(context, "fun", "The amount has to be a number from 1 to %d", this.config.maxThrowNumber);
         }
-
+        
         if (material.equalsIgnoreCase("snowball"))
         {
             materialClass = Snowball.class;
@@ -114,31 +109,18 @@ public class FunCommands
     @Command(
         desc = "The CommandSender throws a certain amount of fireballs. Default is one.",
         max = 1,
-        flags = {@Flag(longName = "small", name = "s")},
-        usage = "[amount] [-small]"
+        usage = "[amount]"
     )
     public void fireball(CommandContext context)
     {
         User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
 
-        int amount = 1;
-        Class material;
-
-        if (context.hasIndexed(0))
+        int amount = context.getIndexed(0, Integer.class, 1);
+        if(amount < 1 || amount > this.config.maxFireballNumber)
         {
-            amount = context.getIndexed(0, Integer.class, 1);
+            invalidUsage(context, "fun", "The amount has to be a number from 1 to %d", this.config.maxFireballNumber);
         }
-
-        if (context.hasFlag("s"))
-        {
-            material = SmallFireball.class;
-        }
-        else
-        {
-            material = Fireball.class;
-        }
-
-        ThrowItem throwItem = new ThrowItem(this.userManager, user.getName(), material);
+        ThrowItem throwItem = new ThrowItem(this.userManager, user.getName(), Fireball.class);
         for (int i = 0; i < amount; i++)
         {
             this.taskManager.scheduleSyncDelayedTask(module, throwItem, i * 10);
@@ -190,23 +172,15 @@ public class FunCommands
         {
             invalidUsage(context, "core", "User not found!");
         }
-        int seconds = 5;
-
-        if (context.hasIndexed(1))
-        {
-            seconds = context.getIndexed(1, Integer.class, 5);
-        }
+        int seconds = context.getIndexed(1, Integer.class, 5);
 
         if (context.hasFlag("u"))
         {
             seconds = 0;
         }
-        else
+        else if (seconds < 1 || seconds > 26)
         {
-            if (seconds < 1 || seconds > 26)
-            {
-                invalidUsage(context, "fun", "Only 1 to 26 seconds are permitted!");
-            }
+            invalidUsage(context, "fun", "Only 1 to 26 seconds are permitted!");
         }
 
         user.setFireTicks(seconds * 20);

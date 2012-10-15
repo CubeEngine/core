@@ -16,6 +16,10 @@ public class FunConfiguration extends Configuration
     @Option("throw.number")
     public int maxThrowNumber = 20;
     
+    @Comment("Sets the maximum number of fireballs")
+    @Option("fireball.number")
+    public int maxFireballNumber = 10;
+    
     @Comment("Sets the maximum height a player can jump. Maximum is 100")
     @Option("rocket.height")
     public int maxRocketHeight = 100;
