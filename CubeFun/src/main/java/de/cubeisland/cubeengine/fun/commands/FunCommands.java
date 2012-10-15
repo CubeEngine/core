@@ -17,16 +17,21 @@ import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.SmallFireball;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.util.Vector;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 
 public class FunCommands
 {
-    Fun module;
-    UserManager userManager;
-    TaskManager taskManager;
+    private final Fun module;
+    private final UserManager userManager;
+    private final TaskManager taskManager;
     
     public FunCommands(Fun module)
     {
@@ -66,7 +71,7 @@ public class FunCommands
             }
             else
             {
-                sender.sendMessage("This command can only be used by a player!");
+                context.sendMessage("fun", "&cThis command can only be used by a player!");
                 return;
             }
         }
@@ -83,7 +88,7 @@ public class FunCommands
     )
     public void throwItem(CommandContext context)
     {
-        User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
 
         String material = context.getString(0);
         int amount = 1;
@@ -106,7 +111,7 @@ public class FunCommands
             }
             else
             {
-                invalidUsage(context, "fun", "The Item %s is not supported", material);
+                invalidUsage(context, "fun", "The Item %s is not supported!", material);
                 return;
             }
         }
@@ -171,7 +176,7 @@ public class FunCommands
 
             if (damage < 1 || damage > 20)
             {
-                invalidUsage(context, "fun", "only damagevalues between 1 and 20 are allowed!");
+                invalidUsage(context, "fun", "Only damage values from 1 to 20 are allowed!");
                 return;
             }
 
@@ -212,7 +217,7 @@ public class FunCommands
         {
             if (seconds < 1 || seconds > 26)
             {
-                invalidUsage(context, "fun", "only 1 to 26 seconds are permitted!");
+                invalidUsage(context, "fun", "Only 1 to 26 seconds are permitted!");
             }
         }
 
@@ -266,10 +271,12 @@ public class FunCommands
     )
     public void nuke(CommandContext context)
     {
-        User user = null;
-        Location location = null;
-        int radius = 1;
+        int spawnLimit = 20;
+        User user;
+        Location centerOfTheCircle;
+        int radius = 0;
         Integer height = 5;
+        NukeListener nukeListener = this.module.getNukeListener();
         
         int noBlock = 0;
         
@@ -280,21 +287,21 @@ public class FunCommands
             {
                 invalidUsage(context, "fun", "User not found");
             }
-            location = user.getLocation();
+            centerOfTheCircle = user.getLocation();
             
         }
         else
         {
             user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
-            location = user.getTargetBlock(null, 40).getLocation();
+            centerOfTheCircle = user.getTargetBlock(null, 40).getLocation();
         }
         
         if(context.hasIndexed(0))
         {
             radius = context.getIndexed(0, Integer.class, 1);
-            if(radius > 6)
+            if(radius > spawnLimit)
             {
-                invalidUsage(context, "fun", "&cThe radius should be not over 6");
+                invalidUsage(context, "fun", "&cThe radius should be not over %d", spawnLimit);
             }
         }
         if(context.hasNamed("height"))
@@ -312,8 +319,8 @@ public class FunCommands
          
         while(noBlock != height)
         {
-            location = location.add(0,1,0);
-            if(location.getBlock().getType() == Material.AIR)
+            centerOfTheCircle.add(0,1,0);
+            if(centerOfTheCircle.getBlock().getType() == Material.AIR)
             {
                 noBlock++;
             }
@@ -323,17 +330,26 @@ public class FunCommands
             }
         }
         
-        NukeListener nukeListener = this.module.getNukeListener();
-        
-        for(int i = 0; i < radius; i++)
+        for(int i = radius; i > 0; i--)
         {
-            for(int j = 0; j < radius; j++)
+            double angle = 2 * Math.PI / (i * 4);
+            for(int j = 0; j < (i * 4); j++)
             {
-                TNTPrimed tnt = user.getWorld().spawn(location.add(i, 0, j), TNTPrimed.class);
+                double x = Math.cos(j * angle) * i + centerOfTheCircle.getX();
+                double z = Math.sin(j * angle) * i + centerOfTheCircle.getZ();
+                TNTPrimed tnt = user.getWorld().spawn(new Location(centerOfTheCircle.getWorld(), x, centerOfTheCircle.getY(), z), TNTPrimed.class);
                 if(!context.hasFlag("u"))
                 {
                     nukeListener.add(tnt);
                 }
+            }
+        }
+        if(radius == 0)
+        {
+            TNTPrimed tnt = user.getWorld().spawn(centerOfTheCircle, TNTPrimed.class);
+            if(!context.hasFlag("u"))
+            {
+                nukeListener.add(tnt);
             }
         }
     }

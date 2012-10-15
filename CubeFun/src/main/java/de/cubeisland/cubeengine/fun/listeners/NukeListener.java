@@ -11,12 +11,13 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class NukeListener implements Listener
 {
-    Fun module;
-    Set<TNTPrimed> noBlockDamageSet = new HashSet<TNTPrimed>();
+    private final Fun module;
+    private final Set<TNTPrimed> noBlockDamageSet;
     
     public NukeListener(Fun module)
     {
         this.module = module;
+        this.noBlockDamageSet = new HashSet<TNTPrimed>();
     }
     
     public void add(TNTPrimed tnt)
@@ -29,7 +30,7 @@ public class NukeListener implements Listener
         noBlockDamageSet.remove(tnt);
     }
     
-    public boolean contains(TNTPrimed tnt)
+    public boolean contains(Object tnt)
     {
         return noBlockDamageSet.contains(tnt);
     }
@@ -37,7 +38,7 @@ public class NukeListener implements Listener
     @EventHandler
     public void onBlockDamage(EntityExplodeEvent event)
     {
-        if(event.getEntityType() == EntityType.PRIMED_TNT && this.contains((TNTPrimed)event.getEntity()))
+        if(event.getEntityType() == EntityType.PRIMED_TNT && this.contains(event.getEntity()))
         {
             event.setCancelled(true);
             remove((TNTPrimed)event.getEntity());
