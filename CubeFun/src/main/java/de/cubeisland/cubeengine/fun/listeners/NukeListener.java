@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.fun.listeners;
 
-import de.cubeisland.cubeengine.fun.Fun;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.entity.EntityType;
@@ -11,12 +10,10 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class NukeListener implements Listener
 {
-    private final Fun module;
     private final Set<TNTPrimed> noBlockDamageSet;
     
-    public NukeListener(Fun module)
+    public NukeListener()
     {
-        this.module = module;
         this.noBlockDamageSet = new HashSet<TNTPrimed>();
     }
     
@@ -40,7 +37,7 @@ public class NukeListener implements Listener
     {
         if(event.getEntityType() == EntityType.PRIMED_TNT && this.contains(event.getEntity()))
         {
-            event.setCancelled(true);
+            event.blockList().clear();
             remove((TNTPrimed)event.getEntity());
         }
     }

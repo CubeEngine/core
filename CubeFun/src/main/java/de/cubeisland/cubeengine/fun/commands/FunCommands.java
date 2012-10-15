@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
@@ -12,14 +8,13 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
+import de.cubeisland.cubeengine.fun.FunConfiguration;
 import de.cubeisland.cubeengine.fun.listeners.NukeListener;
 import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
@@ -29,6 +24,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 
 public class FunCommands
 {
+    private final FunConfiguration config;
     private final Fun module;
     private final UserManager userManager;
     private final TaskManager taskManager;
@@ -38,42 +34,34 @@ public class FunCommands
         this.module = module;
         this.userManager = module.getUserManager();
         this.taskManager = module.getCore().getTaskManager();
+        this.config = module.getConfig();
     }
 
     @Command(
         names = {"lightning", "strike"},
-        desc = "strucks a player or the place you are looking at by lightning.",
-        max = 1,
-        usage = "[player]"
+        desc = "strucks a player or the location you are looking at by lightning.",
+        max = 0,
+        params = {@Param(names = {"player", "p"}, types = {User.class})},
+        usage = "[player <name>]"
     )
     public void lightning(CommandContext context)
     {
-        CommandSender sender = context.getSender();
-        User user = this.userManager.getUser(sender);
-        Location location = null;
+        User user;
+        Location location;
 
-        if (context.getIndexed().isEmpty() && sender instanceof Player)
+        if(context.hasNamed("player"))
         {
-            location = user.getTargetBlock(null, 200).getLocation();
+            user = context.getNamed("player", User.class);
+            if (user == null)
+            {
+                invalidUsage(context, "core", "User not found!");
+            }
+            location = user.getLocation();
         }
         else
         {
-            if (!context.getIndexed().isEmpty())
-            {
-                user = context.getUser(0);
-
-                if (user == null)
-                {
-                    invalidUsage(context, "core", "User not found!");
-                }
-
-                location = user.getLocation();
-            }
-            else
-            {
-                context.sendMessage("fun", "&cThis command can only be used by a player!");
-                return;
-            }
+            user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+            location = user.getTargetBlock(null, config.lightningDistance).getLocation();
         }
 
         user.getWorld().strikeLightning(location);
@@ -81,7 +69,7 @@ public class FunCommands
 
     @Command(
         names = {"throw"},
-        desc = "The CommandSender throws a certain amount of snowballs. Default is one.",
+        desc = "The CommandSender throws a certain amount of snowballs or eggs. Default is one.",
         min = 1,
         max = 2,
         usage = "<egg|snowball> [amount]"
@@ -92,28 +80,28 @@ public class FunCommands
 
         String material = context.getString(0);
         int amount = 1;
-        Class materialClass;
+        Class materialClass = null;
 
         if (context.hasIndexed(1))
         {
             amount = context.getIndexed(1, Integer.class, 1);
+            if(amount > this.config.maxThrowNumber)
+            {
+                invalidUsage(context, "fun", "The maximum amount is %d", this.config.maxThrowNumber);
+            }
         }
 
         if (material.equalsIgnoreCase("snowball"))
         {
             materialClass = Snowball.class;
         }
+        else if(material.equalsIgnoreCase("egg"))
+        {
+            materialClass = Egg.class;
+        }
         else
         {
-            if (material.equalsIgnoreCase("egg"))
-            {
-                materialClass = Egg.class;
-            }
-            else
-            {
-                invalidUsage(context, "fun", "The Item %s is not supported!", material);
-                return;
-            }
+            invalidUsage(context, "fun", "The Item %s is not supported!", material);
         }
 
         ThrowItem throwItem = new ThrowItem(this.userManager, user.getName(), materialClass);
