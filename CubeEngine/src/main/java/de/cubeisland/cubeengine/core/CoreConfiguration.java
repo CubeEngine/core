@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 import java.util.logging.Level;
 
 /**
@@ -51,5 +52,11 @@ public class CoreConfiguration extends Configuration
                 "This is the CubeEngine CoreConfiguration.",
                 "Changes here can affect every CubeEngine-Module"
             };
+    }
+
+    @Override
+    public void onLoaded()
+    {
+        this.defaultLanguage = I18n.normalizeLanguage(this.defaultLanguage);
     }
 }
