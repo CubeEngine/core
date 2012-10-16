@@ -163,7 +163,7 @@ public class CommandContext
                 {
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
-                    for (int typeOffset = 0; typeOffset < types.length && offset < commandLine.length; typeOffset++)
+                    for (int typeOffset = 0; typeOffset < types.length && offset + 1 < commandLine.length; typeOffset++)
                     {
                         if (typeOffset < types.length)
                         {
