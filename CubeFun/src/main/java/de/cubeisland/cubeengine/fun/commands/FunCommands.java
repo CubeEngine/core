@@ -141,14 +141,14 @@ public class FunCommands
               invalidUsage(context, "core", "User not found!");
         }
         
-        int damage = context.getIndexed(1, Integer.class, 3);;
+        int damage = context.getIndexed(1, Integer.class, 3);
 
         if (damage < 1 || damage > 20)
         {
             invalidUsage(context, "fun", "Only damage values from 1 to 20 are allowed!");
             return;
         }
-
+        
         user.damage(damage);
     }
 
@@ -223,7 +223,8 @@ public class FunCommands
         usage = "[radius] [height <value>] [player <name>] [-unsafe]",
         params = {
             @Param(names = {"player", "p"}, types = {User.class}),
-            @Param(names = {"height", "h"}, types = {Integer.class})
+            @Param(names = {"height", "h"}, types = {Integer.class}),
+            @Param(names = {"concentration", "c"}, types = {Integer.class, Integer.class})
         }
     )
     public void nuke(CommandContext context)
@@ -235,15 +236,23 @@ public class FunCommands
         
         int radius = context.getIndexed(0, Integer.class, 0);
         int height = context.getNamed("height", Integer.class, Integer.valueOf(5));
-        int concentration = 1;
-        int concentrationOfblocksPerCircle = 1;
+        int concentration = context.getNamed("concentration", Integer.class, 0, 1);
+        int concentrationOfBlocksPerCircle = context.getNamed("concentration", Integer.class, 1, 1);
         
         Location centerOfTheCircle;
         User user;
         
         if(radius > this.config.nukeRadiusLimit)
         {
-            invalidUsage(context, "fun", "&cThe radius should be not over %d", this.config.nukeRadiusLimit);
+            invalidUsage(context, "fun", "&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
+        }
+        if(concentration < 1)
+        {
+            invalidUsage(context, "fun", "&cThe concentration should not be smaller than 1");
+        }
+        if(concentrationOfBlocksPerCircle < 1)
+        {
+            invalidUsage(context, "fun", "&cThe concentration of Blocks per Circle should not be smaller than 1");
         }
         if(height < 1)
         {
@@ -280,7 +289,7 @@ public class FunCommands
         
         for(int i = radius; i > 0; i -= concentration)
         {
-            double blocksPerCircle = i * 4 / concentrationOfblocksPerCircle;
+            double blocksPerCircle = i * 4 / concentrationOfBlocksPerCircle;
             double angle = 2 * Math.PI / blocksPerCircle;
             for(int j = 0; j < blocksPerCircle; j++)
             {

@@ -30,4 +30,18 @@ public class FunConfiguration extends Configuration
     @Comment("Set the nuke radius limit")
     @Option("nuke.radius_limit")
     public int nukeRadiusLimit = 10;
+    
+    /*
+    @Option("nuke.concentrationradius")
+    public Map<Integer, Integer> nukeRadius = new HashMap<Integer, Integer>()
+    {
+        {
+            put(1, 10);
+            put(2, 15);
+            put(3, 20);
+            put(4, 23);
+            put(5, 25);
+        }
+    };
+    */
 }
