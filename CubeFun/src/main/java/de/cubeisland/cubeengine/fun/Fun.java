@@ -6,10 +6,6 @@ import de.cubeisland.cubeengine.fun.commands.FunCommands;
 import de.cubeisland.cubeengine.fun.listeners.NukeListener;
 import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 
-/**
- * Hello world!
- *
- */
 public class Fun extends Module
 {
     @From

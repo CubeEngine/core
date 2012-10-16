@@ -671,6 +671,25 @@ public class CommandContext
      * @param <T>  the type of the value
      * @param name the name of the parameters
      * @param type the Class of the value
+     * @param def  the default value
+     * @return the value or null if not available
+     */
+    public <T> T getNamed(String name, Class<T> type, T def)
+    {
+        T value = this.getNamed(name, type);
+        if(value != null)
+        {
+            return value;
+        }
+        return def;
+    }
+    
+    /**
+     * Returns a value of a named parameter or a default value if not found
+     *
+     * @param <T>  the type of the value
+     * @param name the name of the parameters
+     * @param type the Class of the value
      * @param i    the index of the value
      * @param def  the default value
      * @return the value or null if not available

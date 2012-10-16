@@ -234,7 +234,7 @@ public class FunCommands
         int numberOfBlocks = 0;
         
         int radius = context.getIndexed(0, Integer.class, 0);
-        int height = context.getNamed("height", Integer.class, 0, 5);
+        int height = context.getNamed("height", Integer.class, Integer.valueOf(5));
         int concentration = 1;
         int concentrationOfblocksPerCircle = 1;
         
