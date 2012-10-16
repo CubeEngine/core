@@ -27,10 +27,24 @@ public class TeleportCommands
         this.module = module;
     }
 
-    private void teleport(User user, Location loc)
+    private void teleport(User user, Location loc, boolean safe)
     {
+        if (safe)
+        {
+            while ((loc.getBlock().getType() != Material.AIR)
+                && (new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getBlock().getType() != Material.AIR))
+            {
+                loc.add(0, 1, 0);
+            }
+            if (!user.isFlying())
+            {
+                while (loc.clone().add(0, -1, 0).getBlock().getType() == Material.AIR)
+                {
+                    loc.add(0, -1, 0);
+                }
+            }
+        }
         user.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
-        //TODO if location in air and not flying tp to ground!
     }
 
     @Command(
@@ -91,8 +105,8 @@ public class TeleportCommands
                 invalidUsage(context, "basics", "&cYou are now teleporting yourself into hell!");
             }
         }
-        this.teleport(user1, user2.getLocation());
-        //TODO msg teleported!
+        this.teleport(user1, user2.getLocation(), true);
+        context.sendMessage("basics", "You teleported to %s", user2.getName());
     }
 
     @Command(
@@ -135,9 +149,9 @@ public class TeleportCommands
                     continue;
                 }
             }
-            this.teleport(CubeEngine.getUserManager().getUser(player), user.getLocation());
+            this.teleport(CubeEngine.getUserManager().getUser(player), user.getLocation(), true);
         }
-        // TODO msg tped everyone!
+        context.sendMessage("basics", "You teleported everyone to %s", user.getName());
     }
 
     @Command(
@@ -173,8 +187,8 @@ public class TeleportCommands
                 return;
             }
         }
-        this.teleport(CubeEngine.getUserManager().getUser(user), sender.getLocation());
-        // TODO msg tped user!
+        this.teleport(user, sender.getLocation(), true);
+        context.sendMessage("basics", "You teleported %s to you!", user.getName());
     }
 
     @Command(
@@ -206,9 +220,9 @@ public class TeleportCommands
                     continue;
                 }
             }
-            this.teleport(CubeEngine.getUserManager().getUser(player), sender.getLocation());
+            this.teleport(CubeEngine.getUserManager().getUser(player), sender.getLocation(), false);
         }
-        // TODO msg tped user!
+        context.sendMessage("basics", "You teleported everyone to you!");
     }
 
     @Command(
@@ -225,6 +239,10 @@ public class TeleportCommands
         {
             World.class
         })
+    },
+    flags =
+    {
+        @Flag(longName = "unsafe", name = "u")
     })
     public void tppos(CommandContext context)
     {
@@ -256,8 +274,9 @@ public class TeleportCommands
                 illegalParameter(context, "basics", "World not found!");
             }
         }
-        this.teleport(sender, new Location(world, x, y, z));
-        // TODO msg tped.
+        boolean safe = !context.hasFlag("u");
+        this.teleport(sender, new Location(world, x, y, z), safe);
+        context.sendMessage("basics", "Teleported to Location!");
     }
 
     @Command(
@@ -318,7 +337,7 @@ public class TeleportCommands
         {
             world = context.getSender().getServer().getWorld(s_world);
         }
-        this.teleport(user, world.getSpawnLocation());
+        this.teleport(user, world.getSpawnLocation(), true);
     }
 
     @Command(
@@ -380,7 +399,7 @@ public class TeleportCommands
             {
                 invalidUsage(context, "basics", "%s seems to have disappeared.", user.getName());
             }
-            this.teleport(sender, user.getLocation());
+            this.teleport(sender, user.getLocation(), true);
             user.sendMessage("bascis", "%s accepted your teleport-request!", sender.getName());
             context.sendMessage("basics", "You accepted to get teleported to %s", user.getName());
         }
@@ -392,7 +411,7 @@ public class TeleportCommands
             {
                 invalidUsage(context, "basics", "%s seems to have disappeared.", user.getName());
             }
-            this.teleport(user, sender.getLocation());
+            this.teleport(user, sender.getLocation(), true);
             user.sendMessage("bascis", "%s accepted your teleport-request!", sender.getName());
             context.sendMessage("basics", "You accepted to teleport to %s", user.getName());
         }
@@ -428,13 +447,7 @@ public class TeleportCommands
     public void jumpTo(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
-        Location loc = sender.getTargetBlock(null, 250).getLocation();
-        while ((loc.getBlock().getType() != Material.AIR)
-            && (new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getBlock().getType() != Material.AIR))
-        {
-            loc.add(0, 1, 0);
-        }
-        this.teleport(sender, loc);
+        this.teleport(sender, sender.getTargetBlock(null, 250).getLocation(), true);
         context.sendMessage("basics", "&aYou just jumped!");
     }
 
@@ -443,13 +456,15 @@ public class TeleportCommands
     max = 0)
     public void back(CommandContext context)
     {
+        //TODO back on death
         User sender = context.getSenderAsUser("basics", "You never teleported!");
         Location loc = sender.getAttribute("lastLocation");
         if (loc == null)
         {
             invalidUsage(context, "basics", "You never teleported!");
         }
-        this.teleport(sender, loc);
+        this.teleport(sender, loc, true);
+        sender.sendMessage("basics", "Teleported to your last location!");
     }
 
     @Command(
@@ -465,8 +480,7 @@ public class TeleportCommands
         {
             illegalParameter(context, "basics", "World not found!");
         }
-        this.teleport(sender, world.getSpawnLocation());
+        this.teleport(sender, world.getSpawnLocation(), true);
+        context.sendMessage("basics", "Teleported to the spawn of world %s", world.getName());
     }
-    
-    // worldedit tp command
 }
