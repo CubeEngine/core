@@ -136,26 +136,20 @@ public class FunCommands
     public void slap(CommandContext context)
     {
         User user = context.getUser(0);
-        if (user != null)
+        if (user == null)
         {
-            int damage = 3;
-            if (context.hasIndexed(1))
-            {
-                damage = context.getIndexed(1, Integer.class, 3);
-            }
-
-            if (damage < 1 || damage > 20)
-            {
-                invalidUsage(context, "fun", "Only damage values from 1 to 20 are allowed!");
-                return;
-            }
-
-            user.damage(damage);
+              invalidUsage(context, "core", "User not found!");
         }
-        else
+        
+        int damage = context.getIndexed(1, Integer.class, 3);;
+
+        if (damage < 1 || damage > 20)
         {
-            invalidUsage(context, "core", "User not found!");
+            invalidUsage(context, "fun", "Only damage values from 1 to 20 are allowed!");
+            return;
         }
+
+        user.damage(damage);
     }
 
     @Command(
@@ -172,6 +166,7 @@ public class FunCommands
         {
             invalidUsage(context, "core", "User not found!");
         }
+        
         int seconds = context.getIndexed(1, Integer.class, 5);
 
         if (context.hasFlag("u"))
@@ -233,14 +228,27 @@ public class FunCommands
     )
     public void nuke(CommandContext context)
     {
-        int spawnLimit = 20;
-        User user;
-        Location centerOfTheCircle;
-        int radius = 0;
-        Integer height = 5;
         NukeListener nukeListener = this.module.getNukeListener();
-        
         int noBlock = 0;
+        
+        int numberOfBlocks = 0;
+        
+        int radius = context.getIndexed(0, Integer.class, 0);
+        int height = context.getNamed("height", Integer.class, 0, 5);
+        int concentration = 1;
+        int concentrationOfblocksPerCircle = 1;
+        
+        Location centerOfTheCircle;
+        User user;
+        
+        if(radius > this.config.nukeRadiusLimit)
+        {
+            invalidUsage(context, "fun", "&cThe radius should be not over %d", this.config.nukeRadiusLimit);
+        }
+        if(height < 1)
+        {
+            invalidUsage(context, "fun", "&cThe height can't be less than 1");
+        }
         
         if(context.hasNamed("player"))
         {
@@ -250,33 +258,11 @@ public class FunCommands
                 invalidUsage(context, "fun", "User not found");
             }
             centerOfTheCircle = user.getLocation();
-            
         }
         else
         {
             user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
             centerOfTheCircle = user.getTargetBlock(null, 40).getLocation();
-        }
-        
-        if(context.hasIndexed(0))
-        {
-            radius = context.getIndexed(0, Integer.class, 1);
-            if(radius > spawnLimit)
-            {
-                invalidUsage(context, "fun", "&cThe radius should be not over %d", spawnLimit);
-            }
-        }
-        if(context.hasNamed("height"))
-        {
-            height = context.getNamed("height", Integer.class);
-            if(height == null)
-            {
-                height = 5;
-            }
-            else if(height < 1)
-            {
-                invalidUsage(context, "fun", "&cThe height can't be less than 1");
-            }
         }
          
         while(noBlock != height)
@@ -292,14 +278,21 @@ public class FunCommands
             }
         }
         
-        for(int i = radius; i > 0; i--)
+        for(int i = radius; i > 0; i -= concentration)
         {
-            double angle = 2 * Math.PI / (i * 4);
-            for(int j = 0; j < (i * 4); j++)
+            double blocksPerCircle = i * 4 / concentrationOfblocksPerCircle;
+            double angle = 2 * Math.PI / blocksPerCircle;
+            for(int j = 0; j < blocksPerCircle; j++)
             {
-                double x = Math.cos(j * angle) * i + centerOfTheCircle.getX();
-                double z = Math.sin(j * angle) * i + centerOfTheCircle.getZ();
-                TNTPrimed tnt = user.getWorld().spawn(new Location(centerOfTheCircle.getWorld(), x, centerOfTheCircle.getY(), z), TNTPrimed.class);
+                TNTPrimed tnt = user.getWorld().spawn(
+                    new Location(centerOfTheCircle.getWorld(), 
+                    Math.cos(j * angle) * i + centerOfTheCircle.getX(), 
+                    centerOfTheCircle.getY(), 
+                    Math.sin(j * angle) * i + centerOfTheCircle.getZ()
+                ), TNTPrimed.class);
+                tnt.setVelocity(new Vector(0,0,0));
+                numberOfBlocks++;
+                
                 if(!context.hasFlag("u"))
                 {
                     nukeListener.add(tnt);
@@ -312,7 +305,9 @@ public class FunCommands
             if(!context.hasFlag("u"))
             {
                 nukeListener.add(tnt);
+                numberOfBlocks++;
             }
         }
+        context.sendMessage("fun", "You spawnt %d blocks of TNT", numberOfBlocks);
     }
 }
