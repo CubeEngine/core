@@ -25,8 +25,11 @@ public class MessageTask extends TimerTask
 	{
 		if(runs == nextExcecution)
 		{
-			scheduler.queueMessage(user, aManager.getNext(user));
-			this.nextExcecution = this.runs + aManager.getNextDelay(user);
+			if(aManager.getNext(user) != null){
+				scheduler.queueMessage(user, aManager.getNext(user));
+				this.nextExcecution = this.runs + aManager.getNextDelay(user);
+			}
+			this.nextExcecution = this.runs+1;
 		}
 		runs++;
 	}

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.shout.scheduler;
 
 import java.util.Queue;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -9,16 +10,21 @@ import de.cubeisland.cubeengine.shout.Shout;
 /**
  * Class to manage tasks based on the system time, not bukkits.
  */
-public class Scheduler
+public class Scheduler implements Runnable
 {
 	
 	private Shout module;
-	private Queue<Message> messageQueue = new ConcurrentLinkedQueue<Message>();
+	private Queue<Message> messageQueue;
+	private Timer timer;
 	
 	public Scheduler(Shout module)
 	{
 		this.module = module;
-		// TODO schedule task to bukkit for doing the queue;
+		this.messageQueue = new ConcurrentLinkedQueue<Message>();
+		this.timer = new Timer();
+		
+		//Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
+		module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 1000, 1000);
 	}
 	
 	/**
@@ -29,7 +35,7 @@ public class Scheduler
 	 */
 	public void scheduleTask(TimerTask task, int delay)
 	{
-		// TODO
+		timer.schedule(task, 1000L, delay*50);
 	}
 	
 	/**
@@ -56,6 +62,11 @@ public class Scheduler
 			this.user = user;
 			this.message = message;
 		}
+	}
+
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

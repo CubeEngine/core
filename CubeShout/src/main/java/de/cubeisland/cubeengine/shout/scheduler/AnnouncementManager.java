@@ -19,15 +19,17 @@ public class AnnouncementManager
 {
 	
 	private Shout module;
-	private Map<String, Queue<Announcement>> users;
+	private Map<String, Queue<Announcement>> messages;
 	private Map<String, Queue<Integer>> delays;
+	private Map<String, String> worlds;
 	private Set<Announcement> announcements;
 	
 	public AnnouncementManager(Shout module)
 	{
 		this.module = module;
-		this.users = new ConcurrentHashMap<String, Queue<Announcement>>();
+		this.messages = new ConcurrentHashMap<String, Queue<Announcement>>();
 		this.delays = new ConcurrentHashMap<String, Queue<Integer>>();
+		this.worlds = new ConcurrentHashMap<String, String>();
 		this.announcements = new HashSet<Announcement>();
 	}
 	
@@ -39,7 +41,7 @@ public class AnnouncementManager
 	 */
 	public List<Announcement> getAnnouncemets(User user)
 	{
-		return Arrays.asList((Announcement[])users.get(user.getName()).toArray());
+		return Arrays.asList((Announcement[])messages.get(user.getName()).toArray());
 	}
 
 	/**
@@ -89,9 +91,21 @@ public class AnnouncementManager
 	 */
 	public String getNext(String user)
 	{
-		//TODO add world support
-		Announcement returnn = users.get(user).poll();
-		users.get(user).add(returnn);
+		Announcement returnn = null;
+		boolean used = false;
+		//Skip all announcements that don't apply to this world.
+		while (!used)
+		{
+			if(messages.get(user).element().hasWorld(worlds.get(user)))
+			{
+				returnn = messages.get(user).poll();
+				messages.get(user).add(returnn);
+				used = true;
+			}
+		}
+		if (returnn == null){
+			return null;
+		}
 		//TODO add language support
 		return returnn.getMessage();
 	}
@@ -104,9 +118,24 @@ public class AnnouncementManager
 	 */
 	public int getNextDelay(String user)
 	{
-		int returnn = delays.get(user).poll();
-		delays.get(user).add(returnn);
-		return returnn;
+		Announcement returnn = null;
+		boolean used = false;
+		
+		//Skip all announcements that don't apply to the users current world.
+		while (!used)
+		{
+			if(messages.get(user).element().hasWorld(worlds.get(user)))
+			{
+				returnn = messages.get(user).poll();
+				messages.get(user).add(returnn);
+				used = true;
+			}
+		}
+		if (returnn == null){
+			return 0;
+		}
+		//TODO add language support
+		return returnn.getDelay();
 	}
 
 	/**
@@ -121,7 +150,7 @@ public class AnnouncementManager
 	 */
 	public void addAnnouncement(Map<String, String> messages, String world, int delay, String permNode, String group)
 	{
-		if (module.getCore().getServer().getWorld(world) == null)
+		if ( !(world == "*" ||module.getCore().getServer().getWorld(world) != null))
 		{
 			// TODO throw exception
 			return;
@@ -161,11 +190,11 @@ public class AnnouncementManager
 		{
 			if (user.hasPermission(a.getPermNode()))// TODO CubeRoles
 			{
-				if (!users.containsKey(user.getName()))
+				if (!messages.containsKey(user.getName()))
 				{
-					users.put(user.getName(), new LinkedList<Announcement>());
+					messages.put(user.getName(), new LinkedList<Announcement>());
 				}
-				users.get(user.getName()).add(a);
+				messages.get(user.getName()).add(a);
 				
 				if(!delays.containsKey(user.getName()))
 				{

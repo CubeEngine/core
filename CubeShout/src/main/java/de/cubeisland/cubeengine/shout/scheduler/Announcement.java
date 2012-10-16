@@ -80,4 +80,8 @@ public class Announcement
 	{
 		return world;
 	}
+
+	public boolean hasWorld(String world) {
+		return (getWorld().equals("*") || getWorld().equals(world));
+	}
 }
