@@ -16,8 +16,11 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -165,7 +168,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     /**
      * Adds an attribute to this user
      *
-     * @param name the name/key
+     * @param name  the name/key
      * @param value the value
      */
     public void setAttribute(String name, Object value)
@@ -178,8 +181,8 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     /**
      * Returns an attribute value
-     * 
-     * @param <T> the type of the value
+     *
+     * @param <T>  the type of the value
      * @param name the name/key
      * @return the value or null
      */
@@ -191,9 +194,9 @@ public class User extends UserBase implements LinkingModel<Integer>
     /**
      * Gets an attribute value or the given default value
      *
-     * @param <T> the value type
+     * @param <T>  the value type
      * @param name the name/key
-     * @param def the default value
+     * @param def  the default value
      * @return the attribute value or the default value
      */
     public <T extends Object> T getAttribute(String name, T def)
@@ -220,5 +223,30 @@ public class User extends UserBase implements LinkingModel<Integer>
     public void removeAttribute(String name)
     {
         this.attributes.remove(name);
+    }
+
+    public void safeTeleport(Location location)
+    {
+        Location checkLocation = location.clone();
+        while ((location.getBlock().getType() != Material.AIR)
+            && (checkLocation.add(0, 1, 0).getBlock().getType() != Material.AIR))
+        {
+            location.add(0, 1, 0);
+        }
+        if (!this.isFlying())
+        {
+            checkLocation = location.clone();
+            while (checkLocation.add(0, -1, 0).getBlock().getType() == Material.AIR)
+            {
+                location.add(0, -1, 0);
+            }
+        }
+        checkLocation = location.clone().add(0, -1, 0);
+        if (checkLocation.getBlock().getType() == Material.STATIONARY_LAVA || checkLocation.getBlock().getType() == Material.LAVA)
+        {
+            location = location.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0); // If would fall in lava tp on highest position.
+            // If there is still lava then you shall burn!
+        }
+        this.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 }

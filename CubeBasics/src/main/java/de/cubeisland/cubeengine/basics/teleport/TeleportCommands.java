@@ -31,6 +31,7 @@ public class TeleportCommands
     {
         if (safe)
         {
+            user.safeTeleport(loc);
             while ((loc.getBlock().getType() != Material.AIR)
                 && (new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getBlock().getType() != Material.AIR))
             {
@@ -44,7 +45,10 @@ public class TeleportCommands
                 }
             }
         }
-        user.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        else
+        {
+            user.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        }
     }
 
     @Command(
@@ -54,7 +58,8 @@ public class TeleportCommands
     max = 2,
     flags =
     {
-        @Flag(longName = "force", name = "f")
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "unsafe", name = "u")
     })
     public void tp(CommandContext context)
     {
@@ -105,7 +110,8 @@ public class TeleportCommands
                 invalidUsage(context, "basics", "&cYou are now teleporting yourself into hell!");
             }
         }
-        this.teleport(user1, user2.getLocation(), true);
+        boolean safe = !context.hasFlag("u");
+        this.teleport(user1, user2.getLocation(), safe);
         context.sendMessage("basics", "You teleported to %s", user2.getName());
     }
 
@@ -116,7 +122,8 @@ public class TeleportCommands
     max = 1,
     flags =
     {
-        @Flag(longName = "force", name = "f")
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "unsafe", name = "u")
     })
     public void tpall(CommandContext context)
     {
@@ -149,7 +156,8 @@ public class TeleportCommands
                     continue;
                 }
             }
-            this.teleport(CubeEngine.getUserManager().getUser(player), user.getLocation(), true);
+            boolean safe = !context.hasFlag("u");
+            this.teleport(CubeEngine.getUserManager().getUser(player), user.getLocation(), safe);
         }
         context.sendMessage("basics", "You teleported everyone to %s", user.getName());
     }
@@ -161,7 +169,8 @@ public class TeleportCommands
     max = 1,
     flags =
     {
-        @Flag(longName = "force", name = "f")
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "unsafe", name = "u")
     })
     public void tphere(CommandContext context)
     {
@@ -187,7 +196,8 @@ public class TeleportCommands
                 return;
             }
         }
-        this.teleport(user, sender.getLocation(), true);
+        boolean safe = !context.hasFlag("u");
+        this.teleport(user, sender.getLocation(), safe);
         context.sendMessage("basics", "You teleported %s to you!", user.getName());
     }
 
@@ -198,7 +208,8 @@ public class TeleportCommands
     max = 1,
     flags =
     {
-        @Flag(longName = "force", name = "f")
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "unsafe", name = "u")
     })
     public void tphereall(CommandContext context)
     {
@@ -220,7 +231,8 @@ public class TeleportCommands
                     continue;
                 }
             }
-            this.teleport(CubeEngine.getUserManager().getUser(player), sender.getLocation(), false);
+            boolean safe = !context.hasFlag("u");
+            this.teleport(CubeEngine.getUserManager().getUser(player), sender.getLocation(), safe);
         }
         context.sendMessage("basics", "You teleported everyone to you!");
     }
@@ -299,6 +311,7 @@ public class TeleportCommands
     })
     public void spawn(CommandContext context)
     {
+        // TODO make diff. spawns for playergroups possible
         User user = context.getSenderAsUser();
         World world;
         if (user == null && !context.hasIndexed(0))
@@ -442,7 +455,7 @@ public class TeleportCommands
     }
 
     @Command(
-    desc = "Denies any pending teleport-request.",
+    desc = "Jumps to the position you are looking at.",
     max = 0)
     public void jumpTo(CommandContext context)
     {
@@ -453,7 +466,12 @@ public class TeleportCommands
 
     @Command(
     desc = "Teleports you to your last location",
-    max = 0)
+    max = 0,
+    flags =
+    {
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "unsafe", name = "u")
+    })
     public void back(CommandContext context)
     {
         //TODO back on death
@@ -463,7 +481,8 @@ public class TeleportCommands
         {
             invalidUsage(context, "basics", "You never teleported!");
         }
-        this.teleport(sender, loc, true);
+        boolean safe = !context.hasFlag("u");
+        this.teleport(sender, loc, safe);
         sender.sendMessage("basics", "Teleported to your last location!");
     }
 
