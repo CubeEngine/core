@@ -5,6 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 
 /**
@@ -24,7 +25,7 @@ public class Scheduler implements Runnable
 		this.timer = new Timer();
 		
 		//Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
-		module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 1000, 1000);
+		module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 1000, 500);
 	}
 	
 	/**
@@ -65,8 +66,15 @@ public class Scheduler implements Runnable
 	}
 
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		if (!messageQueue.isEmpty())
+		{
+			Message m = messageQueue.poll();
+			User u = 	module.getCore().getUserManager().getUser(m.user);
+			if (u != null)
+			{
+				u.sendMessage(m.message);
+			}
+		}
 	}
 	
 }
