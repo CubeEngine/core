@@ -23,15 +23,16 @@ public class Shout extends Module
     {
     	instance = this;
     	
-    	this.scheduler = new Scheduler(this);
+    	this.getFileManager().dropResources(ShoutResource.values());
     	
+    	this.scheduler = new Scheduler(this);
     	this.aManager = new AnnouncementManager(this);
+    	this.listener = new ShoutListener(this);
+    	this.command = new ShoutCommand(this);
+    	
     	// TODO load announcements
     	
-    	this.listener = new ShoutListener(this);
     	this.registerListener(listener);
-    	
-    	this.command = new ShoutCommand(this);
     	this.registerCommands(command);
     	
     }

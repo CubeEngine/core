@@ -176,7 +176,7 @@ public class AnnouncementManager
 			return;
 		}
 		
-		this.announcements.add(new Announcement("en_US", permNode, world, messages, delay));
+		this.announcements.add(new Announcement(module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
 	}
 	
 	/**
