@@ -40,13 +40,18 @@ public class FunCommands
         names = {"lightning", "strike"},
         desc = "strucks a player or the location you are looking at by lightning.",
         max = 0,
-        params = {@Param(names = {"player", "p"}, types = {User.class})},
+        params = {
+            @Param(names = {"player", "p"}, types = {User.class}),
+            @Param(names = {"damage", "d"}, types = {Integer.class}),
+            @Param(names = {"fireticks", "f"}, types = {Integer.class})
+        },
         usage = "[player <name>]"
     )
     public void lightning(CommandContext context)
     {
         User user;
         Location location;
+        int damage = context.getNamed("damage", Integer.class, Integer.valueOf(-1));
 
         if(context.hasNamed("player"))
         {
@@ -56,6 +61,11 @@ public class FunCommands
                 invalidUsage(context, "core", "User not found!");
             }
             location = user.getLocation();
+            if(damage != -1 && damage < 0 && damage > 20)
+            {
+                invalidUsage(context, "fun", "The damage value has to be a number from 1 to 20");
+            }
+            user.setFireTicks(20 * context.getNamed("fireticks", Integer.class, Integer.valueOf(0)));
         }
         else
         {
@@ -63,7 +73,11 @@ public class FunCommands
             location = user.getTargetBlock(null, config.lightningDistance).getLocation();
         }
 
-        user.getWorld().strikeLightning(location);
+        user.getWorld().strikeLightningEffect(location);
+        if(damage != -1)
+        {
+            user.damage(damage);
+        }
     }
 
     @Command(
@@ -317,6 +331,7 @@ public class FunCommands
                 numberOfBlocks++;
             }
         }
+
         context.sendMessage("fun", "You spawnt %d blocks of TNT", numberOfBlocks);
     }
 }
