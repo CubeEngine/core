@@ -11,6 +11,8 @@ import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunConfiguration;
 import de.cubeisland.cubeengine.fun.listeners.NukeListener;
 import de.cubeisland.cubeengine.fun.listeners.RocketListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Egg;
@@ -238,7 +240,7 @@ public class FunCommands
         params = {
             @Param(names = {"player", "p"}, types = {User.class}),
             @Param(names = {"height", "h"}, types = {Integer.class}),
-            @Param(names = {"concentration", "c"}, types = {Integer.class, Integer.class})
+            @Param(names = {"concentration", "c"}, types = {String.class})
         }
     )
     public void nuke(CommandContext context)
@@ -250,12 +252,35 @@ public class FunCommands
         
         int radius = context.getIndexed(0, Integer.class, 0);
         int height = context.getNamed("height", Integer.class, Integer.valueOf(5));
-        int concentration = context.getNamed("concentration", Integer.class, 0, 1);
-        int concentrationOfBlocksPerCircle = context.getNamed("concentration", Integer.class, 1, 1);
+        int concentration = 1;
+        int concentrationOfBlocksPerCircle = 1;
         
         Location centerOfTheCircle;
         User user;
         
+        if(context.hasNamed("concentration"))
+        {
+            String concNamed = context.getNamed("concentration", String.class, null);
+            Matcher matcher = Pattern.compile("(\\d*)(\\.(\\d+))?").matcher(concNamed);
+            if(concNamed != null && matcher.matches())
+            {
+                try
+                {
+                    if(matcher.group(1) != null && matcher.group(1).length() > 0)
+                    {
+                        concentration = Integer.valueOf(matcher.group(1));
+                    }
+                    if(matcher.group(3) != null && matcher.group(3).length() > 0)
+                    {
+                        concentrationOfBlocksPerCircle = Integer.valueOf(matcher.group(3));
+                    }
+                }
+                catch(NumberFormatException e)
+                {
+                    invalidUsage(context, "fun", "The named Paramter concentration has a wron usage. 1.1 is the right. You used %s", concNamed);
+                }
+            }
+        }
         if(radius > this.config.nukeRadiusLimit)
         {
             invalidUsage(context, "fun", "&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
@@ -331,7 +356,6 @@ public class FunCommands
                 numberOfBlocks++;
             }
         }
-
         context.sendMessage("fun", "You spawnt %d blocks of TNT", numberOfBlocks);
     }
 }
