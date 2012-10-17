@@ -451,6 +451,11 @@ public class CheatCommands
 
     @Command(
     desc = "Refills the Stack in hand",
+    usage = "[-a]",
+    flags =
+    {
+        @Flag( longName = "all", name = "a")
+    },
     max = 0)
     public void more(CommandContext context)
     {
@@ -459,8 +464,21 @@ public class CheatCommands
         {
             invalidUsage(context, "basics", "More nothing is still nothing.");
         }
-        sender.getItemInHand().setAmount(64);
-        sender.sendMessage("basics", "Refilled Stack in Hand!");
+        if (context.hasFlag("a"))
+        {
+            for (ItemStack item : sender.getInventory().getContents())
+            {
+                if (item.getType() != Material.AIR)
+                {
+                    item.setAmount(64);
+                }
+            }
+        }
+        else
+        {
+            sender.getItemInHand().setAmount(64);
+            sender.sendMessage("basics", "Refilled Stack in Hand!");
+        }
     }
 
     @Command(

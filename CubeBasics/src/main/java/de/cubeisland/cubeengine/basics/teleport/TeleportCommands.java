@@ -502,4 +502,11 @@ public class TeleportCommands
         this.teleport(sender, world.getSpawnLocation(), true);
         context.sendMessage("basics", "Teleported to the spawn of world %s", world.getName());
     }
+    
+    /*
+     * /up
+     * /ascend
+     * /descend   
+      like WE 
+     */
 }

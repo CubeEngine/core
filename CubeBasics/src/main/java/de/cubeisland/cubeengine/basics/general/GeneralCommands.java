@@ -1,11 +1,18 @@
 package de.cubeisland.cubeengine.basics.general;
 
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
@@ -167,10 +174,27 @@ public class GeneralCommands
     usage = "<player>")
     public void seen(CommandContext context)
     {
-        User sender = um.getUser(context.getSender());
         User user = context.getUser(0);
-        long lastPlayed = user.getLastPlayed();
-        //TODO ausgabe;       
+        if (user == null)
+        {
+            illegalParameter(context, "basics", "User not found!");
+        }
+        if (user.isOnline())
+        {
+            context.sendMessage("basics", "%s is currently online!", user.getName());
+        }
+        else
+        {
+            long lastPlayed = user.getLastPlayed();
+            if (System.currentTimeMillis() - lastPlayed > 7 * 24 * 60 * 60 * 1000) // If greater than 7 days show distance not date
+            {
+                context.sendMessage("basics", "%s is offline since %2$td.%2$tm.%2$tY %2$tk:%2$tM", user.getName(), lastPlayed); //dd.MM.yyyy HH:mm
+            }
+            else
+            {
+                context.sendMessage("basics", "%s was last seen %2$te days %2$tk hours %2$tM minutes ago.", user.getName(), System.currentTimeMillis() - lastPlayed);
+            } //TODO output formatting durations is wrong ... .(
+        }
     }
 
     @Command(desc = "Kills yourself",
@@ -185,6 +209,153 @@ public class GeneralCommands
         sender.setHealth(0);
         sender.
             setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, 20));
-        //TODO msg;
+        context.sendMessage("bascics", "You ended your pitiful life. Why? :(");
     }
+
+    public void afk(CommandContext context)
+    {
+        //TODO automatic afk detection / when moving un-afk the player
+    }
+
+    @Command(
+        desc = "Displays the direction in which you are looking.")
+    public void compass(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "I assume you are looking right at your server-console. Right?");
+        final int direction = (int)(sender.getLocation().getYaw() + 180 + 360) % 360;
+        //TODO any idea to do this better?
+        String dir;
+        if (direction < 23)
+        {
+            dir = "N";
+        }
+        else if (direction < 68)
+        {
+            dir = "NE";
+        }
+        else if (direction < 113)
+        {
+            dir = "E";
+        }
+        else if (direction < 158)
+        {
+            dir = "SE";
+        }
+        else if (direction < 203)
+        {
+            dir = "S";
+        }
+        else if (direction < 248)
+        {
+            dir = "SW";
+        }
+        else if (direction < 293)
+        {
+            dir = "W";
+        }
+        else if (direction < 338)
+        {
+            dir = "NW";
+        }
+        else
+        {
+            dir = "N";
+        }
+        sender.sendMessage("basics", "You are looking into %s", _(sender, "basics", dir));
+    }
+    
+    @Command(
+        desc = "Displays your current depth.")
+    public void depth(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "You dug too deep!");
+        int height = sender.getLocation().getBlockY();
+        if (height > 62)
+        {
+            sender.sendMessage("basics", "You are on heightlevel %d (%d above sealevel)", height, height - 62);
+        }
+        else
+        {
+            sender.sendMessage("basics", "You are on heightlevel %d (%d below sealevel)", height, 62 - height);
+        }
+    }
+
+    @Command(
+        desc = "Displays your current location.")
+    public void getPos(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "Your position: Right in front of your screen!");
+        sender.sendMessage("basics", "Your position is X:%d Y:%d Z:%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
+    }
+
+    @Command(
+        desc = "Looks up an item for you!",
+    max = 1,
+    usage = "<item>")
+    public void itemDB(CommandContext context)
+    {
+        ItemStack item = MaterialMatcher.get().matchItemStack(context.getString(0));
+        if (item != null)
+        {
+            context.sendMessage("basics", "Found %s (%d:%d)", MaterialMatcher.get().getNameFor(item), item.getType().getId(), item.getDurability());
+        }
+        else
+        {
+            context.sendMessage("basics", "Could not find any item named %s", context.getString(0));
+        }
+    }
+    
+     @Command(
+        desc = "Displays all the online players.")
+    public void list(CommandContext context)
+    {
+        //TODO do not show hidden players
+        //TODO possibility to show prefix or main role etc.
+        List<Player> players = context.getCore().getUserManager().getOnlinePlayers();
+        List<String> list = new ArrayList<String>();
+        for (Player player : players){
+            list.add(player.getName());
+        }
+        String playerList = StringUtils.implode(",", list);        
+        context.sendMessage("basics", "Players online: %d/%d", players.size(), context.getCore().getServer().getMaxPlayers());
+        context.sendMessage("basics", "Players:\n%s", playerList);
+    }
+    /**
+     *
+     *DONE: (or almost)
+     *
+     * afk
+     * compass
+     * depth
+     * getpos
+     * me
+     * msg / r
+     * seen
+     * suicide
+     * itemdb (items.csv or something like that)
+     * list
+     * 
+     * //TODO
+     * 
+     * kit
+     * 
+     * 
+     * mail
+     *
+     * helpop -> move to CubePermissions ?? not only op but also "Moderator"
+     * ignore -> move to CubeChat
+     * info
+     * motd
+     *
+     * near
+     * nick -> move to CubeChat
+     * pt
+     * realname -> move to CubeChat
+     * rules
+     *
+     * whois
+     * help -> Display ALL availiable cmd
+     *
+     *
+     */
 }
