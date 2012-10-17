@@ -23,7 +23,7 @@ public class ShoutCommand{
     	usage = "<[World world] <message> | <Announcment-name> >",
     	params =
     	    {
-    	        @Param(names = {"World", "W"},types = {String.class})
+    	        @Param(names = {"World", "W"},types = {World.class})
     	    }
     )
 	public void broadcast(CommandContext context)
@@ -31,7 +31,7 @@ public class ShoutCommand{
 		if (context.hasNamed("World") || context.indexedCount() > 1)
 		{
 			String[] message = (String[])context.getIndexed().toArray();
-			World world = module.getCore().getServer().getWorld(context.getNamed("World", String.class));
+			World world = context.getNamed("World", World.class);
 			if (world != null)
 			{
 				for (Player p : world.getPlayers())
