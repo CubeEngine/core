@@ -205,5 +205,9 @@ public class AnnouncementManager
 		}
 		
 	}
+
+	public void setWorld(String user, String world) {
+		worlds.put(user, world);
+	}
 	
 }

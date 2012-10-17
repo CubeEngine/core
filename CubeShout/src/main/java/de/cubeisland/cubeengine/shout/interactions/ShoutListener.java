@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
@@ -23,11 +26,18 @@ public class ShoutListener implements Listener
 		this.scheduler = module.getScheduler();
 	}
 	
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void PlayerJoinEvent(PlayerJoinEvent event)
 	{
 		User user = module.getUserManager().getUser(event.getPlayer());
 		aManager.initializeUser(user);
 		scheduler.scheduleTask(new MessageTask(aManager, scheduler, user), aManager.getGCD(user));
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void PlayerChangedWorld(PlayerChangedWorldEvent event)
+	{
+		aManager.setWorld(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
 	}
 	
 }
