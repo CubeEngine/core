@@ -401,6 +401,16 @@ public class CommandContext
     {
         return this.getIndexed(i, String.class, def);
     }
+    
+    public String getStrings(int from)
+    {
+        StringBuilder sb = new StringBuilder(this.getString(from));
+        while (this.hasIndexed(++from))
+        {
+            sb.append(" ").append(this.getString(from));
+        }
+        return sb.toString();
+    }
 
     /**
      * Gets a user from a indexed parameter

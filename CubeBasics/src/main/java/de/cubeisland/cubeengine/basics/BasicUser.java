@@ -17,7 +17,7 @@ public class BasicUser implements Model<Integer>
     @Attribute(type = AttrType.INT, unsigned = true)
     public final int key; // User Key
     @Attribute(type = AttrType.TEXT)
-    public List<String> mailbox = new ArrayList<String>(); //PlayerName: message
+    public List<String> mailbox = new ArrayList<String>(); //PlayerName: message //TODO perhaps save this in a separate Table
 
     @DatabaseConstructor
     public BasicUser(List<Object> args) throws ConversionException
@@ -32,9 +32,23 @@ public class BasicUser implements Model<Integer>
         this.key = user.getKey();
     }
 
-    public void addMail(User user, String message)
+    /**
+     * Adds a mail to this users mailbox.
+     * If the user the mail came from is null assume it was the console.
+     * 
+     * @param from the user the mail comes from
+     * @param message the message
+     */
+    public void addMail(User from, String message)
     {
-        this.mailbox.add(user.getName() + ": " + message);
+        if (from == null)
+        {
+            this.mailbox.add("CONSOLE: " + message);
+        }
+        else
+        {
+            this.mailbox.add(from.getName() + ": " + message);
+        }
     }
 
     public String readMail()

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.basics.general;
 
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
