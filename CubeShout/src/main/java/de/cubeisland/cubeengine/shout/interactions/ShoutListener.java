@@ -31,7 +31,7 @@ public class ShoutListener implements Listener
 	{
 		User user = module.getUserManager().getUser(event.getPlayer());
 		aManager.initializeUser(user);
-		scheduler.scheduleTask(new MessageTask(aManager, scheduler, user), aManager.getGCD(user));
+		scheduler.scheduleTask(user.getName(), new MessageTask(aManager, scheduler, user), aManager.getGCD(user));
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

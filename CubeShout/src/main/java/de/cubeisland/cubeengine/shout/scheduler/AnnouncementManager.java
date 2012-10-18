@@ -165,12 +165,12 @@ public class AnnouncementManager
 			// TODO throw exception
 			return;
 		}
-		if (permNode == null || permNode.isEmpty())
+		if (!permNode.equals("*") || (permNode == null || permNode.isEmpty()))
 		{
 			// TODO throw exception
 			return;
 		}
-		if (group == null || permNode.isEmpty())
+		if (!group.equals("*") || (group == null || group.isEmpty()))
 		{
 			// TODO throw exception
 			return;
@@ -188,7 +188,7 @@ public class AnnouncementManager
 		// Load what announcements should be displayed to the user
 		for (Announcement a : announcements)
 		{
-			if (user.hasPermission(a.getPermNode()))// TODO CubeRoles
+			if (a.getPermNode().equals("*") || user.hasPermission(a.getPermNode()))// TODO CubeRoles
 			{
 				if (!messages.containsKey(user.getName()))
 				{

@@ -1,0 +1,6 @@
+delay: 10 minutes
+permission: you.need.this.permission.to.get.the.announcement
+role: Guest
+world: world
+
+This is the announcement that's posted to guests in the world "world" 
