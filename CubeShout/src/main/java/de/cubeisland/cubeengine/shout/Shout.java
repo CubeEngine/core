@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.shout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,39 +93,25 @@ public class Shout extends Module
     	String group = "*";
     	if (f.isDirectory())
     	{
-    		// Where is the message delay, world, group, permNode, etc. stored?
-    		// TODO
-    	}
-    	else
-    	{	
-    		List<String> lines = this.readFile(f);
-    		StringBuilder message = new StringBuilder();
-    		for (String line : lines)
+    		// TODO parse info.yml
+    		
+    		List<File> languages = new ArrayList<File>();
+    		languages = Arrays.asList(f.listFiles());
+    		for (File lang : languages)
     		{
-    			if (line.startsWith("world: "))
+    			if (lang.getName().contains("_") && lang.getName().endsWith(".txt"))
     			{
-    				world = line.split(": ", 2)[1];
-    			}
-    			else if (line.startsWith("permission: "))
-    			{
-    				permNode = line.split(": ", 2)[1];
-    			}
-    			else if (line.startsWith("role: "))
-    			{
-    				group = line.split(": ", 2)[1];
-    			}
-    			else if (line.startsWith("delay: "))
-    			{
-    				delay = this.parseDelay(line.split(": ", 2)[1]);
-    			}
-    			else
-    			{
-    				message.append(line+"\n");
+    				StringBuilder message = new StringBuilder();
+    				for (String line : readFile(lang))
+    				{
+    					message.append(line + "\n");
+    				}
+    				messages.put(lang.getName().replace(".txt", ""), message.toString());
     			}
     		}
-    		messages.put(this.getCore().getConfiguration().defaultLanguage, message.toString());
+    		
+        	aManager.addAnnouncement(messages, world, delay, permNode, group);
     	}
-    	aManager.addAnnouncement(messages, world, delay, permNode, group);
     }
     
     /**
