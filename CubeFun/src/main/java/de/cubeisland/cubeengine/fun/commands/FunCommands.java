@@ -199,37 +199,44 @@ public class FunCommands
 
     @Command(
         desc = "rockets a player",
-        min = 2,
-        max = 2,
-        usage = "<player> <distance>"
+        max = 1,
+        usage = "[height]",
+        params = {@Param(names = {"player", "p"}, types = {User.class})}
     )
     public void rocket(CommandContext context)
     {
-        User user = context.getUser(0);
+        RocketListener rocketListener = this.module.getRocketListener();
+        int ticks = 20;
+        
+        int height = context.getIndexed(0, Integer.class, 10);
+        User user = (context.hasNamed("player")) ? 
+            context.getNamed("player", User.class, null) : 
+            context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+        
         if (user == null)
         {
             invalidUsage(context, "core", "User not found!");
         }
 
-        int distance = context.getIndexed(1, Integer.class, 8);
-
-        if (distance > 100)
+        if (height > 100)
         {
             invalidUsage(context, "fun", "Do you never wanna see %s again?", user.getName());
         }
         else
         {
-            if (distance < 0)
+            if (height < 0)
             {
-                invalidUsage(context, "fun", "The distance has to be greater than 0");
+                invalidUsage(context, "fun", "The height has to be greater than 0");
             }
         }
-
-        user.setVelocity(new Vector(0.0, (double)distance / 10, 0.0));
         
-        RocketListener rocketListener = this.module.getRocketListener();
-        rocketListener.addPlayer(user);
-        this.taskManager.scheduleSyncDelayedTask(module, rocketListener, 110);
+        user.setVelocity(new Vector(0.0, (double)height/10, 0.0));
+        rocketListener.addInstance(user, ticks);
+        
+        for(int i = 1; i <= ticks; i++)
+        {
+            this.taskManager.scheduleSyncDelayedTask(module, rocketListener, 5 * i);
+        }
     }
 
     @Command(
