@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
@@ -11,6 +12,7 @@ import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity(name="basicuser")
 public class BasicUser implements Model<Integer>
 {
     @Key

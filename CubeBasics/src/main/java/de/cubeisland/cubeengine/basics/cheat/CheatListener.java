@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.basics.cheat;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -10,12 +9,17 @@ import org.bukkit.inventory.ItemStack;
 
 public class CheatListener implements Listener
 {
-    private UserManager um = CubeEngine.getUserManager();
+    private Basics module;
+
+    public CheatListener(Basics module)
+    {
+        this.module = module;
+    }
 
     @EventHandler
     public void blockplace(final BlockPlaceEvent event)
     {
-        User user = this.um.getUser(event.getPlayer());
+        User user = module.getUserManager().getUser(event.getPlayer());
         if (user.getAttribute("unlimitedItems"))
         {
             ItemStack itemInHand = event.getPlayer().getItemInHand();
