@@ -14,8 +14,10 @@ import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.ProfessionMatcher;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Locale;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -834,7 +836,11 @@ public class ModerationCommands
     },
     desc = "Bans a player permanently on your server.",
     min = 1,
-    usage = "<player> [message]")
+    usage = "<player> [message] [-ipban]",
+    flags =
+    {
+        @Flag(longName = "ipban", name = "ip")
+    })
     public void ban(CommandContext context)
     {
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
@@ -858,6 +864,10 @@ public class ModerationCommands
                 }
                 user.kickPlayer(message);
             }
+            if (context.hasFlag("ip"))
+            {
+                Bukkit.banIP(player.getPlayer().getAddress().getAddress().getHostAddress());
+            }
         }
         player.setBanned(true);
         context.sendMessage("basics", "You banned %s.", player.getName());
@@ -876,5 +886,51 @@ public class ModerationCommands
         }
         user.setBanned(false);
         context.sendMessage("basics", "You unbanned %s.", user.getName());
+    }
+
+    @Command(
+    names =
+    {
+        "ipban", "banip"
+    },
+    desc = "Bans the IP from this server.",
+    min = 1,
+    usage = "<IP address>")
+    public void ipban(CommandContext context)
+    {
+        String ipadress = context.getString(0);
+        try
+        {
+            InetAddress adress = InetAddress.getByName(ipadress);
+            Bukkit.banIP(adress.getHostAddress());
+            context.sendMessage("basics", "You banned the IP %s from your server!", adress.getHostAddress());
+        }
+        catch (Exception e)
+        {
+            invalidUsage(context, "basics", "%s is not a valid IP-address!", ipadress);
+        }
+    }
+
+    @Command(
+    names =
+    {
+        "ipunban", "unbanip"
+    },
+    desc = "Bans the IP from this server.",
+    min = 1,
+    usage = "<IP address>")
+    public void ipunban(CommandContext context)
+    {
+        String ipadress = context.getString(0);
+        try
+        {
+            InetAddress adress = InetAddress.getByName(ipadress);
+            Bukkit.unbanIP(adress.getHostAddress());
+            context.sendMessage("basics", "You unbanned the IP %s!", adress.getHostAddress());
+        }
+        catch (Exception e)
+        {
+            invalidUsage(context, "basics", "%s is not a valid IP-address!", ipadress);
+        }
     }
 }
