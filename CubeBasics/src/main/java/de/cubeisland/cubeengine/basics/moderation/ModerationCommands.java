@@ -446,26 +446,48 @@ public class ModerationCommands
 
     @Command(
     desc = "Kills a player",
-    usage = "<player>",
-    min = 1,
-    max = 1)
+    usage = "<player>|-a",
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    })
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightnin
         User user = context.getUser(0);
-        if (user == null)
+        if (user == null && !context.hasFlag("a"))
         {
             invalidUsage(context, "core", "User not found!");
         }
-        if (!user.isOnline())
+        else
         {
-            illegalParameter(context, "core", "%s currently not online", user.
-                getName());
+            if (!user.isOnline())
+            {
+                illegalParameter(context, "core", "%s currently not online", user.getName());
+            }
+            if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(user))
+            {
+                context.sendMessage("basics", "You cannot kill that player!");
+                return;
+            }
         }
-        if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(user))
+        if (context.hasFlag("a"))
         {
-            context.sendMessage("basics", "You cannot kill that player!");
-            return;
+            if (!BasicsPerm.COMMAND_KILL_ALL.isAuthorized(context.getSender()))
+            {
+                denyAccess(context, "basics", "You are not allowed to kill everyone!");
+            }
+            for (Player player : context.getCore().getUserManager().getOnlinePlayers())
+            {
+                if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(player))
+                {
+                    continue;
+                }
+                if (!player.getName().equals(context.getSender().getName()))
+                {
+                    user.setHealth(0);
+                }
+            }
         }
         user.setHealth(0);
         //TODO broadcast alternative Deathmsgs
@@ -508,10 +530,9 @@ public class ModerationCommands
             "in"
         }, types = World.class)
     },
-    min = 1,
-    max = 1)
+    min = 1)
     public void remove(CommandContext context)
-    {//TODO test
+    {
         User sender = context.getSenderAsUser();
         World world;
         if (context.hasNamed("in"))
@@ -547,6 +568,13 @@ public class ModerationCommands
             }
         }
         EntityType type = EntityMatcher.get().matchEntity(context.getString(0));
+        if (type == null)
+        {
+            illegalParameter(context, "basics", "Invalid entity-type!\nUse "
+                + EntityType.DROPPED_ITEM + ", " + EntityType.ARROW + ", "
+                + EntityType.BOAT + ", " + EntityType.MINECART + ", "
+                + EntityType.EXPERIENCE_ORB + " or " + EntityType.ARROW);
+        }
         if (type.isAlive())
         {
             invalidUsage(context, "basics", "To kill living entities use the butcher command!");
@@ -556,7 +584,8 @@ public class ModerationCommands
         {
             loc = sender.getLocation();
         }
-        this.removeEntityType(world.getEntities(), loc, radius, type);
+        int entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, type);
+        context.sendMessage("basics", "Removed %d entities!", entitiesRemoved);
     }
 
     private int removeEntityType(List<Entity> list, Location loc, int radius, EntityType type)
@@ -569,7 +598,7 @@ public class ModerationCommands
 
         for (Entity entity : list)
         {
-            if (entity.getType().equals(type.getBukkitType()))
+            if (!entity.getType().equals(type.getBukkitType()))
             {
                 continue;
             }
@@ -748,7 +777,7 @@ public class ModerationCommands
 
     @Command(
     desc = "Kicks a player from the server",
-    usage = "<player> [message]",
+    usage = "<player>|-all [message]",
     flags =
     {
         @Flag(longName = "all", name = "a")
@@ -756,7 +785,7 @@ public class ModerationCommands
     public void kick(CommandContext context)
     {
         User user = context.getUser(0);
-        if (user == null)
+        if (user == null && !context.hasFlag("a"))
         {
             illegalParameter(context, "basics", "User not found!");
         }
@@ -785,13 +814,16 @@ public class ModerationCommands
                     }
                 }
             }
+            else
+            {
+                denyAccess(context, "basics", "You are not allowed to kick everyone!");
+            }
         }
         else
         {
             user.kickPlayer(message);
         }
     }
-    //kick -a
     //ban
     //unban 
 }

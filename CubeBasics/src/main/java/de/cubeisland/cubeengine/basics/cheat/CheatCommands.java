@@ -45,8 +45,7 @@ public class CheatCommands
     usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
-        User sender = context.
-            getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         ItemStack item = sender.getItemInHand();
         if (item.getType().equals(Material.AIR))
         {
@@ -361,7 +360,6 @@ public class CheatCommands
     usage = "<player> <material[:data]> [amount] [-blacklist]")
     public void give(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
         User user = context.getUser(0);
         if (user == null)
         {
@@ -395,10 +393,8 @@ public class CheatCommands
         user.getInventory().addItem(item);
         user.updateInventory();
         String matname = MaterialMatcher.get().getNameFor(item);
-        context.
-            sendMessage("basics", "You gave %s %d %s", user.getName(), amount, matname);
-        user.
-            sendMessage("%s just gave you %d %s", context.getSender().getName(), amount, matname);
+        context.sendMessage("basics", "You gave %s %d %s", user.getName(), amount, matname);
+        user.sendMessage("%s just gave you %d %s", context.getSender().getName(), amount, matname);
     }
 
     @Command(
@@ -416,8 +412,7 @@ public class CheatCommands
     usage = "<material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
-        User sender = context.
-            getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
         ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
@@ -444,9 +439,7 @@ public class CheatCommands
         item.setAmount(amount);
         sender.getInventory().addItem(item);
         sender.updateInventory();
-        sender.
-            sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.
-            get().getNameFor(item));
+        sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
     }
 
     @Command(
@@ -795,10 +788,12 @@ public class CheatCommands
             if (bln == null)
             {
                 sender.setAttribute("unlimitedItems", true);
+                context.sendMessage("basics", "You now have unlimited items to build!");
             }
             else
             {
                 sender.removeAttribute("unlimitedItems");
+                context.sendMessage("basics", "You now no longer have unlimited items to build!");
             }
         }
     }

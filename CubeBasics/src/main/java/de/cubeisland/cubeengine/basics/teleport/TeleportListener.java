@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.teleport;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,7 +34,9 @@ public class TeleportListener implements Listener
     public void onDeath(PlayerDeathEvent event)
     {
         User user = this.module.getUserManager().getUser(event.getEntity());
-        //TODO check tp back on death permission
-        user.setAttribute("lastLocation", user.getLocation());
+        if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
+        {
+            user.setAttribute("lastLocation", user.getLocation());
+        }
     }
 }

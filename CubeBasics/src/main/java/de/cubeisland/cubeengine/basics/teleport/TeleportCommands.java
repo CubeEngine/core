@@ -49,7 +49,7 @@ public class TeleportCommands
         }
         else
         {
-            user.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            user.teleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
         }
     }
 
@@ -471,12 +471,10 @@ public class TeleportCommands
     max = 0,
     flags =
     {
-        @Flag(longName = "force", name = "f"),
         @Flag(longName = "unsafe", name = "u")
     })
     public void back(CommandContext context)
     {
-        //TODO back on death
         User sender = context.getSenderAsUser("basics", "You never teleported!");
         Location loc = sender.getAttribute("lastLocation");
         if (loc == null)

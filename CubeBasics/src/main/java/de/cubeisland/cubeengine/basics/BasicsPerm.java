@@ -14,6 +14,7 @@ public enum BasicsPerm implements Permission
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,
     COMMAND_KILL_EXEMPT,
+    COMMAND_KILL_ALL,
     COMMAND_INVSEE_MODIFY,
     COMMAND_INVSEE_PREVENTMODIFY,
     COMMAND_KICK_ALL,
@@ -21,7 +22,8 @@ public enum BasicsPerm implements Permission
     COMMAND_TP_OTHER, // can tp other person
     COMMAND_TP_PREVENT_TP, // can not be tped except forced
     COMMAND_TP_PREVENT_TPTO, // can not be tped to except forced
-    COMMAND_TPALL_FORCE // ignore all other permissions
+    COMMAND_TPALL_FORCE, // ignore all other permissions
+    COMMAND_BACK_ONDEATH,
     ;
     private String permission;
     private PermissionDefault def;
