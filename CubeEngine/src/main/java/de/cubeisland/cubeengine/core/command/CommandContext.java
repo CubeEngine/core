@@ -401,9 +401,13 @@ public class CommandContext
     {
         return this.getIndexed(i, String.class, def);
     }
-    
+
     public String getStrings(int from)
     {
+        if (!this.hasIndexed(from))
+        {
+            return "";
+        }
         StringBuilder sb = new StringBuilder(this.getString(from));
         while (this.hasIndexed(++from))
         {
@@ -552,7 +556,7 @@ public class CommandContext
         try
         {
             T value = this.getIndexed(index, type);
-            if(value != null)
+            if (value != null)
             {
                 return value;
             }
@@ -674,7 +678,7 @@ public class CommandContext
         }
         return null;
     }
-    
+
     /**
      * Returns a value of a named parameter or a default value if not found
      *
@@ -687,13 +691,13 @@ public class CommandContext
     public <T> T getNamed(String name, Class<T> type, T def)
     {
         T value = this.getNamed(name, type);
-        if(value != null)
+        if (value != null)
         {
             return value;
         }
         return def;
     }
-    
+
     /**
      * Returns a value of a named parameter or a default value if not found
      *
@@ -707,7 +711,7 @@ public class CommandContext
     public <T> T getNamed(String name, Class<T> type, int i, T def)
     {
         T value = this.getNamed(name, type, i);
-        if(value != null)
+        if (value != null)
         {
             return value;
         }

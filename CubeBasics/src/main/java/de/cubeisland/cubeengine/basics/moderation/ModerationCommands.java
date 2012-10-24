@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Villager.Profession;
@@ -28,6 +29,7 @@ import org.bukkit.util.Vector;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class ModerationCommands
 {
@@ -824,6 +826,55 @@ public class ModerationCommands
             user.kickPlayer(message);
         }
     }
-    //ban
-    //unban 
+
+    @Command(
+    names =
+    {
+        "ban", "kickban"
+    },
+    desc = "Bans a player permanently on your server.",
+    min = 1,
+    usage = "<player> [message]")
+    public void ban(CommandContext context)
+    {
+        OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
+        if (player.isBanned())
+        {
+            invalidUsage(context, "basics", "%s is already banned!");
+        }
+        if (player.hasPlayedBefore() == false)
+        {
+            context.sendMessage("basics", "%s has never played on this server before!", player.getName());
+        }
+        else
+        {
+            if (player.isOnline())
+            {
+                User user = context.getCore().getUserManager().getUser(player);
+                String message = context.getStrings(1);
+                if (message.equals(""))
+                {
+                    message = _(user, "basics", "&cYou got banned from this server!");
+                }
+                user.kickPlayer(message);
+            }
+        }
+        player.setBanned(true);
+        context.sendMessage("basics", "You banned %s.", player.getName());
+    }
+
+    @Command(
+    desc = "Unbans a previously banned player.",
+    min = 1,
+    usage = "<player>")
+    public void unban(CommandContext context)
+    {
+        OfflinePlayer user = context.getSender().getServer().getOfflinePlayer(context.getString(0));
+        if (!user.isBanned())
+        {
+            invalidUsage(context, "basics", "%s is not banned!");
+        }
+        user.setBanned(false);
+        context.sendMessage("basics", "You unbanned %s.", user.getName());
+    }
 }
