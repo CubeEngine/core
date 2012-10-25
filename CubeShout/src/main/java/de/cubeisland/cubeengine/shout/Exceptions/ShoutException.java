@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.shout.Exceptions;
 
 public class ShoutException extends Exception{
+	private static final long serialVersionUID = 4325477695912520682L;
 
 	public ShoutException()
 	{

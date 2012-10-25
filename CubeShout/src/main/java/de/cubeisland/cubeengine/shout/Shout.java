@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.shout;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.shout.Exceptions.ShoutException;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
@@ -34,6 +35,11 @@ public class Shout extends Module
     @Override
     public void onEnable()
     {
+    	if (this.getCore().isDebug())
+    	{
+    		this.getLogger().log(Level.INFO, "Enabling CubeShout");
+    	}
+    	
     	instance = this;
     	
     	this.getFileManager().dropResources(ShoutResource.values());
@@ -50,7 +56,7 @@ public class Shout extends Module
     	{
     		this.getLogger().log(Level.SEVERE, ex.getMessage());
     	} catch (IOException ex) {
-    		this.getLogger().log(Level.SEVERE, "Error while reading announcements. Going into zombe state.");
+    		this.getLogger().log(Level.SEVERE, "An IO error occurred while reading announcements. Going into zombie state.\n" + ex.getMessage());
     		return;
 		}
     	
@@ -79,12 +85,16 @@ public class Shout extends Module
     	
     	for (File f : announcements)
     	{
+    		if (this.getCore().isDebug())
+    		{
+    			this.getLogger().log(Level.INFO, "Loading announcement "+f.getName());
+    		}
     		this.loadAnnouncement(f);
     	}
     	
     }
     
-    private void loadAnnouncement(File f) throws IOException
+    private void loadAnnouncement(File f) throws IOException, ShoutException
     {
     	Map<String, String> messages = new HashMap<String, String>();
     	String world = "*";
@@ -93,23 +103,39 @@ public class Shout extends Module
     	String group = "*";
     	if (f.isDirectory())
     	{
-    		// TODO parse info.yml
-    		
-    		List<File> languages = new ArrayList<File>();
-    		languages = Arrays.asList(f.listFiles());
-    		for (File lang : languages)
+    		AnnouncementConfiguration conf = Configuration.load(AnnouncementConfiguration.class, new File(f, "announcement.yml"));
+    		if (conf == null)
     		{
-    			if (lang.getName().contains("_") && lang.getName().endsWith(".txt"))
-    			{
-    				StringBuilder message = new StringBuilder();
-    				for (String line : readFile(lang))
-    				{
-    					message.append(line + "\n");
-    				}
-    				messages.put(lang.getName().replace(".txt", ""), message.toString());
-    			}
+    			throw new ShoutException("No configfile to announcement: "+ f.getName());
     		}
     		
+    		world = conf.world;
+    		permNode = conf.permNode;
+    		group = conf.group;
+    		delay = parseDelay(conf.delay);
+    		
+    		if (delay == 0)
+    		{
+    			throw new ShoutException("No valid delay in announcement: "+ f.getName());
+    		}
+    		
+    		List<File> languages = new ArrayList<File>();
+    		languages = Arrays.asList(f.listFiles((FilenameFilter)new FileExtentionFilter("txt")));
+    		
+    		
+    		for (File lang : languages)
+    		{
+				StringBuilder message = new StringBuilder();
+				for (String line : FileUtil.readStringList(lang))
+				{
+					message.append(line + "\n");
+				}
+				messages.put(lang.getName().replace(".txt", ""), message.toString());
+    		}
+    		if (this.getCore().isDebug())
+    		{
+    			this.getLogger().log(Level.INFO, "Languages: "+ messages.keySet().toString());
+    		}
         	aManager.addAnnouncement(messages, world, delay, permNode, group);
     	}
     }
@@ -139,22 +165,8 @@ public class Shout extends Module
 			
 		}
     	
-		return (Integer)null;
+		return 0;
 	}
-
-	private List<String> readFile(File f) throws IOException
-    {
-    	List<String> lines = new ArrayList<String>();
-    	
-    	BufferedReader reader = new BufferedReader(new FileReader(f));
-        String line;
-        while ((line = reader.readLine()) != null)
-        {
-            lines.add(line.trim().replaceAll("&([a-f0-9])", "\u00A7$1"));
-        }
-        reader.close();
-    	return lines;
-    }
     
 	public AnnouncementManager getAManager()
 	{
