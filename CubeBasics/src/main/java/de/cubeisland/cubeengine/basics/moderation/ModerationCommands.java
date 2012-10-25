@@ -15,6 +15,7 @@ import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.ProfessionMatcher;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Locale;
 import org.bukkit.Bukkit;
@@ -904,8 +905,15 @@ public class ModerationCommands
             InetAddress adress = InetAddress.getByName(ipadress);
             Bukkit.banIP(adress.getHostAddress());
             context.sendMessage("basics", "You banned the IP %s from your server!", adress.getHostAddress());
+            for (Player player : context.getCore().getUserManager().getOnlinePlayers())
+            {
+                if (player.getAddress().getAddress().getHostAddress().equals(ipadress))
+                {
+                    player.kickPlayer(_(player, "basics", "You were banned from this server!"));
+                }
+            }
         }
-        catch (Exception e)
+        catch (UnknownHostException e)
         {
             invalidUsage(context, "basics", "%s is not a valid IP-address!", ipadress);
         }
@@ -928,7 +936,7 @@ public class ModerationCommands
             Bukkit.unbanIP(adress.getHostAddress());
             context.sendMessage("basics", "You unbanned the IP %s!", adress.getHostAddress());
         }
-        catch (Exception e)
+        catch (UnknownHostException e)
         {
             invalidUsage(context, "basics", "%s is not a valid IP-address!", ipadress);
         }
