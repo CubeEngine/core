@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import java.util.logging.Level;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,7 +32,9 @@ public class ShoutListener implements Listener
 	public void PlayerJoinEvent(PlayerJoinEvent event)
 	{
 		User user = module.getUserManager().getUser(event.getPlayer());
+		module.logger.log(Level.INFO, "Loading user: " + user.getName());
 		aManager.initializeUser(user);
+		module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGCD(user)));
 		scheduler.scheduleTask(user.getName(), new MessageTask(aManager, scheduler, user), aManager.getGCD(user));
 	}
 	

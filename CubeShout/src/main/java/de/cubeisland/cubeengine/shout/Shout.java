@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -28,7 +30,7 @@ public class Shout extends Module
 	private ShoutCommand command;
 	private Scheduler scheduler;
 	
-	public static Shout instance;
+	public Logger logger;
 	
 	// TODO CubeRoles
 	
@@ -40,9 +42,9 @@ public class Shout extends Module
     		this.getLogger().log(Level.INFO, "Enabling CubeShout");
     	}
     	
-    	instance = this;
-    	
     	this.getFileManager().dropResources(ShoutResource.values());
+    	
+    	this.logger = this.getLogger();
     	
     	this.scheduler = new Scheduler(this);
     	this.aManager = new AnnouncementManager(this);
@@ -51,13 +53,27 @@ public class Shout extends Module
     	
     	try{
     		loadAnnouncements();
-    	}
-    	catch (ShoutException ex)
-    	{
-    		this.getLogger().log(Level.SEVERE, ex.getMessage());
+    	} catch (ShoutException ex) {
+    		this.logger.log(Level.SEVERE, "Something went wrong while parsing the config! Going into zombie state.\n" + ex.getLocalizedMessage());
+			if (this.getCore().isDebug())
+			{
+				ex.printStackTrace();
+			}
+			return;
     	} catch (IOException ex) {
-    		this.getLogger().log(Level.SEVERE, "An IO error occurred while reading announcements. Going into zombie state.\n" + ex.getMessage());
+    		this.logger.log(Level.SEVERE, "An IO error occurred while reading announcements. Going into zombie state.\n" + ex.getMessage());
+			if (this.getCore().isDebug())
+			{
+				ex.printStackTrace();
+			}
     		return;
+		} catch (InvalidConfigurationException ex) {
+			this.logger.log(Level.SEVERE, "Something went wrong while parsing the config! Going into zombie state.\n" + ex.getLocalizedMessage());
+			if (this.getCore().isDebug())
+			{
+				ex.printStackTrace();
+			}
+			return;
 		}
     	
     	this.registerListener(listener);
@@ -87,7 +103,7 @@ public class Shout extends Module
     	{
     		if (this.getCore().isDebug())
     		{
-    			this.getLogger().log(Level.INFO, "Loading announcement "+f.getName());
+    			this.logger.log(Level.INFO, "Loading announcement "+f.getName());
     		}
     		this.loadAnnouncement(f);
     	}
@@ -134,9 +150,13 @@ public class Shout extends Module
     		}
     		if (this.getCore().isDebug())
     		{
-    			this.getLogger().log(Level.INFO, "Languages: "+ messages.keySet().toString());
+    			this.logger.log(Level.INFO, "Languages: "+ messages.keySet().toString());
+    			this.logger.log(Level.INFO, "World: " +  world);
+    			this.logger.log(Level.INFO, "Delay(in ticks: " +  delay);
+    			this.logger.log(Level.INFO, "Permission: " +  permNode);
+    			this.logger.log(Level.INFO, "Group: " +  group);
     		}
-        	aManager.addAnnouncement(messages, world, delay, permNode, group);
+        	aManager.addAnnouncement(f.getName(), messages, world, delay, permNode, group);
     	}
     }
     
@@ -151,7 +171,7 @@ public class Shout extends Module
      */
     private int parseDelay(String delayText) {
 		String[] parts = delayText.split(" ", 2);
-		int tmpdelay = Integer.parseInt(parts[1]);
+		int tmpdelay = Integer.parseInt(parts[0]);
 		
 		switch(parts[1].toLowerCase()){
 			case "secounds":
@@ -161,6 +181,14 @@ public class Shout extends Module
 			case "hours":
 				return tmpdelay * 20 * 60 * 60;
 			case "days":
+				return tmpdelay * 20 * 60 * 60 * 24;
+			case "secound":
+				return tmpdelay * 20;
+			case "minute":
+				return tmpdelay * 20 * 60;
+			case "hour":
+				return tmpdelay * 20 * 60 * 60;
+			case "day":
 				return tmpdelay * 20 * 60 * 60 * 24;
 			
 		}

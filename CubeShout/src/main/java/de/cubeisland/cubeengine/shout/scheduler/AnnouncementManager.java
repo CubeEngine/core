@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -148,7 +149,7 @@ public class AnnouncementManager
 	 * @param permNode
 	 * @param group
 	 */
-	public void addAnnouncement(Map<String, String> messages, String world, int delay, String permNode, String group)
+	public void addAnnouncement(String name, Map<String, String> messages, String world, int delay, String permNode, String group)
 	{
 		if ( !(world == "*" ||module.getCore().getServer().getWorld(world) != null))
 		{
@@ -176,7 +177,7 @@ public class AnnouncementManager
 			return;
 		}
 		
-		this.announcements.add(new Announcement(module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
+		this.announcements.add(new Announcement(name, module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
 	}
 	
 	/**
@@ -202,6 +203,12 @@ public class AnnouncementManager
 				}
 				delays.get(user.getName()).add(a.getDelay());
 			}
+			
+			if (module.getCore().isDebug())
+			{
+				module.logger.log(Level.INFO, user.getName() + " is now receiving message: " + a.getName());
+			}
+			
 		}
 		
 	}

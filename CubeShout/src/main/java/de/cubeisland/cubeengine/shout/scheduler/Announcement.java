@@ -8,6 +8,7 @@ import java.util.Map;
 public class Announcement
 {
 	
+	private String name;
 	private String defaultLocale = "en_US";
 	private String permNode;
 	private String world;
@@ -22,8 +23,9 @@ public class Announcement
 	 * @param	messages		The message in different languages
 	 * @param	delay			The delay after this message in ticks
 	 */
-	public Announcement(String defaultLocale, String permNode, String world, Map<String, String> messages, int delay)
+	public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, int delay)
 	{
+		this.name = name;
 		this.defaultLocale = defaultLocale;
 		this.permNode = permNode;
 		this.world = world;
@@ -83,5 +85,9 @@ public class Announcement
 
 	public boolean hasWorld(String world) {
 		return (getWorld().equals("*") || getWorld().equals(world));
+	}
+
+	public String getName() {
+		return name;
 	}
 }

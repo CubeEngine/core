@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -67,6 +68,10 @@ public class Scheduler implements Runnable
 			User u = 	module.getCore().getUserManager().getUser(m.user);
 			if (u != null)
 			{
+				if(module.getCore().isDebug())
+				{
+					module.logger.log(Level.INFO, u.getName()+" Is now receiving a message");	
+				}
 				u.sendMessage(m.message);
 			}
 		}
