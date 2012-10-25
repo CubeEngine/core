@@ -847,7 +847,7 @@ public class ModerationCommands
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         if (player.isBanned())
         {
-            invalidUsage(context, "basics", "%s is already banned!");
+            invalidUsage(context, "basics", "%s is already banned!", player.getName());
         }
         if (player.hasPlayedBefore() == false)
         {
@@ -883,7 +883,7 @@ public class ModerationCommands
         OfflinePlayer user = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         if (!user.isBanned())
         {
-            invalidUsage(context, "basics", "%s is not banned!");
+            invalidUsage(context, "basics", "%s is not banned!", user.getName());
         }
         user.setBanned(false);
         context.sendMessage("basics", "You unbanned %s.", user.getName());
