@@ -1,18 +1,18 @@
 CubeShout
 
 FEATURES:
-    - delays on per-announcement basis
+    - delays on per-announcement basis										DONE
     - manual and automatic announcements
     - group announcements
     - role announcements (needs the Role module)
-    - multi language support
+    - multi language support												Should be done
     - variables
-    - delays should not be affected by lag (as good as possible)
-    - announcements and their config should be read from *.txt files
+    - delays should not be affected by lag (as good as possible)				Should be done
+    - announcements should be read from *.txt files and their config from yaml	DONE
     - announcements should not be posted if there are no players
 
 
-Messages will be stored in Announcer/messages/(message)/(localcode(en_US)).txt or just Announcer/messages/(message).txt if not translateable.
+Messages will be stored in Shout/(message)/(localcode(en_US)).txt
 
 HOW TO SCHEDULE THE MESSAGES:
 1. Player Joins
@@ -20,20 +20,3 @@ HOW TO SCHEDULE THE MESSAGES:
 3. Get lowest common denominator of the delays
 4. Translate the delays of the messages to how many times the task should run
 5. Schedule a task that run at the lowest common denominator. And uses the new delays for the messages
-
-psedo code of message task:
->>>>
-AManager aManager;
-User user;
-int runs;
-int nextExcecution;
-
-void run()
-{
-    if(this.runs == this.nextExcecution)
-    {
-        scheduler.queue.append(aManager.getNext(this.user);
-        this.nextExcecution = this.runs + aManager.getNextDelay(this.user);
-    }
-}
->>>>

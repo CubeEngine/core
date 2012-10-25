@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
+import de.cubeisland.cubeengine.shout.Exceptions.ShoutException;
 
 /*
  * Class to manage all the announcements and their receivers
@@ -23,7 +24,7 @@ public class AnnouncementManager
 	private Map<String, Queue<Announcement>> messages;
 	private Map<String, Queue<Integer>> delays;
 	private Map<String, String> worlds;
-	private Set<Announcement> announcements;
+	public Set<Announcement> announcements;
 	
 	public AnnouncementManager(Shout module)
 	{
@@ -40,9 +41,12 @@ public class AnnouncementManager
 	 * @param	user	The user to get announcements of.
 	 * @return			A list of all announcements that should be displayed to this user.
 	 */
-	public List<Announcement> getAnnouncemets(User user)
+	public List<Announcement> getAnnouncemets(String user)
 	{
-		return Arrays.asList((Announcement[])messages.get(user.getName()).toArray());
+
+		Announcement[] aarray = new Announcement[announcements.size()];
+		messages.get(user).toArray(aarray);
+		return Arrays.asList(aarray);
 	}
 
 	/**
@@ -51,7 +55,7 @@ public class AnnouncementManager
 	 * @param 	user	The user to get the gcd of their announcements.
 	 * @return			The gcd of the users announcements.
 	 */
-	public int getGCD(User user)
+	public int getGCD(String user)
 	{
 		List<Announcement> announcements = this.getAnnouncemets(user);
 		int[] delays = new int[announcements.size()];
@@ -92,6 +96,7 @@ public class AnnouncementManager
 	 */
 	public String getNext(String user)
 	{
+		User us = module.getUserManager().getUser(user);
 		Announcement returnn = null;
 		boolean used = false;
 		//Skip all announcements that don't apply to this world.
@@ -108,7 +113,7 @@ public class AnnouncementManager
 			return null;
 		}
 		//TODO add language support
-		return returnn.getMessage();
+		return returnn.getMessage(us.getLanguage());
 	}
 	
 	/**
@@ -136,7 +141,7 @@ public class AnnouncementManager
 			return 0;
 		}
 		//TODO add language support
-		return returnn.getDelay();
+		return returnn.getDelay()/getGCD(user);
 	}
 
 	/**
@@ -148,33 +153,29 @@ public class AnnouncementManager
 	 * @param delay
 	 * @param permNode
 	 * @param group
+	 * @throws ShoutException if there is something wrong with the values
 	 */
-	public void addAnnouncement(String name, Map<String, String> messages, String world, int delay, String permNode, String group)
+	public void addAnnouncement(String name, Map<String, String> messages, String world, int delay, String permNode, String group) throws ShoutException
 	{
-		if ( !(world == "*" ||module.getCore().getServer().getWorld(world) != null))
+		if ( !(world.equals("*") ||module.getCore().getServer().getWorld(world) != null))
 		{
-			// TODO throw exception
-			return;
+			throw new ShoutException("No valid world for this anouncement");
 		}
 		if (delay == 0)
 		{
-			// TODO throw exception
-			return;
+			throw new ShoutException("No valid delay for this anouncement");
 		}
 		if (messages == null || !messages.containsKey("en_US"))
 		{
-			// TODO throw exception
-			return;
+			throw new ShoutException("No valid message for this anouncement");
 		}
 		if (!permNode.equals("*") || (permNode == null || permNode.isEmpty()))
 		{
-			// TODO throw exception
-			return;
+			throw new ShoutException("No valid permission for this anouncement");
 		}
 		if (!group.equals("*") || (group == null || group.isEmpty()))
 		{
-			// TODO throw exception
-			return;
+			throw new ShoutException("No valid group for this anouncement");
 		}
 		
 		this.announcements.add(new Announcement(name, module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
@@ -186,9 +187,19 @@ public class AnnouncementManager
 	 * @param user	The user
 	 */
 	public void initializeUser(User user) {
+		if (module.getCore().isDebug() && announcements.isEmpty())
+		{
+			module.logger.log(Level.INFO, "There is no announcements loaded!!");
+		}
+		
 		// Load what announcements should be displayed to the user
 		for (Announcement a : announcements)
 		{
+			if (module.getCore().isDebug())
+			{
+				module.logger.log(Level.INFO, "Checking with new announcement");
+			}
+			
 			if (a.getPermNode().equals("*") || user.hasPermission(a.getPermNode()))// TODO CubeRoles
 			{
 				if (!messages.containsKey(user.getName()))
@@ -202,11 +213,18 @@ public class AnnouncementManager
 					delays.put(user.getName(), new LinkedList<Integer>());
 				}
 				delays.get(user.getName()).add(a.getDelay());
-			}
-			
-			if (module.getCore().isDebug())
-			{
-				module.logger.log(Level.INFO, user.getName() + " is now receiving message: " + a.getName());
+				
+				worlds.put(user.getName(), user.getWorld().getName());
+				
+				if (module.getCore().isDebug())
+				{
+					module.logger.log(Level.INFO, user.getName() + " is now receiving message: " + a.getName());
+				}
+			} else {
+				if (module.getCore().isDebug())
+				{
+					module.logger.log(Level.INFO, "The user did not have permission");
+				}
 			}
 			
 		}
@@ -215,6 +233,13 @@ public class AnnouncementManager
 
 	public void setWorld(String user, String world) {
 		worlds.put(user, world);
+	}
+
+
+	public void clean(String user) {
+		messages.remove(user);
+		delays.remove(user);
+		worlds.remove(user);
 	}
 	
 }

@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -32,10 +33,26 @@ public class ShoutListener implements Listener
 	public void PlayerJoinEvent(PlayerJoinEvent event)
 	{
 		User user = module.getUserManager().getUser(event.getPlayer());
-		module.logger.log(Level.INFO, "Loading user: " + user.getName());
+		
+		if (module.getCore().isDebug())
+		{
+			module.logger.log(Level.INFO, "Loading user: " + user.getName());	
+		}
 		aManager.initializeUser(user);
-		module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGCD(user)));
-		scheduler.scheduleTask(user.getName(), new MessageTask(aManager, scheduler, user), aManager.getGCD(user));
+		
+		if (module.getCore().isDebug())
+		{
+			module.logger.log(Level.INFO, "User is initialized");
+			module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGCD(user.getName())));
+		}
+		scheduler.scheduleTask(user.getName(), new MessageTask(aManager, scheduler, user), aManager.getGCD(user.getName()));
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void PlayerLeaveEvent(PlayerQuitEvent event)
+	{
+		scheduler.stopUser(event.getPlayer().getName());
+		aManager.clean(event.getPlayer().getName());
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

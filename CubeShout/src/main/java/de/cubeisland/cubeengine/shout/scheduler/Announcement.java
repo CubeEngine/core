@@ -51,7 +51,7 @@ public class Announcement
 	 */
 	public String getMessage(String locale)
 	{
-		return messages.get(locale);
+		return messages.containsKey(locale) ? messages.get(locale) : this.getMessage();
 	}
 	
 	/**

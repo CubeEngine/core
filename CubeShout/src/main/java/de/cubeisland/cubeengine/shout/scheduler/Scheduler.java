@@ -30,7 +30,7 @@ public class Scheduler implements Runnable
 		this.tasks = new HashMap<String, TimerTask>();
 		
 		//Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
-		module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 1000, 500);
+		module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 20, 20);
 	}
 	
 	/**
