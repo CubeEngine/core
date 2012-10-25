@@ -20,10 +20,12 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class GeneralCommands
 {
     private UserManager um;
+    private Basics module;
     private String lastWhisperOfConsole = null;
 
     public GeneralCommands(Basics module)
     {
+        this.module = module;
         this.um = module.getUserManager();
     }
 
@@ -228,41 +230,62 @@ public class GeneralCommands
         {
             dir = "N";
         }
-        else if (direction < 68)
-        {
-            dir = "NE";
-        }
-        else if (direction < 113)
-        {
-            dir = "E";
-        }
-        else if (direction < 158)
-        {
-            dir = "SE";
-        }
-        else if (direction < 203)
-        {
-            dir = "S";
-        }
-        else if (direction < 248)
-        {
-            dir = "SW";
-        }
-        else if (direction < 293)
-        {
-            dir = "W";
-        }
-        else if (direction < 338)
-        {
-            dir = "NW";
-        }
         else
         {
-            dir = "N";
+            if (direction < 68)
+            {
+                dir = "NE";
+            }
+            else
+            {
+                if (direction < 113)
+                {
+                    dir = "E";
+                }
+                else
+                {
+                    if (direction < 158)
+                    {
+                        dir = "SE";
+                    }
+                    else
+                    {
+                        if (direction < 203)
+                        {
+                            dir = "S";
+                        }
+                        else
+                        {
+                            if (direction < 248)
+                            {
+                                dir = "SW";
+                            }
+                            else
+                            {
+                                if (direction < 293)
+                                {
+                                    dir = "W";
+                                }
+                                else
+                                {
+                                    if (direction < 338)
+                                    {
+                                        dir = "NW";
+                                    }
+                                    else
+                                    {
+                                        dir = "N";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         sender.sendMessage("basics", "You are looking into %s", _(sender, "basics", dir));
     }
-    
+
     @Command(
         desc = "Displays your current depth.")
     public void depth(CommandContext context)
@@ -303,8 +326,8 @@ public class GeneralCommands
             context.sendMessage("basics", "Could not find any item named %s", context.getString(0));
         }
     }
-    
-     @Command(
+
+    @Command(
         desc = "Displays all the online players.")
     public void list(CommandContext context)
     {
@@ -312,16 +335,51 @@ public class GeneralCommands
         //TODO possibility to show prefix or main role etc.
         List<Player> players = context.getCore().getUserManager().getOnlinePlayers();
         List<String> list = new ArrayList<String>();
-        for (Player player : players){
+        for (Player player : players)
+        {
             list.add(player.getName());
         }
-        String playerList = StringUtils.implode(",", list);        
+        String playerList = StringUtils.implode(",", list);
         context.sendMessage("basics", "Players online: %d/%d", players.size(), context.getCore().getServer().getMaxPlayers());
         context.sendMessage("basics", "Players:\n%s", playerList);
     }
+
+    @Command(desc = "Displays the message of the day!")
+    public void motd(CommandContext context)
+    {
+        context.sendMessage(module.getConfiguration().motd);
+    }
+
+    @Command(
+    desc = "Displays informations from a player!",
+    usage = "<player>",
+    min = 1)
+    public void whois(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            illegalParameter(context, "basics", "User not found!");
+        }
+        /*TODO
+         * nick
+         * leben
+         * exp
+         * pos
+         * (money)
+         * ip
+         * gamemode
+         * afk
+         * fly-mode
+         * op
+         * (godmode)
+         * (muted)
+         */
+            
+    }
     /**
      *
-     *DONE: (or almost)
+     * DONE: (or almost)
      *
      * afk
      * compass
@@ -333,18 +391,20 @@ public class GeneralCommands
      * suicide
      * itemdb (items.csv or something like that)
      * list
-     * 
+     * motd
+     * whois
+     *
      * //TODO
-     * 
+     *
      * kit
-     * 
-     * 
+     *
+     *
      * mail
      *
      * helpop -> move to CubePermissions ?? not only op but also "Moderator"
      * ignore -> move to CubeChat
      * info
-     * motd
+     *
      *
      * near
      * nick -> move to CubeChat

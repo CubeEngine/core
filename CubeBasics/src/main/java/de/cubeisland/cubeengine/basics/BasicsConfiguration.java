@@ -20,4 +20,7 @@ public class BasicsConfiguration extends Configuration
     + "\nUse -1 to never automaticly deny. (Will loose information after some time when disconecting)")
     @Option("teleport.request.wait")
     public int tpRequestWait = -1;
+    @Comment("This message will be displayed to everyone with the permission on joining!")
+    @Option("motd")
+    public String motd = "Welcome on our server. Have fun!";
 }
