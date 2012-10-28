@@ -23,6 +23,7 @@ public class MaterialMatcher
     private THashMap<ItemStack, String> itemnames;
     private TIntObjectHashMap<THashMap<String, Short>> datavalues;
     private static MaterialMatcher instance = null;
+    private THashMap<String, ItemStack> bukkitnames;
 
     private MaterialMatcher()
     {
@@ -36,6 +37,11 @@ public class MaterialMatcher
             {
                 this.registerItemStack(new ItemStack(item, 1, data), readItems.get(item).get(data));
             }
+        }
+        // Read Bukkit names
+        for (Material mat : Material.values())
+        {
+            this.bukkitnames.put(mat.name(), new ItemStack(mat));
         }
     }
 
@@ -112,17 +118,25 @@ public class MaterialMatcher
                 this.setData(item, data); // Try to set data / returns null if couldn't
                 if (item == null)
                 { //name was probably wrong check ld:
-                    item = matchWithLevenshteinDistance(material);
+                    item = matchWithLevenshteinDistance(material, items);
                     this.setData(item, data); // Try to set data / returns null if couldn't
                 }
-                if (item == null)
+                if (item == null) // Contained ":" but could not find any matching item
                 {
-                    return null; // Contained ":" but could not find any matching item
+                    // Try to match bukkit name
+                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    this.setData(item, data);
+                    return item;
                 }
             }
             if (item == null)
             { // ld-match
-                return matchWithLevenshteinDistance(s);
+                item = matchWithLevenshteinDistance(s, items);
+                if (item == null)
+                {
+                    // Try to match bukkit name
+                    return this.matchWithLevenshteinDistance(s, bukkitnames);
+                }
             }
         }
         return item;
@@ -194,9 +208,9 @@ public class MaterialMatcher
         return null; //could not set data -> invalid item
     }
 
-    private ItemStack matchWithLevenshteinDistance(String s)
+    private ItemStack matchWithLevenshteinDistance(String s, Map<String, ItemStack> map)
     {
-        String t_key = StringUtils.matchString(s, this.items.keySet(), false);
+        String t_key = StringUtils.matchString(s, map.keySet(), false);
         if (t_key != null)
         {
             return this.items.get(t_key);

@@ -19,7 +19,9 @@ import org.bukkit.enchantments.Enchantment;
 public class EnchantMatcher
 {
     private THashMap<String, Enchantment> enchantments;
+    private THashMap<String, Enchantment> bukkitnames;
     private THashMap<Enchantment, String> enchantmentName;
+
     private static EnchantMatcher instance = null;
 
     private EnchantMatcher()
@@ -33,6 +35,10 @@ public class EnchantMatcher
             this.registerEnchantment(Enchantment.getById(id), enchs.get(id));
             this.enchantmentName.put(Enchantment.getById(id), enchs.get(id).get(0));
         }
+        for (Enchantment enchantment : Enchantment.values())
+        {
+            this.bukkitnames.put(enchantment.getName(), enchantment);
+        }            
     }
 
     /**
@@ -101,6 +107,14 @@ public class EnchantMatcher
             if (t_key != null)
             {
                 return this.enchantments.get(t_key);
+            }
+            else
+            {
+                t_key = StringUtils.matchString(s, this.bukkitnames.keySet());
+                if (t_key != null)
+                {
+                    return this.bukkitnames.get(t_key);
+                }
             }
         }
         return ench;
