@@ -28,6 +28,7 @@ public class EnchantMatcher
     {
         this.enchantments = new THashMap<String, Enchantment>();
         this.enchantmentName = new THashMap<Enchantment, String>();
+        this.bukkitnames = new THashMap<String, Enchantment>();
 
         TreeMap<Integer, List<String>> enchs = this.readEnchantments();
         for (int id : enchs.keySet())

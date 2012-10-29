@@ -29,6 +29,7 @@ public class MaterialMatcher
     {
         this.items = new THashMap<String, ItemStack>();
         this.itemnames = new THashMap<ItemStack, String>();
+        this.bukkitnames = new THashMap<String, ItemStack>();
         TreeMap<Integer, TreeMap<Short, List<String>>> readItems = this.readItems();
         this.readDataValues();
         for (Integer item : readItems.keySet())
