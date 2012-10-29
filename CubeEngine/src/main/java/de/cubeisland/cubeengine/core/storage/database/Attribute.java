@@ -21,4 +21,6 @@ public @interface Attribute
     public boolean ai() default false;
 
     public boolean unsigned() default false;
+    
+    public boolean unique() default false;
 }

@@ -101,6 +101,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 {
                     attributes.add(name);
                 }
+                if (attribute.unique())
+                {
+                    tbuilder.unique(name);
+                }
             }
         }
 

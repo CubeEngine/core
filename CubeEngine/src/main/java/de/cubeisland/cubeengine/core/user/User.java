@@ -34,7 +34,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
-    @Attribute(type = AttrType.VARCHAR, length = 16)
+    @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)
     public final OfflinePlayer player;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean nogc = false;

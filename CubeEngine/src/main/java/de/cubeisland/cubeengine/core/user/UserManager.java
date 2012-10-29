@@ -35,7 +35,8 @@ import org.bukkit.plugin.Plugin;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 
 /**
- * This Manager provides methods to access the Users and saving/loading from database.
+ * This Manager provides methods to access the Users and saving/loading from
+ * database.
  */
 public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
 {
@@ -95,11 +96,35 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             public void update(Database database) throws SQLException
             {
                 database.execute(
-                    database.getQueryBuilder().alterTable(table).add("nogc", AttrType.BOOLEAN).rawSQL(" DEFAULT false").end().end());
+                    database.getQueryBuilder().
+                        alterTable(table).
+                            add("nogc", AttrType.BOOLEAN).
+                            rawSQL(" DEFAULT false").
+                        end().
+                    end());
                 database.execute(
-                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.TIMESTAMP).rawSQL(" DEFAULT ").value().end().end(), new Timestamp(System.currentTimeMillis()));
+                    database.getQueryBuilder().
+                        alterTable(table).
+                            add("lastseen", AttrType.TIMESTAMP).
+                            rawSQL(" DEFAULT ").value().
+                        end().
+                    end()
+                    ,new Timestamp(System.currentTimeMillis()));
             }
         }, 1);
+        this.registerUpdater(new DatabaseUpdater()
+        {
+            @Override
+            public void update(Database database) throws SQLException
+            {
+                database.execute(
+                    database.getQueryBuilder().
+                        alterTable(table).
+                            addUnique("player").
+                        end().
+                    end());
+            }
+        }, 2);
     }
 
     /**
@@ -309,12 +334,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     public List<User> getOnlineUsers()
     {
         final List<User> onlineUsers = new ArrayList<User>();
-        
+
         for (Player player : this.onlinePlayers)
         {
             onlineUsers.add(this.getUser(player));
         }
-        
+
         return onlineUsers;
     }
 
@@ -427,7 +452,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         user.setAttribute("removingTaskId", id);
         this.onlinePlayers.remove(player);
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onLogin(final PlayerLoginEvent event)
     {

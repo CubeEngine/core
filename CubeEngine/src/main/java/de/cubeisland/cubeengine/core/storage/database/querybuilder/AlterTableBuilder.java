@@ -20,6 +20,8 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
      * @return fluent interface
      */
     public AlterTableBuilder add(String field, AttrType type);
+    
+    public AlterTableBuilder addUnique(String field);
 
     /**
      * Drop a field from the table
