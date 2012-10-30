@@ -18,30 +18,30 @@ import org.bukkit.entity.Player;
 
 public class LogManager
 {
-/*
- * TODOne
- * LISTENERS for:
- * BlockBreak (sand stuff)
- * BlockBurn
- * BlockFade
- * BlockForm
- * BlockPlace (sand stuff)
- * Enderman place&break
- * Explosion (misc / what explosion??? when creeper cause of player expl. -> loose info)
- * StructureGrow 
- * LeavesDecay
- *
- * TODO: ActionType detection / stopp logging in the listener.
- * 
- * MISSING:
- * Chat
- * ConatinerAccess
- * FluidFlow
- * Kill
- * PlayerInteract
- * SignChange
- */
-    
+    /*
+     * TODOne
+     * LISTENERS for:
+     * BlockBreak (sand stuff)
+     * BlockBurn
+     * BlockFade
+     * BlockForm
+     * BlockPlace (sand stuff)
+     * Enderman place&break
+     * Explosion (misc / what explosion??? when creeper cause of player expl. ->
+     * loose info)
+     * StructureGrow
+     * LeavesDecay
+     *
+     * TODO: ActionType detection / stopp logging in the listener.
+     *
+     * MISSING:
+     * Chat
+     * ConatinerAccess
+     * FluidFlow
+     * Kill
+     * PlayerInteract
+     * SignChange
+     */
     private Map<LogAction, LogListener> loggers = new EnumMap<LogAction, LogListener>(LogAction.class);
     private final Log module;
     private BlockLogManager blockLogManager;
@@ -85,13 +85,16 @@ public class LogManager
 
     public void logChangeBlock(BlockChangeCause cause, Player player, BlockState oldState, BlockState newState)
     {
-        if (cause == BlockChangeCause.PLAYER)
+        if ((oldState != newState) || !(oldState.getType().equals(newState.getType()) && oldState.getRawData() == newState.getRawData())) // If no change do not log!
         {
-            this.blockLogManager.store(new BlockLog(System.currentTimeMillis(), player, newState, oldState));
-        }
-        else
-        {
-            this.blockLogManager.store(new BlockLog(cause, System.currentTimeMillis(), newState, oldState));
+            if (cause == BlockChangeCause.PLAYER)
+            {
+                this.blockLogManager.store(new BlockLog(System.currentTimeMillis(), player, newState, oldState));
+            }
+            else
+            {
+                this.blockLogManager.store(new BlockLog(cause, System.currentTimeMillis(), newState, oldState));
+            }
         }
     }
 
@@ -127,7 +130,7 @@ public class LogManager
     public void logPlaceBlock(Player player, BlockState placedBlock, BlockState replacedBlock)
     {
         this.logChangeBlock(BlockChangeCause.PLAYER, player, replacedBlock, placedBlock);
-         /* //TODO SAND etc.
+        /* //TODO SAND etc.
          * if (placedBlock.getType() == Material.SAND || placedBlock.getType()
          * == Material.GRAVEL || placedBlock.getType() == Material.DRAGON_EGG)
          * {

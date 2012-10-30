@@ -460,7 +460,7 @@ public class ModerationCommands
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightnin
         User user = context.getUser(0);
-        if (user == null && !context.hasFlag("a"))
+        if (user == null || !context.hasFlag("a"))
         {
             invalidUsage(context, "core", "User not found!");
         }
@@ -776,6 +776,10 @@ public class ModerationCommands
         if (BasicsPerm.COMMAND_INVSEE_PREVENTMODIFY.isAuthorized(user))
         {
             allowModify = false;
+        }
+        if (BasicsPerm.COMMAND_INVSEE_NOTIFY.isAuthorized(user))
+        {
+            user.sendMessage("basics", "%s is looking into your inventory.", sender.getName());
         }
         listener.addInventory(sender, allowModify);
     }

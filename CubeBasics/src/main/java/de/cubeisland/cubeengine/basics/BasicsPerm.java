@@ -15,8 +15,9 @@ public enum BasicsPerm implements Permission
     COMMAND_CLEARINVENTORY_OTHER,
     COMMAND_KILL_EXEMPT,
     COMMAND_KILL_ALL,
-    COMMAND_INVSEE_MODIFY,
-    COMMAND_INVSEE_PREVENTMODIFY,
+    COMMAND_INVSEE_MODIFY, // allows to modify the inventory
+    COMMAND_INVSEE_PREVENTMODIFY, // prevents from modifying the inventory
+    COMMAND_INVSEE_NOTIFY, // notify if someone looks into your inventory
     COMMAND_KICK_ALL,
     COMMAND_TP_FORCE, // ignore all other permissions
     COMMAND_TP_OTHER, // can tp other person

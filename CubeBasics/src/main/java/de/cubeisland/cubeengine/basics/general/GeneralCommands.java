@@ -333,15 +333,77 @@ public class GeneralCommands
     {
         //TODO do not show hidden players
         //TODO possibility to show prefix or main role etc.
+        //TODO softdependency with Roles/etc for grouped output
+        //Players online: x/x
         List<Player> players = context.getCore().getUserManager().getOnlinePlayers();
-        List<String> list = new ArrayList<String>();
+        if (players.isEmpty())
+        {
+            context.sendMessage("basics", "&cThere are no players online now!");
+            return;
+        }
+        context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", players.size(), context.getCore().getServer().getMaxPlayers());
+        context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(players));
+    }
+
+    public String displayPlayerList(List<Player> players)
+    {
+        //TODO test if it looks good for more players
+        //1 line ~ 70 characters
+        //6 12 18 (+1)
+        StringBuilder sb = new StringBuilder();
+        StringBuilder partBuilder = new StringBuilder();
+        int pos = 0;
+        boolean first = true;
         for (Player player : players)
         {
-            list.add(player.getName());
+            partBuilder.setLength(0);
+
+            String name = player.getName();
+            if (name.length() < 6)
+            {
+                int k = 6 - name.length();
+                partBuilder.append(StringUtils.repeat(" ", k / 2));
+                k = k - k / 2;
+                partBuilder.append(name);
+                partBuilder.append(StringUtils.repeat(" ", k));
+                pos += 6;
+            }
+            else
+            {
+                if (name.length() < 12)
+                {
+                    int k = 12 - name.length();
+                    partBuilder.append(StringUtils.repeat(" ", k / 2));
+                    k = k - k / 2;
+                    partBuilder.append(name);
+                    partBuilder.append(StringUtils.repeat(" ", k));
+                    pos += 12;
+                }
+                else
+                {
+                    int k = 16 - name.length();
+                    partBuilder.append(StringUtils.repeat(" ", k / 2));
+                    k = k - k / 2;
+                    partBuilder.append(name);
+                    partBuilder.append(StringUtils.repeat(" ", k));
+                    pos += 16;
+                }
+            }
+            if (pos >= 30)
+            {
+                pos = partBuilder.toString().length();
+                sb.append("\n");
+                first = true;
+            }
+            if (!first)
+            {
+                sb.append("&f|&2");
+                pos++;
+            }
+            sb.append(partBuilder.toString());
+            first = false;
         }
-        String playerList = StringUtils.implode(",", list);
-        context.sendMessage("basics", "Players online: %d/%d", players.size(), context.getCore().getServer().getMaxPlayers());
-        context.sendMessage("basics", "Players:\n%s", playerList);
+        return sb.toString();
     }
 
     @Command(desc = "Displays the message of the day!")
@@ -361,21 +423,33 @@ public class GeneralCommands
         {
             illegalParameter(context, "basics", "User not found!");
         }
-        /*TODO
-         * nick
-         * leben
-         * exp
-         * pos
+        context.sendMessage("basics","&eNickname: &2%s\n"
+            + "&eLife: &2%d&f/&2%d\n"
+            + "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)\n"
+            + "&eLevel: &2%d &eExp: &2%d&f/&2100%% &eof the next Level\n"
+            + "&ePosition: &2%d %d %d &ein world %2%s\n"
+            + "&eIP: &2%s\n"
+            + "&eGamemode: &2%s\n"
+            + "&eFlymode: &2%s\n"
+            + "&eOP: &2%s",
+            
+            user.getName(),
+            user.getHealth(),user.getMaxHealth(),
+            user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel(),
+            user.getLevel(), (int)(user.getExp() * 100),
+            user.getLocation().getBlockX(), user.getLocation().getBlockY(), user.getLocation().getBlockZ(), user.getLocation().getWorld().getName(),
+            user.getAddress().getAddress().getHostAddress(),
+            user.getGameMode().toString(),
+            String.valueOf(user.isFlying()),
+            String.valueOf(user.isOp()));
+        //TODO starve cmd
+        /* TODO
          * (money)
-         * ip
-         * gamemode
          * afk
-         * fly-mode
-         * op
          * (godmode)
          * (muted)
          */
-            
+
     }
     /**
      *
@@ -412,7 +486,6 @@ public class GeneralCommands
      * realname -> move to CubeChat
      * rules
      *
-     * whois
      * help -> Display ALL availiable cmd
      *
      *

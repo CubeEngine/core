@@ -127,7 +127,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.moduleManager = new ModuleManager(this);
 
         // depends on: server
-        BukkitUtils.registerPacketHookInjector(this);
+       //TODO broken with 1.4 BukkitUtils.registerPacketHookInjector(this);
 
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
