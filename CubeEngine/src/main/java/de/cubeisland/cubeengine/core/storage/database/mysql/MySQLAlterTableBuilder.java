@@ -47,4 +47,19 @@ public class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuil
         this.query.append("ADD UNIQUE (").append(this.database.prepareFieldName(field)).append(")");
         return this;
     }
+
+    @Override
+    public AlterTableBuilder defaultValue(String value)
+    {
+        this.defaultValue();
+        this.query.append(value);
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder defaultValue()
+    {
+        this.query.append(" DEFAULT ");
+        return this;
+    }
 }

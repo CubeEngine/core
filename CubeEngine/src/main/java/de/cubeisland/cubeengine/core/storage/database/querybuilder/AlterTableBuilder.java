@@ -22,7 +22,10 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
     public AlterTableBuilder add(String field, AttrType type);
     
     public AlterTableBuilder addUnique(String field);
-
+    
+    public AlterTableBuilder defaultValue(String value);
+    public AlterTableBuilder defaultValue();
+    
     /**
      * Drop a field from the table
      * 

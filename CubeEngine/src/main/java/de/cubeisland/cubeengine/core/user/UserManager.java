@@ -99,14 +99,14 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                     database.getQueryBuilder().
                         alterTable(table).
                             add("nogc", AttrType.BOOLEAN).
-                            rawSQL(" DEFAULT false").
+                            defaultValue("false").
                         end().
                     end());
                 database.execute(
                     database.getQueryBuilder().
                         alterTable(table).
                             add("lastseen", AttrType.TIMESTAMP).
-                            rawSQL(" DEFAULT ").value().
+                            defaultValue().value().
                         end().
                     end()
                     ,new Timestamp(System.currentTimeMillis()));
