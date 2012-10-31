@@ -7,6 +7,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunConfiguration;
 import de.cubeisland.cubeengine.fun.listeners.NukeListener;
@@ -15,12 +17,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.util.Vector;
 
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 
 public class FunCommands
@@ -358,4 +363,74 @@ public class FunCommands
         }
         context.sendMessage("fun", "You spawnt %d blocks of TNT", numberOfBlocks);
     }
+    
+    @Command(
+        desc = "spawns the mob next to every player on the server",
+        min = 1,
+        max = 1,
+        usage = "<mob>"
+    )
+    public void invasion(CommandContext context)
+    {
+        EntityType entityType = EntityMatcher.get().matchMob(context.getString(0, null));
+        if(entityType == null)
+        {
+            illegalParameter(context, "fun", "EntityType %s not found", context.getString(0));
+        }
+        else
+        {
+            for(Player player : this.module.getCore().getServer().getOnlinePlayers())
+            {
+                player.getWorld().spawnEntity(player.getTargetBlock(null, 5).getLocation(), entityType.getBukkitType());
+            }
+        }
+    }
+    
+    @Command(
+        desc = "changes from day to night every second",
+        min = 1,
+        max = 1,
+        usage = "<seconds>"
+    )
+    public void disco(CommandContext context)
+    {
+        try
+        {
+            final int seconds = Integer.valueOf(context.getString(0));
+            final World world = context.getSenderAsUser("core", "&cThis command can only be used by a player!").getWorld();
+            
+            if(world != null)
+            {
+                final long defaultTime = world.getTime();
+                for(int i = 0; i <= seconds * 2; i++)
+                {
+                    final int j = i;
+                    this.taskManager.scheduleSyncDelayedTask(module, new Runnable() {
+                        public void run()
+                        {
+                            if(world.getTime() > 12000)
+                            {
+                                world.setTime(6000);
+                            }
+                            else 
+                            {
+                                world.setTime(18000);
+                            }
+                            
+                            if(j == seconds * 2)
+                            {
+                                world.setTime(defaultTime);
+                            }
+                        }
+                    }, i * 10);
+                } 
+            }
+              
+        }
+        catch(NumberFormatException e)
+        {
+            illegalParameter(context, "fun", "\"%s\" is not a number", context.getString(0));
+        }
+    }
+    
 }
