@@ -682,32 +682,39 @@
   birchwoodstairs
 136:0
   junglewoodstairs
-# 137:0
-#   commandblock
-#   cmdblock
-# 138:0
-#   beaconblock
-#   beacon
-# 139:0
-#   cobblestonewall
-#   cobblewall
-#   wallcobble
-#   wallcobblestone
-# 139:1
-#   mossstonewall
-#   mosswall
-#   wallmossstone
-#   wallmoss
-# 140:0
-#   flowerpotblock
-# 141:0
-#   carrotcrop
-# 142:0
-#   potatocrops
-#   potatoescrops
-# 143:0
-#   buttonwood
-#   woodbutton
+137:0
+  commandblock
+  cmdblock
+138:0
+  beaconblock
+  beacon
+139:0
+  cobblestonewall
+  cobblewall
+  wallcobble
+  wallcobblestone
+139:1
+  mossycobblewall
+  mossycobblestonewall
+  mossstonewall
+  mosswall
+  wallmossstone
+  wallmoss
+140:0
+  flowerpotblock
+141:0
+  carrotcrops
+142:0
+  potatocrops
+  potatoescrops
+143:0
+  buttonwood
+  woodbutton
+144:0
+  headblock
+145:0
+  anvil
+  repairblock
 256:0
   ironshovel
   ironspade
@@ -1426,26 +1433,35 @@
   ownedbook
 388:0
   emerald
-# 389:0
-#   itemframe
-# 390:0
-#   flowerpot
-# 391:0
-#   carrot
-# 392:0
-#   potato
-# 393:0
-#   bakedpotato
-# 394:0
-#   poisonouspotato
-# 395:0
-#   emptymap
-#   mapempty
-#   mapclear
-#   clearmap
-# 396:0
-#   goldencarrot
-#   goldencarrots
+389:0
+  itemframe
+390:0
+  flowerpot
+391:0
+  carrot
+392:0
+  potato
+393:0
+  bakedpotato
+394:0
+  poisonouspotato
+395:0
+  emptymap
+  mapempty
+  mapclear
+  clearmap
+396:0
+  goldencarrot
+  carrotgolden
+397:
+  head
+398:
+  carrotOnAStick
+399:
+  NetherStar
+400:
+  PumpkinPie
+
 2256:0
   goldrecord
   golddisk

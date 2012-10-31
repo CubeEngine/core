@@ -20,14 +20,14 @@
     ThrownEnderpearl
 15:
     EyeOfEnderSignal
-#16:
-#    ThrownPotion
+16:
+    ThrownPotion
 17:
     ThrownExpBottle
-#18:
-#    ItemFrame
-#19:
-#    WitherSkull
+18:
+    ItemFrame
+19:
+    WitherSkull
 #Blocks
 20:
     PrimedTnt
@@ -68,8 +68,12 @@
     MagmaSlime
 63:
     EnderDragon
-#64:
-#    WitherBoss
+64:
+    WitherBoss
+65:
+    Bat
+66:
+    Witch
 #Passive mobs
 90:
     Pig
