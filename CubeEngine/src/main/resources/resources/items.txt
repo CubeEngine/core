@@ -1378,6 +1378,12 @@
   egglavaslime
   egglavacube
   eggmagmaslime
+383:65
+  eggbat
+  bategg
+383:66
+  eggwitch
+  witchegg
 383:90
   pigegg
   eggpig
@@ -1453,15 +1459,14 @@
 396:0
   goldencarrot
   carrotgolden
-397:
+397:0
   head
-398:
+398:0
   carrotOnAStick
-399:
+399:0
   NetherStar
-400:
+400:0
   PumpkinPie
-
 2256:0
   goldrecord
   golddisk

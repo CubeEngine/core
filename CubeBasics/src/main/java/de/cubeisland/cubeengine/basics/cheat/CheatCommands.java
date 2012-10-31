@@ -211,7 +211,7 @@ public class CheatCommands
     {
         @Flag(longName = "all", name = "a")
     },
-    usage = "[player]")
+    usage = "[player]|-a")
     public void heal(CommandContext context)
     {
         if (context.hasFlag("a"))

@@ -460,9 +460,12 @@ public class ModerationCommands
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightnin
         User user = context.getUser(0);
-        if (user == null || !context.hasFlag("a"))
+        if (user == null)
         {
-            invalidUsage(context, "core", "User not found!");
+            if (!context.hasFlag("a"))
+            {
+                invalidUsage(context, "core", "User not found!");
+            }
         }
         else
         {
@@ -494,9 +497,12 @@ public class ModerationCommands
                 }
             }
         }
-        user.setHealth(0);
-        //TODO broadcast alternative Deathmsgs
-        context.sendMessage("basics", "You killed %s!", user.getName());
+        else
+        {
+            user.setHealth(0);
+            //TODO broadcast alternative Deathmsgs
+            context.sendMessage("basics", "You killed %s!", user.getName());
+        }
     }
 
     @Command(

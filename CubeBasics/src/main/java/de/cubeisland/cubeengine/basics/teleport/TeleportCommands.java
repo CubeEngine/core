@@ -81,7 +81,7 @@ public class TeleportCommands
         }
         if (!force)
         {
-            if (!BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(user2))
+            if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(user2))
             {
                 denyAccess(context, "basics", "You are not allowed to teleport to %s!", user2.getName());
             }
@@ -99,7 +99,7 @@ public class TeleportCommands
                 {
                     denyAccess(context, "basics", "You are not allowed to teleport other persons!");
                 }
-                if (!BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(context.getSender()))
+                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(context.getSender()))
                 {
                     denyAccess(context, "basics", "You are not allowed to teleport %s!", user1.getName());
                 }
@@ -144,7 +144,7 @@ public class TeleportCommands
         }
         if (!force)
         {
-            if (!BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(user))
+            if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(user))
             {
                 denyAccess(context, "basics", "You are not allowed to teleport to %s!", user.getName());
             }
@@ -153,7 +153,7 @@ public class TeleportCommands
         {
             if (!force)
             {
-                if (!BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(player))
+                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(player))
                 {
                     continue;
                 }
@@ -192,7 +192,7 @@ public class TeleportCommands
         }
         if (!force)
         {
-            if (!BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user))
+            if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user))
             {
                 denyAccess(context, "bascics", "You are not allowed to teleport %s!", user.getName());
                 return;
@@ -205,9 +205,7 @@ public class TeleportCommands
 
     @Command(
     desc = "Teleport every player directly to you.",
-    usage = "<player>",
-    min = 1,
-    max = 1,
+    max = 0,
     flags =
     {
         @Flag(longName = "force", name = "f"),
@@ -228,7 +226,7 @@ public class TeleportCommands
         {
             if (!force)
             {
-                if (!BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(player))
+                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(player))
                 {
                     continue;
                 }
