@@ -1979,4 +1979,24 @@ public class UserBase implements Player
      * }
      * return I18n.SOURCE_LANGUAGE;
      * } */
+
+    @Override
+    public void giveExpLevels(int amount)
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.giveExpLevels(amount);
+        }
+    }
+
+    @Override
+    public void setBedSpawnLocation(Location location, boolean force)
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.setBedSpawnLocation(location, force);
+        }
+    }
 }

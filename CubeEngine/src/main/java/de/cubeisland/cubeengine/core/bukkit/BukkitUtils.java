@@ -161,7 +161,7 @@ public class BukkitUtils
                     Location loc = player.getLocation();
                     handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
-                    ServerConnection sc = playerEntity.server.ac();
+                    ServerConnection sc = playerEntity.server.ae();
                     ((List<NetServerHandler>)nshListField.get(sc)).remove(oldHandler);
                     sc.a(handler);
                     System.out.print("Replaced the NetServerHandler of player '" + player.getName() + "'"); // TODO log this as debug or smt like this
