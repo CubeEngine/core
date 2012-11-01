@@ -28,9 +28,11 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class CheatCommands
 {
     private UserManager um;
+    private Basics module;
 
     public CheatCommands(Basics module)
     {
+        this.module = module;
         this.um = module.getUserManager();
     }
 
@@ -822,7 +824,7 @@ public class CheatCommands
         {
             if (context.getString(0).equalsIgnoreCase("on"))
             {
-                sender.setAttribute("unlimitedItems", true);
+                sender.setAttribute(module, "unlimitedItems", true);
                 sender.
                     sendMessage("basics", "You now have unlimited items to build!");
             }
@@ -830,7 +832,7 @@ public class CheatCommands
             {
                 if (context.getString(0).equalsIgnoreCase("off"))
                 {
-                    sender.removeAttribute("unlimitedItems");
+                    sender.removeAttribute(module, "unlimitedItems");
                     sender.
                         sendMessage("basics", "You now no longer have unlimited items to build!");
                 }
@@ -842,15 +844,15 @@ public class CheatCommands
         }
         else
         {
-            Object bln = sender.getAttribute("unlimitedItems");
+            Object bln = sender.getAttribute(module,"unlimitedItems");
             if (bln == null)
             {
-                sender.setAttribute("unlimitedItems", true);
+                sender.setAttribute(module,"unlimitedItems", true);
                 context.sendMessage("basics", "You now have unlimited items to build!");
             }
             else
             {
-                sender.removeAttribute("unlimitedItems");
+                sender.removeAttribute(module,"unlimitedItems");
                 context.sendMessage("basics", "You now no longer have unlimited items to build!");
             }
         }

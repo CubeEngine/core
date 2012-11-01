@@ -39,9 +39,11 @@ public class ModerationCommands
     private UserManager um;
     private BasicsConfiguration config;
     private ModerationListener listener;
+    private Basics module;
 
     public ModerationCommands(Basics module)
     {
+        this.module = module;
         um = module.getUserManager();
         config = module.getConfiguration();
         listener = new ModerationListener(module);
@@ -683,8 +685,8 @@ public class ModerationCommands
     {
         User sender = context.
             getSenderAsUser("core", "&cThis command can only be used by a player!");
-        ItemStack[] stashedInv = sender.getAttribute("stash_Inventory");
-        ItemStack[] stashedArmor = sender.getAttribute("stash_Armor");
+        ItemStack[] stashedInv = sender.getAttribute(module,"stash_Inventory");
+        ItemStack[] stashedArmor = sender.getAttribute(module,"stash_Armor");
         ItemStack[] InvToStash = sender.getInventory().getContents().clone();
         ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().
             clone();
@@ -696,7 +698,7 @@ public class ModerationCommands
         {
             sender.getInventory().clear();
         }
-        sender.setAttribute("stash_Inventory", InvToStash);
+        sender.setAttribute(module,"stash_Inventory", InvToStash);
         if (stashedArmor != null)
         {
             sender.getInventory().setBoots(stashedArmor[0]);
@@ -711,7 +713,7 @@ public class ModerationCommands
             sender.getInventory().setChestplate(null);
             sender.getInventory().setHelmet(null);
         }
-        sender.setAttribute("stash_Armor", ArmorToStash);
+        sender.setAttribute(module,"stash_Armor", ArmorToStash);
         sender.sendMessage("basics", "Swapped stashed Inventory!");
     }
 

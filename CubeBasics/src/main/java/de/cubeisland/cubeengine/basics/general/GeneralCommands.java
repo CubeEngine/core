@@ -92,19 +92,20 @@ public class GeneralCommands
         if (sender == null)
         {
             this.lastWhisperOfConsole = user.getName();
-            user.setAttribute("lastWhisper", "console");
+            user.setAttribute(module,
+                "lastWhisper", "console");
         }
         else
         {
             if (user == null)
             {
                 this.lastWhisperOfConsole = sender.getName();
-                sender.setAttribute("lastWhisper", "console");
+                sender.setAttribute(module, "lastWhisper", "console");
             }
             else
             {
-                sender.setAttribute("lastWhisper", user.getName());
-                user.setAttribute("lastWhisper", sender.getName());
+                sender.setAttribute(module, "lastWhisper", user.getName());
+                user.setAttribute(module, "lastWhisper", sender.getName());
             }
         }
     }
@@ -132,7 +133,7 @@ public class GeneralCommands
         }
         else
         {
-            lastWhisperer = sender.getAttribute("lastWhisper");
+            lastWhisperer = sender.getAttribute(module,"lastWhisper");
             if (lastWhisperer == null)
             {
                 invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
@@ -422,7 +423,7 @@ public class GeneralCommands
         {
             illegalParameter(context, "basics", "User not found!");
         }
-        context.sendMessage("basics","&eNickname: &2%s\n"
+        context.sendMessage("basics", "&eNickname: &2%s\n"
             + "&eLife: &2%d&f/&2%d\n"
             + "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)\n"
             + "&eLevel: &2%d &eExp: &2%d&f/&2100%% &eof the next Level\n"
@@ -431,9 +432,8 @@ public class GeneralCommands
             + "&eGamemode: &2%s\n"
             + "&eFlymode: &2%s\n"
             + "&eOP: &2%s",
-            
             user.getName(),
-            user.getHealth(),user.getMaxHealth(),
+            user.getHealth(), user.getMaxHealth(),
             user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel(),
             user.getLevel(), (int)(user.getExp() * 100),
             user.getLocation().getBlockX(), user.getLocation().getBlockY(), user.getLocation().getBlockZ(), user.getLocation().getWorld().getName(),

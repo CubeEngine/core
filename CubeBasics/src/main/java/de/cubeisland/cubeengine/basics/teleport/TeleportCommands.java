@@ -398,8 +398,8 @@ public class TeleportCommands
             illegalParameter(context, "basics", "User not found!");
         }
         user.sendMessage("basics", "%s wants to teleport to you! Use /tpaccept to accept or /tpdeny to deny the request!", sender.getName());
-        user.setAttribute("pendingTpToRequest", sender.getName());
-        user.removeAttribute("pendingTpFromRequest");
+        user.setAttribute(module,"pendingTpToRequest", sender.getName());
+        user.removeAttribute(module,"pendingTpFromRequest");
         context.sendMessage("basics", "Teleport request send to %s!", user.getName());
     }
 
@@ -417,8 +417,8 @@ public class TeleportCommands
             illegalParameter(context, "basics", "User not found!");
         }
         user.sendMessage("basics", "%s wants to teleport you to him! Use /tpaccept to accept or /tpdeny to deny the request!", sender.getName());
-        user.setAttribute("pendingTpFromRequest", sender.getName());
-        user.removeAttribute("pendingTpToRequest");
+        user.setAttribute(module,"pendingTpFromRequest", sender.getName());
+        user.removeAttribute(module,"pendingTpToRequest");
         context.sendMessage("basics", "Teleport request send to %s!", user.getName());
     }
 
@@ -432,15 +432,15 @@ public class TeleportCommands
     public void tpaccept(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo one wants to teleport to you!");
-        String name = sender.getAttribute("pendingTpToRequest");
+        String name = sender.getAttribute(module, "pendingTpToRequest");
         if (name == null)
         {
-            name = sender.getAttribute("pendingTpFromRequest");
+            name = sender.getAttribute(module, "pendingTpFromRequest");
             if (name == null)
             {
                 invalidUsage(context, "basics", "You don't have any pending requests!");
             }
-            sender.removeAttribute("pendingTpFromRequest");
+            sender.removeAttribute(module, "pendingTpFromRequest");
             User user = module.getUserManager().getUser(name, false);
             if (user == null || !user.isOnline())
             {
@@ -452,7 +452,7 @@ public class TeleportCommands
         }
         else
         {
-            sender.removeAttribute("pendingTpToRequest");
+            sender.removeAttribute(module, "pendingTpToRequest");
             User user = module.getUserManager().getUser(name, false);
             if (user == null || !user.isOnline())
             {
@@ -470,11 +470,11 @@ public class TeleportCommands
     public void tpdeny(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo one wants to teleport to you!");
-        String tpa = sender.getAttribute("pendingTpToRequest");
-        String tpahere = sender.getAttribute("pendingTpFromRequest");
+        String tpa = sender.getAttribute(module, "pendingTpToRequest");
+        String tpahere = sender.getAttribute(module, "pendingTpFromRequest");
         if (tpa != null)
         {
-            sender.removeAttribute("pendingTpToRequest");
+            sender.removeAttribute(module, "pendingTpToRequest");
             User user = module.getUserManager().getUser(tpa, false);
             if (user == null)
             {
@@ -485,7 +485,7 @@ public class TeleportCommands
         }
         if (tpahere != null)
         {
-            sender.removeAttribute("pendingTpFromRequest");
+            sender.removeAttribute(module, "pendingTpFromRequest");
             User user = module.getUserManager().getUser(tpahere, false);
             if (user == null)
             {
@@ -516,7 +516,7 @@ public class TeleportCommands
     public void back(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "You never teleported!");
-        Location loc = sender.getAttribute("lastLocation");
+        Location loc = sender.getAttribute(module, "lastLocation");
         if (loc == null)
         {
             invalidUsage(context, "basics", "You never teleported!");

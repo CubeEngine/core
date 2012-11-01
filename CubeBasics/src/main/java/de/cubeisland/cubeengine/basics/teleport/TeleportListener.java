@@ -26,7 +26,7 @@ public class TeleportListener implements Listener
             case COMMAND:
             case PLUGIN:
             case UNKNOWN:
-                user.setAttribute("lastLocation", event.getFrom());
+                user.setAttribute(module,"lastLocation", event.getFrom());
         }
     }
 
@@ -36,7 +36,7 @@ public class TeleportListener implements Listener
         User user = this.module.getUserManager().getExactUser(event.getEntity());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
-            user.setAttribute("lastLocation", user.getLocation());
+            user.setAttribute(module,"lastLocation", user.getLocation());
         }
     }
 }

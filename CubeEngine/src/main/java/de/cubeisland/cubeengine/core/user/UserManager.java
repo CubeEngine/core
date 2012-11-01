@@ -448,7 +448,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 users.remove(event.getPlayer().getName());
             }
         }, this.core.getConfiguration().userManagerKeepUserLoaded);
-        user.setAttribute("removingTaskId", id);
+        user.removalTaskId = null;
         this.onlinePlayers.remove(player);
     }
 
@@ -466,12 +466,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         if (user != null)
         {
             user.offlinePlayer = player;
-            Integer id = user.getAttribute("removingTaskId");
-            if (id == null)
+            if (user.removalTaskId == null)
             {
                 return; // No task to cancel
             }
-            user.getServer().getScheduler().cancelTask(id);
+            user.getServer().getScheduler().cancelTask(user.removalTaskId);
         }
     }
 

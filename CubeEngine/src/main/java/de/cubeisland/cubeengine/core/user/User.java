@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -14,6 +15,7 @@ import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
@@ -41,8 +43,10 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Attribute(type = AttrType.DATETIME)
     public Timestamp lastseen;
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
-    private ConcurrentHashMap<String, Object> attributes = new ConcurrentHashMap<String, Object>();
+    private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
 
+    Integer removalTaskId;
+    
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
@@ -171,12 +175,17 @@ public class User extends UserBase implements LinkingModel<Integer>
      * @param name  the name/key
      * @param value the value
      */
-    public void setAttribute(String name, Object value)
+    public void setAttribute(Module module, String name, Object value)
     {
+        Validate.notNull(module, "The module must not be null!");
         Validate.notNull(name, "The attribute name must not be null!");
         Validate.notNull(value, "Null-values are not allowed!");
-
-        this.attributes.put(name, value);
+        Map<String, Object> attributMap = this.attributes.get(module);
+        if (attributMap == null)
+        {
+            attributMap = new ConcurrentHashMap<String, Object>();
+        }
+        attributMap.put(name, value);
     }
 
     /**
@@ -186,9 +195,9 @@ public class User extends UserBase implements LinkingModel<Integer>
      * @param name the name/key
      * @return the value or null
      */
-    public <T extends Object> T getAttribute(String name)
+    public <T extends Object> T getAttribute(Module module, String name)
     {
-        return this.<T>getAttribute(name, null);
+        return this.<T>getAttribute(module, name, null);
     }
 
     /**
@@ -199,11 +208,16 @@ public class User extends UserBase implements LinkingModel<Integer>
      * @param def  the default value
      * @return the attribute value or the default value
      */
-    public <T extends Object> T getAttribute(String name, T def)
+    public <T extends Object> T getAttribute(Module module, String name, T def)
     {
         try
         {
-            T value = (T)this.attributes.get(name);
+            Map<String, Object> attributMap = this.attributes.get(module);
+            if (attributMap == null)
+            {
+                return null;
+            }
+            T value = (T)attributMap.get(name);
             if (value != null)
             {
                 return value;
@@ -220,9 +234,14 @@ public class User extends UserBase implements LinkingModel<Integer>
      *
      * @param name the name/key
      */
-    public void removeAttribute(String name)
+    public void removeAttribute(Module module,String name)
     {
-        this.attributes.remove(name);
+        Map<String, Object> attributMap = this.attributes.get(module);
+        if (attributMap == null)
+        {
+            return;
+        }
+        attributMap.remove(name);
     }
 
     public void safeTeleport(Location location)

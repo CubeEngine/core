@@ -20,9 +20,9 @@ public class CheatListener implements Listener
     public void blockplace(final BlockPlaceEvent event)
     {
         User user = module.getUserManager().getExactUser(event.getPlayer());
-        if (user.getAttribute("unlimitedItems") != null)
+        if (user.getAttribute(module,"unlimitedItems") != null)
         {
-            if (user.getAttribute("unlimitedItems"))
+            if (user.getAttribute(module,"unlimitedItems"))
             {
                 ItemStack itemInHand = event.getPlayer().getItemInHand();
                 itemInHand.setAmount(itemInHand.getAmount() + 1);
