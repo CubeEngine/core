@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.scheduler;
+package de.cubeisland.cubeengine.shout.task;
 
 import java.util.Map;
 
@@ -13,8 +13,8 @@ public class Announcement
 	private String permNode;
 	private String world;
 	private Map<String, String> messages;
-	//in ticks
-	private int delay = 0;
+	//in millisecounds
+	private long delay = 0;
 	
 	/**
 	 * Constructor of Announcement
@@ -23,7 +23,7 @@ public class Announcement
 	 * @param	messages		The message in different languages
 	 * @param	delay			The delay after this message in ticks
 	 */
-	public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, int delay)
+	public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay)
 	{
 		this.name = name;
 		this.defaultLocale = defaultLocale;
@@ -56,9 +56,9 @@ public class Announcement
 	
 	/**
 	 * Get the delay after this message
-	 * @return The delay in ticks
+	 * @return The delay in milliseconds
 	 */
-	public int getDelay()
+	public long getDelay()
 	{
 		return delay;
 	}

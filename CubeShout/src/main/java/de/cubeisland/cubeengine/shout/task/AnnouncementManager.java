@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.scheduler;
+package de.cubeisland.cubeengine.shout.task;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ public class AnnouncementManager
 	
 	private Shout module;
 	private Map<String, Queue<Announcement>> messages;
-	private Map<String, Queue<Integer>> delays;
+	private Map<String, Queue<Long>> delays;
 	private Map<String, String> worlds;
 	public Set<Announcement> announcements;
 	
@@ -30,7 +30,7 @@ public class AnnouncementManager
 	{
 		this.module = module;
 		this.messages = new ConcurrentHashMap<String, Queue<Announcement>>();
-		this.delays = new ConcurrentHashMap<String, Queue<Integer>>();
+		this.delays = new ConcurrentHashMap<String, Queue<Long>>();
 		this.worlds = new ConcurrentHashMap<String, String>();
 		this.announcements = new HashSet<Announcement>();
 	}
@@ -55,10 +55,10 @@ public class AnnouncementManager
 	 * @param 	user	The user to get the gcd of their announcements.
 	 * @return			The gcd of the users announcements.
 	 */
-	public int getGCD(String user)
+	public long getGCD(String user)
 	{
 		List<Announcement> announcements = this.getAnnouncemets(user);
-		int[] delays = new int[announcements.size()];
+		long[] delays = new long[announcements.size()];
 		for (int x = 0; x < delays.length; x++)
 		{
 			delays[x] = announcements.get(x).getDelay();
@@ -72,15 +72,15 @@ public class AnnouncementManager
 	 * @param	ints	The list to get the gcd from.
 	 * @return			gcd of all the integers in the list.
 	 */
-	private int gcd(int[] ints)
+	private long gcd(long[] ints)
 	{
-		int result = ints[0];
+		long result = ints[0];
 		
 		for (int x = 1; x < ints.length; x++)
 		{
 			while (ints[x] > 0)
 			{
-				int t = ints[x];
+				long t = ints[x];
 				ints[x] = result % ints[x];
 				result = t;
 			}
@@ -112,14 +112,13 @@ public class AnnouncementManager
 		if (returnn == null){
 			return null;
 		}
-		//TODO add language support
 		return returnn.getMessage(us.getLanguage());
 	}
 	
 	/**
 	 * Get the next delay for this users MessageTask
 	 * @param	user	The user to get the next delay of.
-	 * @return			The next delay that should be used from this users MessageTask.
+	 * @return			The next delay that should be used for this users MessageTask in milliseconds.
 	 * @see		MessageTask
 	 */
 	public int getNextDelay(String user)
@@ -141,7 +140,7 @@ public class AnnouncementManager
 			return 0;
 		}
 		//TODO add language support
-		return returnn.getDelay()/getGCD(user);
+		return (int) (returnn.getDelay()/getGCD(user));
 	}
 
 	/**
@@ -155,7 +154,7 @@ public class AnnouncementManager
 	 * @param group
 	 * @throws ShoutException if there is something wrong with the values
 	 */
-	public void addAnnouncement(String name, Map<String, String> messages, String world, int delay, String permNode, String group) throws ShoutException
+	public void addAnnouncement(String name, Map<String, String> messages, String world, long delay, String permNode, String group) throws ShoutException
 	{
 		if ( !(world.equals("*") ||module.getCore().getServer().getWorld(world) != null))
 		{
@@ -210,7 +209,7 @@ public class AnnouncementManager
 				
 				if(!delays.containsKey(user.getName()))
 				{
-					delays.put(user.getName(), new LinkedList<Integer>());
+					delays.put(user.getName(), new LinkedList<Long>());
 				}
 				delays.get(user.getName()).add(a.getDelay());
 				

@@ -11,16 +11,16 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
-import de.cubeisland.cubeengine.shout.scheduler.AnnouncementManager;
-import de.cubeisland.cubeengine.shout.scheduler.MessageTask;
-import de.cubeisland.cubeengine.shout.scheduler.Scheduler;
+import de.cubeisland.cubeengine.shout.task.AnnouncementManager;
+import de.cubeisland.cubeengine.shout.task.MessageTask;
+import de.cubeisland.cubeengine.shout.task.TaskManager;
 
 public class ShoutListener implements Listener
 {
 	
 	private Shout module;
 	private AnnouncementManager aManager;
-	private Scheduler scheduler;
+	private TaskManager scheduler;
 	
 	public ShoutListener(Shout module)
 	{

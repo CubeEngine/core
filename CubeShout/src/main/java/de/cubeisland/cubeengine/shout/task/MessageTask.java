@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.scheduler;
+package de.cubeisland.cubeengine.shout.task;
 
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.TimerTask;
@@ -9,12 +9,12 @@ public class MessageTask extends TimerTask
 {
 	
 	AnnouncementManager aManager;
-	Scheduler scheduler;
+	TaskManager scheduler;
 	String user;
 	int runs;
 	int nextExcecution;
 	
-	public MessageTask(AnnouncementManager aManager,Scheduler scheduler, User user)
+	public MessageTask(AnnouncementManager aManager,TaskManager scheduler, User user)
 	{
 		this.aManager = aManager;
 		this.scheduler = scheduler;

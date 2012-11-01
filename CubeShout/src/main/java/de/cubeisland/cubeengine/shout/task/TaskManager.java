@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.scheduler;
+package de.cubeisland.cubeengine.shout.task;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,40 +9,45 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.shout.Shout;
 
 /**
  * Class to manage tasks based on the system time, not bukkits.
  */
-public class Scheduler implements Runnable
+public class TaskManager implements Runnable
 {
 	
 	private Shout module;
 	private Queue<Message> messageQueue;
 	private Timer timer;
 	private Map<String, TimerTask> tasks;
+	private int initDelay;
+	private int messagerPeriod;
 	
-	public Scheduler(Shout module)
+	public TaskManager(Shout module, int initDelay, int messagerPeriod)
 	{
 		this.module = module;
 		this.messageQueue = new ConcurrentLinkedQueue<Message>();
 		this.timer = new Timer();
 		this.tasks = new HashMap<String, TimerTask>();
+		this.initDelay = initDelay;
+		this.messagerPeriod = messagerPeriod;
 		
 		//Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
-		module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 20, 20);
+		module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 20, this.messagerPeriod/50);
 	}
 	
 	/**
 	 * Schedule a task based on system time.
 	 * 
 	 * @param	task	The task to scheduler
-	 * @param	delay	Delay between each time this task in run, in ticks.
+	 * @param	delay	Delay between each time this task in run.
 	 */
-	public void scheduleTask(String user, TimerTask task, int delay)
+	public void scheduleTask(String user, TimerTask task, long delay)
 	{
 		tasks.put(user, task);
-		timer.schedule(task, 1000L, delay*50);
+		timer.schedule(task, this.initDelay, delay);
 	}
 	
 	/**
@@ -72,7 +77,7 @@ public class Scheduler implements Runnable
 				{
 					module.logger.log(Level.INFO, u.getName()+" Is now receiving a message");	
 				}
-				u.sendMessage(m.message);
+				u.sendMessage(ChatFormat.parseFormats('&', m.message));
 			}
 		}
 	}

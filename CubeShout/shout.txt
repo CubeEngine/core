@@ -1,18 +1,17 @@
 CubeShout
 
 FEATURES:
-    - delays on per-announcement basis										DONE
-    - manual and automatic announcements
-    - group announcements
-    - role announcements (needs the Role module)
-    - multi language support												Should be done
-    - variables
-    - delays should not be affected by lag (as good as possible)				Should be done
-    - announcements should be read from *.txt files and their config from yaml	DONE
-    - announcements should not be posted if there are no players
+    - delays on per-announcement basis												DONE
+    - manual and automatic announcements											Have to do manual
+    - role announcements (needs the Role module)									CubeRoles have to be done
+    - multi language support														DONE
+    - variables	and colors in the announcements										TODO
+    - delays should not be affected by lag (as good as possible)					Should be done
+    - announcements should be read from *.txt files and their config from yaml		DONE
+    - announcements should not be posted if there are no players					DONE
 
 
-Messages will be stored in Shout/(message)/(localcode(en_US)).txt
+Messages will be stored in Shout/(announcement)/(localcode(en_US)).txt
 
 HOW TO SCHEDULE THE MESSAGES:
 1. Player Joins

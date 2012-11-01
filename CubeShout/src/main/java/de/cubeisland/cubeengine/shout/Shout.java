@@ -13,14 +13,15 @@ import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
+import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.shout.Exceptions.ShoutException;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
 import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
-import de.cubeisland.cubeengine.shout.scheduler.AnnouncementManager;
-import de.cubeisland.cubeengine.shout.scheduler.Scheduler;
+import de.cubeisland.cubeengine.shout.task.AnnouncementManager;
+import de.cubeisland.cubeengine.shout.task.TaskManager;
 
 public class Shout extends Module
 {
@@ -28,7 +29,9 @@ public class Shout extends Module
 	private AnnouncementManager aManager;
 	private ShoutListener listener;
 	private ShoutCommand command;
-	private Scheduler scheduler;
+	private TaskManager scheduler;
+	@From
+	private ShoutConfiguration config;
 	
 	public Logger logger;
 	
@@ -37,16 +40,16 @@ public class Shout extends Module
     @Override
     public void onEnable()
     {
+    	this.logger = this.getLogger();
+    	
     	if (this.getCore().isDebug())
     	{
-    		this.getLogger().log(Level.INFO, "Enabling CubeShout");
+    		this.logger.log(Level.INFO, "Enabling CubeShout");
     	}
     	
     	this.getFileManager().dropResources(ShoutResource.values());
     	
-    	this.logger = this.getLogger();
-    	
-    	this.scheduler = new Scheduler(this);
+    	this.scheduler = new TaskManager(this, config.initDelay, config.messagerPeriod);
     	this.aManager = new AnnouncementManager(this);
     	this.listener = new ShoutListener(this);
     	this.command = new ShoutCommand(this);
@@ -114,7 +117,7 @@ public class Shout extends Module
     {
     	Map<String, String> messages = new HashMap<String, String>();
     	String world = "*";
-    	int delay = 0;
+    	long delay = 0;
     	String permNode = "*";
     	String group = "*";
     	if (f.isDirectory())
@@ -152,7 +155,7 @@ public class Shout extends Module
     		{
     			this.logger.log(Level.INFO, "Languages: "+ messages.keySet().toString());
     			this.logger.log(Level.INFO, "World: " +  world);
-    			this.logger.log(Level.INFO, "Delay(in ticks: " +  delay);
+    			this.logger.log(Level.INFO, "Delay(in millisecounds): " +  delay);
     			this.logger.log(Level.INFO, "Permission: " +  permNode);
     			this.logger.log(Level.INFO, "Group: " +  group);
     		}
@@ -169,27 +172,27 @@ public class Shout extends Module
      * @param delayText	the text to parse
      * @return the delay in ticks
      */
-    private int parseDelay(String delayText) {
+    private long parseDelay(String delayText) {
 		String[] parts = delayText.split(" ", 2);
 		int tmpdelay = Integer.parseInt(parts[0]);
 		
 		switch(parts[1].toLowerCase()){
 			case "secounds":
-				return tmpdelay * 20;
+				return tmpdelay * 1000;
 			case "minutes":
-				return tmpdelay * 20 * 60;
+				return tmpdelay * 60 * 1000;
 			case "hours":
-				return tmpdelay * 20 * 60 * 60;
+				return tmpdelay * 60 * 60 * 100;
 			case "days":
-				return tmpdelay * 20 * 60 * 60 * 24;
+				return tmpdelay * 24 * 60 * 60 * 1000;
 			case "secound":
-				return tmpdelay * 20;
+				return tmpdelay * 1000;
 			case "minute":
-				return tmpdelay * 20 * 60;
+				return tmpdelay * 60 * 1000;
 			case "hour":
-				return tmpdelay * 20 * 60 * 60;
+				return tmpdelay * 60 * 60 * 100;
 			case "day":
-				return tmpdelay * 20 * 60 * 60 * 24;
+				return tmpdelay * 24 * 60 * 60 * 1000;
 			
 		}
     	
@@ -201,7 +204,7 @@ public class Shout extends Module
 		return this.aManager;
 	}
 
-	public Scheduler getScheduler()
+	public TaskManager getScheduler()
 	{
 		return scheduler;
 	}
