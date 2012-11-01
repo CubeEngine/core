@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class MaterialMatcher
 {
+    //TODO rename item ; is it possible?
     private THashMap<String, ItemStack> items;
     private THashMap<ItemStack, String> itemnames;
     private TIntObjectHashMap<THashMap<String, Short>> datavalues;

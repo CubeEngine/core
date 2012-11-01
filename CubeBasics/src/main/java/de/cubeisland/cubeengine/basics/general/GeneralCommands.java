@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class GeneralCommands
@@ -58,9 +59,9 @@ public class GeneralCommands
                 illegalParameter(context, "basics", "&eTalking to yourself?");
             }
             if (context.getString(0).equalsIgnoreCase("console"))
-            {   // TODO find why console does not get any message here:
-                context.getSender().getServer().getConsoleSender().sendMessage(
-                    _("basics", "&e%s -> You: &f%s", context.getSender().getName(), message));
+            {
+                context.getSender().getServer().getConsoleSender().
+                    sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().getName(), message));
                 context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", message);
             }
             else
@@ -426,7 +427,43 @@ public class GeneralCommands
          * (godmode)
          * (muted)
          */
+    }
 
+    @Command(
+    desc = "Gives a kit of items.",
+    usage = "<kitname> [player]",
+    min = 1, max = 2)
+    public void kit(CommandContext context)
+    {
+        //TODO dynamic permissions for each kit
+        //TODO get kits only x-time
+        //TODO delay between kits
+        //TODO give kit to all players online
+        //TODO starterKit on login (not here)
+        String kitname = context.getString(0);
+        User user;
+        Kit kit = null; //TODO getKitFromConfig
+        if (kit == null)
+        {
+            illegalParameter(context, "basics", "Kit %s not found!", kitname);
+        }
+        if (context.hasIndexed(1))
+        {
+            user = context.getUser(1);
+        }
+        else
+        {
+            user = context.getSenderAsUser();
+        }
+        if (user == null)
+        {
+            illegalParameter(context, "basics", "User not found!");
+        }
+        if (!kit.getPermission().isAuthorized(user))
+        {
+            denyAccess(context, "basics", "You are not allowed to give this kit.");
+        }
+        kit.give(user);
     }
     /**
      *
@@ -444,13 +481,11 @@ public class GeneralCommands
      * list
      * motd
      * whois
+     * kit
      *
      * //TODO
      *
-     * kit
-     *
-     *
-     * mail
+     * kit //TODO wait for converter for saving this in config
      *
      * helpop -> move to CubePermissions ?? not only op but also "Moderator"
      * ignore -> move to CubeChat

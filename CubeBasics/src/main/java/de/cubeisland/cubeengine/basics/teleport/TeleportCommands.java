@@ -571,7 +571,7 @@ public class TeleportCommands
         loc.add(0, 1, 0);
         if (block.getType().equals(Material.AIR))
         {
-            block.setType(Material.GLASS); // TODO need to send update to client?
+            block.setType(Material.GLASS);
         }
         this.teleport(sender, loc, true); // is save anyway so we do not need to check again
 
