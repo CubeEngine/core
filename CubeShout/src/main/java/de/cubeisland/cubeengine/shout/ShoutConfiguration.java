@@ -10,11 +10,11 @@ import de.cubeisland.cubeengine.core.config.annotations.Revision;
 @Revision(1)
 public class ShoutConfiguration extends Configuration {
 	
-	@Option("InitialDelay")
+	@Option("initial-delay")
 	@Comment("The delay after a player joins before he receives his first message, in millisecounds")
 	public int initDelay = 20;
 	
-	@Option("MessagerPeriod")
+	@Option("messager-period")
 	@Comment("The period the task that sends the messages should run at, in millisecounds")
 	public int messagerPeriod = 40;
 }

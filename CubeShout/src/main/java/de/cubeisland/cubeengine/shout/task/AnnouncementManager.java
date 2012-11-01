@@ -249,7 +249,7 @@ public class AnnouncementManager
 		worlds.remove(user);
 	}
 	
-    public void loadAnnouncements() throws ShoutException, IOException
+    public void loadAnnouncements() throws ShoutException
     {
     	File moduleFolder = module.getFolder();
     	
@@ -272,7 +272,7 @@ public class AnnouncementManager
     	
     }
     
-    private void loadAnnouncement(File f) throws IOException, ShoutException
+    private void loadAnnouncement(File f) throws ShoutException
     {
     	Map<String, String> messages = new HashMap<String, String>();
     	String world = "*";
@@ -300,16 +300,20 @@ public class AnnouncementManager
     		List<File> languages = new ArrayList<File>();
     		languages = Arrays.asList(f.listFiles((FilenameFilter)new FileExtentionFilter("txt")));
     		
-    		
-    		for (File lang : languages)
-    		{
-				StringBuilder message = new StringBuilder();
-				for (String line : FileUtil.readStringList(lang))
-				{
-					message.append(line + "\n");
-				}
-				messages.put(lang.getName().replace(".txt", ""), message.toString());
+    		try {
+        		for (File lang : languages)
+        		{
+    				StringBuilder message = new StringBuilder();
+    				for (String line : FileUtil.readStringList(lang))
+    				{
+    					message.append(line + "\n");
+    				}
+    				messages.put(lang.getName().replace(".txt", ""), message.toString());
+        		}
+    		} catch (IOException ex) {
+    			throw new ShoutException("Error while reading one of the language files for announcement: " + f.getName(), ex);
     		}
+
     		if (module.getCore().isDebug())
     		{
     			module.logger.log(Level.INFO, "Languages: "+ messages.keySet().toString());
