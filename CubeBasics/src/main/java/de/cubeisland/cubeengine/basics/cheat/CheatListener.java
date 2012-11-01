@@ -9,20 +9,20 @@ import org.bukkit.inventory.ItemStack;
 
 public class CheatListener implements Listener
 {
-    private Basics module;
+    private Basics basics;
 
-    public CheatListener(Basics module)
+    public CheatListener(Basics basics)
     {
-        this.module = module;
+        this.basics = basics;
     }
 
     @EventHandler
     public void blockplace(final BlockPlaceEvent event)
     {
-        User user = module.getUserManager().getExactUser(event.getPlayer());
-        if (user.getAttribute(module,"unlimitedItems") != null)
+        User user = basics.getUserManager().getExactUser(event.getPlayer());
+        if (user.getAttribute(basics,"unlimitedItems") != null)
         {
-            if (user.getAttribute(module,"unlimitedItems"))
+            if (user.getAttribute(basics,"unlimitedItems"))
             {
                 ItemStack itemInHand = event.getPlayer().getItemInHand();
                 itemInHand.setAmount(itemInHand.getAmount() + 1);

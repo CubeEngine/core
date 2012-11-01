@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -507,6 +508,14 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         for (Player player : this.server.getOnlinePlayers())
         {
             this.getExactUser(player).sendMessage(category, message, args);
+        }
+    }
+    
+    public void clearAttributes(Module module)
+    {
+        for (User user : this.users.values())
+        {
+            user.clearAttributes(module);
         }
     }
 }

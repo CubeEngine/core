@@ -28,12 +28,12 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class CheatCommands
 {
     private UserManager um;
-    private Basics module;
-
-    public CheatCommands(Basics module)
-    {
-        this.module = module;
-        this.um = module.getUserManager();
+    private Basics basics
+;
+    public CheatCommands(Basics basics
+)    {
+        this.basics = basics;
+        this.um = basics.getUserManager();
     }
 
     @Command(
@@ -824,7 +824,7 @@ public class CheatCommands
         {
             if (context.getString(0).equalsIgnoreCase("on"))
             {
-                sender.setAttribute(module, "unlimitedItems", true);
+                sender.setAttribute(basics, "unlimitedItems", true);
                 sender.
                     sendMessage("basics", "You now have unlimited items to build!");
             }
@@ -832,7 +832,7 @@ public class CheatCommands
             {
                 if (context.getString(0).equalsIgnoreCase("off"))
                 {
-                    sender.removeAttribute(module, "unlimitedItems");
+                    sender.removeAttribute(basics, "unlimitedItems");
                     sender.
                         sendMessage("basics", "You now no longer have unlimited items to build!");
                 }
@@ -844,15 +844,15 @@ public class CheatCommands
         }
         else
         {
-            Object bln = sender.getAttribute(module,"unlimitedItems");
+            Object bln = sender.getAttribute(basics,"unlimitedItems");
             if (bln == null)
             {
-                sender.setAttribute(module,"unlimitedItems", true);
+                sender.setAttribute(basics,"unlimitedItems", true);
                 context.sendMessage("basics", "You now have unlimited items to build!");
             }
             else
             {
-                sender.removeAttribute(module,"unlimitedItems");
+                sender.removeAttribute(basics,"unlimitedItems");
                 context.sendMessage("basics", "You now no longer have unlimited items to build!");
             }
         }

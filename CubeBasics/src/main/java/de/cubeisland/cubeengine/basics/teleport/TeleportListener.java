@@ -10,33 +10,33 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class TeleportListener implements Listener
 {
-    private Basics module;
+    private Basics basics;
 
-    public TeleportListener(Basics module)
+    public TeleportListener(Basics basics)
     {
-        this.module = module;
+        this.basics = basics;
     }
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        User user = module.getUserManager().getExactUser(event.getPlayer());
+        User user = basics.getUserManager().getExactUser(event.getPlayer());
         switch (event.getCause())
         {
             case COMMAND:
             case PLUGIN:
             case UNKNOWN:
-                user.setAttribute(module,"lastLocation", event.getFrom());
+                user.setAttribute(basics,"lastLocation", event.getFrom());
         }
     }
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
-        User user = this.module.getUserManager().getExactUser(event.getEntity());
+        User user = this.basics.getUserManager().getExactUser(event.getEntity());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
-            user.setAttribute(module,"lastLocation", user.getLocation());
+            user.setAttribute(basics,"lastLocation", user.getLocation());
         }
     }
 }

@@ -380,6 +380,7 @@ public class ModuleManager implements Cleanable
     public void disableModule(Module module)
     {
         this.disableModule(module, true);
+        this.core.getUserManager().clearAttributes(module); // Clean up saved attributes
     }
 
     /**

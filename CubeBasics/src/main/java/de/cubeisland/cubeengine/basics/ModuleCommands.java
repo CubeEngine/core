@@ -11,10 +11,10 @@ public class ModuleCommands extends ContainerCommand
 {
     private final ModuleManager mm;
     
-    public ModuleCommands(Basics module)
+    public ModuleCommands(Basics basics)
     {
-        super(module, "module", "Provides ingame module plugin management functionality");
-        this.mm = module.getModuleManager();
+        super(basics, "module", "Provides ingame module plugin management functionality");
+        this.mm = basics.getModuleManager();
     }
     
     @Alias(names = {"modules"})

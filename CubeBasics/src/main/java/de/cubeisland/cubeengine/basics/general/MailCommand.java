@@ -12,14 +12,14 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 
 public class MailCommand extends ContainerCommand
 {
-    Basics module;
+    private Basics basics;
 
     //TODO when user joins check with custom query if there is any mail.
     //If there is load BasicUser + Show amount of unread mails.
-    public MailCommand(Basics module)
+    public MailCommand(Basics basics)
     {
-        super(module, "mail", "Manages your server-mails.");
-        this.module = module;
+        super(basics, "mail", "Manages your server-mails.");
+        this.basics = basics;
     }
 
     @Alias(names = "readmail")
@@ -54,7 +54,7 @@ public class MailCommand extends ContainerCommand
         {
             sender = context.getSenderAsUser("basics", "Log into the game to check your mailbox!");
         }
-        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(sender);
+        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);
         if (bUser.mailbox.isEmpty())
         {
             context.sendMessage("basics", "You do not have any message!");
@@ -127,9 +127,9 @@ public class MailCommand extends ContainerCommand
     {
         for (User user : users)
         {
-            BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
+            BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
             bUser.addMail(from, message); //If from is null pretend it was the console
-            this.module.getBasicUserManager().update(bUser); // This is async
+            this.basics.getBasicUserManager().update(bUser); // This is async
             if (user.isOnline())
             {
                 user.sendMessage("basics", "You just got a mail from %s", from.getName());

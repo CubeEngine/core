@@ -45,7 +45,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
 
-    Integer removalTaskId;
+    Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
     
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
@@ -267,5 +267,10 @@ public class User extends UserBase implements LinkingModel<Integer>
             // If there is still lava then you shall burn!
         }
         this.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    public void clearAttributes(Module module)
+    {
+        this.attributes.remove(module);
     }
 }

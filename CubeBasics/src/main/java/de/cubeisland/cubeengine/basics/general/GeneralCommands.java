@@ -19,13 +19,13 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class GeneralCommands
 {
     private UserManager um;
-    private Basics module;
+    private Basics basics;
     private String lastWhisperOfConsole = null;
 
-    public GeneralCommands(Basics module)
+    public GeneralCommands(Basics basics)
     {
-        this.module = module;
-        this.um = module.getUserManager();
+        this.basics = basics;
+        this.um = basics.getUserManager();
     }
 
     @Command(
@@ -34,14 +34,8 @@ public class GeneralCommands
     usage = "<message>")
     public void me(CommandContext context)
     {
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        while (context.hasIndexed(i))
-        {
-            sb.append(context.getString(i++)).append(" ");
-        }
-        this.um.
-            broadcastMessage("basics", "* %s %s", context.getSender().getName(), sb.toString()); // Here no category so -> no Translation
+        String message = context.getStrings(0);
+        this.um.broadcastMessage("basics", "* %s %s", context.getSender().getName(), message); // Here no category so -> no Translation
     }
 
     @Command(
@@ -54,12 +48,7 @@ public class GeneralCommands
     usage = "<player> <message>")
     public void msg(CommandContext context)
     {
-        StringBuilder sb = new StringBuilder();
-        int i = 1;
-        while (context.hasIndexed(i))
-        {
-            sb.append(context.getString(i++)).append(" ");
-        }
+        String message = context.getStrings(1);
         User sender = context.getSenderAsUser();
         User user = context.getUser(0);
         if (user == null)
@@ -71,8 +60,8 @@ public class GeneralCommands
             if (context.getString(0).equalsIgnoreCase("console"))
             {   // TODO find why console does not get any message here:
                 context.getSender().getServer().getConsoleSender().sendMessage(
-                    _("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb));
-                context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", sb);
+                    _("basics", "&e%s -> You: &f%s", context.getSender().getName(), message));
+                context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", message);
             }
             else
             {
@@ -85,14 +74,14 @@ public class GeneralCommands
             {
                 illegalParameter(context, "basics", "&eTalking to yourself?");
             }
-            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), sb);
-            context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), sb));
+            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), message);
+            context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), message));
         }
 
         if (sender == null)
         {
             this.lastWhisperOfConsole = user.getName();
-            user.setAttribute(module,
+            user.setAttribute(basics,
                 "lastWhisper", "console");
         }
         else
@@ -100,12 +89,12 @@ public class GeneralCommands
             if (user == null)
             {
                 this.lastWhisperOfConsole = sender.getName();
-                sender.setAttribute(module, "lastWhisper", "console");
+                sender.setAttribute(basics, "lastWhisper", "console");
             }
             else
             {
-                sender.setAttribute(module, "lastWhisper", user.getName());
-                user.setAttribute(module, "lastWhisper", sender.getName());
+                sender.setAttribute(basics, "lastWhisper", user.getName());
+                user.setAttribute(basics, "lastWhisper", sender.getName());
             }
         }
     }
@@ -133,7 +122,7 @@ public class GeneralCommands
         }
         else
         {
-            lastWhisperer = sender.getAttribute(module,"lastWhisper");
+            lastWhisperer = sender.getAttribute(basics, "lastWhisper");
             if (lastWhisperer == null)
             {
                 invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
@@ -146,26 +135,16 @@ public class GeneralCommands
         {
             invalidUsage(context, "basics", "Could not find the player to reply too. Is he offline?");
         }
-        StringBuilder sb = new StringBuilder(); //TODO absolutly need this in cmdContext i am using it way too often
-        int i = 0;
-        while (context.hasIndexed(i))
-        {
-            sb.append(context.getString(i++)).append(" ");
-        }
+        String message = context.getStrings(0);
         if (replyToConsole)
         {
-            sender.getServer().getConsoleSender().
-                sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().
-                getName(), sb.toString()));
-            context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", sb.
-                toString());
+            sender.getServer().getConsoleSender().sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().getName(), message));
+            context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", message);
         }
         else
         {
-            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().
-                getName(), sb);
-            context.
-                sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), sb));
+            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), message);
+            context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), message));
         }
     }
 
@@ -409,7 +388,7 @@ public class GeneralCommands
     @Command(desc = "Displays the message of the day!")
     public void motd(CommandContext context)
     {
-        context.sendMessage(module.getConfiguration().motd);
+        context.sendMessage(basics.getConfiguration().motd);
     }
 
     @Command(

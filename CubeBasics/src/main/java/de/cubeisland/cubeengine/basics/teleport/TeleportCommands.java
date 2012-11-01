@@ -22,11 +22,11 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 
 public class TeleportCommands
 {
-    Basics module;
+    private Basics basics;
 
-    public TeleportCommands(Basics module)
+    public TeleportCommands(Basics basics)
     {
-        this.module = module;
+        this.basics = basics;
     }
 
     private void teleport(User user, Location loc, boolean safe)
@@ -324,7 +324,7 @@ public class TeleportCommands
         // TODO later make diff. spawns for playergroups/roles possible
         User user = context.getSenderAsUser();
         World world;
-        String s_world = module.getConfiguration().spawnMainWorld;
+        String s_world = basics.getConfiguration().spawnMainWorld;
         if (s_world == null)
         {
             world = user.getWorld();
@@ -398,8 +398,8 @@ public class TeleportCommands
             illegalParameter(context, "basics", "User not found!");
         }
         user.sendMessage("basics", "%s wants to teleport to you! Use /tpaccept to accept or /tpdeny to deny the request!", sender.getName());
-        user.setAttribute(module,"pendingTpToRequest", sender.getName());
-        user.removeAttribute(module,"pendingTpFromRequest");
+        user.setAttribute(basics,"pendingTpToRequest", sender.getName());
+        user.removeAttribute(basics,"pendingTpFromRequest");
         context.sendMessage("basics", "Teleport request send to %s!", user.getName());
     }
 
@@ -417,8 +417,8 @@ public class TeleportCommands
             illegalParameter(context, "basics", "User not found!");
         }
         user.sendMessage("basics", "%s wants to teleport you to him! Use /tpaccept to accept or /tpdeny to deny the request!", sender.getName());
-        user.setAttribute(module,"pendingTpFromRequest", sender.getName());
-        user.removeAttribute(module,"pendingTpToRequest");
+        user.setAttribute(basics,"pendingTpFromRequest", sender.getName());
+        user.removeAttribute(basics,"pendingTpToRequest");
         context.sendMessage("basics", "Teleport request send to %s!", user.getName());
     }
 
@@ -432,16 +432,16 @@ public class TeleportCommands
     public void tpaccept(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo one wants to teleport to you!");
-        String name = sender.getAttribute(module, "pendingTpToRequest");
+        String name = sender.getAttribute(basics, "pendingTpToRequest");
         if (name == null)
         {
-            name = sender.getAttribute(module, "pendingTpFromRequest");
+            name = sender.getAttribute(basics, "pendingTpFromRequest");
             if (name == null)
             {
                 invalidUsage(context, "basics", "You don't have any pending requests!");
             }
-            sender.removeAttribute(module, "pendingTpFromRequest");
-            User user = module.getUserManager().getUser(name, false);
+            sender.removeAttribute(basics, "pendingTpFromRequest");
+            User user = basics.getUserManager().getUser(name, false);
             if (user == null || !user.isOnline())
             {
                 invalidUsage(context, "basics", "%s seems to have disappeared.", user.getName());
@@ -452,8 +452,8 @@ public class TeleportCommands
         }
         else
         {
-            sender.removeAttribute(module, "pendingTpToRequest");
-            User user = module.getUserManager().getUser(name, false);
+            sender.removeAttribute(basics, "pendingTpToRequest");
+            User user = basics.getUserManager().getUser(name, false);
             if (user == null || !user.isOnline())
             {
                 invalidUsage(context, "basics", "%s seems to have disappeared.", user.getName());
@@ -470,12 +470,12 @@ public class TeleportCommands
     public void tpdeny(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo one wants to teleport to you!");
-        String tpa = sender.getAttribute(module, "pendingTpToRequest");
-        String tpahere = sender.getAttribute(module, "pendingTpFromRequest");
+        String tpa = sender.getAttribute(basics, "pendingTpToRequest");
+        String tpahere = sender.getAttribute(basics, "pendingTpFromRequest");
         if (tpa != null)
         {
-            sender.removeAttribute(module, "pendingTpToRequest");
-            User user = module.getUserManager().getUser(tpa, false);
+            sender.removeAttribute(basics, "pendingTpToRequest");
+            User user = basics.getUserManager().getUser(tpa, false);
             if (user == null)
             {
                 throw new IllegalStateException("User saved in \"pendingTpToRequest\" was not found!");
@@ -485,8 +485,8 @@ public class TeleportCommands
         }
         if (tpahere != null)
         {
-            sender.removeAttribute(module, "pendingTpFromRequest");
-            User user = module.getUserManager().getUser(tpahere, false);
+            sender.removeAttribute(basics, "pendingTpFromRequest");
+            User user = basics.getUserManager().getUser(tpahere, false);
             if (user == null)
             {
                 throw new IllegalStateException("User saved in \"pendingTpFromRequest\" was not found!");
@@ -516,7 +516,7 @@ public class TeleportCommands
     public void back(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "You never teleported!");
-        Location loc = sender.getAttribute(module, "lastLocation");
+        Location loc = sender.getAttribute(basics, "lastLocation");
         if (loc == null)
         {
             invalidUsage(context, "basics", "You never teleported!");
