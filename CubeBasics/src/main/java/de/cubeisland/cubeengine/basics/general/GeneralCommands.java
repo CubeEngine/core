@@ -461,7 +461,7 @@ public class GeneralCommands
         boolean result = kit.give(context.getSender(), user);
         if (result)
         {
-            context.sendMessage("basics", "%s do not have enough space for the % kit ", user.getName(), kitname);
+            context.sendMessage("basics", "%s do not have enough space for the %s kit ", user.getName(), kitname);
         }
         else
         {
