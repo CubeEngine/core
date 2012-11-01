@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout;
+package de.cubeisland.cubeengine.shout.task;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
