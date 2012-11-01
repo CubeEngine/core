@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -442,7 +441,6 @@ public class GeneralCommands
             user.getGameMode().toString(),
             String.valueOf(user.isFlying()),
             String.valueOf(user.isOp()));
-        //TODO starve cmd
         /* TODO
          * (money)
          * afk

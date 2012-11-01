@@ -205,6 +205,64 @@ public class CheatCommands
     }
 
     @Command(
+    desc = "Empties the hunger bar",
+    max = 1,
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    },
+    usage = "[player]")
+    public void starve(CommandContext context)
+    {
+        if (context.hasFlag("a"))
+        {
+            Player[] players = context.getSender().getServer().getOnlinePlayers();
+            for (Player player : players)
+            {
+                player.setFoodLevel(0);
+                player.setSaturation(0);
+                player.setExhaustion(4);
+            }
+            context.sendMessage("basics", "You starve everyone to death!");
+            this.um.broadcastMessage("basics", "%s took away all food.", context.getSender().getName());
+        }
+        else
+        {
+            User sender = context.getSenderAsUser();
+            User user = sender;
+            boolean other = false;
+            if (context.hasIndexed(0))
+            {
+                user = context.getUser(0);
+                if (user == null)
+                {
+                    invalidUsage(context, "core", "User not found!");
+                }
+                other = true;
+            }
+            else
+            {
+                if (sender == null)
+                {
+                    invalidUsage(context, "basics", "\n\n\n\n\n&cI'll give you only one line to eat!\n\n\n\n\n");
+                }
+            }
+            user.setFoodLevel(0);
+            user.setSaturation(0);
+            user.setExhaustion(4);
+            if (other)
+            {
+                context.sendMessage("basics", "&6Starved %s", user.getName());
+                user.sendMessage("basics", "&6You are suddenly starving!");
+            }
+            else
+            {
+                context.sendMessage("basics", "&6You are now starving!");
+            }
+        }
+    }
+
+    @Command(
     desc = "Heals a Player",
     max = 1,
     flags =
