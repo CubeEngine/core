@@ -91,7 +91,7 @@ public class CubeCommandMap extends SimpleCommandMap
 
         if (command == null && !"".equals(label))
         {
-            User user = this.um.getUser(sender);
+            User user = this.um.getExactUser(sender);
             if (user != null)
             {
                 sender = user;

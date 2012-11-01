@@ -40,8 +40,7 @@ class RuleBookListener implements Listener, Runnable
     {
         if (playerName != null)
         {
-            User user = this.module.getCore().getUserManager().
-                getUser(playerName);
+            User user = this.module.getCore().getUserManager().getUser(playerName , true);
             String language = user.getLanguage();
 
             if (!this.module.getConfig().getLanguages().contains(language))

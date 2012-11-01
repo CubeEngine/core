@@ -20,7 +20,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        User user = module.getUserManager().getUser(event.getPlayer());
+        User user = module.getUserManager().getExactUser(event.getPlayer());
         switch (event.getCause())
         {
             case COMMAND:
@@ -33,7 +33,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
-        User user = this.module.getUserManager().getUser(event.getEntity());
+        User user = this.module.getUserManager().getExactUser(event.getEntity());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
             user.setAttribute("lastLocation", user.getLocation());

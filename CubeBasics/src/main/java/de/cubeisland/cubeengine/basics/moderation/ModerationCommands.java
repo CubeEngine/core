@@ -867,7 +867,7 @@ public class ModerationCommands
         {
             if (player.isOnline())
             {
-                User user = context.getCore().getUserManager().getUser(player);
+                User user = context.getCore().getUserManager().getExactUser(player);
                 String message = context.getStrings(1);
                 if (message.equals(""))
                 {

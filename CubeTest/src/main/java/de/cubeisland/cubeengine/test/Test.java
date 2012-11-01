@@ -114,10 +114,10 @@ public class Test extends Module
     public void testUserManager()
     {
         //Testing get
-        User userToDel = uM.getUser("userGetsDel");
-        User user = uM.getUser("UserU");
-        uM.getUser("User1");
-        uM.getUser("User2");
+        User userToDel = uM.getUser("userGetsDel", true);
+        User user = uM.getUser("UserU", true);
+        uM.getUser("User1", true);
+        uM.getUser("User2", true);
         //Testing getall
         uM.getAll();
         //Testing delete
@@ -126,7 +126,7 @@ public class Test extends Module
         user.nogc = true;
         user.lastseen = new Timestamp(50000);
         uM.update(user);
-        user = uM.getUser("User1");
+        user = uM.getUser("User1", true);
         user.lastseen = new Timestamp(50000);
         uM.update(user);
     }
@@ -151,12 +151,12 @@ public class Test extends Module
         {
         }
 
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"),false);
-        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"),false);
-        this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"),false);
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"),false);
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"),false);
-        this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"),false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"), false);
+        this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"), false);
         this.manager.get(2);
         this.manager.getAll();
         TestModel model = this.manager.get(3);

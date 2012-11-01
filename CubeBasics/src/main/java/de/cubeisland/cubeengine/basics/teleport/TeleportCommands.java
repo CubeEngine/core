@@ -168,7 +168,7 @@ public class TeleportCommands
                 }
             }
             boolean safe = !context.hasFlag("u");
-            this.teleport(CubeEngine.getUserManager().getUser(player), user.getLocation(), safe);
+            this.teleport(CubeEngine.getUserManager().getExactUser(player), user.getLocation(), safe);
         }
         context.sendMessage("basics", "You teleported everyone to %s", user.getName());
     }
@@ -241,7 +241,7 @@ public class TeleportCommands
                 }
             }
             boolean safe = !context.hasFlag("u");
-            this.teleport(CubeEngine.getUserManager().getUser(player), sender.getLocation(), safe);
+            this.teleport(CubeEngine.getUserManager().getExactUser(player), sender.getLocation(), safe);
         }
         context.sendMessage("basics", "You teleported everyone to you!");
     }
@@ -364,7 +364,7 @@ public class TeleportCommands
         {
             invalidUsage(context, "basics", "&eProTip: Teleport does not work IRL!");
         }
-        
+
         if (context.hasIndexed(0))
         {
             user = context.getUser(0);
@@ -441,8 +441,8 @@ public class TeleportCommands
                 invalidUsage(context, "basics", "You don't have any pending requests!");
             }
             sender.removeAttribute("pendingTpFromRequest");
-            User user = module.getUserManager().getUser(name);
-            if (!user.isOnline())
+            User user = module.getUserManager().getUser(name, false);
+            if (user == null || !user.isOnline())
             {
                 invalidUsage(context, "basics", "%s seems to have disappeared.", user.getName());
             }
@@ -453,8 +453,8 @@ public class TeleportCommands
         else
         {
             sender.removeAttribute("pendingTpToRequest");
-            User user = module.getUserManager().getUser(name);
-            if (!user.isOnline())
+            User user = module.getUserManager().getUser(name, false);
+            if (user == null || !user.isOnline())
             {
                 invalidUsage(context, "basics", "%s seems to have disappeared.", user.getName());
             }
@@ -475,14 +475,22 @@ public class TeleportCommands
         if (tpa != null)
         {
             sender.removeAttribute("pendingTpToRequest");
-            User user = module.getUserManager().getUser(tpa);
+            User user = module.getUserManager().getUser(tpa, false);
+            if (user == null)
+            {
+                throw new IllegalStateException("User saved in \"pendingTpToRequest\" was not found!");
+            }
             user.sendMessage("basics", "%s denied your teleport-request!", sender.getName());
             context.sendMessage("basics", "You denied %s's teleport-request", user.getName());
         }
         if (tpahere != null)
         {
             sender.removeAttribute("pendingTpFromRequest");
-            User user = module.getUserManager().getUser(tpahere);
+            User user = module.getUserManager().getUser(tpahere, false);
+            if (user == null)
+            {
+                throw new IllegalStateException("User saved in \"pendingTpFromRequest\" was not found!");
+            }
             user.sendMessage("basics", "%s denied your request!", sender.getName());
             context.sendMessage("basics", "You denied %s's teleport-request", user.getName());
         }

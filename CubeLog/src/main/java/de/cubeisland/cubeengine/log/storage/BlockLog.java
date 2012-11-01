@@ -72,7 +72,7 @@ public class BlockLog extends AbstractLog //implements Model<Integer>
         }
         else
         {
-            this.userID = CubeEngine.getUserManager().getUser(user).getKey();
+            this.userID = CubeEngine.getUserManager().getExactUser(user).getKey();
         }
 
 

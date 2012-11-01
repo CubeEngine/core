@@ -21,7 +21,7 @@ public class RocketCMDInstance
     
     public User getUser()
     {
-        return CubeEngine.getUserManager().getUser(name);
+        return CubeEngine.getUserManager().getUser(name, true);
     }
     
     public void addTick()

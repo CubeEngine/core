@@ -47,7 +47,7 @@ public class CommandContext
         this.core = core;
         if (sender instanceof Player)
         {
-            sender = command.getModule().getUserManager().getUser(sender);
+            sender = command.getModule().getUserManager().getExactUser(sender);
         }
         this.sender = sender;
         this.command = command;
@@ -489,7 +489,7 @@ public class CommandContext
      */
     public User getSenderAsUser()
     {
-        return this.core.getUserManager().getUser(this.sender);
+        return this.core.getUserManager().getExactUser(this.sender);
     }
 
     /**

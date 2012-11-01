@@ -30,8 +30,7 @@ public class ModerationListener implements Listener
     {
         if (event.getWhoClicked() instanceof Player)
         {
-            User sender = module.getUserManager().getUser((Player)event.
-                getWhoClicked());
+            User sender = module.getUserManager().getExactUser((Player)event.getWhoClicked());
             if (openedInventories.containsKey(sender))
             {
                 event.setCancelled(!openedInventories.get(sender));

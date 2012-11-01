@@ -92,7 +92,7 @@ public class RocketListener implements Listener, Runnable
     {
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL)
         {
-            User user = this.userManager.getUser((Player)event.getEntity());
+            User user = this.userManager.getExactUser((Player)event.getEntity());
             if(user == null)
             {
                 return;

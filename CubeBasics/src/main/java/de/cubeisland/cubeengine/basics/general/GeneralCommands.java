@@ -202,7 +202,7 @@ public class GeneralCommands
     max = 0)
     public void suicide(CommandContext context)
     {
-        User sender = um.getUser(context.getSender());
+        User sender = um.getExactUser(context.getSender());
         if (sender == null)
         {
             invalidUsage(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
