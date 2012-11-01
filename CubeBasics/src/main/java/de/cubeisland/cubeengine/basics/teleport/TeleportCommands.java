@@ -55,19 +55,19 @@ public class TeleportCommands
 
     @Command(
     desc = "Teleport directly to a player.",
-    usage = "<player> [player]",
+    usage = "<player> [player] [-unsafe]",
     min = 1,
     max = 2,
     flags =
     {
-        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "force", name = "f"), // is not shown directly in usage
         @Flag(longName = "unsafe", name = "u")
     })
     public void tp(CommandContext context)
     {
-        User user1 = context.getSenderAsUser();
-        User user2 = context.getUser(0);
-        if (user2 == null)
+        User user = context.getSenderAsUser();
+        User target = context.getUser(0);
+        if (target == null)
         {
             illegalParameter(context, "basics", "User %s not found!", context.getString(0));
         }
@@ -81,45 +81,54 @@ public class TeleportCommands
         }
         if (!force)
         {
-            if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(user2))
+            if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(target)) // Check if no force & target does not prevent
             {
-                denyAccess(context, "basics", "You are not allowed to teleport to %s!", user2.getName());
+                if (BasicsPerm.COMMAND_TP_FORCE.isAuthorized(context.getSender()))
+                {
+                    context.sendMessage("basics", "&aUse the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
+                }
+                denyAccess(context, "basics", "&cYou are not allowed to teleport to %s!", target.getName());
             }
         }
-        if (context.hasIndexed(1))
+        if (context.hasIndexed(1)) //tp player1 player2
         {
-            user1 = context.getUser(1);
-            if (user1 == null)
+            user = target; // The first user is not the target
+            target = context.getUser(1);
+            if (target == null)
             {
                 illegalParameter(context, "basics", "User %s not found!", context.getString(1));
             }
             if (!force) // if force no need to check
             {
-                if (!BasicsPerm.COMMAND_TP_OTHER.isAuthorized(context.getSender()))
+                if (!BasicsPerm.COMMAND_TP_OTHER.isAuthorized(context.getSender())) // teleport other persons
                 {
                     denyAccess(context, "basics", "You are not allowed to teleport other persons!");
                 }
-                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(context.getSender()))
+                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user)) // teleport the user
                 {
-                    denyAccess(context, "basics", "You are not allowed to teleport %s!", user1.getName());
+                    denyAccess(context, "basics", "You are not allowed to teleport %s!", user.getName());
+                }
+                if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(target)) // teleport to the target
+                {
+                    denyAccess(context, "basics", "You are not allowed to teleport to %s!", target.getName());
                 }
             }
         }
         else
         {
-            if (user1 == null)
+            if (user == null) // if not tp other persons console cannot use this
             {
                 invalidUsage(context, "basics", "&cYou are now teleporting yourself into hell!");
             }
         }
         boolean safe = !context.hasFlag("u");
-        this.teleport(user1, user2.getLocation(), safe);
-        context.sendMessage("basics", "You teleported to %s", user2.getName());
+        this.teleport(user, target.getLocation(), safe);
+        context.sendMessage("basics", "You teleported to %s", target.getName());
     }
 
     @Command(
     desc = "Teleport everyone directly to a player.",
-    usage = "<player>",
+    usage = "<player> [-unsafe]",
     min = 1,
     max = 1,
     flags =
@@ -137,7 +146,7 @@ public class TeleportCommands
         boolean force = false;
         if (context.hasFlag("f"))
         {
-            if (BasicsPerm.COMMAND_TPALL_FORCE.isAuthorized(context.getSender()))
+            if (BasicsPerm.COMMAND_TP_FORCE_TPALL.isAuthorized(context.getSender()))
             {
                 force = true;
             } // if not allowed ignore flag
@@ -177,30 +186,30 @@ public class TeleportCommands
     public void tphere(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        User user = context.getUser(0);
-        if (user == null)
+        User target = context.getUser(0);
+        if (target == null)
         {
             illegalParameter(context, "basics", "User %s not found!", context.getString(0));
         }
         boolean force = false;
         if (context.hasFlag("f"))
         {
-            if (BasicsPerm.COMMAND_TPALL_FORCE.isAuthorized(context.getSender()))
+            if (BasicsPerm.COMMAND_TPHERE_FORCE.isAuthorized(context.getSender()))
             {
                 force = true;
             } // if not allowed ignore flag
         }
         if (!force)
         {
-            if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user))
+            if (BasicsPerm.COMMAND_TPHERE_PREVENT.isAuthorized(target))
             {
-                denyAccess(context, "bascics", "You are not allowed to teleport %s!", user.getName());
+                denyAccess(context, "bascics", "You are not allowed to teleport %s!", target.getName());
                 return;
             }
         }
         boolean safe = !context.hasFlag("u");
-        this.teleport(user, sender.getLocation(), safe);
-        context.sendMessage("basics", "You teleported %s to you!", user.getName());
+        this.teleport(target, sender.getLocation(), safe);
+        context.sendMessage("basics", "You teleported %s to you!", target.getName());
     }
 
     @Command(
@@ -217,7 +226,7 @@ public class TeleportCommands
         boolean force = false;
         if (context.hasFlag("f"))
         {
-            if (BasicsPerm.COMMAND_TPALL_FORCE.isAuthorized(context.getSender()))
+            if (BasicsPerm.COMMAND_TPHEREALL_FORCE.isAuthorized(context.getSender()))
             {
                 force = true;
             } // if not allowed ignore flag
@@ -226,7 +235,7 @@ public class TeleportCommands
         {
             if (!force)
             {
-                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(player))
+                if (BasicsPerm.COMMAND_TPHEREALL_PREVENT.isAuthorized(player))
                 {
                     continue;
                 }
@@ -307,25 +316,55 @@ public class TeleportCommands
     },
     flags =
     {
-        @Flag(longName = "force", name = "f")
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "all", name = "a")
     })
     public void spawn(CommandContext context)
     {
-        // TODO make diff. spawns for playergroups possible
+        // TODO later make diff. spawns for playergroups/roles possible
         User user = context.getSenderAsUser();
         World world;
-        if (user == null && !context.hasIndexed(0))
+        String s_world = module.getConfiguration().spawnMainWorld;
+        if (s_world == null)
         {
-            invalidUsage(context, "basics", "&eProTip: Teleport does not work IRL!");
+            world = user.getWorld();
+        }
+        else
+        {
+            world = context.getSender().getServer().getWorld(s_world);
         }
         boolean force = false;
         if (context.hasFlag("f"))
         {
-            if (BasicsPerm.COMMAND_TP_FORCE.isAuthorized(context.getSender()))
+            if (BasicsPerm.COMMAND_SPAWN_FORCE.isAuthorized(context.getSender()))
             {
                 force = true;
             } // if not allowed ignore flag
         }
+        if (context.hasFlag("a"))
+        {
+            if (!BasicsPerm.COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
+            {
+                denyAccess(context, "basics", "You are not allowed to spawn everyone!");
+            }
+            for (User player : context.getCore().getUserManager().getOnlineUsers())
+            {
+                if (!force)
+                {
+                    if (BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(player))
+                    {
+                        continue;
+                    }
+                }
+                this.teleport(player, world.getSpawnLocation(), true);
+            }
+            return;
+        }
+        if (user == null && !context.hasIndexed(0))
+        {
+            invalidUsage(context, "basics", "&eProTip: Teleport does not work IRL!");
+        }
+        
         if (context.hasIndexed(0))
         {
             user = context.getUser(0);
@@ -335,20 +374,11 @@ public class TeleportCommands
             }
             if (!force)
             {
-                if (!BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user))
+                if (BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(user))
                 {
-                    denyAccess(context, "basics", "You are not allowed to teleport %s!", user.getName());
+                    denyAccess(context, "basics", "You are not allowed to spawn %s!", user.getName());
                 }
             }
-        }
-        String s_world = module.getConfiguration().spawnMainWorld;
-        if (s_world == null)
-        {
-            world = user.getWorld();
-        }
-        else
-        {
-            world = context.getSender().getServer().getWorld(s_world);
         }
         this.teleport(user, world.getSpawnLocation(), true);
     }
@@ -393,6 +423,10 @@ public class TeleportCommands
     }
 
     @Command(
+    names =
+    {
+        "tpac", "tpaccept"
+    },
     desc = "Accepts any pending teleport-request.",
     max = 0)
     public void tpaccept(CommandContext context)

@@ -473,7 +473,7 @@ public class ModerationCommands
             {
                 illegalParameter(context, "core", "%s currently not online", user.getName());
             }
-            if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(user))
+            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user))
             {
                 context.sendMessage("basics", "You cannot kill that player!");
                 return;
@@ -487,7 +487,7 @@ public class ModerationCommands
             }
             for (Player player : context.getCore().getUserManager().getOnlinePlayers())
             {
-                if (BasicsPerm.COMMAND_KILL_EXEMPT.isAuthorized(player))
+                if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(player))
                 {
                     continue;
                 }

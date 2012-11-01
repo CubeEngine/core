@@ -13,17 +13,24 @@ public enum BasicsPerm implements Permission
     COMMAND_GAMEMODE_OTHER,
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,
-    COMMAND_KILL_EXEMPT,
+    COMMAND_KILL_PREVENT(PermissionDefault.FALSE),
     COMMAND_KILL_ALL,
     COMMAND_INVSEE_MODIFY, // allows to modify the inventory
-    COMMAND_INVSEE_PREVENTMODIFY, // prevents from modifying the inventory
+    COMMAND_INVSEE_PREVENTMODIFY(PermissionDefault.FALSE), // prevents from modifying the inventory
     COMMAND_INVSEE_NOTIFY, // notify if someone looks into your inventory
     COMMAND_KICK_ALL,
-    COMMAND_TP_FORCE, // ignore all other permissions
+    COMMAND_SPAWN_ALL, // spawn all players
+    COMMAND_SPAWN_PREVENT, //prevents from being spawned
+    COMMAND_SPAWN_FORCE, //forces someone to spawn
+    COMMAND_TP_FORCE, // ignore tp prevent perms
+    COMMAND_TP_FORCE_TPALL, // ignore tpall prevent perms
+    COMMAND_TPHERE_FORCE, // ignore tphere prevent perms
+    COMMAND_TPHEREALL_FORCE, // ignore tphere prevent perms
     COMMAND_TP_OTHER, // can tp other person
-    COMMAND_TP_PREVENT_TP, // can not be tped except forced
-    COMMAND_TP_PREVENT_TPTO, // can not be tped to except forced
-    COMMAND_TPALL_FORCE, // ignore all other permissions
+    COMMAND_TP_PREVENT_TP(PermissionDefault.FALSE), // can not be tped except forced
+    COMMAND_TP_PREVENT_TPTO(PermissionDefault.FALSE), // can not be tped to except forced
+    COMMAND_TPHERE_PREVENT(PermissionDefault.FALSE), // can not tpedhere except forced
+    COMMAND_TPHEREALL_PREVENT(PermissionDefault.FALSE), // can not tpedhere(all) except forced
     COMMAND_BACK_ONDEATH,
     ;
     private String permission;
