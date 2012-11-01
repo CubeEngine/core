@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.basics.general;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -14,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class GeneralCommands
@@ -432,14 +432,13 @@ public class GeneralCommands
     @Command(
     desc = "Gives a kit of items.",
     usage = "<kitname> [player]",
-    min = 1, max = 2)
+    min = 1, max = 2,
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    })
     public void kit(CommandContext context)
     {
-        //TODO dynamic permissions for each kit
-        //TODO get kits only x-time
-        //TODO delay between kits
-        //TODO give kit to all players online
-        //TODO starterKit on login (not here)
         String kitname = context.getString(0);
         User user;
         Kit kit = null; //TODO getKitFromConfig
@@ -459,11 +458,42 @@ public class GeneralCommands
         {
             illegalParameter(context, "basics", "User not found!");
         }
-        if (!kit.getPermission().isAuthorized(user))
+        boolean result = kit.give(context.getSender(), user);
+        if (result)
         {
-            denyAccess(context, "basics", "You are not allowed to give this kit.");
+            context.sendMessage("basics", "%s do not have enough space for the % kit ", user.getName(), kitname);
         }
-        kit.give(user);
+        else
+        {
+            if (user.getName().equals(context.getSender().getName()))
+            {
+                context.sendMessage("basics", "Received the %s kit", kitname);
+            }
+            else
+            {
+                context.sendMessage("basics", "You gave %s the %s kit", user.getName(), kitname);
+                user.sendMessage("basics", "Received the %s kit. Enjoy it!", kitname);
+            }
+        }
+    }
+
+    @Command(
+    names =
+    {
+        "pt", "powertool"
+    },
+    desc = "Binds a command to the item in hand.",
+    usage = "<command> [arguments]",
+    min = 1, max = 2,
+    flags =
+    {
+        @Flag(longName = "all", name = "a")
+    })
+    public void powertool(CommandContext context)
+    {
+        //TODO listener
+        //TODO how to save this in db??? map of ItemStack -> String
+        context.sendMessage("not implemented Yet");
     }
     /**
      *
@@ -485,21 +515,14 @@ public class GeneralCommands
      *
      * //TODO
      *
-     * kit //TODO wait for converter for saving this in config
-     *
      * helpop -> move to CubePermissions ?? not only op but also "Moderator"
      * ignore -> move to CubeChat
      * info
-     *
-     *
      * near
      * nick -> move to CubeChat
-     * pt
      * realname -> move to CubeChat
      * rules
      *
      * help -> Display ALL availiable cmd
-     *
-     *
      */
 }

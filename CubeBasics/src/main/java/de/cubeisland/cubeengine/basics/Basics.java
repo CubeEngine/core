@@ -32,6 +32,7 @@ public class Basics extends Module
         this.registerListener(new TeleportListener(this));
         this.registerListener(new ModerationListener(this));
         this.registerListener(new CheatListener(this));
+        //TODO register permissions of kits in config
     }
 
     public BasicsConfiguration getConfiguration()

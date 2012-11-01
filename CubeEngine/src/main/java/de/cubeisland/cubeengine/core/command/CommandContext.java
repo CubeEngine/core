@@ -451,7 +451,7 @@ public class CommandContext
     }
 
     /**
-     * Sends a message to the sender
+     * Formats and sends a message to the sender
      *
      * @param message the message
      */
