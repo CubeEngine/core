@@ -618,6 +618,7 @@ public class GeneralCommands
     min = 1)
     public void headchange(CommandContext context)
     {
+        //TODO later listener to drop the custom heads
         String name = context.getString(0);
         User sender = context.getSenderAsUser("basics", "&eTrying to give your toys a name?");
         CraftItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
@@ -653,6 +654,7 @@ public class GeneralCommands
      * near
      * language
      * rename
+     * headchange
      *
      * //TODO
      *

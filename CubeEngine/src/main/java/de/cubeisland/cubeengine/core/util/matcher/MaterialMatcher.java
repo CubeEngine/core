@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util.matcher;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
@@ -12,6 +13,7 @@ import java.util.*;
 import java.util.logging.Level;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -102,7 +104,7 @@ public class MaterialMatcher
                 try
                 { // id and data match
                     item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
-                    this.setData(item, s.substring(s.indexOf(":") + 1)); // Try to set data / returns null if couldn't
+                    this.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
                     if (item != null)
                     {
                         return item;
@@ -115,7 +117,7 @@ public class MaterialMatcher
             if (s.contains(":"))
             { // name match with data
                 String material = s.substring(0, s.indexOf(":"));
-                String data = s.substring(s.indexOf(":") + 1);
+                String data = name.substring(name.indexOf(":") + 1);
                 item = this.items.get(material);
                 this.setData(item, data); // Try to set data / returns null if couldn't
                 if (item == null)
@@ -163,8 +165,9 @@ public class MaterialMatcher
      * @param data
      * @return
      */
-    private ItemStack setData(ItemStack item, String data)
+    private ItemStack setData(ItemStack item, String rawdata)
     {
+        String data = rawdata.toLowerCase(Locale.ENGLISH);
         if (item == null)
         {
             return null;
@@ -203,6 +206,9 @@ public class MaterialMatcher
                     {
                         item.setDurability(foundEggData.getBukkitType().getTypeId());
                     }
+                case SKULL_ITEM:
+                    //TODO sadly this does not work the information gets lost
+                    item = BukkitUtils.changeHead(item, rawdata);
                 default:
                     return item;
             }
