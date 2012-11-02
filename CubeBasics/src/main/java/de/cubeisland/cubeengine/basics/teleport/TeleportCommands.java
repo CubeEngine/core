@@ -117,6 +117,18 @@ public class TeleportCommands
             }
         }
         boolean safe = !context.hasFlag("u");
+        if (user.equals(target))
+        {
+            if (context.getSender().getName().equals(user.getName()))
+            {
+                context.sendMessage("basics", "&6You found yourself!");
+            }
+            else
+            {
+                context.sendMessage("basics", "&6%s is now with himself!", user.getName());
+            }
+            return;
+        }
         this.teleport(user, target.getLocation(), safe, force);
         context.sendMessage("basics", "&aYou teleported to %s", target.getName());
     }
@@ -203,6 +215,11 @@ public class TeleportCommands
             }
         }
         boolean safe = !context.hasFlag("u");
+        if (sender.equals(target))
+        {
+            context.sendMessage("basics", "&6You found yourself!");
+            return;
+        }
         this.teleport(target, sender.getLocation(), safe, force);
         context.sendMessage("basics", "&aYou teleported %s to you!", target.getName());
         target.sendMessage("basics", "&aYou were teleported to %s", sender.getName());
@@ -699,7 +716,7 @@ public class TeleportCommands
             invalidUsage(context, "bascics", "&cYou cannot descend here");
         }
         //reached new location
-        context.sendMessage("basics", "%aDescended a level!");
+        context.sendMessage("basics", "&aDescended a level!");
         this.teleport(sender, loc, true, false);
     }
 }

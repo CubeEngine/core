@@ -139,6 +139,7 @@ public class ModerationCommands
         {
             illegalParameter(context, "basics", "&cThe serverlimit is set to &e%d &cyou cannot spawn more mobs at once!", config.spawnmobLimit);
         }
+        loc.add(0.5, 0, 0.5);
         for (int i = 1; i <= amount; ++i)
         {
             Entity entity = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
