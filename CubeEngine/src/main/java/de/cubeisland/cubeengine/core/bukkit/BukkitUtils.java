@@ -81,7 +81,7 @@ public class BukkitUtils
         }
         return null;
     }
-    
+
     private static Field findCommandMapField(Object o)
     {
         for (Field field : o.getClass().getDeclaredFields())
@@ -98,7 +98,7 @@ public class BukkitUtils
     public static void swapCommandMap(Server server, PluginManager pm, CommandMap commandMap)
     {
         Validate.notNull(commandMap, "The command map must not be null!");
-        
+
         if (pm.getClass() == SimplePluginManager.class && server.getClass() == CraftServer.class)
         {
             Field serverField = findCommandMapField(server);
@@ -111,7 +111,8 @@ public class BukkitUtils
                     pmField.set(pm, commandMap);
                 }
                 catch (Exception ignored)
-                {}
+                {
+                }
             }
         }
     }
@@ -119,7 +120,7 @@ public class BukkitUtils
     /**
      * Registers the packet hook injector
      *
-     * @param plugin        a Plugin to register the injector with
+     * @param plugin a Plugin to register the injector with
      */
     public static void registerPacketHookInjector(Plugin plugin)
     {
@@ -179,17 +180,16 @@ public class BukkitUtils
             }
         }
     }
-    
+
     public static void reloadHelpMap()
     {
         SimpleHelpMap helpMap = (SimpleHelpMap)Bukkit.getHelpMap();
-        
+
         helpMap.clear();
         helpMap.initializeGeneralTopics();
         helpMap.initializeCommands();
     }
-    
-    
+
     public static boolean renameItemStack(ItemStack itemStack, String name)
     {
         if (itemStack == null || itemStack.getType().equals(Material.AIR))
@@ -200,13 +200,13 @@ public class BukkitUtils
         NBTTagCompound tag = cis.getHandle().getTag();
         if (tag == null)
         {
-            cis.getHandle().setTag(new NBTTagCompound());
+            cis.getHandle().setTag(tag = new NBTTagCompound());
         }
-        if (hasDisplay(itemStack) == false)
+        if (tag.hasKey("display") == false)
         {
-            addDisplay(itemStack);
+            tag.setCompound("display", new NBTTagCompound());
         }
-        NBTTagCompound display = getDisplay(itemStack);
+        NBTTagCompound display = tag.getCompound("display");
         if (name == null)
         {
             display.remove("Name");
@@ -225,13 +225,13 @@ public class BukkitUtils
         NBTTagCompound tag = cis.getHandle().getTag();
         if (tag == null)
         {
-            cis.getHandle().setTag(new NBTTagCompound());
+            cis.getHandle().setTag(tag = new NBTTagCompound());
         }
-        if (hasDisplay(itemStack) == false)
+        if (tag.hasKey("display") == false)
         {
             return null;
         }
-        String name = getDisplay(itemStack).getString("Name");
+        String name = tag.getCompound("display").getString("Name");
         if (name.equals(""))
         {
             return null;
@@ -239,18 +239,20 @@ public class BukkitUtils
         return name;
     }
 
-    private static boolean hasDisplay(ItemStack itemStack)
+    public static CraftItemStack changeHead(ItemStack head, String name)
     {
-        return ((CraftItemStack)itemStack).getHandle().getTag().hasKey("display");
-    }
-
-    private static NBTTagCompound getDisplay(ItemStack itemStack)
-    {
-        return ((CraftItemStack)itemStack).getHandle().getTag().getCompound("display");
-    }
-
-    private static void addDisplay(ItemStack itemStack)
-    {
-        ((CraftItemStack)itemStack).getHandle().getTag().setCompound("display", new NBTTagCompound());
+        if (head.getType().equals(Material.SKULL_ITEM))
+        {
+            head.setDurability((short)3);
+            CraftItemStack newHead = new CraftItemStack(head);
+            NBTTagCompound newHeadData = new NBTTagCompound();
+            newHeadData.setString("SkullOwner", name);
+            newHead.getHandle().tag = newHeadData;
+            return newHead;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

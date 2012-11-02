@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -602,11 +603,33 @@ public class GeneralCommands
         String name = context.getStrings(0);
         if (BukkitUtils.renameItemStack(context.getSenderAsUser("basics", "&eTrying to give your toys a name?").getItemInHand(), name))
         {
-            context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!",name);
+            context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
         }
         else
         {
-            context.sendMessage("basics","&cRenaming failed!");
+            context.sendMessage("basics", "&cRenaming failed!");
+        }
+    }
+
+    @Command(
+    names = {"headchange","skullchange"},
+    desc = "Changes a skull to a players skin.",
+    usage = "<name>",
+    min = 1)
+    public void headchange(CommandContext context)
+    {
+        String name = context.getString(0);
+        User sender = context.getSenderAsUser("basics", "&eTrying to give your toys a name?");
+        CraftItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
+        if (changedHead != null)
+        {
+            context.sendMessage("basics", "&aYou now hold &6%s's &ahead in your hands!", name);
+            sender.setItemInHand(changedHead);
+            sender.updateInventory();                
+        }
+        else
+        {
+            context.sendMessage("basics", "&cYou are not holding a head.");
         }
     }
     /**
