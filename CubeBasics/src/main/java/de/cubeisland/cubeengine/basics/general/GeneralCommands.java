@@ -7,8 +7,13 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -210,58 +215,37 @@ public class GeneralCommands
         {
             dir = "N";
         }
+        else if (direction < 68)
+        {
+            dir = "NE";
+        }
+        else if (direction < 113)
+        {
+            dir = "E";
+        }
+        else if (direction < 158)
+        {
+            dir = "SE";
+        }
+        else if (direction < 203)
+        {
+            dir = "S";
+        }
+        else if (direction < 248)
+        {
+            dir = "SW";
+        }
+        else if (direction < 293)
+        {
+            dir = "W";
+        }
+        else if (direction < 338)
+        {
+            dir = "NW";
+        }
         else
         {
-            if (direction < 68)
-            {
-                dir = "NE";
-            }
-            else
-            {
-                if (direction < 113)
-                {
-                    dir = "E";
-                }
-                else
-                {
-                    if (direction < 158)
-                    {
-                        dir = "SE";
-                    }
-                    else
-                    {
-                        if (direction < 203)
-                        {
-                            dir = "S";
-                        }
-                        else
-                        {
-                            if (direction < 248)
-                            {
-                                dir = "SW";
-                            }
-                            else
-                            {
-                                if (direction < 293)
-                                {
-                                    dir = "W";
-                                }
-                                else
-                                {
-                                    if (direction < 338)
-                                    {
-                                        dir = "NW";
-                                    }
-                                    else
-                                    {
-                                        dir = "N";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            dir = "N";
         }
         sender.sendMessage("basics", "You are looking into %s", _(sender, "basics", dir));
     }
@@ -386,7 +370,8 @@ public class GeneralCommands
         return sb.toString();
     }
 
-    @Command(desc = "Displays the message of the day!")
+    @Command(
+    desc = "Displays the message of the day!")
     public void motd(CommandContext context)
     {
         context.sendMessage(basics.getConfiguration().motd);
@@ -461,19 +446,16 @@ public class GeneralCommands
         boolean result = kit.give(context.getSender(), user);
         if (result)
         {
-            context.sendMessage("basics", "%s do not have enough space for the %s kit ", user.getName(), kitname);
+            context.sendMessage("basics", "%s does not have enough space for the %s kit ", user.getName(), kitname);
+        }
+        else if (user.getName().equals(context.getSender().getName()))
+        {
+            context.sendMessage("basics", "Received the %s kit", kitname);
         }
         else
         {
-            if (user.getName().equals(context.getSender().getName()))
-            {
-                context.sendMessage("basics", "Received the %s kit", kitname);
-            }
-            else
-            {
-                context.sendMessage("basics", "You gave %s the %s kit", user.getName(), kitname);
-                user.sendMessage("basics", "Received the %s kit. Enjoy it!", kitname);
-            }
+            context.sendMessage("basics", "You gave %s the %s kit", user.getName(), kitname);
+            user.sendMessage("basics", "Received the %s kit. Enjoy it!", kitname);
         }
     }
 
@@ -495,6 +477,106 @@ public class GeneralCommands
         //TODO how to save this in db??? map of ItemStack -> String
         context.sendMessage("not implemented Yet");
     }
+
+    @Command(
+    desc = "Displays near players(entities/mobs) to you.",
+    max = 2,
+    usage = "[radius] [player] [-entity][-mob]",
+    flags =
+    {
+        @Flag(longName = "entity", name = "e"),
+        @Flag(longName = "mob", name = "m")
+    })
+    public void near(CommandContext context)
+    {
+        User user;
+        if (context.hasIndexed(1))
+        {
+            user = context.getUser(1);
+        }
+        else
+        {
+            user = context.getSenderAsUser("basics", "&eI'am right &cbehind &eyou!");
+        }
+        if (user == null)
+        {
+            illegalParameter(context, "basics", "User not found!");
+        }
+        int radius = 20; //TODO default in config
+        if (context.hasIndexed(0))
+        {
+            radius = context.getIndexed(0, int.class, radius);
+        }
+        List<Entity> list = user.getWorld().getEntities();
+        List<String> outputlist = new ArrayList<String>(); //TODO sort list by distance
+        for (Entity entity : list)
+        {
+            double distance = entity.getLocation().distance(user.getLocation());
+            if (!entity.getLocation().equals(user.getLocation()))
+            {
+                if (distance < radius)
+                {
+                    if (context.hasFlag("e"))
+                    {
+                        this.addNearInformation(outputlist, entity, distance);
+                    }
+                    else if (context.hasFlag("m"))
+                    {
+                        if (entity instanceof LivingEntity)
+                        {
+                            this.addNearInformation(outputlist, entity, distance);
+                        }
+                    }
+                    else
+                    {
+                        if (entity instanceof Player)
+                        {
+                            this.addNearInformation(outputlist, entity, distance);
+                        }
+                    }
+                }
+            }
+        }
+        if (outputlist.isEmpty())
+        {
+            context.sendMessage("Nothing detected nearby!");
+        }
+        else
+        {
+            if (context.getSender().getName().equals(user.getName()))
+            {
+                context.sendMessage("basics", "&eFound those nearby you:\n%s", StringUtils.implode("&f, ", outputlist));
+            }
+            else
+            {
+                context.sendMessage("basics", "&eFound those nearby %s:\n%s", user.getName(), StringUtils.implode("&f, ", outputlist));
+            }
+
+        }
+    }
+
+    private void addNearInformation(List<String> list, Entity entity, double distance)
+    {
+        if (entity instanceof Player)
+        {
+            list.add(String.format("&2%s&f(&e%dm&f)", ((Player)entity).getName(), (int)distance));
+        }
+        else if (entity instanceof LivingEntity)
+        {
+            list.add(String.format("&3%s&f(&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+        }
+        else
+        {
+            if (entity instanceof Item)
+            {
+                list.add(String.format("&7%s&f(&e%dm&f)", MaterialMatcher.get().getNameFor(((Item)entity).getItemStack()), (int)distance));
+            }
+            else
+            {
+                list.add(String.format("&7%s&f(&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+            }
+        }
+    }
     /**
      *
      * DONE: (or almost)
@@ -512,13 +594,15 @@ public class GeneralCommands
      * motd
      * whois
      * kit
+     * powertool
+     * near
      *
      * //TODO
      *
      * helpop -> move to CubePermissions ?? not only op but also "Moderator"
      * ignore -> move to CubeChat
      * info
-     * near
+     *
      * nick -> move to CubeChat
      * realname -> move to CubeChat
      * rules

@@ -72,8 +72,7 @@ public class ModerationCommands
         if (mobString.contains(","))
         {
             entityName = mobString.substring(0, mobString.indexOf(","));
-            ridingEntityName = mobString.
-                substring(mobString.indexOf(",") + 1, mobString.length());
+            ridingEntityName = mobString.substring(mobString.indexOf(",") + 1, mobString.length());
         }
         else
         {
@@ -81,15 +80,13 @@ public class ModerationCommands
         }
         if (entityName.contains(":"))
         {
-            entityData = entityName.
-                substring(entityName.indexOf(":") + 1, entityName.length());
+            entityData = entityName.substring(entityName.indexOf(":") + 1, entityName.length());
             entityName = entityName.substring(0, entityName.indexOf(":"));
             entityType = EntityMatcher.get().matchMob(entityName);
         }
         else
         {
             entityType = EntityMatcher.get().matchMob(entityName);
-
         }
         if (entityType == null)
         {
@@ -123,8 +120,7 @@ public class ModerationCommands
         }
         else
         {
-            loc = sender.getTargetBlock(null, 200).getLocation().
-                add(new Vector(0, 1, 0)); // TODO do Util method for this in core 
+            loc = sender.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0)); // TODO do Util method for this in core 
         }
         Integer amount = 1;
         if (context.hasIndexed(1))
@@ -132,8 +128,7 @@ public class ModerationCommands
             amount = context.getIndexed(1, int.class, null);
             if (amount == null)
             {
-                illegalParameter(context, "basics", "&e%s is not a number! Really!", context.
-                    getString(1));
+                illegalParameter(context, "basics", "&e%s is not a number! Really!", context.getString(1));
             }
             if (amount <= 0)
             {
@@ -146,28 +141,22 @@ public class ModerationCommands
         }
         for (int i = 1; i <= amount; ++i)
         {
-            Entity entity = loc.getWorld().spawnEntity(loc, entityType.
-                getBukkitType());
-            this.
-                applyDataToMob(context.getSender(), entityType, entity, entityData);
+            Entity entity = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
+            this.applyDataToMob(context.getSender(), entityType, entity, entityData);
             if (ridingEntityType != null)
             {
-                Entity ridingentity = loc.getWorld().
-                    spawnEntity(loc, ridingEntityType.getBukkitType());
-                this.
-                    applyDataToMob(context.getSender(), ridingEntityType, ridingentity, ridingEntityData);
+                Entity ridingentity = loc.getWorld().spawnEntity(loc, ridingEntityType.getBukkitType());
+                this.applyDataToMob(context.getSender(), ridingEntityType, ridingentity, ridingEntityData);
                 entity.setPassenger(ridingentity);
             }
         }
         if (ridingEntityType != null)
         {
-            context.
-                sendMessage("basics", "Spawned %d %s riding %s!", amount, ridingEntityType, entityType);
+            context.sendMessage("basics", "Spawned %d %s riding %s!", amount, ridingEntityType, entityType);
         }
         else
         {
-            context.sendMessage("basics", "Spawned %d %s!", amount, entityType.
-                toString());
+            context.sendMessage("basics", "Spawned %d %s!", amount, entityType.toString());
         }
     }
 
@@ -175,8 +164,7 @@ public class ModerationCommands
     {
         if (data != null)
         {
-            String match = StringUtils.matchString(data.
-                toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged");
+            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged"); //TODO this list configurable something like datavalues.txt
 
             if (match.equals("baby"))
             {
@@ -250,36 +238,28 @@ public class ModerationCommands
                                     equals(EntityType.MAGMA_CUBE))
                                 {
                                     int size = 4;
-                                    match = StringUtils.
-                                        matchString(data, "tiny", "small", "big");
+                                    match = StringUtils.matchString(data, "tiny", "small", "big");
                                     if (match.equals("tiny"))
                                     {
                                         size = 0;
                                     }
+                                    else if (match.equals("small"))
+                                    {
+                                        size = 2;
+                                    }
+                                    else if (match.equals("big"))
+                                    {
+                                        size = 4;
+                                    }
                                     else
                                     {
-                                        if (match.equals("small"))
+                                        try
                                         {
-                                            size = 2;
+                                            size = Integer.parseInt(data);
                                         }
-                                        else
+                                        catch (NumberFormatException e)
                                         {
-                                            if (match.equals("big"))
-                                            {
-                                                size = 4;
-                                            }
-                                            else
-                                            {
-                                                try
-                                                {
-                                                    size = Integer.
-                                                        parseInt(data);
-                                                }
-                                                catch (NumberFormatException e)
-                                                {
-                                                    illegalParameter(sender, "basics", "The slime-size has to be a number or tiny, small or big!");
-                                                }
-                                            }
+                                            illegalParameter(sender, "basics", "The slime-size has to be a number or tiny, small or big!");
                                         }
                                     }
                                     if (size >= 0 && size <= 250)
@@ -295,29 +275,24 @@ public class ModerationCommands
                                 {
                                     if (entityType.equals(EntityType.VILLAGER))
                                     {
-                                        Profession profession = ProfessionMatcher.
-                                            get().matchProfession(data);
+                                        Profession profession = ProfessionMatcher.get().matchProfession(data);
                                         if (profession == null)
                                         {
                                             illegalParameter(sender, "basics", "Unknown villager-profession!");
                                         }
-                                        ((Villager)entity).
-                                            setProfession(profession);
+                                        ((Villager)entity).setProfession(profession);
                                     }
                                     else
                                     {
                                         if (entityType.
                                             equals(EntityType.ENDERMAN))
                                         {
-                                            ItemStack item = MaterialMatcher.
-                                                get().matchItemStack(data);
+                                            ItemStack item = MaterialMatcher.get().matchItemStack(data);
                                             if (item == null)
                                             {
                                                 illegalParameter(sender, "basics", "Material not found!");
                                             }
-                                            ((Enderman)entity).
-                                                setCarriedMaterial(item.
-                                                getData());
+                                            ((Enderman)entity).setCarriedMaterial(item.getData());
                                         }
                                     }
                                 }
@@ -685,8 +660,8 @@ public class ModerationCommands
     {
         User sender = context.
             getSenderAsUser("core", "&cThis command can only be used by a player!");
-        ItemStack[] stashedInv = sender.getAttribute(basics,"stash_Inventory");
-        ItemStack[] stashedArmor = sender.getAttribute(basics,"stash_Armor");
+        ItemStack[] stashedInv = sender.getAttribute(basics, "stash_Inventory");
+        ItemStack[] stashedArmor = sender.getAttribute(basics, "stash_Armor");
         ItemStack[] InvToStash = sender.getInventory().getContents().clone();
         ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().
             clone();
@@ -698,7 +673,7 @@ public class ModerationCommands
         {
             sender.getInventory().clear();
         }
-        sender.setAttribute(basics,"stash_Inventory", InvToStash);
+        sender.setAttribute(basics, "stash_Inventory", InvToStash);
         if (stashedArmor != null)
         {
             sender.getInventory().setBoots(stashedArmor[0]);
@@ -713,7 +688,7 @@ public class ModerationCommands
             sender.getInventory().setChestplate(null);
             sender.getInventory().setHelmet(null);
         }
-        sender.setAttribute(basics,"stash_Armor", ArmorToStash);
+        sender.setAttribute(basics, "stash_Armor", ArmorToStash);
         sender.sendMessage("basics", "Swapped stashed Inventory!");
     }
 

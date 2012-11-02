@@ -833,8 +833,7 @@ public class CheatCommands
                 if (context.getString(0).equalsIgnoreCase("off"))
                 {
                     sender.removeAttribute(basics, "unlimitedItems");
-                    sender.
-                        sendMessage("basics", "You now no longer have unlimited items to build!");
+                    sender.sendMessage("basics", "You now no longer have unlimited items to build!");
                 }
                 else
                 {
@@ -856,5 +855,10 @@ public class CheatCommands
                 context.sendMessage("basics", "You now no longer have unlimited items to build!");
             }
         }
+    }
+    
+    public void rename(CommandContext context)
+    {
+        //TODO rename items
     }
 }
