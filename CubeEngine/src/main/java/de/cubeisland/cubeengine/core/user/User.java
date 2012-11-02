@@ -44,9 +44,8 @@ public class User extends UserBase implements LinkingModel<Integer>
     public Timestamp lastseen;
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
-
     Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
-    
+
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
@@ -180,12 +179,13 @@ public class User extends UserBase implements LinkingModel<Integer>
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(name, "The attribute name must not be null!");
         Validate.notNull(value, "Null-values are not allowed!");
-        Map<String, Object> attributMap = this.attributes.get(module);
+        ConcurrentHashMap<String, Object> attributMap = this.attributes.get(module);
         if (attributMap == null)
         {
             attributMap = new ConcurrentHashMap<String, Object>();
         }
         attributMap.put(name, value);
+        this.attributes.put(module, attributMap);
     }
 
     /**
@@ -234,7 +234,7 @@ public class User extends UserBase implements LinkingModel<Integer>
      *
      * @param name the name/key
      */
-    public void removeAttribute(Module module,String name)
+    public void removeAttribute(Module module, String name)
     {
         Map<String, Object> attributMap = this.attributes.get(module);
         if (attributMap == null)
@@ -246,11 +246,12 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     public void safeTeleport(Location location)
     {
-        Location checkLocation = location.clone();
-        while ((location.getBlock().getType() != Material.AIR)
-            && (checkLocation.add(0, 1, 0).getBlock().getType() != Material.AIR))
+        Location checkLocation = location.clone().add(0, 1, 0);
+        while (!((location.getBlock().getType().equals(Material.AIR))
+            && (checkLocation.getBlock().getType().equals(Material.AIR))))
         {
             location.add(0, 1, 0);
+            checkLocation.add(0, 1, 0);
         }
         if (!this.isFlying())
         {

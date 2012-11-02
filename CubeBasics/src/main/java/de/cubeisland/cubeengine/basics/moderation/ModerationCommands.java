@@ -549,9 +549,9 @@ public class ModerationCommands
             if (context.hasIndexed(1))
             {
                 radius = context.getIndexed(1, int.class, 0);
-                if (radius == 0)
+                if (radius <= 0)
                 {
-                    illegalParameter(context, "basics", "The radius has to be a number!");
+                    illegalParameter(context, "basics", "The radius has to be a number greater than 0!");
                 }
             }
         }

@@ -17,7 +17,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
  * A Kit of Items a User can receive
  */
 public class Kit
-{
+{//TODO command to create those
     private ItemStack[] items;
     private boolean giveKitOnFirstJoin;
     private int limitUsagePerPlayer;
@@ -27,7 +27,7 @@ public class Kit
     //TODO register permissions
     public Kit(String name, Collection<ItemStack> items)
     {
-        this(name, (ItemStack[])items.toArray());
+        this(name, items.toArray(new ItemStack[0]));
     }
 
     public Kit(final String name, ItemStack... items)

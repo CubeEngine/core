@@ -374,7 +374,11 @@ public class GeneralCommands
     desc = "Displays the message of the day!")
     public void motd(CommandContext context)
     {
-        context.sendMessage(basics.getConfiguration().motd);
+        context.sendMessage(basics.getConfiguration().motd);//TODO translatable other lang in config else default
+        /*
+         * default: 'Welcome on our Server! Have fun!'
+         * de_DE: 'Willkommen auf unserem Server! Viel Spaß'
+         */
     }
 
     @Command(
@@ -481,7 +485,7 @@ public class GeneralCommands
     @Command(
     desc = "Displays near players(entities/mobs) to you.",
     max = 2,
-    usage = "[radius] [player] [-entity][-mob]",
+    usage = "[radius] [player] [-entity]|[-mob]",
     flags =
     {
         @Flag(longName = "entity", name = "e"),
@@ -502,13 +506,14 @@ public class GeneralCommands
         {
             illegalParameter(context, "basics", "User not found!");
         }
-        int radius = 20; //TODO default in config
+        int radius = this.basics.getConfiguration().nearDefaultRadius;
         if (context.hasIndexed(0))
         {
             radius = context.getIndexed(0, int.class, radius);
         }
         List<Entity> list = user.getWorld().getEntities();
         List<String> outputlist = new ArrayList<String>(); //TODO sort list by distance
+        //TODO only show the flag is there for
         for (Entity entity : list)
         {
             double distance = entity.getLocation().distance(user.getLocation());
@@ -559,23 +564,32 @@ public class GeneralCommands
     {
         if (entity instanceof Player)
         {
-            list.add(String.format("&2%s&f(&e%dm&f)", ((Player)entity).getName(), (int)distance));
+            list.add(String.format("&2%s&f (&e%dm&f)", ((Player)entity).getName(), (int)distance));
         }
         else if (entity instanceof LivingEntity)
         {
-            list.add(String.format("&3%s&f(&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+            list.add(String.format("&3%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
         }
         else
         {
             if (entity instanceof Item)
             {
-                list.add(String.format("&7%s&f(&e%dm&f)", MaterialMatcher.get().getNameFor(((Item)entity).getItemStack()), (int)distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", MaterialMatcher.get().getNameFor(((Item)entity).getItemStack()), (int)distance));
             }
             else
             {
-                list.add(String.format("&7%s&f(&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
             }
         }
+    }
+
+    @Command(
+    desc = "Displays your current language setting.",
+    max = 0)
+    public void language(CommandContext context)
+    {
+        context.sendMessage("basics", "Your language is %s.",
+            context.getSenderAsUser("basics", "Your language is %s.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
     }
     /**
      *

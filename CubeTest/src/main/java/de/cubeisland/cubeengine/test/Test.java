@@ -15,6 +15,7 @@ import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
+import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
@@ -74,6 +75,7 @@ public class Test extends Module
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
+        this.registerCommands(new TestCommands());
 
         this.registerListener(new Listener()
         {
