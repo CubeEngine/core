@@ -4,21 +4,25 @@ import java.lang.reflect.Field;
 import java.util.List;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
+import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.ServerConnection;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
@@ -183,5 +187,70 @@ public class BukkitUtils
         helpMap.clear();
         helpMap.initializeGeneralTopics();
         helpMap.initializeCommands();
+    }
+    
+    
+    public static boolean renameItemStack(ItemStack itemStack, String name)
+    {
+        if (itemStack == null || itemStack.getType().equals(Material.AIR))
+        {
+            return false;
+        }
+        CraftItemStack cis = ((CraftItemStack)itemStack);
+        NBTTagCompound tag = cis.getHandle().getTag();
+        if (tag == null)
+        {
+            cis.getHandle().setTag(new NBTTagCompound());
+        }
+        if (hasDisplay(itemStack) == false)
+        {
+            addDisplay(itemStack);
+        }
+        NBTTagCompound display = getDisplay(itemStack);
+        if (name == null)
+        {
+            display.remove("Name");
+        }
+        display.setString("Name", name);
+        return true;
+    }
+
+    public static String getItemStackName(ItemStack itemStack)
+    {
+        if (itemStack == null)
+        {
+            return null;
+        }
+        CraftItemStack cis = ((CraftItemStack)itemStack);
+        NBTTagCompound tag = cis.getHandle().getTag();
+        if (tag == null)
+        {
+            cis.getHandle().setTag(new NBTTagCompound());
+        }
+        if (hasDisplay(itemStack) == false)
+        {
+            return null;
+        }
+        String name = getDisplay(itemStack).getString("Name");
+        if (name.equals(""))
+        {
+            return null;
+        }
+        return name;
+    }
+
+    private static boolean hasDisplay(ItemStack itemStack)
+    {
+        return ((CraftItemStack)itemStack).getHandle().getTag().hasKey("display");
+    }
+
+    private static NBTTagCompound getDisplay(ItemStack itemStack)
+    {
+        return ((CraftItemStack)itemStack).getHandle().getTag().getCompound("display");
+    }
+
+    private static void addDisplay(ItemStack itemStack)
+    {
+        ((CraftItemStack)itemStack).getHandle().getTag().setCompound("display", new NBTTagCompound());
     }
 }

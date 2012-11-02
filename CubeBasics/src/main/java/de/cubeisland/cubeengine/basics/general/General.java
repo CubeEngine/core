@@ -11,8 +11,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class General  //TODO remove this class
 {
-
-    
     public List<Player> near(Location loc, int radius)
     {
         List<Player> nearPlayers = new ArrayList<Player>();

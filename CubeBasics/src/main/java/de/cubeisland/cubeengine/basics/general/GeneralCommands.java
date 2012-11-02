@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
@@ -591,6 +592,23 @@ public class GeneralCommands
         context.sendMessage("basics", "Your language is %s.",
             context.getSenderAsUser("basics", "Your language is %s.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
     }
+
+    @Command(
+    desc = "Changes the display name of the item in your hand.",
+    usage = "<name>",
+    min = 1)
+    public void rename(CommandContext context)
+    {
+        String name = context.getStrings(0);
+        if (BukkitUtils.renameItemStack(context.getSenderAsUser("basics", "&eTrying to give your toys a name?").getItemInHand(), name))
+        {
+            context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!",name);
+        }
+        else
+        {
+            context.sendMessage("basics","&cRenaming failed!");
+        }
+    }
     /**
      *
      * DONE: (or almost)
@@ -610,6 +628,8 @@ public class GeneralCommands
      * kit
      * powertool
      * near
+     * language
+     * rename
      *
      * //TODO
      *
