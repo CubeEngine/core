@@ -119,14 +119,13 @@ public class CommandContext
             {
                 continue; // part is empty, ignoring...
             }
-            if (commandLine[offset].charAt(0) == '-') // is flag?
+            if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
             {
                 String flag = commandLine[offset].substring(1);
                 if (flag.charAt(0) == '-')
                 {
                     flag = flag.substring(1);
                 }
-
                 if (flag.isEmpty()) // is there still a name?
                 {
                     this.indexedParams.add(commandLine[offset]);
@@ -562,7 +561,8 @@ public class CommandContext
             }
         }
         catch (ConversionException ignored)
-        {}
+        {
+        }
         return def;
     }
 
