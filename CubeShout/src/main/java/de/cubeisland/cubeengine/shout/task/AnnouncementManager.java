@@ -170,19 +170,19 @@ public class AnnouncementManager
 		}
 		if (delay == 0)
 		{
-			throw new ShoutException("No valid delay for this anouncement");
+			throw new ShoutException("No valid delay for anouncement: " + name);
 		}
 		if (messages == null || !messages.containsKey("en_US"))
 		{
-			throw new ShoutException("No valid message for this anouncement");
+			throw new ShoutException("No valid message for anouncement: " + name);
 		}
 		if (!permNode.equals("*") || (permNode == null || permNode.isEmpty()))
 		{
-			throw new ShoutException("No valid permission for this anouncement");
+			throw new ShoutException("No valid permission for anouncement: " + name);
 		}
 		if (!group.equals("*") || (group == null || group.isEmpty()))
 		{
-			throw new ShoutException("No valid group for this anouncement");
+			throw new ShoutException("No valid group for anouncement: " + name);
 		}
 		
 		this.announcements.add(new Announcement(name, module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
@@ -339,7 +339,7 @@ public class AnnouncementManager
      * @param delayText	the text to parse
      * @return the delay in ticks
      */
-    private long parseDelay(String delayText) {
+    long parseDelay(String delayText) {
 		String[] parts = delayText.split(" ", 2);
 		int tmpdelay = Integer.parseInt(parts[0]);
 		String unit = parts[1].toLowerCase();
@@ -353,7 +353,7 @@ public class AnnouncementManager
 		}
 		else if (unit.equalsIgnoreCase("hours") || unit.equalsIgnoreCase("hour"))
 		{
-			return tmpdelay * 60 * 60 * 100;
+			return tmpdelay * 60 * 60 * 1000;
 		}
 		else if (unit.equalsIgnoreCase("days") || unit.equalsIgnoreCase("day"))
 		{
