@@ -6,9 +6,11 @@ import de.cubeisland.cubeengine.basics.general.GeneralCommands;
 import de.cubeisland.cubeengine.basics.general.MailCommand;
 import de.cubeisland.cubeengine.basics.moderation.ModerationCommands;
 import de.cubeisland.cubeengine.basics.moderation.ModerationListener;
-import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
+import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportListener;
+import de.cubeisland.cubeengine.basics.teleport.TeleportRequestCommands;
+import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 
@@ -23,13 +25,18 @@ public class Basics extends Module
     {
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.registerPermissions(BasicsPerm.values());
-        this.registerPermissions(new TpWorldPermissions(this).getPermissions());
-        
+
+        //Teleport:
+        this.registerCommands(new TeleportCommands(this));
+        this.registerCommands(new MovementCommands(this));
+        this.registerCommands(new TeleportRequestCommands(this));
+        this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
+        //
         this.registerCommands(new CheatCommands(this));
         this.registerCommands(new ModerationCommands(this));
         this.registerCommands(new GeneralCommands(this));
         this.registerCommand(new ModuleCommands(this));
-        this.registerCommands(new TeleportCommands(this));
+        
         this.registerCommands(new MailCommand(this));
         
         this.registerListener(new TeleportListener(this));
