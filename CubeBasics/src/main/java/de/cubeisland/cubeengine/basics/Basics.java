@@ -1,14 +1,15 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.basics.cheat.CheatCommands;
-import de.cubeisland.cubeengine.basics.cheat.CheatListener;
-import de.cubeisland.cubeengine.basics.general.GeneralCommands;
+import de.cubeisland.cubeengine.basics.general.ChatCommands;
+import de.cubeisland.cubeengine.basics.general.CheatListener;
+import de.cubeisland.cubeengine.basics.general.InformationCommands;
+import de.cubeisland.cubeengine.basics.general.ListCommand;
 import de.cubeisland.cubeengine.basics.general.MailCommand;
-import de.cubeisland.cubeengine.basics.moderation.ModerationCommands;
-import de.cubeisland.cubeengine.basics.moderation.ModerationListener;
+import de.cubeisland.cubeengine.basics.general.PlayerCommands;
+import de.cubeisland.cubeengine.basics.moderation.*;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
+import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
-import de.cubeisland.cubeengine.basics.teleport.TeleportListener;
 import de.cubeisland.cubeengine.basics.teleport.TeleportRequestCommands;
 import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
 import de.cubeisland.cubeengine.core.config.annotations.From;
@@ -25,24 +26,53 @@ public class Basics extends Module
     {
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.registerPermissions(BasicsPerm.values());
-
-        //Teleport:
-        this.registerCommands(new TeleportCommands(this));
-        this.registerCommands(new MovementCommands(this));
-        this.registerCommands(new TeleportRequestCommands(this));
-        this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
-        //
-        this.registerCommands(new CheatCommands(this));
-        this.registerCommands(new ModerationCommands(this));
-        this.registerCommands(new GeneralCommands(this));
+        //Modules:
         this.registerCommand(new ModuleCommands(this));
+        //General:
         
+        this.registerCommands(new ChatCommands(this));
+        this.registerCommands(new InformationCommands(this));
+        this.registerCommands(new ListCommand());        
         this.registerCommands(new MailCommand(this));
+        this.registerCommands(new PlayerCommands(this));
         
-        this.registerListener(new TeleportListener(this));
-        this.registerListener(new ModerationListener(this));
         this.registerListener(new CheatListener(this));
+        
+        //Moderation:
+        this.registerCommands(new InventoryCommands(this));
+        this.registerCommands(new ItemCommands(this));
+        this.registerCommands(new KickBanCommands());
+        this.registerCommands(new SpawnMobCommand(this));
+        this.registerCommands(new TimeControlCommands());
+        this.registerCommands(new WorldControlCommands(this));
+        
+        this.registerListener(new ModerationListener(this));
+        //Teleport:
+        this.registerCommands(new MovementCommands(this));
+        this.registerCommands(new SpawnCommands(this));
+        this.registerCommands(new TeleportCommands(this));
+        this.registerCommands(new TeleportRequestCommands(this));
+
+        this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
+        
+        
         //TODO register permissions of kits in config
+        
+        
+        /**
+         * * //commands TODO
+     *
+     * helpop -> move to CubePermissions ?? not only op but also "Moderator"
+     * ignore -> move to CubeChat
+     * info
+     *
+     * nick -> move to CubeChat
+     * realname -> move to CubeChat
+     * rules
+     *
+     * help -> Display ALL availiable cmd
+     */
+         
     }
     
     public BasicsConfiguration getConfiguration()

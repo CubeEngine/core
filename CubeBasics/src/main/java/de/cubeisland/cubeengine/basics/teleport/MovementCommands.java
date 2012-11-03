@@ -7,13 +7,20 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 
+/**
+ * Contains commands for fast movement.
+ * /up
+ * /ascend
+ * /descend
+ * /jumpto
+ * /back
+ */
 public class MovementCommands
 {
     private Basics basics;
@@ -48,6 +55,9 @@ public class MovementCommands
         {
             blockCommand(context, "basics", "&cYour destination seems to be obstructed!");
         }
+        loc = loc.getBlock().getLocation();
+        loc.setPitch(sender.getLocation().getPitch());
+        loc.setYaw(sender.getLocation().getYaw());
         loc.add(0.5, 1, 0.5);
         if (block.getType().equals(Material.AIR))
         {
@@ -124,11 +134,12 @@ public class MovementCommands
     public void jumpTo(CommandContext context)
     {//TODO compass teleport ftw!
         User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
-        Location loc = sender.getTargetBlock(null, 350).getLocation().add(0.5, 1, 0.5);
+        Location loc = sender.getTargetBlock(null, 350).getLocation();
         if (loc.getBlock().getType().equals(Material.AIR))
         {
             blockCommand(context, "basics", "&cNo block in sight!");
         }
+        loc.add(0.5, 1, 0.5);
         loc.setYaw(sender.getLocation().getYaw());
         loc.setPitch(sender.getLocation().getPitch());
         TeleportCommands.teleport(sender, loc, true, false);
@@ -150,22 +161,5 @@ public class MovementCommands
         boolean safe = !context.hasFlag("u");
         TeleportCommands.teleport(sender, loc, safe, true);
         sender.sendMessage("basics", "&aTeleported to your last location!");
-    }
-
-    @Command(
-        desc = "Teleports you to the spawn of given world",
-        usage = "<world>",
-        min = 1,
-        max = 1)
-    public void tpworld(CommandContext context)
-    {
-        User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        World world = context.getIndexed(0, World.class, null);
-        if (world == null)
-        {
-            illegalParameter(context, "basics", "&cWorld not found!");
-        }
-        TeleportCommands.teleport(sender, world.getSpawnLocation(), true, false);
-        context.sendMessage("basics", "&aTeleported to the spawn of world &6%s", world.getName());
     }
 }

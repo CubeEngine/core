@@ -17,6 +17,14 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
+/**
+ * Contains commands to teleport to players/worlds/position.
+ * /tp
+ * /tpall
+ * /tphere
+ * /tphereall
+ * /tppos
+ */
 public class TeleportCommands
 {
     private Basics basics;
@@ -299,80 +307,5 @@ public class TeleportCommands
         loc.setPitch(sender.getLocation().getPitch());
         TeleportCommands.teleport(sender, loc, safe, false);
         context.sendMessage("basics", "&aTeleported to &eX:&6%d &eY:&6%d &eZ:&6%d &ain %s!", x, y, z, world.getName());
-    }
-
-    @Command(
-        desc = "Teleport directly to the worlds spawn.",
-        usage = "[player] [world <world>]",
-        max = 2,
-        params = { @Param(names = { "world", "w"}, types = {World.class}) },
-        flags =
-        {
-            @Flag(longName = "force", name = "f"),
-            @Flag(longName = "all", name = "a")
-        })
-    public void spawn(CommandContext context)
-    {
-        // TODO later make diff. spawns for playergroups/roles possible
-        User user = context.getSenderAsUser();
-        World world;
-        String s_world = basics.getConfiguration().spawnMainWorld;
-        if (s_world == null)
-        {
-            world = user.getWorld();
-        }
-        else
-        {
-            world = context.getSender().getServer().getWorld(s_world);
-        }
-        boolean force = false;
-        if (context.hasFlag("f"))
-        {
-            if (BasicsPerm.COMMAND_SPAWN_FORCE.isAuthorized(context.getSender()))
-            {
-                force = true;
-            } // if not allowed ignore flag
-        }
-        if (context.hasFlag("a"))
-        {
-            if (!BasicsPerm.COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
-            {
-                denyAccess(context, "basics", "&cYou are not allowed to spawn everyone!");
-            }
-            for (User player : context.getCore().getUserManager().getOnlineUsers())
-            {
-                if (!force)
-                {
-                    if (BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(player))
-                    {
-                        continue;
-                    }
-                }
-                TeleportCommands.teleport(player, world.getSpawnLocation().add(0.5, 0, 0.5), true, force);
-            }
-            this.basics.getUserManager().broadcastMessage("basics", "&aTeleported everyone to the spawn of %s!", world.getName());
-            return;
-        }
-        if (user == null && !context.hasIndexed(0))
-        {
-            invalidUsage(context, "basics", "&6ProTip: &cTeleport does not work IRL!");
-        }
-
-        if (context.hasIndexed(0))
-        {
-            user = context.getUser(0);
-            if (user == null)
-            {
-                paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
-            }
-            if (!force)
-            {
-                if (BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(user))
-                {
-                    denyAccess(context, "basics", "&cYou are not allowed to spawn %s!", user.getName());
-                }
-            }
-        }
-        TeleportCommands.teleport(user, world.getSpawnLocation().add(0.5, 0, 0.5), true, force);
     }
 }

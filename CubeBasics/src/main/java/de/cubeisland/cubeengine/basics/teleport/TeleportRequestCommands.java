@@ -7,6 +7,13 @@ import de.cubeisland.cubeengine.core.user.User;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
+/**
+ * Contains Teleport-Request commands.
+ * /tpa
+ * /tpahere
+ * /tpaccept
+ * /tpdeny
+ */
 public class TeleportRequestCommands
 {
     private Basics basics;
@@ -33,7 +40,7 @@ public class TeleportRequestCommands
         user.sendMessage("basics", "&2%s &awants to teleport to you!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
         user.setAttribute(basics, "pendingTpToRequest", sender.getName());
         user.removeAttribute(basics, "pendingTpFromRequest");
-        context.sendMessage("basics", "&aTeleport request send to &2%s!", user.getName());
+        context.sendMessage("basics", "&aTeleport request send to &2%s&a!", user.getName());
         int waitTime = this.basics.getConfiguration().tpRequestWait * 20;
         if (waitTime > 0)
         {

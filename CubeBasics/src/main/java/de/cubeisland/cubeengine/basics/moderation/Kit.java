@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.basics.general;
+package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;

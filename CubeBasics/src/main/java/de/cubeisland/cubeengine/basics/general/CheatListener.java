@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.basics.cheat;
+package de.cubeisland.cubeengine.basics.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.user.User;
