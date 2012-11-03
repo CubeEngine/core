@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.shout.Shout;
 import org.junit.Test;
 
 public class AnnouncementManagerTest {
+	// TODO test the actual class, not single methods
 	
 	@Test
 	public void testParseDelay()

@@ -36,17 +36,7 @@ public class Shout extends Module
     	this.listener = new ShoutListener(this);
     	this.command = new ShoutCommand(this);
     	
-    	try{
-    		this.announcementManager.loadAnnouncements();
-    	} catch (Exception ex) {
-    		this.logger.log(Level.SEVERE, "Something went wrong while parsing the announcements! The error message was: " + ex.getLocalizedMessage());
-			if (this.getCore().isDebug())
-			{
-				ex.printStackTrace();
-			}
-    		this.logger.log(Level.WARNING, "The plugin is now going into zombie state");
-			return;
-    	}
+    	this.announcementManager.loadAnnouncements();
     	
     	this.registerListener(listener);
     	this.registerCommands(command);

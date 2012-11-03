@@ -249,14 +249,9 @@ public class AnnouncementManager
 		worlds.remove(user);
 	}
 	
-    public void loadAnnouncements() throws ShoutException
+    public void loadAnnouncements()
     {
     	File moduleFolder = module.getFolder();
-    	
-    	if (moduleFolder == null)
-    	{
-    		throw new ShoutException("The folder for this plugin does not exist or could not be created");
-    	}
     	
     	List<File> announcements = new ArrayList<File>();
     	announcements = Arrays.asList(moduleFolder.listFiles());
@@ -269,7 +264,16 @@ public class AnnouncementManager
         		{
         			module.logger.log(Level.INFO, "Loading announcement "+f.getName());
         		}
-        		this.loadAnnouncement(f);	
+        		try {
+					this.loadAnnouncement(f);
+				} catch (ShoutException e) {
+					module.logger.log(Level.WARNING, "There was an error loading the announcement: " + f.getName());
+					module.logger.log(Level.WARNING, "The error message was: " + e.getLocalizedMessage());
+					if (module.getCore().isDebug())
+	        		{
+						e.printStackTrace();
+	        		}
+				}	
     		}
     	}
     	
