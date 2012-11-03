@@ -13,10 +13,10 @@ import de.cubeisland.cubeengine.shout.task.TaskManager;
 public class Shout extends Module
 {
 	
-	private AnnouncementManager aManager;
+	private AnnouncementManager announcementManager;
 	private ShoutListener listener;
 	private ShoutCommand command;
-	private TaskManager scheduler;
+	private TaskManager taskManager;
 	@From
 	private ShoutConfiguration config;
 	
@@ -29,20 +29,15 @@ public class Shout extends Module
     {
     	this.logger = this.getLogger();
     	
-    	if (this.getCore().isDebug())
-    	{
-    		this.logger.log(Level.INFO, "Enabling CubeShout");
-    	}
-    	
     	this.getFileManager().dropResources(ShoutResource.values());
     	
-    	this.scheduler = new TaskManager(this, config.initDelay, config.messagerPeriod);
-    	this.aManager = new AnnouncementManager(this);
+    	this.taskManager = new TaskManager(this, config.initDelay, config.messagerPeriod);
+    	this.announcementManager = new AnnouncementManager(this);
     	this.listener = new ShoutListener(this);
     	this.command = new ShoutCommand(this);
     	
     	try{
-    		this.aManager.loadAnnouncements();
+    		this.announcementManager.loadAnnouncements();
     	} catch (Exception ex) {
     		this.logger.log(Level.SEVERE, "Something went wrong while parsing the announcements! The error message was: " + ex.getLocalizedMessage());
 			if (this.getCore().isDebug())
@@ -64,14 +59,14 @@ public class Shout extends Module
     	
     }
     
-	public AnnouncementManager getAManager()
+	public AnnouncementManager getAnnouncementManager()
 	{
-		return this.aManager;
+		return this.announcementManager;
 	}
 
-	public TaskManager getScheduler()
+	public TaskManager getTaskManager()
 	{
-		return scheduler;
+		return taskManager;
 	}
 	
 }

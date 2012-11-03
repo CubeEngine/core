@@ -63,7 +63,7 @@ public class AnnouncementManager
 	 * @param 	user	The user to get the gcd of their announcements.
 	 * @return			The gcd of the users announcements.
 	 */
-	public long getGCD(String user)
+	public long getGreatestCommonDivisor(String user)
 	{
 		List<Announcement> announcements = this.getAnnouncemets(user);
 		long[] delays = new long[announcements.size()];
@@ -71,7 +71,7 @@ public class AnnouncementManager
 		{
 			delays[x] = announcements.get(x).getDelay();
 		}
-		return gcd(delays);
+		return greatestCommonDivisor(delays);
 	}
 	
 	/**
@@ -80,7 +80,7 @@ public class AnnouncementManager
 	 * @param	ints	The list to get the gcd from.
 	 * @return			gcd of all the integers in the list.
 	 */
-	private long gcd(long[] ints)
+	private long greatestCommonDivisor(long[] ints)
 	{
 		long result = ints[0];
 		
@@ -102,25 +102,25 @@ public class AnnouncementManager
 	 * @param	user	User to get the next message of.
 	 * @return			The next message that should be displayed to the user.
 	 */
-	public String getNext(String user)
+	public String getNextMessage(String user)
 	{
 		User us = module.getUserManager().getUser(user);
-		Announcement returnn = null;
+		Announcement announcement = null;
 		boolean used = false;
 		//Skip all announcements that don't apply to this world.
 		while (!used)
 		{
 			if(messages.get(user).element().hasWorld(worlds.get(user)))
 			{
-				returnn = messages.get(user).poll();
-				messages.get(user).add(returnn);
+				announcement = messages.get(user).poll();
+				messages.get(user).add(announcement);
 				used = true;
 			}
 		}
-		if (returnn == null){
+		if (announcement == null){
 			return null;
 		}
-		return returnn.getMessage(us.getLanguage());
+		return announcement.getMessage(us.getLanguage());
 	}
 	
 	/**
@@ -131,7 +131,7 @@ public class AnnouncementManager
 	 */
 	public int getNextDelay(String user)
 	{
-		Announcement returnn = null;
+		Announcement announcement = null;
 		boolean used = false;
 		
 		//Skip all announcements that don't apply to the users current world.
@@ -139,16 +139,16 @@ public class AnnouncementManager
 		{
 			if(messages.get(user).element().hasWorld(worlds.get(user)))
 			{
-				returnn = messages.get(user).poll();
-				messages.get(user).add(returnn);
+				announcement = messages.get(user).poll();
+				messages.get(user).add(announcement);
 				used = true;
 			}
 		}
-		if (returnn == null){
+		if (announcement == null){
 			return 0;
 		}
 		//TODO add language support
-		return (int) (returnn.getDelay()/getGCD(user));
+		return (int) (announcement.getDelay()/getGreatestCommonDivisor(user));
 	}
 
 	/**
@@ -164,9 +164,9 @@ public class AnnouncementManager
 	 */
 	public void addAnnouncement(String name, Map<String, String> messages, String world, long delay, String permNode, String group) throws ShoutException
 	{
-		if ( !(world.equals("*") ||module.getCore().getServer().getWorld(world) != null))
+		if (world == null ||  module.getCore().getServer().getWorld(world) == null)
 		{
-			throw new ShoutException("No valid world for this anouncement");
+			world = "*";
 		}
 		if (delay == 0)
 		{
@@ -263,67 +263,71 @@ public class AnnouncementManager
     	
     	for (File f : announcements)
     	{
-    		if (module.getCore().isDebug())
+    		if (f.isDirectory())
     		{
-    			module.logger.log(Level.INFO, "Loading announcement "+f.getName());
+        		if (module.getCore().isDebug())
+        		{
+        			module.logger.log(Level.INFO, "Loading announcement "+f.getName());
+        		}
+        		this.loadAnnouncement(f);	
     		}
-    		this.loadAnnouncement(f);
     	}
     	
     }
     
     private void loadAnnouncement(File f) throws ShoutException
     {
+    	if (f.isFile())
+    	{
+    		throw new ShoutException("Tried to load an announcement that was a file!");
+    	}
     	Map<String, String> messages = new HashMap<String, String>();
     	String world = "*";
     	long delay = 0;
     	String permNode = "*";
     	String group = "*";
-    	if (f.isDirectory())
-    	{
-    		AnnouncementConfiguration conf = Configuration.load(AnnouncementConfiguration.class, new File(f, "announcement.yml"));
-    		if (conf == null)
+    	AnnouncementConfiguration conf = Configuration.load(AnnouncementConfiguration.class, new File(f, "announcement.yml"));
+    	if (conf == null)
+		{
+			throw new ShoutException("No configfile to announcement: "+ f.getName());
+		}
+		
+		world = conf.world;
+		permNode = conf.permNode;
+		group = conf.group;
+		delay = parseDelay(conf.delay);
+		
+		if (delay == 0)
+		{
+			throw new ShoutException("No valid delay in announcement: "+ f.getName());
+		}
+		
+		List<File> languages = new ArrayList<File>();
+		languages = Arrays.asList(f.listFiles((FilenameFilter)new FileExtentionFilter("txt")));
+		
+		try {
+    		for (File lang : languages)
     		{
-    			throw new ShoutException("No configfile to announcement: "+ f.getName());
+				StringBuilder message = new StringBuilder();
+				for (String line : FileUtil.readStringList(lang))
+				{
+					message.append(line + "\n");
+				}
+				messages.put(lang.getName().replace(".txt", ""), message.toString());
     		}
-    		
-    		world = conf.world;
-    		permNode = conf.permNode;
-    		group = conf.group;
-    		delay = parseDelay(conf.delay);
-    		
-    		if (delay == 0)
-    		{
-    			throw new ShoutException("No valid delay in announcement: "+ f.getName());
-    		}
-    		
-    		List<File> languages = new ArrayList<File>();
-    		languages = Arrays.asList(f.listFiles((FilenameFilter)new FileExtentionFilter("txt")));
-    		
-    		try {
-        		for (File lang : languages)
-        		{
-    				StringBuilder message = new StringBuilder();
-    				for (String line : FileUtil.readStringList(lang))
-    				{
-    					message.append(line + "\n");
-    				}
-    				messages.put(lang.getName().replace(".txt", ""), message.toString());
-        		}
-    		} catch (IOException ex) {
-    			throw new ShoutException("Error while reading one of the language files for announcement: " + f.getName(), ex);
-    		}
+		} catch (IOException ex) {
+			throw new ShoutException("Error while reading one of the language files for announcement: " + f.getName(), ex);
+		}
 
-    		if (module.getCore().isDebug())
-    		{
-    			module.logger.log(Level.INFO, "Languages: "+ messages.keySet().toString());
-    			module.logger.log(Level.INFO, "World: " +  world);
-    			module.logger.log(Level.INFO, "Delay(in millisecounds): " +  delay);
-    			module.logger.log(Level.INFO, "Permission: " +  permNode);
-    			module.logger.log(Level.INFO, "Group: " +  group);
-    		}
-        	this.addAnnouncement(f.getName(), messages, world, delay, permNode, group);
-    	}
+		if (module.getCore().isDebug())
+		{
+			module.logger.log(Level.INFO, "Languages: "+ messages.keySet().toString());
+			module.logger.log(Level.INFO, "World: " +  world);
+			module.logger.log(Level.INFO, "Delay(in millisecounds): " +  delay);
+			module.logger.log(Level.INFO, "Permission: " +  permNode);
+			module.logger.log(Level.INFO, "Group: " +  group);
+		}
+    	this.addAnnouncement(f.getName(), messages, world, delay, permNode, group);
     }
     
     /**
@@ -338,27 +342,23 @@ public class AnnouncementManager
     private long parseDelay(String delayText) {
 		String[] parts = delayText.split(" ", 2);
 		int tmpdelay = Integer.parseInt(parts[0]);
-		
-		switch(parts[1].toLowerCase()){
-			case "secounds":
-				return tmpdelay * 1000;
-			case "minutes":
-				return tmpdelay * 60 * 1000;
-			case "hours":
-				return tmpdelay * 60 * 60 * 100;
-			case "days":
-				return tmpdelay * 24 * 60 * 60 * 1000;
-			case "secound":
-				return tmpdelay * 1000;
-			case "minute":
-				return tmpdelay * 60 * 1000;
-			case "hour":
-				return tmpdelay * 60 * 60 * 100;
-			case "day":
-				return tmpdelay * 24 * 60 * 60 * 1000;
-			
+		String unit = parts[1].toLowerCase();
+		if (unit.equalsIgnoreCase("secounds") || unit.equalsIgnoreCase("secound"))
+		{
+			return tmpdelay * 1000;
 		}
-    	
+		else if (unit.equalsIgnoreCase("minutes") || unit.equalsIgnoreCase("minute"))
+		{
+			return tmpdelay * 60 * 1000;
+		}
+		else if (unit.equalsIgnoreCase("hours") || unit.equalsIgnoreCase("hour"))
+		{
+			return tmpdelay * 60 * 60 * 100;
+		}
+		else if (unit.equalsIgnoreCase("days") || unit.equalsIgnoreCase("day"))
+		{
+			return tmpdelay * 24 * 60 * 60 * 1000;
+		}
 		return 0;
 	}
 	

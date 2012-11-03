@@ -61,6 +61,10 @@ public class TaskManager implements Runnable
 		messageQueue.add(new Message(user, message));
 	}
 
+	/**
+	 * Stops a user from receiving announcements
+	 * @param user
+	 */
 	public void stopUser(String user)
 	{
 		tasks.get(user).cancel();

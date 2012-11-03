@@ -20,13 +20,13 @@ public class ShoutListener implements Listener
 	
 	private Shout module;
 	private AnnouncementManager aManager;
-	private TaskManager scheduler;
+	private TaskManager taskManager;
 	
 	public ShoutListener(Shout module)
 	{
 		this.module = module;
-		this.aManager = module.getAManager();
-		this.scheduler = module.getScheduler();
+		this.aManager = module.getAnnouncementManager();
+		this.taskManager = module.getTaskManager();
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -42,16 +42,15 @@ public class ShoutListener implements Listener
 		
 		if (module.getCore().isDebug())
 		{
-			module.logger.log(Level.INFO, "User is initialized");
-			module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGCD(user.getName())));
+			module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGreatestCommonDivisor(user.getName())));
 		}
-		scheduler.scheduleTask(user.getName(), new MessageTask(aManager, scheduler, user), aManager.getGCD(user.getName()));
+		taskManager.scheduleTask(user.getName(), new MessageTask(aManager, taskManager, user), aManager.getGreatestCommonDivisor(user.getName()));
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void PlayerLeaveEvent(PlayerQuitEvent event)
 	{
-		scheduler.stopUser(event.getPlayer().getName());
+		taskManager.stopUser(event.getPlayer().getName());
 		aManager.clean(event.getPlayer().getName());
 	}
 	
