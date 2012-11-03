@@ -7,21 +7,22 @@
   fireprotect
   fireprot
 2:
+  featherfalling  
   fallprotection
   fallprotect
   fallprot
-  featherfalling
+  
 3:
-  explosionprotection
   blastprotection
+  explosionprotection
   blastprotect
   blastprot
   bprot
 4:
+  arrowprotection  
   projectileprotection
   projprotect
   projprot
-  arrowprotection
   arrowprotect
   arrowprot
 5:
@@ -43,8 +44,8 @@
   undeaddamage
   undeaddmg
 18:
+  spiderdamage  
   arthropodsdamage
-  spiderdamage
   spiderdmg
 19:
   knockback

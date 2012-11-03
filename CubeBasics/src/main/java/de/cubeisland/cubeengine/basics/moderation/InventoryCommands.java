@@ -38,7 +38,7 @@ public class InventoryCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context, "basics", "&cUser %s not found!",context.getString(0));
+            paramNotFound(context, "basics", "&cUser &2%s &cnot found!",context.getString(0));
         }
         boolean allowModify = false;
         if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
@@ -51,7 +51,7 @@ public class InventoryCommands
         }
         if (BasicsPerm.COMMAND_INVSEE_NOTIFY.isAuthorized(user))
         {
-            user.sendMessage("basics", "%s is looking into your inventory.", sender.getName());
+            user.sendMessage("basics", "&2%s &eis looking into your inventory.", sender.getName());
         }
         sender.openInventory(user.getInventory());
         listener.addInventory(sender, allowModify);
@@ -110,14 +110,13 @@ public class InventoryCommands
             user = context.getUser(0);
             if (user == null)
             {
-                invalidUsage(context, "core", "User not found!");
+                invalidUsage(context, "core", "&cUser &2%s &cnot found!", context.getString(0));
             }
             other = true;
         }
-        if (other && BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.
-            isAuthorized(context.getSender()))
+        if (other && !BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(context.getSender()))
         {
-            denyAccess(context, "basics", "&cYou are not allowed to clear the inventory of other User!");
+            denyAccess(context, "basics", "&cYou are not allowed to clear the inventory of other users!");
         }
         user.getInventory().clear();
         if (context.hasFlag("ra"))
@@ -128,11 +127,10 @@ public class InventoryCommands
             user.getInventory().setHelmet(null);
         }
         user.updateInventory();
-        user.sendMessage("basics", "Cleared Inventory!");
+        user.sendMessage("basics", "&eCleared inventory!");
         if (other)
         {
-            sender.sendMessage("basics", "Cleared Inventory of %s!", user.
-                getName());
+            sender.sendMessage("basics", "&aCleared Inventory of &2%s&a!", user.getName());
         }
     }
 }

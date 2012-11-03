@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.logging.Level;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -90,14 +89,21 @@ public class MaterialMatcher
      */
     public ItemStack matchItemStack(String name)
     {
+        if (name == null)
+        {
+            return null;
+        }
         String s = name.toLowerCase(Locale.ENGLISH);
         ItemStack item = this.items.get(s);//direct match
         if (item == null)
         {
             try
             { // id match
-                int matId = Integer.parseInt(s);
-                return new ItemStack(matId, 1);
+                Material mat = Material.getMaterial(Integer.parseInt(s));
+                if (mat != null)
+                {
+                    return new ItemStack(mat, 1);
+                }                
             }
             catch (NumberFormatException e)
             {
@@ -143,7 +149,7 @@ public class MaterialMatcher
                 }
             }
         }
-        return item;
+        return item.clone();
     }
 
     /**
@@ -172,6 +178,7 @@ public class MaterialMatcher
         {
             return null;
         }
+        item = item.clone();
         try
         { // try dataValue as Number
             item.setDurability(Short.parseShort(data));
@@ -477,6 +484,10 @@ public class MaterialMatcher
      */
     public String getNameFor(ItemStack item)
     {
+        if (item == null)
+        {
+            return null;
+        }
         return this.itemnames.get(new ItemStack(item.getType(), 1, item.getDurability()));
     }
 }

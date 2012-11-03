@@ -41,7 +41,7 @@ public class KickBanCommands
             User user = context.getUser(0);
             if (user == null && !context.hasFlag("a"))
             {
-                paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+                paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
             }
             user.kickPlayer(message);
         }

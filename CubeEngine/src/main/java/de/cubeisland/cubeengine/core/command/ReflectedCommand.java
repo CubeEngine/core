@@ -79,18 +79,18 @@ public class ReflectedCommand extends CubeCommand
     {
         if (context.indexedCount() < this.min)
         {
-            invalidUsage(context, "core", "This command needs at least %d parameters.", this.min);
+            invalidUsage(context, "core", "&cThis command needs at least &e%d &cparameters.", this.min);
         }
         else
         {
             if (this.max > -1 && context.indexedCount() > this.max)
             {
-                invalidUsage(context, "core", "This command needs at most %d parameters.", this.max);
+                invalidUsage(context, "core", "&cThis command needs at most &e%d &cparameters.", this.max);
             }
         }
         if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
         {
-            denyAccess(context, "core", "You are not allowed to do this.");
+            denyAccess(context, "core", "&cYou are not allowed to do this.");
         }
 
         try
@@ -113,12 +113,12 @@ public class ReflectedCommand extends CubeCommand
         CommandSender sender = context.getSender();
         context.sendMessage(this.getUsage(sender));
 
-        context.sendMessage("core", "Description: %s", _(sender, this.getModule().getId(), this.getDescription()));
+        context.sendMessage("core", "&eDescription: &f%s", _(sender, this.getModule().getId(), this.getDescription()));
 
         List<String> aliases = this.getAliases();
         if (!aliases.isEmpty())
         {
-            context.sendMessage("core", "Aliases: %s", "/" + StringUtils.implode(", /", aliases));
+            context.sendMessage("core", "&eAliases: &f%s", "/" + StringUtils.implode(", /", aliases));
         }
 
 

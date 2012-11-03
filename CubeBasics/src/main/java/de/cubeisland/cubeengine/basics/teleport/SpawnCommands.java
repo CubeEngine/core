@@ -146,7 +146,7 @@ public class SpawnCommands
             user = context.getUser(0);
             if (user == null)
             {
-                paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+                paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
             }
             if (!force)
             {

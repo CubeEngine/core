@@ -19,7 +19,7 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 
 /**
- * Commands controling / affecting worlds
+ * Commands controling / affecting worlds.
  * /weather
  * /remove
  */
@@ -33,10 +33,10 @@ public class WorldControlCommands
     }
 
     @Command(
-    desc = "Changes the weather",
-    min = 1,
-    max = 3,
-    usage = "<sun|rain|storm> [world] [duration]")
+        desc = "Changes the weather",
+        min = 1,
+        max = 3,
+        usage = "<sun|rain|storm> [world] [duration]")
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -81,27 +81,17 @@ public class WorldControlCommands
             invalidUsage(context, "basics", "If not used ingame you have to specify a world!");
         }
         world = sender.getWorld();
-
         world.setStorm(!sunny);
         world.setThundering(!noThunder);
         world.setWeatherDuration(duration);
     }
 
     @Command(
-    desc = "Removes entity",
-    usage = "<entityType> [radius] [in <world>] [-a]",
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
-    params =
-    {
-        @Param(names =
-        {
-            "in"
-        }, types = World.class)
-    },
-    min = 1)
+        desc = "Removes entity",
+        usage = "<entityType> [radius] [in <world>] [-a]",
+        flags = { @Flag(longName = "all", name = "a") },
+        params = { @Param(names = { "in" }, types = World.class) },
+        min = 1)
     public void remove(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -123,19 +113,16 @@ public class WorldControlCommands
         {
             radius = -1;
         }
-        else
+        else if (sender == null)
         {
-            if (sender == null)
+            invalidUsage(context, "basics", "If not used ingame you can only remove all!");
+        }
+        if (context.hasIndexed(1))
+        {
+            radius = context.getIndexed(1, int.class, 0);
+            if (radius <= 0)
             {
-                invalidUsage(context, "basics", "If not used ingame you can only remove all!");
-            }
-            if (context.hasIndexed(1))
-            {
-                radius = context.getIndexed(1, int.class, 0);
-                if (radius <= 0)
-                {
-                    illegalParameter(context, "basics", "The radius has to be a number greater than 0!");
-                }
+                illegalParameter(context, "basics", "The radius has to be a number greater than 0!");
             }
         }
         EntityType type = EntityMatcher.get().matchEntity(context.getString(0));
@@ -175,8 +162,7 @@ public class WorldControlCommands
             }
             if (radius != -1)
             {
-                int distance = (int)(entity.getLocation().subtract(loc)).
-                    lengthSquared();
+                int distance = (int)(entity.getLocation().subtract(loc)).lengthSquared();
                 if (radius * radius < distance)
                 {
                     continue;

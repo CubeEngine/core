@@ -35,7 +35,7 @@ public class TeleportRequestCommands
         final User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
         }
         user.sendMessage("basics", "&2%s &awants to teleport to you!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
         user.setAttribute(basics, "pendingTpToRequest", sender.getName());
@@ -75,7 +75,7 @@ public class TeleportRequestCommands
         final User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context.getSender(), "basics", "&cUser %s not found!", context.getString(0));
+            paramNotFound(context.getSender(), "basics", "&cUser &2%s &cnot found!", context.getString(0));
         }
         user.sendMessage("basics", "&2%s &awants to teleport you to him!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
         user.setAttribute(basics, "pendingTpFromRequest", sender.getName());

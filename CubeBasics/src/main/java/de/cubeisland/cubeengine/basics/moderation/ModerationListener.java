@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 
 public class ModerationListener implements Listener
 {
@@ -23,17 +24,24 @@ public class ModerationListener implements Listener
     public void addInventory(User sender, boolean canModify)
     {
         basics.registerListener(this);
+        this.openedInventories.put(sender, canModify);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event)
     {
-        if (event.getWhoClicked() instanceof Player)
+        if (event.getView().getTopInventory().getType() == InventoryType.PLAYER)
         {
-            User sender = basics.getUserManager().getExactUser((Player)event.getWhoClicked());
-            if (openedInventories.containsKey(sender))
+            if (event.getWhoClicked() instanceof Player)
             {
-                event.setCancelled(!openedInventories.get(sender));
+                User sender = basics.getUserManager().getExactUser((Player)event.getWhoClicked());
+                if (openedInventories.containsKey(sender))
+                {
+                    if (!openedInventories.get(sender))
+                    {
+                        event.setCancelled(!openedInventories.get(sender));
+                    }
+                }
             }
         }
     }
@@ -46,7 +54,10 @@ public class ModerationListener implements Listener
             if (user.getName().equals(event.getPlayer().getName()))
             {
                 openedInventories.remove(user);
-                basics.getEventManager().unregisterListener(this.basics, this);
+                if (openedInventories.isEmpty())
+                {
+                    basics.getEventManager().unregisterListener(this.basics, this);
+                }                
                 return;
             }
         }

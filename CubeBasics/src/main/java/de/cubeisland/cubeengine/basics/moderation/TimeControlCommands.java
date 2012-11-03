@@ -80,7 +80,7 @@ public class TimeControlCommands
         desc = "Changes the time of a world",
         min = 1, max = 2,
         flags = { @Flag(name = "a", longName = "all") },
-    usage = "<day|night|dawn|even|<time>> [world] [-all]")
+        usage = "<day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
         //TODO change output time set to %d to day|night etc..
@@ -150,14 +150,11 @@ public class TimeControlCommands
     }
     
     @Command(
-    desc = "Changes the time for a player",
-    min = 1,
-    max = 2,
-    flags =
-    {
-        @Flag(longName = "relative", name = "rel")
-    },
-    usage = "<day|night|dawn|even> [player]")
+        desc = "Changes the time for a player",
+        min = 1,
+        max = 2,
+        flags = { @Flag(longName = "relative", name = "rel") },
+        usage = "<day|night|dawn|even> [player]")
     public void ptime(CommandContext context)
     {
         Long time = 0L;
@@ -195,8 +192,7 @@ public class TimeControlCommands
         if (reset)
         {
             user.resetPlayerTime();
-            context.sendMessage("basics", "Resetted the time for %s!", user.
-                getName());
+            context.sendMessage("basics", "Resetted the time for %s!", user.getName());
             if (other)
             {
                 user.sendMessage("basics", "Your time was resetted!");
@@ -204,19 +200,22 @@ public class TimeControlCommands
         }
         else
         {
-            user.setPlayerTime(time, context.hasFlag("rel"));
-            String timeName = Time.getTimeName(time);
-            if (timeName == null)
+            if (context.hasFlag("rel"))
             {
-                context.
-                    sendMessage("basics", "Time set to %d for %s", time, user.
-                    getName());
+                user.setPlayerTime(time, false);
             }
             else
             {
-                context.
-                    sendMessage("basics", "Time set to %s for %s", timeName, user.
-                    getName());
+                user.setPlayerTime(user.getWorld().getTime() - time, true);
+            }
+            String timeName = Time.getTimeName(time);
+            if (timeName == null)
+            {
+                context.sendMessage("basics", "Time set to %d for %s", time, user.getName());
+            }
+            else
+            {
+                context.sendMessage("basics", "Time set to %s for %s", timeName, user.getName());
             }
             if (other)
             {

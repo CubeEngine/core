@@ -69,7 +69,7 @@ public class TeleportCommands
         User target = context.getUser(0);
         if (target == null)
         {
-            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
         }
         boolean force = false;
         if (context.hasFlag("f"))
@@ -85,7 +85,7 @@ public class TeleportCommands
             target = context.getUser(1);
             if (target == null)
             {
-                paramNotFound(context, "basics", "&cUser %s not found!", context.getString(1));
+                paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(1));
             }
             if (!force) // if force no need to check
             {
@@ -153,7 +153,7 @@ public class TeleportCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
         }
         boolean force = false;
         if (context.hasFlag("f"))
@@ -201,7 +201,7 @@ public class TeleportCommands
         User target = context.getUser(0);
         if (target == null)
         {
-            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
         }
         boolean force = false;
         if (context.hasFlag("f"))
