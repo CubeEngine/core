@@ -155,7 +155,6 @@ public class CubeCommandMap extends SimpleCommandMap
 
         if (oldCommand != null && !aliases.contains(label))
         {
-            knownCommands.remove(label);
             String fallback = label;
             if (oldCommand instanceof PluginCommand)
             {
@@ -169,7 +168,12 @@ public class CubeCommandMap extends SimpleCommandMap
             {
                 fallback = ((CubeCommand)oldCommand).getModule().getId() + ":" + label;
             }
-            knownCommands.put(fallback, command);
+            
+            if (fallback != label)
+            {
+                knownCommands.remove(label);
+                knownCommands.put(fallback, oldCommand);
+            }
         }
 
         if (isAlias)
