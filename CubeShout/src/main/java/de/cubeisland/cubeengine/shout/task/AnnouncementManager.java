@@ -5,13 +5,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -32,7 +31,7 @@ public class AnnouncementManager
 	private Map<String, Queue<Announcement>> messages;
 	private Map<String, Queue<Long>> delays;
 	private Map<String, String> worlds;
-	public Set<Announcement> announcements;
+	private Map<String, Announcement> announcements;
 	
 	public AnnouncementManager(Shout module)
 	{
@@ -40,7 +39,7 @@ public class AnnouncementManager
 		this.messages = new ConcurrentHashMap<String, Queue<Announcement>>();
 		this.delays = new ConcurrentHashMap<String, Queue<Long>>();
 		this.worlds = new ConcurrentHashMap<String, String>();
-		this.announcements = new HashSet<Announcement>();
+		this.announcements = new HashMap<String, Announcement>();
 	}
 	
 	/**
@@ -57,6 +56,21 @@ public class AnnouncementManager
 		return Arrays.asList(aarray);
 	}
 
+	public Collection<Announcement> getAnnouncemets()
+	{
+		return this.announcements.values();
+	}
+	
+	public Announcement getAnnouncement(String name)
+	{
+		return this.announcements.get(name);
+	}
+	
+	public boolean hasAnnouncement(String name)
+	{
+		return this.announcements.containsKey(name);
+	}
+	
 	/**
 	 * Get the greatest common divisor of the delays form the announcements this user should receive.
 	 *  
@@ -185,7 +199,7 @@ public class AnnouncementManager
 			throw new ShoutException("No valid group for anouncement: " + name);
 		}
 		
-		this.announcements.add(new Announcement(name, module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
+		this.announcements.put(name, new Announcement(name, module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
 	}
 	
 	/**
@@ -200,7 +214,7 @@ public class AnnouncementManager
 		}
 		
 		// Load what announcements should be displayed to the user
-		for (Announcement a : announcements)
+		for (Announcement a : announcements.values())
 		{
 			if (module.getCore().isDebug())
 			{
@@ -371,5 +385,6 @@ public class AnnouncementManager
 		}
 		return 0;
 	}
+
 	
 }
