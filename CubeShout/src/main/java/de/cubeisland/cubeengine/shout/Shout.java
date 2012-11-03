@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.shout;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.config.annotations.From;

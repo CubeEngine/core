@@ -264,9 +264,12 @@ public class AnnouncementManager
         		{
         			module.logger.log(Level.INFO, "Loading announcement "+f.getName());
         		}
-        		try {
+        		try
+        		{
 					this.loadAnnouncement(f);
-				} catch (ShoutException e) {
+				} 
+        		catch (ShoutException e)
+        		{
 					module.logger.log(Level.WARNING, "There was an error loading the announcement: " + f.getName());
 					module.logger.log(Level.WARNING, "The error message was: " + e.getLocalizedMessage());
 					if (module.getCore().isDebug())
@@ -285,17 +288,20 @@ public class AnnouncementManager
     	{
     		throw new ShoutException("Tried to load an announcement that was a file!");
     	}
+
+    	File confFile = new File(f, "announcement.yml");
+    	if (!confFile.exists())
+    	{
+    		throw new ShoutException("No configfile to announcement: "+ f.getName());
+    	}
+    	
     	Map<String, String> messages = new HashMap<String, String>();
     	String world = "*";
     	long delay = 0;
     	String permNode = "*";
     	String group = "*";
-    	AnnouncementConfiguration conf = Configuration.load(AnnouncementConfiguration.class, new File(f, "announcement.yml"));
-    	if (conf == null)
-		{
-			throw new ShoutException("No configfile to announcement: "+ f.getName());
-		}
-		
+
+    	AnnouncementConfiguration conf = Configuration.load(AnnouncementConfiguration.class, confFile);
 		world = conf.world;
 		permNode = conf.permNode;
 		group = conf.group;
