@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import java.lang.reflect.Field;
 import java.util.List;
 import net.minecraft.server.EntityPlayer;
@@ -192,6 +193,7 @@ public class BukkitUtils
 
     public static boolean renameItemStack(ItemStack itemStack, String name)
     {
+        name = ChatFormat.parseFormats(name);
         if (itemStack == null || itemStack.getType().equals(Material.AIR))
         {
             return false;
@@ -207,9 +209,10 @@ public class BukkitUtils
             tag.setCompound("display", new NBTTagCompound());
         }
         NBTTagCompound display = tag.getCompound("display");
-        if (name == null)
+        if (name == null || name.equals(""))
         {
             display.remove("Name");
+            return true;
         }
         display.setString("Name", name);
         return true;
