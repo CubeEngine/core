@@ -8,7 +8,7 @@ public class ItemStackConverter implements Converter<ItemStack>
     @Override
     public Object toObject(ItemStack object) throws ConversionException
     {
-        throw new UnsupportedOperationException("Not supported.");
+        return this.toString(object);
     }
 
     @Override
@@ -18,14 +18,17 @@ public class ItemStackConverter implements Converter<ItemStack>
         {
             return (ItemStack)object;
         }
+        else if (object instanceof String)
+        {
+            return this.fromString(object.toString());
+        }
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public String toString(ItemStack object)
     {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+        return object.getType().getId() + ":" + object.getDurability();
     }
 
     @Override

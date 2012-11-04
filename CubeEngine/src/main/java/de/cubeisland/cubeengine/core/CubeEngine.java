@@ -16,8 +16,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
 /**
- *
- * @author Phillip Schichtel
+ * The CubeEngine provides static method to access all important Manager and the Core.
  */
 public final class CubeEngine
 {

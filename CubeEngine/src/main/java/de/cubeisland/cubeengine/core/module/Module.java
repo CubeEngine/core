@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
@@ -21,9 +22,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
 
 /**
- * module for CubeEngine
- *
- * @author Phillip Schichtel
+ * Module for CubeEngine.
  */
 public abstract class Module
 {
@@ -373,5 +372,10 @@ public abstract class Module
     public void registerListener(Listener listener)
     {
         this.core.getEventManager().registerListener(this, listener);
+    }
+    
+    public TaskManager getTaskManger()
+    {
+        return this.core.getTaskManager();
     }
 }

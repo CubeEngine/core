@@ -11,10 +11,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ContainerAccess extends LogListener
 {
     public ContainerAccess(Log module)
@@ -43,8 +39,6 @@ public class ContainerAccess extends LogListener
             this.actions.put(LogAction.BREWINGSTANDACCESS, false);
             this.enabled = false;
         }
-        @Option(value = "actions", genericType = Boolean.class)
-        public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override
         public String getName()

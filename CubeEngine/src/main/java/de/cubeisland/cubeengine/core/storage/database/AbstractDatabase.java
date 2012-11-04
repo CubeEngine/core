@@ -13,8 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author Phillip Schichtel
+ * Abstract Database implementing most of the database methods.
+ * Extend this class and complement it to use the database.
  */
 public abstract class AbstractDatabase implements Database
 {

@@ -3,13 +3,14 @@ package de.cubeisland.cubeengine.writer;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.inventory.ItemStack;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 
 public class EditCommand
 {
@@ -19,6 +20,7 @@ public class EditCommand
     usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ",
     params =
     {
+        @Param(names = {"1", "Line1"},types = {String.class}),
         @Param(names = {"2", "Line2"},types = {String.class}),
         @Param(names = {"3", "Line3"},types = {String.class}),
         @Param(names = {"4", "Line4"},types = {String.class})

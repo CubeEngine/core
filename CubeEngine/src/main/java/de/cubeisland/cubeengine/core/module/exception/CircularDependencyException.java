@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
 /**
- *
- * @author Phillip Schichtel
+ * This exception is thrown when modules have a circular dependency.
  */
 public class CircularDependencyException extends ModuleException
 {

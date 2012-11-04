@@ -4,8 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for selecting from tables.
  */
 public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> implements SelectBuilder
 {

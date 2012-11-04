@@ -5,35 +5,35 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class is a file handler that logs into CubeEngine's log directory.
  */
-public class FileHandler extends java.util.logging.FileHandler
+public class CubeFileHandler extends FileHandler
 {
-    public FileHandler(Level level, String pattern) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern) throws IOException, SecurityException
     {
         super(pattern + "_%g.log", 500000, 3, true);
         this.init(level);
     }
 
-    public FileHandler(Level level, String pattern, boolean append) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern, boolean append) throws IOException, SecurityException
     {
         super(pattern + "_%g.log", 500000, 3, append);
         this.init(level);
     }
 
-    public FileHandler(Level level, String pattern, int limit, int count) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern, int limit, int count) throws IOException, SecurityException
     {
         super(pattern + "_%g.log", limit, count, true);
         this.init(level);
     }
 
-    public FileHandler(Level level, String pattern, int limit, int count, boolean append) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern, int limit, int count, boolean append) throws IOException, SecurityException
     {
         super(pattern, limit, count, append);
         this.init(level);

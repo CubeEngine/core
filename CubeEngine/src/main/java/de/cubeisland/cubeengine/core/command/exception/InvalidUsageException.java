@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.core.command.exception;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import org.bukkit.command.CommandSender;
 
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
 /**
- *
- * @author CodeInfection
+ * This exception is thrown when a user performed an invalid command.
+ * Use invalidUsage to throw an exception insinde a command. The exception will be caught.
  */
 public class InvalidUsageException extends CommandException
 {
@@ -31,6 +32,36 @@ public class InvalidUsageException extends CommandException
     public static void invalidSender(CommandSender sender, String category, String message, Object... params)
     {
         throw new InvalidUsageException(_(sender, category, message, params), false);
+    }
+
+    public static void invalidSender(CommandContext context, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(context.getSender(), category, message, params), false);
+    }
+    
+    public static void blockCommand()
+    {
+        throw new InvalidUsageException("", false);
+    }
+    
+    public static void blockCommand(CommandSender sender, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(sender, category, message, params), false);
+    }
+
+    public static void blockCommand(CommandContext context, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(context.getSender(), category, message, params), false);
+    }
+
+    public static void paramNotFound(CommandSender sender, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(sender, category, message, params), false);
+    }
+
+    public static void paramNotFound(CommandContext context, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(context.getSender(), category, message, params), false);
     }
 
     public static void invalidUsage(CommandContext context, String category, String message, Object... params)

@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.util;
 
 /**
- *
- * @author Anselm Brehme
+ * This interface indicates that the classes implementing it is cleanable.
  */
 public interface Cleanable
 {

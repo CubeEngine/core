@@ -4,8 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.DeleteBuilder
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for deleting tables.
  */
 public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder> implements DeleteBuilder
 {

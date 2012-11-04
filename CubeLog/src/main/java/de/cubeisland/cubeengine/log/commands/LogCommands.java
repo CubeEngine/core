@@ -9,14 +9,10 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.Date;
-import java.util.List;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class LogCommands extends ContainerCommand
 {
     public LogCommands(Module module)
@@ -102,12 +98,10 @@ public class LogCommands extends ContainerCommand
     })
     public void lookup(CommandContext context)
     {
-        context.sendMessage("You used the /log lookup command!");
+        ItemStack[] blocktypes;
         if (context.hasNamed("block"))
         {
-            // cl lookup block 18:2 <- will print birchleaves
-            context.sendMessage(MaterialMatcher.get().getNameFor(context.
-                getNamed("block", ItemStack[].class)[0]));
+            blocktypes = context.getNamed("block", ItemStack[].class);
         }
     }
 }

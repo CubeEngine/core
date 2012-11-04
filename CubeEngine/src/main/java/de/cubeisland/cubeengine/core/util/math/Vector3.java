@@ -1,9 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- * This class represents a 3D vector
- *
- * @author Phillip Schichtel
+ * This class represents a 3D vector.
  */
 public class Vector3
 {

@@ -5,9 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
 /**
- *
- * @author Phillip Schichtel
+ * Defines the tableName and/or engine/defaultCharset for a Model.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

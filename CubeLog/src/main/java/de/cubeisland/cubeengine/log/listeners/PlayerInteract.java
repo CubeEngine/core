@@ -1,19 +1,12 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
-import java.util.EnumMap;
-import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class PlayerInteract extends LogListener
 {
     public PlayerInteract(Log module)
@@ -38,8 +31,6 @@ public class PlayerInteract extends LogListener
             this.actions.put(LogAction.DIODEINTERACT, false);
             this.enabled = false;
         }
-        @Option(value = "actions", genericType = Boolean.class)
-        public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override
         public String getName()

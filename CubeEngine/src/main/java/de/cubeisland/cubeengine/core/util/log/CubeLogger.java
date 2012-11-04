@@ -6,8 +6,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
- *
- * @author Anselm Brehme
+ * This logger is used for all of CubeEngine's messages.
  */
 public class CubeLogger extends Logger
 {
@@ -63,6 +62,11 @@ public class CubeLogger extends Logger
         this.log(Level.SEVERE, msg, t);
     }
 
+    /**
+     * This method logs a messages only if the CubeEngine is in debug mode
+     *
+     * @param msg the message
+     */
     public void debug(Object msg)
     {
         if (CubeEngine.isDebug())
@@ -71,8 +75,21 @@ public class CubeLogger extends Logger
         }
     }
 
+    /**
+     * This method sets the global logging level
+     *
+     * @param level the new logging level
+     */
     public static void setLoggingLevel(Level level)
     {
         loggingLevel = level;
+    }
+
+    /**
+     * This method returns the current logging level
+     */
+    public static Level getLoggingLevel()
+    {
+        return loggingLevel;
     }
 }

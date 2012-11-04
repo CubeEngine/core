@@ -27,6 +27,8 @@ public class YamlCodec extends ConfigurationCodec
         QUOTE = "'";
     }
 
+    //TODO \n in Strings do get lost when restarting
+    
     @Override
     public Map<String, Object> loadFromInputStream(InputStream is)
     {

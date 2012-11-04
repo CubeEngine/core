@@ -4,15 +4,13 @@ import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BasicUserManager extends BasicStorage<BasicUser>
 {
-    public BasicUserManager(Database database, int revision)
+    private static final int REVISION = 1;
+    
+    public BasicUserManager(Database database)
     {
-        super(database, BasicUser.class, revision);
+        super(database, BasicUser.class, REVISION);
         this.initialize();
     }
 

@@ -1,4 +1,10 @@
 {
-    "TEST1":"Test1",
-    "TEST2":"Test2"
+    "strucks a player or the location you are looking at by lightning.":"Trifft einen Spieler oder den Ort den du anschaust mit einem Blitz",
+    "&cThis command can only be used by a player!":"&cDieser Befehl kann nur von einem Spieler verwendet werden!",
+    "The Item %s is not supported!":"Das Item %s wird nicht unterstützt!",
+    "The amount has to be a number from 1 to %d":"Der Wert muss eine Zahl von 1 bis %d sein.",
+    "Only damage values from 1 to 20 are allowed!":"Nur Schadenswerte von 1 bis 20 sind erlaubt!",
+    "Only 1 to 26 seconds are permitted!":"Nur 1 bis 26 Sekunden werden unterstützt!",
+    "Do you never wanna see %s again?":"Willst du %s nie wieder sehen?",
+    "The distance has to be greater than 0!":"Die Distanz muss größer als null sein!"
 }

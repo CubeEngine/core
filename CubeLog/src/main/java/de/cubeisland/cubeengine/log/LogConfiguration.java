@@ -8,32 +8,23 @@ import gnu.trove.map.hash.THashMap;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- *
- * @author Anselm Brehme
- */
 @Codec("yml")
 public class LogConfiguration extends Configuration
 {
+    public Map<LogAction, String> configNames = new EnumMap<LogAction, String>(LogAction.class);
+    
+    @Option(value = "configs", genericType = Configuration.class)
+    public Map<String, LogSubConfiguration> configs = new THashMap<String, LogSubConfiguration>();
+
     public LogConfiguration()
     {
         for (LogAction action : LogAction.values())
         {
-            LogListener listener = LogListener.getInstance(action.
-                getListenerClass(), Log.getInstance());
-            this.configs.put(listener.getConfiguration().getName(), listener.
-                getConfiguration());
+            LogListener listener = LogListener.getInstance(action.getListenerClass(), Log.getInstance());
+            this.configs.put(listener.getConfiguration().getName(), listener.getConfiguration());
+            this.configNames.put(action, listener.getConfiguration().getName());
         }
     }
-
-    @Override
-    public void onLoaded()
-    {
-        //TODO register needed Listener
-    }
-    public Map<LogAction, String> configNames = new EnumMap<LogAction, String>(LogAction.class);
-    @Option(value = "configs", genericType = Configuration.class)
-    public Map<String, LogSubConfiguration> configs = new THashMap<String, LogSubConfiguration>();
 
     public boolean isLogging(LogAction name)
     {

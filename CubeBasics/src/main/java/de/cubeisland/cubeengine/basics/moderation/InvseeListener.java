@@ -9,36 +9,39 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 
-/**
- *
- * @author Anselm Brehme
- */
-public class ModerationListener implements Listener
+public class InvseeListener implements Listener
 {
-    private Basics module;
+    private Basics basics;
 
-    public ModerationListener(Basics module)
+    public InvseeListener(Basics basics)
     {
-        this.module = module;
+        this.basics = basics;
     }
     private Map<User, Boolean> openedInventories = new THashMap<User, Boolean>();
 
     public void addInventory(User sender, boolean canModify)
     {
-        module.registerListener(this);
+        basics.registerListener(this);
+        this.openedInventories.put(sender, canModify);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event)
     {
-        if (event.getWhoClicked() instanceof Player)
+        if (event.getView().getTopInventory().getType() == InventoryType.PLAYER)
         {
-            User sender = module.getUserManager().getUser((Player)event.
-                getWhoClicked());
-            if (openedInventories.containsKey(sender))
+            if (event.getWhoClicked() instanceof Player)
             {
-                event.setCancelled(!openedInventories.get(sender));
+                User sender = basics.getUserManager().getExactUser((Player)event.getWhoClicked());
+                if (openedInventories.containsKey(sender))
+                {
+                    if (!openedInventories.get(sender))
+                    {
+                        event.setCancelled(!openedInventories.get(sender));
+                    }
+                }
             }
         }
     }
@@ -51,7 +54,10 @@ public class ModerationListener implements Listener
             if (user.getName().equals(event.getPlayer().getName()))
             {
                 openedInventories.remove(user);
-                module.getEventManager().unregisterListener(this.module, this);
+                if (openedInventories.isEmpty())
+                {
+                    basics.getEventManager().unregisterListener(this.basics, this);
+                }                
                 return;
             }
         }

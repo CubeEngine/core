@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Phillip Schichtel
+ * This annotation is used to declare alias commands.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

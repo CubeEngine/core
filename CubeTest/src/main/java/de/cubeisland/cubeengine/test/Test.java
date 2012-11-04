@@ -11,10 +11,11 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import de.cubeisland.cubeengine.core.util.log.FileHandler;
+import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
@@ -60,7 +61,7 @@ public class Test extends Module
         try
         {
             this.getLogger().
-                addHandler(new FileHandler(Level.ALL, new File(this.
+                addHandler(new CubeFileHandler(Level.ALL, new File(this.
                 getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
@@ -74,6 +75,7 @@ public class Test extends Module
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
+        this.registerCommands(new TestCommands());
 
         this.registerListener(new Listener()
         {
@@ -114,10 +116,10 @@ public class Test extends Module
     public void testUserManager()
     {
         //Testing get
-        User userToDel = uM.getUser("userGetsDel");
-        User user = uM.getUser("UserU");
-        uM.getUser("User1");
-        uM.getUser("User2");
+        User userToDel = uM.getUser("userGetsDel", true);
+        User user = uM.getUser("UserU", true);
+        uM.getUser("User1", true);
+        uM.getUser("User2", true);
         //Testing getall
         uM.getAll();
         //Testing delete
@@ -126,7 +128,7 @@ public class Test extends Module
         user.nogc = true;
         user.lastseen = new Timestamp(50000);
         uM.update(user);
-        user = uM.getUser("User1");
+        user = uM.getUser("User1", true);
         user.lastseen = new Timestamp(50000);
         uM.update(user);
     }
@@ -151,14 +153,12 @@ public class Test extends Module
         {
         }
 
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"));
-        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"));
-        this.manager.
-            store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"));
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"));
-        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"));
-        this.manager.
-            store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"));
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 6), 20, "Manfred"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"), false);
+        this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"), false);
+        this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"), false);
         this.manager.get(2);
         this.manager.getAll();
         TestModel model = this.manager.get(3);
@@ -252,37 +252,24 @@ public class Test extends Module
 
     private void testMatchers()
     {
-        this.getLogger().
-            debug(EnchantMatcher.get().matchEnchantment("infinity"));
+        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infinity"));
         this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infini"));
-        this.getLogger().debug(EnchantMatcher.get().
-            matchEnchantment("hablablubb") + " is null");
+        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("hablablubb") + " is null");
         this.getLogger().debug(EnchantMatcher.get().matchEnchantment("protect"));
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stone").
-            serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stoned").
-            serialize());
-        this.getLogger().debug(MaterialMatcher.get().
-            matchItemStack("hablablubb") + " is null");
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wool:red").
-            serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35").
-            serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:15").
-            serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:red").
-            serialize());
-        this.getLogger().debug(MaterialMatcher.get().
-            matchItemStack("wood:birch").serialize());
-        this.getLogger().debug(MaterialMatcher.get().
-            matchItemStack("leves:pine").serialize());
-        this.getLogger().debug(MaterialMatcher.get().
-            matchItemStack("spawnegg:pig").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stone").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stoned").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("hablablubb") + " is null");
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wool:red").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:15").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:red").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wood:birch").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("leves:pine").serialize());
+        this.getLogger().debug(MaterialMatcher.get().matchItemStack("spawnegg:pig").serialize());
         this.getLogger().debug(EntityMatcher.get().matchEntity("pig"));
         this.getLogger().debug(EntityMatcher.get().matchMonster("zombi"));
         this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("shep"));
-        this.getLogger().
-            debug(EntityMatcher.get().matchFriendlyMob("ghast") + " is null");
+        this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("ghast") + " is null");
     }
 
     private void testsomeUtils()

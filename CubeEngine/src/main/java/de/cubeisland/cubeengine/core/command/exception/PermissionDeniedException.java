@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.core.command.exception;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import org.bukkit.command.CommandSender;
 
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
 /**
- *
- * @author CodeInfection
+ * This exception is thrown when a user is not allowed to perform an action.
+ * Use denyAccess to throw an exception insinde a command. The exception will be caught.
  */
 public class PermissionDeniedException extends CommandException
 {

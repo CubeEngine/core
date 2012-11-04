@@ -1,6 +1,11 @@
 package de.cubeisland.cubeengine.core.config;
 
-import de.cubeisland.cubeengine.core.config.annotations.*;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComments;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.config.annotations.Revision;
+import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;

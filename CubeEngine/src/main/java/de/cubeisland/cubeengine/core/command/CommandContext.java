@@ -4,16 +4,11 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.THashMap;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -38,6 +33,8 @@ public class CommandContext
     private int flagCount;
     private boolean empty;
     private boolean helpCall;
+    
+    private static Integer offset;
 
     /**
      * Initializes the CommandContext object with an array of arguments
@@ -52,7 +49,7 @@ public class CommandContext
         this.core = core;
         if (sender instanceof Player)
         {
-            sender = command.getModule().getUserManager().getUser(sender);
+            sender = command.getModule().getUserManager().getExactUser(sender);
         }
         this.sender = sender;
         this.command = command;
@@ -117,21 +114,20 @@ public class CommandContext
             }
         }
 
-        Integer offset = new Integer(0);
+        offset = new Integer(0);
         for (; offset < commandLine.length; ++offset)
         {
             if (commandLine[offset].isEmpty())
             {
                 continue; // part is empty, ignoring...
             }
-            if (commandLine[offset].charAt(0) == '-') // is flag?
+            if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
             {
                 String flag = commandLine[offset].substring(1);
                 if (flag.charAt(0) == '-')
                 {
                     flag = flag.substring(1);
                 }
-
                 if (flag.isEmpty()) // is there still a name?
                 {
                     this.indexedParams.add(commandLine[offset]);
@@ -164,11 +160,11 @@ public class CommandContext
                 }
                 Param param = paramMap.get(paramName);
                 // is named Param?
-                if (param != null)
+                if (param != null && offset + 1 < commandLine.length)
                 {
                     Class<?>[] types = param.types();
                     Object[] values = new Object[types.length];
-                    for (int typeOffset = 0; typeOffset < types.length && (offset) < commandLine.length; typeOffset++)
+                    for (int typeOffset = 0; typeOffset < types.length && offset + 1 < commandLine.length; typeOffset++)
                     {
                         if (typeOffset < types.length)
                         {
@@ -180,7 +176,7 @@ public class CommandContext
                             // try to apply needed type
                             if (String.class.isAssignableFrom(types[typeOffset]))
                             {
-                                values[typeOffset] = readString(offset, commandLine);
+                                values[typeOffset] = readString(commandLine);
                             }
                             else
                             {
@@ -198,7 +194,7 @@ public class CommandContext
                 else // else is indexed param
                 {
                     // added indexed param
-                    this.indexedParams.add(readString(offset, commandLine));
+                    this.indexedParams.add(readString(commandLine));
                 }
             }
         }
@@ -212,12 +208,12 @@ public class CommandContext
      * @param commandLine the command line
      * @return the read string
      */
-    private static String readString(Integer offset, String[] commandLine)
+    private static String readString(String[] commandLine)
     {
         char quote = commandLine[offset].charAt(0);
         if (quote == '"' || quote == '\'')
         {
-            return readString(quote, offset, commandLine);
+            return readString(quote, commandLine);
         }
         return commandLine[offset];
     }
@@ -230,7 +226,7 @@ public class CommandContext
      * @param commandLine the command line
      * @return the read string
      */
-    private static String readString(char quoteChar, Integer offset, String[] commandLine)
+    private static String readString(char quoteChar, String[] commandLine)
     {
         String message = commandLine[offset++].substring(1);
         if (message.charAt(message.length() - 1) == quoteChar)
@@ -407,6 +403,20 @@ public class CommandContext
         return this.getIndexed(i, String.class, def);
     }
 
+    public String getStrings(int from)
+    {
+        if (!this.hasIndexed(from))
+        {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(this.getString(from));
+        while (this.hasIndexed(++from))
+        {
+            sb.append(" ").append(this.getString(from));
+        }
+        return sb.toString();
+    }
+
     /**
      * Gets a user from a indexed parameter
      *
@@ -442,13 +452,13 @@ public class CommandContext
     }
 
     /**
-     * Sends a message to the sender
+     * Formats and sends a message to the sender
      *
      * @param message the message
      */
     public void sendMessage(String message)
     {
-        this.sender.sendMessage(message);
+        this.sender.sendMessage(ChatFormat.parseFormats(message));
     }
 
     /**
@@ -480,7 +490,7 @@ public class CommandContext
      */
     public User getSenderAsUser()
     {
-        return this.core.getUserManager().getUser(this.sender);
+        return this.core.getUserManager().getExactUser(this.sender);
     }
 
     /**
@@ -546,12 +556,16 @@ public class CommandContext
     {
         try
         {
-            return this.getIndexed(index, type);
+            T value = this.getIndexed(index, type);
+            if (value != null)
+            {
+                return value;
+            }
         }
-        catch (ConversionException e)
+        catch (ConversionException ignored)
         {
-            return def;
         }
+        return def;
     }
 
     /**
@@ -649,6 +663,10 @@ public class CommandContext
         {
             throw new IndexOutOfBoundsException("The named parameter you requested has only " + values.length + " " + (values.length == 1 ? "value" : "values") + " but you requested the " + (i + 1) + ".");
         }
+        if (values[i] == null)
+        {
+            return null;
+        }
         if (type.isAssignableFrom(values[i].getClass()))
         {
             return type.cast(values[i]);
@@ -661,6 +679,45 @@ public class CommandContext
         {
         }
         return null;
+    }
+
+    /**
+     * Returns a value of a named parameter or a default value if not found
+     *
+     * @param <T>  the type of the value
+     * @param name the name of the parameters
+     * @param type the Class of the value
+     * @param def  the default value
+     * @return the value or null if not available
+     */
+    public <T> T getNamed(String name, Class<T> type, T def)
+    {
+        T value = this.getNamed(name, type);
+        if (value != null)
+        {
+            return value;
+        }
+        return def;
+    }
+
+    /**
+     * Returns a value of a named parameter or a default value if not found
+     *
+     * @param <T>  the type of the value
+     * @param name the name of the parameters
+     * @param type the Class of the value
+     * @param i    the index of the value
+     * @param def  the default value
+     * @return the value or null if not available
+     */
+    public <T> T getNamed(String name, Class<T> type, int i, T def)
+    {
+        T value = this.getNamed(name, type, i);
+        if (value != null)
+        {
+            return value;
+        }
+        return def;
     }
 
     /**

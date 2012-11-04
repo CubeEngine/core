@@ -16,8 +16,8 @@ import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -78,7 +78,7 @@ public class BukkitCore extends JavaPlugin implements Core
         try
         {
             // depends on: file manager
-            this.logger.addHandler(new FileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
+            this.logger.addHandler(new CubeFileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
         }
         catch (IOException e)
         {
@@ -106,7 +106,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.tableManager = new TableManager(this);
 
         // depends on: plugin manager
-        this.permissionRegistration = new PermissionManager(pm);
+        this.permissionRegistration = new PermissionManager(this);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
@@ -118,7 +118,7 @@ public class BukkitCore extends JavaPlugin implements Core
         pm.registerEvents(this.userManager, this);
 
         // depends on: file manager, core config
-        this.i18n = new I18n(this.fileManager, this.config.defaultLanguage);
+        this.i18n = new I18n(this);
 
         // depends on: Server
         this.commandManager = new CommandManager(this);
@@ -127,7 +127,8 @@ public class BukkitCore extends JavaPlugin implements Core
         this.moduleManager = new ModuleManager(this);
 
         // depends on: server
-        BukkitUtils.registerPacketHookInjector(this, pm);
+       //TODO broken with 1.4 
+        BukkitUtils.registerPacketHookInjector(this);
 
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()

@@ -1,28 +1,28 @@
 package de.cubeisland.cubeengine.core.util.worker;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang.Validate;
 
 /**
- * This TaskQueue will execute all tasks in an async thread.
- */
+* This TaskQueue will execute all tasks in an async thread.
+*/
 public class AsyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
     private final ExecutorService executorService;
-    private final BlockingQueue<Runnable> taskQueue;
+    private final Queue<Runnable> taskQueue;
     private final AtomicReference<Future<?>> exectorFuture;
 
     public AsyncTaskQueue(ExecutorService executorService)
     {
-        this(executorService, new LinkedBlockingQueue<Runnable>());
+        this(executorService, new ConcurrentLinkedQueue<Runnable>());
     }
 
-    public AsyncTaskQueue(ExecutorService executorService, BlockingQueue<Runnable> taskQueue)
+    public AsyncTaskQueue(ExecutorService executorService, Queue<Runnable> taskQueue)
     {
         this.executorService = executorService;
         this.taskQueue = taskQueue;
@@ -86,10 +86,12 @@ public class AsyncTaskQueue implements TaskQueue
         @Override
         public void run()
         {
-            while (exectorFuture.get() != null)
+            Runnable task;
+            while ((task = AsyncTaskQueue.this.taskQueue.poll()) != null)
             {
-                taskQueue.poll().run();
+                task.run();
             }
+            AsyncTaskQueue.this.exectorFuture.set(null);
         }
     }
 }

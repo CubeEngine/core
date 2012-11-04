@@ -5,8 +5,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class represents a clone of another language.
  */
 public class ClonedLanguage implements Language
 {
@@ -89,5 +88,15 @@ public class ClonedLanguage implements Language
     public void clean()
     {
         this.original.clean();
+    }
+    
+    /**
+     * This method returns the language cloned by this language
+     *
+     * @return the original
+     */
+    public Language getOriginal()
+    {
+        return this.original;
     }
 }

@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
 /**
- *
- * @author Phillip Schichtel
+ * This exception is fired when an error occurs during the loading-process of modules.
  */
 public class ModuleException extends Exception
 {

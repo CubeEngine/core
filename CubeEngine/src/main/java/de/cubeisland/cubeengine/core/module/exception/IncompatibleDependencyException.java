@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
 /**
- *
- * @author CodeInfection
+ * This exception is thrown when the dependency was found but its revision is not correct.
  */
 public class IncompatibleDependencyException extends ModuleException
 {

@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.bukkit.CubeEvent;
 import de.cubeisland.cubeengine.core.module.Module;
 
 /**
- *
- * @author Phillip Schichtel
+ * An Event containing the module for easier access.
  */
 public abstract class ModuleEvent extends CubeEvent
 {

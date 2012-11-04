@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import org.bukkit.event.HandlerList;
 
 /**
- *
- * @author Phillip Schichtel
+ * This event is fired when a module got enabled.
  */
 public class ModuleEnabledEvent extends ModuleEvent
 {

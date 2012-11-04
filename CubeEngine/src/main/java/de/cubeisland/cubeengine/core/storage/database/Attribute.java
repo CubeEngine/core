@@ -5,6 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * This annotation is used to define a Attribute in a model for saving in database.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Attribute
@@ -18,4 +21,6 @@ public @interface Attribute
     public boolean ai() default false;
 
     public boolean unsigned() default false;
+    
+    public boolean unique() default false;
 }

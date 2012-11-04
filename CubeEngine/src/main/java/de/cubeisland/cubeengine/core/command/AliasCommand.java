@@ -50,4 +50,14 @@ public class AliasCommand extends CubeCommand
     {
         this.command.showHelp(context);
     }
+    
+    /**
+     * Returns the command this alias points to
+     *
+     * @return the actual command
+     */
+    public CubeCommand getActualCommand()
+    {
+        return this.command;
+    }
 }

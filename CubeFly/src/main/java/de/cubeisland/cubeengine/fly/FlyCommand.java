@@ -68,7 +68,7 @@ public class FlyCommand
         }
         if (!user.isOnline())
         {
-            illegalParameter(context, "core", "User is not online!");
+            illegalParameter(context, "core", "User %s is not online!", user.getName());
         }
         // PermissionChecks
         if (other)

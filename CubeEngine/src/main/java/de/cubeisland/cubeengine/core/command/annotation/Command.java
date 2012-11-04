@@ -9,7 +9,6 @@ import org.bukkit.permissions.PermissionDefault;
 /**
  * Annotates a method as a command
  *
- * @author Phillip Schichtel
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

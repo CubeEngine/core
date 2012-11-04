@@ -7,8 +7,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLDatabaseConfig containing all needed information to connect to a MYSQLDatabse
  */
 @Codec("yml")
 public class MySQLDatabaseConfiguration extends DatabaseConfiguration

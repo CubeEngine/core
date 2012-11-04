@@ -10,8 +10,7 @@ import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.util.List;
 
 /**
- *
- * @author Anselm Brehme
+ * Represents a table in database with a revision.
  */
 @Entity(name = "tables")
 public class Table implements Model<Integer>

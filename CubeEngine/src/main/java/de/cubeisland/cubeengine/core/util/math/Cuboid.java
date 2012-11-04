@@ -1,9 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- * Represents a Cuboid specified by two corners
- *
- * @author Phillip Schichtel
+ * Represents a Cuboid specified by two corners.
  */
 public class Cuboid
 {

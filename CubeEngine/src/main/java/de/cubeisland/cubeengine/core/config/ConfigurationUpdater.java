@@ -3,8 +3,7 @@ package de.cubeisland.cubeengine.core.config;
 import java.util.Map;
 
 /**
- *
- * @author Anselm Brehme
+ * This ConfigurationUpdater can be used to update a configuration from an older revision.
  */
 public interface ConfigurationUpdater
 {

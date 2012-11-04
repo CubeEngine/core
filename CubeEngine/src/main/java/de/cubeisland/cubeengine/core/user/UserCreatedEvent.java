@@ -1,12 +1,11 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.event.HandlerList;
 
+//TODO do we use this ????? We have Callbacks
 /**
- *
- * @author CubeIsland-Dev
+ * This Event is fired when a new User got created and added to the database.
  */
 public class UserCreatedEvent extends UserEvent
 {

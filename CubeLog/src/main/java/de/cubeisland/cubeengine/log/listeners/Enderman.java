@@ -1,20 +1,14 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
-import java.util.EnumMap;
-import java.util.Map;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Enderman extends LogListener
 {
     public Enderman(Log module)
@@ -25,7 +19,7 @@ public class Enderman extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event)
     {
-        if (event.getEntity() instanceof Enderman)
+        if (event.getEntityType().equals(EntityType.ENDERMAN))
         {
             BlockState newState = event.getBlock().getState();
             newState.setType(event.getTo());
@@ -40,8 +34,6 @@ public class Enderman extends LogListener
             this.actions.put(LogAction.ENDERMEN, false);
             this.enabled = false;
         }
-        @Option(value = "actions", genericType = Boolean.class)
-        public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
 
         @Override
         public String getName()

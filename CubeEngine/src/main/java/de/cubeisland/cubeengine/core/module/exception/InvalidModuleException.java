@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.module.exception;
 
 /**
- *
- * @author Phillip Schichtel
+ * This exception is thrown when a module is considered as invalid.
  */
 public class InvalidModuleException extends ModuleException
 {

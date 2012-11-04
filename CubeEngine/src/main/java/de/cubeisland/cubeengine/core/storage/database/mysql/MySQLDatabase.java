@@ -8,8 +8,7 @@ import java.sql.SQLException;
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Phillip Schichtel
+ * MYSQLDatabase the MYSQL implementation for the database.
  */
 public class MySQLDatabase extends AbstractDatabase
 {

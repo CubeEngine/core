@@ -12,8 +12,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * Creates new instance of database.
  */
 public class DatabaseFactory
 {
@@ -24,6 +23,13 @@ public class DatabaseFactory
         registerDatabase("mysql", MySQLDatabaseConfiguration.class);
     }
 
+    /**
+     * Creates a new database.
+     * 
+     * @param name the databaseType
+     * @param configFile the configurationFile for the database
+     * @return the prepared database
+     */
     public static Database loadDatabase(String name, File configFile)
     {
         Validate.notNull(name, "The name must not be null!");

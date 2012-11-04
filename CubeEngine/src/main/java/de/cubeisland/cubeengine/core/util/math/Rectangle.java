@@ -1,9 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math;
 
 /**
- * Represents a Rectangle specified by two corners
- *
- * @author Phillip Schichtel
+ * Represents a Rectangle specified by two corners.
  */
 public class Rectangle
 {

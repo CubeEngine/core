@@ -4,8 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.ConditionalBu
 import org.apache.commons.lang.Validate;
 
 /**
- *
- * @author Anselm Brehme
+ * Abstract MYSQLlQueryBuilder used by other builders.
  */
 public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
 {

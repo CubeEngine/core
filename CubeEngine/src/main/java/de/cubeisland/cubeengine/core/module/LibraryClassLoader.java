@@ -4,8 +4,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- *
- * @author Phillip Schichtel
+ * This is a global classloader that should be used to load classes from librarys.
  */
 public class LibraryClassLoader extends URLClassLoader
 {

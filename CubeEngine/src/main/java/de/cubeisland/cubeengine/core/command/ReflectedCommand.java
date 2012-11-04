@@ -3,8 +3,6 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
-import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.lang.reflect.InvocationTargetException;
@@ -18,8 +16,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
- *
- * @author Phillip Schichtel
+ * The reflected command invokes a method that being parsed from a class
  */
 public class ReflectedCommand extends CubeCommand
 {
@@ -80,48 +77,33 @@ public class ReflectedCommand extends CubeCommand
     @Override
     public void run(CommandContext context) throws Exception
     {
+        if (context.indexedCount() < this.min)
+        {
+            invalidUsage(context, "core", "&cThis command needs at least &e%d &cparameters.", this.min);
+        }
+        else
+        {
+            if (this.max > -1 && context.indexedCount() > this.max)
+            {
+                invalidUsage(context, "core", "&cThis command needs at most &e%d &cparameters.", this.max);
+            }
+        }
+        if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
+        {
+            denyAccess(context, "core", "&cYou are not allowed to do this.");
+        }
+
         try
         {
-            if (context.indexedCount() < this.min)
-            {
-                invalidUsage(context, "core", "This command needs at least %d parameters.", this.min);
-            }
-            else
-            {
-                if (this.max > -1 && context.indexedCount() > this.max)
-                {
-                    invalidUsage(context, "core", "This command needs at most %d parameters.", this.max);
-                }
-            }
-            if (this.checkPermision && !context.getSender().hasPermission(this.permissionNode))
-            {
-                denyAccess(context, "core", "You are not allowed to do this.");
-            }
-
-            try
-            {
-                this.commandMethod.invoke(this.commandContainer, context);
-            }
-            catch (InvocationTargetException e)
-            {
-                if (e.getCause() instanceof Exception)
-                {
-                    throw (Exception)e.getCause();
-                }
-                throw e;
-            }
+            this.commandMethod.invoke(this.commandContainer, context);
         }
-        catch (InvalidUsageException e)
+        catch (InvocationTargetException e)
         {
-            context.sendMessage(e.getMessage());
-            if (e.showUsage())
+            if (e.getCause() instanceof Exception)
             {
-                context.sendMessage("core", "Proper usage: %s", this.getUsage(context));
+                throw (Exception)e.getCause();
             }
-        }
-        catch (PermissionDeniedException e)
-        {
-            context.sendMessage(e.getMessage());
+            throw e;
         }
     }
 
@@ -131,12 +113,12 @@ public class ReflectedCommand extends CubeCommand
         CommandSender sender = context.getSender();
         context.sendMessage(this.getUsage(sender));
 
-        context.sendMessage("core", "Description: %s", _(sender, this.getModule().getId(), this.getDescription()));
+        context.sendMessage("core", "&eDescription: &f%s", _(sender, this.getModule().getId(), this.getDescription()));
 
         List<String> aliases = this.getAliases();
         if (!aliases.isEmpty())
         {
-            context.sendMessage("core", "Aliases: %s", "/" + StringUtils.implode(", /", aliases));
+            context.sendMessage("core", "&eAliases: &f%s", "/" + StringUtils.implode(", /", aliases));
         }
 
 
@@ -152,12 +134,7 @@ public class ReflectedCommand extends CubeCommand
 
     private String generatePermissionNode()
     {
-        String implodedParents = this.implodeParentNames(".");
-        if (!implodedParents.isEmpty())
-        {
-            implodedParents += ".";
-        }
-        return "cubeengine." + this.getModule().getId() + ".command." + implodedParents + this.getName();
+        return "cubeengine." + this.getModule().getId() + ".command." + this.implodeCommandPathNames(".");
     }
 
     @Override

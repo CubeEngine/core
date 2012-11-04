@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -7,13 +8,12 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.FileHandler;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -26,8 +26,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 
 /**
- *
- * @author Phillip Schichtel
+ * This class provides functionality to translate messages.
  */
 public class I18n implements Cleanable
 {
@@ -36,19 +35,15 @@ public class I18n implements Cleanable
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
 
-    public I18n(FileManager fm)
-    {
-        this(fm, SOURCE_LANGUAGE.getCode());
-    }
-
-    public I18n(FileManager fm, String defaultLanguage)
+    public I18n(Core core)
     {
         this.languageMap = new THashMap<String, Language>();
-        this.defaultLanguage = defaultLanguage;
+        this.defaultLanguage = core.getConfiguration().defaultLanguage;
+        FileManager fm = core.getFileManager();
         this.loadLanguages(fm.getLanguageDir());
         try
         {
-            LOGGER.addHandler(new FileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
+            LOGGER.addHandler(new CubeFileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
         }
         catch (IOException e)
         {
@@ -56,11 +51,21 @@ public class I18n implements Cleanable
         }
     }
 
+    /**
+     * Returns the default language
+     *
+     * @return the locale string of the default language
+     */
     public String getDefaultLanguage()
     {
         return this.defaultLanguage;
     }
 
+    /**
+     * Sets the default language
+     *
+     * @param language the new default language
+     */
     public void setDefaultLanguage(String language)
     {
         Validate.notNull(language, "The language must not be null!");
@@ -72,6 +77,11 @@ public class I18n implements Cleanable
         }
     }
 
+    /**
+     * This method load all languages from a directory
+     *
+     * @param languageDir the directory to load from
+     */
     private void loadLanguages(File languageDir)
     {
         Map<String, LanguageConfiguration> languages = new HashMap<String, LanguageConfiguration>();
@@ -153,18 +163,38 @@ public class I18n implements Cleanable
         return null;
     }
 
-    public Collection<String> getLanguages()
+    /**
+     * This method returns all languages
+     *
+     * @return a set of languages
+     */
+    public Set<String> getLanguages()
     {
         Set<String> languages = new HashSet<String>(this.languageMap.keySet());
         languages.add(SOURCE_LANGUAGE.getCode());
         return languages;
     }
 
+    /**
+     * Returns a language by their locale string / name
+     *
+     * @param name the name / locale string
+     * @return the language or null if not found
+     */
     public Language getLanguage(String name)
     {
         return this.languageMap.get(name);
     }
 
+    /**
+     * This method translates a messages
+     *
+     * @param language the language to translate to
+     * @param category the category to load the messages from
+     * @param message the message to translate
+     * @param params the parameters to insert into the language after translation
+     * @return the translated language
+     */
     public String translate(String language, String category, String message, Object... params)
     {
         Validate.notNull(language, "The language must not be null!");
@@ -229,6 +259,12 @@ public class I18n implements Cleanable
         this.languageMap.clear();
     }
 
+    /**
+     * This method normalizes a locale string as good as possible
+     *
+     * @param name the locale string
+     * @return the normalized locale string
+     */
     public static String normalizeLanguage(String name)
     {
         if (name == null)
@@ -256,10 +292,7 @@ public class I18n implements Cleanable
 
     private void logMissingTranslation(String language, String category, String message)
     {
-        LOGGER.log(Level.INFO, "\"{0}\" - \"{1}\" - \"{2}\"", new Object[]
-            {
-                language, category, message
-            });
+        LOGGER.log(Level.INFO, String.format("\"%s\" - \"%s\" - \"%s\"", language, category, message));
     }
 
     public static String _(CommandSender sender, Module module, String message, Object... params)

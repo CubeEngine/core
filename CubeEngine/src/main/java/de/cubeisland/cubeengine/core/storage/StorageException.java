@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.storage;
 
 /**
- *
- * @author Phillip Schichtel
+ * This exception is thrown when an error occurs during the storage-process.
  */
 public class StorageException extends RuntimeException
 {

@@ -7,29 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.bukkit.Achievement;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.GameMode;
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Egg;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.Inventory;
@@ -48,8 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 /**
- *
- * @author Anselm Brehme
+ * Wrapper around the BukkitPlayer/OfflinePlayer
  */
 public class UserBase implements Player
 {
@@ -1998,4 +1979,24 @@ public class UserBase implements Player
      * }
      * return I18n.SOURCE_LANGUAGE;
      * } */
+
+    @Override
+    public void giveExpLevels(int amount)
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.giveExpLevels(amount);
+        }
+    }
+
+    @Override
+    public void setBedSpawnLocation(Location location, boolean force)
+    {
+        Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.setBedSpawnLocation(location, force);
+        }
+    }
 }

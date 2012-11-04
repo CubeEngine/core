@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 
 /**
- *
- * @author Anselm Brehme
+ * MYSQLQueryBuilder for creating new tables.
  */
 public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> implements TableBuilder
 {
@@ -161,5 +160,12 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
             throw new IllegalStateException("A table needs at least one field!");
         }
         return super.end();
+    }
+
+    @Override
+    public TableBuilder unique(String field)
+    {
+        this.query.append(",UNIQUE(").append(this.database.prepareFieldName(field)).append(")");
+        return this;
     }
 }

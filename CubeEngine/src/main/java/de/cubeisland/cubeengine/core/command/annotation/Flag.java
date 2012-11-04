@@ -4,8 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- *
- * @author Phillip Schichtel
+ * This is used to define flags in a command.
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Flag

@@ -32,7 +32,7 @@ public class FlyListener implements Listener
     @EventHandler
     public void playerJoin(final PlayerJoinEvent event)
     {
-        User user = usermanager.getUser(event.getPlayer());
+        User user = usermanager.getExactUser(event.getPlayer());
         if (fly.getFlyManager().getFlyModel(user).flying)
         {
             user.setAllowFlight(true);
@@ -43,7 +43,7 @@ public class FlyListener implements Listener
     @EventHandler
     public void playerQuit(final PlayerQuitEvent event)
     {
-        User user = usermanager.getUser(event.getPlayer());
+        User user = usermanager.getExactUser(event.getPlayer());
         if (user.isFlying())
         {
             FlyModel model = fly.getFlyManager().getFlyModel(user);
@@ -69,7 +69,7 @@ public class FlyListener implements Listener
         {
             return;
         }
-        User user = usermanager.getUser(player);
+        User user = usermanager.getExactUser(player);
         if (user == null)//User does not exist
         {
             return;

@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.config;
 
 /**
- *
- * @author Anselm Brehme
+ * This exception is thrown when a configuration is invalid.
  */
 public class InvalidConfigurationException extends RuntimeException
 {

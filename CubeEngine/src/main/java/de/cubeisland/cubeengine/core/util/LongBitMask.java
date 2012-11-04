@@ -1,9 +1,7 @@
 package de.cubeisland.cubeengine.core.util;
 
 /**
- * Represents a bitmask with 64 bits
- *
- * @author Phillip Schichtel
+ * Represents a bitmask with 64 bits.
  */
 public class LongBitMask
 {
@@ -11,7 +9,6 @@ public class LongBitMask
 
     /**
      * Creates a new BitMask
-     *
      */
     public LongBitMask()
     {

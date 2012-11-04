@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Phillip Schichtel
+ * Identifies a field as a Key for the database.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

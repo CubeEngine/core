@@ -20,6 +20,11 @@
             <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>${bukkitVersion}</version>
+        </dependency>
     </dependencies>
 
     <build>

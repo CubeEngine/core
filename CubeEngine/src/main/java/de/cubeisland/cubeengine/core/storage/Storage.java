@@ -5,8 +5,8 @@ import de.cubeisland.cubeengine.core.util.Callback;
 import java.util.Collection;
 
 /**
- *
- * @author Phillip Schichtel
+ * This interface provides basic access-methods for accessing the model V
+ * @param <V> 
  */
 public interface Storage<V extends Model>
 {
@@ -31,6 +31,13 @@ public interface Storage<V extends Model>
      * @param model the model to store
      */
     public void store(V model);
+    
+    /**
+     * Stores the model into the DataBase asynchonous
+     *
+     * @param model the model to store
+     */
+    public void store(V model, boolean async);
 
     /**
      * Updates the model in the DataBase

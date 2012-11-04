@@ -3,8 +3,7 @@ package de.cubeisland.cubeengine.core.storage.database;
 import java.sql.SQLException;
 
 /**
- *
- * @author Anselm Brehme
+ * Updater that will be automaticly triggered when registered for its revision.
  */
 public interface DatabaseUpdater
 {

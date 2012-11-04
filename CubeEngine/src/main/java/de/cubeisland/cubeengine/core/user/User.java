@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -10,18 +10,24 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
- *
- * @author Phillip Schichtel
+ * A CubeEngine User (can exist offline too).
  */
 @Entity(name = "user")
 public class User extends UserBase implements LinkingModel<Integer>
@@ -30,14 +36,15 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
-    @Attribute(type = AttrType.VARCHAR, length = 16)
+    @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)
     public final OfflinePlayer player;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
     public Timestamp lastseen;
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
-    private ConcurrentHashMap<String, Object> attributes = new ConcurrentHashMap<String, Object>();
+    private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
+    Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
 
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
@@ -97,7 +104,7 @@ public class User extends UserBase implements LinkingModel<Integer>
                 CubeEngine.getLogger().warning("A module sent an untranslated message!");
             }
         }
-        super.sendMessage(string);
+        super.sendMessage(ChatFormat.parseFormats(string));
     }
 
     /**
@@ -131,6 +138,11 @@ public class User extends UserBase implements LinkingModel<Integer>
         return (T)this.attachments.get(modelClass);
     }
 
+    /**
+     * Returns the users configured language
+     *
+     * @return a locale string
+     */
     public String getLanguage()
     {
         String language = null;
@@ -156,24 +168,56 @@ public class User extends UserBase implements LinkingModel<Integer>
         return this.lastseen.getTime();
     }
 
-    public void setAttribute(String name, Object value)
+    /**
+     * Adds an attribute to this user
+     *
+     * @param name  the name/key
+     * @param value the value
+     */
+    public void setAttribute(Module module, String name, Object value)
     {
+        Validate.notNull(module, "The module must not be null!");
         Validate.notNull(name, "The attribute name must not be null!");
         Validate.notNull(value, "Null-values are not allowed!");
-
-        this.attributes.put(name, value);
+        ConcurrentHashMap<String, Object> attributMap = this.attributes.get(module);
+        if (attributMap == null)
+        {
+            attributMap = new ConcurrentHashMap<String, Object>();
+        }
+        attributMap.put(name, value);
+        this.attributes.put(module, attributMap);
     }
 
-    public <T extends Object> T getAttribute(String name)
+    /**
+     * Returns an attribute value
+     *
+     * @param <T>  the type of the value
+     * @param name the name/key
+     * @return the value or null
+     */
+    public <T extends Object> T getAttribute(Module module, String name)
     {
-        return this.<T>getAttribute(name, null);
+        return this.<T>getAttribute(module, name, null);
     }
 
-    public <T extends Object> T getAttribute(String name, T def)
+    /**
+     * Gets an attribute value or the given default value
+     *
+     * @param <T>  the value type
+     * @param name the name/key
+     * @param def  the default value
+     * @return the attribute value or the default value
+     */
+    public <T extends Object> T getAttribute(Module module, String name, T def)
     {
         try
         {
-            T value = (T)this.attributes.get(name);
+            Map<String, Object> attributMap = this.attributes.get(module);
+            if (attributMap == null)
+            {
+                return null;
+            }
+            T value = (T)attributMap.get(name);
             if (value != null)
             {
                 return value;
@@ -185,8 +229,49 @@ public class User extends UserBase implements LinkingModel<Integer>
         return def;
     }
 
-    public void removeAttribute(String name)
+    /**
+     * Removes an attribute
+     *
+     * @param name the name/key
+     */
+    public void removeAttribute(Module module, String name)
     {
-        this.attributes.remove(name);
+        Map<String, Object> attributMap = this.attributes.get(module);
+        if (attributMap == null)
+        {
+            return;
+        }
+        attributMap.remove(name);
+    }
+
+    public void safeTeleport(Location location)
+    {
+        Location checkLocation = location.clone().add(0, 1, 0);
+        while (!((location.getBlock().getType().equals(Material.AIR))
+            && (checkLocation.getBlock().getType().equals(Material.AIR))))
+        {
+            location.add(0, 1, 0);
+            checkLocation.add(0, 1, 0);
+        }
+        if (!this.isFlying())
+        {
+            checkLocation = location.clone();
+            while (checkLocation.add(0, -1, 0).getBlock().getType() == Material.AIR)
+            {
+                location.add(0, -1, 0);
+            }
+        }
+        checkLocation = location.clone().add(0, -1, 0);
+        if (checkLocation.getBlock().getType() == Material.STATIONARY_LAVA || checkLocation.getBlock().getType() == Material.LAVA)
+        {
+            location = location.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0); // If would fall in lava tp on highest position.
+            // If there is still lava then you shall burn!
+        }
+        this.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    public void clearAttributes(Module module)
+    {
+        this.attributes.remove(module);
     }
 }

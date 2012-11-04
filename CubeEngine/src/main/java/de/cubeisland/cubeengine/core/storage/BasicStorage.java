@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
@@ -19,10 +18,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
+
 /**
- * BasicStorage (1 Key only)
- *
- * @author Anselm Brehme
+ * Basic Storage-implementation (1 Key only)
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {
@@ -86,7 +85,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
 
         Attribute attribute;
         TableBuilder tbuilder = builder.createTable(this.table, true).beginFields();
-        for (Field field : this.modelClass.getDeclaredFields())
+        for (Field field : this.modelClass.getFields())
         {
             attribute = field.getAnnotation(Attribute.class);
             if (attribute != null)
@@ -101,6 +100,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 else
                 {
                     attributes.add(name);
+                }
+                if (attribute.unique())
+                {
+                    tbuilder.unique(name);
                 }
             }
         }
@@ -298,26 +301,40 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public void store(V model)
+    public void store(final V model)
+    {
+        this.store(model, true);
+    }
+
+    @Override
+    public void store(final V model, boolean async)
     {
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
             if (!keyIsAI)
             {
-                values.add(Convert.toObject(modelClass.getDeclaredField(key).get(model)));
+                values.add(Convert.toObject(modelClass.getField(key).get(model)));
             }
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(modelClass.getDeclaredField(name).get(model)));
+                values.add(Convert.toObject(modelClass.getField(name).get(model)));
             }
             if (keyIsAI)
             {
+                // This is never async
                 model.setKey(this.database.getLastInsertedId(modelClass, "store", values.toArray()));
             }
             else
             {
-                this.database.preparedExecute(modelClass, "store", values.toArray());
+                if (async)
+                {
+                    this.database.asyncPreparedExecute(modelClass, "store", values.toArray());
+                }
+                else
+                {
+                    this.database.preparedExecute(modelClass, "store", values.toArray());
+                }
             }
             for (Callback cb : createCallbacks)
             {
@@ -348,9 +365,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
             ArrayList<Object> values = new ArrayList<Object>();
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(this.modelClass.getDeclaredField(name).get(model)));
+                values.add(Convert.toObject(this.modelClass.getField(name).get(model)));
             }
-            values.add(Convert.toObject(this.modelClass.getDeclaredField(this.key).get(model)));
+            values.add(Convert.toObject(this.modelClass.getField(this.key).get(model)));
             if (async)
             {
                 this.database.asyncPreparedExecute(this.modelClass, "update", values.toArray());
@@ -387,10 +404,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
-            values.add(Convert.toObject(this.modelClass.getDeclaredField(this.key).get(model)));
+            values.add(Convert.toObject(this.modelClass.getField(this.key).get(model)));
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(this.modelClass.getDeclaredField(name).get(model)));
+                values.add(Convert.toObject(this.modelClass.getField(name).get(model)));
             }
 
             if (async)

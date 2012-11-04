@@ -2,11 +2,9 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.CubeEvent;
-import de.cubeisland.cubeengine.core.user.User;
 
 /**
- *
- * @author Anselm Brehme
+ * This is a base for user related events.
  */
 public abstract class UserEvent extends CubeEvent
 {
@@ -18,6 +16,11 @@ public abstract class UserEvent extends CubeEvent
         this.user = user;
     }
 
+    /**
+     * Returns the user corresponding to this event
+     *
+     * @return a user
+     */
     public User getUser()
     {
         return this.user;

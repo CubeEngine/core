@@ -14,10 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Explosion extends LogListener
 {
     public Explosion(Log module)
@@ -29,21 +25,16 @@ public class Explosion extends LogListener
     public void onEntityExplode(EntityExplodeEvent event)
     {
         ExplosionConfig c = this.getConfiguration();
-        if ((event.getEntity() == null && !c.actions.
-            get(LogAction.EXPLOSION_MISC))
-            || (event.getEntity() instanceof TNTPrimed && !c.actions.
-            get(LogAction.EXPLOSION_TNT))
-            || (event.getEntity() instanceof Creeper && !c.actions.
-            get(LogAction.EXPLOSION_CREEPER))
-            || (event.getEntity() instanceof Fireball && !c.actions.
-            get(LogAction.EXPLOSION_GHASTFIREBALL))
-            || (event.getEntity() instanceof EnderDragon && !c.actions.
-            get(LogAction.EXPLOSION_ENDERDRAGON)))
+        if ((event.getEntity() == null && !c.actions.get(LogAction.EXPLOSION_MISC.toString()))
+            || (event.getEntity() instanceof TNTPrimed && !c.actions.get(LogAction.EXPLOSION_TNT.toString()))
+            || (event.getEntity() instanceof Creeper && !c.actions.get(LogAction.EXPLOSION_CREEPER.toString()))
+            || (event.getEntity() instanceof Fireball && !c.actions.get(LogAction.EXPLOSION_GHASTFIREBALL.toString()))
+            || (event.getEntity() instanceof EnderDragon && !c.actions.get(LogAction.EXPLOSION_ENDERDRAGON.toString())))
         // TODO dont forget to check this later on|| (!c.actions.get(LogAction.EXPLOSION_MISC))
         {
             return;
         }
-        this.lm.logExplosion(event.blockList(), event.getEntity());
+        lm.logExplosion(event.blockList(), event.getEntity());
     }
 
     public static class ExplosionConfig extends LogSubConfiguration
@@ -57,8 +48,8 @@ public class Explosion extends LogListener
             this.actions.put(LogAction.EXPLOSION_MISC, false);
             this.enabled = true;
         }
-        @Option(value = "actions", genericType = Boolean.class)
-        public Map<LogAction, Boolean> actions = new EnumMap<LogAction, Boolean>(LogAction.class);
+        @Option("creeper.log-as-player")
+        public boolean logAsPlayer = false;
 
         @Override
         public String getName()
