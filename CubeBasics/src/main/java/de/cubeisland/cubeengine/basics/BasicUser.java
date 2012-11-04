@@ -20,6 +20,7 @@ public class BasicUser implements Model<Integer>
     public final int key; // User Key
     @Attribute(type = AttrType.TEXT)
     public List<String> mailbox = new ArrayList<String>(); //PlayerName: message //TODO perhaps save this in a separate Table
+    //TODO save IP
 
     @DatabaseConstructor
     public BasicUser(List<Object> args) throws ConversionException

@@ -18,9 +18,9 @@ public abstract class AbstractLog implements Model<Integer>
     @Attribute(type = AttrType.DATETIME)
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
-    public int userID;
+    public int causeID;
     @Attribute(type = AttrType.VARCHAR, length = 64)
-    public World world;
+    public World world; //TODO secondary key for this
     @Attribute(type = AttrType.INT)
     public int x;
     @Attribute(type = AttrType.INT)
@@ -52,13 +52,13 @@ public abstract class AbstractLog implements Model<Integer>
     {
         if (this.isCausedByPlayer())
         {
-            return CubeEngine.getUserManager().getUser(userID);
+            return CubeEngine.getUserManager().getUser(causeID);
         }
         return null;
     }
     
     public boolean isCausedByPlayer()
     {
-        return (userID > 0);
+        return (causeID > 0);
     }
 }

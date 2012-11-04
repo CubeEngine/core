@@ -24,7 +24,7 @@ public class BlockBurn extends LogListener
     {
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
-            lm.logBreakBlock(FIRE, null, block.getState());
+            lm.logChangeBlock(FIRE,null, block.getState(), null);
         }
         switch (event.getBlock().getRelative(BlockFace.UP).getType())
         {
@@ -36,9 +36,9 @@ public class BlockBurn extends LogListener
             case REDSTONE_WIRE:
             case DIODE_BLOCK_OFF:
             case DIODE_BLOCK_ON:
-                lm.logBreakBlock(FIRE, null, event.getBlock().getRelative(BlockFace.UP).getState());
+                lm.logChangeBlock(FIRE, null, event.getBlock().getRelative(BlockFace.UP).getState(), null);
         }
-        lm.logBreakBlock(FIRE, null, event.getBlock().getState());
+        lm.logChangeBlock(FIRE, null, event.getBlock().getState(), null);
     }
 
     public static class BurnConfig extends LogSubConfiguration

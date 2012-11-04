@@ -27,7 +27,7 @@ public class BlockBreak extends LogListener
         //TODO SAND stuff later...
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
-            lm.logBreakBlock(PLAYER, event.getPlayer(), block.getState());
+            lm.logChangeBlock(PLAYER, event.getPlayer(), block.getState(), null);
         }
         switch (event.getBlock().getRelative(BlockFace.UP).getType())
         {
@@ -52,10 +52,9 @@ public class BlockBreak extends LogListener
             case DIODE_BLOCK_OFF:
             case DIODE_BLOCK_ON:
             case CACTUS:
-                lm.logBreakBlock(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState());
+                lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
         }
-
-        lm.logBreakBlock(PLAYER, event.getPlayer(), event.getBlock().getState());
+        lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlock().getState(), null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -63,9 +62,9 @@ public class BlockBreak extends LogListener
     {
         if (event.getBlockClicked().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY))
         {
-            lm.logBreakBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(BlockFace.UP).getState());
+            lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(BlockFace.UP).getState(), null);
         }
-        lm.logBreakBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getState());
+        lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getState(), null);
     }
 
     public static class BreakConfig extends LogSubConfiguration
@@ -75,7 +74,7 @@ public class BlockBreak extends LogListener
             this.actions.put(LogAction.PLAYER_BLOCKBREAK, true);
             this.enabled = true;
         }
-        
+
         @Override
         public String getName()
         {

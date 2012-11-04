@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.log.listeners;
 
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
-import de.cubeisland.cubeengine.log.LogManager.BlockChangeCause;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -11,6 +10,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+
+import static de.cubeisland.cubeengine.log.LogManager.BlockChangeCause.PLAYER;
 
 public class BlockPlace extends LogListener
 {
@@ -24,17 +25,27 @@ public class BlockPlace extends LogListener
     {
         if (event.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY))
         {
-            lm.logBreakBlock(BlockChangeCause.PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState());;
+            lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
         }
-        lm.logPlaceBlock(event.getPlayer(), event.getBlockPlaced().getState(), event.getBlockReplacedState());
+        lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlockReplacedState(), event.getBlockPlaced().getState());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBucketEmpty(PlayerBucketEmptyEvent event)
     {
         BlockState newState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
-        newState.setType(event.getBucket());
-        lm.logPlaceBlock(event.getPlayer(), newState, event.getBlockClicked().getRelative(event.getBlockFace()).getState());
+        Material mat = event.getBucket();
+        switch (mat)
+        {
+            case LAVA_BUCKET:
+                mat = Material.STATIONARY_LAVA;
+                break;
+            case WATER_BUCKET:
+                mat = Material.STATIONARY_WATER;
+                break;
+        }
+        newState.setType(mat);
+        lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(event.getBlockFace()).getState(), newState);
         // TODO Care when replacing if it is Bucket ID!!!
     }
 

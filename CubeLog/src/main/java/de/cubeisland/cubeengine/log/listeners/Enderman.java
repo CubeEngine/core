@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log.listeners;
 
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.LogManager;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.EntityType;
@@ -23,7 +24,7 @@ public class Enderman extends LogListener
         {
             BlockState newState = event.getBlock().getState();
             newState.setType(event.getTo());
-            lm.logEnderGrief(event.getBlock().getState(), newState);
+            lm.logChangeBlock(LogManager.BlockChangeCause.ENDERMAN, null, event.getBlock().getState(), newState);
         }
     }
 
