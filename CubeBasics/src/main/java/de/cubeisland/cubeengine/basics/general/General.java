@@ -1,35 +1,11 @@
 package de.cubeisland.cubeengine.basics.general;
 
 import de.cubeisland.cubeengine.core.user.User;
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class General  //TODO remove this class
 {
-
-    
-    public List<Player> near(Location loc, int radius)
-    {
-        List<Player> nearPlayers = new ArrayList<Player>();
-        List<LivingEntity> nearEntities = loc.getWorld().getLivingEntities();
-        for (LivingEntity entity : nearEntities)
-        {
-            if (entity instanceof Player)
-            {
-                if (entity.getLocation().distanceSquared(loc) < radius * radius)
-                {
-                    nearPlayers.add((Player)entity);
-                }
-            }
-        }
-        return nearPlayers;
-    }
-
     public String randomDeathMessage(User user, EntityDamageByEntityEvent lastDmg)
     {
         return null;

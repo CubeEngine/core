@@ -6,9 +6,11 @@ import de.cubeisland.cubeengine.core.user.User;
 
 public class BasicUserManager extends BasicStorage<BasicUser>
 {
-    public BasicUserManager(Database database, int revision)
+    private static final int REVISION = 1;
+    
+    public BasicUserManager(Database database)
     {
-        super(database, BasicUser.class, revision);
+        super(database, BasicUser.class, REVISION);
         this.initialize();
     }
 

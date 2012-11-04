@@ -35,10 +35,14 @@ public class NukeListener implements Listener
     @EventHandler
     public void onBlockDamage(EntityExplodeEvent event)
     {
-        if(event.getEntityType() == EntityType.PRIMED_TNT && this.contains(event.getEntity()))
+        try
         {
-            event.blockList().clear();
-            remove((TNTPrimed)event.getEntity());
+            if(event.getEntityType() == EntityType.PRIMED_TNT && this.contains(event.getEntity()))
+            {
+                event.blockList().clear();
+                remove((TNTPrimed)event.getEntity());
+            }
         }
+        catch(NullPointerException ignored){}
     }
 }

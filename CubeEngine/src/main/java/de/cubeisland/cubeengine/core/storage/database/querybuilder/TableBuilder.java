@@ -91,6 +91,8 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @return fluent interface 
      */
     public TableBuilder foreignKey(String key);
+    
+    public TableBuilder unique(String field);
 
     /**
      * Sets the reference for the foreign key

@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandExecuteEvent;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -13,7 +14,9 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.BukkitCommand;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -34,7 +37,8 @@ public class CubeCommandMap extends SimpleCommandMap
         this.um = core.getUserManager();
         for (Command command : oldMap.getCommands())
         {
-            this.knownCommands.put(command.getName().toLowerCase(Locale.ENGLISH), command);
+            command.unregister(oldMap);
+            this.register(command);
         }
     }
     
@@ -46,12 +50,6 @@ public class CubeCommandMap extends SimpleCommandMap
     public Map<String, Command> getKnownCommands()
     {
         return this.knownCommands;
-    }
-
-    @Override
-    public boolean register(String label, String fallbackPrefix, Command command)
-    {
-        return super.register(label, fallbackPrefix, command);
     }
 
     @Override
@@ -91,7 +89,7 @@ public class CubeCommandMap extends SimpleCommandMap
 
         if (command == null && !"".equals(label))
         {
-            User user = this.um.getUser(sender);
+            User user = this.um.getExactUser(sender);
             if (user != null)
             {
                 sender = user;
@@ -129,12 +127,82 @@ public class CubeCommandMap extends SimpleCommandMap
         {
             throw e;
         }
-        catch (Throwable t)
+        catch (Exception e)
         {
-            throw new CommandException("Unhandled exception executing '" + commandLine + "' in " + command, t);
+            throw new CommandException("Unhandled exception executing '" + commandLine + "' in " + command, e);
         }
 
         // return true as command was handled
+        return true;
+    }
+    
+    public boolean register(Command command)
+    {
+        return this.register(null, command);
+    }
+    
+    protected synchronized boolean registerAndOverwrite(String label, Command command, boolean isAlias)
+    {
+        label = label.trim().toLowerCase();
+        Command oldCommand = this.knownCommands.get(label);
+        
+        if (isAlias && oldCommand != null && !this.aliases.contains(label) && !(oldCommand instanceof CubeCommand))
+        {
+            // Request is for an alias and it conflicts with a existing command or previous alias ignore it
+            // Note: This will mean it gets removed from the commands list of active aliases
+            return false;
+        }
+
+        if (oldCommand != null && !aliases.contains(label))
+        {
+            String fallback = label;
+            if (oldCommand instanceof PluginCommand)
+            {
+                fallback = ((PluginCommand)oldCommand).getPlugin().getName().toLowerCase(Locale.ENGLISH) + ":" + label;
+            }
+            else if (oldCommand instanceof BukkitCommand)
+            {
+                fallback = "bukkit:" + label;
+            }
+            else if (oldCommand instanceof CubeCommand)
+            {
+                fallback = ((CubeCommand)oldCommand).getModule().getId() + ":" + label;
+            }
+            
+            if (fallback != label)
+            {
+                knownCommands.remove(label);
+                knownCommands.put(fallback, oldCommand);
+            }
+        }
+
+        if (isAlias)
+        {
+            aliases.add(label);
+        }
+        else
+        {
+            // Ensure lowerLabel isn't listed as a alias anymore and update the commands registered name
+            aliases.remove(label);
+        }
+        knownCommands.put(label, command);
+
+        return true;
+    }
+
+    @Override
+    public boolean register(String label, String fallbackPrefix, Command command)
+    {
+        registerAndOverwrite(label, command, false);
+
+        for (String alias : command.getAliases())
+        {
+            registerAndOverwrite(alias, command, true);
+        }
+
+        // Register to us so further updates of the commands label and aliases are postponed until its reregistered
+        command.register(this);
+
         return true;
     }
 }

@@ -47,7 +47,7 @@ public class CommandContext
         this.core = core;
         if (sender instanceof Player)
         {
-            sender = command.getModule().getUserManager().getUser(sender);
+            sender = command.getModule().getUserManager().getExactUser(sender);
         }
         this.sender = sender;
         this.command = command;
@@ -119,14 +119,13 @@ public class CommandContext
             {
                 continue; // part is empty, ignoring...
             }
-            if (commandLine[offset].charAt(0) == '-') // is flag?
+            if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
             {
                 String flag = commandLine[offset].substring(1);
                 if (flag.charAt(0) == '-')
                 {
                     flag = flag.substring(1);
                 }
-
                 if (flag.isEmpty()) // is there still a name?
                 {
                     this.indexedParams.add(commandLine[offset]);
@@ -402,6 +401,20 @@ public class CommandContext
         return this.getIndexed(i, String.class, def);
     }
 
+    public String getStrings(int from)
+    {
+        if (!this.hasIndexed(from))
+        {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(this.getString(from));
+        while (this.hasIndexed(++from))
+        {
+            sb.append(" ").append(this.getString(from));
+        }
+        return sb.toString();
+    }
+
     /**
      * Gets a user from a indexed parameter
      *
@@ -437,7 +450,7 @@ public class CommandContext
     }
 
     /**
-     * Sends a message to the sender
+     * Formats and sends a message to the sender
      *
      * @param message the message
      */
@@ -475,7 +488,7 @@ public class CommandContext
      */
     public User getSenderAsUser()
     {
-        return this.core.getUserManager().getUser(this.sender);
+        return this.core.getUserManager().getExactUser(this.sender);
     }
 
     /**
@@ -542,13 +555,14 @@ public class CommandContext
         try
         {
             T value = this.getIndexed(index, type);
-            if(value != null)
+            if (value != null)
             {
                 return value;
             }
         }
         catch (ConversionException ignored)
-        {}
+        {
+        }
         return def;
     }
 
@@ -664,7 +678,7 @@ public class CommandContext
         }
         return null;
     }
-    
+
     /**
      * Returns a value of a named parameter or a default value if not found
      *
@@ -677,13 +691,13 @@ public class CommandContext
     public <T> T getNamed(String name, Class<T> type, T def)
     {
         T value = this.getNamed(name, type);
-        if(value != null)
+        if (value != null)
         {
             return value;
         }
         return def;
     }
-    
+
     /**
      * Returns a value of a named parameter or a default value if not found
      *
@@ -697,7 +711,7 @@ public class CommandContext
     public <T> T getNamed(String name, Class<T> type, int i, T def)
     {
         T value = this.getNamed(name, type, i);
-        if(value != null)
+        if (value != null)
         {
             return value;
         }

@@ -294,7 +294,7 @@ public abstract class CubeCommand extends Command
             context.sendMessage(e.getMessage());
             if (e.showUsage())
             {
-                context.sendMessage("core", "Proper usage: %s", this.getUsage(context));
+                context.sendMessage("core", "&eProper usage: &f%s", this.getUsage(context));
             }
         }
         catch (PermissionDeniedException e)

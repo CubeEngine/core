@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util.matcher;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
@@ -19,15 +20,18 @@ import org.bukkit.inventory.ItemStack;
  */
 public class MaterialMatcher
 {
+    //TODO rename item ; is it possible?
     private THashMap<String, ItemStack> items;
     private THashMap<ItemStack, String> itemnames;
     private TIntObjectHashMap<THashMap<String, Short>> datavalues;
     private static MaterialMatcher instance = null;
+    private THashMap<String, ItemStack> bukkitnames;
 
     private MaterialMatcher()
     {
         this.items = new THashMap<String, ItemStack>();
         this.itemnames = new THashMap<ItemStack, String>();
+        this.bukkitnames = new THashMap<String, ItemStack>();
         TreeMap<Integer, TreeMap<Short, List<String>>> readItems = this.readItems();
         this.readDataValues();
         for (Integer item : readItems.keySet())
@@ -36,6 +40,11 @@ public class MaterialMatcher
             {
                 this.registerItemStack(new ItemStack(item, 1, data), readItems.get(item).get(data));
             }
+        }
+        // Read Bukkit names
+        for (Material mat : Material.values())
+        {
+            this.bukkitnames.put(mat.name(), new ItemStack(mat));
         }
     }
 
@@ -80,21 +89,28 @@ public class MaterialMatcher
      */
     public ItemStack matchItemStack(String name)
     {
+        if (name == null)
+        {
+            return null;
+        }
         String s = name.toLowerCase(Locale.ENGLISH);
         ItemStack item = this.items.get(s);//direct match
         if (item == null)
         {
             try
             { // id match
-                int matId = Integer.parseInt(s);
-                return new ItemStack(matId, 1);
+                Material mat = Material.getMaterial(Integer.parseInt(s));
+                if (mat != null)
+                {
+                    return new ItemStack(mat, 1);
+                }                
             }
             catch (NumberFormatException e)
             {
                 try
                 { // id and data match
                     item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
-                    this.setData(item, s.substring(s.indexOf(":") + 1)); // Try to set data / returns null if couldn't
+                    this.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
                     if (item != null)
                     {
                         return item;
@@ -107,25 +123,33 @@ public class MaterialMatcher
             if (s.contains(":"))
             { // name match with data
                 String material = s.substring(0, s.indexOf(":"));
-                String data = s.substring(s.indexOf(":") + 1);
+                String data = name.substring(name.indexOf(":") + 1);
                 item = this.items.get(material);
                 this.setData(item, data); // Try to set data / returns null if couldn't
                 if (item == null)
                 { //name was probably wrong check ld:
-                    item = matchWithLevenshteinDistance(material);
+                    item = matchWithLevenshteinDistance(material, items);
                     this.setData(item, data); // Try to set data / returns null if couldn't
                 }
-                if (item == null)
+                if (item == null) // Contained ":" but could not find any matching item
                 {
-                    return null; // Contained ":" but could not find any matching item
+                    // Try to match bukkit name
+                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    this.setData(item, data);
+                    return item;
                 }
             }
             if (item == null)
             { // ld-match
-                return matchWithLevenshteinDistance(s);
+                item = matchWithLevenshteinDistance(s, items);
+                if (item == null)
+                {
+                    // Try to match bukkit name
+                    return this.matchWithLevenshteinDistance(s, bukkitnames);
+                }
             }
         }
-        return item;
+        return item.clone();
     }
 
     /**
@@ -147,12 +171,14 @@ public class MaterialMatcher
      * @param data
      * @return
      */
-    private ItemStack setData(ItemStack item, String data)
+    private ItemStack setData(ItemStack item, String rawdata)
     {
+        String data = rawdata.toLowerCase(Locale.ENGLISH);
         if (item == null)
         {
             return null;
         }
+        item = item.clone();
         try
         { // try dataValue as Number
             item.setDurability(Short.parseShort(data));
@@ -187,6 +213,9 @@ public class MaterialMatcher
                     {
                         item.setDurability(foundEggData.getBukkitType().getTypeId());
                     }
+                case SKULL_ITEM:
+                    //TODO sadly this does not work the information gets lost
+                    item = BukkitUtils.changeHead(item, rawdata);
                 default:
                     return item;
             }
@@ -194,9 +223,9 @@ public class MaterialMatcher
         return null; //could not set data -> invalid item
     }
 
-    private ItemStack matchWithLevenshteinDistance(String s)
+    private ItemStack matchWithLevenshteinDistance(String s, Map<String, ItemStack> map)
     {
-        String t_key = StringUtils.matchString(s, this.items.keySet(), false);
+        String t_key = StringUtils.matchString(s, map.keySet(), false);
         if (t_key != null)
         {
             return this.items.get(t_key);
@@ -455,6 +484,10 @@ public class MaterialMatcher
      */
     public String getNameFor(ItemStack item)
     {
+        if (item == null)
+        {
+            return null;
+        }
         return this.itemnames.get(new ItemStack(item.getType(), 1, item.getDurability()));
     }
 }

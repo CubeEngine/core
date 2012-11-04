@@ -402,6 +402,7 @@ public class ModuleManager implements Cleanable
         {
             BukkitUtils.reloadHelpMap();
         }
+        this.core.getUserManager().clearAttributes(module); // Clean up saved attributes
     }
 
     /**

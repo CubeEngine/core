@@ -1,13 +1,10 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.log.LogManager.BlockChangeCause;
@@ -20,23 +17,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
 @Entity(name = "blocklog")
-public class BlockLog implements Model<Integer>
+public class BlockLog extends AbstractLog //implements Model<Integer>
 {
-    @Key
-    @Attribute(type = AttrType.INT, unsigned = true, ai = true)
-    public int key;
-    @Attribute(type = AttrType.DATETIME)
-    public Timestamp timestamp;
-    @Attribute(type = AttrType.INT)
-    public int userID;
-    @Attribute(type = AttrType.VARCHAR, length = 64)
-    public World world;
-    @Attribute(type = AttrType.INT)
-    public int x;
-    @Attribute(type = AttrType.INT)
-    public int y;
-    @Attribute(type = AttrType.INT)
-    public int z;
     @Attribute(type = AttrType.VARCHAR, length = 10)
     public BlockData newBlock;
     @Attribute(type = AttrType.VARCHAR, length = 10)
@@ -90,7 +72,7 @@ public class BlockLog implements Model<Integer>
         }
         else
         {
-            this.userID = CubeEngine.getUserManager().getUser(user).getKey();
+            this.userID = CubeEngine.getUserManager().getExactUser(user).getKey();
         }
 
 
@@ -122,21 +104,6 @@ public class BlockLog implements Model<Integer>
         }
     }
 
-    public Integer getKey()
-    {
-        return key;
-    }
-
-    public void setKey(Integer key)
-    {
-        this.key = key;
-    }
-
-    public Location getLocation()
-    {
-        return new Location(world, x, y, z);
-    }
-
     public boolean isBlockBreak()
     {
         return (newBlock.mat == Material.AIR);
@@ -150,24 +117,5 @@ public class BlockLog implements Model<Integer>
     public boolean isBlockRePlace()
     {
         return ((oldBlock.mat != Material.AIR) && (newBlock.mat != Material.AIR));
-    }
-
-    public boolean isCausedByPlayer()
-    {
-        return (userID > 0);
-    }
-
-    public User getUser()
-    {
-        if (this.isCausedByPlayer())
-        {
-            return CubeEngine.getUserManager().getUser(userID);
-        }
-        return null;
-    }
-
-    public long getTimeStamp()
-    {
-        return this.timestamp.getTime();
     }
 }

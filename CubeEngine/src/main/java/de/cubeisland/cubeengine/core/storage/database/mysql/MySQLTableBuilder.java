@@ -161,4 +161,11 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
         }
         return super.end();
     }
+
+    @Override
+    public TableBuilder unique(String field)
+    {
+        this.query.append(",UNIQUE(").append(this.database.prepareFieldName(field)).append(")");
+        return this;
+    }
 }

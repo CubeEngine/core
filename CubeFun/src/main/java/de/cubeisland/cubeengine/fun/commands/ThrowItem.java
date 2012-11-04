@@ -29,7 +29,7 @@ public class ThrowItem implements Runnable
     @Override
     public void run()
     {
-        User user = userManager.getUser(name);
+        User user = userManager.getUser(name, true);
         if(material == Fireball.class)
         {
             Fireball fireball = (Fireball) user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection()), EntityType.FIREBALL);

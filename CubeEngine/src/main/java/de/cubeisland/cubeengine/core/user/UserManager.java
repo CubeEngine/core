@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -35,7 +36,8 @@ import org.bukkit.plugin.Plugin;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
 
 /**
- * This Manager provides methods to access the Users and saving/loading from database.
+ * This Manager provides methods to access the Users and saving/loading from
+ * database.
  */
 public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
 {
@@ -95,11 +97,34 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             public void update(Database database) throws SQLException
             {
                 database.execute(
-                    database.getQueryBuilder().alterTable(table).add("nogc", AttrType.BOOLEAN).rawSQL(" DEFAULT false").end().end());
+                    database.getQueryBuilder().
+                    alterTable(table).
+                    add("nogc", AttrType.BOOLEAN).
+                    defaultValue("false").
+                    end().
+                    end());
                 database.execute(
-                    database.getQueryBuilder().alterTable(table).add("lastseen", AttrType.TIMESTAMP).rawSQL(" DEFAULT ").value().end().end(), new Timestamp(System.currentTimeMillis()));
+                    database.getQueryBuilder().
+                    alterTable(table).
+                    add("lastseen", AttrType.TIMESTAMP).
+                    defaultValue().value().
+                    end().
+                    end(), new Timestamp(System.currentTimeMillis()));
             }
         }, 1);
+        this.registerUpdater(new DatabaseUpdater()
+        {
+            @Override
+            public void update(Database database) throws SQLException
+            {
+                database.execute(
+                    database.getQueryBuilder().
+                    alterTable(table).
+                    addUnique("player").
+                    end().
+                    end());
+            }
+        }, 2);
     }
 
     /**
@@ -137,7 +162,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     }
 
     /**
-     * Adds the user
+     * Adds a new User
      *
      * @param user the User
      * @return fluent interface
@@ -158,7 +183,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     }
 
     /**
-     * Removes the user permanently. Data cannot be retrieved
+     * Removes the user permanently. Data cannot be retrieved later
      *
      * @param user the User
      * @return fluent interface
@@ -178,12 +203,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     }
 
     /**
-     * Gets a User by name (creates new User if not found)
+     * Gets a User by name
      *
      * @param name the name
      * @return the User
      */
-    public User getUser(String name)
+    public User getUser(String name, boolean createIfMissing)
     {
         if (name == null)
         {
@@ -198,7 +223,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 this.users.put(name, user);
             }
         }
-        if (user == null)
+        if (user == null && createIfMissing)
         {
             user = new User(name);
             this.addUser(user);
@@ -212,7 +237,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      * @param player the player
      * @return the User
      */
-    public User getUser(OfflinePlayer player)
+    public User getExactUser(OfflinePlayer player)
     {
         if (player == null)
         {
@@ -226,7 +251,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         {
             return null;
         }
-        return this.getUser(player.getName());
+        return this.getUser(player.getName(), true);
     }
 
     /**
@@ -235,7 +260,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      * @param player the player
      * @return the User
      */
-    public User getUser(Player player)
+    public User getExactUser(Player player)
     {
         if (player == null)
         {
@@ -245,7 +270,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         {
             return (User)player;
         }
-        return this.getUser(player.getName());
+        return this.getUser(player.getName(), true);
     }
 
     /**
@@ -254,7 +279,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      * @param sender the sender
      * @return the User OR null if sender is not a Player
      */
-    public User getUser(CommandSender sender)
+    public User getExactUser(CommandSender sender)
     {
         if (sender == null)
         {
@@ -266,7 +291,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         }
         if (sender instanceof Player)
         {
-            return this.getUser(sender.getName());
+            return this.getUser(sender.getName(), true);
         }
         return null;
     }
@@ -309,12 +334,12 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     public List<User> getOnlineUsers()
     {
         final List<User> onlineUsers = new ArrayList<User>();
-        
+
         for (Player player : this.onlinePlayers)
         {
-            onlineUsers.add(this.getUser(player));
+            onlineUsers.add(this.getExactUser(player));
         }
-        
+
         return onlineUsers;
     }
 
@@ -341,7 +366,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     }
 
     /**
-     * Finds an User
+     * Finds an User (can create a new User if a found player is online but not yet added)
      *
      * @param name the name
      * @return a User
@@ -370,7 +395,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 {
                     onlinePlayerList.add(player.getName());
                 }
-                user = this.getUser(StringUtils.matchString(name, onlinePlayerList));
+                user = this.getUser(StringUtils.matchString(name, onlinePlayerList), true);
             }
             if (user != null)
             {
@@ -402,7 +427,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     private void onQuit(final PlayerQuitEvent event)
     {
         Player player = event.getPlayer();
-        final User user = getUser(player);
+        final User user = getExactUser(player);
         final int id = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)core, new Runnable()
         {
             @Override
@@ -424,10 +449,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 users.remove(event.getPlayer().getName());
             }
         }, this.core.getConfiguration().userManagerKeepUserLoaded);
-        user.setAttribute("removingTaskId", id);
+        user.removalTaskId = null;
         this.onlinePlayers.remove(player);
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onLogin(final PlayerLoginEvent event)
     {
@@ -442,12 +467,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         if (user != null)
         {
             user.offlinePlayer = player;
-            Integer id = user.getAttribute("removingTaskId");
-            if (id == null)
+            if (user.removalTaskId == null)
             {
                 return; // No task to cancel
             }
-            user.getServer().getScheduler().cancelTask(id);
+            user.getServer().getScheduler().cancelTask(user.removalTaskId);
         }
     }
 
@@ -483,7 +507,15 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         for (Player player : this.server.getOnlinePlayers())
         {
-            this.getUser(player).sendMessage(category, message, args);
+            this.getExactUser(player).sendMessage(category, message, args);
+        }
+    }
+    
+    public void clearAttributes(Module module)
+    {
+        for (User user : this.users.values())
+        {
+            user.clearAttributes(module);
         }
     }
 }

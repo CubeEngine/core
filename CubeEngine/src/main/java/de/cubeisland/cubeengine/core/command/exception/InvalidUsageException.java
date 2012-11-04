@@ -28,10 +28,40 @@ public class InvalidUsageException extends CommandException
     {
         return this.showUsage;
     }
-//TODO use this!!!
+
     public static void invalidSender(CommandSender sender, String category, String message, Object... params)
     {
         throw new InvalidUsageException(_(sender, category, message, params), false);
+    }
+
+    public static void invalidSender(CommandContext context, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(context.getSender(), category, message, params), false);
+    }
+    
+    public static void blockCommand()
+    {
+        throw new InvalidUsageException("", false);
+    }
+    
+    public static void blockCommand(CommandSender sender, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(sender, category, message, params), false);
+    }
+
+    public static void blockCommand(CommandContext context, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(context.getSender(), category, message, params), false);
+    }
+
+    public static void paramNotFound(CommandSender sender, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(sender, category, message, params), false);
+    }
+
+    public static void paramNotFound(CommandContext context, String category, String message, Object... params)
+    {
+        throw new InvalidUsageException(_(context.getSender(), category, message, params), false);
     }
 
     public static void invalidUsage(CommandContext context, String category, String message, Object... params)
