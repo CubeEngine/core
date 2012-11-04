@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.bukkit.World;
@@ -57,7 +59,7 @@ public class ShoutSubCommands {
 					@Param
 					(
 							names = {"world", "w"},
-							types = World.class
+							types = String.class
 					),
 					@Param
 					(
@@ -88,8 +90,25 @@ public class ShoutSubCommands {
 			language.createNewFile();
 			
 			AnnouncementConfiguration config = new AnnouncementConfiguration();
+			config.delay = context.getNamed("delay", String.class, "10 minutes");
+			config.world = context.getNamed("world", String.class, "*");
+			config.permNode = context.getNamed("permission", String.class, "*");
+			config.group = context.getNamed("group", String.class, "*");
 			
+			FileWriter fw = new FileWriter(language);
+			BufferedWriter bw = new BufferedWriter(fw);
 			
+			String message = "";
+			for (String s : (String[])context.getNamed("message"))
+			{
+				message += s;
+			}
+			bw.write(message);
+			
+			bw.close();
+			fw.close();
+			
+			module.getCore().getServer().dispatchCommand(context.getSender(), "shout reload");
 		}catch (IOException e) {
 			context.sendMessage("shout", "Could not create some of the files or folders.");
 			context.sendMessage("shout", "Please contact an administrator and tell him to check their console.");
@@ -98,4 +117,14 @@ public class ShoutSubCommands {
 		
 		
 	}
+
+	@Command
+	(
+			desc = "clean all loaded announcements form memory and load from disk"
+	)
+	public void reload(CommandContext context)
+	{
+		// TODO
+	}
+	
 }
