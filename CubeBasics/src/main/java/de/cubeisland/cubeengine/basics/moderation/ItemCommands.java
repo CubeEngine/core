@@ -71,8 +71,16 @@ public class ItemCommands
             }
             else
             {
+                String found = MaterialMatcher.get().getNameFor(sender.getItemInHand());
+                if (found == null)
+                {
+                    context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f", 
+                        sender.getItemInHand().getType().getId(),
+                        sender.getItemInHand().getDurability());
+                    return;
+                }
                 context.sendMessage("basics", "&aThe Item in your hand is: &e%s &f(&e%d&f:&e%d&f)",
-                    MaterialMatcher.get().getNameFor(sender.getItemInHand()),
+                    found,
                     sender.getItemInHand().getType().getId(),
                     sender.getItemInHand().getDurability());
             }

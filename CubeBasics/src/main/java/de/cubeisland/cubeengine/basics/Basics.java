@@ -44,6 +44,7 @@ public class Basics extends Module
         this.registerCommands(new SpawnMobCommand(this));
         this.registerCommands(new TimeControlCommands());
         this.registerCommands(new WorldControlCommands(this));
+        this.registerCommands(new PowerToolCommand());
         
         this.registerListener(new PowerToolListener());
         //Teleport:
