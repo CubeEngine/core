@@ -352,9 +352,9 @@ public class AnnouncementManager
     	String group = "*";
 
     	AnnouncementConfiguration conf = Configuration.load(AnnouncementConfiguration.class, confFile);
-		world = conf.world;
-		permNode = conf.permNode;
-		group = conf.group;
+		world = conf.world == null ? world : conf.world;
+		permNode = conf.permNode == null ? permNode : conf.permNode;
+		group = conf.group == null ? group : conf.group;
 		delay = parseDelay(conf.delay);
 		
 		if (delay == 0)

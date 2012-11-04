@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.shout;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.config.annotations.From;
@@ -22,6 +23,7 @@ public class Shout extends Module
 	private ShoutConfiguration config;
 	
 	public Logger logger;
+	public File announcementFolder;
 	
 	// TODO CubeRoles
 	
@@ -29,7 +31,7 @@ public class Shout extends Module
     public void onEnable()
     {
     	this.logger = this.getLogger();
-    	
+    	this.announcementFolder = this.getFolder();
     	this.getFileManager().dropResources(ShoutResource.values());
     	
     	this.taskManager = new TaskManager(this, config.initDelay, config.messagerPeriod);
@@ -38,7 +40,7 @@ public class Shout extends Module
     	this.command = new ShoutCommand(this);
     	this.subCommands = new ShoutSubCommands(this);
     	
-    	this.announcementManager.loadAnnouncements(this.getFolder()); // Should we move this to a separate folder? config?
+    	this.announcementManager.loadAnnouncements(this.announcementFolder); // Should we move this to a separate folder? config?
     	
     	this.registerListener(listener);
     	this.registerCommands(command);
