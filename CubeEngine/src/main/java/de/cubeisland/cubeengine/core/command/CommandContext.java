@@ -33,6 +33,8 @@ public class CommandContext
     private int flagCount;
     private boolean empty;
     private boolean helpCall;
+    
+    private static Integer offset;
 
     /**
      * Initializes the CommandContext object with an array of arguments
@@ -112,7 +114,7 @@ public class CommandContext
             }
         }
 
-        Integer offset = new Integer(0);
+        offset = new Integer(0);
         for (; offset < commandLine.length; ++offset)
         {
             if (commandLine[offset].isEmpty())
@@ -174,7 +176,7 @@ public class CommandContext
                             // try to apply needed type
                             if (String.class.isAssignableFrom(types[typeOffset]))
                             {
-                                values[typeOffset] = readString(offset, commandLine);
+                                values[typeOffset] = readString(commandLine);
                             }
                             else
                             {
@@ -192,7 +194,7 @@ public class CommandContext
                 else // else is indexed param
                 {
                     // added indexed param
-                    this.indexedParams.add(readString(offset, commandLine));
+                    this.indexedParams.add(readString(commandLine));
                 }
             }
         }
@@ -206,12 +208,12 @@ public class CommandContext
      * @param commandLine the command line
      * @return the read string
      */
-    private static String readString(Integer offset, String[] commandLine)
+    private static String readString(String[] commandLine)
     {
         char quote = commandLine[offset].charAt(0);
         if (quote == '"' || quote == '\'')
         {
-            return readString(quote, offset, commandLine);
+            return readString(quote, commandLine);
         }
         return commandLine[offset];
     }
@@ -224,7 +226,7 @@ public class CommandContext
      * @param commandLine the command line
      * @return the read string
      */
-    private static String readString(char quoteChar, Integer offset, String[] commandLine)
+    private static String readString(char quoteChar, String[] commandLine)
     {
         String message = commandLine[offset++].substring(1);
         if (message.charAt(message.length() - 1) == quoteChar)

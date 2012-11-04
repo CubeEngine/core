@@ -54,11 +54,11 @@ public class PowerToolCommand
                 String itemName = BukkitUtils.getItemStackName(item);
                 if (itemName == null)
                 {
-                    sender.sendMessage(MaterialMatcher.get().getNameFor(item) + ":");
+                    sender.sendMessage("&6"+MaterialMatcher.get().getNameFor(item) + "&6:");
                 }
                 else
                 {
-                    sender.sendMessage(itemName + ":");
+                    sender.sendMessage("&6"+itemName + "&6:");
                 }
                 this.printList(sender, list, false, false);
             }
