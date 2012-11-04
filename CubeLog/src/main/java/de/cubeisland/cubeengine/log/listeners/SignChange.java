@@ -17,7 +17,7 @@ public class SignChange extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event)
     {
-        //TODO
+        lm.logSignChange(event.getPlayer(),event.getLines(),event.getBlock().getState());
     }
 
     public static class SignChangeConfig extends LogSubConfiguration

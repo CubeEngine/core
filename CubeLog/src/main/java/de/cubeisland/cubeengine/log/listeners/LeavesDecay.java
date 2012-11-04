@@ -19,7 +19,7 @@ public class LeavesDecay extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event)
     {
-        lm.logBreakBlock(DECAY, null, event.getBlock().getState());
+        lm.logChangeBlock(DECAY, null, event.getBlock().getState(), null);
     }
 
     public static class DecayConfig extends LogSubConfiguration
