@@ -75,7 +75,7 @@ public class TaskManager implements Runnable
 		if (!messageQueue.isEmpty())
 		{
 			Message m = messageQueue.poll();
-			User u = 	module.getCore().getUserManager().getUser(m.user);
+			User u = 	module.getCore().getUserManager().getUser(m.user, false);
 			if (u != null)
 			{
 				if(module.getCore().isDebug())

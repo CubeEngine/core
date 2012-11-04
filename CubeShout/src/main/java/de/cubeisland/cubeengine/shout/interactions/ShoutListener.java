@@ -32,7 +32,7 @@ public class ShoutListener implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void PlayerJoinEvent(PlayerJoinEvent event)
 	{
-		User user = module.getUserManager().getUser(event.getPlayer());
+		User user = module.getUserManager().getExactUser(event.getPlayer());
 		
 		if (module.getCore().isDebug())
 		{

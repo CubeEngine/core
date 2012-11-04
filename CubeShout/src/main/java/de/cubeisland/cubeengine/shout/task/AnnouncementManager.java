@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.shout.task;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -135,7 +134,7 @@ public class AnnouncementManager
 	 */
 	public String getNextMessage(String user)
 	{
-		User us = module.getUserManager().getUser(user);
+		User us = module.getUserManager().getUser(user, false);
 		Announcement announcement = null;
 		boolean used = false;
 		//Skip all announcements that don't apply to this world.
@@ -365,18 +364,14 @@ public class AnnouncementManager
 		List<File> languages = new ArrayList<File>();
 		languages = Arrays.asList(f.listFiles((FilenameFilter)new FileExtentionFilter("txt")));
 		
-		try {
-    		for (File lang : languages)
-    		{
-				StringBuilder message = new StringBuilder();
-				for (String line : FileUtil.readStringList(lang))
-				{
-					message.append(line + "\n");
-				}
-				messages.put(lang.getName().replace(".txt", ""), message.toString());
-    		}
-		} catch (IOException ex) {
-			throw new ShoutException("Error while reading one of the language files for announcement: " + f.getName(), ex);
+		for (File lang : languages)
+		{
+			StringBuilder message = new StringBuilder();
+			for (String line : FileUtil.readStringList(lang))
+			{
+				message.append(line + "\n");
+			}
+			messages.put(lang.getName().replace(".txt", ""), message.toString());
 		}
 
 		if (module.getCore().isDebug())

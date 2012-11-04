@@ -50,7 +50,7 @@ public class ShoutCommand{
 				
 				for (Player p : players)
 				{
-					User u = module.getUserManager().getUser(p);
+					User u = module.getUserManager().getExactUser(p);
 					u.sendMessage(ChatFormat.parseFormats('&', a.getMessage(u.getLanguage())));
 				}
 				context.sendMessage("shout", "The announcement is announced");
