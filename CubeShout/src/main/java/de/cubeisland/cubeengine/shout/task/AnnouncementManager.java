@@ -56,16 +56,33 @@ public class AnnouncementManager
 		return Arrays.asList(aarray);
 	}
 
+	/**
+	 * Get all the announcements
+	 * 
+	 * @return All announcements
+	 */
 	public Collection<Announcement> getAnnouncemets()
 	{
 		return this.announcements.values();
 	}
 	
+	/**
+	 * Get announcement by name
+	 * 
+	 * @param 	name	Name of the announcement
+	 * @return	The announcements with this name, or null if not exist
+	 */
 	public Announcement getAnnouncement(String name)
 	{
 		return this.announcements.get(name);
 	}
 	
+	/**
+	 * Check if this announcement exist
+	 * 
+	 * @param 	name	Name of the announcement to check
+	 * @return	true or false
+	 */
 	public boolean hasAnnouncement(String name)
 	{
 		return this.announcements.containsKey(name);
@@ -251,24 +268,37 @@ public class AnnouncementManager
 		}
 		
 	}
-
+	
+	/**
+	 * Set the world for the user
+	 * 
+	 * @param 	user	The user
+	 * @param 	world	The new world
+	 */
 	public void setWorld(String user, String world) {
 		worlds.put(user, world);
 	}
 
-
+	/**
+	 * Clean all stored information of that user
+	 * 
+	 * @param 	user	the user to clean
+	 */
 	public void clean(String user) {
 		messages.remove(user);
 		delays.remove(user);
 		worlds.remove(user);
 	}
 	
-    public void loadAnnouncements()
+	/**
+	 * Load announcements
+	 * 
+	 * @param	announcementFolder	The folder to load the announcements from
+	 */
+    public void loadAnnouncements(File announcementFolder)
     {
-    	File moduleFolder = module.getFolder();
-    	
     	List<File> announcements = new ArrayList<File>();
-    	announcements = Arrays.asList(moduleFolder.listFiles());
+    	announcements = Arrays.asList(announcementFolder.listFiles());
     	
     	for (File f : announcements)
     	{
@@ -296,6 +326,12 @@ public class AnnouncementManager
     	
     }
     
+    /**
+     * Load an specific announcement
+     * 
+     * @param 	f				the folder to load the announcement from
+     * @throws 	ShoutException	if folder is not an folder or don't contain required information
+     */
     private void loadAnnouncement(File f) throws ShoutException
     {
     	if (f.isFile())
@@ -358,7 +394,7 @@ public class AnnouncementManager
      * parse a delay in this format:
      * 	10 minutes
      * to
-     * 	1200 ticks
+     * 	600 000 ms
      * 
      * @param delayText	the text to parse
      * @return the delay in ticks

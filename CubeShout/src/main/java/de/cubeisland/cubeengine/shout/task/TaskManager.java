@@ -63,6 +63,7 @@ public class TaskManager implements Runnable
 
 	/**
 	 * Stops a user from receiving announcements
+	 * 
 	 * @param user
 	 */
 	public void stopUser(String user)

@@ -38,7 +38,7 @@ public class Shout extends Module
     	this.command = new ShoutCommand(this);
     	this.subCommands = new ShoutSubCommands(this);
     	
-    	this.announcementManager.loadAnnouncements();
+    	this.announcementManager.loadAnnouncements(this.getFolder()); // Should we move this to a separate folder? config?
     	
     	this.registerListener(listener);
     	this.registerCommands(command);

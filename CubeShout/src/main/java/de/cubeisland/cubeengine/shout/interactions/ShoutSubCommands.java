@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import org.bukkit.permissions.PermissionDefault;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -16,7 +18,9 @@ public class ShoutSubCommands {
 	
 	@Command
 	(
-			desc = "List all announcements"
+			desc = "List all announcements",
+			permDefault = PermissionDefault.OP,
+			permNode = "shout.list"
 	)
 	public void list(CommandContext context)
 	{

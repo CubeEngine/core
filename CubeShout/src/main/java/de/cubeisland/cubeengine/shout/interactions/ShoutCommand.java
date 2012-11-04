@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionDefault;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
@@ -26,7 +27,9 @@ public class ShoutCommand{
     	names = {"shout", "announce"},
     	min = 1,
     	desc = "Announce a message to players on the server",
-    	usage = "<Announcment-name>"
+    	usage = "<Announcment-name>",
+    	permDefault = PermissionDefault.OP,
+		permNode = "shout.announce"
     )
 	public void shout(CommandContext context)
 	{
