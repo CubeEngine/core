@@ -786,6 +786,7 @@
   diaspade
 278:0
   diamondpickaxe
+  diapickaxe
   diamondpick
   diapick
 279:0

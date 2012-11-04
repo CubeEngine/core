@@ -24,8 +24,12 @@ public class TimeControlCommands
     {
         DAY(6000, "day", "noon"),
         NIGHT(18000, "night", "midnight"),
-        DAWN(0, "dawn", "morning"),
-        DUSK(12000, "dusk", "even");
+        DAWN(22500, "dawn"),
+        SUNRISE(0, "sunrise", "morning"),
+        DUSK(13000, "dusk", "moonrise"),
+        EVEN(15000, "even", "evening", "sunset"),
+        FORENOON(3000, "forenoon"),
+        AFTERNOON(9000, "afternoon");
         private static final HashMap<String, Time> times = new HashMap<String, Time>();
         private static final HashMap<Long, String> timeNames = new HashMap<Long, String>();
         protected String[] names;
@@ -88,7 +92,7 @@ public class TimeControlCommands
         Long time = Time.matchTime(timeString);
         if (time == null)
         {
-            illegalParameter(context, "basics", "Invalid Time format!");
+            illegalParameter(context, "basics", "&cInvalid time-format!");
         }
         if (context.hasFlag("a"))
         {
@@ -99,11 +103,11 @@ public class TimeControlCommands
             String timeName = Time.getTimeName(time);
             if (timeName == null)
             {
-                context.sendMessage("basics", "Time set to %d in all worlds", time);
+                context.sendMessage("basics", "&aTime set to &e%d &ain all worlds!", time);
             }
             else
             {
-                context.sendMessage("basics", "Time set to %s in all worlds", timeName);
+                context.sendMessage("basics", "&aTime set to &e%s &ain all worlds!", timeName);
             }
         }
         else
@@ -120,15 +124,15 @@ public class TimeControlCommands
                     StringBuilder sb = new StringBuilder();
                     for (World w : worlds)
                     {
-                        sb.append(" ").append(w.getName());
+                        sb.append("\n").append(w.getName());
                     }
-                    paramNotFound(context, "basics", "&cThe World %s does not exist!"
-                        + "\nUse one of those:%s", context. getString(1), sb.toString());
+                    paramNotFound(context, "basics", "&cThe World &6%s &cdoes not exist!"
+                        + "\n&eUse one of those:&6%s", context.getString(1), sb.toString());
                 }
             }
             else if (sender == null)
             {
-                invalidUsage(context, "basics", "If not used by a player you have to specify a world!");
+                invalidUsage(context, "basics", "&cIf not used by a player you have to specify a world!"); //TODO funny message ?
             }
             if (world == null)
             {
@@ -139,12 +143,12 @@ public class TimeControlCommands
             if (timeName == null)
             {
                 context.
-                    sendMessage("basics", "Time set to %d in world %s", time, world.
+                    sendMessage("basics", "&aTime set to &e%d &ain world &6%s&a!", time, world.
                     getName());
             }
             else
             {
-                context.sendMessage("basics", "Time set to %s in world %s", timeName, world.getName());
+                context.sendMessage("basics", "&aTime set to &e%s &ain world &6%s&a!", timeName, world.getName());
             }
         }
     }
@@ -154,7 +158,7 @@ public class TimeControlCommands
         min = 1,
         max = 2,
         flags = { @Flag(longName = "relative", name = "rel") },
-        usage = "<day|night|dawn|even> [player]")
+        usage = "<day|night|dawn|even|reset> [player]")
     public void ptime(CommandContext context)
     {
         Long time = 0L;
@@ -170,7 +174,7 @@ public class TimeControlCommands
             time = Time.matchTime(timeString);
             if (time == null)
             {
-                invalidUsage(context, "basics", "Invalid Time format!");
+                invalidUsage(context, "basics", "&cInvalid time-format!");
             }
         }
         User sender = context.getSenderAsUser();
@@ -180,7 +184,7 @@ public class TimeControlCommands
             user = context.getUser(1);
             if (user == null)
             {
-                invalidUsage(context, "core", "User not found!");
+                invalidUsage(context, "core", "&cUser %s not found!", context.getUser(0));
             }
             if (!BasicsPerm.COMMAND_PTIME_OTHER.
                 isAuthorized(context.getSender()))
@@ -192,41 +196,42 @@ public class TimeControlCommands
         if (reset)
         {
             user.resetPlayerTime();
-            context.sendMessage("basics", "Resetted the time for %s!", user.getName());
+            context.sendMessage("basics", "&aReseted the time for &2%s&a!", user.getName());
             if (other)
             {
-                user.sendMessage("basics", "Your time was resetted!");
+                user.sendMessage("basics", "&eYour time was reseted!");
             }
         }
         else
         {
             if (context.hasFlag("rel"))
             {
-                user.setPlayerTime(time, false);
+                user.resetPlayerTime();
+                user.setPlayerTime(user.getWorld().getTime() - time, true);
             }
             else
             {
-                user.setPlayerTime(user.getWorld().getTime() - time, true);
+                user.resetPlayerTime();
+                user.setPlayerTime(time, false);
             }
             String timeName = Time.getTimeName(time);
             if (timeName == null)
             {
-                context.sendMessage("basics", "Time set to %d for %s", time, user.getName());
+                context.sendMessage("basics", "&aTime set to &e%d &afor &2%s&a!", time, user.getName());
             }
             else
             {
-                context.sendMessage("basics", "Time set to %s for %s", timeName, user.getName());
+                context.sendMessage("basics", "&aTime set to &e%s &afor &2%s&a!", timeName, user.getName());
             }
             if (other)
             {
                 if (timeName == null)
                 {
-                    user.sendMessage("basics", "Your time was set to %d!", time);
+                    user.sendMessage("basics", "&aYour time was set to &e%d!", time);
                 }
                 else
                 {
-                    user.
-                        sendMessage("basics", "Your time was set to %s!", timeName);
+                    user.sendMessage("basics", "&aYour time was set to &e%s!", timeName);
                 }
             }
         }

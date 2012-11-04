@@ -26,9 +26,9 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class KickBanCommands
 {
     @Command(
-    desc = "Kicks a player from the server",
-    usage = "<<player>|-all> [message]",
-    flags = { @Flag(longName = "all", name = "a") })
+        desc = "Kicks a player from the server",
+        usage = "<<player>|-all> [message]",
+        flags = { @Flag(longName = "all", name = "a") })
     public void kick(CommandContext context)
     {
         String message = context.getStrings(1);
@@ -44,12 +44,13 @@ public class KickBanCommands
                 paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
             }
             user.kickPlayer(message);
+            context.getCore().getUserManager().broadcastMessage("basics", "&2%s &4was kicked from the server!", user.getName());
         }
         else
         {
             if (!BasicsPerm.COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {
-                denyAccess(context, "basics", "You are not allowed to kick everyone!");
+                denyAccess(context, "basics", "&cYou are not allowed to kick everyone!");
             }
             String sendername = context.getSender().getName();
             for (Player player : context.getSender().getServer().getOnlinePlayers())
@@ -81,6 +82,29 @@ public class KickBanCommands
         }
         else
         {
+            if (context.hasFlag("ip"))
+            {
+                if (player.isOnline())
+                {
+                    String ipadress = player.getPlayer().getAddress().getAddress().getHostAddress();
+                    Bukkit.banIP(ipadress);
+                    for (Player ipPlayer : context.getCore().getUserManager().getOnlinePlayers())
+                    {
+                        if (!ipPlayer.getName().equals(player.getName()))
+                        {
+                            if (ipPlayer.getAddress() != null && ipPlayer.getAddress().getAddress().getHostAddress().equals(ipadress))
+                            {
+                                ipPlayer.kickPlayer(_(ipPlayer, "basics", "&cYou were ip-banned from this server!"));
+                            }
+                        }
+                    }
+                    context.sendMessage("basics", "&cYou banned the IP: &e%s&c!", ipadress);
+                }
+                else
+                {
+                    context.sendMessage("basics", "&eYou cannot IP-ban this player because he is offline!");
+                }
+            }
             if (player.isOnline())
             {
                 User user = context.getCore().getUserManager().getExactUser(player);
@@ -91,25 +115,13 @@ public class KickBanCommands
                 }
                 user.kickPlayer(message);
             }
-            if (context.hasFlag("ip"))
-            {
-                String ipadress = player.getPlayer().getAddress().getAddress().getHostAddress();
-                Bukkit.banIP(ipadress);
-                for (Player ipPlayer : context.getCore().getUserManager().getOnlinePlayers())
-                {
-                    if (ipPlayer.getAddress().getAddress().getHostAddress().equals(ipadress))
-                    {
-                        ipPlayer.kickPlayer(_(ipPlayer, "basics", "&cYou were ip-banned from this server!"));
-                    }
-                }
-            }
         }
         player.setBanned(true);
-        context.sendMessage("basics", "&aYou banned &c%s.", player.getName());
+        context.sendMessage("basics", "&cYou banned &2%s&c!", player.getName());
     }
 
     @Command(
-        names= { "unban", "pardon" },
+        names = { "unban", "pardon" },
         desc = "Unbans a previously banned player.",
         min = 1,
         max = 1,
@@ -122,7 +134,7 @@ public class KickBanCommands
             blockCommand(context, "basics", "&2%s &cis not banned!", user.getName());
         }
         user.setBanned(false);
-        context.sendMessage("basics", "&aYou unbanned &2%s.", user.getName());
+        context.sendMessage("basics", "&aYou unbanned &2%s&a!", user.getName());
     }
 
     @Command(
@@ -141,7 +153,7 @@ public class KickBanCommands
             context.sendMessage("basics", "&cYou banned the IP &6%s &cfrom your server!", adress.getHostAddress());
             for (Player player : context.getCore().getUserManager().getOnlinePlayers())
             {
-                if (player.getAddress().getAddress().getHostAddress().equals(ipadress))
+                if (player.getAddress() != null && player.getAddress().getAddress().getHostAddress().equals(ipadress))
                 {
                     player.kickPlayer(_(player, "basics", "&cYou were banned from this server!"));
                 }

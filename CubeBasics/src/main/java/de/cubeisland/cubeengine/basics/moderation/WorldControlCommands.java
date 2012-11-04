@@ -16,7 +16,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 /**
  * Commands controling / affecting worlds.
@@ -44,6 +44,10 @@ public class WorldControlCommands
         boolean noThunder = true;
         int duration = 10000000;
         String weather = StringUtils.matchString(context.getString(0), "sun", "rain", "storm");
+        if (weather == null)
+        {
+            paramNotFound(context, "basics", "&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
+        }
         if (weather.equalsIgnoreCase("sun"))
         {
             sunny = true;
@@ -64,26 +68,34 @@ public class WorldControlCommands
             duration = context.getIndexed(2, int.class, 0);
             if (duration == 0)
             {
-                illegalParameter(context, "basics", "The given time is invalid!");
+                illegalParameter(context, "basics", "&cThe given duration is invalid!");
             }
+            duration *= 20;
         }
-        World world;
+        World world = null;
         if (context.hasIndexed(1))
         {
             world = context.getSender().getServer().getWorld(context.getString(1));
             if (world == null)
             {
-                illegalParameter(context, "basics", "World %s not found!", context.getString(1));
+                illegalParameter(context, "basics", "&cWorld &6%s &cnot found!", context.getString(1));
             }
         }
-        else if (sender == null)
+        else
         {
-            invalidUsage(context, "basics", "If not used ingame you have to specify a world!");
+            if (sender == null)
+            {
+                invalidUsage(context, "basics", "&cIf not used ingame you have to specify a world!");
+            }
+            else
+            {
+                world = sender.getWorld();
+            }
         }
-        world = sender.getWorld();
         world.setStorm(!sunny);
         world.setThundering(!noThunder);
         world.setWeatherDuration(duration);
+        context.sendMessage("basics", "&aChanged wheather in &6%s &ato &e%s&a!", world.getName(), weather);
     }
 
     @Command(
@@ -104,7 +116,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                invalidUsage(context, "basics", "If not used ingame you have to specify a world!");
+                invalidUsage(context, "basics", "&cIf not used ingame you have to specify a world!");//TODO funny msg
             }
             world = sender.getWorld();
         }
@@ -115,27 +127,28 @@ public class WorldControlCommands
         }
         else if (sender == null)
         {
-            invalidUsage(context, "basics", "If not used ingame you can only remove all!");
+            invalidUsage(context, "basics", "&cIf not used ingame you can only remove all!");//TODO funny msg
         }
         if (context.hasIndexed(1))
         {
             radius = context.getIndexed(1, int.class, 0);
             if (radius <= 0)
             {
-                illegalParameter(context, "basics", "The radius has to be a number greater than 0!");
+                illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
             }
         }
         EntityType type = EntityMatcher.get().matchEntity(context.getString(0));
         if (type == null)
         {
-            illegalParameter(context, "basics", "Invalid entity-type!\nUse "
-                + EntityType.DROPPED_ITEM + ", " + EntityType.ARROW + ", "
-                + EntityType.BOAT + ", " + EntityType.MINECART + ", "
-                + EntityType.EXPERIENCE_ORB + " or " + EntityType.ARROW);
+            paramNotFound(context, "basics", "&cInvalid entity-type!\n&eUse &6"
+                + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
+                + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
+                + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
+                + EntityType.EXPERIENCE_ORB);
         }
         if (type.isAlive())
         {
-            invalidUsage(context, "basics", "To kill living entities use the butcher command!");
+            blockCommand(context, "basics", "&cTo kill living entities use the &e/butcher &ccommand!");
         }
         Location loc = null;
         if (sender != null)
@@ -143,7 +156,7 @@ public class WorldControlCommands
             loc = sender.getLocation();
         }
         int entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, type);
-        context.sendMessage("basics", "Removed %d entities!", entitiesRemoved);
+        context.sendMessage("basics", "&aRemoved &e%d &aentities!", entitiesRemoved);
     }
 
     private int removeEntityType(List<Entity> list, Location loc, int radius, EntityType type)

@@ -26,11 +26,13 @@
     ThrownExpBottle
 18:
     ItemFrame
+    frame
 19:
     WitherSkull
 #Blocks
 20:
     PrimedTnt
+    tnt
 21:
     FallingSand
 #Vehicles

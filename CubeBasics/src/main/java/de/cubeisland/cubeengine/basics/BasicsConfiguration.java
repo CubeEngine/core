@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

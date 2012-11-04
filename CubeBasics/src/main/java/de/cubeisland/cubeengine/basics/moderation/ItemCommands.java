@@ -12,8 +12,9 @@ import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.naming.Context;
 import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.NBTTagList;
+import net.minecraft.server.NBTTagString;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -22,7 +23,22 @@ import org.bukkit.inventory.ItemStack;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
+/**
+ * item-related commands
+ * /itemdb
+ * /kit  //TODO
+ * /rename
+ * /headchange
+ * /unlimited
+ * /enchant
+ * /give
+ * /item
+ * /more
+ * /repair
+ * /powertool
+ */
 public class ItemCommands
 {
     private Basics basics;
@@ -34,8 +50,8 @@ public class ItemCommands
 
     @Command(
         desc = "Looks up an item for you!",
-    max = 1,
-    usage = "[item]")
+        max = 1,
+        usage = "[item]")
     public void itemDB(CommandContext context)
     {
         if (context.hasIndexed(0))
@@ -70,12 +86,9 @@ public class ItemCommands
 
     @Command(
         desc = "Gives a kit of items.",
-    usage = "<kitname> [player]",
-    min = 1, max = 2,
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    })
+        usage = "<kitname> [player]",
+        min = 1, max = 2,
+        flags = { @Flag(longName = "all", name = "a") })
     public void kit(CommandContext context)
     {
         //TODO this needs the converters
@@ -116,8 +129,8 @@ public class ItemCommands
 
     @Command(
         desc = "Changes the display name of the item in your hand.",
-    usage = "<name>",
-    min = 1)
+        usage = "<name>",
+        min = 1)
     public void rename(CommandContext context)
     {
         String name = context.getStrings(0);
@@ -132,13 +145,10 @@ public class ItemCommands
     }
 
     @Command(
-        names =
-    {
-        "headchange", "skullchange"
-    },
-    desc = "Changes a skull to a players skin.",
-    usage = "<name>",
-    min = 1)
+        names = { "headchange", "skullchange" },
+        desc = "Changes a skull to a players skin.",
+        usage = "<name>",
+        min = 1)
     public void headchange(CommandContext context)
     {
         //TODO later listener to drop the custom heads
@@ -159,8 +169,8 @@ public class ItemCommands
 
     @Command(
         desc = "The user can use unlimited items",
-    max = 1,
-    usage = "[on|off]")
+        max = 1,
+        usage = "[on|off]")
     public void unlimited(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -206,12 +216,9 @@ public class ItemCommands
 
     @Command(
         desc = "Adds an Enchantment to the item in your hand",
-    max = 2,
-    flags =
-    {
-        @Flag(longName = "unsafe", name = "u")
-    },
-    usage = "<enchantment> [level] [-unsafe]")
+        max = 2,
+        flags = { @Flag(longName = "unsafe", name = "u") },
+        usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
         if (!context.hasIndexed(0))
@@ -355,18 +362,12 @@ public class ItemCommands
     }
 
     @Command(
-        names =
-    {
-        "item", "i"
-    },
-    desc = "Gives the specified Item to you",
-    max = 2,
-    min = 1,
-    flags =
-    {
-        @Flag(longName = "blacklist", name = "b")
-    },
-    usage = "<material[:data]> [amount] [-blacklist]")
+        names = { "item", "i" },
+        desc = "Gives the specified Item to you",
+        max = 2,
+        min = 1,
+        flags = { @Flag(longName = "blacklist", name = "b") },
+        usage = "<material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eDid you try to use &6/give &eon your new I-Tem?");
@@ -399,12 +400,9 @@ public class ItemCommands
 
     @Command(
         desc = "Refills the stack in hand",
-    usage = "[-a]",
-    flags =
-    {
-        @Flag( longName = "all", name = "a")
-    },
-    max = 0)
+        usage = "[-a]",
+        flags = { @Flag( longName = "all", name = "a") },
+        max = 0)
     public void more(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cYou can't get enough of it. Don't you?");
@@ -432,11 +430,8 @@ public class ItemCommands
 
     @Command(
         desc = "Repairs your items",
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
-    usage = "[-all]") // without item in hand
+        flags = { @Flag(longName = "all", name = "a") },
+        usage = "[-all]") // without item in hand
     public void repair(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eIf you do this you'll loose your warranty!");
@@ -484,41 +479,61 @@ public class ItemCommands
     }
 
     @Command(
-        names =
-    {
-        "pt", "powertool"
-    },
-    desc = "Binds a command to the item in hand.",
-    usage = "<command> [arguments]",
-    min = 1, max = 2,
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    })
+        names = { "pt", "powertool" },
+        desc = "Binds a command to the item in hand.",
+        usage = "<command> [arguments]",
+        flags = { @Flag(longName = "append", name = "add") })
     public void powertool(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
-        this.setPowerToolToItemInHand(sender);
-
-        //TODO listener
-        //TODO how to save this in db??? map of ItemStack -> String
+        if (sender.getItemInHand().getType().equals(Material.AIR))
+        {
+            blockCommand(context, "basics", "&eYou do not have an item in your hand to bound the command to!");
+        }
+        if (context.hasIndexed(0))
+        {
+            this.addPowerTool(sender, context.getStrings(0), context.hasFlag("add"));
+        }
+        else
+        {
+            CraftItemStack item = (CraftItemStack)sender.getItemInHand();
+            NBTTagCompound tag = item.getHandle().getTag();
+            if (tag != null)
+            {
+                tag.set("UniquePowerToolID", new NBTTagList());
+            }
+            context.sendMessage("basics", "&aRemoved all commands bound to this item!");
+        }
     }
 
-    private void setPowerToolToItemInHand(User user)
+    private void addPowerTool(User user, String command, boolean add)
     {
-        int id = 1;
         CraftItemStack item = (CraftItemStack)user.getItemInHand();
         NBTTagCompound tag = item.getHandle().getTag();
         if (tag == null)
         {
             item.getHandle().setTag(tag = new NBTTagCompound());
         }
+        NBTTagList ptVals;
+        if (add)
+        {
+            ptVals = (NBTTagList)tag.get("UniquePowerToolID");
+            if (ptVals == null)
+            {
+                tag.set("UniquePowerToolID", ptVals = new NBTTagList());
+            }
+        }
         else
         {
-            Integer val = tag.getInt("UniquePowerToolID");
-            user.sendMessage("Saved value was: "+val);
+            tag.set("UniquePowerToolID", ptVals = new NBTTagList());
         }
-        tag.setInt("UniquePowerToolID", id);
-        user.sendMessage("Saved into Tag: "+String.valueOf(tag.getInt("UniquePowerToolID")));
+        StringBuilder sb = new StringBuilder(_(user, "basics", "command(s) bound to this item:"));
+        int i = 0;
+        for (; i < ptVals.size(); i++)
+        {
+            sb.append("\n&f").append(((NBTTagString)ptVals.get(i)).data);
+        }
+        ptVals.add(new NBTTagString(command, command));//what key should i take?
+        user.sendMessage("basics", "&6%d &e%s\n&aNew: &e%s", i + 1, sb.toString(), command);
     }
 }

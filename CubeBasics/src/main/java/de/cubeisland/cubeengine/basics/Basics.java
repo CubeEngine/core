@@ -35,7 +35,6 @@ public class Basics extends Module
         this.registerCommands(new ListCommand());        
         this.registerCommands(new MailCommand(this));
         this.registerCommands(new PlayerCommands(this));
-        
         this.registerListener(new CheatListener(this));
         
         //Moderation:
@@ -46,7 +45,7 @@ public class Basics extends Module
         this.registerCommands(new TimeControlCommands());
         this.registerCommands(new WorldControlCommands(this));
         
-        this.registerListener(new ModerationListener(this));
+        this.registerListener(new PowerToolListener());
         //Teleport:
         this.registerCommands(new MovementCommands(this));
         this.registerCommands(new SpawnCommands(this));

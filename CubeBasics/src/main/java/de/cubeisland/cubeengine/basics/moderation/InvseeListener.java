@@ -11,11 +11,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 
-public class ModerationListener implements Listener
+public class InvseeListener implements Listener
 {
     private Basics basics;
 
-    public ModerationListener(Basics basics)
+    public InvseeListener(Basics basics)
     {
         this.basics = basics;
     }

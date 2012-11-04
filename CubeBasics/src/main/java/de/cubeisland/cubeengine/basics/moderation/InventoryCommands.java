@@ -18,13 +18,13 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
  */
 public class InventoryCommands
 {
-    private ModerationListener listener;
+    private InvseeListener listener;
     private Basics basics;
 
     public InventoryCommands(Basics basics)
     {
         this.basics = basics;
-        this.basics.registerListener(listener = new ModerationListener(basics));
+        this.basics.registerListener(listener = new InvseeListener(basics));
     }
     
     @Command(

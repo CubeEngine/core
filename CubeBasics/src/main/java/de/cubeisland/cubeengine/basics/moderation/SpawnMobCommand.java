@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
@@ -53,7 +54,7 @@ public class SpawnMobCommand
             User user = context.getUser(2);
             if (user == null)
             {
-                illegalParameter(context, "core", "User not found!");
+                illegalParameter(context, "core", "&cUser %s not found!",context.getString(2));
             }
             loc = user.getLocation();
         }
@@ -76,13 +77,13 @@ public class SpawnMobCommand
         }
         if (amount > config.spawnmobLimit)
         {
-            denyAccess(context, "basics", "&cThe serverlimit is set to &e%d &cyou cannot spawn more mobs at once!", config.spawnmobLimit);
+            denyAccess(context, "basics", "&cThe serverlimit is set to &e%d&c, you cannot spawn more mobs at once!", config.spawnmobLimit);
         }
         loc.add(0.5, 0, 0.5);
         Entity entitySpawned = this.spawnMobs(context, context.getString(0), loc, amount);
         if (entitySpawned.getPassenger() == null)
         {
-            context.sendMessage("basics", "Spawned %d %s!", amount, EntityType.fromBukkitType(entitySpawned.getType()).toString());
+            context.sendMessage("basics", "&aSpawned %d &e%s&a!", amount, EntityType.fromBukkitType(entitySpawned.getType()).toString());
         }
         else
         {
@@ -90,9 +91,9 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = _(context.getSender(), "basics", "%s riding %s", EntityType.fromBukkitType(entitySpawned.getType()).toString(), message);
+                message = _(context.getSender(), "basics", "%s &ariding &e%s", EntityType.fromBukkitType(entitySpawned.getType()).toString(), message);
             }
-            message = _(context.getSender(), "basics", "Spawned %d %s!", amount, message);
+            message = _(context.getSender(), "basics", "&aSpawned %d &e%s!", amount, message);
             context.sendMessage(message);
         }
     }
@@ -102,11 +103,19 @@ public class SpawnMobCommand
         String[] mobStrings = StringUtils.explode(",", mobString);
         Entity[] mobs = this.spawnMob(context, mobStrings[0], loc, amount, null);
         Entity[] ridingMobs = mobs;
-        for (int i = 1; i < mobStrings.length; ++i)
+        try
         {
-            ridingMobs = this.spawnMob(context, mobStrings[i], loc, amount, ridingMobs);
+            for (int i = 1; i < mobStrings.length; ++i)
+            {
+                ridingMobs = this.spawnMob(context, mobStrings[i], loc, amount, ridingMobs);
+            }
+            return mobs[0];
         }
-        return mobs[0];
+        catch (InvalidUsageException e)
+        {
+            context.sendMessage(e.getMessage());
+            return mobs[0];
+        }
     }
 
     private Entity[] spawnMob(CommandContext context, String mobString, Location loc, int amount, Entity[] ridingOn)
@@ -124,9 +133,13 @@ public class SpawnMobCommand
         {
             entityType = EntityMatcher.get().matchMob(entityName);
         }
+        if (entityName.isEmpty())
+        {
+            blockCommand();
+        }
         if (entityType == null)
         {
-            paramNotFound(context, "basics", "&cEntitiy-type &6%s &cnot found!", entityName);
+            paramNotFound(context, "basics", "&cEntity-type &6%s &cnot found!", entityName);
         }
         Entity[] spawnedMobs = new Entity[amount];
         for (int i = 0; i < amount; ++i)

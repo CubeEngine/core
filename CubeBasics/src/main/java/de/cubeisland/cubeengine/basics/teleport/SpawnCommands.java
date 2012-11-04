@@ -113,6 +113,14 @@ public class SpawnCommands
                 force = true;
             } // if not allowed ignore flag
         }
+        if (context.hasNamed("world"))
+        {
+            world = context.getNamed("world", World.class, null);
+            if (world == null)
+            {
+                paramNotFound(context, "basics", "&cWorld not found!");
+            } 
+        }
         if (context.hasFlag("a"))
         {
             if (!BasicsPerm.COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
@@ -179,6 +187,6 @@ public class SpawnCommands
         loc.setPitch(sender.getLocation().getPitch());
         loc.setYaw(sender.getLocation().getYaw());
         TeleportCommands.teleport(sender, loc, true, false);
-        context.sendMessage("basics", "&aTeleported to the spawn of world &6%s", world.getName());
+        context.sendMessage("basics", "&aTeleported to the spawn of world &6%s&a!", world.getName());
     }
 }

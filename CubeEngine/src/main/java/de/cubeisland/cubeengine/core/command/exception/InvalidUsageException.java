@@ -39,6 +39,11 @@ public class InvalidUsageException extends CommandException
         throw new InvalidUsageException(_(context.getSender(), category, message, params), false);
     }
     
+    public static void blockCommand()
+    {
+        throw new InvalidUsageException("", false);
+    }
+    
     public static void blockCommand(CommandSender sender, String category, String message, Object... params)
     {
         throw new InvalidUsageException(_(sender, category, message, params), false);

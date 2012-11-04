@@ -135,7 +135,7 @@ public class TeleportCommands
             return;
         }
         TeleportCommands.teleport(user, target.getLocation(), safe, force);
-        context.sendMessage("basics", "&aYou teleported to %s", target.getName());
+        context.sendMessage("basics", "&aYou teleported to &2%s&a!", target.getName());
     }
 
     @Command(
