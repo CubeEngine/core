@@ -36,7 +36,6 @@ public class BlockLog extends AbstractLog //implements Model<Integer>
         this.z = Convert.fromObject(Integer.class, args.get(6));
         this.newBlock = Convert.fromObject(BlockData.class, args.get(7));
         this.oldBlock = Convert.fromObject(BlockData.class, args.get(8));
-
     }
 
     public BlockLog(BlockChangeCause cause, BlockState newBlock, BlockState oldBlock)

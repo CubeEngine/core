@@ -36,16 +36,13 @@ public class LogManager
      * StructureGrow
      * LeavesDecay
      * SignChange
-     * //TODO send the CauseID to the model it does not need no know the player/user etc
-
-     * 
+     * FluidFlow
      *
      * TODO: ActionType detection / stopp logging in the listener if not enabled!
      *
      * MISSING:
      * Chat
      * ConatinerAccess
-     * FluidFlow
      * Kill
      * PlayerInteract
      * 
@@ -159,6 +156,46 @@ public class LogManager
         WITHER(-9);
 
         private BlockChangeCause(int causeID)
+        {
+            this.causeID = causeID;
+        }
+        final private int causeID;
+
+        public int getId()
+        {
+            return causeID;
+        }
+    }
+    
+    public static enum KillCause
+    {
+        PLAYER(-1),
+        BLAZE(-2),
+        CREEPER(-3),
+        ENDER_DRAGON(-4),
+        ENDERMAN(-4),
+        GHAST(-5),
+        IRON_GOLEM(-6),
+        MAGMA_CUBE(-7),
+        SILVER_FISH(-8),
+        SKELETON(-9),
+        SLIME(-10),
+        SPIDER(-11),
+        WOLF(-12),
+        ZOMBIE(-13),
+        ZOMBIE_PIGMAN(-14),
+        LIGHTNING(-15),
+        FALL_DAMAGE(-16),
+        DROWNING(-17),
+        SUFFOCATION(-18),
+        STARVATION(-19),
+        CACTI(-20),
+        LAVA(-21),
+        POISON(-22), //cant really kill someone
+        WITHER(-23),
+        OTHER(-24);
+
+        private KillCause(int causeID)
         {
             this.causeID = causeID;
         }
