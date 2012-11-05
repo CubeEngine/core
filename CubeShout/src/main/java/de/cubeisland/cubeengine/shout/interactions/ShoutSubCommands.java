@@ -98,9 +98,9 @@ public class ShoutSubCommands {
 			BufferedWriter bw = new BufferedWriter(fw);
 			
 			String message = "";
-			for (String s : (String[])context.getNamed("message"))
+			for (Object o : context.getNamed("message"))
 			{
-				message += s;
+				message += (String)o;
 			}
 			bw.write(message);
 			
