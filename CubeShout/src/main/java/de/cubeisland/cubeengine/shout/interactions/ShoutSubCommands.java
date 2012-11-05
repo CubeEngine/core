@@ -10,6 +10,7 @@ import org.bukkit.permissions.PermissionDefault;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -79,6 +80,11 @@ public class ShoutSubCommands {
 	)
 	public void create(CommandContext context)
 	{
+		if (!context.hasNamed("message"))
+		{
+			context.sendMessage("shout", "You have to include a message!");
+			return;
+		}
 		try {
 			String name = context.getIndexed(0, String.class);
 			File folder = new File(module.announcementFolder, name);
@@ -89,10 +95,13 @@ public class ShoutSubCommands {
 			language.createNewFile();
 			
 			AnnouncementConfiguration config = new AnnouncementConfiguration();
+			config.setCodec("yml");
+			config.setFile(configFile);
 			config.delay = context.getNamed("delay", String.class, "10 minutes");
 			config.world = context.getNamed("world", String.class, "*");
 			config.permNode = context.getNamed("permission", String.class, "*");
 			config.group = context.getNamed("group", String.class, "*");
+			config.save();
 			
 			FileWriter fw = new FileWriter(language);
 			BufferedWriter bw = new BufferedWriter(fw);
