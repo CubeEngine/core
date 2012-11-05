@@ -29,7 +29,7 @@ public class ShoutSubCommands {
 	(
 			desc = "List all announcements",
 			permDefault = PermissionDefault.OP,
-			permNode = "shout.list"
+			permNode = "cubeengine.shout.list"
 	)
 	public void list(CommandContext context)
 	{
@@ -46,7 +46,7 @@ public class ShoutSubCommands {
 	(
 			desc = "Create the structure for a new announcement",
 			permDefault = PermissionDefault.OP,
-			permNode = "shout.list",
+			permNode = "cubeengine.shout.create",
 			min = 1,
 			params = 
 			{
@@ -121,7 +121,9 @@ public class ShoutSubCommands {
 
 	@Command
 	(
-			desc = "clean all loaded announcements form memory and load from disk"
+			desc = "clean all loaded announcements form memory and load from disk",
+			permDefault = PermissionDefault.OP,
+			permNode = "cubeengine.shout.reload"
 	)
 	public void reload(CommandContext context)
 	{

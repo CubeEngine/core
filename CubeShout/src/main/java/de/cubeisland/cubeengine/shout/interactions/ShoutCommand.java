@@ -29,7 +29,7 @@ public class ShoutCommand{
     	desc = "Announce a message to players on the server",
     	usage = "<Announcment-name>",
     	permDefault = PermissionDefault.OP,
-		permNode = "shout.announce"
+		permNode = "cubeengine.shout.announce"
     )
 	public void shout(CommandContext context)
 	{
