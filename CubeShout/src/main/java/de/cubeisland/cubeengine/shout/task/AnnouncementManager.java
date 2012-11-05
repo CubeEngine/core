@@ -13,6 +13,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
@@ -27,14 +29,16 @@ public class AnnouncementManager
 {
 	
 	private Shout module;
-	private Map<String, Queue<Announcement>> messages;
-	private Map<String, Queue<Long>> delays;
-	private Map<String, String> worlds;
+	private TaskManager taskManager;
+	private Map<String, Queue<Announcement>> messages;	//
+	private Map<String, Queue<Long>> delays;			// TODO Combine these in one class
+	private Map<String, String> worlds;					//
 	private Map<String, Announcement> announcements;
 	
 	public AnnouncementManager(Shout module)
 	{
 		this.module = module;
+		this.taskManager = module.getTaskManager();
 		this.messages = new ConcurrentHashMap<String, Queue<Announcement>>();
 		this.delays = new ConcurrentHashMap<String, Queue<Long>>();
 		this.worlds = new ConcurrentHashMap<String, String>();
@@ -284,9 +288,36 @@ public class AnnouncementManager
 	 * @param 	user	the user to clean
 	 */
 	public void clean(String user) {
-		messages.remove(user);
-		delays.remove(user);
-		worlds.remove(user);
+		this.messages.remove(user);
+		this.delays.remove(user);
+		this.worlds.remove(user);
+		this.taskManager.stopUser(user);
+	}
+	
+	/**
+	 * Clean all loaded announcements and users
+	 */
+	public void clean()
+	{
+		for(String s : messages.keySet())
+		{
+			this.clean(s);
+		}
+
+		this.messages = new ConcurrentHashMap<String, Queue<Announcement>>();
+		this.delays = new ConcurrentHashMap<String, Queue<Long>>();
+		this.worlds = new ConcurrentHashMap<String, String>();
+		this.announcements = new HashMap<String, Announcement>();
+		
+		this.loadAnnouncements(module.announcementFolder);
+		
+		for (Player p : module.getCore().getServer().getOnlinePlayers())
+		{
+			User u = module.getUserManager().getUser(p.getName(), false);
+			
+			this.initializeUser(u);
+			taskManager.scheduleTask(u.getName(), new MessageTask(this, taskManager, u), this.getGreatestCommonDivisor(u.getName()));
+		}
 	}
 	
 	/**

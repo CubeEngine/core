@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.bukkit.World;
 import org.bukkit.permissions.PermissionDefault;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -108,7 +107,9 @@ public class ShoutSubCommands {
 			bw.close();
 			fw.close();
 			
-			module.getCore().getServer().dispatchCommand(context.getSender(), "shout reload");
+			module.getAnnouncementManager().clean();
+			
+			context.sendMessage("shout", "Your announcement have been created and loaded into the plugin");
 		}catch (IOException e) {
 			context.sendMessage("shout", "Could not create some of the files or folders.");
 			context.sendMessage("shout", "Please contact an administrator and tell him to check their console.");
@@ -124,7 +125,8 @@ public class ShoutSubCommands {
 	)
 	public void reload(CommandContext context)
 	{
-		// TODO
+		module.getAnnouncementManager().clean();
+		context.sendMessage("shout", "All players and announcements have now been reloaded");
 	}
 	
 }
