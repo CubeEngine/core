@@ -5,11 +5,15 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.log.LogManager.KillCause;
 import de.cubeisland.cubeengine.log.storage.AbstractLog;
 import java.sql.Timestamp;
 import java.util.List;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 
+@de.cubeisland.cubeengine.core.storage.database.Entity(name = "killlog")
 public class KillLog extends AbstractLog
 {
     @Attribute(type = AttrType.INT)
@@ -27,5 +31,15 @@ public class KillLog extends AbstractLog
         this.y = Convert.fromObject(Integer.class, args.get(5));
         this.z = Convert.fromObject(Integer.class, args.get(6));
         this.killedId = Convert.fromObject(Integer.class, args.get(7));
+    }
+
+    public KillLog(KillCause killCause, Entity entity, Location loc)
+    {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
+        this.causeID = killCause.getId();
+        this.x = loc.getBlockX();
+        this.y = loc.getBlockY();
+        this.z = loc.getBlockZ();
+        this.world = loc.getWorld();
     }
 }

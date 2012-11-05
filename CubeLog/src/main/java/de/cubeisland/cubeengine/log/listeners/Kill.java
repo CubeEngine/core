@@ -1,13 +1,12 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.LogSubConfiguration;
-import java.util.EnumMap;
-import java.util.Map;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class Kill extends LogListener
@@ -20,7 +19,23 @@ public class Kill extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamageEvent(EntityDamageEvent event)
     {
-        //TODO
+        if (event.getEntity() instanceof LivingEntity)
+        {
+            LivingEntity entity = (LivingEntity)event.getEntity();
+            if (entity.getHealth() - event.getDamage() <= 0)
+            {
+                if (event instanceof EntityDamageByEntityEvent)
+                {
+                    lm.logKill(event.getCause(), ((EntityDamageByEntityEvent)event).getDamager(),
+                        event.getEntity(), event.getEntity().getLocation());
+
+                }
+                else
+                {
+                    lm.logKill(event.getCause(), null, event.getEntity(), event.getEntity().getLocation());
+                }
+            }
+        }
     }
 
     public static class KillConfig extends LogSubConfiguration

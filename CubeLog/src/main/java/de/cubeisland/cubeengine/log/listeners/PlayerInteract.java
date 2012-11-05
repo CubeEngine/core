@@ -13,7 +13,7 @@ public class PlayerInteract extends LogListener
     {
         super(module, new InteractConfig());
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event)
     {

@@ -5,8 +5,11 @@ import de.cubeisland.cubeengine.log.listeners.Explosion.ExplosionConfig;
 import de.cubeisland.cubeengine.log.listeners.LogListener;
 import de.cubeisland.cubeengine.log.storage.blocks.BlockLog;
 import de.cubeisland.cubeengine.log.storage.blocks.BlockLogManager;
+import de.cubeisland.cubeengine.log.storage.kills.KillLog;
+import de.cubeisland.cubeengine.log.storage.kills.KillLogManager;
 import de.cubeisland.cubeengine.log.storage.signs.SignChangLog;
 import de.cubeisland.cubeengine.log.storage.signs.SignChangeLogManager;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +22,8 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.Inventory;
 
 public class LogManager
 {
@@ -38,26 +43,29 @@ public class LogManager
      * SignChange
      * FluidFlow
      *
-     * TODO: ActionType detection / stopp logging in the listener if not enabled!
+     * TODO: ActionType detection / stopp logging in the listener if not
+     * enabled!
      *
      * MISSING:
      * Chat
      * ConatinerAccess
      * Kill
      * PlayerInteract
-     * 
+     *
      */
     private Map<LogAction, LogListener> loggers = new EnumMap<LogAction, LogListener>(LogAction.class);
     private final Log module;
     private BlockLogManager blockLogManager;
     private SignChangeLogManager signChangeLogManager;
+    private KillLogManager killLogManager;
 
     public LogManager(Log module)
     {
         LogListener.initLogManager(this);
         this.module = module;
         this.blockLogManager = new BlockLogManager(module.getDatabase());
-        this.signChangeLogManager = new  SignChangeLogManager(module.getDatabase());
+        this.signChangeLogManager = new SignChangeLogManager(module.getDatabase());
+        this.killLogManager = new KillLogManager(module.getDatabase());
         for (LogSubConfiguration config : module.getConfiguration().configs.values())
         {
             this.registerLogger(config.listener); // register all loaded & enabled Listener 
@@ -87,9 +95,14 @@ public class LogManager
 
     public void logChangeBlock(BlockChangeCause cause, Player player, BlockState oldState, BlockState newState)
     {
-        if (oldState == newState || (oldState.getType().equals(newState.getType()) && oldState.getRawData() == newState.getRawData()))
+        if (oldState == newState)
         {
-            return;
+            if (oldState != null && newState != null
+                && (oldState.getType().equals(newState.getType())
+                && oldState.getRawData() == newState.getRawData()))
+            {
+                return;
+            }
         }
         if (cause == BlockChangeCause.PLAYER)
         {
@@ -101,7 +114,6 @@ public class LogManager
             this.blockLogManager.store(new BlockLog(cause, newState, oldState));
         }
     }
-
 
     public void logExplosion(List<Block> blockList, Entity entity)
     {
@@ -143,6 +155,11 @@ public class LogManager
         this.signChangeLogManager.store(new SignChangLog(player, state, oldlines, lines));
     }
 
+    public void logKill(DamageCause cause, Entity damager, Entity damagee, Location loc)
+    {
+        this.killLogManager.store(new KillLog(KillCause.getKillCause(cause, damager), damagee, loc));
+    }
+
     public static enum BlockChangeCause
     {
         PLAYER(-1),
@@ -166,7 +183,7 @@ public class LogManager
             return causeID;
         }
     }
-    
+
     public static enum KillCause
     {
         PLAYER(-1),
@@ -191,9 +208,10 @@ public class LogManager
         STARVATION(-19),
         CACTI(-20),
         LAVA(-21),
-        POISON(-22), //cant really kill someone
+        POISON(-22), //cant really kill someone in normal minecraft
         WITHER(-23),
-        OTHER(-24);
+        MAGIC(-24),
+        OTHER(-25);
 
         private KillCause(int causeID)
         {
@@ -204,6 +222,105 @@ public class LogManager
         public int getId()
         {
             return causeID;
+        }
+
+        public static KillCause getKillCause(DamageCause cause, Entity damager)
+        {
+            switch (cause)
+            {
+                case ENTITY_ATTACK:
+                    switch (damager.getType())
+                    {
+                        case PLAYER:
+                            return PLAYER;
+                        case BLAZE:
+                            return BLAZE;
+                        case CREEPER:
+                            return CREEPER;
+                        case ENDER_DRAGON:
+                            return ENDER_DRAGON;
+                        case ENDERMAN:
+                            return ENDERMAN;
+                        case GHAST:
+                            return GHAST;
+                        case IRON_GOLEM:
+                            return IRON_GOLEM;
+                        case MAGMA_CUBE:
+                            return MAGMA_CUBE;
+                        case SILVERFISH:
+                            return SILVER_FISH;
+                        case SKELETON:
+                            return SKELETON;
+                        case SLIME:
+                            return SLIME;
+                        case SPIDER:
+                            return SPIDER;
+                        case WOLF:
+                            return WOLF;
+                        case ZOMBIE:
+                            return ZOMBIE;
+                        case PIG_ZOMBIE:
+                            return ZOMBIE_PIGMAN;
+
+                    }
+                case LIGHTNING:
+                    return LIGHTNING;
+                case FALL:
+                    return FALL_DAMAGE;
+                case DROWNING:
+                    return DROWNING;
+                case SUFFOCATION:
+                    return SUFFOCATION;
+                case STARVATION:
+                    return STARVATION;
+                case CONTACT:
+                    return CACTI; // or other blockcontact
+                case LAVA:
+                    return LAVA;
+                case POISON:
+                    return POISON;
+                case WITHER:
+                    return WITHER;
+                case MAGIC:
+                    return MAGIC;
+                default:
+                    return OTHER;
+            }
+        }
+    }
+
+    public static enum ContainerType
+    {
+        CHEST(1),
+        FURNACE(2),
+        BREWINGSTAND(3),
+        DISPENSER(4),
+        OTHER(5);
+        private final int id;
+        private static final TIntObjectHashMap<ContainerType> map;
+
+        static
+        {
+            map = new TIntObjectHashMap<ContainerType>();
+            for (ContainerType type : values())
+            {
+                map.put(type.id, type);
+            }
+        }
+
+        private ContainerType(int id)
+        {
+            this.id = id;
+        }
+
+        public static ContainerType getContainerType(int id)
+        {
+            return map.get(id);
+        }
+
+        public static ContainerType getContainerType(Inventory inventory)
+        {
+            return null;//TODO
         }
     }
 
