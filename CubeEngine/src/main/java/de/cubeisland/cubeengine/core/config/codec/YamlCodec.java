@@ -33,6 +33,10 @@ public class YamlCodec extends ConfigurationCodec
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
         Map<String, Object> map = (Map<String, Object>)yaml.load(is);
+        if (map == null)
+        {
+            return null;
+        }
         try
         {
             Object rev = map.get("revision");

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.storage.kills;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 @de.cubeisland.cubeengine.core.storage.database.Entity(name = "killlog")
 public class KillLog extends AbstractLog
@@ -33,10 +35,25 @@ public class KillLog extends AbstractLog
         this.killedId = Convert.fromObject(Integer.class, args.get(7));
     }
 
-    public KillLog(KillCause killCause, Entity entity, Location loc)
+    public KillLog(KillCause killCause, Player damager, Entity entity, Location loc)
     {
         this.timestamp = new Timestamp(System.currentTimeMillis());
-        this.causeID = killCause.getId();
+        if (damager != null)
+        {
+            this.causeID = CubeEngine.getUserManager().getExactUser(damager).getKey();
+        }
+        else
+        {
+            this.causeID = killCause.getId();
+        }
+        if (entity instanceof Player)
+        {
+            this.killedId = CubeEngine.getUserManager().getExactUser((Player)entity).getKey();
+        }
+        else
+        {
+            this.killedId = -entity.getType().getTypeId();
+        }
         this.x = loc.getBlockX();
         this.y = loc.getBlockY();
         this.z = loc.getBlockZ();

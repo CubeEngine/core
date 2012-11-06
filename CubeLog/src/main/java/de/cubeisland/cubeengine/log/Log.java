@@ -6,6 +6,8 @@ import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
+import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
 
 public class Log extends Module
 {
@@ -13,7 +15,6 @@ public class Log extends Module
     private static Log instance;
     @From("config")
     protected LogConfiguration config;
-    
 
     public Log()
     {
@@ -33,6 +34,7 @@ public class Log extends Module
         this.lm = new LogManager(this);
         this.registerCommand(new LogCommands(this));
         Convert.registerConverter(BlockData.class, new BlockDataConverter());
+        Convert.registerConverter(ItemData.class, new ItemDataConverter());
     }
 
     public LogManager getLogManager()

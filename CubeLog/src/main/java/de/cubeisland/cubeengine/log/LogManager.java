@@ -3,8 +3,11 @@ package de.cubeisland.cubeengine.log;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.listeners.Explosion.ExplosionConfig;
 import de.cubeisland.cubeengine.log.listeners.LogListener;
+import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.blocks.BlockLog;
 import de.cubeisland.cubeengine.log.storage.blocks.BlockLogManager;
+import de.cubeisland.cubeengine.log.storage.chests.ChestLog;
+import de.cubeisland.cubeengine.log.storage.chests.ChestLogManager;
 import de.cubeisland.cubeengine.log.storage.kills.KillLog;
 import de.cubeisland.cubeengine.log.storage.kills.KillLogManager;
 import de.cubeisland.cubeengine.log.storage.signs.SignChangLog;
@@ -15,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
+import org.bukkit.block.*;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.StorageMinecart;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.Inventory;
 
@@ -58,6 +61,7 @@ public class LogManager
     private BlockLogManager blockLogManager;
     private SignChangeLogManager signChangeLogManager;
     private KillLogManager killLogManager;
+    private ChestLogManager chestLogManager;
 
     public LogManager(Log module)
     {
@@ -66,6 +70,7 @@ public class LogManager
         this.blockLogManager = new BlockLogManager(module.getDatabase());
         this.signChangeLogManager = new SignChangeLogManager(module.getDatabase());
         this.killLogManager = new KillLogManager(module.getDatabase());
+        this.chestLogManager = new ChestLogManager(module.getDatabase());
         for (LogSubConfiguration config : module.getConfiguration().configs.values())
         {
             this.registerLogger(config.listener); // register all loaded & enabled Listener 
@@ -157,7 +162,12 @@ public class LogManager
 
     public void logKill(DamageCause cause, Entity damager, Entity damagee, Location loc)
     {
-        this.killLogManager.store(new KillLog(KillCause.getKillCause(cause, damager), damagee, loc));
+        this.killLogManager.store(new KillLog(KillCause.getKillCause(cause, damager), (Player)damager, damagee, loc));
+    }
+
+    public void logContainerChange(User user, ItemData data, int amount, Location loc, int type)
+    {
+        this.chestLogManager.store(new ChestLog(user.getKey(),data,amount,loc,type));
     }
 
     public static enum BlockChangeCause
@@ -320,7 +330,32 @@ public class LogManager
 
         public static ContainerType getContainerType(Inventory inventory)
         {
-            return null;//TODO
+            if (inventory.getHolder() instanceof BrewingStand)
+            {
+                return BREWINGSTAND;
+            }
+            if (inventory.getHolder() instanceof Chest || inventory.getHolder() instanceof DoubleChest)
+            {
+                return CHEST;
+            }
+            if (inventory.getHolder() instanceof Furnace)
+            {
+                return FURNACE;
+            }
+            if (inventory.getHolder() instanceof Dispenser)
+            {
+                return DISPENSER;
+            }
+            if (inventory.getHolder() instanceof HumanEntity || inventory.getHolder() instanceof StorageMinecart)
+            {
+                return null;
+            }
+            return OTHER;
+        }
+
+        public int getId()
+        {
+            return this.id;
         }
     }
 
