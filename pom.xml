@@ -24,6 +24,7 @@
         <module>CubeFun</module>
         <module>CubeLog</module>
         <module>CubeWriter</module>
+        <module>CubeGuests</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>
