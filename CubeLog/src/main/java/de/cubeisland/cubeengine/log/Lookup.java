@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.log;
 
+import de.cubeisland.cubeengine.log.storage.AbstractPositionLog;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import de.cubeisland.cubeengine.log.logger.blockchange.AbstractLog;
-import de.cubeisland.cubeengine.log.logger.blockchange.BlockLog;
+import de.cubeisland.cubeengine.log.logger.BlockLog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +27,7 @@ public class Lookup
     {
         //TODO sort by timestamp (or other)
         //TODO print
-        for (AbstractLog log : blocklogs)
+        for (AbstractPositionLog log : blocklogs)
         {
             StringBuilder sb = new StringBuilder();
             if (log instanceof BlockLog)

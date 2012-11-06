@@ -4,18 +4,17 @@ import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
-import de.cubeisland.cubeengine.log.logger.MainLogConfig;
-import de.cubeisland.cubeengine.log.logger.blockchange.BlockData;
-import de.cubeisland.cubeengine.log.logger.blockchange.BlockDataConverter;
-import de.cubeisland.cubeengine.log.logger.blockchange.ItemData;
-import de.cubeisland.cubeengine.log.logger.blockchange.ItemDataConverter;
+import de.cubeisland.cubeengine.log.storage.BlockData;
+import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
+import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
 
 public class Log extends Module
 {
     private static Log instance;
 
     @From("newconfig")
-    protected MainLogConfig mainconfig;
+    protected LogConfiguration mainconfig;
 
     public Log()
     {
@@ -38,7 +37,7 @@ public class Log extends Module
         Convert.registerConverter(ItemData.class, new ItemDataConverter());
     }
 
-    public MainLogConfig getConfiguration()
+    public LogConfiguration getConfiguration()
     {
         return null;
     }
