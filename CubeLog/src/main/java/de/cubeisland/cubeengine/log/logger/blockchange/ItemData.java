@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.storage;
+package de.cubeisland.cubeengine.log.logger.blockchange;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
