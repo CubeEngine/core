@@ -1,9 +1,10 @@
-package de.cubeisland.cubeengine.log.listeners;
+package de.cubeisland.cubeengine.log.logger.blockchange;
 
+import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.LogAction;
-import de.cubeisland.cubeengine.log.LogSubConfiguration;
+import de.cubeisland.cubeengine.log.logger.SubLogConfig;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -12,13 +13,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
-import static de.cubeisland.cubeengine.log.LogManager.BlockChangeCause.PLAYER;
+import static de.cubeisland.cubeengine.log.logger.blockchange.BlockLogger.BlockChangeCause.PLAYER;
 
-public class BlockBreak extends LogListener
+public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakConfig>
 {
-    public BlockBreak(Log module)
+    public BlockBreakLogger()
     {
-        super(module, new BreakConfig());
+        this.config = new BlockBreakConfig();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -27,7 +28,7 @@ public class BlockBreak extends LogListener
         //TODO SAND stuff later...
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
-            lm.logChangeBlock(PLAYER, event.getPlayer(), block.getState(), null);
+            this.logBlockChange(PLAYER, event.getPlayer(), block.getState(), null);
         }
         switch (event.getBlock().getRelative(BlockFace.UP).getType())
         {
@@ -52,9 +53,9 @@ public class BlockBreak extends LogListener
             case DIODE_BLOCK_OFF:
             case DIODE_BLOCK_ON:
             case CACTUS:
-                lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
+                this.logBlockChange(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
         }
-        lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlock().getState(), null);
+        this.logBlockChange(PLAYER, event.getPlayer(), event.getBlock().getState(), null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -62,23 +63,27 @@ public class BlockBreak extends LogListener
     {
         if (event.getBlockClicked().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY))
         {
-            lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(BlockFace.UP).getState(), null);
+            this.logBlockChange(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(BlockFace.UP).getState(), null);
         }
-        lm.logChangeBlock(PLAYER, event.getPlayer(), event.getBlockClicked().getState(), null);
+        this.logBlockChange(PLAYER, event.getPlayer(), event.getBlockClicked().getState(), null);
     }
 
-    public static class BreakConfig extends LogSubConfiguration
+    public static class BlockBreakConfig extends SubLogConfig
     {
-        public BreakConfig()
+
+        public BlockBreakConfig()
         {
-            this.actions.put(LogAction.PLAYER_BLOCKBREAK, true);
             this.enabled = true;
         }
+        
+        @Option(value = "no-logging", genericType = BlockData.class)
+        public ArrayList<BlockData> noLogging = new ArrayList<BlockData>();
 
         @Override
         public String getName()
         {
-            return "break";
+            return "block-break";
         }
     }
+  
 }

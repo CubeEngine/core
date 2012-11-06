@@ -4,17 +4,18 @@ import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
-import de.cubeisland.cubeengine.log.storage.BlockData;
-import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
-import de.cubeisland.cubeengine.log.storage.ItemData;
-import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
+import de.cubeisland.cubeengine.log.logger.MainLogConfig;
+import de.cubeisland.cubeengine.log.logger.blockchange.BlockData;
+import de.cubeisland.cubeengine.log.logger.blockchange.BlockDataConverter;
+import de.cubeisland.cubeengine.log.logger.blockchange.ItemData;
+import de.cubeisland.cubeengine.log.logger.blockchange.ItemDataConverter;
 
 public class Log extends Module
 {
-    private LogManager lm;
     private static Log instance;
-    @From("config")
-    protected LogConfiguration config;
+
+    @From("newconfig")
+    protected MainLogConfig mainconfig;
 
     public Log()
     {
@@ -31,20 +32,15 @@ public class Log extends Module
         // perhaps make possible to select this cuboid to rollback later
         //flag to ignore what block
         //possibility to select the region containing the last search results
-        this.lm = new LogManager(this);
+        //this.lm = new LogManager(this);
         this.registerCommand(new LogCommands(this));
         Convert.registerConverter(BlockData.class, new BlockDataConverter());
         Convert.registerConverter(ItemData.class, new ItemDataConverter());
     }
 
-    public LogManager getLogManager()
+    public MainLogConfig getConfiguration()
     {
-        return this.lm;
-    }
-
-    public LogConfiguration getConfiguration()
-    {
-        return this.config;
+        return null;
     }
 
     public static Log getInstance()

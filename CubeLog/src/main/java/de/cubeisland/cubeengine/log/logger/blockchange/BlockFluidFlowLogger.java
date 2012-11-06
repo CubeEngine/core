@@ -1,8 +1,6 @@
-package de.cubeisland.cubeengine.log.listeners;
+package de.cubeisland.cubeengine.log.logger.blockchange;
 
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.LogAction;
-import de.cubeisland.cubeengine.log.LogSubConfiguration;
+import de.cubeisland.cubeengine.log.logger.SubLogConfig;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,14 +12,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
 
-import static de.cubeisland.cubeengine.log.LogManager.BlockChangeCause.*;
+import static de.cubeisland.cubeengine.log.logger.blockchange.BlockLogger.BlockChangeCause.*;
 
-public class FluidFlow extends LogListener
+public class BlockFluidFlowLogger extends BlockLogger<BlockFluidFlowLogger.BlockFluidFlowConfig>
 {
-    public FluidFlow(Log module)
+    public BlockFluidFlowLogger()
     {
-        super(module, new FluidConfig());
+        this.config = new BlockFluidFlowConfig();
     }
+    
     //TODO do this better
     private static final Set<Integer> nonFluidProofBlocks = new HashSet<Integer>(Arrays.asList(7, 8, 9, 10, 27, 28, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 69, 70, 75, 76, 78, 93, 94, 104, 105, 106));
     private static final BlockFace[] DIRECTIONS = new BlockFace[]
@@ -82,7 +81,7 @@ public class FluidFlow extends LogListener
                 newToBlock.setType(Material.LAVA);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
             }
-            lm.logChangeBlock(LAVA, null, toBlock, newToBlock);
+            this.logBlockChange(LAVA, null, toBlock, newToBlock);
         }
         else if (mat.equals(Material.WATER) || mat.equals(Material.STATIONARY_WATER))
         {
@@ -101,7 +100,7 @@ public class FluidFlow extends LogListener
                 {
                     newToBlock.setType(Material.STATIONARY_WATER);
                     newToBlock.setRawData((byte)0);
-                    lm.logChangeBlock(WATER, null, toBlock, newToBlock);
+                    this.logBlockChange(WATER, null, toBlock, newToBlock);
                 }
                 return; // changing water-level do not log
             }
@@ -121,13 +120,13 @@ public class FluidFlow extends LogListener
                         BlockState newNearBlock = nearBlock.getState();
                         newNearBlock.setTypeId(nearBlock.getData() == 0 ? 49 : 4);
                         newNearBlock.setRawData((byte)0);
-                        lm.logChangeBlock(WATER, null, oldNearBlock, newNearBlock);
+                        this.logBlockChange(WATER, null, oldNearBlock, newNearBlock);
                     }
                 }
                 newToBlock.setType(Material.WATER);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
             }
-            lm.logChangeBlock(WATER, null, toBlock, newToBlock);
+            this.logBlockChange(WATER, null, toBlock, newToBlock);
         }
     }
 
@@ -144,19 +143,12 @@ public class FluidFlow extends LogListener
         return false;
     }
 
-    public static class FluidConfig extends LogSubConfiguration
+    public static class BlockFluidFlowConfig extends SubLogConfig
     {
-        public FluidConfig()
-        {
-            this.actions.put(LogAction.LAVAFLOW, false);
-            this.actions.put(LogAction.WATERFLOW, false);
-            this.enabled = false;
-        }
-
         @Override
         public String getName()
         {
-            return "fluid";
+            return "block-fluids";
         }
     }
 }

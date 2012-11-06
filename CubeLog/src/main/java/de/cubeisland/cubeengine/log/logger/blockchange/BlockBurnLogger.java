@@ -1,22 +1,20 @@
-package de.cubeisland.cubeengine.log.listeners;
+package de.cubeisland.cubeengine.log.logger.blockchange;
 
 import de.cubeisland.cubeengine.core.util.BlockUtil;
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.LogAction;
-import de.cubeisland.cubeengine.log.LogSubConfiguration;
+import de.cubeisland.cubeengine.log.logger.SubLogConfig;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBurnEvent;
 
-import static de.cubeisland.cubeengine.log.LogManager.BlockChangeCause.FIRE;
+import static de.cubeisland.cubeengine.log.logger.blockchange.BlockLogger.BlockChangeCause.FIRE;
 
-public class BlockBurn extends LogListener
+public class BlockBurnLogger extends BlockLogger<BlockBurnLogger.BlockBurnConfig>
 {
-    public BlockBurn(Log module)
+    public BlockBurnLogger()
     {
-        super(module, new BurnConfig());
+        this.config = new BlockBurnConfig();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -24,7 +22,7 @@ public class BlockBurn extends LogListener
     {
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
-            lm.logChangeBlock(FIRE,null, block.getState(), null);
+            this.logBlockChange(FIRE, null, block.getState(), null);
         }
         switch (event.getBlock().getRelative(BlockFace.UP).getType())
         {
@@ -36,23 +34,17 @@ public class BlockBurn extends LogListener
             case REDSTONE_WIRE:
             case DIODE_BLOCK_OFF:
             case DIODE_BLOCK_ON:
-                lm.logChangeBlock(FIRE, null, event.getBlock().getRelative(BlockFace.UP).getState(), null);
+                this.logBlockChange(FIRE, null, event.getBlock().getRelative(BlockFace.UP).getState(), null);
         }
-        lm.logChangeBlock(FIRE, null, event.getBlock().getState(), null);
+        this.logBlockChange(FIRE, null, event.getBlock().getState(), null);
     }
 
-    public static class BurnConfig extends LogSubConfiguration
+    public static class BlockBurnConfig extends SubLogConfig
     {
-        public BurnConfig()
-        {
-            this.actions.put(LogAction.FIRE, true);
-            this.enabled = false;
-        }
-
         @Override
         public String getName()
         {
-            return "burn";
+            return "block-burn";
         }
     }
 }

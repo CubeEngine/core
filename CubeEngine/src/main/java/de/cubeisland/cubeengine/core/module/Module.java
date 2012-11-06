@@ -373,7 +373,12 @@ public abstract class Module
     {
         this.core.getEventManager().registerListener(this, listener);
     }
-    
+
+    public void unregisterListener(Listener listener)
+    {
+        this.core.getEventManager().unregisterListener(this, listener);
+    }
+
     public TaskManager getTaskManger()
     {
         return this.core.getTaskManager();

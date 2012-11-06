@@ -2,8 +2,8 @@ package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import de.cubeisland.cubeengine.log.storage.AbstractLog;
-import de.cubeisland.cubeengine.log.storage.blocks.BlockLog;
+import de.cubeisland.cubeengine.log.logger.blockchange.AbstractLog;
+import de.cubeisland.cubeengine.log.logger.blockchange.BlockLog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
