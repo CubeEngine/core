@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.logger;
+package de.cubeisland.cubeengine.log.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
-import de.cubeisland.cubeengine.log.storage.AbstractPositionLog;
-import de.cubeisland.cubeengine.log.storage.BlockData;
 import java.sql.Timestamp;
 import java.util.List;
 import org.bukkit.Location;

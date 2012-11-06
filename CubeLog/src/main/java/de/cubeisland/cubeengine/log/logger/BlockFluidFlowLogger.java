@@ -41,7 +41,7 @@ public class BlockFluidFlowLogger extends BlockLogger<BlockFluidFlowLogger.Block
         }
         if (mat.equals(Material.LAVA) || mat.equals(Material.STATIONARY_LAVA))
         {
-            //TODO when removing source of falling lava "AIR" is falling down no more lava but blocks get formed
+            //TODO when removing source of falling lava "AIR" is falling down no more lava but blocks get formed //any idea if possible how to log this?
             if (toBlock.getType().equals(Material.WATER) || toBlock.getType().equals(Material.STATIONARY_WATER))
             {
                 if (event.getFace() == BlockFace.DOWN)

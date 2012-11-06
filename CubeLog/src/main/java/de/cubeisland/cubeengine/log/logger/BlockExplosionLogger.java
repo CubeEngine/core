@@ -3,10 +3,7 @@ package de.cubeisland.cubeengine.log.logger;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -21,24 +18,30 @@ public class BlockExplosionLogger extends BlockLogger<BlockExplosionLogger.Block
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event)
     {
-        /*
-         * Explosion.ExplosionConfig c = this.getConfiguration();
-         * if ((event.getEntity() == null &&
-         * !c.actions.get(LogAction.EXPLOSION_MISC.toString()))
-         * || (event.getEntity() instanceof TNTPrimed &&
-         * !c.actions.get(LogAction.EXPLOSION_TNT.toString()))
-         * || (event.getEntity() instanceof Creeper &&
-         * !c.actions.get(LogAction.EXPLOSION_CREEPER.toString()))
-         * || (event.getEntity() instanceof Fireball &&
-         * !c.actions.get(LogAction.EXPLOSION_GHASTFIREBALL.toString()))
-         * || (event.getEntity() instanceof EnderDragon &&
-         * !c.actions.get(LogAction.EXPLOSION_ENDERDRAGON.toString())))
-         *
-         * // TODO dont forget to check this later on||
-         * (!c.actions.get(LogAction.EXPLOSION_MISC))
-         * {
-         * return;
-         * } */
+        if (event.getEntity() instanceof TNTPrimed && !this.config.logTNT)
+        {
+            return;
+        }
+        else if (event.getEntity() instanceof Creeper && !this.config.logCreeper)
+        {
+            return;
+        }
+        else if (event.getEntity() instanceof Fireball && !this.config.logFireball)
+        {
+            return;
+        }
+        else if (event.getEntity() instanceof EnderDragon && !this.config.logDragon)
+        {
+            return;
+        }
+        else if (event.getEntity() instanceof WitherSkull && !this.config.logWither)
+        {
+            return;
+        }
+        else if (!this.config.logMisc)
+        {
+            return;
+        }
         Entity entity = event.getEntity();
         Player player = null;
         if (this.getConfig().logCreeperAsPlayer)
@@ -70,6 +73,18 @@ public class BlockExplosionLogger extends BlockLogger<BlockExplosionLogger.Block
         }
         @Option(value = "log-creeper-as-player-who-triggered")
         public boolean logCreeperAsPlayer;
+        @Option(value = "log-explosion-type.misc")
+        public boolean logMisc;
+        @Option(value = "log-explosion-type.creeper")
+        public boolean logCreeper;
+        @Option(value = "log-explosion-type.tnt")
+        public boolean logTNT;
+        @Option(value = "log-explosion-type.ender-dragon")
+        public boolean logDragon;
+        @Option(value = "log-explosion-type.wither")
+        public boolean logWither;
+        @Option(value = "log-explosion-type.ghast-fireball")
+        public boolean logFireball;
 
         @Override
         public String getName()

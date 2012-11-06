@@ -4,6 +4,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.storage.BlockLog;
+import de.cubeisland.cubeengine.log.storage.BlockLogManager;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 

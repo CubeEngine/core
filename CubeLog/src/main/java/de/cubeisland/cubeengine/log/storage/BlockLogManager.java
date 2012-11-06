@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.logger;
+package de.cubeisland.cubeengine.log.storage;
 
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;

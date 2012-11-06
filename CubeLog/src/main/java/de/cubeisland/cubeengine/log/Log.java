@@ -12,14 +12,15 @@ import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
 public class Log extends Module
 {
     private static Log instance;
-
-    @From("newconfig")
+    @From()
     protected LogConfiguration mainconfig;
 
     public Log()
     {
         instance = this;
     }
+    //TODO config for each world -> config should be empty!
+    //but inherit from global config how to do this???
 
     @Override
     public void onEnable()

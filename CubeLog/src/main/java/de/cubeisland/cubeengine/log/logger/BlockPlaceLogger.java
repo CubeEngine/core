@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.storage.BlockData;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
