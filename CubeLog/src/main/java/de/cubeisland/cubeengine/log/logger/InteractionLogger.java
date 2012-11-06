@@ -13,6 +13,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
     public InteractionLogger()
     {
         super(LogAction.INTERACTION);
+        this.config = new InteractionConfig();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

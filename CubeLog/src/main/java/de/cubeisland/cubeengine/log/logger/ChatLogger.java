@@ -22,8 +22,9 @@ public class ChatLogger extends Logger<ChatLogger.ChatConfig>
     public ChatLogger()
     {
         super(LogAction.CHAT);
+        this.config = new ChatConfig();
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {

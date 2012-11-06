@@ -47,7 +47,6 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
         }
         newState.setType(mat);
         this.logBlockChange(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(event.getBlockFace()).getState(), newState);
-        // TODO Care when replacing if it is Bucket ID!!!
     }
 
     public static class BlockPlaceConfig extends SubLogConfig

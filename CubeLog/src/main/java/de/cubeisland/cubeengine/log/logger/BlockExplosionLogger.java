@@ -72,19 +72,19 @@ public class BlockExplosionLogger extends BlockLogger<BlockExplosionLogger.Block
             this.enabled = true;
         }
         @Option(value = "log-creeper-as-player-who-triggered")
-        public boolean logCreeperAsPlayer;
+        public boolean logCreeperAsPlayer = false;
         @Option(value = "log-explosion-type.misc")
-        public boolean logMisc;
+        public boolean logMisc = false;
         @Option(value = "log-explosion-type.creeper")
-        public boolean logCreeper;
+        public boolean logCreeper = true;
         @Option(value = "log-explosion-type.tnt")
-        public boolean logTNT;
+        public boolean logTNT = true;
         @Option(value = "log-explosion-type.ender-dragon")
-        public boolean logDragon;
+        public boolean logDragon = false;
         @Option(value = "log-explosion-type.wither")
-        public boolean logWither;
+        public boolean logWither = false;
         @Option(value = "log-explosion-type.ghast-fireball")
-        public boolean logFireball;
+        public boolean logFireball = false;
 
         @Override
         public String getName()
