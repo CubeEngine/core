@@ -18,40 +18,33 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class PlayerCommands
 {
-    
     private UserManager um;
     private Basics basics;
-    
 
     public PlayerCommands(Basics basics)
     {
         this.basics = basics;
         this.um = basics.getUserManager();
     }
+
     @Command(
-    desc = "Refills your hunger bar",
-    max = 1,
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
-    usage = "[player]")
+        desc = "Refills your hunger bar",
+        max = 1,
+        flags = { @Flag(longName = "all", name = "a") },
+        usage = "[player]|[-a]")
     public void feed(CommandContext context)
     {
         if (context.hasFlag("a"))
         {
-            Player[] players = context.getSender().getServer().
-                getOnlinePlayers();
+            Player[] players = context.getSender().getServer().getOnlinePlayers();
             for (Player player : players)
             {
                 player.setFoodLevel(20);
                 player.setSaturation(20);
                 player.setExhaustion(0);
             }
-            context.sendMessage("basics", "You made everyone fat!");
-            this.um.
-                broadcastMessage("basics", "%s shared food with everyone.", context.
-                getSender().getName());
+            context.sendMessage("basics", "&6You made everyone fat!");
+            this.um.broadcastMessage("basics", "&2%s &ashared food with everyone.", context.getSender().getName());
         }
         else
         {
@@ -63,7 +56,7 @@ public class PlayerCommands
                 user = context.getUser(0);
                 if (user == null)
                 {
-                    invalidUsage(context, "core", "User not found!");
+                    invalidUsage(context, "basics", "&cUser %s not found!", context.getString(0));
                 }
                 other = true;
             }
@@ -79,25 +72,21 @@ public class PlayerCommands
             user.setExhaustion(0);
             if (other)
             {
-                context.sendMessage("basics", "&6Feeded %s", user.getName());
-                user.sendMessage("basics", "&6You got fed by %s", context.
-                    getSender().getName());
+                context.sendMessage("basics", "&aFeeded &2%s&a!", user.getName());
+                user.sendMessage("basics", "&aYou got fed by &2%s&a!", context.getSender().getName());
             }
             else
             {
-                context.sendMessage("basics", "&6You are now fed!");
+                context.sendMessage("basics", "&aYou are now fed!");
             }
         }
     }
 
     @Command(
-    desc = "Empties the hunger bar",
-    max = 1,
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
-    usage = "[player]")
+        desc = "Empties the hunger bar",
+        max = 1,
+        flags = { @Flag(longName = "all", name = "a") },
+        usage = "[player]|[-a]")
     public void starve(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -109,8 +98,8 @@ public class PlayerCommands
                 player.setSaturation(0);
                 player.setExhaustion(4);
             }
-            context.sendMessage("basics", "You starve everyone to death!");
-            this.um.broadcastMessage("basics", "%s took away all food.", context.getSender().getName());
+            context.sendMessage("basics", "&eYou starve everyone to death!");
+            this.um.broadcastMessage("basics", "&2%s &etook away all food.", context.getSender().getName());
         }
         else
         {
@@ -122,7 +111,7 @@ public class PlayerCommands
                 user = context.getUser(0);
                 if (user == null)
                 {
-                    invalidUsage(context, "core", "User not found!");
+                    invalidUsage(context, "core", "&cUser %s not found!", context.getString(0));
                 }
                 other = true;
             }
@@ -130,7 +119,7 @@ public class PlayerCommands
             {
                 if (sender == null)
                 {
-                    invalidUsage(context, "basics", "\n\n\n\n\n&cI'll give you only one line to eat!\n\n\n\n\n");
+                    invalidUsage(context, "basics", "\n\n\n\n\n\n\n\n\n\n\n\n\n&cI'll give you only one line to eat!");
                 }
             }
             user.setFoodLevel(0);
@@ -138,8 +127,8 @@ public class PlayerCommands
             user.setExhaustion(4);
             if (other)
             {
-                context.sendMessage("basics", "&6Starved %s", user.getName());
-                user.sendMessage("basics", "&6You are suddenly starving!");
+                context.sendMessage("basics", "&eStarved &2%s&e!", user.getName());
+                user.sendMessage("basics", "&eYou are suddenly starving!");
             }
             else
             {
@@ -149,19 +138,15 @@ public class PlayerCommands
     }
 
     @Command(
-    desc = "Heals a Player",
-    max = 1,
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    },
-    usage = "[player]|-a")
+        desc = "Heals a Player",
+        max = 1,
+        flags = { @Flag(longName = "all", name = "a") },
+        usage = "[player]|[-a]")
     public void heal(CommandContext context)
     {
         if (context.hasFlag("a"))
         {
-            Player[] players = context.getSender().getServer().
-                getOnlinePlayers();
+            Player[] players = context.getSender().getServer().getOnlinePlayers();
             for (Player player : players)
             {
                 player.setHealth(player.getMaxHealth());
@@ -169,10 +154,8 @@ public class PlayerCommands
                 player.setSaturation(20);
                 player.setExhaustion(0);
             }
-            context.sendMessage("basics", "You healed everyone!");
-            this.um.
-                broadcastMessage("basics", "%s healed every player.", context.
-                getSender().getName());
+            context.sendMessage("basics", "&aYou healed everyone!");
+            this.um.broadcastMessage("basics", "&2%s &ahealed every player.", context.getSender().getName());
         }
         else
         {
@@ -183,7 +166,7 @@ public class PlayerCommands
             {
                 if (user == null)
                 {
-                    invalidUsage(context, "core", "User not found!");
+                    invalidUsage(context, "core", "&cUser %s not found!", context.getString(0));
                 }
                 other = true;
             }
@@ -200,29 +183,24 @@ public class PlayerCommands
             user.setExhaustion(0);
             if (other)
             {
-                context.sendMessage("basics", "&6Healed %s", user.getName());
-                user.sendMessage("basics", "&6You got healed by %s", sender.
-                    getName());
+                context.sendMessage("basics", "&aHealed &2%s&a!", user.getName());
+                user.sendMessage("basics", "&aYou got healed by &2%s&a!", sender.getName());
             }
             else
             {
-                context.sendMessage("basics", "&6You are now healed!");
+                context.sendMessage("basics", "&aYou are now healed!");
             }
         }
     }
 
     @Command(
-    names =
-    {
-        "gamemode", "gm"
-    },
-    max = 2,
-    desc = "Changes the gamemode",
-    usage = "<gamemode> [player]")
+        names = { "gamemode", "gm" },
+        max = 2,
+        desc = "Changes the gamemode",
+        usage = "[gamemode] [player]")
     public void gamemode(CommandContext context)
     {
         boolean changeOther = false;
-
         User sender = context.getSenderAsUser();
         User user = sender;
         if (user == null)
@@ -234,13 +212,13 @@ public class PlayerCommands
             user = context.getUser(1);
             if (user == null)
             {
-                invalidUsage(context, "core", "User not found!");
+                invalidUsage(context, "core", "&cUser %s not found!", context.getString(1));
             }
             changeOther = true;
         }
         if (!BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
-            denyAccess(context, "basics", "You do not have permission to change the gamemode of an other player!");
+            denyAccess(context, "basics", "&cYou are not allowed to change the gamemode of an other player!");
         }
         if (context.hasIndexed(0))
         {
@@ -249,19 +227,13 @@ public class PlayerCommands
             {
                 user.setGameMode(GameMode.SURVIVAL);
             }
-            else
+            else if (mode.equals("creative") || mode.equals("c"))
             {
-                if (mode.equals("creative") || mode.equals("c"))
-                {
-                    user.setGameMode(GameMode.CREATIVE);
-                }
-                else
-                {
-                    if (mode.equals("adventure") || mode.equals("a"))
-                    {
-                        user.setGameMode(GameMode.ADVENTURE);
-                    }
-                }
+                user.setGameMode(GameMode.CREATIVE);
+            }
+            else if (mode.equals("adventure") || mode.equals("a"))
+            {
+                user.setGameMode(GameMode.ADVENTURE);
             }
         }
         else
@@ -279,48 +251,42 @@ public class PlayerCommands
         }
         if (changeOther)
         {
-            context.
-                sendMessage("basics", "You changed the gamemode of %s to %s", user.
-                getName(), _(sender, "basics", user.getGameMode().toString()));
-            user.
-                sendMessage("basics", "Your Gamemode has been changed to %s", _(user, "basics", user.
-                getGameMode().toString()));
+            context.sendMessage("basics", "&You changed the gamemode of &2%s &ato &6%s&a!", 
+                user.getName(), _(sender, "basics", user.getGameMode().toString()));
+            user.sendMessage("basics", "&eYour Gamemode has been changed to &6%s&a!", 
+                _(user, "basics", user.getGameMode().toString()));
         }
         else
         {
-            context.
-                sendMessage("basics", "You changed your gamemode to %s", _(user, "basics", user.
-                getGameMode().toString()));
+            context. sendMessage("basics", "&aYou changed your gamemode to &6%s&a!", 
+                _(user, "basics", user.getGameMode().toString()));
         }
     }
-    
+
     @Command(
-    desc = "Kills a player",
-    usage = "<player>|-a",
-    flags =
-    {
-        @Flag(longName = "all", name = "a")
-    })
+        desc = "Kills a player",
+        usage = "<player>|-a",
+        flags = { @Flag(longName = "all", name = "a") })
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
-        //TODO kill a player with cool effects :) e.g. lightnin
+        //TODO kill a player with cool effects :) e.g. lightning
         User user = context.getUser(0);
         if (user == null)
         {
             if (!context.hasFlag("a"))
             {
-                invalidUsage(context, "core", "User not found!");
+                invalidUsage(context, "core", "&cUser %s not found!",context.getString(0));
             }
         }
         else
         {
             if (!user.isOnline())
             {
-                illegalParameter(context, "core", "%s currently not online", user.getName());
+                illegalParameter(context, "core", "&2%s &eis currently not online!", user.getName());
             }
             if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user))
             {
-                context.sendMessage("basics", "You cannot kill that player!");
+                context.sendMessage("basics", "&cYou cannot kill that player!");
                 return;
             }
         }
@@ -328,7 +294,7 @@ public class PlayerCommands
         {
             if (!BasicsPerm.COMMAND_KILL_ALL.isAuthorized(context.getSender()))
             {
-                denyAccess(context, "basics", "You are not allowed to kill everyone!");
+                denyAccess(context, "basics", "&cYou are not allowed to kill everyone!");
             }
             for (Player player : context.getCore().getUserManager().getOnlinePlayers())
             {
@@ -346,24 +312,21 @@ public class PlayerCommands
         {
             user.setHealth(0);
             //TODO broadcast alternative Deathmsgs
-            context.sendMessage("basics", "You killed %s!", user.getName());
+            context.sendMessage("basics", "&aYou killed &2%s&a!", user.getName());
         }
     }
-    
+
     @Command(
-    desc = "Makes a player execute a command",
-    usage = "<player> <command>",
-    flags =
-    {
-        @Flag(longName = "chat", name = "c")
-    })
+        desc = "Makes a player execute a command",
+        usage = "<player> <command>",
+        min = 2,
+        flags = { @Flag(longName = "chat", name = "c") })
     public void sudo(CommandContext context)
     {
-        //User sender = context.getSenderAsUser();
         User user = context.getUser(0);
         if (user == null)
         {
-            illegalParameter(context, "core", "User not found!");
+            illegalParameter(context, "core", "&cUser %s not found!", context.getString(0));
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;
@@ -380,38 +343,40 @@ public class PlayerCommands
             user.chat("/" + sb.toString()); //TODO later msg to sender if cmd worked??
         }
     }
-    
-    @Command(desc = "Shows when given player was online the last time",
-    min = 1,
-    max = 1,
-    usage = "<player>")
+
+    @Command(
+        desc = "Shows when given player was online the last time",
+        min = 1,
+        max = 1,
+        usage = "<player>")
     public void seen(CommandContext context)
     {
         User user = context.getUser(0);
         if (user == null)
         {
-            illegalParameter(context, "basics", "User not found!");
+            illegalParameter(context, "basics", "&cUser %s not found!", context.getString(0));
         }
         if (user.isOnline())
         {
-            context.sendMessage("basics", "%s is currently online!", user.getName());
+            context.sendMessage("basics", "&2%s &eis currently online!", user.getName());
         }
         else
         {
             long lastPlayed = user.getLastPlayed();
             if (System.currentTimeMillis() - lastPlayed > 7 * 24 * 60 * 60 * 1000) // If greater than 7 days show distance not date
             {
-                context.sendMessage("basics", "%s is offline since %2$td.%2$tm.%2$tY %2$tk:%2$tM", user.getName(), lastPlayed); //dd.MM.yyyy HH:mm
+                context.sendMessage("basics", "&2%s &eis offline since %2$td.%2$tm.%2$tY %2$tk:%2$tM", user.getName(), lastPlayed); //dd.MM.yyyy HH:mm
             }
             else
             {
-                context.sendMessage("basics", "%s was last seen %2$te days %2$tk hours %2$tM minutes ago.", user.getName(), System.currentTimeMillis() - lastPlayed);
+                context.sendMessage("basics", "&2%s &ewas last seen %2$te days %2$tk hours %2$tM minutes ago.", user.getName(), System.currentTimeMillis() - lastPlayed);
             } //TODO output formatting durations is wrong ... .(
         }
     }
 
-    @Command(desc = "Kills yourself",
-    max = 0)
+    @Command(
+        desc = "Kills yourself",
+        max = 0)
     public void suicide(CommandContext context)
     {
         User sender = um.getExactUser(context.getSender());
@@ -420,19 +385,26 @@ public class PlayerCommands
             invalidUsage(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
         }
         sender.setHealth(0);
-        sender.
-            setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, 20));
-        context.sendMessage("bascics", "You ended your pitiful life. Why? :(");
+        sender.setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, 20));
+        context.sendMessage("bascics", "&eYou ended your pitiful life. &cWhy? &4:(");
     }
 
+    @Command(
+        desc = "Displays that you are afk",
+        max = 0)
     public void afk(CommandContext context)
     {
-        //TODO automatic afk detection / when moving un-afk the player
+        User sender = context.getSenderAsUser("basics", "&cJust go!");
+        sender.setAttribute(basics, "afk", true);
+        this.basics.getUserManager().broadcastMessage("basics", "%2%s &fis now afk.", sender.getName());
+        //TODO listener to detect when back
+        //TODO automatic afk detection after standing around / when moving un-afk the player
     }
+
     @Command(
-    desc = "Displays informations from a player!",
-    usage = "<player>",
-    min = 1)
+        desc = "Displays informations from a player!",
+        usage = "<player>",
+        min = 1)
     public void whois(CommandContext context)
     {
         User user = context.getUser(0);
@@ -458,20 +430,20 @@ public class PlayerCommands
             user.getGameMode().toString(),
             String.valueOf(user.isFlying()),
             String.valueOf(user.isOp()));
-        /* TODO
+        /* TODO expand this if needed
          * (money)
          * afk
-         * (godmode)
+         * (godmode) //TODO godmode cmd
          * (muted)
          */
     }
-    
+
     @Command(
-    desc = "Displays your current language setting.",
-    max = 0)
+        desc = "Displays your current language settings.",
+        max = 0)
     public void language(CommandContext context)
     {
-        context.sendMessage("basics", "Your language is %s.",
-            context.getSenderAsUser("basics", "Your language is %s.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
+        context.sendMessage("basics", "&eYour language is &6%s&e.",
+            context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
     }
 }
