@@ -10,19 +10,17 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
-import gnu.trove.map.hash.TDoubleObjectHashMap;
-import gnu.trove.map.hash.THashMap;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.material.Tree;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -108,7 +106,7 @@ public class InformationCommands
     }
 
     @Command(
-    desc = "Displays the message of the day!")
+        desc = "Displays the message of the day!")
     public void motd(CommandContext context)
     {
         context.sendMessage(basics.getConfiguration().motd);//TODO translatable other lang in config else default
@@ -119,14 +117,14 @@ public class InformationCommands
     }
 
     @Command(
-    desc = "Displays near players(entities/mobs) to you.",
-    max = 2,
-    usage = "[radius] [player] [-entity]|[-mob]",
-    flags =
-    {
-        @Flag(longName = "entity", name = "e"),
-        @Flag(longName = "mob", name = "m")
-    })
+        desc = "Displays near players(entities/mobs) to you.",
+        max = 2,
+        usage = "[radius] [player] [-entity]|[-mob]",
+        flags =
+        {
+            @Flag(longName = "entity", name = "e"),
+            @Flag(longName = "mob", name = "m")
+        })
     public void near(CommandContext context)
     {
         User user;
@@ -150,7 +148,7 @@ public class InformationCommands
         int squareRadius = radius * radius;
         List<Entity> list = user.getWorld().getEntities();
         LinkedList<String> outputlist = new LinkedList<String>();
-        TreeMap<Double,List<Entity>> sortedMap = new TreeMap<Double,List<Entity>>();
+        TreeMap<Double, List<Entity>> sortedMap = new TreeMap<Double, List<Entity>>();
         //TODO if list contains too many objects show nearest normally then
         //e.g.:  100x Zombie (250m+)
         //TODO only show the flag is there for
@@ -175,7 +173,7 @@ public class InformationCommands
             }
         }
         int i = 0;
-        LinkedHashMap<String,Pair<Double,Integer>> groupedEntities = new LinkedHashMap<String, Pair<Double, Integer>>();
+        LinkedHashMap<String, Pair<Double, Integer>> groupedEntities = new LinkedHashMap<String, Pair<Double, Integer>>();
         for (double dist : sortedMap.keySet())
         {
             i++;
@@ -266,7 +264,7 @@ public class InformationCommands
     }
 
     @Command(
-    names =
+        names =
     {
         "ping", "pong"
     },
@@ -276,18 +274,55 @@ public class InformationCommands
     {
         if (context.getLabel().equalsIgnoreCase("ping"))
         {
-            context.sendMessage("basics", "Pong!");
+            context.sendMessage("basics", "&6Pong!");
         }
         else
         {
             if (context.getLabel().equalsIgnoreCase("pong"))
             {
-                context.sendMessage("basics", "Ping!");
+                context.sendMessage("basics", "&6Ping!");
             }
         }
     }
 
+    @Command(
+        desc = "Displays chunk, memory, and world information.",
+    max = 0)
     public void lag(CommandContext context)
     {
+        //uptime
+        //tps
+        //nutz/reserviert/max Memory
+
+        //alle worlds mit gel. chunks und entity
+        String uptime = new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).toString();
+        long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;
+        long memCom = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() / 1048576;
+        long memMax = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax() / 1048576;
+        String memused;
+        String memcommited = "&e" + memCom;
+        String memmax = "&e" + memMax;
+        long memUsePercent = 100 * memUse / memMax;
+        if (memUsePercent > 90)
+        {
+            if (memUsePercent > 95)
+            {
+                memused = "&4";
+            }
+            else
+            {
+                memused = "&c";
+            }
+        }
+        else if (memUsePercent > 60)
+        {
+            memused = "&e";
+        }
+        else
+        {
+            memused = "&a";
+        }
+        memused += memUse;
+        context.sendMessage("basics", "&6Uptime: &a%s\n&6Memory Usage: %s&f/%s&f/%s MB", uptime, memused, memcommited, memmax);
     }
 }
