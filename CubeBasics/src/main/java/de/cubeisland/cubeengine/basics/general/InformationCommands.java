@@ -5,15 +5,24 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.math.MathHelper;
+import gnu.trove.map.hash.TDoubleObjectHashMap;
+import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Tree;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -138,38 +147,80 @@ public class InformationCommands
         {
             radius = context.getIndexed(0, int.class, radius);
         }
+        int squareRadius = radius * radius;
         List<Entity> list = user.getWorld().getEntities();
-        List<String> outputlist = new ArrayList<String>(); //TODO sort list by distance
+        LinkedList<String> outputlist = new LinkedList<String>();
+        TreeMap<Double,List<Entity>> sortedMap = new TreeMap<Double,List<Entity>>();
         //TODO if list contains too many objects show nearest normally then
         //e.g.:  100x Zombie (250m+)
         //TODO only show the flag is there for
         for (Entity entity : list)
         {
-            double distance = entity.getLocation().distance(user.getLocation());
+            double distance = entity.getLocation().distanceSquared(user.getLocation());
             if (!entity.getLocation().equals(user.getLocation()))
             {
-                if (distance < radius)
+                if (distance < squareRadius)
                 {
-                    if (context.hasFlag("e"))
+                    if (context.hasFlag("e") || (context.hasFlag("m") && entity instanceof LivingEntity) || entity instanceof Player)
                     {
-                        this.addNearInformation(outputlist, entity, distance);
-                    }
-                    else if (context.hasFlag("m"))
-                    {
-                        if (entity instanceof LivingEntity)
+                        List<Entity> sublist = sortedMap.get(distance);
+                        if (sublist == null)
                         {
-                            this.addNearInformation(outputlist, entity, distance);
+                            sublist = new ArrayList<Entity>();
                         }
-                    }
-                    else
-                    {
-                        if (entity instanceof Player)
-                        {
-                            this.addNearInformation(outputlist, entity, distance);
-                        }
+                        sublist.add(entity);
+                        sortedMap.put(distance, sublist);
                     }
                 }
             }
+        }
+        int i = 0;
+        LinkedHashMap<String,Pair<Double,Integer>> groupedEntities = new LinkedHashMap<String, Pair<Double, Integer>>();
+        for (double dist : sortedMap.keySet())
+        {
+            i++;
+            for (Entity entity : sortedMap.get(dist))
+            {
+                if (i <= 10)
+                {
+                    this.addNearInformation(outputlist, entity, Math.sqrt(dist));
+                }
+                else
+                {
+                    String key;
+                    if (entity instanceof Player)
+                    {
+                        key = "&2player";
+                    }
+                    else if (entity instanceof LivingEntity)
+                    {
+                        key = "&3" + EntityType.fromBukkitType(entity.getType()).toString();
+                    }
+                    else if (entity instanceof Item)
+                    {
+                        key = "&7" + MaterialMatcher.get().getNameFor(((Item)entity).getItemStack());
+                    }
+                    else
+                    {
+                        key = "&7" + EntityType.fromBukkitType(entity.getType()).toString();
+                    }
+                    Pair<Double, Integer> pair = groupedEntities.get(key);
+                    if (pair == null)
+                    {
+                        pair = new Pair<Double, Integer>(Math.sqrt(dist), 1);
+                        groupedEntities.put(key, pair);
+                    }
+                    else
+                    {
+                        pair.y++;
+                    }
+                }
+            }
+        }
+        StringBuilder groupedOutput = new StringBuilder();
+        for (String key : groupedEntities.keySet())
+        {
+            groupedOutput.append(String.format("\n&6%dx %s &f(&e%dm+&f)", groupedEntities.get(key).y, key, MathHelper.round(groupedEntities.get(key).x)));
         }
         if (outputlist.isEmpty())
         {
@@ -177,15 +228,17 @@ public class InformationCommands
         }
         else
         {
+            String result;
+            result = StringUtils.implode("&f, ", outputlist);
+            result += groupedOutput.toString();
             if (context.getSender().getName().equals(user.getName()))
             {
-                context.sendMessage("basics", "&eFound those nearby you:\n%s", StringUtils.implode("&f, ", outputlist));
+                context.sendMessage("basics", "&eFound those nearby you:\n%s", result);
             }
             else
             {
                 context.sendMessage("basics", "&eFound those nearby %s:\n%s", user.getName(), StringUtils.implode("&f, ", outputlist));
             }
-
         }
     }
 
@@ -211,7 +264,7 @@ public class InformationCommands
             }
         }
     }
-    
+
     @Command(
     names =
     {
@@ -233,9 +286,8 @@ public class InformationCommands
             }
         }
     }
-    
+
     public void lag(CommandContext context)
     {
-        
     }
 }

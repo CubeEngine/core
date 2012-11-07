@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +19,13 @@ public class BasicUser implements Model<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true)
     public final int key; // User Key
-    @Attribute(type = AttrType.TEXT)
-    public List<String> mailbox = new ArrayList<String>(); //PlayerName: message //TODO perhaps save this in a separate Table
-    //TODO save IP
-
+    
+    @Attribute(type = AttrType.TIMESTAMP, notnull=false)
+    public Timestamp muted; //TODO NO on update current_timestamp
+    
+    //@Attribute(type = AttrType.TEXT) //TODO separate table for mails
+    public List<String> mailbox = new ArrayList<String>(); //PlayerName: message
+    
     @DatabaseConstructor
     public BasicUser(List<Object> args) throws ConversionException
     {

@@ -1,11 +1,6 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.basics.general.ChatCommands;
-import de.cubeisland.cubeengine.basics.general.CheatListener;
-import de.cubeisland.cubeengine.basics.general.InformationCommands;
-import de.cubeisland.cubeengine.basics.general.ListCommand;
-import de.cubeisland.cubeengine.basics.general.MailCommand;
-import de.cubeisland.cubeengine.basics.general.PlayerCommands;
+import de.cubeisland.cubeengine.basics.general.*;
 import de.cubeisland.cubeengine.basics.moderation.*;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
@@ -35,7 +30,8 @@ public class Basics extends Module
         this.registerCommands(new ListCommand());        
         this.registerCommands(new MailCommand(this));
         this.registerCommands(new PlayerCommands(this));
-        this.registerListener(new CheatListener(this));
+        this.registerListener(new UnlimitedListener(this));
+        this.registerListener(new MuteListener(this));
         
         //Moderation:
         this.registerCommands(new InventoryCommands(this));

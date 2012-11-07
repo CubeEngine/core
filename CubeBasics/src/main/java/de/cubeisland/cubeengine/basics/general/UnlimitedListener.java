@@ -7,11 +7,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class CheatListener implements Listener
+public class UnlimitedListener implements Listener
 {
     private Basics basics;
 
-    public CheatListener(Basics basics)
+    public UnlimitedListener(Basics basics)
     {
         this.basics = basics;
     }

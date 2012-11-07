@@ -36,7 +36,8 @@ public class WorldControlCommands
         desc = "Changes the weather",
         min = 1,
         max = 3,
-        usage = "<sun|rain|storm> [world] [duration]")
+        usage = "<sun|rain|storm> [duration] [in <world>]",
+        params= { @Param(names = "in", types = World.class) })
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -63,9 +64,9 @@ public class WorldControlCommands
             sunny = false;
             noThunder = false;
         }
-        if (context.hasIndexed(2))
+        if (context.hasIndexed(1))
         {
-            duration = context.getIndexed(2, int.class, 0);
+            duration = context.getIndexed(1, int.class, 0);
             if (duration == 0)
             {
                 illegalParameter(context, "basics", "&cThe given duration is invalid!");
@@ -73,9 +74,9 @@ public class WorldControlCommands
             duration *= 20;
         }
         World world = null;
-        if (context.hasIndexed(1))
+        if (context.hasNamed("in"))
         {
-            world = context.getSender().getServer().getWorld(context.getString(1));
+            world = context.getNamed("in", World.class, null);
             if (world == null)
             {
                 illegalParameter(context, "basics", "&cWorld &6%s &cnot found!", context.getString(1));
