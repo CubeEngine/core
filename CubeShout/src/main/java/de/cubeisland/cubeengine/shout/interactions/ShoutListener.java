@@ -17,47 +17,45 @@ import de.cubeisland.cubeengine.shout.task.TaskManager;
 
 public class ShoutListener implements Listener
 {
-	
-	private Shout module;
-	private AnnouncementManager aManager;
-	private TaskManager taskManager;
-	
-	public ShoutListener(Shout module)
-	{
-		this.module = module;
-		this.aManager = module.getAnnouncementManager();
-		this.taskManager = module.getTaskManager();
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void PlayerJoinEvent(PlayerJoinEvent event)
-	{
-		User user = module.getUserManager().getExactUser(event.getPlayer());
-		
-		if (module.getCore().isDebug())
-		{
-			module.logger.log(Level.INFO, "Loading user: " + user.getName());	
-		}
-		aManager.initializeUser(user);
-		
-		if (module.getCore().isDebug())
-		{
-			module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGreatestCommonDivisor(user.getName())));
-		}
-		taskManager.scheduleTask(user.getName(), new MessageTask(aManager, taskManager, user), aManager.getGreatestCommonDivisor(user.getName()));
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void PlayerLeaveEvent(PlayerQuitEvent event)
-	{
-		taskManager.stopUser(event.getPlayer().getName());
-		aManager.clean(event.getPlayer().getName());
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void PlayerChangedWorld(PlayerChangedWorldEvent event)
-	{
-		aManager.setWorld(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
-	}
-	
+    private Shout module;
+    private AnnouncementManager aManager;
+    private TaskManager taskManager;
+
+    public ShoutListener(Shout module)
+    {
+        this.module = module;
+        this.aManager = module.getAnnouncementManager();
+        this.taskManager = module.getTaskManager();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void PlayerJoinEvent(PlayerJoinEvent event)
+    {
+        User user = module.getUserManager().getExactUser(event.getPlayer());
+
+        if (module.getCore().isDebug())
+        {
+            module.logger.log(Level.INFO, "Loading user: " + user.getName());
+        }
+        aManager.initializeUser(user);
+
+        if (module.getCore().isDebug())
+        {
+            module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGreatestCommonDivisor(user.getName())));
+        }
+        taskManager.scheduleTask(user.getName(), new MessageTask(aManager, taskManager, user), aManager.getGreatestCommonDivisor(user.getName()));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void PlayerLeaveEvent(PlayerQuitEvent event)
+    {
+        taskManager.stopUser(event.getPlayer().getName());
+        aManager.clean(event.getPlayer().getName());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void PlayerChangedWorld(PlayerChangedWorldEvent event)
+    {
+        aManager.setWorld(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
+    }
 }
