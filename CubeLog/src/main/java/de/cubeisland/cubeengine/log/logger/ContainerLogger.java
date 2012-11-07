@@ -48,6 +48,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
     {
+        // TODO problem logging items multiple times when 2 players looking into the same inventory
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
         TObjectIntHashMap<ItemData> oldItems = openedInventories.get(user.getKey());
         if (oldItems == null)
@@ -59,7 +60,16 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         {
             if (event.getPlayer() instanceof Player)
             {
-                this.logContainerChanges(user, type, oldItems, this.compressInventory(event.getView().getTopInventory().getContents()), ((BlockState)event.getView().getTopInventory().getHolder()).getLocation());
+                Location loc;
+                if (event.getView().getTopInventory().getHolder() instanceof DoubleChest)
+                {
+                    loc = ((BlockState)((DoubleChest)event.getView().getTopInventory().getHolder()).getLeftSide()).getLocation();
+                }
+                else
+                {
+                    loc = ((BlockState)event.getView().getTopInventory().getHolder()).getLocation();
+                }
+                this.logContainerChanges(user, type, oldItems, this.compressInventory(event.getView().getTopInventory().getContents()), loc);
                 openedInventories.remove(user.getKey());
             }
         }
