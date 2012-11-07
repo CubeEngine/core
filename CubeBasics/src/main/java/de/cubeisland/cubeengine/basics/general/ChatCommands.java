@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class ChatCommands
@@ -21,10 +21,9 @@ public class ChatCommands
         this.basics = basics;
         this.um = basics.getUserManager();
     }
-    //TODO mute? or cubechat
 
     @Command(
-    desc = "Allows you to emote",
+        desc = "Allows you to emote",
     min = 1,
     usage = "<message>")
     public void me(CommandContext context)
@@ -34,7 +33,7 @@ public class ChatCommands
     }
 
     @Command(
-    desc = "Sends a private message to someone",
+        desc = "Sends a private message to someone",
     names =
     {
         "message", "msg", "tell", "pn", "m", "t", "whisper"
@@ -60,14 +59,14 @@ public class ChatCommands
             }
             else
             {
-                invalidUsage(context, "core", "User not found!");
+                paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
             }
         }
         else
         {
             if (sender == user)
             {
-                illegalParameter(context, "basics", "&eTalking to yourself?");
+                paramNotFound(context, "basics", "&eTalking to yourself?");
             }
             user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), message);
             context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), message));
@@ -76,8 +75,7 @@ public class ChatCommands
         if (sender == null)
         {
             this.lastWhisperOfConsole = user.getName();
-            user.setAttribute(basics,
-                "lastWhisper", "console");
+            user.setAttribute(basics, "lastWhisper", "console");
         }
         else
         {
@@ -95,7 +93,7 @@ public class ChatCommands
     }
 
     @Command(
-    names =
+        names =
     {
         "reply", "r"
     },
@@ -111,7 +109,7 @@ public class ChatCommands
         {
             if (this.lastWhisperOfConsole == null)
             {
-                invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
+                blockCommand(context, "basics", "&eNobody send you a message you could reply to!");
             }
             lastWhisperer = lastWhisperOfConsole;
         }
@@ -120,7 +118,7 @@ public class ChatCommands
             lastWhisperer = sender.getAttribute(basics, "lastWhisper");
             if (lastWhisperer == null)
             {
-                invalidUsage(context, "basics", "Nobody send you a message you could reply to!");
+                blockCommand(context, "basics", "&eNobody send you a message you could reply to!");
                 return;
             }
             replyToConsole = "console".equalsIgnoreCase(lastWhisperer);
@@ -128,7 +126,7 @@ public class ChatCommands
         user = um.findUser(lastWhisperer);
         if (!replyToConsole && (user == null || !user.isOnline()))
         {
-            invalidUsage(context, "basics", "Could not find the player to reply too. Is he offline?");
+            paramNotFound(context, "basics", "&eCould not find the player to reply too. Is he offline?");
         }
         String message = context.getStrings(0);
         if (replyToConsole)
@@ -144,7 +142,7 @@ public class ChatCommands
     }
 
     @Command(
-    desc = "Broadcasts a message",
+        desc = "Broadcasts a message",
     usage = "<message>")
     public void broadcast(CommandContext context)
     {
@@ -154,7 +152,56 @@ public class ChatCommands
         {
             sb.append(context.getString(i++)).append(" ");
         }
-        this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.
-            toString());
+        this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.toString());
+    }
+
+    @Command(
+        desc = "Mutes a player",
+        usage = "<player> [duration]",
+        min = 1,
+        max = 2)
+    public void mute(CommandContext context) // mute will be unset when user is unloaded
+    {
+        //TODO save this in user nbt
+        final User user = context.getUser(0);
+        if (user == null)
+        {
+            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+        }
+        long delay = 0;
+        if (context.hasIndexed(1))
+        {
+            delay = context.getIndexed(1, Long.class, 601000L);//TODO default in config(in seconds) //TODO detec sec min
+        }
+        final int taskId = this.basics.getTaskManger().scheduleSyncDelayedTask(basics, new Runnable()
+        {
+            public void run()
+            {
+                user.removeAttribute(basics, "muted");
+                user.sendMessage("basics", "&aYou are no longer muted.");
+            }
+        }, delay);
+        user.setAttribute(basics, "muted", taskId);
+        user.sendMessage("basics", "&cYou are now muted for &6%d &cseconds!");
+    }
+
+    @Command(
+        desc = "Unmutes a player",
+        usage = "<player>",
+        min = 1,
+        max = 1)
+    public void unmute(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+        }
+        Integer unmuteTask = user.getAttribute(basics, "muted");
+        if (unmuteTask != null)
+        {
+            this.basics.getTaskManger().cancelTask(basics, unmuteTask);
+        }
+        user.sendMessage("basics", "&aYou got unmuted!");
     }
 }

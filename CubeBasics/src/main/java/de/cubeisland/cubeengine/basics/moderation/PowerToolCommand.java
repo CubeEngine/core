@@ -16,7 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 
 /**
- * /powertool.
+ * The powertool command allows binding commands/chatmakros to a specific item
+ * using NBT-Data.
+ * /powertool
  */
 public class PowerToolCommand
 {
@@ -136,8 +138,7 @@ public class PowerToolCommand
                 if (ptVals != null || ptVals.size() == 0)
                 {
                     NBTTagList newVals = new NBTTagList();
-                    int i = 0;
-                    for (; i < ptVals.size() - 1; i++)
+                    for (int i = 0; i < ptVals.size() - 1; i++)
                     {
                         newVals.add(ptVals.get(i));
                     }

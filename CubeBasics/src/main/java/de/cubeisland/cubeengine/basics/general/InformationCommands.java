@@ -140,6 +140,8 @@ public class InformationCommands
         }
         List<Entity> list = user.getWorld().getEntities();
         List<String> outputlist = new ArrayList<String>(); //TODO sort list by distance
+        //TODO if list contains too many objects show nearest normally then
+        //e.g.:  100x Zombie (250m+)
         //TODO only show the flag is there for
         for (Entity entity : list)
         {

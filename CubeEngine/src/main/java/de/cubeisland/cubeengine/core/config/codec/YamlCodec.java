@@ -33,6 +33,10 @@ public class YamlCodec extends ConfigurationCodec
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
         Map<String, Object> map = (Map<String, Object>)yaml.load(is);
+        if (map == null)
+        {
+            return null;
+        }
         try
         {
             Object rev = map.get("revision");
@@ -63,8 +67,7 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof Map)
             {
                 sb.append(LINEBREAK);
-                sb.append(this.
-                    convertMap(path, (Map<String, Object>)value, off + 1));
+                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
                 return sb.toString();
             }
             else
@@ -122,15 +125,11 @@ public class YamlCodec extends ConfigurationCodec
         {
             if (off == 0)
             {
-                sb.append(this.buildComment(entry.getKey(), off))
-                    .append(this.
-                    convertValue(entry.getKey(), entry.getValue(), off));//path value off
+                sb.append(this.buildComment(entry.getKey(), off)).append(this.convertValue(entry.getKey(), entry.getValue(), off));//path value off
             }
             else
             {
-                sb.append(this.buildComment(path + "." + entry.getKey(), off))
-                    .append(this.
-                    convertValue(path + "." + entry.getKey(), entry.getValue(), off));
+                sb.append(this.buildComment(path + "." + entry.getKey(), off)).append(this.convertValue(path + "." + entry.getKey(), entry.getValue(), off));
             }
             if (!first)
             {

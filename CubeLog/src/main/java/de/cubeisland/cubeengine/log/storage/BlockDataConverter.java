@@ -37,9 +37,9 @@ public class BlockDataConverter implements Converter<BlockData>
         }
         Material mat;
         Byte data;
-        if (string.contains(":"))
+        if (!string.contains(":"))
         {
-            mat = Material.matchMaterial(string.substring(0, string.indexOf(":")));
+            mat = Material.matchMaterial(string);
             data = 0;
         }
         else

@@ -34,7 +34,7 @@ public class CommandContext
     private boolean empty;
     private boolean helpCall;
     
-    private static Integer offset;
+    private static int offset;
 
     /**
      * Initializes the CommandContext object with an array of arguments

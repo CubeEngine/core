@@ -175,6 +175,7 @@ public class TestConfig extends Configuration
 
         public class TestSubSubConfig extends Configuration
         {
+            @Comment("SubMapComment2")
             @Option("sub.int")
             public int subInt = 1;
             @Option("sub.doub")

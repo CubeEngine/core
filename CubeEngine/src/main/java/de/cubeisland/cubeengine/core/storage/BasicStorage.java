@@ -521,4 +521,25 @@ public class BasicStorage<V extends Model> implements Storage<V>
             this.updaters.put(i, updater);
         }
     }
+    
+    public void notAssignKey()
+    {
+        this.keyIsAI = false;
+        String[] allFields = new String[this.attributes.size() + 1];
+        allFields[0] = this.key;
+        System.arraycopy(this.attributes.toArray(), 0, allFields, 1, this.attributes.size());
+        QueryBuilder builder = this.database.getQueryBuilder();
+        builder.insert()
+            .into(this.table)
+            .cols(allFields)
+            .end();
+        try
+        {
+            this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error overriding store not to return key.", ex);
+        }
+    }
 }
