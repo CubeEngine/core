@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -56,7 +56,7 @@ public class PlayerCommands
                 user = context.getUser(0);
                 if (user == null)
                 {
-                    invalidUsage(context, "basics", "&cUser %s not found!", context.getString(0));
+                    paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
                 }
                 other = true;
             }
@@ -111,7 +111,7 @@ public class PlayerCommands
                 user = context.getUser(0);
                 if (user == null)
                 {
-                    invalidUsage(context, "core", "&cUser %s not found!", context.getString(0));
+                    paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
                 }
                 other = true;
             }
@@ -166,7 +166,7 @@ public class PlayerCommands
             {
                 if (user == null)
                 {
-                    invalidUsage(context, "core", "&cUser %s not found!", context.getString(0));
+                    paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
                 }
                 other = true;
             }
@@ -212,7 +212,7 @@ public class PlayerCommands
             user = context.getUser(1);
             if (user == null)
             {
-                invalidUsage(context, "core", "&cUser %s not found!", context.getString(1));
+                paramNotFound(context, "core", "&cUser %s not found!", context.getString(1));
             }
             changeOther = true;
         }
@@ -275,7 +275,7 @@ public class PlayerCommands
         {
             if (!context.hasFlag("a"))
             {
-                invalidUsage(context, "core", "&cUser %s not found!",context.getString(0));
+                paramNotFound(context, "core", "&cUser %s not found!",context.getString(0));
             }
         }
         else
@@ -326,7 +326,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            illegalParameter(context, "core", "&cUser %s not found!", context.getString(0));
+            paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;
