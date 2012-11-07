@@ -433,7 +433,7 @@ public class AnnouncementManager
             folder.mkdirs();
             File configFile = new File(folder, "announcement.yml");
             configFile.createNewFile();
-            File language = new File(folder, locale + ".txt"); // TODO change for users/servers language
+            File language = new File(folder, locale + ".txt");
             language.createNewFile();
 
             AnnouncementConfiguration config = new AnnouncementConfiguration();

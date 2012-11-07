@@ -24,12 +24,32 @@ public class Shout extends Module
     private ShoutConfiguration config;
     public Logger logger;
     public File announcementFolder;
+    public boolean firstRun;
 
     // TODO CubeRoles
     @Override
     public void onEnable()
     {
-        boolean firstRun = isFirstRun();
+        File f = new File(this.getFolder(), ".shout");
+        if (f.exists())
+        {
+            this.firstRun = false;
+        }
+        try
+        {
+            f.createNewFile();
+        }
+        catch (IOException ex)
+        {
+            this.logger.log(Level.WARNING, "There was an error creating a file");
+            this.logger.log(Level.WARNING, "The error message was: " + ex.getLocalizedMessage());
+            if (this.getCore().isDebug())
+            {
+                ex.printStackTrace();
+            }
+        }
+        this.firstRun = true;
+
 
         this.logger = this.getLogger();
         this.announcementFolder = this.getFolder();
@@ -57,30 +77,6 @@ public class Shout extends Module
     @Override
     public void onDisable()
     {
-    }
-
-    private boolean isFirstRun()
-    {
-        File f = new File(this.getFolder(), ".shout");
-        if (f.exists())
-        {
-            return false;
-        }
-
-        try
-        {
-            f.createNewFile();
-        }
-        catch (IOException ex)
-        {
-            this.logger.log(Level.WARNING, "There was an error creating a file");
-            this.logger.log(Level.WARNING, "The error message was: " + ex.getLocalizedMessage());
-            if (this.getCore().isDebug())
-            {
-                ex.printStackTrace();
-            }
-        }
-        return true;
     }
 
     public AnnouncementManager getAnnouncementManager()
