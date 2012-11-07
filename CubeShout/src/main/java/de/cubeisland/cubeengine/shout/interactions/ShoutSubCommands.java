@@ -1,21 +1,14 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import org.bukkit.permissions.PermissionDefault;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.task.Announcement;
-import de.cubeisland.cubeengine.shout.task.AnnouncementConfiguration;
 
 public class ShoutSubCommands {
 	
@@ -28,6 +21,7 @@ public class ShoutSubCommands {
 	
 	@Command
 	(
+			names = {"list", "announcements"},
 			desc = "List all announcements",
 			permDefault = PermissionDefault.OP,
 			permNode = "cubeengine.shout.list"
@@ -40,7 +34,13 @@ public class ShoutSubCommands {
 			announcements.append(a.getName() + ", ");
 		}
 		
-		context.sendMessage("shout", "Here is the list of announcements: %s", announcements.substring(0, announcements.length()-2));
+		if (announcements.toString().isEmpty())
+		{
+			context.sendMessage("shoust", "There is no loaded announcements!");
+			return;
+		}
+		context.sendMessage("shout", "Here is the list of announcements: %s",
+				announcements.substring(0, announcements.length()-2));
 	}
 	
 	@Command
@@ -85,47 +85,28 @@ public class ShoutSubCommands {
 			context.sendMessage("shout", "You have to include a message!");
 			return;
 		}
-		try {
-			String name = context.getIndexed(0, String.class);
-			File folder = new File(module.announcementFolder, name);
-			folder.mkdirs();
-			File configFile = new File(folder, "announcement.yml");
-			configFile.createNewFile();
-			File language = new File(folder, "en_US.txt"); // TODO change for users/servers language
-			language.createNewFile();
-			
-			AnnouncementConfiguration config = new AnnouncementConfiguration();
-			config.setCodec("yml");
-			config.setFile(configFile);
-			config.delay = context.getNamed("delay", String.class, "10 minutes");
-			config.world = context.getNamed("world", String.class, "*");
-			config.permNode = context.getNamed("permission", String.class, "*");
-			config.group = context.getNamed("group", String.class, "*");
-			config.save();
-			
-			FileWriter fw = new FileWriter(language);
-			BufferedWriter bw = new BufferedWriter(fw);
-			
+		
+		try
+		{
 			String message = "";
 			for (Object o : context.getNamed("message"))
 			{
 				message += (String)o;
 			}
-			bw.write(message);
 			
-			bw.close();
-			fw.close();
+			String locale = module.getCore().getConfiguration().defaultLanguage;
+			if (context.getSenderAsUser() != null)
+			{
+				locale = context.getSenderAsUser().getLanguage();
+			}
 			
+			module.getAnnouncementManager().createAnnouncement(context.getIndexed(0, String.class), message, context.getNamed("delay", String.class, "10 minutes"), 
+					context.getNamed("world", String.class, "*"), context.getNamed("group", String.class, "*"), context.getNamed("permission", String.class, "*"), 
+					locale);
 			module.getAnnouncementManager().clean();
 			
 			context.sendMessage("shout", "Your announcement have been created and loaded into the plugin");
-		}catch (IOException e) {
-			context.sendMessage("shout", "Could not create some of the files or folders.");
-			context.sendMessage("shout", "Please contact an administrator and tell him to check their console.");
-			e.printStackTrace();
 		} catch (ConversionException e) {} // This should never happen
-		
-		
 	}
 
 	@Command

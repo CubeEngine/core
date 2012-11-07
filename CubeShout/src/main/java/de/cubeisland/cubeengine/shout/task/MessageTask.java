@@ -25,15 +25,16 @@ public class MessageTask extends TimerTask
 	
 	public void run()
 	{
-		Logger.getLogger("Debug").log(Level.INFO, "Task run "+ runs);
-		Logger.getLogger("Debug").log(Level.INFO, "Next excecution "+ nextExcecution);
 		if(this.runs == this.nextExcecution)
 		{
 			Logger.getLogger("Debug").log(Level.INFO, "excecutiong now!");
-			if(aManager.getNextMessage(user) != null){
+			if(aManager.getNextMessage(user) != null)
+			{
 				taskManager.queueMessage(user, aManager.getNextMessage(user));
 				this.nextExcecution = this.runs + aManager.getNextDelay(user);
-			}else{
+			}
+			else
+			{
 				this.nextExcecution = this.runs+1;	
 			}
 		}

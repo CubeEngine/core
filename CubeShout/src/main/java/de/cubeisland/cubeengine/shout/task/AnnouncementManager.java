@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.shout.task;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,18 +33,14 @@ public class AnnouncementManager
 	
 	private Shout module;
 	private TaskManager taskManager;
-	private Map<String, Queue<Announcement>> messages;	//
-	private Map<String, Queue<Long>> delays;			// TODO Combine these in one class
-	private Map<String, String> worlds;					//
+	private Map<String, AnnouncementReceiver> receivers;
 	private Map<String, Announcement> announcements;
 	
 	public AnnouncementManager(Shout module)
 	{
 		this.module = module;
 		this.taskManager = module.getTaskManager();
-		this.messages = new ConcurrentHashMap<String, Queue<Announcement>>();
-		this.delays = new ConcurrentHashMap<String, Queue<Long>>();
-		this.worlds = new ConcurrentHashMap<String, String>();
+		this.receivers = new ConcurrentHashMap<String, AnnouncementReceiver>();
 		this.announcements = new HashMap<String, Announcement>();
 	}
 	
@@ -54,9 +53,9 @@ public class AnnouncementManager
 	public List<Announcement> getAnnouncemets(String user)
 	{
 
-		Announcement[] aarray = new Announcement[announcements.size()];
-		messages.get(user).toArray(aarray);
-		return Arrays.asList(aarray);
+		Announcement[] announcementArray = new Announcement[announcements.size()];
+		receivers.get(user).messages.toArray(announcementArray);
+		return Arrays.asList(announcementArray);
 	}
 
 	/**
@@ -144,10 +143,10 @@ public class AnnouncementManager
 		//Skip all announcements that don't apply to this world.
 		while (!used)
 		{
-			if(messages.get(user).element().hasWorld(worlds.get(user)))
+			if(receivers.get(user).messages.element().hasWorld(receivers.get(user).world))
 			{
-				announcement = messages.get(user).poll();
-				messages.get(user).add(announcement);
+				announcement = receivers.get(user).messages.poll();
+				receivers.get(user).messages.add(announcement);
 				used = true;
 			}
 		}
@@ -171,17 +170,16 @@ public class AnnouncementManager
 		//Skip all announcements that don't apply to the users current world.
 		while (!used)
 		{
-			if(messages.get(user).element().hasWorld(worlds.get(user)))
+			if(receivers.get(user).messages.element().hasWorld(receivers.get(user).world))
 			{
-				announcement = messages.get(user).poll();
-				messages.get(user).add(announcement);
+				announcement = receivers.get(user).messages.poll();
+				receivers.get(user).messages.add(announcement);
 				used = true;
 			}
 		}
 		if (announcement == null){
 			return 0;
 		}
-		//TODO add language support
 		return (int) (announcement.getDelay()/getGreatestCommonDivisor(user));
 	}
 
@@ -196,7 +194,8 @@ public class AnnouncementManager
 	 * @param group
 	 * @throws ShoutException if there is something wrong with the values
 	 */
-	public void addAnnouncement(String name, Map<String, String> messages, String world, long delay, String permNode, String group) throws ShoutException
+	public void addAnnouncement(String name, Map<String, String> messages, String world, long delay,
+			String permNode, String group) throws ShoutException
 	{
 		if (world == null ||  module.getCore().getServer().getWorld(world) == null)
 		{
@@ -219,7 +218,8 @@ public class AnnouncementManager
 			throw new ShoutException("No valid group for anouncement: " + name);
 		}
 		
-		this.announcements.put(name, new Announcement(name, module.getCore().getConfiguration().defaultLanguage, permNode, world, messages, delay));
+		this.announcements.put(name, new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
+				permNode, world, messages, delay));
 	}
 	
 	/**
@@ -228,48 +228,21 @@ public class AnnouncementManager
 	 * @param user	The user
 	 */
 	public void initializeUser(User user) {
-		if (module.getCore().isDebug() && announcements.isEmpty())
-		{
-			module.logger.log(Level.INFO, "There is no announcements loaded!!");
-		}
+		String name = user.getName();
+		Queue<Announcement> messages = new LinkedList<Announcement>();
+		String world = user.getWorld().getName();
 		
 		// Load what announcements should be displayed to the user
 		for (Announcement a : announcements.values())
 		{
-			if (module.getCore().isDebug())
-			{
-				module.logger.log(Level.INFO, "Checking with new announcement");
-			}
-			
 			if (a.getPermNode().equals("*") || user.hasPermission(a.getPermNode()))// TODO CubeRoles
 			{
-				if (!messages.containsKey(user.getName()))
-				{
-					messages.put(user.getName(), new LinkedList<Announcement>());
-				}
-				messages.get(user.getName()).add(a);
-				
-				if(!delays.containsKey(user.getName()))
-				{
-					delays.put(user.getName(), new LinkedList<Long>());
-				}
-				delays.get(user.getName()).add(a.getDelay());
-				
-				worlds.put(user.getName(), user.getWorld().getName());
-				
-				if (module.getCore().isDebug())
-				{
-					module.logger.log(Level.INFO, user.getName() + " is now receiving message: " + a.getName());
-				}
-			} else {
-				if (module.getCore().isDebug())
-				{
-					module.logger.log(Level.INFO, "The user did not have permission");
-				}
+				messages.add(a);
 			}
 			
 		}
 		
+		this.receivers.put(name, new AnnouncementReceiver(messages, world));
 	}
 	
 	/**
@@ -279,7 +252,7 @@ public class AnnouncementManager
 	 * @param 	world	The new world
 	 */
 	public void setWorld(String user, String world) {
-		worlds.put(user, world);
+		receivers.get(user).world = world;
 	}
 
 	/**
@@ -288,9 +261,7 @@ public class AnnouncementManager
 	 * @param 	user	the user to clean
 	 */
 	public void clean(String user) {
-		this.messages.remove(user);
-		this.delays.remove(user);
-		this.worlds.remove(user);
+		this.receivers.remove(user);
 		this.taskManager.stopUser(user);
 	}
 	
@@ -299,14 +270,12 @@ public class AnnouncementManager
 	 */
 	public void clean()
 	{
-		for(String s : messages.keySet())
+		for(String s : receivers.keySet())
 		{
 			this.clean(s);
 		}
 
-		this.messages = new ConcurrentHashMap<String, Queue<Announcement>>();
-		this.delays = new ConcurrentHashMap<String, Queue<Long>>();
-		this.worlds = new ConcurrentHashMap<String, String>();
+		this.receivers = new ConcurrentHashMap<String, AnnouncementReceiver>();
 		this.announcements = new HashMap<String, Announcement>();
 		
 		this.loadAnnouncements(module.announcementFolder);
@@ -316,7 +285,8 @@ public class AnnouncementManager
 			User u = module.getUserManager().getUser(p.getName(), false);
 			
 			this.initializeUser(u);
-			taskManager.scheduleTask(u.getName(), new MessageTask(this, taskManager, u), this.getGreatestCommonDivisor(u.getName()));
+			taskManager.scheduleTask(u.getName(), new MessageTask(this, taskManager, u),
+					this.getGreatestCommonDivisor(u.getName()));
 		}
 	}
 	
@@ -344,7 +314,8 @@ public class AnnouncementManager
 				} 
         		catch (ShoutException e)
         		{
-					module.logger.log(Level.WARNING, "There was an error loading the announcement: " + f.getName());
+					module.logger.log(Level.WARNING, "There was an error loading the announcement: "
+							+ f.getName());
 					module.logger.log(Level.WARNING, "The error message was: " + e.getLocalizedMessage());
 					if (module.getCore().isDebug())
 	        		{
@@ -425,7 +396,7 @@ public class AnnouncementManager
      * @param delayText	the text to parse
      * @return the delay in ticks
      */
-    long parseDelay(String delayText) {
+    public long parseDelay(String delayText) {
 		String[] parts = delayText.split(" ", 2);
 		int tmpdelay = Integer.parseInt(parts[0]);
 		String unit = parts[1].toLowerCase();
@@ -448,5 +419,52 @@ public class AnnouncementManager
 		return 0;
 	}
 
+	public void createAnnouncement(String name, String message, String delay, String world, String group,
+			String permNode, String locale)
+	{
+		try
+		{
+			File folder = new File(module.announcementFolder, name);
+			folder.mkdirs();
+			File configFile = new File(folder, "announcement.yml");
+			configFile.createNewFile();
+			File language = new File(folder, locale + ".txt"); // TODO change for users/servers language
+			language.createNewFile();
+			
+			AnnouncementConfiguration config = new AnnouncementConfiguration();
+			config.setCodec("yml");
+			config.setFile(configFile);
+			config.delay = delay;
+			config.world = world;
+			config.permNode = permNode;
+			config.group = group;
+			config.save();
+			
+			BufferedWriter bw = new BufferedWriter(new FileWriter(language));
+			bw.write(message);
+			bw.close();
+		}
+		catch (IOException ex)
+		{
+			module.logger.log(Level.WARNING, "There was an error creating the announcement: " + name);
+			module.logger.log(Level.WARNING, "The error message was: " + ex.getLocalizedMessage());
+			if (module.getCore().isDebug())
+    		{
+				ex.printStackTrace();
+    		}
+		}
+	}
+    
+	private class AnnouncementReceiver {
+		public Queue<Announcement> messages;
+		public String world;
+		
+		public AnnouncementReceiver (Queue<Announcement> messages, String world)
+		{
+			this.messages = messages;
+			this.world = world;
+		}
+		
+	}
 	
 }

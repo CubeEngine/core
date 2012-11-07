@@ -13,8 +13,7 @@ public class Announcement
 	private String permNode;
 	private String world;
 	private Map<String, String> messages;
-	//in millisecounds
-	private long delay = 0;
+	private long delay = 0;	//in milliseconds
 	
 	/**
 	 * Constructor of Announcement

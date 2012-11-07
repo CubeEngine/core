@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.shout;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.config.annotations.From;
@@ -30,6 +32,8 @@ public class Shout extends Module
     @Override
     public void onEnable()
     {
+        boolean firstRun = isFirstRun();
+        
     	this.logger = this.getLogger();
     	this.announcementFolder = this.getFolder();
     	this.getFileManager().dropResources(ShoutResource.values());
@@ -40,8 +44,13 @@ public class Shout extends Module
     	this.command = new ShoutCommand(this);
     	this.subCommands = new ShoutSubCommands(this);
     	
-    	this.announcementManager.loadAnnouncements(this.announcementFolder); // Should we move this to a separate folder? config?
+        if (firstRun)
+        {
+        	this.announcementManager.createAnnouncement("Example", "This is an example announcement",
+        			"10 minutes", "*", "*", "*", this.getCore().getConfiguration().defaultLanguage);
+        }
     	
+    	this.announcementManager.loadAnnouncements(this.announcementFolder);
     	this.registerListener(listener);
     	this.registerCommands(command);
     	this.registerCommands(subCommands, "shout");
@@ -53,6 +62,31 @@ public class Shout extends Module
     {
     	
     }
+    
+    private boolean isFirstRun()
+    {
+    	File f = new File(this.getFolder(), ".shout");
+    	if (f.exists())
+    	{
+    		return false;
+    	}
+    	
+    	try
+    	{
+			f.createNewFile();
+		}
+    	catch (IOException ex)
+    	{
+    		this.logger.log(Level.WARNING, "There was an error creating a file");
+			this.logger.log(Level.WARNING, "The error message was: " + ex.getLocalizedMessage());
+			if (this.getCore().isDebug())
+    		{
+				ex.printStackTrace();
+    		}
+		}
+    	return true;
+    }
+    
     
 	public AnnouncementManager getAnnouncementManager()
 	{
