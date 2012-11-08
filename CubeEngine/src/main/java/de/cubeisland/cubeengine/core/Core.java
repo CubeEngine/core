@@ -21,7 +21,7 @@ import org.bukkit.Server;
  */
 public interface Core
 {
-    public static final int REVISION = 3;
+    public static final int REVISION = 1;
 
     /**
      * The method returns the Server

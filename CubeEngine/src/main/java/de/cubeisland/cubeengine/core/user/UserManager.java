@@ -46,10 +46,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     private final ConcurrentHashMap<String, User> users;
     private final Server server;
     private final ScheduledExecutorService executor;
+    private static final int REVISION = 3;
 
     public UserManager(final Core core)
     {
-        super(core.getDB(), User.class, Core.REVISION);
+        super(core.getDB(), User.class, REVISION);
         this.core = core;
         this.registerUpdaters();
         this.executor = core.getTaskManager().getExecutorService();

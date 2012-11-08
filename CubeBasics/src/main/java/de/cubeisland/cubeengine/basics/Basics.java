@@ -15,11 +15,13 @@ public class Basics extends Module
     @From
     protected BasicsConfiguration config;
     private BasicUserManager basicUM;
+    private MailManager mailManager;
     
     @Override
     public void onEnable()
     {
         this.basicUM = new BasicUserManager(this.getDatabase());
+        this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.registerPermissions(BasicsPerm.values());
         //Modules:
         this.registerCommand(new ModuleCommands(this));
@@ -28,7 +30,7 @@ public class Basics extends Module
         this.registerCommands(new ChatCommands(this));
         this.registerCommands(new InformationCommands(this));
         this.registerCommands(new ListCommand());        
-        this.registerCommands(new MailCommand(this));
+        this.registerCommand(new MailCommand(this));
         this.registerCommands(new PlayerCommands(this));
         this.registerListener(new UnlimitedListener(this));
         this.registerListener(new MuteListener(this));
@@ -79,5 +81,10 @@ public class Basics extends Module
     public BasicUserManager getBasicUserManager()
     {
         return this.basicUM;
+    }
+    
+    public MailManager getMailManager()
+    {
+        return this.mailManager;
     }
 }

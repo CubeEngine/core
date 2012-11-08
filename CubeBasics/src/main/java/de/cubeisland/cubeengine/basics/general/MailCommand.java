@@ -7,12 +7,14 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import java.util.List;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
 public class MailCommand extends ContainerCommand
 {
     private Basics basics;
+    private MailManager mailManager;
 
     //TODO when user joins check with custom query if there is any mail.
     //If there is load BasicUser + Show amount of unread mails.
@@ -20,6 +22,7 @@ public class MailCommand extends ContainerCommand
     {
         super(basics, "mail", "Manages your server-mails.");
         this.basics = basics;
+        this.mailManager = basics.getMailManager();
     }
 
     @Alias(names = "readmail")
@@ -34,14 +37,14 @@ public class MailCommand extends ContainerCommand
         if (context.hasIndexed(0))
         {
             sender = context.getSenderAsUser("basics", "If you wanted to look into other players mails use: /mail spy %s."
-                                                     + "\nOtherwise be quiet!",context.getString(0));
+                + "\nOtherwise be quiet!", context.getString(0));
             //TODO mail spy <player>
             mailof = context.getUser(0);
             if (mailof == null)
             {
                 if (!context.getString(0).equalsIgnoreCase("CONSOLE"))
                 {
-                    illegalParameter(context, "basics", "User not found!");
+                    illegalParameter(context, "basics", "&cUser %s not found!", context.getString(0));
                 }
                 nameMailOf = "CONSOLE";
             }
@@ -52,36 +55,37 @@ public class MailCommand extends ContainerCommand
         }
         else
         {
-            sender = context.getSenderAsUser("basics", "Log into the game to check your mailbox!");
+            sender = context.getSenderAsUser("basics", "&eLog into the game to check your mailbox!");
         }
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);
         if (bUser.mailbox.isEmpty())
         {
-            context.sendMessage("basics", "You do not have any message!");
+            context.sendMessage("basics", "&eYou do not have any message!");
         }
+
+        List<Mail> mails;
         if (mailof == null) // Just read next mail
         {
-            bUser.readMail();
+            mails = mailManager.getMails(sender);
         }
         else //Search for mail of that user
         {
-            String foundMessage = null;
-            for (String message : bUser.mailbox)
+            mails = mailManager.getMails(sender, mailof);
+        }
+        if (mails.isEmpty()) // Mailbox is not empty but no message from that player
+        {
+            context.sendMessage("basics", "You do not have any mail from %s", nameMailOf);
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            for (Mail mail : mails)
             {
-                if (message.startsWith(nameMailOf))
-                {
-                    foundMessage = message;
-                    break;
-                }
+                i++;
+                sb.append("\n").append(i).append(": ").append(mail.toString());
             }
-            if (foundMessage == null)
-            {
-                context.sendMessage("basics", "You do not have any mail from %s", nameMailOf);
-            }
-            else
-            {
-                context.sendMessage("basics", "Mail read:\n%s", foundMessage);
-            }
+            context.sendMessage("basics", "Mail read:%s", sb.toString());
         }
     }
 
@@ -113,13 +117,13 @@ public class MailCommand extends ContainerCommand
 
     @Command(names =
     {
-        "remove", "delete"
+        "clear", "remove"
     },
-    desc = "Deletes a mail.")
+    desc = "Clears your mails.", usage = "[player]")
     //TODO alias for deleting all 
     //mail remove -a
     //== mail clear
-    public void remove(CommandContext context)
+    public void clear(CommandContext context)
     {
     }
 
@@ -127,9 +131,7 @@ public class MailCommand extends ContainerCommand
     {
         for (User user : users)
         {
-            BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
-            bUser.addMail(from, message); //If from is null pretend it was the console
-            this.basics.getBasicUserManager().update(bUser); // This is async
+            mailManager.addMail(user, from, message);
             if (user.isOnline())
             {
                 user.sendMessage("basics", "You just got a mail from %s", from.getName());
