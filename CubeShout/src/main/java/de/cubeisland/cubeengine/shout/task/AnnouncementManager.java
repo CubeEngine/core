@@ -204,7 +204,7 @@ public class AnnouncementManager
                 world, messages, delay);
             Announcement announcement = new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
                 permNode, world, messages, delay);
-            this.announcements.put(name, announcement);
+            this.addAnnouncement(announcement);
         }
         catch (IllegalArgumentException ex)
         {
@@ -471,7 +471,10 @@ public class AnnouncementManager
         bw.write(message);
         bw.close();
     }
-
+    
+    /**
+     * Class to reperesent someone receiving announcements
+     */
     private class AnnouncementReceiver
     {
         public Queue<Announcement> messages;
