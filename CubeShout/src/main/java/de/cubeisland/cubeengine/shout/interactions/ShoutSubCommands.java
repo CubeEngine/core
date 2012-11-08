@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.task.Announcement;
+import java.io.IOException;
 
 public class ShoutSubCommands
 {
@@ -31,7 +32,7 @@ public class ShoutSubCommands
         StringBuilder announcements = new StringBuilder();
         for (Announcement a : module.getAnnouncementManager().getAnnouncemets())
         {
-            announcements.append(a.getName() + ", ");
+            announcements.append(a.getName()).append(", ");
         }
 
         if (announcements.toString().isEmpty())
@@ -97,14 +98,28 @@ public class ShoutSubCommands
                 locale = context.getSenderAsUser().getLanguage();
             }
 
-            module.getAnnouncementManager().createAnnouncement(context.getIndexed(0, String.class), message, context.getNamed("delay", String.class, "10 minutes"),
-                context.getNamed("world", String.class, "*"), context.getNamed("group", String.class, "*"), context.getNamed("permission", String.class, "*"),
-                locale);
+            try
+            {
+                module.getAnnouncementManager().createAnnouncement(context.getIndexed(0, String.class), message, context.getNamed("delay", String.class, "10 minutes"),
+                    context.getNamed("world", String.class, "*"), context.getNamed("group", String.class, "*"), context.getNamed("permission", String.class, "*"),
+                    locale);
+            }
+            catch (IllegalArgumentException ex)
+            {
+                context.sendMessage("shout", "Some of your arguments are not valid.");
+                context.sendMessage("shout", "The error message was: %S", ex.getLocalizedMessage());
+            }
+            catch (IOException ex)
+            {
+                context.sendMessage("shout", "There was an error creating some of the files.");
+                context.sendMessage("shout", "The error message was: %S", ex.getLocalizedMessage());
+            }
+
             module.getAnnouncementManager().clean();
 
             context.sendMessage("shout", "Your announcement have been created and loaded into the plugin");
         }
-        catch (ConversionException e)
+        catch (ConversionException ex)
         {
         } // This should never happen
     }

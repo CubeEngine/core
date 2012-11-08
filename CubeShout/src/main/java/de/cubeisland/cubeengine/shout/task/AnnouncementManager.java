@@ -198,29 +198,23 @@ public class AnnouncementManager
     public void addAnnouncement(String name, Map<String, String> messages, String world, long delay,
         String permNode, String group) throws ShoutException
     {
-        if (world == null || module.getCore().getServer().getWorld(world) == null)
+        try
         {
-            world = "*";
+            Announcement.validate(name, permNode, module.getCore().getConfiguration().defaultLanguage,
+                world, messages, delay);
+            Announcement announcement = new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
+                permNode, world, messages, delay);
+            this.announcements.put(name, announcement);
         }
-        if (delay == 0)
+        catch (IllegalArgumentException ex)
         {
-            throw new ShoutException("No valid delay for anouncement: " + name);
+            throw new ShoutException("The announcement was not valid", ex);
         }
-        if (messages == null || !messages.containsKey("en_US"))
-        {
-            throw new ShoutException("No valid message for anouncement: " + name);
-        }
-        if (!permNode.equals("*") || (permNode == null || permNode.isEmpty()))
-        {
-            throw new ShoutException("No valid permission for anouncement: " + name);
-        }
-        if (!group.equals("*") || (group == null || group.isEmpty()))
-        {
-            throw new ShoutException("No valid group for anouncement: " + name);
-        }
+    }
 
-        this.announcements.put(name, new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
-            permNode, world, messages, delay));
+    public void addAnnouncement(Announcement announcement)
+    {
+        this.announcements.put(announcement.getName(), announcement);
     }
 
     /**
@@ -323,7 +317,7 @@ public class AnnouncementManager
                     module.logger.log(Level.WARNING, "The error message was: " + e.getLocalizedMessage());
                     if (module.getCore().isDebug())
                     {
-                        e.printStackTrace();
+                        module.logger.log(Level.SEVERE, null, e);
                     }
                 }
             }
@@ -344,7 +338,7 @@ public class AnnouncementManager
             throw new ShoutException("Tried to load an announcement that was a file!");
         }
 
-        File confFile = new File(f, "announcement.yml");
+        File confFile = new File(f, "meta.yml");
         if (!confFile.exists())
         {
             throw new ShoutException("No configfile to announcement: " + f.getName());
@@ -360,11 +354,13 @@ public class AnnouncementManager
         world = conf.world == null ? world : conf.world;
         permNode = conf.permNode == null ? permNode : conf.permNode;
         group = conf.group == null ? group : conf.group;
-        delay = parseDelay(conf.delay);
-
-        if (delay == 0)
+        try
         {
-            throw new ShoutException("No valid delay in announcement: " + f.getName());
+            delay = parseDelay(conf.delay);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            throw new ShoutException("The delay was not valid", ex);
         }
 
         List<File> languages = new ArrayList<File>();
@@ -375,7 +371,7 @@ public class AnnouncementManager
             StringBuilder message = new StringBuilder();
             for (String line : FileUtil.readStringList(lang))
             {
-                message.append(line + "\n");
+                message.append(line).append("\n");
             }
             messages.put(lang.getName().replace(".txt", ""), message.toString());
         }
@@ -388,7 +384,14 @@ public class AnnouncementManager
             module.logger.log(Level.INFO, "Permission: " + permNode);
             module.logger.log(Level.INFO, "Group: " + group);
         }
-        this.addAnnouncement(f.getName(), messages, world, delay, permNode, group);
+        try
+        {
+            this.addAnnouncement(f.getName(), messages, world, delay, permNode, group);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            throw new ShoutException("The delay was not valid", ex);
+        }
     }
 
     /**
@@ -399,10 +402,15 @@ public class AnnouncementManager
      * 
      * @param delayText	the text to parse
      * @return the delay in ticks
+     * @throws IllegalArgumentException if the delay was not in a valid format
      */
-    public long parseDelay(String delayText)
+    public long parseDelay(String delayText) throws IllegalArgumentException
     {
         String[] parts = delayText.split(" ", 2);
+        if (parts.length != 2)
+        {
+            throw new IllegalArgumentException("Not valid delay string");
+        }
         int tmpdelay = Integer.parseInt(parts[0]);
         String unit = parts[1].toLowerCase();
         if (unit.equalsIgnoreCase("secounds") || unit.equalsIgnoreCase("secound"))
@@ -424,40 +432,44 @@ public class AnnouncementManager
         return 0;
     }
 
+    /**
+     * Create an announcement folder structure with the params specified.
+     * This will not load the announcement into the plugin
+     * 
+     * @param name
+     * @param message
+     * @param delay
+     * @param world
+     * @param group
+     * @param permNode
+     * @param locale 
+     */
     public void createAnnouncement(String name, String message, String delay, String world, String group,
-        String permNode, String locale)
+        String permNode, String locale) throws IOException, IllegalArgumentException
     {
-        try
-        {
-            File folder = new File(module.announcementFolder, name);
-            folder.mkdirs();
-            File configFile = new File(folder, "announcement.yml");
-            configFile.createNewFile();
-            File language = new File(folder, locale + ".txt");
-            language.createNewFile();
+        Map<String, String> messages = new HashMap<String, String>();
+        messages.put(locale, message);
+        Announcement.validate(name, locale, permNode, world, messages, parseDelay(delay));
 
-            AnnouncementConfiguration config = new AnnouncementConfiguration();
-            config.setCodec("yml");
-            config.setFile(configFile);
-            config.delay = delay;
-            config.world = world;
-            config.permNode = permNode;
-            config.group = group;
-            config.save();
+        File folder = new File(module.announcementFolder, name);
+        folder.mkdirs();
+        File configFile = new File(folder, "meta.yml");
+        configFile.createNewFile();
+        File language = new File(folder, locale + ".txt");
+        language.createNewFile();
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(language));
-            bw.write(message);
-            bw.close();
-        }
-        catch (IOException ex)
-        {
-            module.logger.log(Level.WARNING, "There was an error creating the announcement: " + name);
-            module.logger.log(Level.WARNING, "The error message was: " + ex.getLocalizedMessage());
-            if (module.getCore().isDebug())
-            {
-                ex.printStackTrace();
-            }
-        }
+        AnnouncementConfiguration config = new AnnouncementConfiguration();
+        config.setCodec("yml");
+        config.setFile(configFile);
+        config.delay = delay;
+        config.world = world;
+        config.permNode = permNode;
+        config.group = group;
+        config.save();
+
+        BufferedWriter bw = new BufferedWriter(new FileWriter(language));
+        bw.write(message);
+        bw.close();
     }
 
     private class AnnouncementReceiver

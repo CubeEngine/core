@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.shout.task;
 
 import java.util.Map;
+import org.apache.commons.lang.Validate;
 
 /*
  * Class to represent an announcement.
@@ -89,5 +90,19 @@ public class Announcement
     public String getName()
     {
         return name;
+    }
+
+    public static void validate(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay) throws IllegalArgumentException
+    {
+        Validate.notEmpty(name, "The announcement most have a name");
+        Validate.notEmpty(defaultLocale, "The announcement most have a default locale");
+        Validate.notEmpty(permNode, "The announcement most have a permission");
+        Validate.notEmpty(world, "The announcement most have a world");
+        Validate.notEmpty(messages, "The announcement most have one or more messages");
+        Validate.notNull(delay, "The announcement most have a delay");
+        if (delay == 0l)
+        {
+            throw new IllegalArgumentException("The announcement modt have a delay");
+        }
     }
 }

@@ -63,8 +63,20 @@ public class Shout extends Module
 
         if (firstRun)
         {
-            this.announcementManager.createAnnouncement("Example", "This is an example announcement",
-                "10 minutes", "*", "*", "*", this.getCore().getConfiguration().defaultLanguage);
+            try
+            {
+                this.announcementManager.createAnnouncement("Example", "This is an example announcement",
+                    "10 minutes", "*", "*", "*", this.getCore().getConfiguration().defaultLanguage);
+            }
+            catch (Exception ex)
+            {
+                this.logger.log(Level.WARNING, "An exception occured when creating the example announcement");
+                this.logger.log(Level.WARNING, "The message was: " + ex.getLocalizedMessage());
+                if (this.getCore().getConfiguration().debugMode)
+                {
+                    this.logger.log(Level.WARNING, null, ex);
+                }
+            }
         }
 
         this.announcementManager.loadAnnouncements(this.announcementFolder);
