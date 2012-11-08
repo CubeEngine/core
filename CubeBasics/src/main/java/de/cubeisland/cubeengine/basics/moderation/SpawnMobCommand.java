@@ -38,7 +38,6 @@ public class SpawnMobCommand
 
     @Command(
         desc = "Spawns the specified Mob",
-        min = 1,
         max = 3,
         usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
@@ -47,6 +46,10 @@ public class SpawnMobCommand
         if (!context.hasIndexed(2) && sender == null)
         {
             invalidUsage(context, "basics", "&eSuccesfully spawned some &cbugs &einside your server!");
+        }
+        if (!context.hasIndexed(0))
+        {
+            invalidUsage(context, "basics", "&cYou need to define what mob to spawn!");
         }
         Location loc;
         if (context.hasIndexed(2))
