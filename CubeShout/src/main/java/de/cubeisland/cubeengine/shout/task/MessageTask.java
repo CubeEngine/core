@@ -2,13 +2,11 @@ package de.cubeisland.cubeengine.shout.task;
 
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MessageTask extends TimerTask
 {
     private final AnnouncementManager aManager;
-    private final TaskManager taskManager;
+    private final Announcer taskManager;
     private final String user;
     private int runs;
     private int nextExcecution;

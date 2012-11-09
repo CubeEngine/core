@@ -1,23 +1,5 @@
 package de.cubeisland.cubeengine.shout.task;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-
-import org.bukkit.entity.Player;
-
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
@@ -25,6 +7,15 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.ShoutException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import org.bukkit.entity.Player;
 
 /*
  * Class to manage all the announcements and their receivers
@@ -46,21 +37,19 @@ public class AnnouncementManager
 
     /**
      * Get all the announcements this user should receive.
-     * 
+     *
      * @param	user	The user to get announcements of.
-     * @return			A list of all announcements that should be displayed to this user.
+     * @return	A list of all announcements that should be displayed to this
+     *         user.
      */
     public List<Announcement> getAnnouncemets(String user)
     {
-
-        Announcement[] announcementArray = new Announcement[announcements.size()];
-        receivers.get(user).messages.toArray(announcementArray);
-        return Arrays.asList(announcementArray);
+        return new ArrayList<Announcement>(receivers.get(user).messages);
     }
 
     /**
      * Get all the announcements
-     * 
+     *
      * @return All announcements
      */
     public Collection<Announcement> getAnnouncemets()
@@ -70,8 +59,8 @@ public class AnnouncementManager
 
     /**
      * Get announcement by name
-     * 
-     * @param 	name	Name of the announcement
+     *
+     * @param name	Name of the announcement
      * @return	The announcements with this name, or null if not exist
      */
     public Announcement getAnnouncement(String name)
@@ -81,8 +70,8 @@ public class AnnouncementManager
 
     /**
      * Check if this announcement exist
-     * 
-     * @param 	name	Name of the announcement to check
+     *
+     * @param name	Name of the announcement to check
      * @return	true or false
      */
     public boolean hasAnnouncement(String name)
@@ -91,27 +80,28 @@ public class AnnouncementManager
     }
 
     /**
-     * Get the greatest common divisor of the delays form the announcements this user should receive.
-     *  
-     * @param 	user	The user to get the gcd of their announcements.
-     * @return			The gcd of the users announcements.
+     * Get the greatest common divisor of the delays form the announcements this
+     * user should receive.
+     *
+     * @param user	The user to get the gcd of their announcements.
+     * @return	The gcd of the users announcements.
      */
     public long getGreatestCommonDivisor(String user)
     {
-        List<Announcement> announcements = this.getAnnouncemets(user);
-        long[] delays = new long[announcements.size()];
+        List<Announcement> tmpAnnouncements = this.getAnnouncemets(user);
+        long[] delays = new long[tmpAnnouncements.size()];
         for (int x = 0; x < delays.length; x++)
         {
-            delays[x] = announcements.get(x).getDelay();
+            delays[x] = tmpAnnouncements.get(x).getDelay();
         }
         return greatestCommonDivisor(delays);
     }
 
     /**
      * Get the greatest common divisor of a list of integers.
-     *  
+     *
      * @param	ints	The list to get the gcd from.
-     * @return			gcd of all the integers in the list.
+     * @return	gcd of all the integers in the list.
      */
     private long greatestCommonDivisor(long[] ints)
     {
@@ -131,9 +121,9 @@ public class AnnouncementManager
 
     /**
      * Get next message that should be displayed to this user.
-     * 
+     *
      * @param	user	User to get the next message of.
-     * @return			The next message that should be displayed to the user.
+     * @return	The next message that should be displayed to the user.
      */
     public String getNextMessage(String user)
     {
@@ -159,9 +149,11 @@ public class AnnouncementManager
 
     /**
      * Get the next delay for this users MessageTask
+     *
      * @param	user	The user to get the next delay of.
-     * @return			The next delay that should be used for this users MessageTask in milliseconds.
-     * @see		MessageTask
+     * @return	The next delay that should be used for this users MessageTask in
+     *         milliseconds.
+     * @see	MessageTask
      */
     public int getNextDelay(String user)
     {
@@ -188,7 +180,7 @@ public class AnnouncementManager
     /**
      * Adds an announcement.
      * Most be done before ay player joins!
-     * 
+     *
      * @param messages
      * @param world
      * @param delay
@@ -220,7 +212,7 @@ public class AnnouncementManager
 
     /**
      * initialize this users announcements
-     * 
+     *
      * @param user	The user
      */
     public void initializeUser(User user)
@@ -244,9 +236,9 @@ public class AnnouncementManager
 
     /**
      * Set the world for the user
-     * 
-     * @param 	user	The user
-     * @param 	world	The new world
+     *
+     * @param user	 The user
+     * @param world	The new world
      */
     public void setWorld(String user, String world)
     {
@@ -255,8 +247,8 @@ public class AnnouncementManager
 
     /**
      * Clean all stored information of that user
-     * 
-     * @param 	user	the user to clean
+     *
+     * @param user	the user to clean
      */
     public void clean(String user)
     {
@@ -291,21 +283,20 @@ public class AnnouncementManager
 
     /**
      * Load announcements
-     * 
+     *
      * @param	announcementFolder	The folder to load the announcements from
      */
     public void loadAnnouncements(File announcementFolder)
     {
-        List<File> announcements = new ArrayList<File>();
-        announcements = Arrays.asList(announcementFolder.listFiles());
+        List<File> announcementFiles = Arrays.asList(announcementFolder.listFiles());
 
-        for (File f : announcements)
+        for (File f : announcementFiles)
         {
             if (f.isDirectory())
             {
                 if (module.getCore().isDebug())
                 {
-                    module.logger.log(Level.INFO, "Loading announcement " + f.getName());
+                    module.logger.log(Level.INFO, "Loading announcement %s", f.getName());
                 }
                 try
                 {
@@ -313,9 +304,8 @@ public class AnnouncementManager
                 }
                 catch (ShoutException e)
                 {
-                    module.logger.log(Level.WARNING, "There was an error loading the announcement: "
-                        + f.getName());
-                    module.logger.log(Level.WARNING, "The error message was: " + e.getLocalizedMessage());
+                    module.logger.log(Level.WARNING, "There was an error loading the announcement: %s", f.getName());
+                    module.logger.log(Level.WARNING, "The error message was: %s", e.getLocalizedMessage());
                     if (module.getCore().isDebug())
                     {
                         module.logger.log(Level.SEVERE, null, e);
@@ -328,31 +318,32 @@ public class AnnouncementManager
 
     /**
      * Load an specific announcement
-     * 
-     * @param 	f				the folder to load the announcement from
-     * @throws 	ShoutException	if folder is not an folder or don't contain required information
+     *
+     * @param file the folder to load the announcement from
+     * @throws ShoutException if folder is not an folder or don't contain
+     *                        required information
      */
-    private void loadAnnouncement(File f) throws ShoutException
+    private void loadAnnouncement(File file) throws ShoutException
     {
-        if (f.isFile())
+        if (file.isFile())
         {
             throw new ShoutException("Tried to load an announcement that was a file!");
         }
 
-        File confFile = new File(f, "meta.yml");
+        File confFile = new File(file, "meta.yml");
         if (!confFile.exists())
         {
-            File config = f.listFiles((FilenameFilter)FileExtentionFilter.YAML)[0];
-            if (config != null)
+            File[] yamlFiles = file.listFiles((FilenameFilter)FileExtentionFilter.YAML);
+            if (yamlFiles.length > 0)
             {
-                if (!config.renameTo(confFile))
+                if (!yamlFiles[0].renameTo(confFile))
                 {
-                    throw new ShoutException("No configfile to announcement: " + f.getName());
+                    throw new ShoutException("No configfile to announcement: " + file.getName());
                 }
             }
             else
             {
-                throw new ShoutException("No configfile to announcement: " + f.getName());   
+                throw new ShoutException("No configfile to announcement: " + file.getName());
             }
         }
 
@@ -362,7 +353,7 @@ public class AnnouncementManager
         String permNode = "*";
         String group = "*";
 
-        AnnouncementConfiguration conf = Configuration.load(AnnouncementConfiguration.class, confFile);
+        AnnouncementConfig conf = Configuration.load(AnnouncementConfig.class, confFile, false);
         world = conf.world == null ? world : conf.world;
         permNode = conf.permNode == null ? permNode : conf.permNode;
         group = conf.group == null ? group : conf.group;
@@ -370,15 +361,14 @@ public class AnnouncementManager
         {
             delay = parseDelay(conf.delay);
         }
-        catch (IllegalArgumentException ex)
+        catch (IllegalArgumentException e)
         {
-            throw new ShoutException("The delay was not valid", ex);
+            throw new ShoutException("The delay was not valid", e);
         }
 
-        List<File> languages = new ArrayList<File>();
-        languages = Arrays.asList(f.listFiles((FilenameFilter)new FileExtentionFilter("txt")));
+        File[] languageFiles = file.listFiles((FilenameFilter)new FileExtentionFilter("txt"));
 
-        for (File lang : languages)
+        for (File lang : languageFiles)
         {
             StringBuilder message = new StringBuilder();
             for (String line : FileUtil.readStringList(lang))
@@ -388,30 +378,30 @@ public class AnnouncementManager
             messages.put(I18n.normalizeLanguage(lang.getName().replace(".txt", "")), message.toString());
         }
 
-        if (module.getCore().isDebug())
+        if (this.module.getCore().isDebug())
         {
-            module.logger.log(Level.INFO, "Languages: " + messages.keySet().toString());
-            module.logger.log(Level.INFO, "World: " + world);
-            module.logger.log(Level.INFO, "Delay(in millisecounds): " + delay);
-            module.logger.log(Level.INFO, "Permission: " + permNode);
-            module.logger.log(Level.INFO, "Group: " + group);
+            this.module.logger.log(Level.INFO, "Languages: %s", messages.keySet().toString());
+            this.module.logger.log(Level.INFO, "World: %s", world);
+            this.module.logger.log(Level.INFO, "Delay(in millisecounds): %s", delay);
+            this.module.logger.log(Level.INFO, "Permission: %s", permNode);
+            this.module.logger.log(Level.INFO, "Group: %s", group);
         }
         try
         {
-            this.addAnnouncement(f.getName(), messages, world, delay, permNode, group);
+            this.addAnnouncement(file.getName(), messages, world, delay, permNode, group);
         }
-        catch (IllegalArgumentException ex)
+        catch (IllegalArgumentException e)
         {
-            throw new ShoutException("The delay was not valid", ex);
+            throw new ShoutException("The delay was not valid", e);
         }
     }
 
     /**
      * parse a delay in this format:
-     * 	10 minutes
+     * 10 minutes
      * to
-     * 	600 000 ms
-     * 
+     * 600 000 ms
+     *
      * @param delayText	the text to parse
      * @return the delay in ticks
      * @throws IllegalArgumentException if the delay was not in a valid format
@@ -419,7 +409,7 @@ public class AnnouncementManager
     public long parseDelay(String delayText) throws IllegalArgumentException
     {
         String[] parts = delayText.split(" ", 2);
-        if (parts.length != 2)
+        if (parts.length < 2) // at least 2 parts, more will be ignored for now
         {
             throw new IllegalArgumentException("Not valid delay string");
         }
@@ -447,18 +437,18 @@ public class AnnouncementManager
     /**
      * Create an announcement folder structure with the params specified.
      * This will not load the announcement into the plugin
-     * 
+     *
      * @param name
      * @param message
      * @param delay
      * @param world
      * @param group
      * @param permNode
-     * @param locale 
+     * @param locale
      */
-    public void createAnnouncement(String name, String message, String delay, String world, String group,
-        String permNode, String locale) throws IOException, IllegalArgumentException
+    public void createAnnouncement(String name, String message, String delay, String world, String group, String permNode, String locale) throws IOException, IllegalArgumentException
     {
+        locale = I18n.normalizeLanguage(locale);
         Map<String, String> messages = new HashMap<String, String>();
         messages.put(locale, message);
         Announcement.validate(name, locale, permNode, world, messages, parseDelay(delay));
@@ -470,7 +460,7 @@ public class AnnouncementManager
         File language = new File(folder, locale + ".txt");
         language.createNewFile();
 
-        AnnouncementConfiguration config = new AnnouncementConfiguration();
+        AnnouncementConfig config = new AnnouncementConfig();
         config.setCodec("yml");
         config.setFile(configFile);
         config.delay = delay;
@@ -480,10 +470,21 @@ public class AnnouncementManager
         config.save();
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(language));
-        bw.write(message);
-        bw.close();
+        try
+        {
+            bw.write(message);
+        }
+        catch (IOException e)
+        {
+            bw.close();
+            throw e;
+        }
+        finally
+        {
+            bw.close();
+        }
     }
-    
+
     /**
      * Class to reperesent someone receiving announcements
      */

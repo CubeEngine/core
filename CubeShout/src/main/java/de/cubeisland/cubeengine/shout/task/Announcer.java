@@ -32,8 +32,8 @@ public class Announcer implements Runnable
         this.initDelay = initDelay;
         this.messagerPeriod = messagerPeriod;
 
-        //Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
-        // please try to not leak this in the constructor
+        // Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
+        // TODO please try to not leak this in the constructor
         module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 20, this.messagerPeriod / 50);
     }
 
@@ -74,15 +74,15 @@ public class Announcer implements Runnable
     {
         if (!messageQueue.isEmpty())
         {
-            Message m = messageQueue.poll();
-            User u = module.getCore().getUserManager().getUser(m.user, false);
-            if (u != null)
+            Message message = messageQueue.poll();
+            User user = module.getCore().getUserManager().getUser(message.user, false);
+            if (user != null)
             {
                 if (module.getCore().isDebug())
                 {
-                    module.logger.log(Level.INFO, u.getName() + " Is now receiving a message");
+                    module.logger.log(Level.INFO, "%s is now receiving a message", user.getName());
                 }
-                u.sendMessage(ChatFormat.parseFormats('&', m.message));
+                user.sendMessage(ChatFormat.parseFormats('&', message.message));
             }
         }
     }
