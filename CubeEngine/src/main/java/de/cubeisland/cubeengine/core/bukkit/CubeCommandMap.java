@@ -105,7 +105,7 @@ public class CubeCommandMap extends SimpleCommandMap
             else if (matches.size() > 1 && matches.size() <= 5) // TODO maximum configurable
             {
                 sender.sendMessage(_(sender, "core", "I could not find the command /%s ...", label));
-                sender.sendMessage(_(sender, "core", "Did you mean once of these: %s ?", "/" + StringUtils.implode(", /", matches)));
+                sender.sendMessage(_(sender, "core", "Did you mean one of these: %s ?", "/" + StringUtils.implode(", /", matches)));
             }
             else
             {
