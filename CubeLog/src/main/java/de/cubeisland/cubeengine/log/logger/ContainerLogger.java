@@ -205,7 +205,10 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         FURNACE(2),
         BREWINGSTAND(3),
         DISPENSER(4),
-        OTHER(5);
+        OTHER(5),
+        STORAGEMINECART(6),
+        HUMANENTITY(7),
+        ;
         private final int id;
         private static final TIntObjectHashMap<ContainerType> map;
 
@@ -246,9 +249,13 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             {
                 return DISPENSER;
             }
-            if (inventory.getHolder() instanceof HumanEntity || inventory.getHolder() instanceof StorageMinecart)
+            if (inventory.getHolder() instanceof StorageMinecart)
             {
-                return null;
+                return STORAGEMINECART;
+            }
+            if (inventory.getHolder() instanceof HumanEntity)
+            {
+                return HUMANENTITY;
             }
             return OTHER;
         }
