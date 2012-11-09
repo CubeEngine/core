@@ -1,0 +1,227 @@
+name: CubeWar
+version: ${project.version}
+main: de.cubeisland.cubeengine.war.CubeWar
+depend:
+  - CubeCore
+softdepend:
+  - CubeFly
+website: "http://cubeisland.de/"
+description: "War module"
+authors:
+  - Anselm Brehme
+  - Quick_Wango
+
+commands:
+  cubewar:
+    usage: "/<command> <action>"
+    description: "This is the base command of CubeWar"
+    aliases:
+      - cw
+      - war
+
+##############GROUPED PERMISSIONS##############
+permissions:
+  cubewar.*:
+    description: ""
+    default: op
+    children:
+      cubewar.command.claim.*: true
+      cubewar.command.unclaim.*: true
+      cubewar.command.relation.*: true
+      cubewar.command.membercontrol: true
+      cubewar.command.info.*: true
+      cubewar.command.create.*: true
+      cubewar.command.bypass.*: true
+        
+  cubewar.admin:
+    description: "Gives all permissions"
+    children:   
+      cubewar.*: true
+
+  cubewar.mod:
+    description: "Gives Moderator permissions"
+    children:
+      cubewar.user: true
+      cubewar.command.relation.change.other: true
+      cubewar.command.kick.other: true
+      cubewar.command.create.arena:  true
+      cubewar.command.bypass.protection: true
+      cubewar.command.bypass.fly: true
+      cubewar.command.bypass.create: true
+      
+  cubewar.user:
+    description: "Gives User permissions"
+    children: 
+      cubewar.command.claim: true
+      cubewar.command.claim.ownTeam: true
+      cubewar.command.claim.radius: true
+      cubewar.command.unclaim: true
+      cubewar.command.unclaim.radius: true
+      cubewar.command.unclaim.ownTeam: true
+      cubewar.command.relation.change: true
+      cubewar.command.membercontrol: true
+      cubewar.command.kick.other: false
+      cubewar.command.info.*: true
+      cubewar.command.create:  true
+      cubewar.command.create.team:  true
+      cubewar.command.claim.fromother: true
+      cubewar.command.unclaim.ownTeam.all: true
+  
+  cubewar.fly:
+    description: "Gives User permissions"
+    children:
+      cubewar.command.fly: true
+#################ALL PERMISSONS######################### 
+  cubewar.command.claim.*:
+    description: ""
+    children:
+      cubewar.command.claim: true
+      cubewar.command.claim.ownTeam: true
+      cubewar.command.claim.radius: true
+      cubewar.command.claim.otherTeam: true
+      cubewar.command.claim.fromother: true
+  cubewar.command.claim:
+    description: ""
+  cubewar.command.claim.ownTeam:
+    description: ""
+  cubewar.command.claim.radius:
+    description: ""
+  cubewar.command.claim.otherTeam:
+    description: ""
+  cubewar.command.claim.fromother:
+    description: ""
+  
+  cubewar.command.unclaim.*:
+    description: ""
+    children:
+      cubewar.command.unclaim: true
+      cubewar.command.unclaim.ownTeam.all: true
+      cubewar.command.unclaim.radius: true
+      cubewar.command.unclaim.otherTeam: true
+      cubewar.command.unclaim.otherTeam.all: true
+      cubewar.command.unclaim.allTeam: true
+      cubewar.command.unclaim.allTeam.all: true
+  cubewar.command.unclaim:
+    description: ""    
+  cubewar.command.unclaim.ownTeam:
+    description: ""
+  cubewar.command.unclaim.ownTeam.all:
+    description: ""
+  cubewar.command.unclaim.radius:
+    description: ""
+  cubewar.command.unclaim.otherTeam:
+    description: ""
+  cubewar.command.unclaim.otherTeam.all:
+    description: ""
+  cubewar.command.unclaim.allTeam:
+    description: ""
+  cubewar.command.unclaim.allTeam.all:
+    description: ""
+    
+  cubewar.command.relation.*:
+    description: ""
+    children:
+      cubewar.command.relation.change: true
+      cubewar.command.relation.change.other: true
+  cubewar.command.relation.change:
+    description: ""
+  cubewar.command.relation.change.other:
+    description: ""
+  
+  cubewar.command.membercontrol:
+    description: ""
+    children:
+      cubewar.command.invite: true
+      cubewar.command.uninvte: true
+      cubewar.command.kick: true
+      cubewar.command.kick.other: true
+      cubewar.command.join: true
+      cubewar.command.leave: true
+      cubewar.command.position.*: true
+  cubewar.command.invite:
+    description: ""
+  cubewar.command.uninvte:
+    description: ""
+  cubewar.command.kick:
+    description: ""
+  cubewar.command.kick.other:
+    description: ""
+  cubewar.command.join:
+    description: ""
+  cubewar.command.leave:
+    description: ""
+  cubewar.command.position.*:
+    description: ""
+    children:
+      cubewar.command.position.admin: true
+      cubewar.command.position.mod: true
+  cubewar.command.position.admin:
+    description: ""
+  cubewar.command.position.mod:
+    description: ""
+    
+  cubewar.command.info.*:
+    description: ""
+    children:
+      cubewar.command.info: true
+      cubewar.command.info.other: true
+      cubewar.command.whois: true
+      cubewar.command.whois.other:  true
+  cubewar.command.info:
+    description: ""
+  cubewar.command.info.other:
+    description: ""
+  cubewar.command.whois:
+    description: ""
+  cubewar.command.whois.other:
+    description: ""
+    
+  cubewar.command.create.*:
+    description: ""
+    children:
+      cubewar.command.modify:  true
+      cubewar.command.create:  true
+      cubewar.command.create.team:  true
+      cubewar.command.create.arena:  true
+  cubewar.command.modify:
+    description: ""
+  cubewar.command.create:
+    description: ""
+  cubewar.command.create.team:
+    description: ""
+  cubewar.command.create.arena:
+    description: ""
+    
+  cubewar.command.fly:
+    description: ""
+  
+  cubewar.command.bypass.*:
+    description: ""
+    children:
+      cubewar.command.bypass.claim: true
+      cubewar.command.bypass.unclaim: true
+      cubewar.command.bypass.relation: true
+      cubewar.command.bypass.membercontrol: true
+      cubewar.command.bypass.position: true
+      cubewar.command.bypass.create: true
+      cubewar.command.bypass.modify: true
+      cubewar.command.bypass.protection: true
+      cubewar.command.bypass.fly: true
+  cubewar.command.bypass.claim:
+    description: ""
+  cubewar.command.bypass.unclaim:
+    description: ""
+  cubewar.command.bypass.relation:
+    description: ""
+  cubewar.command.bypass.membercontrol:
+    description: ""
+  cubewar.command.bypass.position:
+    description: ""
+  cubewar.command.bypass.create:
+    description: ""
+  cubewar.command.bypass.modify:
+    description: ""
+  cubewar.command.bypass.protection:
+    description: ""
+  cubewar.command.bypass.fly:
+    description: ""

@@ -1,0 +1,91 @@
+0:
+  protection
+  protect
+  prot
+1:
+  fireprotection
+  fireprotect
+  fireprot
+2:
+  featherfalling  
+  fallprotection
+  fallprotect
+  fallprot
+  
+3:
+  blastprotection
+  explosionprotection
+  blastprotect
+  blastprot
+  bprot
+4:
+  arrowprotection  
+  projectileprotection
+  projprotect
+  projprot
+  arrowprotect
+  arrowprot
+5:
+  oxygen
+  longbreath
+  respiration
+  breath
+6:
+  waterworker
+  aquaaffinity
+16:
+  damage
+  alldamage
+  damageall
+  sharpness
+  dmg
+17:
+  smite
+  undeaddamage
+  undeaddmg
+18:
+  spiderdamage  
+  arthropodsdamage
+  spiderdmg
+19:
+  knockback
+  kb
+20:
+  fireaspect
+  firedamage
+  firedmg
+  fire
+21:
+  looting
+  mobloot
+32:
+  efficiency
+  effi
+  digspeed
+33:
+  silktouch
+34:
+  unbreaking
+  durability
+  dura
+35:
+  fortune
+  blockloot
+  luck
+48:
+  power
+  arrowdamage
+  arrowdmg
+  arrdmg
+49:
+  punch
+  arrowknockback
+  arrowkb
+50:
+  flame
+  firearrow
+  farrow
+51:
+  infinity
+  infinitearrow
+  infarrow

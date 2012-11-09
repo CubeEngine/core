@@ -1,0 +1,107 @@
+#Drops
+1:
+    item
+2:
+    XPOrb
+    exp
+#Immobile
+9:
+    Painting
+#Projectiles
+10:
+    Arrow
+11:
+    Snowball
+12:
+    Fireball
+13:
+    SmallFireball
+14:
+    ThrownEnderpearl
+15:
+    EyeOfEnderSignal
+16:
+    ThrownPotion
+17:
+    ThrownExpBottle
+18:
+    ItemFrame
+    frame
+19:
+    WitherSkull
+#Blocks
+20:
+    PrimedTnt
+    tnt
+21:
+    FallingSand
+#Vehicles
+40:
+    Minecart
+41:
+    Boat
+#Hostile mobs
+50:
+    Creeper
+51:
+    Skeleton
+52:
+    Spider
+53:
+    Giant
+54:
+    Zombie
+55:
+    Slime
+56:
+    Ghast
+57:
+    PigZombie
+58:
+    Enderman
+59:
+    CaveSpider
+60:
+    Silverfish
+61:
+    Blaze
+62:
+    LavaSlime
+    MagmaSlime
+63:
+    EnderDragon
+64:
+    WitherBoss
+65:
+    Bat
+66:
+    Witch
+#Passive mobs
+90:
+    Pig
+91:
+    Sheep
+92:
+    Cow
+93:
+    Chicken
+94:
+    Squid
+95:
+    Wolf
+96:
+    MushroomCow
+97:
+    SnowMan
+    SnowGolem
+98:
+    Ozelot
+99:
+    IronGolem
+    VillagerGolem
+#NPCs
+120:
+    Villager
+#Other
+200:
+    EnderCrystal

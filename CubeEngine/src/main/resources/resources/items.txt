@@ -1,0 +1,1525 @@
+1:0
+  stone
+  cleanstone
+  smoothstone
+  rock
+2:0
+  grass
+3:0
+  dirt
+  earth
+  land
+4:0
+  cobblestone
+  cobble
+5:0
+  planks
+  woodenplanks
+  plankwooden
+5:1
+  darkplanks
+  darkwoodplanks
+  pineplanks
+  spruceplanks
+5:2
+  whiteplanks
+  lightplanks
+  birchplanks
+  birchwoodplanks
+5:3
+  junglewoodplanks
+  jungleplanks
+6:0
+  sapling
+  treesapling
+  oaksapling
+  sap
+  treesap
+  oaksap
+6:1
+  darksapling
+  pinesapling
+  sprucesapling
+  darksap
+  pinesap
+  sprucesap
+6:2
+  birchsapling
+  whitesapling
+  birchsap
+  whitesap
+6:3
+  junglesapling
+  junglesap
+7:0
+  bedrock
+  adminblock
+  adminium
+8:0
+  water
+9:0
+  stationarywater
+  statwater
+10:0
+  lava
+11:0
+  stationarylava
+  statlava
+12:0
+  sand
+13:0
+  gravel
+14:0
+  goldore
+  oregold
+15:0
+  ironore
+  oreiron
+16:0
+  coalore
+  orecoal
+17:0
+  tree
+  log
+  wood
+  oaklog
+  oakwood
+17:1
+  darklog
+  darkwood
+  blacklog
+  blackwood
+  pinelog
+  pinewood
+  sprucelog
+  sprucewood
+17:2
+  birch
+  birchtree
+  birchlog
+  birchwood
+  whitelog
+  whitewood
+17:3
+  junglewood
+  jungletree
+  junglelog
+18:0
+  leaves
+  leaf
+18:1
+  pineleaves
+  pineleaf
+  spruceleaves
+  spruceleaf
+18:2
+  birchleaves
+  birchleaf
+18:3
+  jungleleaves
+  jungleleaf
+19:0
+  sponge
+20:0
+  glass
+21:0
+  lapislazuliore
+  lapisore
+  orelapislazuli
+  orelapis
+22:0
+  lapislazuliblock
+  blocklapislazuli
+  lapisblock
+  blocklapis
+23:0
+  dispenser
+24:0
+  sandstone
+24:1
+  creepersandstone
+  chiseledsandstone
+  hieroglyphsandstone
+  pyramidsandstone
+24:2
+  smoothsandstone
+  cleansandstone
+25:0
+  noteblock
+  musicblock
+26:0
+  bedblock
+27:0
+  poweredtrack
+  poweredrail
+  boostertrack
+  boosterrail
+28:0
+  detectortrack
+  detectorrail
+29:7
+  stickypiston
+  slimepiston
+30:0
+  spiderweb
+  cobweb
+31:0
+  deadgrass
+  grassdead
+31:1
+  longgrass
+  tallgrass
+  grasslong
+  grasstall
+31:2
+  fern
+32:0
+  deadbush
+  bushdead
+33:7
+  normalpiston
+  piston
+34:0
+  pistonextension
+35:0
+  whitecloth
+  whitewool
+  whitecotton
+  cloth
+  wool
+  cotton
+35:1
+  orangecloth
+  orangewool
+  orangecotton
+35:2
+  magentacloth
+  magentawool
+  magentacotton
+
+35:3
+  lightbluecloth
+  lightbluewool
+  lightbluecotton
+35:4
+  yellowcloth
+  yellowwool
+  yellowcotton
+35:5
+  lightgreencloth
+  lightgreenwool
+  lightgreencotton
+35:6
+  pinkcloth
+  pinkwool
+  pinkcotton
+35:7
+  graycloth
+  graywool
+  graycotton
+35:8
+  lightgraycloth
+  lightgraywool
+  lightgraycotton
+35:9
+  cyancloth
+  cyanwool
+  cyancotton
+35:10
+  purplecloth
+  purplewool
+  purplecotton
+35:11
+  bluecloth
+  bluewool
+  bluecotton
+35:12
+  browncloth
+  brownwool
+  browncotton
+35:13
+  darkgreencloth
+  darkgreenwool
+  darkgreencotton
+  greencloth
+  greenwool
+  greencotton
+35:14
+  redcloth
+  redwool
+  redcotton
+35:15
+  blackcloth
+  blackwool
+  blackcotton
+36:0
+  blockmovedbypiston
+  pistonmovingpiece
+37:0
+  yellowflower
+  flower
+  dandelion
+38:0
+  redrose
+  redflower
+  rose
+39:0
+  brownmushroom
+  brownmush
+40:0
+  redmushroom
+  redmush
+41:0
+  goldblock
+  blockgold
+42:0
+  ironblock
+  steelblock
+  blockiron
+  blocksteel
+43:0
+  doubleslab
+  cleandoubleslab
+  smoothdoubleslab
+  doublestep
+  cleandoublestep
+  smoothdoublestep
+43:1
+  sandstonedoublestep
+  sandstonedoubleslab
+43:2
+  woodstonedoublestep
+  woodstonedoubleslab
+43:3
+  cobblestonedoublestep
+  cobbledoublestep
+  cobblestonedoubleslab
+  cobbledoubleslab
+43:4
+  brickdoublestep
+  claybrickdoublestep
+  brickdoubleslab
+  claybrickdoubleslab
+43:5
+  stonebrickdoublestep
+  stonebrickdoubleslab
+43:6
+  adminslab
+  magicslab
+44:0
+  slab
+  stoneslab
+  cleanstoneslab
+  step
+  stonestep
+  cleanstonestep
+44:1
+  sanddstonestep
+  sanddstoneslab
+44:2
+  woodstonestep
+  woodstoneslab
+44:3
+  cobblestep
+  cobbleslab
+  cobblestonestep
+  cobblestoneslab
+44:4
+  brickstep
+  brickslab
+  claybrickstep
+  claybrickslab
+44:5
+  stonebrickstep
+  stonebrickslab
+45:0
+  brickblock
+  blockbrick
+  claybrickblock
+46:0
+  tnt
+  bomb
+  dynamite
+47:0
+  bookcase
+  bookshelf
+  bookblock
+48:0
+  mossycobblestone
+  mossycobble
+  mossystone
+49:0
+  obsidian
+  obsi
+50:0
+  torch
+51:0
+  fire
+  flame
+52:0
+  mobspawner
+  mobcage
+  monsterspawner
+  monstercage
+  spawner
+53:0
+  woodstairs
+54:0
+  chest
+  container
+55:0
+  redstonewireblock
+  wire
+56:0
+  diamondore
+57:0
+  diamondblock
+  blockdiamond
+58:0
+  workbench
+  craftingbench
+  worktable
+  craftingtable
+59:0
+  crop
+  wheatcrop
+60:0
+  soil
+  farmland
+61:0
+  furnace
+  oven
+62:0
+  burningfurnace
+  burningoven
+63:0
+  signpost
+64:0
+  wooddoorhalf
+  wooddoorblock
+65:0
+  ladder
+66:0
+  minecarttrack
+  minecartrail
+  rail
+  track
+67:0
+  cobblestonestairs
+  cobblestairs
+68:0
+  wallsign
+69:0
+  lever
+70:0
+  stonepressureplate
+  stoneplate
+71:0
+  irondoorhalf
+  irondoorblock
+  steeldoorhalf
+  steeldoorblock
+72:0
+  woodpressureplate
+  woodplate
+73:0
+  redstoneore
+  oreredstone
+74:0
+  glowingredstoneore
+  oreglowingredstone
+75:0
+  redstonetorchoff
+76:0
+  redstonetorchon
+  redstonetorch
+77:0
+  button
+  stonebutton
+78:0
+  snowcover
+79:0
+  ice
+80:0
+  snowblock
+  blocksnow
+81:0
+  cactus
+82:0
+  clay
+  clayblock
+  blockclay
+83:0
+  reedblock
+  sugarcaneblock
+  blockreed
+  blocksugarcane
+84:0
+  jukebox
+85:0
+  fence
+  woodfence
+86:0
+  pumpkin
+87:0
+  netherrack
+  netherstone
+  hellstone
+88:0
+  soulsand
+  slowsand
+89:0
+  lightstoneblock
+  glowstoneblock
+  lightstone
+  glowstone
+90:0
+  portal
+91:0
+  jackolantern
+  pumpkinlantern
+  glowingpumpkin
+92:0
+  cakeblock
+93:0
+  repeateroff
+  diodeoff
+94:0
+  repeateron
+  dioderon
+95:0
+  lockedchest
+  aprilfoolschest
+  aprilchest
+96:0
+  trapdoor
+  hatch
+97:0
+  silverfishstone
+  silverfishblock
+  trapsstone
+  stonesilverfish
+97:1
+  silverfishcobblestone
+  silverfishcobble
+  cobblesilverfish
+97:2
+  silverfishbrickstone
+  silverfishcobble
+  bricksilverfish
+98:0
+  stonebrick
+  stonebrickblock
+98:1
+  mossystonebrick
+  mossystonebrickblock
+98:2
+  crackedstonebrick
+  crackedstonebrickblock
+  oldstonebrick
+98:3
+  circlestonebrick
+  chiseledstonebrick
+  roundbrick
+  roundstonebrick
+99:0
+  hugeredmushroom
+  bigredmushroom
+  giantredmushroom
+100:0
+  hugebrownmushroom
+  bigbrownmushroom
+  giantbrownmushroom
+101:0
+  ironbars
+  metalbars
+102:0
+  glasspane
+  paneglass
+  flatglass
+103:0
+  melon
+  watermelon
+  melonblock
+  watermelonblock
+104:0
+  pumpkinstem
+105:0
+  melonstem
+106:0
+  vines
+  climbplant
+107:0
+  woodfencegate
+  fencegate
+108:0
+  brickstairs
+  redbrickstairs
+  claybrickstairs
+109:0
+  stonebrickstairs
+  greybrickstairs
+110:0
+  mycel
+  mycelium
+  mushroomgrass
+111:0
+  waterlily
+  lilypad
+  swamppad
+112:0
+  netherbrick
+  hellbrick
+113:0
+  netherfence
+  netherbrickfence
+  hellfence
+114:0
+  netherbrickstairs
+  hellbrickstairs
+  netherstairs
+  hellstairs
+115:0
+  netherwartblock
+  nethercrops
+116:0
+  enchantmenttable
+  magictable
+  magicdesk
+  enchantmentdesk
+117:0
+  brewingstandblock
+  potionstandblock
+118:0
+  cauldronblock
+119:0
+  enderportal
+  endportal
+120:0
+  enderportalframe
+  portalframe
+121:0
+  endstone
+122:0
+  enderdragonegg
+  dragonegg
+  bossegg
+123:0
+  redstonelamp
+  redstonelampoff
+124:0
+  redstonelampon
+125:0
+  doublewoodplankstep
+  doublewoodplankslab
+  doublewoodstep
+  doublewoodslab
+125:1
+  doubledarkwoodplankstep
+  doubledarkwoodplankslab
+  doubledarkwoodstep
+  doubledarkwoodslab
+125:2
+  doublebirchwoodplankstep
+  doublebirchwoodplankslab
+  doublebirchwoodstep
+  doublebirchwoodslab
+125:3
+  doublejunglewoodplankstep
+  doublejunglewoodplankslab
+  doublejunglewoodstep
+  doublejunglewoodslab 
+126:0
+  woodplankstep
+  woodplankslab
+  woodstep
+  woodslab
+  oakwoodstep
+  oakwoodslab
+  oakwoodplanksstep
+  oakwoodplanksslab
+126:1
+  darkwoodstep
+  darkwoodslab
+  darkwoodplanksstep
+  darkwoodplanksslab
+126:2
+  birchwoodstep
+  birchwoodslab
+  birchwoodplanksstep
+  birchwoodplanksslab
+126:3
+  junglewoodstep
+  junglewoodslab
+  junglewoodplanksstep
+  junglewoodplanksslab
+127:0
+  cocoaplant
+  cocoafruit
+128:0
+  sandstairs
+  sandstonestairs
+129:0
+  emeraldore
+  oreemerald
+130:0
+  enderchest
+  endchest
+131:0
+  tripwirehook
+  triphook
+132:0
+  tripwireblock
+  tripwire
+133:0
+  emeraldblock
+  blockemerald
+134:0
+  sprucewoodstairs
+  darkwoodenstairs
+  pinewoodstairs
+135:0
+  birchwoodstairs
+136:0
+  junglewoodstairs
+137:0
+  commandblock
+  cmdblock
+138:0
+  beaconblock
+  beacon
+139:0
+  cobblestonewall
+  cobblewall
+  wallcobble
+  wallcobblestone
+139:1
+  mossycobblewall
+  mossycobblestonewall
+  mossstonewall
+  mosswall
+  wallmossstone
+  wallmoss
+140:0
+  flowerpotblock
+141:0
+  carrotcrops
+142:0
+  potatocrops
+  potatoescrops
+143:0
+  buttonwood
+  woodbutton
+144:0
+  headblock
+145:0
+  anvil
+  repairblock
+256:0
+  ironshovel
+  ironspade
+  steelshovel
+  steelspade
+257:0
+  ironpickaxe
+  ironpick
+  steelpickaxe
+  steelpick
+258:0
+  ironaxe
+  steelaxe
+259:0
+  flintandsteel
+  flintandtinder
+  lighter
+260:0
+  apple
+261:0
+  bow
+262:0
+  arrow
+263:0
+  coal
+263:1
+  charcoal
+264:0
+  diamond
+265:0
+  ironingot
+  ironbar
+  steelingot
+  steelbar
+266:0
+  goldingot
+  goldbar
+  gold
+267:0
+  ironsword
+  steelsword
+268:0
+  woodsword
+269:0
+  woodshovel
+  woodspade
+270:0
+  woodpickaxe
+  woodpick
+271:0
+  woodaxe
+272:0
+  stonesword
+273:0
+  stoneshovel
+  stonespade
+274:0
+  stonepickaxe
+  stonepick
+275:0
+  stoneaxe
+276:0
+  diamondsword
+  diasword
+277:0
+  diamondshovel
+  diamondspade
+  diashovel
+  diaspade
+278:0
+  diamondpickaxe
+  diapickaxe
+  diamondpick
+  diapick
+279:0
+  diamondaxe
+  diaaxe
+280:0
+  stick
+281:0
+  bowl
+282:0
+  mushroomsoup
+  soup
+283:0
+  goldsword
+284:0
+  goldshovel
+  goldspade
+285:0
+  goldpickaxe
+  goldpick
+286:0
+  goldaxe
+287:0
+  string
+288:0
+  feather
+289:0
+  gunpowder
+  sulfur
+290:0
+  woodhoe
+291:0
+  stonehoe
+292:0
+  ironhoe
+  steelhoe
+293:0
+  diamondhoe
+295:0
+  seeds
+296:0
+  wheat
+297:0
+  bread
+298:0
+  leatherhelmet
+  leatherhat
+  leathercap
+299:0
+  leatherchestplate
+  leatherarmor
+  leatherplate
+  leathershirt
+300:0
+  leatherleggings
+  leatherpants
+301:0
+  leatherboots
+  leathershoes
+302:0
+  chainmailhelmet
+  chainmailhat
+  chainmailcap
+  chainhelmet
+  chainhat
+  chaincap
+303:0
+  chainmailchestplate
+  chainmailarmor
+  chainmailplate
+  chainmailshirt
+  chainchestplate
+  chainplate
+  chainshirt
+  chainarmor
+304:0
+  chainmailleggings
+  chainmailpants
+  chainleggings
+  chainpants
+305:0
+  chainmailboots
+  chainmailshoes
+  chainboots
+  chainshoes
+306:0
+  ironhelmet
+  ironhat
+  ironcap
+  steelhelmet
+  steelhat
+  steelcap
+307:0
+  ironchestplate
+  ironarmor
+  ironplate
+  ironshirt
+  steelchestplate
+  steelarmor
+  steelplate
+  steelshirt
+308:0
+  ironleggings
+  ironpants
+  steelleggings
+  steelpants
+309:0
+  ironboots
+  ironshoes
+  steelboots
+  steelshoes
+310:0
+  diamondhelmet
+  diamondhat
+  diamondcap
+311:0
+  diamondchestplate
+  diamondarmor
+  diamondplate
+  diamondshirt
+312:0
+  diamondleggings
+  diamondpants
+313:0
+  diamondboots
+  diamondshoes
+314:0
+  goldhelmet
+  goldhat
+  goldcap
+315:0
+  goldchestplate
+  goldarmor
+  goldplate
+  goldshirt
+316:0
+  goldleggings
+  goldpants
+317:0
+  goldboots
+  goldshoes
+318:0
+  flint
+319:0
+  pork
+  rawpork
+320:0
+  grilledpork
+  cookedpork
+  bacon
+321:0
+  painting
+  picture
+322:0
+  goldenapple
+  goldapple
+322:1
+  enchantedgoldenapple
+  enchantedgoldapple
+  magicapple
+  magicgoldapple
+323:0
+  sign
+324:0
+  wooddoor
+325:0
+  bucket
+326:0
+  waterbucket
+327:0
+  magmabucket
+  lavabucket
+328:0
+  minecart
+329:0
+  saddle
+330:0
+  irondoor
+  steeldoor
+331:0
+  redstonedust
+  redstone
+332:0
+  snowball
+333:0
+  boat
+334:0
+  leather
+335:0
+  milkbucket
+  milk
+336:0
+  claybrick
+  brick
+337:0
+  clayball
+338:0
+  reed
+  sugarcane
+339:0
+  paper
+340:0
+  book
+341:0
+  slimeball
+342:0
+  storageminecart
+  chestminecart
+343:0
+  poweredminecart
+  furnaceminecart
+344:0
+  egg
+345:0
+  compass
+346:0
+  fishingrod
+  rod
+347:0
+  goldwatch
+  goldclock
+  watch
+  clock
+348:0
+  glowstonedust
+349:0
+  rawfish
+  fish
+350:0
+  cookedfish
+  grilledfish
+351:0
+  dye
+  inksack
+  blackcolor
+  blackdye
+351:1
+  rosered
+  redcolor
+  reddye
+351:2
+  cactusgreen
+  greencolor
+  greendye
+351:3
+  cocoabeans
+  browncolor
+  browndye
+351:4
+  lapislazuliblue
+  lapisdye
+  bluecolor
+  bluedye
+351:5
+  purplecolor
+  purpledye
+351:6
+  cyancolor
+  cyandye
+351:7
+  lightgraycolor
+  lightgraydye
+351:8
+  graycolor
+  graydye
+351:9
+  pinkcolor
+  pinkdye
+351:10
+  limecolor
+  limedye
+351:11
+  dandelionyellow
+  yellowdye
+  yellowcolor
+351:12
+  lightbluecolor
+  lightbluedye
+351:13
+  magentacolor
+  magentadye
+351:14
+  orangecolor
+  orangedye
+351:15
+  bonemeal
+  bonemealdye
+  whitecolor
+  whitedye
+352:0
+  bone
+353:0
+  sugar
+354:0
+  cake
+355:0
+  bed
+356:0
+  repeater
+  delayer
+  diode
+357:0
+  cookie
+358:0
+  map
+359:0
+  sheers
+  woolcutter
+360:0
+  melonslice
+  slicemelon
+  watermelonslice
+361:0
+  pumpkinseeds
+  seedspumpkin
+362:0
+  melonseeds
+  watermelonseeds
+  seedsmelon
+363:0
+  rawbeef
+  rawsteak
+  cowmeat
+364:0
+  beef
+  steak
+  cookedbeef
+  grilledbeef
+  cookedsteak
+  grilledsteak
+365:0
+  rawchicken
+  chickenraw
+366:0
+  cookedchicken
+  grilledchicken
+  friedchicken
+367:0
+  rottenflesh
+  zombieflesh
+  rottenmeat
+  zombiemeat
+368:0
+  enderpearl
+369:0
+  blazerod
+  blazestick
+370:0
+  ghasttear
+371:0
+  goldnugget
+372:0
+  netherwart
+  netherstalk
+373:0
+  potion
+  waterbottle
+373:16
+  awkwardpotion
+373:32
+  thickpotion
+373:64
+  mundanepotion
+373:8193
+  regenerationpotion
+  regenpotion
+373:8194
+  swiftnesspotion
+  swiftpotion
+373:8195
+  fireresistancepotion
+  fireresistpotion
+373:8196
+  posionpotion
+373:8197
+  healingpotion
+  healpotion
+  lifepotion
+373:8200
+  weaknesspotion
+  weakpotion
+373:8201
+  strengthpotion
+  strongpotion
+373:8202
+  slownesspotion
+  slowpotion
+373:8204
+  harmingpotion
+  damagepotion
+373:8225
+  regeneration2potion
+  regen2potion
+373:8226
+  swiftness2potion
+  swift2potion
+373:8228
+  posion2potion
+373:8229
+  healing2potion
+  heal2potion
+  life2potion
+373:8233
+  strength2potion
+  strong2potion
+373:8236
+  harming2potion
+  damage2potion
+373:8257
+  longregenerationpotion
+  longregenpotion
+373:8258
+  longswiftnesspotion
+  longswiftpotion
+373:8259
+  longfireresistancepotion
+  longfireresistpotion
+373:8260
+  longposionpotion
+373:8264
+  longweaknesspotion
+  longweakpotion
+373:8265
+  longstrengthpotion
+  longstrongpotion
+373:8266
+  longslownesspotion
+  longslowpotion
+373:8289
+  dualregenerationpotion
+  dualregenpotion
+373:8290
+  dualswiftnesspotion
+  dualswiftpotion
+373:8292
+  dualpoisonpotion
+373:8297
+  dualstrengthpotion
+  dualstrongpotion
+373:16385
+  splashregenerationpotion
+  splashregenpotion
+373:16386
+  splashswiftnesspotion
+  splashswiftpotion
+373:16387
+  splashfireresistancepotion
+  splashfireresistpotion
+373:16388
+  splashposionpotion
+373:16389
+  splashhealingpotion
+  splashhealpotion
+  splashlifepotion
+373:16392
+  splashweaknesspotion
+  splashweakpotion
+373:16393
+  splashstrengthpotion
+  splashstrongpotion
+373:16394
+  splashslownesspotion
+  splashslowpotion
+373:16396
+  splashharmingpotion
+  splashdamagepotion
+373:16417
+  splashregeneration2potion
+  splashregen2potion
+373:16418
+  splashswiftness2potion
+  splashswift2potion
+373:16420
+  splashposion2potion
+373:16421
+  splashhealing2potion
+  splashheal2potion
+  splashlife2potion
+373:16425
+  splashstrength2potion
+  splashstrong2potion
+373:16428
+  splashharming2potion
+  splashdamage2potion
+373:16449
+  longsplashregenerationpotion
+  longsplashregenpotion
+373:16450
+  longsplashswiftnesspotion
+  longsplashswiftpotion
+373:16451
+  longsplashfireresistancepotion
+  longsplashfireresistpotion
+373:16452
+  longsplashposionpotion
+373:16456
+  longsplashweaknesspotion
+  longsplashweakpotion
+373:16457
+  longsplashstrengthpotion
+  longsplashstrongpotion
+373:16458
+  longsplashslownesspotion
+  longsplashslowpotion
+373:16481
+  dualsplashregenerationpotion
+  dualsplashregenpotion
+373:16482
+  dualsplashswiftnesspotion
+  dualsplashswiftpotion
+373:16484
+  dualsplashposionpotion
+373:16489
+  dualsplashstrengthpotion
+  dualsplashstrongpotion
+374:0
+  glassbottle
+  bottle
+  emptyglassbottle
+  emptybottle
+375:0
+  spidereye
+  eyeofspider
+376:0
+  fermentedspidereye
+  fspidereye
+377:0
+  blazepowder
+  blazedust
+378:0
+  magmacream
+379:0
+  brewingstand
+  potionstand
+380:0
+  cauldron
+  ironcauldron
+  steelcauldron
+381:0
+  eyeofender
+  endereye
+382:0
+  glisteringmelon
+  goldmelon
+  sparklymelon
+  shiningmelon
+383:0
+  spawnegg
+  monsteregg
+383:50
+  creeperegg
+  eggcreeper
+383:51
+  skeletonegg
+  eggskeleton
+383:52
+  spideregg
+  eggspider
+383:53
+  giantegg
+  egggiant
+383:54
+  zombieegg
+  eggzombie
+383:55
+  slimeegg
+  eggslime
+383:56
+  ghastegg
+  eggghast
+383:57
+  zombiepigmanegg
+  eggzombiepigman
+383:58
+  endermanegg
+  eggenderman
+383:59
+  eggcavespider
+  cavespideregg
+383:60
+  silverfishegg
+  eggsilverfish
+383:61
+  blazeegg
+  eggblaze
+383:62
+  lavaslimeegg
+  lavacubeegg
+  magmaslimeegg
+  egglavaslime
+  egglavacube
+  eggmagmaslime
+383:65
+  eggbat
+  bategg
+383:66
+  eggwitch
+  witchegg
+383:90
+  pigegg
+  eggpig
+383:91
+  sheepegg
+  eggsheep
+383:92
+  cowegg
+  eggcow
+383:93
+  chickenegg
+  eggchicken
+383:94
+  squidegg
+  eggsquid
+383:95
+  wolfegg
+  eggwolf
+383:96
+  mooshroomegg
+  mushroomcowegg
+  eggmooshroom
+  eggmushroomcow
+383:97
+  snowgolemegg
+  eggsnowgolem
+383:98
+  ocelotegg
+  eggocelot
+383:99
+  irongolemegg
+  eggirongolem
+383:120
+  villageregg
+  eggvillager
+384:0
+  bottleofenchanting
+  enchantingbottle
+  expbottle
+  bottleexp
+  enchantbottle
+385:0
+  firecharge
+  fireball
+386:0
+  bookandquill
+  bookandfeather
+  writeablebook
+387:0
+  writtenbook
+  readablebook
+  sealedbook
+  ownedbook
+388:0
+  emerald
+389:0
+  itemframe
+390:0
+  flowerpot
+391:0
+  carrot
+392:0
+  potato
+393:0
+  bakedpotato
+394:0
+  poisonouspotato
+395:0
+  emptymap
+  mapempty
+  mapclear
+  clearmap
+396:0
+  goldencarrot
+  carrotgolden
+397:0
+  head
+398:0
+  carrotOnAStick
+399:0
+  NetherStar
+400:0
+  PumpkinPie
+2256:0
+  goldrecord
+  golddisk
+  record13
+  disk13
+2257:0
+  greenrecord
+  greendisk
+  recordcat
+  diskcat
+2258:0
+  orangerecord
+  orangedisk
+  recordblocks
+  diskblocks
+2259:0
+  redrecord
+  reddisk
+  recordchirp
+  diskchirp
+2260:0
+  lightgreenrecord
+  lightgreendisk
+  recordfar
+  diskfar
+2261:0
+  purplerecord
+  purpledisk
+  recordmall
+  diskmall
+2262:0
+  pinkrecord
+  pinkdisk
+  recordmellohi
+  diskmellohi
+2263:0
+  blackrecord
+  blackdisk
+  recordstal
+  diskstal
+2264:0
+  whiterecord
+  whitedisk
+  recordstrad
+  diskstrad
+2265:0
+  greenrecord
+  greendisk
+  recordward
+  diskward
+2266:0
+  crackedrecord
+  crackeddisk
+  record11
+  disk11

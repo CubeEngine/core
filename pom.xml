@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.cubeisland</groupId>
+    <artifactId>cubeengine-aggregator</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>CubeEngine</name>
+    <url>http://cubeisland.de</url>
+    <packaging>pom</packaging>
+    <description>Minecraft module framework.</description>
+  
+    <repositories>
+        <repository>
+            <id>cubeisland-repo</id>
+            <url>http://repo.cubeisland.de/</url>
+        </repository>
+    </repositories>
+
+    <modules>
+        <module>CubeEngine</module>
+        <module>CubeFly</module>
+        <module>CubeConomy</module>
+        <module>CubeBasics</module>
+        <module>CubeFun</module>
+        <module>CubeLog</module>
+        <module>CubeWriter</module>
+        <module>CubeShout</module>
+        <module>CubeGuests</module>
+        <!--
+        <module>CubeWar</module>
+        <module>CubeAuctions</module>
+        -->
+        <module>CubeRuleBook</module>
+        
+        <!-- The test module should always be the last! -->
+        <module>CubeTest</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <minecraftVersion>1.4.2</minecraftVersion>
+        <bukkitVersion>1.4.2-R0.2</bukkitVersion>
+        <jdkVersion>1.6</jdkVersion>
+        <defaultGoal>clean install</defaultGoal>
+        
+        <!-- Netbeans Format Settings -->
+        <org-netbeans-modules-editor-indent.CodeStyle.usedProfile>project</org-netbeans-modules-editor-indent.CodeStyle.usedProfile>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaces-per-tab>4</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaces-per-tab>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.tab-size>8</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.tab-size>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.indent-shift-width>4</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.indent-shift-width>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.expand-tabs>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.expand-tabs>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-limit-width>150</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-limit-width>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-line-wrap>none</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-line-wrap>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.blankLinesAfterClassHeader>0</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.blankLinesAfterClassHeader>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignJavadocExceptionDescriptions>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignJavadocExceptionDescriptions>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.specialElseIf>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.specialElseIf>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.allowConvertToStaticStarImport>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.allowConvertToStaticStarImport>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapIfStatement>WRAP_IF_LONG</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapIfStatement>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignMultilineArrayInit>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignMultilineArrayInit>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignJavadocParameterDescriptions>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignJavadocParameterDescriptions>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaces-per-tab>4</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaces-per-tab>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapOneLineComment>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapOneLineComment>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.allowConvertToStarImport>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.allowConvertToStarImport>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.countForUsingStaticStarImport>2</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.countForUsingStaticStarImport>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeElseOnNewLine>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeElseOnNewLine>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapEnumConstants>WRAP_IF_LONG</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapEnumConstants>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceAfterTypeCast>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceAfterTypeCast>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeFinallyOnNewLine>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeFinallyOnNewLine>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeCatchOnNewLine>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeCatchOnNewLine>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.classDeclBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.classDeclBracePlacement>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapAnnotationArgs>WRAP_IF_LONG</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapAnnotationArgs>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.separateStaticImports>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.separateStaticImports>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.preserveNewLinesInComments>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.preserveNewLinesInComments>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignJavadocReturnDescription>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignJavadocReturnDescription>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeWhileOnNewLine>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.placeWhileOnNewLine>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.indent-shift-width>4</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.indent-shift-width>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-limit-width>80</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-limit-width>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-line-wrap>none</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.text-line-wrap>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.enableBlockCommentFormatting>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.enableBlockCommentFormatting>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.tab-size>8</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.tab-size>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.continuationIndentSize>4</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.continuationIndentSize>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.otherBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.otherBracePlacement>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.expand-tabs>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.expand-tabs>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.importGroupsOrder>*;static *</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.importGroupsOrder>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.countForUsingStarImport>7</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.countForUsingStarImport>
+    </properties>
+</project>

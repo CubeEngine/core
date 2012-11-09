@@ -1,0 +1,194 @@
+name: CubeAuctions
+version: "${project.version}"
+main: de.cubeisland.cubeengine.auctions.CubeAuctions
+commands:
+  cubeauctions:
+    description: "This is the base command of CubeAuctions"
+    usage: "/<command> <action>"
+    aliases:
+      - ca
+      - ah
+depend:
+  - Vault
+database: false
+website: "http://cubeisland.de/"
+description: "Implements an AuctionHouse for your Minecraft-Server"
+authors:
+  - "Anselm Brehme"
+  - "Quick_Wango"
+
+permissions:
+  auctionhouse.admin:
+    description: "Can do everything"
+    children: 
+      auctionhouse.*: true
+      
+  auctionhouse.mod:
+    description: "All normal Commands"
+    children: 
+      auctionhouse.user.command: true
+      auctionhouse.command.delete.server: true
+      auctionhouse.command.delete.player.other: true
+      auctionhouse.sign.*: true
+      
+  auctionhouse.user.command:
+    description: "All normal Commands"
+    children: 
+      auctionhouse.user: true
+      auctionhouse.command.add: true
+      auctionhouse.command.getItems: true
+      
+  auctionhouse.user:
+    description: "Can not Start Auction or receive items with command"
+    children:
+      auctionhouse.use: true
+      auctionhouse.command.bid: true
+      auctionhouse.command.undobid: true
+      auctionhouse.command.delete.id: true
+      auctionhouse.command.delete.player: true
+      auctionhouse.command.info.*: true
+      auctionhouse.command.search: true
+      auctionhouse.command.notify: true
+      auctionhouse.sign.auctionbox: true
+      auctionhouse.sign.use: true
+      auctionhouse.sign.start: true
+
+  auctionhouse.*:
+    description: "Allows the player to do everything"
+    default: op
+    children:
+      auctionhouse.use: true
+      auctionhouse.command.*: true
+      auctionhouse.command.add.cheatItems: true
+      auctionhouse.command.add.nolomit: true
+      auctionhouse.command.bid.infinite: true
+      auctionhouse.sign.*: true
+      auctionhouse.admin.reload: true
+      auctionhouse.admin.save: true
+ 
+  auctionhouse.command.add.nolomit:
+      description: ""
+
+  auctionhouse.command.*:
+    description: ""
+    children:
+      auctionhouse.command.bid: true
+      auctionhouse.command.add: true
+      auctionhouse.command.add.multi: true
+      auctionhouse.command.undobid: true
+      auctionhouse.command.sub: true
+      auctionhouse.command.delete.all: true
+      auctionhouse.command.info.*: true
+      auctionhouse.command.search: true
+      auctionhouse.command.notify: true
+      auctionhouse.command.getItems: true
+      auctionhouse.command.add.server: true
+  
+  auctionhouse.command.add.server:
+    description: ""
+    
+  auctionhouse.command.sub:
+    description: ""
+  
+  auctionhouse.command.bid:
+    description: ""
+    
+  auctionhouse.command.bid.infinite:
+    description: ""
+    
+  auctionhouse.command.add:
+    description: ""
+    
+  auctionhouse.command.add.multi:
+    description: ""
+    
+  auctionhouse.command.undobid:
+    description: ""
+    
+  auctionhouse.command.delete.all:
+    description: ""
+    children:
+      auctionhouse.command.delete.player: true
+      auctionhouse.command.delete.player.other: true
+      auctionhouse.command.delete.id: true
+      auctionhouse.command.delete.server: true
+
+  auctionhouse.command.delete.player:
+    description: ""
+    
+  auctionhouse.command.delete.id:
+    description: ""
+    
+  auctionhouse.command.delete.player.other:
+    description: ""
+
+  auctionhouse.command.delete.server:
+    description: ""
+
+  auctionhouse.command.add.cheatItems:
+    description: ""
+
+  auctionhouse.command.info.*:
+    description: ""
+    children:
+      auctionhouse.command.info: true
+      auctionhouse.command.info.others: true
+
+  auctionhouse.command.info:
+    description: ""
+    
+  auctionhouse.command.info.others:
+    description: ""
+
+  auctionhouse.command.notify:
+    description: ""
+
+  auctionhouse.use:
+    description: ""
+    
+  auctionhouse.command.search:
+    description: ""
+    
+  auctionhouse.command.getItems:
+    description: ""
+  
+  auctionhouse.sign.*:
+    description: ""
+    children:
+      auctionhouse.sign.use: true
+      auctionhouse.sign.create.*: true
+      
+  auctionhouse.sign.use:
+    description: ""
+    children:
+      auctionhouse.sign.auctionbox: true
+      auctionhouse.sign.start: true
+      auctionhouse.sign.list: true
+  
+  auctionhouse.sign.auctionbox:
+    description: ""
+    
+  auctionhouse.sign.start:
+    description: ""
+    
+  auctionhouse.sign.list:
+    description: ""
+  
+  auctionhouse.sign.create.*:
+    description: ""  
+    children:
+      auctionhouse.sign.create.box: true
+      auctionhouse.sign.create.add: true
+      auctionhouse.sign.create.list: true
+
+  auctionhouse.sign.create.box:
+    description: ""
+    
+  auctionhouse.sign.create.add:
+    description: ""
+  
+  auctionhouse.sign.create.list:
+    description: ""
+
+  auctionhouse.admin.reload:
+    description: ""

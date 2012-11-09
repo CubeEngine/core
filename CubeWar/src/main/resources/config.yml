@@ -1,0 +1,284 @@
+debug: true
+cubewar:
+  language: de
+  ranks:
+    Zombie:
+      deathmodifier: 1
+      killmodifier: 0
+      killpointlimit: -200
+      influence: 0.5
+    Wegelagerer:
+      deathmodifier: 20
+      killmodifier: 50
+      killpointlimit: -100
+      influence: 0.9
+    Vagabund:
+      deathmodifier: 45
+      killmodifier: 50
+      killpointlimit: 0
+      influence: 1
+    Schläger:
+      deathmodifier: 90
+      killmodifier: 100
+      killpointlimit: 250
+      influence: 1.1
+    Bandit:
+      deathmodifier: 225
+      killmodifier: 250
+      killpointlimit: 600
+      influence: 1.2
+    Plünderer:
+      deathmodifier: 540
+      killmodifier: 600
+      killpointlimit: 1500
+      influence: 1.3
+    Söldner:
+      deathmodifier: 1350
+      killmodifier: 1500
+      killpointlimit: 3500
+      influence: 1.4
+    Berserker:
+      deathmodifier: 3150
+      killmodifier: 3500
+      killpointlimit: 8000
+      influence: 1.5
+    Gladiator:
+      deathmodifier: 7200
+      killmodifier: 8000
+      killpointlimit: 20000
+      influence: 1.8
+    Held:
+      deathmodifier: 18000
+      killmodifier: 20000
+      killpointlimit: 100000
+      influence: 2
+  killpoint:
+     min: -200
+     max: 200000
+     kp:
+        Chicken: 0
+        Cow: 1
+        Mooshroom: 1
+        Ocelot : 0
+        Pig: 1
+        Sheep: 0
+        Squid: 1
+        Villager: -20
+        Enderman: 8
+        Wolf: -15
+        ZombiePigman: 2
+        Blaze: 3
+        CaveSpider: 2
+        Creeper: 3
+        Ghast: 4
+        MagmaCube: 1
+        Silverfish: 1
+        Skeleton: 1
+        Slime: 1
+        Spider: 2
+        Zombie: 1
+        SnowGolem: -5
+        IronGolem: -50
+        EnderDragon: 250
+        Giant: 100
+
+  chat:
+    useCWChat: false
+    tagreplace: [CWTEAM]
+
+  claim:
+    maxclaim: 5
+  
+  area:
+    safezone:
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: false
+        powergain: false
+      pvp:
+        PvP: false
+        damage: false 
+        friendlyfire: false
+        spawnprotectseconds: 3
+      monster: 
+        spawn: false
+        damage: false
+      build:
+        place: true
+        destroy: true
+      protect: []
+      use:
+        fire: false
+        lava: false
+        water: false
+      denycommands: []
+      
+    warland:
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: true
+        powergain: true
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: true
+        spawnprotectseconds: 2
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: false
+      protect: []
+      use:
+        fire: true
+        lava: false
+        water: false
+      denycommands:
+        - spawn
+        - warp
+        - home
+
+    wildland:
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: true
+        powergain: true
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: false
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: false
+      protect: []
+      use:
+        fire: false
+        lava: false
+        water: false
+      denycommands: []
+
+    team_default:
+      economy:
+        bank: false
+        ##### economy einbindung
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: true
+        powergain: true
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: false
+        spawnprotectseconds: 3
+        #P+1 or P-1  changeDamage with Percentage
+        #S5          setDamage to
+        #1 or -1     changeDamage
+        damagemodifier: P-30
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: false
+      protect:
+        - DISPENSER
+        - CHEST
+        - FURNACE
+        - BURNING_FURNACE
+        - WOODEN_DOOR
+        - JUKEBOX
+        - DIODE_BLOCK_OFF
+        - DIODE_BLOCK_ON
+        - TRAP_DOOR
+        - FENCE_GATE
+        - ENCHANTMENT_TABLE
+        - BREWING_STAND
+        - CAULDRON
+      use:
+        fire: true
+        lava: false
+        water: false
+      denycommands: []
+      closed: false
+      autoclose: true
+        
+    arena_default:
+      economy:
+        bank: false
+      power:
+        haspermpower: false
+        permpower: 0
+        powerboost: 0
+        powerloss: true
+        powergain: true
+      pvp:
+        PvP: true
+        damage: true 
+        friendlyfire: true
+        spawnprotectseconds: 3
+      monster: 
+        spawn: true
+        damage: true
+      build:
+        place: false
+        destroy: false
+      protect: []
+      use:
+        fire: true
+        lava: false
+        water: false
+      denycommands:
+        - spawn
+        - warp
+        - home
+  #Permissions to DENY for InGroup TeamPositions even if given permissions in Perm_System
+  #You can still use bypass to access commands that are denied here
+  IGperm:
+    leader:
+      - command.unclaim.ownTeam.all
+    mod:
+      - command.position.admin
+      - command.unclaim.ownTeam.all
+      - command.unclaim.radius
+    member:
+      - command.claim.radius
+      - command.unclaim
+      - command.relation.change
+      - command.kick
+      - command.invite
+      - command.uninvite
+      - command.position.*
+      - command.description
+    user:
+      - command.create
+      - command.fly
+  influence:
+    gainPerMin: 0.007
+    #~ 10 IP per day
+    gainPerMinOnline: 0.01
+    loose:
+      afterDaysOffline: 7
+      loosePerMin: 0.1
+    buy: 100
+  fly:
+    block_sec_after_hit: 10
+  database:
+    host: localhost
+    port: 3306
+    user: root
+    pass: ''
+    name: cubeengine
+    
