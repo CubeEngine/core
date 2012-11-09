@@ -86,11 +86,6 @@ public class Shout extends Module
 
     }
 
-    @Override
-    public void onDisable()
-    {
-    }
-
     public AnnouncementManager getAnnouncementManager()
     {
         return this.announcementManager;

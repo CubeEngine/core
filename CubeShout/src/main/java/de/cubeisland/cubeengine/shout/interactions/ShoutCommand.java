@@ -29,9 +29,7 @@ public class ShoutCommand
     },
     min = 1,
     desc = "Announce a message to players on the server",
-    usage = "<Announcment-name>",
-    permDefault = PermissionDefault.OP,
-    permNode = "cubeengine.shout.announce")
+    usage = "<Announcment-name>")
     public void shout(CommandContext context)
     {
         try
@@ -62,7 +60,7 @@ public class ShoutCommand
                 context.sendMessage("shout", "%s is not an announcement...", context.getIndexed(0, String.class));
             }
         }
-        catch (ConversionException e)
+        catch (ConversionException ex)
         {
         } //This should never happen
     }

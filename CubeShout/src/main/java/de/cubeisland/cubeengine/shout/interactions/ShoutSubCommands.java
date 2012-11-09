@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
-import org.bukkit.permissions.PermissionDefault;
-
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -24,9 +23,7 @@ public class ShoutSubCommands
     {
         "list", "announcements"
     },
-    desc = "List all announcements",
-    permDefault = PermissionDefault.OP,
-    permNode = "cubeengine.shout.list")
+    desc = "List all announcements")
     public void list(CommandContext context)
     {
         StringBuilder announcements = new StringBuilder();
@@ -45,8 +42,6 @@ public class ShoutSubCommands
     }
 
     @Command(desc = "Create the structure for a new announcement",
-    permDefault = PermissionDefault.OP,
-    permNode = "cubeengine.shout.create",
     min = 1,
     params =
     {
@@ -74,6 +69,11 @@ public class ShoutSubCommands
         {
             "message", "m"
         },
+        types = String.class),
+        @Param(names =
+        {
+            "locale", "l"
+        },
         types = String.class)
     })
     public void create(CommandContext context)
@@ -93,7 +93,11 @@ public class ShoutSubCommands
             }
 
             String locale = module.getCore().getConfiguration().defaultLanguage;
-            if (context.getSenderAsUser() != null)
+            if (context.hasNamed("locale"))
+            {
+                locale = I18n.normalizeLanguage(context.getNamed("locale", String.class));
+            }
+            else if (context.getSenderAsUser() != null)
             {
                 locale = context.getSenderAsUser().getLanguage();
             }
@@ -125,9 +129,7 @@ public class ShoutSubCommands
     }
 
     @Command(
-    desc = "clean all loaded announcements form memory and load from disk",
-    permDefault = PermissionDefault.OP,
-    permNode = "cubeengine.shout.reload")
+    desc = "clean all loaded announcements form memory and load from disk")
     public void reload(CommandContext context)
     {
         module.getAnnouncementManager().clean();

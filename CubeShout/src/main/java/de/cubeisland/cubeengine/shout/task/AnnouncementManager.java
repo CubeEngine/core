@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.Exceptions.ShoutException;
@@ -341,7 +342,18 @@ public class AnnouncementManager
         File confFile = new File(f, "meta.yml");
         if (!confFile.exists())
         {
-            throw new ShoutException("No configfile to announcement: " + f.getName());
+            File config = f.listFiles((FilenameFilter)FileExtentionFilter.YAML)[0];
+            if (config != null)
+            {
+                if (!config.renameTo(confFile))
+                {
+                    throw new ShoutException("No configfile to announcement: " + f.getName());
+                }
+            }
+            else
+            {
+                throw new ShoutException("No configfile to announcement: " + f.getName());   
+            }
         }
 
         Map<String, String> messages = new HashMap<String, String>();
@@ -373,7 +385,7 @@ public class AnnouncementManager
             {
                 message.append(line).append("\n");
             }
-            messages.put(lang.getName().replace(".txt", ""), message.toString());
+            messages.put(I18n.normalizeLanguage(lang.getName().replace(".txt", "")), message.toString());
         }
 
         if (module.getCore().isDebug())
