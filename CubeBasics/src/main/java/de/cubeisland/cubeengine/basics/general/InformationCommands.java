@@ -38,9 +38,8 @@ public class InformationCommands
         desc = "Displays the direction in which you are looking.")
     public void compass(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "I assume you are looking right at your server-console. Right?");
-        final int direction = (int)(sender.getLocation().getYaw() + 180 + 360) % 360;
-        //TODO any idea to do this better?
+        User sender = context.getSenderAsUser("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
+        int direction = (int)(sender.getLocation().getYaw() + 180 + 360) % 360;
         String dir;
         if (direction < 23)
         {
@@ -78,14 +77,14 @@ public class InformationCommands
         {
             dir = "N";
         }
-        sender.sendMessage("basics", "You are looking into %s", _(sender, "basics", dir));
+        sender.sendMessage("basics", "&eYou are looking to &6%s&e!", _(sender, "basics", dir));
     }
 
     @Command(
         desc = "Displays your current depth.")
     public void depth(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "You dug too deep!");
+        User sender = context.getSenderAsUser("basics", "&cYou dug too deep!");
         int height = sender.getLocation().getBlockY();
         if (height > 62)
         {
@@ -101,8 +100,8 @@ public class InformationCommands
         desc = "Displays your current location.")
     public void getPos(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "Your position: Right in front of your screen!");
-        sender.sendMessage("basics", "Your position is X:%d Y:%d Z:%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
+        User sender = context.getSenderAsUser("basics", "&eYour position: &cRight in front of your screen!");
+        sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
     }
 
     @Command(
