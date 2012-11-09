@@ -18,11 +18,10 @@ public class ShoutSubCommands
         this.module = module;
     }
 
-    @Command(names =
-    {
-        "list", "announcements"
-    },
-    desc = "List all announcements")
+    @Command(
+        names = {"list", "announcements"},
+        desc = "List all announcements"
+    )
     public void list(CommandContext context)
     {
         StringBuilder announcements = new StringBuilder();
@@ -40,31 +39,18 @@ public class ShoutSubCommands
             announcements.substring(0, announcements.length() - 2));
     }
 
-    @Command(desc = "Create the structure for a new announcement",
-    min = 1,
-    params =
-    {
-        @Param(names =
-        {
-            "delay", "d"
-        }, types = String.class),
-        @Param(names =
-        {
-            "world", "w"
-        }, types = String.class),
-        @Param(names =
-        {
-            "permission", "p"
-        }, types = Permission.class),
-        @Param(names =
-        {
-            "group", "g"
-        }, types = String.class),
-        @Param(names =
-        {
-            "message", "m"
-        }, types = String.class)
-    })
+    @Command(
+        desc = "Create the structure for a new announcement",
+        min = 1,
+        params = {
+            @Param(names = {"delay", "d"}, types = String.class),
+            @Param(names = {"world", "w"}, types = String.class),
+            @Param(names = {"permission", "p"}, types = Permission.class),
+            @Param(names = {"group", "g"}, types = String.class),
+            @Param(names = {"message", "m"}, types = String.class),
+            @Param(names = {"locale", "l"}, types = String.class)
+        }
+    )
     public void create(CommandContext context)
     {
         if (!context.hasNamed("message"))
@@ -80,7 +66,11 @@ public class ShoutSubCommands
         }
 
         String locale = this.module.getCore().getConfiguration().defaultLanguage;
-        if (context.getSenderAsUser() != null)
+        if (context.hasNamed("locale"))
+        {
+            locale = I18n.normalizeLanguage(context.getString("locale"));
+        }
+        else if (context.getSenderAsUser() != null)
         {
             locale = context.getSenderAsUser().getLanguage();
         }
@@ -90,10 +80,10 @@ public class ShoutSubCommands
             this.module.getAnnouncementManager().createAnnouncement(
                 context.getString(0),
                 message,
-                context.getNamed("delay", String.class, "10 minutes"),
-                context.getNamed("world", String.class, "*"),
-                context.getNamed("group", String.class, "*"),
-                context.getNamed("permission", String.class, "*"),
+                context.getString("delay", "10 minutes"),
+                context.getString("world", "*"),
+                context.getString("group", "*"),
+                context.getString("permission", "*"),
                 locale);
         }
         catch (IllegalArgumentException ex)
@@ -113,7 +103,8 @@ public class ShoutSubCommands
     }
 
     @Command(
-    desc = "clean all loaded announcements form memory and load from disk")
+        desc = "clean all loaded announcements form memory and load from disk"
+    )
     public void reload(CommandContext context)
     {
         module.getAnnouncementManager().clean(); // TODO this doesn't seem like reloading or the method is named bad
