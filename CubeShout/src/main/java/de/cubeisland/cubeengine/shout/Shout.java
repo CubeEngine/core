@@ -54,7 +54,7 @@ public class Shout extends Module
         this.announcementFolder = this.getFolder();
         this.getFileManager().dropResources(ShoutResource.values());
 
-        this.taskManager = new Announcer(this, config.initDelay, config.messagerPeriod);
+        this.taskManager = new Announcer(config.initDelay);
         this.announcementManager = new AnnouncementManager(this);
         this.listener = new ShoutListener(this);
         this.command = new ShoutCommand(this);

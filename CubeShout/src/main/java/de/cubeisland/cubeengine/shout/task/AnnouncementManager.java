@@ -284,7 +284,7 @@ public class AnnouncementManager
             User u = module.getUserManager().getUser(p.getName(), false);
 
             this.initializeUser(u);
-            taskManager.scheduleTask(u.getName(), new MessageTask(this, taskManager, u),
+            taskManager.scheduleTask(u.getName(), new MessageTask(this, module.getTaskManger(), u),
                 this.getGreatestCommonDivisor(u.getName()));
         }
     }

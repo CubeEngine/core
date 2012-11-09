@@ -14,27 +14,17 @@ import java.util.logging.Level;
 /**
  * Class to manage tasks based on the system time, not bukkits.
  */
-public class Announcer implements Runnable
+public class Announcer
 {
-    private Shout module;
-    private Queue<Message> messageQueue;
     private Timer timer;
     private Map<String, TimerTask> tasks;
     private int initDelay;
-    private int messagerPeriod;
 
-    public Announcer(Shout module, int initDelay, int messagerPeriod)
+    public Announcer(int initDelay)
     {
-        this.module = module;
-        this.messageQueue = new ConcurrentLinkedQueue<Message>();
         this.timer = new Timer();
         this.tasks = new HashMap<String, TimerTask>();
         this.initDelay = initDelay;
-        this.messagerPeriod = messagerPeriod;
-
-        //Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
-        // please try to not leak this in the constructor
-        module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 20, this.messagerPeriod / 50);
     }
 
     /**
@@ -50,17 +40,6 @@ public class Announcer implements Runnable
     }
 
     /**
-     * Queue a message to be displayed to an user.
-     * 
-     * @param	user		User to display this message to.
-     * @param	message		the message to display to this user.
-     */
-    public void queueMessage(String user, String message)
-    {
-        messageQueue.add(new Message(user, message));
-    }
-
-    /**
      * Stops a user from receiving announcements
      * 
      * @param user
@@ -68,37 +47,5 @@ public class Announcer implements Runnable
     public void stopUser(String user)
     {
         tasks.get(user).cancel();
-    }
-
-    public void run()
-    {
-        if (!messageQueue.isEmpty())
-        {
-            Message m = messageQueue.poll();
-            User u = module.getCore().getUserManager().getUser(m.user, false);
-            if (u != null)
-            {
-                if (module.getCore().isDebug())
-                {
-                    module.logger.log(Level.INFO, u.getName() + " Is now receiving a message");
-                }
-                u.sendMessage(ChatFormat.parseFormats('&', m.message));
-            }
-        }
-    }
-
-    /**
-     * Class to represent a message to be sent to a player.
-     */
-    private class Message
-    {
-        String user;
-        String message;
-
-        public Message(String user, String message)
-        {
-            this.user = user;
-            this.message = message;
-        }
     }
 }

@@ -41,7 +41,7 @@ public class ShoutListener implements Listener
         {
             module.logger.log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), aManager.getGreatestCommonDivisor(user.getName())));
         }
-        taskManager.scheduleTask(user.getName(), new MessageTask(aManager, taskManager, user), aManager.getGreatestCommonDivisor(user.getName()));
+        taskManager.scheduleTask(user.getName(), new MessageTask(aManager, module.getTaskManger(), user), aManager.getGreatestCommonDivisor(user.getName()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
