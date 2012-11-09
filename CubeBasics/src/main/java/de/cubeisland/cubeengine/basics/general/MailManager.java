@@ -68,7 +68,15 @@ public class MailManager extends BasicStorage<Mail>
     public void addMail(User user, User from, String message)
     {
         BasicUser bUser = this.getBasicUserWithMails(user);
-        Mail mail = new Mail(user.key, from.key, message);
+        Mail mail;
+        if (from == null)
+        {
+            mail = new Mail(user.key, 0, message);
+        }
+        else
+        {
+            mail = new Mail(user.key, from.key, message);
+        }
         bUser.mailbox.add(mail);
         this.store(mail);
     }
@@ -99,7 +107,7 @@ public class MailManager extends BasicStorage<Mail>
     }
 
     public void removeMail(User user, User sendBy)
-    {
+    {//TODO if null then key = 0 (send by CONSOLE)
         BasicUser bUser = this.getBasicUserWithMails(user);
         for (Mail mail : bUser.mailbox)
         {

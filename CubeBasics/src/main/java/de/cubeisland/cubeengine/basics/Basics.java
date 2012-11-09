@@ -32,7 +32,7 @@ public class Basics extends Module
         this.registerCommands(new ListCommand());        
         this.registerCommand(new MailCommand(this));
         this.registerCommands(new PlayerCommands(this));
-        this.registerListener(new UnlimitedListener(this));
+        this.registerListener(new GeneralsListener(this));
         this.registerListener(new MuteListener(this));
         
         //Moderation:

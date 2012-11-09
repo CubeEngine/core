@@ -43,6 +43,9 @@ public class CoreConfiguration extends Configuration
     @Option("logging.Level")
     @Comment("Logging into Console \nALL > FINEST > FINER > FINE > INFO > OFF")
     public Level loggingLevel = Level.FINE;
+    @Option("after-join-event-delay")
+    @Comment("How many ticks after PlayerJoinEvent the AfterJoingEvent is fired")
+    public long afterJoinEventDelay = 1;
 
     @Override
     public String[] head()

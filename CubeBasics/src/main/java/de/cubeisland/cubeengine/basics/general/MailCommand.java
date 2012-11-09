@@ -7,17 +7,16 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 public class MailCommand extends ContainerCommand
 {
     private Basics basics;
     private MailManager mailManager;
 
-    //TODO when user joins check with custom query if there is any mail.
-    //If there is load BasicUser + Show amount of unread mails.
     public MailCommand(Basics basics)
     {
         super(basics, "mail", "Manages your server-mails.");
@@ -28,7 +27,7 @@ public class MailCommand extends ContainerCommand
     @Alias(names = "readmail")
     @Command(
         desc = "Reads your mails.",
-    usage = "[player]")
+        usage = "[player]")
     public void read(CommandContext context)
     {
         User sender;
@@ -36,15 +35,14 @@ public class MailCommand extends ContainerCommand
         String nameMailOf = null;
         if (context.hasIndexed(0))
         {
-            sender = context.getSenderAsUser("basics", "If you wanted to look into other players mails use: /mail spy %s."
-                + "\nOtherwise be quiet!", context.getString(0));
-            //TODO mail spy <player>
+            sender = context.getSenderAsUser("basics", "&eIf you wanted to look into other players mails use: &6/mail spy %s&e."
+                + "\n&cOtherwise be quiet!", context.getString(0));
             mailof = context.getUser(0);
             if (mailof == null)
             {
                 if (!context.getString(0).equalsIgnoreCase("CONSOLE"))
                 {
-                    illegalParameter(context, "basics", "&cUser %s not found!", context.getString(0));
+                    paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
                 }
                 nameMailOf = "CONSOLE";
             }
@@ -64,7 +62,7 @@ public class MailCommand extends ContainerCommand
         }
 
         List<Mail> mails;
-        if (mailof == null) // Just read next mail
+        if (mailof == null) //get mails
         {
             mails = mailManager.getMails(sender);
         }
@@ -74,7 +72,7 @@ public class MailCommand extends ContainerCommand
         }
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
-            context.sendMessage("basics", "You do not have any mail from %s", nameMailOf);
+            context.sendMessage("basics", "&eYou do not have any mail from &2%s&e.", nameMailOf);
         }
         else
         {
@@ -85,46 +83,92 @@ public class MailCommand extends ContainerCommand
                 i++;
                 sb.append("\n").append(i).append(": ").append(mail.toString());
             }
-            context.sendMessage("basics", "Mail read:%s", sb.toString());
+            context.sendMessage("basics", "&aYour mails:%s", sb.toString());
         }
+    }
+    
+    @Alias(names = "spymail")
+    @Command(
+        desc = "Reads your mails.",
+        usage = "[player]")
+    public void spy(CommandContext context)
+    {
+        //TODO
     }
 
     @Alias(names = "sendmail")
     @Command(
-    desc = "Sends mails to other players.",
-    usage = "<player> <message>",
-    min = 2)
+        desc = "Sends mails to other players.",
+        usage = "<player> <message>",
+        min = 2)
     public void send(CommandContext context)
     {
         User user = context.getUser(0);
         if (user == null)
         {
-            illegalParameter(context, "basics", "User not found!");
+            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
         }
         String message = context.getStrings(1);
         this.mail(message, context.getSenderAsUser(), user);
+        context.sendMessage("basics", "&aMail send to &2%s&a!", user.getName());
     }
 
-    @Alias(names = "sendmail")
+    @Alias(names = "sendallmail")
     @Command(
         desc = "Sends mails to all players.",
-    usage = "<message>")
+        usage = "<message>")
     public void sendAll(CommandContext context)
     {
-        // Sending the mails sync to loadedUsers
-        // then async for getting all Users from database and sending to them
+        List<User> users = this.basics.getUserManager().getOnlineUsers();
+        final TIntSet alreadySend = new TIntHashSet();
+        final User sender = context.getSenderAsUser();
+        final String message = context.getStrings(0);
+        for (User user : users)
+        {
+            this.mailManager.addMail(user, sender, message);
+            alreadySend.add(user.key);
+        }
+        this.basics.getTaskManger().getExecutorService().submit(new Runnable() 
+        {
+            public void run() // Async sending to all Users ever
+            {
+                for (User user : basics.getUserManager().getAll())
+                {
+                    if (!alreadySend.contains(user.key))
+                    {
+                        mailManager.addMail(user, sender, message);
+                    }
+                }
+            }
+        });
+        context.sendMessage("basics", "&aMail send to everyone!");
     }
 
-    @Command(names =
-    {
-        "clear", "remove"
-    },
-    desc = "Clears your mails.", usage = "[player]")
-    //TODO alias for deleting all 
-    //mail remove -a
-    //== mail clear
+    @Command(
+        names = { "clear", "remove" },
+        desc = "Clears your mails.",
+        usage = "[player]")
     public void clear(CommandContext context)
     {
+        User sender = context.getSenderAsUser("basics", "&cYou will never have mails here!");
+        if (!context.hasIndexed(0))
+        {
+            this.mailManager.removeMail(sender);
+            context.sendMessage("basics", "&eCleared all mails!");
+        }
+        else
+        {
+            User from = context.getUser(0);
+            if (from == null)
+            {
+                if (!context.getString(0).equalsIgnoreCase("Console"))
+                {
+                    paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+                }
+            }
+            this.mailManager.removeMail(sender, from);
+            context.sendMessage("basics", "&eCleared all mails from &2%s&e!", from.getName());
+        }
     }
 
     private void mail(String message, User from, User... users)
@@ -134,7 +178,7 @@ public class MailCommand extends ContainerCommand
             mailManager.addMail(user, from, message);
             if (user.isOnline())
             {
-                user.sendMessage("basics", "You just got a mail from %s", from.getName());
+                user.sendMessage("basics", "&eYou just got a mail from &2%s&e!", from.getName());
             }
         }
     }
