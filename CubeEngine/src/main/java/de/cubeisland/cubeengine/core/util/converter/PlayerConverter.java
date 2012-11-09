@@ -17,24 +17,16 @@ public class PlayerConverter implements Converter<OfflinePlayer>
     @Override
     public Object toObject(OfflinePlayer object)
     {
-        return this.toString(object);
-    }
-
-    @Override
-    public OfflinePlayer fromObject(Object object)
-    {
-        return this.fromString(String.valueOf(object));
-    }
-
-    @Override
-    public String toString(OfflinePlayer object)
-    {
         return object.getName();
     }
 
     @Override
-    public OfflinePlayer fromString(String string)
+    public OfflinePlayer fromObject(Object object) throws ConversionException
     {
-        return this.server.getOfflinePlayer(string);
+        if (object instanceof String)
+        {
+            return this.server.getOfflinePlayer((String)object);
+        }
+        throw new ConversionException("Could not convert to OfflinePlayer!");
     }
 }

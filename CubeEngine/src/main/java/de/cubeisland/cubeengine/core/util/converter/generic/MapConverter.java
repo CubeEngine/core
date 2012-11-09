@@ -6,44 +6,58 @@ import de.cubeisland.cubeengine.core.util.converter.Converter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class MapConverter implements GenericConverter<Map>
+public class MapConverter
 {
-    @Override
-    public Object toObject(Map object, Class<?> genericType, String basepath) throws ConversionException
+    /**
+     * Makes a map serializable for configs
+     * 
+     * @param map the map to convert
+     * @return the serializable map
+     * @throws ConversionException 
+     */
+    public Object toObject(Map<?, ?> map) throws ConversionException
     {
-        Converter converter = Convert.matchConverter(genericType);
-        if (converter != null)
+        Map<Object, Object> result = new LinkedHashMap<Object, Object>();
+        if (map.isEmpty())
         {
-            Map<Object, ?> map = (Map<Object, ?>)object;
-            Map<String, Object> result = new LinkedHashMap<String, Object>();
-            for (Object key : map.keySet())
-            {
-                result.put(key.toString(), converter.toObject(map.get(key)));
-            }
             return result;
         }
-        return object;
+        Class<?> keyType = map.entrySet().iterator().next().getKey().getClass();
+        Class<?> valType = map.entrySet().iterator().next().getValue().getClass();
+        Converter keyConverter = Convert.matchConverter(keyType);
+        Converter valConverter = Convert.matchConverter(valType);
+        for (Object key : map.keySet())
+        {
+            result.put(keyConverter.toObject(key), valConverter.toObject(map.get(key)));
+        }
+        return result;
     }
 
-    @Override
-    public <G> Map fromObject(Object object, Object fieldObject, Class<G> genericType) throws ConversionException
+    /**
+     * Deserializes an object back to a map
+     * 
+     * @param <K> the KeyType
+     * @param <V> the ValueType
+     * @param object the object to convert
+     * @param keyType the KeyTypeClass
+     * @param valType the ValueTypeClass
+     * @return the converted map
+     * @throws ConversionException 
+     */
+    public <K, V> Map<K, V> fromObject(Object object, Class<K> keyType, Class<V> valType) throws ConversionException
     {
-        Converter converter = Convert.matchConverter(genericType);
-        if (converter != null)
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        if (object instanceof Map)
         {
-            Map<String, ?> map = (Map<String, ?>)object;
-            if (map.isEmpty())
+            Converter<K> keyConverter = Convert.matchConverter(keyType);
+            Converter<V> valConverter = Convert.matchConverter(valType);
+            Map<?, ?> objectmap = (Map<?, ?>)object;
+            for (Object key : objectmap.keySet())
             {
-                return (Map<String, Object>)object;
-            }
-            Map<String, G> result = new LinkedHashMap<String, G>();
-            for (Map.Entry<String, ?> entry : map.entrySet())
-            {
-                result.put(entry.getKey(), (G)converter.fromObject(entry.
-                    getValue()));
+                result.put(keyConverter.fromObject(key), valConverter.fromObject(objectmap.get(key)));
             }
             return result;
         }
-        return (Map<String, G>)object;
+        throw new IllegalStateException("Cannot convert not a map to a map.");
     }
 }

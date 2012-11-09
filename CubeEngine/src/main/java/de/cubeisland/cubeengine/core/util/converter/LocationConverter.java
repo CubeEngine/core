@@ -43,16 +43,4 @@ public class LocationConverter implements Converter<Location>
 
         return new Location(world, x, y, z, (float)yaw, (float)pitch);
     }
-
-    @Override
-    public Location fromString(String string)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String toString(Location object)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

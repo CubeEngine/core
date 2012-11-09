@@ -11,18 +11,7 @@ public class BooleanConverter implements Converter<Boolean>
     @Override
     public Boolean fromObject(Object object) throws ConversionException
     {
-        return this.fromString(object.toString());
-    }
-
-    @Override
-    public String toString(Boolean object)
-    {
-        return object.toString();
-    }
-
-    @Override
-    public Boolean fromString(String s) throws ConversionException
-    {
+        String s = object.toString();
         if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("on") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("1"))
         {
             return true;

@@ -3,11 +3,11 @@ package de.cubeisland.cubeengine.core.util.converter;
 public class ByteConverter extends BasicConverter<Byte>
 {
     @Override
-    public Byte fromString(String string) throws ConversionException
+    public Byte fromObject(Object object) throws ConversionException
     {
         try
         {
-            return Byte.parseByte(string);
+            return Byte.parseByte(object.toString());
         }
         catch (NumberFormatException e)
         {

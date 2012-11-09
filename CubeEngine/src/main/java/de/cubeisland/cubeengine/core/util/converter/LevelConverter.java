@@ -15,16 +15,4 @@ public class LevelConverter implements Converter<Level>
     {
         return Level.parse(object.toString());
     }
-
-    @Override
-    public String toString(Level object)
-    {
-        return object.toString();
-    }
-
-    @Override
-    public Level fromString(String string) throws ConversionException
-    {
-        return Level.parse(string);
-    }
 }

@@ -74,7 +74,7 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakCon
         {
             this.enabled = true;
         }
-        @Option(value = "no-logging", genericType = BlockData.class)
+        @Option(value = "no-logging", valueType = BlockData.class)
         public ArrayList<BlockData> noLogging = new ArrayList<BlockData>();
 
         @Override

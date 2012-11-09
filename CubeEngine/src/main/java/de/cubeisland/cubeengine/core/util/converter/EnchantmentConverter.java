@@ -8,24 +8,16 @@ public class EnchantmentConverter implements Converter<Enchantment>
     @Override
     public Object toObject(Enchantment object) throws ConversionException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return EnchantMatcher.get().getNameFor(object);
     }
 
     @Override
     public Enchantment fromObject(Object object) throws ConversionException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String toString(Enchantment object)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Enchantment fromString(String string) throws ConversionException
-    {
-        return EnchantMatcher.get().matchEnchantment(string);
+        if (object instanceof String)
+        {
+            return EnchantMatcher.get().matchEnchantment(object.toString());
+        }
+        throw new ConversionException("Could not convert to Enchantment!");
     }
 }

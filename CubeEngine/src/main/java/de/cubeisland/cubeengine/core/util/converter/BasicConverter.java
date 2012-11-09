@@ -7,16 +7,4 @@ public abstract class BasicConverter<T> implements Converter<T>
     {
         return object;
     }
-
-    @Override
-    public T fromObject(Object object) throws ConversionException
-    {
-        return this.fromString(object.toString());
-    }
-
-    @Override
-    public String toString(T object)
-    {
-        return String.valueOf(object);
-    }
 }

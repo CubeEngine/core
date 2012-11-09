@@ -22,6 +22,6 @@ public class LanguageConfiguration extends Configuration
     @Option("parent")
     public String parent = null;
     
-    @Option(value = "clones", genericType = String.class)
+    @Option(value = "clones", valueType = String.class)
     public String[] clones = null;
 }

@@ -13,18 +13,6 @@ class DateConverter implements Converter<Date>
     @Override
     public Date fromObject(Object object) throws ConversionException
     {
-        return this.fromString(object.toString());
-    }
-
-    @Override
-    public String toString(Date object)
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Date fromString(String string) throws ConversionException
-    {
-        return Date.valueOf(string);
+        return Date.valueOf(object.toString());
     }
 }

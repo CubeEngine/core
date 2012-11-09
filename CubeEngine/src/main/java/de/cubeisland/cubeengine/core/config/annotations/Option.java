@@ -22,7 +22,14 @@ public @interface Option
     /**
      * Needed to deserialize Objects in Collections or Maps correctly
      *
-     * @return the genericType
+     * @return the valueType
      */
-    public Class<?> genericType() default Object.class;
+    public Class<?> valueType() default Object.class;
+    
+    /**
+     * Needed to deserialize Keys of Maps that are not Strings correctly
+     *
+     * @return the keyType
+     */
+    public Class<?> keyType() default String.class;
 }

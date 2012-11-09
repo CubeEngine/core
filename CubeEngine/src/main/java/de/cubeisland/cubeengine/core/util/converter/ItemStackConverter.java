@@ -8,7 +8,7 @@ public class ItemStackConverter implements Converter<ItemStack>
     @Override
     public Object toObject(ItemStack object) throws ConversionException
     {
-        return this.toString(object);
+        return object.getType().getId() + ":" + object.getDurability();
     }
 
     @Override
@@ -20,20 +20,8 @@ public class ItemStackConverter implements Converter<ItemStack>
         }
         else if (object instanceof String)
         {
-            return this.fromString(object.toString());
+            return MaterialMatcher.get().matchItemStack(object.toString());
         }
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String toString(ItemStack object)
-    {
-        return object.getType().getId() + ":" + object.getDurability();
-    }
-
-    @Override
-    public ItemStack fromString(String string) throws ConversionException
-    {
-        return MaterialMatcher.get().matchItemStack(string);
+        throw new ConversionException("Could not convert to ItemStack!");
     }
 }

@@ -55,7 +55,7 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
         {
             this.enabled = true;
         }
-        @Option(value = "no-logging", genericType = BlockData.class)
+        @Option(value = "no-logging", valueType = BlockData.class)
         public ArrayList<BlockData> noLogging = new ArrayList<BlockData>();
 
         @Override

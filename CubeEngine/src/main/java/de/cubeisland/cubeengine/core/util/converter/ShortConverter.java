@@ -3,11 +3,11 @@ package de.cubeisland.cubeengine.core.util.converter;
 public class ShortConverter extends BasicConverter<Short>
 {
     @Override
-    public Short fromString(String string) throws ConversionException
+    public Short fromObject(Object object) throws ConversionException
     {
         try
         {
-            return Short.parseShort(string);
+            return Short.parseShort(object.toString());
         }
         catch (NumberFormatException e)
         {

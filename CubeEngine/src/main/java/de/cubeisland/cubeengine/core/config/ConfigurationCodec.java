@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -270,18 +271,16 @@ public abstract class ConfigurationCodec
                 Converter converter = Convert.matchConverter(fieldClass);
                 if (converter == null)
                 {
-                    Class genericType = field.getAnnotation(Option.class).genericType();
-                    GenericConverter gConverter = Convert.matchGenericConverter(fieldClass);
-                    if (Configuration.class.isAssignableFrom(genericType))
+                    Class valueType = field.getAnnotation(Option.class).valueType();
+                    if (Configuration.class.isAssignableFrom(valueType))
                     {
-                        if (gConverter instanceof MapConverter) // config in maps IMPORTANT: key.toString() is the key in the config
+                        if (Map.class.isAssignableFrom(fieldClass)) // config in maps IMPORTANT: key.toString() is the key in the config
                         {
                             Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
                             Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
                             for (Object key : fieldMap.keySet())
                             {
-                                new CodecContainer().dumpIntoFields(fieldMap.get(key),
-                                    this.getOrCreateSubSection(key.toString(), subvalues));
+                                new CodecContainer().dumpIntoFields(fieldMap.get(key),this.getOrCreateSubSection(key.toString(), subvalues));
                             }
                             return fieldMap;
                         }
@@ -290,9 +289,17 @@ public abstract class ConfigurationCodec
                             throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
                         }
                     }
-                    if (gConverter != null)
+                    if (fieldClass.isArray())
                     {
-                        return gConverter.fromObject(object, field.get(this.config), genericType);
+                        return Convert.ARRAYCONVERTER.fromObject(object, valueType);
+                    }
+                    if (Collection.class.isAssignableFrom(fieldClass))
+                    {
+                        return Convert.COLLECTIONCONVERTER.fromObject(object, valueType);
+                    }
+                    if (Map.class.isAssignableFrom(fieldClass))
+                    {
+                        return Convert.MAPCONVERTER.fromObject(object, field.getAnnotation(Option.class).keyType(), valueType);
                     }
                 }
                 else
@@ -301,7 +308,6 @@ public abstract class ConfigurationCodec
                 }
             }
             return object;
-
         }
 
         /**
@@ -606,14 +612,14 @@ public abstract class ConfigurationCodec
                 Converter converter = Convert.matchConverter(fieldClass);
                 if (converter == null)
                 {
-                    Class genericType = field.getAnnotation(Option.class).genericType();
-                    GenericConverter gConverter = Convert.matchGenericConverter(fieldClass);
-                    if (Configuration.class.isAssignableFrom(genericType))
+                    Class valueType = field.getAnnotation(Option.class).valueType();
+                    if (Configuration.class.isAssignableFrom(valueType))
                     {
-                        if (gConverter instanceof MapConverter)
+                        if (Map.class.isAssignableFrom(fieldClass))
                         {
                             Map<Object, ? extends Configuration> fieldMap = (Map)fieldValue;
                             Map<String, Object> map = new LinkedHashMap<String, Object>();
+                            Converter keyConverter = Convert.matchConverter(fieldMap.keySet().iterator().next().getClass());
                             for (Object key : fieldMap.keySet())
                             {
                                 String newPath = field.getAnnotation(Option.class).value() + "." + this.findKey(key.toString());
@@ -621,7 +627,8 @@ public abstract class ConfigurationCodec
                                 {
                                     newPath = basepath + "." + newPath;
                                 }
-                                map.put(key.toString(), new CodecContainer().fillFromFields(this, fieldMap.get(key),
+                                map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
+                                    new CodecContainer().fillFromFields(this, fieldMap.get(key),
                                     newPath, this.getOrCreateSubSection(key.toString(), map)));
                             }
                             return map;
@@ -631,9 +638,17 @@ public abstract class ConfigurationCodec
                             throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
                         }
                     }
-                    if (gConverter != null)
+                    if (fieldClass.isArray())
                     {
-                        return gConverter.toObject(fieldValue, genericType, null);
+                        return Convert.ARRAYCONVERTER.toObject((Object[])fieldValue);
+                    }
+                    if (Collection.class.isAssignableFrom(fieldClass))
+                    {
+                        return Convert.COLLECTIONCONVERTER.toObject((Collection)fieldValue);
+                    }
+                    if (Map.class.isAssignableFrom(fieldClass))
+                    {
+                        return Convert.MAPCONVERTER.toObject((Map)fieldValue);
                     }
                 }
                 else

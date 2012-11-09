@@ -3,15 +3,15 @@ package de.cubeisland.cubeengine.core.util.converter;
 public class IntegerConverter extends BasicConverter<Integer>
 {
     @Override
-    public Integer fromString(String string) throws ConversionException
+    public Integer fromObject(Object object) throws ConversionException
     {
         try
         {
-            return Integer.parseInt(string);
+            return Integer.parseInt(object.toString());
         }
-        catch (NumberFormatException ex)
+        catch (NumberFormatException e)
         {
-            throw new ConversionException(string + " is no Integer", ex);
+            throw new ConversionException(e);
         }
     }
 }

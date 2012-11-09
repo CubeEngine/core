@@ -17,14 +17,4 @@ public interface Converter<T extends Object>
      * @return the deserialized fieldvalue
      */
     public T fromObject(Object object) throws ConversionException;
-
-    public String toString(T object);
-
-    /**
-     * Converts the given String to this class
-     *
-     * @param object the object to deserialize
-     * @return the deserialized fieldvalue
-     */
-    public T fromString(String string) throws ConversionException;
 }

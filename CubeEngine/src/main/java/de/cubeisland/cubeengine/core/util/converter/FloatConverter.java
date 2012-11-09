@@ -3,11 +3,11 @@ package de.cubeisland.cubeengine.core.util.converter;
 public class FloatConverter extends BasicConverter<Float>
 {
     @Override
-    public Float fromString(String string) throws ConversionException
+    public Float fromObject(Object object) throws ConversionException
     {
         try
         {
-            return Float.parseFloat(string);
+            return Float.parseFloat(object.toString());
         }
         catch (NumberFormatException e)
         {

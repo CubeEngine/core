@@ -49,7 +49,7 @@ public class TestConfig extends Configuration
     @Option("regions.sql.password")
     public String sql_password = "worldguard";
     @Option(value = "regions.max-region-count-per-player",
-    genericType = Integer.class)
+    valueType = Integer.class)
     @Comment(
     "This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
@@ -63,12 +63,12 @@ public class TestConfig extends Configuration
     public Integer the42 = 42;
     @Option("regions.the21")
     public int the21 = 21;
-    @Option(value = "arrays.stringtest", genericType = String.class)
+    @Option(value = "arrays.stringtest", valueType = String.class)
     public String[] stringarray =
     {
         "text1", "text2"
     };
-    @Option(value = "arrays.playertest", genericType = OfflinePlayer.class)
+    @Option(value = "arrays.playertest", valueType = OfflinePlayer.class)
     public OfflinePlayer[] playerarray =
     {
         server.getOfflinePlayer("Anselm Brehme"),
@@ -83,7 +83,7 @@ public class TestConfig extends Configuration
             add("kekse");
         }
     };
-    @Option(value = "list.playerlist", genericType = OfflinePlayer.class)
+    @Option(value = "list.playerlist", valueType = OfflinePlayer.class)
     public List<OfflinePlayer> playerlist = new ArrayList<OfflinePlayer>()
     {
         
@@ -92,7 +92,7 @@ public class TestConfig extends Configuration
             add(server.getOfflinePlayer("KekseSpieler"));
         }
     };
-    @Option(value = "list.shortlist", genericType = Short.class)
+    @Option(value = "list.shortlist", valueType = Short.class)
     public List<Short> shortlist = new ArrayList<Short>()
     {
         
@@ -103,7 +103,7 @@ public class TestConfig extends Configuration
             add(s);
         }
     };
-    @Option(value = "list.listinmaps", genericType = List.class)
+    @Option(value = "list.listinmaps", valueType = List.class)
     @Comment("list in maps ftw")
     public Map<String, List<Integer>> pointlessmap = new LinkedHashMap<String, List<Integer>>()
     {
@@ -119,7 +119,7 @@ public class TestConfig extends Configuration
             put("list2", list2);
         }
     };
-    @Option(value = "locationinmap", genericType = Location.class)
+    @Option(value = "locationinmap", valueType = Location.class)
     @Comment("multi location")
     public LinkedHashMap<String, Location> locs;
 
@@ -142,7 +142,7 @@ public class TestConfig extends Configuration
      @Option("role.role")
      @Comment("a single role")
      public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
-     @Option(value = "role.roles", genericType = Role.class)
+     @Option(value = "role.roles", valueType = Role.class)
      @Comment("multi roles")
      public LinkedHashMap<String, Role> roles;
 

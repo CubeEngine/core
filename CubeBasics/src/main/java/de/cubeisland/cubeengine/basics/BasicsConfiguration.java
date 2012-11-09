@@ -30,7 +30,7 @@ public class BasicsConfiguration extends Configuration
     public String motd = "Welcome on our server. Have fun!";
     @Option("commands.near-defaultradius")
     public int nearDefaultRadius = 20;
-    @Option(value = "commands.item-blacklist", genericType = ItemStack.class)
+    @Option(value = "commands.item-blacklist", valueType = ItemStack.class)
     public LinkedList<ItemStack> blacklist = new LinkedList<ItemStack>()
     {
         {
