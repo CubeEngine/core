@@ -8,12 +8,12 @@ import java.util.logging.Logger;
 public class MessageTask extends TimerTask
 {
     AnnouncementManager aManager;
-    TaskManager taskManager;
+    Announcer taskManager;
     String user;
     int runs;
     int nextExcecution;
 
-    public MessageTask(AnnouncementManager aManager, TaskManager scheduler, User user)
+    public MessageTask(AnnouncementManager aManager, Announcer scheduler, User user)
     {
         this.aManager = aManager;
         this.taskManager = scheduler;
@@ -26,7 +26,6 @@ public class MessageTask extends TimerTask
     {
         if (this.runs == this.nextExcecution)
         {
-            Logger.getLogger("Debug").log(Level.INFO, "excecutiong now!"); // TODO use the module logger!
             if (aManager.getNextMessage(user) != null)
             {
                 taskManager.queueMessage(user, aManager.getNextMessage(user));

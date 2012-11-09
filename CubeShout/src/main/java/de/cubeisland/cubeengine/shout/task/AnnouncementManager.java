@@ -32,7 +32,7 @@ import de.cubeisland.cubeengine.shout.ShoutException;
 public class AnnouncementManager
 {
     private Shout module;
-    private TaskManager taskManager;
+    private Announcer taskManager;
     private Map<String, AnnouncementReceiver> receivers;
     private Map<String, Announcement> announcements;
 
@@ -267,7 +267,7 @@ public class AnnouncementManager
     /**
      * Clean all loaded announcements and users
      */
-    public void clean()
+    public void reload()
     {
         for (String s : receivers.keySet())
         {

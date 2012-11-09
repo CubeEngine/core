@@ -13,9 +13,8 @@ import java.util.logging.Level;
 
 /**
  * Class to manage tasks based on the system time, not bukkits.
- * TODO rename me
  */
-public class TaskManager implements Runnable
+public class Announcer implements Runnable
 {
     private Shout module;
     private Queue<Message> messageQueue;
@@ -24,7 +23,7 @@ public class TaskManager implements Runnable
     private int initDelay;
     private int messagerPeriod;
 
-    public TaskManager(Shout module, int initDelay, int messagerPeriod)
+    public Announcer(Shout module, int initDelay, int messagerPeriod)
     {
         this.module = module;
         this.messageQueue = new ConcurrentLinkedQueue<Message>();

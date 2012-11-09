@@ -97,7 +97,7 @@ public class ShoutSubCommands
             context.sendMessage("shout", "The error message was: %S", ex.getLocalizedMessage());
         }
 
-        module.getAnnouncementManager().clean();
+        module.getAnnouncementManager().reload();
 
         context.sendMessage("shout", "Your announcement have been created and loaded into the plugin");
     }
@@ -107,7 +107,7 @@ public class ShoutSubCommands
     )
     public void reload(CommandContext context)
     {
-        module.getAnnouncementManager().clean(); // TODO this doesn't seem like reloading or the method is named bad
+        module.getAnnouncementManager().reload();
         context.sendMessage("shout", "All players and announcements have now been reloaded");
     }
 }

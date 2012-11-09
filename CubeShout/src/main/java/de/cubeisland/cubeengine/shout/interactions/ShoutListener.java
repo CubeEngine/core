@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.task.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.task.MessageTask;
-import de.cubeisland.cubeengine.shout.task.TaskManager;
+import de.cubeisland.cubeengine.shout.task.Announcer;
 import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +17,7 @@ public class ShoutListener implements Listener
 {
     private Shout module;
     private AnnouncementManager aManager;
-    private TaskManager taskManager;
+    private Announcer taskManager;
 
     public ShoutListener(Shout module)
     {
