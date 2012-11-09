@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.shout.task;
 
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.shout.Shout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -8,12 +11,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.shout.Shout;
-
 /**
  * Class to manage tasks based on the system time, not bukkits.
+ * TODO rename me
  */
 public class TaskManager implements Runnable
 {
@@ -34,6 +34,7 @@ public class TaskManager implements Runnable
         this.messagerPeriod = messagerPeriod;
 
         //Schedule a task in main thread after 1 second with 1 second periods to take care of the messageQueue 
+        // please try to not leak this in the constructor
         module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 20, this.messagerPeriod / 50);
     }
 
