@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.test;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
