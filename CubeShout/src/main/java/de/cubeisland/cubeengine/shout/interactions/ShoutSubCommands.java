@@ -18,10 +18,11 @@ public class ShoutSubCommands
         this.module = module;
     }
 
-    @Command(
-        names = {"list", "announcements"},
-        desc = "List all announcements"
-    )
+    @Command(names =
+    {
+        "list", "announcements"
+    },
+    desc = "List all announcements")
     public void list(CommandContext context)
     {
         StringBuilder announcements = new StringBuilder();
@@ -39,17 +40,31 @@ public class ShoutSubCommands
             announcements.substring(0, announcements.length() - 2));
     }
 
-    @Command(
-        desc = "Create the structure for a new announcement",
-        min = 1,
-        params = {
-            @Param(names = {"delay", "d"}, types = String.class),
-            @Param(names = {"world", "w"}, types = String.class),
-            @Param(names = {"permission", "p"}, types = Permission.class),
-            @Param(names = {"group", "g"}, types = String.class),
-            @Param(names = {"message", "m"}, types = String.class)
-        }
-    )
+    @Command(desc = "Create the structure for a new announcement",
+    min = 1,
+    params =
+    {
+        @Param(names =
+        {
+            "delay", "d"
+        }, types = String.class),
+        @Param(names =
+        {
+            "world", "w"
+        }, types = String.class),
+        @Param(names =
+        {
+            "permission", "p"
+        }, types = Permission.class),
+        @Param(names =
+        {
+            "group", "g"
+        }, types = String.class),
+        @Param(names =
+        {
+            "message", "m"
+        }, types = String.class)
+    })
     public void create(CommandContext context)
     {
         if (!context.hasNamed("message"))
@@ -79,8 +94,7 @@ public class ShoutSubCommands
                 context.getNamed("world", String.class, "*"),
                 context.getNamed("group", String.class, "*"),
                 context.getNamed("permission", String.class, "*"),
-                locale
-            );
+                locale);
         }
         catch (IllegalArgumentException ex)
         {
@@ -99,8 +113,7 @@ public class ShoutSubCommands
     }
 
     @Command(
-        desc = "clean all loaded announcements form memory and load from disk"
-    )
+    desc = "clean all loaded announcements form memory and load from disk")
     public void reload(CommandContext context)
     {
         module.getAnnouncementManager().clean(); // TODO this doesn't seem like reloading or the method is named bad

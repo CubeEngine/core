@@ -20,12 +20,13 @@ public class ShoutCommand
         this.module = module;
     }
 
-    @Command(
-        names = {"shout", "announce"},
-        min = 1,
-        desc = "Announce a message to players on the server",
-        usage = "<announcment name>"
-    )
+    @Command(names =
+    {
+        "shout", "announce"
+    },
+    min = 1,
+    desc = "Announce a message to players on the server",
+    usage = "<announcment name>")
     public void shout(CommandContext context)
     {
         try
