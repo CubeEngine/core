@@ -23,7 +23,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
-import de.cubeisland.cubeengine.shout.Exceptions.ShoutException;
+import de.cubeisland.cubeengine.shout.ShoutException;
 
 /*
  * Class to manage all the announcements and their receivers

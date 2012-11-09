@@ -1,11 +1,5 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionDefault;
-
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
@@ -13,6 +7,9 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.task.Announcement;
+import java.util.Arrays;
+import java.util.List;
+import org.bukkit.entity.Player;
 
 public class ShoutCommand
 {
@@ -23,15 +20,12 @@ public class ShoutCommand
         this.module = module;
     }
 
-    @Command(names =
-    {
-        "shout", "announce"
-    },
-    min = 1,
-    desc = "Announce a message to players on the server",
-    usage = "<Announcment-name>",
-    permDefault = PermissionDefault.OP,
-    permNode = "cubeengine.shout.announce")
+    @Command(
+        names = {"shout", "announce"},
+        min = 1,
+        desc = "Announce a message to players on the server",
+        usage = "<announcment name>"
+    )
     public void shout(CommandContext context)
     {
         try

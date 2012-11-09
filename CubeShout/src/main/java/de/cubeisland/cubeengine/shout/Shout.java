@@ -1,10 +1,5 @@
 package de.cubeisland.cubeengine.shout;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
@@ -12,6 +7,10 @@ import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
 import de.cubeisland.cubeengine.shout.task.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.task.TaskManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Shout extends Module
 {

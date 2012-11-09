@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.Exceptions;
+package de.cubeisland.cubeengine.shout;
 
 public class ShoutException extends Exception
 {

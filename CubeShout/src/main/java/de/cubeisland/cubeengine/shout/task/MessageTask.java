@@ -26,7 +26,7 @@ public class MessageTask extends TimerTask
     {
         if (this.runs == this.nextExcecution)
         {
-            Logger.getLogger("Debug").log(Level.INFO, "excecutiong now!");
+            Logger.getLogger("Debug").log(Level.INFO, "excecutiong now!"); // TODO use the module logger!
             if (aManager.getNextMessage(user) != null)
             {
                 taskManager.queueMessage(user, aManager.getNextMessage(user));

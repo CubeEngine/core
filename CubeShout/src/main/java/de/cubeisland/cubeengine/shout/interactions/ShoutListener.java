@@ -1,19 +1,17 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.shout.Shout;
+import de.cubeisland.cubeengine.shout.task.AnnouncementManager;
+import de.cubeisland.cubeengine.shout.task.MessageTask;
+import de.cubeisland.cubeengine.shout.task.TaskManager;
 import java.util.logging.Level;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.shout.Shout;
-import de.cubeisland.cubeengine.shout.task.AnnouncementManager;
-import de.cubeisland.cubeengine.shout.task.MessageTask;
-import de.cubeisland.cubeengine.shout.task.TaskManager;
 
 public class ShoutListener implements Listener
 {
