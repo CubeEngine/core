@@ -7,11 +7,11 @@ import java.util.logging.Logger;
 
 public class MessageTask extends TimerTask
 {
-    AnnouncementManager aManager;
-    Announcer taskManager;
-    String user;
-    int runs;
-    int nextExcecution;
+    private final AnnouncementManager aManager;
+    private final TaskManager taskManager;
+    private final String user;
+    private int runs;
+    private int nextExcecution;
 
     public MessageTask(AnnouncementManager aManager, Announcer scheduler, User user)
     {
@@ -36,6 +36,6 @@ public class MessageTask extends TimerTask
                 this.nextExcecution = this.runs + 1;
             }
         }
-        runs++;
+        this.runs++;
     }
 }
