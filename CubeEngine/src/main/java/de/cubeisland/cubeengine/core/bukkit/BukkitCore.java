@@ -117,7 +117,7 @@ public class BukkitCore extends JavaPlugin implements Core
         // register Listerer for UserManger
         pm.registerEvents(this.userManager, this);
         
-        pm.registerEvents(new CoreListener(), this);
+        pm.registerEvents(new CoreListener(this), this);
 
         // depends on: file manager, core config
         this.i18n = new I18n(this);
