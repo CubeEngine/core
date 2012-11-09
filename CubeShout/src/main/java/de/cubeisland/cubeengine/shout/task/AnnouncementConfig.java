@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Revision;
 
 @Codec("yml")
 @Revision(1)
-public class AnnouncementConfiguration extends Configuration
+public class AnnouncementConfig extends Configuration
 {
     @Option("delay")
     public String delay = "10 minutes";
