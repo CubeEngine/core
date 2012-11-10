@@ -270,14 +270,16 @@ public class AnnouncementManager
         this.announcements = new HashMap<String, Announcement>();
 
         this.loadAnnouncements(module.announcementFolder);
-
-        for (Player p : module.getCore().getServer().getOnlinePlayers())
+        this.initUsers();
+    }
+    
+    public void initUsers()
+    {
+        for (User user : module.getUserManager().getOnlineUsers())
         {
-            User u = module.getUserManager().getUser(p.getName(), false);
-
-            this.initializeUser(u);
-            taskManager.scheduleTask(u.getName(), new MessageTask(this, module.getTaskManger(), u),
-                this.getGreatestCommonDivisor(u.getName()));
+            this.initializeUser(user);
+            taskManager.scheduleTask(user.getName(), new MessageTask(this, module.getTaskManger(), user),
+                this.getGreatestCommonDivisor(user.getName()));
         }
     }
 
@@ -296,7 +298,7 @@ public class AnnouncementManager
             {
                 if (module.getCore().isDebug())
                 {
-                    module.getLogger().log(Level.INFO, "Loading announcement %s", f.getName());
+                    module.getLogger().log(Level.INFO, "Loading announcement {0}", f.getName());
                 }
                 try
                 {
@@ -304,11 +306,10 @@ public class AnnouncementManager
                 }
                 catch (ShoutException e)
                 {
-                    module.getLogger().log(Level.WARNING, "There was an error loading the announcement: %s", f.getName());
-                    module.getLogger().log(Level.WARNING, "The error message was: %s", e.getLocalizedMessage());
+                    module.getLogger().log(Level.WARNING, "There was an error loading the announcement: {0}", f.getName());
                     if (module.getCore().isDebug())
                     {
-                        module.getLogger().log(Level.SEVERE, null, e);
+                        module.getLogger().log(Level.SEVERE, "The error message was: ", e);
                     }
                 }
             }
@@ -353,7 +354,7 @@ public class AnnouncementManager
         String permNode = "*";
         String group = "*";
 
-        AnnouncementConfig conf = Configuration.load(AnnouncementConfig.class, confFile, false);
+        AnnouncementConfig conf = Configuration.load(AnnouncementConfig.class, confFile);
         world = conf.world == null ? world : conf.world;
         permNode = conf.permNode == null ? permNode : conf.permNode;
         group = conf.group == null ? group : conf.group;
@@ -415,7 +416,7 @@ public class AnnouncementManager
         }
         int tmpdelay = Integer.parseInt(parts[0]);
         String unit = parts[1].toLowerCase();
-        if (unit.equalsIgnoreCase("secounds") || unit.equalsIgnoreCase("secound"))
+        if (unit.equalsIgnoreCase("seconds") || unit.equalsIgnoreCase("second"))
         {
             return tmpdelay * 1000;
         }

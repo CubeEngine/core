@@ -42,4 +42,13 @@ public class Announcer
     {
         tasks.get(user).cancel();
     }
+    
+    public void stopAll()
+    {
+        for (TimerTask task : tasks.values())
+        {
+            task.cancel();
+        }
+        tasks.clear();
+    }
 }

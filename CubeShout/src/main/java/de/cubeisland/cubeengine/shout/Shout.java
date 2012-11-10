@@ -21,16 +21,16 @@ public class Shout extends Module
     @From
     private ShoutConfiguration config;
     public File announcementFolder;
-    public boolean firstRun;
 
     // TODO CubeRoles
     @Override
     public void onEnable()
     {
+        boolean firstRun = true;
         File f = new File(this.getFolder(), ".shout");
         if (f.exists())
         {
-            this.firstRun = false;
+            firstRun = false;
         }
         try
         {
@@ -43,7 +43,7 @@ public class Shout extends Module
                 this.getLogger().log(Level.WARNING, "There was an error creating a file!", ex);
             }
         }
-        this.firstRun = true;
+        
         this.announcementFolder = this.getFolder();
         this.getFileManager().dropResources(ShoutResource.values());
 
@@ -74,6 +74,14 @@ public class Shout extends Module
         this.registerListener(listener);
         this.registerCommands(command);
         this.registerCommands(subCommands, "shout");
+        
+        this.announcementManager.initUsers();
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.taskManager.stopAll();
     }
 
     public AnnouncementManager getAnnouncementManager()
