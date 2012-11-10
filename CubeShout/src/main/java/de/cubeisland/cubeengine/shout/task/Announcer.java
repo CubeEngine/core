@@ -1,15 +1,9 @@
 package de.cubeisland.cubeengine.shout.task;
 
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.shout.Shout;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
 
 /**
  * Class to manage tasks based on the system time, not bukkits.

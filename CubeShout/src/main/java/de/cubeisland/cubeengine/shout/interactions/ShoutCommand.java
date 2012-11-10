@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.task.Announcement;
 import java.util.Arrays;
@@ -28,36 +27,30 @@ public class ShoutCommand
     )
     public void shout(CommandContext context)
     {
-        try
+        if (this.module.getAnnouncementManager().hasAnnouncement(context.getString(0)))
         {
-            if (module.getAnnouncementManager().hasAnnouncement(context.getIndexed(0, String.class)))
+            Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
+            List<Player> players;
+
+            if (announcement.getWorld().equals("*"))
             {
-                Announcement a = module.getAnnouncementManager().getAnnouncement(context.getIndexed(0, String.class));
-                List<Player> players;
-
-                if (a.getWorld().equals("*"))
-                {
-                    players = Arrays.asList(module.getCore().getServer().getOnlinePlayers());
-                }
-                else
-                {
-                    players = module.getCore().getServer().getWorld(a.getWorld()).getPlayers();
-                }
-
-                for (Player p : players)
-                {
-                    User u = module.getUserManager().getExactUser(p);
-                    u.sendMessage(ChatFormat.parseFormats('&', a.getMessage(u.getLanguage())));
-                }
-                context.sendMessage("shout", "The announcement is announced");
+                players = Arrays.asList(this.module.getCore().getServer().getOnlinePlayers());
             }
             else
             {
-                context.sendMessage("shout", "%s is not an announcement...", context.getIndexed(0, String.class));
+                players = this.module.getCore().getServer().getWorld(announcement.getWorld()).getPlayers();
             }
+
+            for (Player player : players)
+            {
+                User u = this.module.getUserManager().getExactUser(player);
+                u.sendMessage(ChatFormat.parseFormats('&', announcement.getMessage(u.getLanguage())));
+            }
+            context.sendMessage("shout", "The announcement is announced");
         }
-        catch (ConversionException ex)
+        else
         {
-        } //This should never happen
+            context.sendMessage("shout", "%s is not an announcement...", context.getString(0));
+        }
     }
 }

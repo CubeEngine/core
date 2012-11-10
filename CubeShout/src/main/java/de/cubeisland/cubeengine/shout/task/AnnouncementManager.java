@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import org.bukkit.entity.Player;
 
-/*
+/**
  * Class to manage all the announcements and their receivers
  */
 public class AnnouncementManager

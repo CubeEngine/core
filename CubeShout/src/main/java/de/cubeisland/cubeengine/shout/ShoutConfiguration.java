@@ -11,9 +11,9 @@ import de.cubeisland.cubeengine.core.config.annotations.Revision;
 public class ShoutConfiguration extends Configuration
 {
     @Option("initial-delay")
-    @Comment(
-    "The delay after a player joins before he receives his first message")
+    @Comment("The delay after a player joins before he receives his first message")
     public int initDelay = 20;
+    
     @Option("messager-period")
     @Comment("The period the task that sends the messages should run at")
     public int messagerPeriod = 40;
@@ -21,10 +21,9 @@ public class ShoutConfiguration extends Configuration
     @Override
     public String[] head()
     {
-        return new String[]
-            {
-                "The global config for all announcements.",
-                "All times are in millisecounds"
-            };
+        return new String[] {
+            "The global config for all announcements.",
+            "All times are in millisecounds"
+        };
     }
 }

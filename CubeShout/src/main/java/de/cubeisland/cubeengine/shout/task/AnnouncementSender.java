@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import java.util.concurrent.Callable;
 
 /**
- * A class to acutually send a message to a user
+ * A class to actually send a message to a user
  */
 public class AnnouncementSender implements Callable
 {

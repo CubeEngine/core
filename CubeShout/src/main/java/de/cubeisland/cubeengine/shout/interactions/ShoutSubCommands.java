@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.task.Announcement;
 import java.io.IOException;
+import java.util.Iterator;
 
 public class ShoutSubCommands
 {
@@ -24,19 +25,19 @@ public class ShoutSubCommands
     )
     public void list(CommandContext context)
     {
-        StringBuilder announcements = new StringBuilder();
-        for (Announcement a : module.getAnnouncementManager().getAnnouncemets())
+        Iterator<Announcement> iter = this.module.getAnnouncementManager().getAnnouncemets().iterator();
+        if (iter.hasNext())
         {
-            announcements.append(a.getName()).append(", ");
+            context.sendMessage("shout", "Here is the list of announcements:");
+            while (iter.hasNext())
+            {
+                context.sendMessage(" - " + iter.next().getName());
+            }
         }
-
-        if (announcements.toString().isEmpty())
+        else
         {
-            context.sendMessage("shoust", "There is no loaded announcements!");
-            return;
+            context.sendMessage("shout", "There are no announcements loaded!");
         }
-        context.sendMessage("shout", "Here is the list of announcements: %s",
-            announcements.substring(0, announcements.length() - 2));
     }
 
     @Command(
@@ -84,17 +85,18 @@ public class ShoutSubCommands
                 context.getString("world", "*"),
                 context.getString("group", "*"),
                 context.getString("permission", "*"),
-                locale);
+                locale
+            );
         }
         catch (IllegalArgumentException ex)
         {
             context.sendMessage("shout", "Some of your arguments are not valid.");
-            context.sendMessage("shout", "The error message was: %S", ex.getLocalizedMessage());
+            context.sendMessage("shout", "The error message was: %s", ex.getLocalizedMessage());
         }
         catch (IOException ex)
         {
             context.sendMessage("shout", "There was an error creating some of the files.");
-            context.sendMessage("shout", "The error message was: %S", ex.getLocalizedMessage());
+            context.sendMessage("shout", "The error message was: %s", ex.getLocalizedMessage());
         }
 
         module.getAnnouncementManager().reload();
