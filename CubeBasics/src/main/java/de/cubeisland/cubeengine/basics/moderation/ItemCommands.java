@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
@@ -389,7 +390,7 @@ public class ItemCommands
         int amount = item.getMaxStackSize();
         if (context.hasIndexed(1))
         {
-            amount = context.getIndexed(1, int.class, 0);
+            amount = context.getIndexed(1, IntArg.class, 0);
             if (amount == 0)
             {
                 illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");

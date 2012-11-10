@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.BlockDataConverter;

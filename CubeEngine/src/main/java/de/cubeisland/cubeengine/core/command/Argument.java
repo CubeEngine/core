@@ -8,6 +8,8 @@ import de.cubeisland.cubeengine.core.util.RequiresDefaultConstructor;
 @RequiresDefaultConstructor
 public interface Argument<T>
 {
+    Class<T> getType();
+    
     /**
      * This method reads values from a subset of arguments of a commandline 
      * 
@@ -15,7 +17,7 @@ public interface Argument<T>
      * @return the number of arguments that got read from the input array
      * @throws InvalidArgumentException when it wasn't possible to read a proper value from the given arguments
      */
-    int read(String[] args) throws InvalidArgumentException;
+    int read(String... args) throws InvalidArgumentException;
 
     /**
      * Returns the value read by the read(String[] args) method

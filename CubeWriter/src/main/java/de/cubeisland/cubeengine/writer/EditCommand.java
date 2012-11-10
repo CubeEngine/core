@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.writer;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.Argument;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -22,10 +23,10 @@ public class EditCommand
     usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ",
     params =
     {
-        @Param(names = {"1", "Line1"},types = {String.class}),
-        @Param(names = {"2", "Line2"},types = {String.class}),
-        @Param(names = {"3", "Line3"},types = {String.class}),
-        @Param(names = {"4", "Line4"},types = {String.class})
+        @Param(names = {"1", "Line1"}),
+        @Param(names = {"2", "Line2"}),
+        @Param(names = {"3", "Line3"}),
+        @Param(names = {"4", "Line4"})
     })
     public void edit(CommandContext context)
     {
@@ -56,8 +57,8 @@ public class EditCommand
                 }
                 Sign sign = (Sign)target.getState();
                 String[] lines = sign.getLines();
-                Map<String, Object[]> params = context.getNamed();
-                for (String key : params.keySet())
+                Map<String, Argument<?>> params = context.getNamed();
+                for (String key : params.keySet()) // TODO refactor
                 {
                     lines[Integer.parseInt(key) - 1] = context.getNamed(key, String.class); 
                 }

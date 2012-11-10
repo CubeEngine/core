@@ -88,7 +88,7 @@ public class TimeControlCommands
     public void time(CommandContext context)
     {
         //TODO change output time set to %d to day|night etc..
-        String timeString = context.getIndexed(0, String.class, null);
+        String timeString = context.getString(0);
         Long time = Time.matchTime(timeString);
         if (time == null)
         {
@@ -116,7 +116,7 @@ public class TimeControlCommands
             World world = null;
             if (context.hasIndexed(1))
             {
-                String worldname = context.getIndexed(1, String.class, "");
+                String worldname = context.getString(1, "");
                 world = context.getSender().getServer().getWorld(worldname);
                 if (world == null)
                 {
@@ -164,7 +164,7 @@ public class TimeControlCommands
         Long time = 0L;
         boolean other = false;
         boolean reset = false;
-        String timeString = context.getIndexed(0, String.class, null);
+        String timeString = context.getString(0);
         if (timeString.equalsIgnoreCase("reset"))
         {
             reset = true;

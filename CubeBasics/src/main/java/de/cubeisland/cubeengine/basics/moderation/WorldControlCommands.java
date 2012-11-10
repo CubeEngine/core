@@ -6,6 +6,8 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
+import de.cubeisland.cubeengine.core.command.args.WorldArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
@@ -37,7 +39,8 @@ public class WorldControlCommands
         min = 1,
         max = 3,
         usage = "<sun|rain|storm> [duration] [in <world>]",
-        params= { @Param(names = "in", types = World.class) })
+        params = @Param(names = "in", type = WorldArg.class)
+    )
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -66,7 +69,7 @@ public class WorldControlCommands
         }
         if (context.hasIndexed(1))
         {
-            duration = context.getIndexed(1, int.class, 0);
+            duration = context.getIndexed(1, IntArg.class, 0);
             if (duration == 0)
             {
                 illegalParameter(context, "basics", "&cThe given duration is invalid!");
@@ -103,8 +106,9 @@ public class WorldControlCommands
         desc = "Removes entity",
         usage = "<entityType> [radius] [in <world>] [-a]",
         flags = { @Flag(longName = "all", name = "a") },
-        params = { @Param(names = { "in" }, types = World.class) },
-        min = 1)
+        params = @Param(names = { "in" }, type = WorldArg.class),
+        min = 1
+    )
     public void remove(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -132,7 +136,7 @@ public class WorldControlCommands
         }
         if (context.hasIndexed(1))
         {
-            radius = context.getIndexed(1, int.class, 0);
+            radius = context.getIndexed(1, IntArg.class, 0);
             if (radius <= 0)
             {
                 illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");

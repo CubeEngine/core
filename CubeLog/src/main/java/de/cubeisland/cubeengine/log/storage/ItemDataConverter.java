@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Converter;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 
 public class ItemDataConverter implements Converter<ItemData>
 {

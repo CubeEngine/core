@@ -44,12 +44,12 @@ public class ShoutSubCommands
         desc = "Create the structure for a new announcement",
         min = 1,
         params = {
-            @Param(names = {"delay", "d"}, types = String.class),
-            @Param(names = {"world", "w"}, types = String.class),
-            @Param(names = {"permission", "p"}, types = Permission.class),
-            @Param(names = {"group", "g"}, types = String.class),
-            @Param(names = {"message", "m"}, types = String.class),
-            @Param(names = {"locale", "l"}, types = String.class)
+            @Param(names = {"delay", "d"}),
+            @Param(names = {"world", "w"}),
+            //@Param(names = {"permission", "p"}, type = Permission.class), TODO
+            @Param(names = {"group", "g"}),
+            @Param(names = {"message", "m"}),
+            @Param(names = {"locale", "l"})
         }
     )
     public void create(CommandContext context)
@@ -60,12 +60,7 @@ public class ShoutSubCommands
             return;
         }
 
-        String message = "";
-        for (Object o : context.getNamed("message"))
-        {
-            message += (String)o;
-        }
-
+        String message = context.getString("message");
         String locale = this.module.getCore().getConfiguration().defaultLanguage;
         if (context.hasNamed("locale"))
         {

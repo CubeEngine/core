@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.Date;
@@ -42,57 +43,14 @@ public class LogCommands extends ContainerCommand
         @Flag(longName = "coordinates", name = "coords"),//display position (off by default)
         @Flag(longName = "descending", name = "desc"), //sort in descending order (default ascending)
     },
-    params =
-    {
-        @Param(names =
-        {
-            "player", "p"
-        }, types =
-        {
-            User[].class
-        }),
-        @Param(names =
-        {
-            "area"
-        }, types =
-        {
-            int.class
-        }),
-        @Param(names =
-        {
-            "block"
-        }, types =
-        {
-            ItemStack[].class
-        }),
-        @Param(names =
-        {
-            "since", "time"
-        }, types =
-        {
-            Date.class
-        }),
-        @Param(names =
-        {
-            "before"
-        }, types =
-        {
-            Date.class
-        }),
-        @Param(names =
-        {
-            "limit"
-        }, types =
-        {
-            Date.class
-        }),
-        @Param(names =
-        {
-            "world"
-        }, types =
-        {
-            World.class
-        }),
+    params = {
+        //@Param(names ={"player", "p"}, type = User[].class), TODO
+        @Param(names = "area", type = IntArg.class),
+        //@Param(names = "block", type = ItemStack[].class), TODO
+        //@Param(names = {"since", "time"}, type = Date.class), TODO
+        //@Param(names = "before", type = Date.class),
+        //@Param(names = "limit", type = Date.class),
+        //@Param(names = "world", type = World.class),
     })
     public void lookup(CommandContext context)
     {

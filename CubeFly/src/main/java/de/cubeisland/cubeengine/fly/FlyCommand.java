@@ -4,9 +4,10 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.args.FloatArg;
+import de.cubeisland.cubeengine.core.command.args.UserArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
@@ -28,7 +29,7 @@ public class FlyCommand
     max = 1,
     params =
     {
-        @Param(names = "player", types = User.class)
+        @Param(names = "player", type = UserArg.class)
     },
     usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
@@ -98,9 +99,9 @@ public class FlyCommand
         //I Believe I Can Fly ...     
         if (context.getIndexed().size() > 0)
         {
-            try
+            Float speed = context.getIndexed(0, FloatArg.class);
+            if (speed != null && speed >= 0 && speed <= 10)
             {
-                float speed = context.getIndexed(0, Float.class);
                 if (speed > 0 && speed <= 10)
                 {
                     user.setFlySpeed(speed / 10f);
@@ -118,7 +119,7 @@ public class FlyCommand
                     }
                 }
             }
-            catch (ConversionException ex)
+            else
             {
                 user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
             }

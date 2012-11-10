@@ -7,6 +7,8 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
+import de.cubeisland.cubeengine.core.command.args.WorldArg;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -270,23 +272,24 @@ public class TeleportCommands
         usage = "<x> [y] <z> [world <world>]",
         min = 2,
         max = 4,
-        params = { @Param(names = { "world", "w" }, types = { World.class }) },
-        flags = { @Flag(longName = "unsafe", name = "u") })
+        params = @Param(names = {"world", "w"}, type = WorldArg.class),
+        flags = @Flag(longName = "unsafe", name = "u")
+    )
     public void tppos(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
-        Integer x = context.getIndexed(0, Integer.class, null);
+        Integer x = context.getIndexed(0, IntArg.class);
         Integer y;
         Integer z;
         World world = sender.getWorld();
         if (context.hasIndexed(2))
         {
-            y = context.getIndexed(1, Integer.class, null);
-            z = context.getIndexed(2, Integer.class, null);
+            y = context.getIndexed(1, IntArg.class);
+            z = context.getIndexed(2, IntArg.class);
         }
         else
         {
-            z = context.getIndexed(1, Integer.class, null);
+            z = context.getIndexed(1, IntArg.class);
             if (x == null || z == null)
             {
                 illegalParameter(context, "basics", "&cCoordinates have to be numbers!");

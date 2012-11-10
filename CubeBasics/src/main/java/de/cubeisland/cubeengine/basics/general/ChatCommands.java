@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.args.LongArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import java.sql.Timestamp;
@@ -171,7 +172,7 @@ public class ChatCommands
         long delay = 0;
         if (context.hasIndexed(1))
         {
-            delay = context.getIndexed(1, Long.class, 60000L);//TODO default in config //TODO detect sec min etc/ default == -1  -> 1000 years
+            delay = context.getIndexed(1, LongArg.class, 60000L);//TODO default in config //TODO detect sec min etc/ default == -1  -> 1000 years
         }
         bUser.muted = new Timestamp(System.currentTimeMillis() + delay);
         this.basics.getBasicUserManager().update(bUser);

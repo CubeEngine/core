@@ -6,6 +6,8 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
+import de.cubeisland.cubeengine.core.command.args.WorldArg;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -59,9 +61,9 @@ public class SpawnCommands
 
         if (context.hasIndexed(3))
         {
-            x = context.getIndexed(1, Integer.class, null);
-            y = context.getIndexed(2, Integer.class, null);
-            z = context.getIndexed(3, Integer.class, null);
+            x = context.getIndexed(1, IntArg.class, null);
+            y = context.getIndexed(2, IntArg.class, null);
+            z = context.getIndexed(3, IntArg.class, null);
             if (x == null || y == null || z == null)
             {
                 illegalParameter(context, "basics", "&cCoordinates are invalid!");
@@ -85,9 +87,8 @@ public class SpawnCommands
         desc = "Teleport directly to the worlds spawn.",
         usage = "[player] [world <world>]",
         max = 2,
-        params = { @Param(names = { "world", "w" }, types = { World.class }) },
-        flags =
-        {
+        params = @Param(names = {"world", "w"}, type = WorldArg.class),
+        flags = {
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "all", name = "a")
         })
@@ -178,7 +179,7 @@ public class SpawnCommands
     public void tpworld(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        World world = context.getIndexed(0, World.class, null);
+        World world = context.getIndexed(0, WorldArg.class, null);
         if (world == null)
         {
             illegalParameter(context, "basics", "&cWorld not found!");

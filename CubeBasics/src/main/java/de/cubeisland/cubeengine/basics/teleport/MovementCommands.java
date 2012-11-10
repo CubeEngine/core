@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -38,7 +39,7 @@ public class MovementCommands
     public void up(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        int height = context.getIndexed(0, Integer.class, -1);
+        int height = context.getIndexed(0, IntArg.class, -1);
         if ((height < 0))
         {
             illegalParameter(context, "basics", "&cInvalid height. The height has to be a number greater than 0!");

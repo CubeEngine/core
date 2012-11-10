@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -68,7 +69,7 @@ public class SpawnMobCommand
         Integer amount = 1;
         if (context.hasIndexed(1))
         {
-            amount = context.getIndexed(1, int.class, null);
+            amount = context.getIndexed(1, IntArg.class, null);
             if (amount == null)
             {
                 illegalParameter(context, "basics", "&e%s is not a number! Really!", context.getString(1));

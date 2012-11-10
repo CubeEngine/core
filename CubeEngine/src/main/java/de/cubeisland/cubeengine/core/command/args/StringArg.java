@@ -1,21 +1,21 @@
 package de.cubeisland.cubeengine.core.command.args;
 
-import de.cubeisland.cubeengine.core.command.Argument;
+import de.cubeisland.cubeengine.core.command.AbstractArgument;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
 
 /**
  *
  * @author Phillip Schichtel
  */
-public class StringArg implements Argument<String>
+public final class StringArg extends AbstractArgument<String>
 {
-    private String value = null;
-    
-    public StringArg(String a)
-    {}
+    public StringArg()
+    {
+        super(String.class);
+    }
     
     @Override
-    public int read(String[] args) throws InvalidArgumentException
+    public int read(String... args) throws InvalidArgumentException
     {
         if (args.length == 0)
         {
@@ -48,11 +48,5 @@ public class StringArg implements Argument<String>
         
         this.value = args[0];
         return 1;
-    }
-
-    @Override
-    public String value()
-    {
-        return this.value;
     }
 }

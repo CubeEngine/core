@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -142,7 +143,7 @@ public class InformationCommands
         int radius = this.basics.getConfiguration().nearDefaultRadius;
         if (context.hasIndexed(0))
         {
-            radius = context.getIndexed(0, int.class, radius);
+            radius = context.getIndexed(0, IntArg.class, radius);
         }
         int squareRadius = radius * radius;
         List<Entity> list = user.getWorld().getEntities();
