@@ -87,7 +87,6 @@ public class TimeControlCommands
         usage = "<day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
-        //TODO change output time set to %d to day|night etc..
         String timeString = context.getIndexed(0, String.class, null);
         Long time = Time.matchTime(timeString);
         if (time == null)

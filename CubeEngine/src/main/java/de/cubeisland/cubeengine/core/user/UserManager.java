@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -342,6 +343,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         }
 
         return onlineUsers;
+    }
+    
+    public Collection<User> getLoadedUsers()
+    {
+        return this.users.values();
     }
 
     @Override
