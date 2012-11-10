@@ -141,7 +141,7 @@ public class CubeCommandMap extends SimpleCommandMap
         return this.register(null, command);
     }
     
-    protected synchronized boolean registerAndOverwrite(String label, Command command, boolean isAlias)
+    protected synchronized boolean registerAndOverwrite(String label, String fallbackPrefix, Command command, boolean isAlias)
     {
         label = label.trim().toLowerCase();
         Command oldCommand = this.knownCommands.get(label);
@@ -166,7 +166,8 @@ public class CubeCommandMap extends SimpleCommandMap
             }
             else if (oldCommand instanceof CubeCommand)
             {
-                fallback = ((CubeCommand)oldCommand).getModule().getId() + ":" + label;
+                label = fallback = fallbackPrefix.toLowerCase(Locale.ENGLISH) + ":" + label;
+                command.setLabel(label);
             }
             
             if (fallback != label)
@@ -193,11 +194,11 @@ public class CubeCommandMap extends SimpleCommandMap
     @Override
     public boolean register(String label, String fallbackPrefix, Command command)
     {
-        registerAndOverwrite(label, command, false);
+        registerAndOverwrite(label, fallbackPrefix, command, false);
 
         for (String alias : command.getAliases())
         {
-            registerAndOverwrite(alias, command, true);
+            registerAndOverwrite(alias, fallbackPrefix, command, true);
         }
 
         // Register to us so further updates of the commands label and aliases are postponed until its reregistered
