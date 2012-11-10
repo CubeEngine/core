@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.shout.task.Announcer;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Shout extends Module
 {
@@ -21,7 +20,6 @@ public class Shout extends Module
     private Announcer taskManager;
     @From
     private ShoutConfiguration config;
-    public Logger logger;
     public File announcementFolder;
     public boolean firstRun;
 
@@ -40,17 +38,12 @@ public class Shout extends Module
         }
         catch (IOException ex)
         {
-            this.logger.log(Level.WARNING, "There was an error creating a file");
-            this.logger.log(Level.WARNING, "The error message was: " + ex.getLocalizedMessage());
             if (this.getCore().isDebug())
             {
-                ex.printStackTrace();
+                this.getLogger().log(Level.WARNING, "There was an error creating a file!", ex);
             }
         }
         this.firstRun = true;
-
-
-        this.logger = this.getLogger();
         this.announcementFolder = this.getFolder();
         this.getFileManager().dropResources(ShoutResource.values());
 
@@ -69,20 +62,18 @@ public class Shout extends Module
             }
             catch (Exception ex)
             {
-                this.logger.log(Level.WARNING, "An exception occured when creating the example announcement");
-                this.logger.log(Level.WARNING, "The message was: " + ex.getLocalizedMessage());
+                this.getLogger().log(Level.WARNING, "An exception occured when creating the example announcement");
+                this.getLogger().log(Level.WARNING, "The message was: " + ex.getLocalizedMessage());
                 if (this.getCore().getConfiguration().debugMode)
                 {
-                    this.logger.log(Level.WARNING, null, ex);
+                    this.getLogger().log(Level.WARNING, null, ex);
                 }
             }
         }
-
         this.announcementManager.loadAnnouncements(this.announcementFolder);
         this.registerListener(listener);
         this.registerCommands(command);
         this.registerCommands(subCommands, "shout");
-
     }
 
     public AnnouncementManager getAnnouncementManager()

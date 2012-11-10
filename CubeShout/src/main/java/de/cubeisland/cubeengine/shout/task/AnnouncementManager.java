@@ -296,7 +296,7 @@ public class AnnouncementManager
             {
                 if (module.getCore().isDebug())
                 {
-                    module.logger.log(Level.INFO, "Loading announcement %s", f.getName());
+                    module.getLogger().log(Level.INFO, "Loading announcement %s", f.getName());
                 }
                 try
                 {
@@ -304,11 +304,11 @@ public class AnnouncementManager
                 }
                 catch (ShoutException e)
                 {
-                    module.logger.log(Level.WARNING, "There was an error loading the announcement: %s", f.getName());
-                    module.logger.log(Level.WARNING, "The error message was: %s", e.getLocalizedMessage());
+                    module.getLogger().log(Level.WARNING, "There was an error loading the announcement: %s", f.getName());
+                    module.getLogger().log(Level.WARNING, "The error message was: %s", e.getLocalizedMessage());
                     if (module.getCore().isDebug())
                     {
-                        module.logger.log(Level.SEVERE, null, e);
+                        module.getLogger().log(Level.SEVERE, null, e);
                     }
                 }
             }
@@ -380,11 +380,11 @@ public class AnnouncementManager
 
         if (this.module.getCore().isDebug())
         {
-            this.module.logger.log(Level.INFO, "Languages: %s", messages.keySet().toString());
-            this.module.logger.log(Level.INFO, "World: %s", world);
-            this.module.logger.log(Level.INFO, "Delay(in millisecounds): %s", delay);
-            this.module.logger.log(Level.INFO, "Permission: %s", permNode);
-            this.module.logger.log(Level.INFO, "Group: %s", group);
+            this.module.getLogger().log(Level.INFO, "Languages: {0}", messages.keySet().toString());
+            this.module.getLogger().log(Level.INFO, "World: {0}", world);
+            this.module.getLogger().log(Level.INFO, "Delay(in millisecounds): {0}", delay);
+            this.module.getLogger().log(Level.INFO, "Permission: {0}", permNode);
+            this.module.getLogger().log(Level.INFO, "Group: {0}", group);
         }
         try
         {
