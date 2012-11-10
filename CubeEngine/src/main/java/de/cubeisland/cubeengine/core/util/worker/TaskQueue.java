@@ -22,6 +22,18 @@ public interface TaskQueue
      * Stops to execute the queued tasks.
      */
     void stop();
+    
+    /**
+     * Shuts the task queue permanently down.
+     */
+    void shutdown();
+    
+    /**
+     * Checks whether this task queue is shut down.
+     *
+     * @return true if the queue is shut down, false otherwise
+     */
+    boolean isShutdown();
 
     /**
      * Stops the execution of this queue.

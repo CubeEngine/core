@@ -38,6 +38,10 @@ public class KickBanCommands
         }
         if (!context.hasFlag("a"))
         {
+            if (!context.hasIndexed(0))
+            {
+                blockCommand(context, "basics", "&cYou need to specify a player!");
+            }
             User user = context.getUser(0);
             if (user == null && !context.hasFlag("a"))
             {

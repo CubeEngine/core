@@ -16,6 +16,7 @@ public class AsyncTaskQueue implements TaskQueue
     private final ExecutorService executorService;
     private final Queue<Runnable> taskQueue;
     private final AtomicReference<Future<?>> exectorFuture;
+    private boolean isShutdown;
 
     public AsyncTaskQueue(ExecutorService executorService)
     {
@@ -27,11 +28,16 @@ public class AsyncTaskQueue implements TaskQueue
         this.executorService = executorService;
         this.taskQueue = taskQueue;
         this.exectorFuture = new AtomicReference<Future<?>>();
+        this.isShutdown = false;
     }
 
     @Override
     public void addTask(Runnable runnable)
     {
+        if (!this.isShutdown)
+        {
+            return;
+        }
         Validate.notNull(runnable, "The task must not be null!");
 
         this.taskQueue.offer(runnable);
@@ -41,10 +47,28 @@ public class AsyncTaskQueue implements TaskQueue
     @Override
     public void start()
     {
+        if (this.isShutdown)
+        {
+            throw new IllegalArgumentException("This task queue has been shut down!");
+        }
         if (this.exectorFuture.get() == null)
         {
             this.exectorFuture.set(this.executorService.submit(this.workerTask));
         }
+    }
+    
+    @Override
+    public void shutdown()
+    {
+        this.isShutdown = true;
+        this.taskQueue.clear();
+        this.stop();
+    }
+    
+    @Override
+    public boolean isShutdown()
+    {
+        return this.isShutdown;
     }
 
     @Override

@@ -49,6 +49,8 @@ public class Convert
         registerConverter(Level.class, new LevelConverter());
         registerConverter(Float.class, converter = new FloatConverter());
         registerConverter(float.class, converter);
+        registerConverter(Long.class, converter = new LongConverter());
+        registerConverter(long.class, converter);
         registerConverter(ItemStack.class, new ItemStackConverter());
         registerConverter(Enchantment.class, new EnchantmentConverter());
         registerConverter(User.class, new UserConverter());
@@ -144,6 +146,10 @@ public class Convert
 
     public static <T> Object toObject(T object) throws ConversionException
     {
+        if (object == null)
+        {
+            return null;
+        }
         Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
         if (converter != null)
         {

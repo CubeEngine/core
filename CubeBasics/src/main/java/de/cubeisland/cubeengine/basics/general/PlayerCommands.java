@@ -64,7 +64,7 @@ public class PlayerCommands
             {
                 if (sender == null)
                 {
-                    invalidUsage(context, "basics", "&cDon't feed the troll!");
+                    blockCommand(context, "basics", "&cDon't feed the troll!");
                 }
             }
             user.setFoodLevel(20);

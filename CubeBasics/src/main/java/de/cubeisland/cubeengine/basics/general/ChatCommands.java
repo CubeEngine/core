@@ -1,10 +1,12 @@
 package de.cubeisland.cubeengine.basics.general;
 
+import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import java.sql.Timestamp;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
@@ -24,8 +26,8 @@ public class ChatCommands
 
     @Command(
         desc = "Allows you to emote",
-    min = 1,
-    usage = "<message>")
+        min = 1,
+        usage = "<message>")
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -34,12 +36,9 @@ public class ChatCommands
 
     @Command(
         desc = "Sends a private message to someone",
-    names =
-    {
-        "message", "msg", "tell", "pn", "m", "t", "whisper"
-    },
-    min = 1,
-    usage = "<player> <message>")
+        names = { "message", "msg", "tell", "pn", "m", "t", "whisper" },
+        min = 1,
+        usage = "<player> <message>")
     public void msg(CommandContext context)
     {
         String message = context.getStrings(1);
@@ -93,12 +92,9 @@ public class ChatCommands
     }
 
     @Command(
-        names =
-    {
-        "reply", "r"
-    },
-    desc = "Replies to the last person that whispered to you.",
-    usage = "<message>")
+        names = { "reply", "r" },
+        desc = "Replies to the last person that whispered to you.",
+        usage = "<message>")
     public void reply(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -143,7 +139,7 @@ public class ChatCommands
 
     @Command(
         desc = "Broadcasts a message",
-    usage = "<message>")
+        usage = "<message>")
     public void broadcast(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
@@ -162,27 +158,25 @@ public class ChatCommands
         max = 2)
     public void mute(CommandContext context) // mute will be unset when user is unloaded
     {
-        //TODO save this in user nbt
-        final User user = context.getUser(0);
+        User user = context.getUser(0);
         if (user == null)
         {
             paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
         }
+        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
+        if (bUser.muted != null && bUser.muted.getTime() < System.currentTimeMillis())
+        {
+            context.sendMessage("basics", "&2%s &ewas already muted!", user.getName());
+        }
         long delay = 0;
         if (context.hasIndexed(1))
         {
-            delay = context.getIndexed(1, Long.class, 601000L);//TODO default in config(in seconds) //TODO detec sec min
+            delay = context.getIndexed(1, Long.class, 60000L);//TODO default in config //TODO detect sec min etc/ default == -1  -> 1000 years
         }
-        final int taskId = this.basics.getTaskManger().scheduleSyncDelayedTask(basics, new Runnable()
-        {
-            public void run()
-            {
-                user.removeAttribute(basics, "muted");
-                user.sendMessage("basics", "&aYou are no longer muted.");
-            }
-        }, delay);
-        user.setAttribute(basics, "muted", taskId);
-        user.sendMessage("basics", "&cYou are now muted for &6%d &cseconds!");
+        bUser.muted = new Timestamp(System.currentTimeMillis() + delay);
+        this.basics.getBasicUserManager().update(bUser);
+        user.sendMessage("basics", "&cYou are now muted for &6%d &cseconds!",(int)delay/20);//TODO message / time value
+        context.sendMessage("basics","&eYou muted &2%s &efor &6%d &esec!",user.getName(),(int)delay/20);
     }
 
     @Command(
@@ -197,11 +191,9 @@ public class ChatCommands
         {
             paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
         }
-        Integer unmuteTask = user.getAttribute(basics, "muted");
-        if (unmuteTask != null)
-        {
-            this.basics.getTaskManger().cancelTask(basics, unmuteTask);
-        }
-        user.sendMessage("basics", "&aYou got unmuted!");
+        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
+        bUser.muted = null;
+        this.basics.getBasicUserManager().update(bUser);
+        context.sendMessage("basics", "&2%s &ais not muted now!", user.getName());
     }
 }

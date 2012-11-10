@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.general;
 
+import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
@@ -24,9 +25,11 @@ public class MuteListener implements Listener
             User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
             if (user != null)
             {
-                if (user.getAttribute(this.basics, "muted") != null)
+                BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
+                if (bUser.muted != null && System.currentTimeMillis() > bUser.muted.getTime())
                 {
                     event.setCancelled(true);
+                    user.sendMessage("basics", "&cYou try to speak but nothing happens!");
                 }
             }
         }

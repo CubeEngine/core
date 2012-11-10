@@ -1,11 +1,6 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.basics.general.ChatCommands;
-import de.cubeisland.cubeengine.basics.general.CheatListener;
-import de.cubeisland.cubeengine.basics.general.InformationCommands;
-import de.cubeisland.cubeengine.basics.general.ListCommand;
-import de.cubeisland.cubeengine.basics.general.MailCommand;
-import de.cubeisland.cubeengine.basics.general.PlayerCommands;
+import de.cubeisland.cubeengine.basics.general.*;
 import de.cubeisland.cubeengine.basics.moderation.*;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
@@ -20,11 +15,13 @@ public class Basics extends Module
     @From
     protected BasicsConfiguration config;
     private BasicUserManager basicUM;
+    private MailManager mailManager;
     
     @Override
     public void onEnable()
     {
         this.basicUM = new BasicUserManager(this.getDatabase());
+        this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.registerPermissions(BasicsPerm.values());
         //Modules:
         this.registerCommand(new ModuleCommands(this));
@@ -33,9 +30,10 @@ public class Basics extends Module
         this.registerCommands(new ChatCommands(this));
         this.registerCommands(new InformationCommands(this));
         this.registerCommands(new ListCommand());        
-        this.registerCommands(new MailCommand(this));
+        this.registerCommand(new MailCommand(this));
         this.registerCommands(new PlayerCommands(this));
-        this.registerListener(new CheatListener(this));
+        this.registerListener(new GeneralsListener(this));
+        this.registerListener(new MuteListener(this));
         
         //Moderation:
         this.registerCommands(new InventoryCommands(this));
@@ -83,5 +81,10 @@ public class Basics extends Module
     public BasicUserManager getBasicUserManager()
     {
         return this.basicUM;
+    }
+    
+    public MailManager getMailManager()
+    {
+        return this.mailManager;
     }
 }
