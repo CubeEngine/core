@@ -373,7 +373,7 @@ public abstract class ConfigurationCodec
                 sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
             }
             first = true;
-            sb.append(convertMap("", values, 0));
+            sb.append(convertMap("", values, 0).trim()).append("\n");
             if (config.tail() != null)
             {
                 sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
