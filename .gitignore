@@ -10,3 +10,4 @@ nb-actions.xml
 */.settings**
 */.externalToolBuilders**
 */maven-eclipse.xml
+/cubeengine-aggregator.iml
