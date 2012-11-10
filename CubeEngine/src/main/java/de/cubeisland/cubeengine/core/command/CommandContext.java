@@ -189,8 +189,7 @@ public class CommandContext
                         }
                         catch (ConversionException e)
                         {
-                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s", paramName, typeOffset, commandLine[offset], types[typeOffset].
-                                toString());
+                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s", paramName, typeOffset, commandLine[offset], types[typeOffset].toString());
                         }
                     }
                     //added named param

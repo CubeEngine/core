@@ -10,7 +10,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  * Use illegalParameter to throw an exception insinde a command. The exception will be caught.
  */
 public class IllegalParameterValue extends InvalidUsageException
-{
+{   
     private IllegalParameterValue(String message)
     {
         super(message);
