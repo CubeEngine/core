@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.shout.Shout;
-import de.cubeisland.cubeengine.shout.task.Announcement;
+import de.cubeisland.cubeengine.shout.announce.Announcement;
 import java.util.Arrays;
 import java.util.List;
 import org.bukkit.entity.Player;

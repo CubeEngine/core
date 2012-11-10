@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.shout.task;
 
+import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.Shout;
 import org.junit.Test;
 

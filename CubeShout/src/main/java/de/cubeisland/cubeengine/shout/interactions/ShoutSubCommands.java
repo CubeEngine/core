@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.shout.Shout;
-import de.cubeisland.cubeengine.shout.task.Announcement;
+import de.cubeisland.cubeengine.shout.announce.Announcement;
 import java.io.IOException;
 import java.util.Iterator;
 
