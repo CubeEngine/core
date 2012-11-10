@@ -1,83 +1,108 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Map;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 /**
  * A Kit of Items a User can receive
  */
 public class Kit
-{//TODO command to create those
+{
+    private static Basics basics = Basics.getInstance();
+    //TODO command to create those
+    private String name;
     private ItemStack[] items;
     private boolean giveKitOnFirstJoin;
-    private int limitUsagePerPlayer;
+    private int limitUsagePerPlayer; // TODO good way to do this?
+    private long limitUsageDelay;
     private Permission permission;
-    private String name;
 
-    //TODO register permissions
-    public Kit(String name, Collection<ItemStack> items)
+    // TODO ? add commands to execute to the kit (same with powertool)
+    //e.g. /feed {PLAYER} | {PLAYER} will be replaced with the username that reveives the kit
+    public Kit(String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, Collection<ItemStack> items)
     {
-        this(name, items.toArray(new ItemStack[0]));
+        this(name, giveKitOnFirstJoin, limitUsagePerPlayer, limitUsageDelay, usePermission, items.toArray(new ItemStack[0]));
     }
 
-    public Kit(final String name, ItemStack... items)
+    public Kit(final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, ItemStack... items)
     {
+        this.name = name;
         this.items = items;
-        this.permission = new Permission()
+        if (usePermission)
         {
-            private String permission = "cubeengine.basics.kits." + name.toLowerCase(Locale.ENGLISH);
-            private PermissionDefault def = PermissionDefault.OP;
-
-            public boolean isAuthorized(Permissible player)
+            this.permission = new Permission()
             {
-                return player.hasPermission(permission);
-            }
+                private String permission = "cubeengine.basics.kits." + name.toLowerCase(Locale.ENGLISH);
+                private PermissionDefault def = PermissionDefault.OP;
 
-            public String getPermission()
-            {
-                return this.permission;
-            }
+                public boolean isAuthorized(Permissible player)
+                {
+                    return player.hasPermission(permission);
+                }
 
-            public PermissionDefault getPermissionDefault()
-            {
-                return this.def;
-            }
-        };
+                public String getPermission()
+                {
+                    return this.permission;
+                }
+
+                public PermissionDefault getPermissionDefault()
+                {
+                    return this.def;
+                }
+            };
+        }
+        else
+        {
+            this.permission = null;
+        }
+        this.giveKitOnFirstJoin = giveKitOnFirstJoin;
+        this.limitUsagePerPlayer = limitUsagePerPlayer;
+        this.limitUsageDelay = limitUsageDelay;
     }
 
-    public boolean give(CommandSender sender, User user)
+    public void give(CommandSender sender, User user, boolean force)
     {
         //TODO get kits only x-time
-        //TODO delay between kits
-        //TODO give kit to all players online
+        //TODO give kit to all players online (not here)
         //TODO starterKit on login (not here)
         if (!this.getPermission().isAuthorized(sender))
         {
             denyAccess(sender, "basics", "You are not allowed to give this kit.");
         }
-        //TODO util for that could use it more often for other modules
-        PlayerInventory inventory = user.getInventory();
-        ItemStack[] oldInventory = inventory.getContents();
-        Map map = inventory.addItem(items);
-        if (!map.isEmpty())
+        if (limitUsageDelay != 0)
         {
-            user.getInventory().clear();
-            user.getInventory().addItem(oldInventory);
-            return false;
+            Long lastUsage = user.getAttribute(basics, "kitUsage_" + this.name);
+            if (lastUsage != null)
+            {
+                if (System.currentTimeMillis() - lastUsage < limitUsageDelay)
+                {
+                    blockCommand(sender, "basisc", "This kit not availiable at the moment. Try again later!");
+                }
+            }
         }
-        return true;
+        if (InventoryUtil.giveItemsToUser(user, items))
+        {
+            if (limitUsageDelay != 0)
+            {
+                user.setAttribute(basics, "kitUsage_" + this.name, System.currentTimeMillis());
+            }
+        }
+        else
+        {
+            blockCommand(sender, "basics", "Not enough space for this kit!");
+        }
     }
-    //TODO converter and add default to config to config and back
 
     public Permission getPermission()
     {

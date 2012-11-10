@@ -11,19 +11,24 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Basics extends Module
 {
     private BasicsConfiguration config;
     private BasicUserManager basicUM;
     private MailManager mailManager;
+    
+    private static Basics instance;
+    
+    public static Basics getInstance()
+    {
+        return instance;
+    }
 
     @Override
     public void onEnable()
     {
+        instance = this;
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.registerPermissions(BasicsPerm.values());
@@ -56,7 +61,6 @@ public class Basics extends Module
         this.registerCommands(new TeleportRequestCommands(this));
 
         this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
-        final Basics instance = this;
         final long autoAfk;
         final long afkCheck;
         try

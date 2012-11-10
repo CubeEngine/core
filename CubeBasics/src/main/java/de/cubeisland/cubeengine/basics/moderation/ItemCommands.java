@@ -24,7 +24,6 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 /**
  * item-related commands
  * /itemdb
- * /kit  //TODO
  * /rename
  * /headchange
  * /unlimited
@@ -84,49 +83,6 @@ public class ItemCommands
                     sender.getItemInHand().getType().getId(),
                     sender.getItemInHand().getDurability());
             }
-        }
-    }
-
-    @Command(
-        desc = "Gives a kit of items.",
-        usage = "<kitname> [player]",
-        min = 1, max = 2,
-        flags = { @Flag(longName = "all", name = "a") })
-    public void kit(CommandContext context)
-    {
-        //TODO this needs the converters
-        String kitname = context.getString(0);
-        User user;
-        Kit kit = null; //TODO getKitFromConfig
-        if (kit == null)
-        {
-            paramNotFound(context, "basics", "&cKit &6%s &cnot found!", kitname);
-        }
-        if (context.hasIndexed(1))
-        {
-            user = context.getUser(1);
-        }
-        else
-        {
-            user = context.getSenderAsUser();
-        }
-        if (user == null)
-        {
-            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
-        }
-        boolean result = kit.give(context.getSender(), user);
-        if (result)
-        {
-            context.sendMessage("basics", "&2%s &cdoes not have enough space for the &6%s &ckit!", user.getName(), kitname);
-        }
-        else if (user.getName().equals(context.getSender().getName()))
-        {
-            context.sendMessage("basics", "&aReceived the &6%s &akit!", kitname);
-        }
-        else
-        {
-            context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", user.getName(), kitname);
-            user.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
         }
     }
 
