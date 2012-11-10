@@ -2,9 +2,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketSentEvent;
-import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
-import java.util.concurrent.Executors;
 import net.minecraft.server.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -19,11 +17,11 @@ public class CubeEngineNetServerHandler extends NetServerHandler
     private final TaskQueue taskQueue;
     private final Player bukkitPlayer;
 
-    public CubeEngineNetServerHandler(EntityPlayer player)
+    public CubeEngineNetServerHandler(EntityPlayer player, TaskQueue taskQueue)
     {
         super(player.server, player.netServerHandler.networkManager, player);
         this.pm = player.getBukkitEntity().getServer().getPluginManager();
-        this.taskQueue = new AsyncTaskQueue(Executors.newSingleThreadExecutor());
+        this.taskQueue = taskQueue;
         this.bukkitPlayer = player.getBukkitEntity();
     }
     
