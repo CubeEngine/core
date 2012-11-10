@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;

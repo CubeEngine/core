@@ -1,16 +1,15 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.convert;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.convert.converter.*;
 import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.GenericConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import org.bukkit.Location;
@@ -25,9 +24,9 @@ import org.bukkit.inventory.ItemStack;
 public class Convert
 {
     private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
-    public final static MapConverter MAPCONVERTER = new MapConverter();
-    public final static ArrayConverter ARRAYCONVERTER = new ArrayConverter();
-    public final static CollectionConverter COLLECTIONCONVERTER = new CollectionConverter();
+    private final static MapConverter MAP_CONVERTER = new MapConverter();
+    private final static ArrayConverter ARRAY_CONVERTER = new ArrayConverter();
+    private final static CollectionConverter COLLECTION_CONVERTER = new CollectionConverter();
 
     static
     {
@@ -113,15 +112,15 @@ public class Convert
         }
         if (object.getClass().isArray())
         {
-            return ARRAYCONVERTER.toObject((Object[])object);
+            return ARRAY_CONVERTER.toObject((Object[])object);
         }
         else if (object instanceof Collection)
         {
-            return COLLECTIONCONVERTER.toObject((Collection)object);
+            return COLLECTION_CONVERTER.toObject((Collection)object);
         }
         else if (object instanceof Map)
         {
-            return MAPCONVERTER.toObject((Map)object);
+            return MAP_CONVERTER.toObject((Map)object);
         }
         Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
         return converter.toObject(object);
@@ -135,16 +134,16 @@ public class Convert
 
     public static <K, V> Map<K, V> fromObjectToMap(Class<K> keyType, Class<V> valType, Object object) throws ConversionException
     {
-        return MAPCONVERTER.fromObject(object, keyType, valType);
+        return MAP_CONVERTER.fromObject(object, keyType, valType);
     }
 
     public static <V> Collection<V> fromObjectToCollection(Class<V> valType, Object object) throws ConversionException
     {
-        return COLLECTIONCONVERTER.fromObject(object, valType);
+        return COLLECTION_CONVERTER.fromObject(object, valType);
     }
 
     public static <V> V[] fromObjectToArray(Class<V> valType, Object object) throws ConversionException
     {
-        return ARRAYCONVERTER.fromObject(object, valType);
+        return ARRAY_CONVERTER.fromObject(object, valType);
     }
 }

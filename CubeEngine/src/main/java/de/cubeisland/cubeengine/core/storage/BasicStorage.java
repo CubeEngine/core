@@ -9,7 +9,7 @@ import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

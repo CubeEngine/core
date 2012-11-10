@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.convert;
 
 public interface Converter<T extends Object>
 {

@@ -1,5 +1,6 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.Core;
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -7,11 +7,9 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
-import de.cubeisland.cubeengine.core.util.converter.Converter;
-import de.cubeisland.cubeengine.core.util.converter.generic.GenericConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileWriter;
@@ -291,15 +289,15 @@ public abstract class ConfigurationCodec
                     }
                     if (fieldClass.isArray())
                     {
-                        return Convert.ARRAYCONVERTER.fromObject(object, valueType);
+                        return Convert.fromObjectToArray(valueType, object);
                     }
                     if (Collection.class.isAssignableFrom(fieldClass))
                     {
-                        return Convert.COLLECTIONCONVERTER.fromObject(object, valueType);
+                        return Convert.fromObjectToCollection(valueType, object);
                     }
                     if (Map.class.isAssignableFrom(fieldClass))
                     {
-                        return Convert.MAPCONVERTER.fromObject(object, field.getAnnotation(Option.class).keyType(), valueType);
+                        return Convert.fromObjectToMap(field.getAnnotation(Option.class).keyType(), valueType, object);
                     }
                 }
                 else
@@ -638,18 +636,7 @@ public abstract class ConfigurationCodec
                             throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
                         }
                     }
-                    if (fieldClass.isArray())
-                    {
-                        return Convert.ARRAYCONVERTER.toObject((Object[])fieldValue);
-                    }
-                    if (Collection.class.isAssignableFrom(fieldClass))
-                    {
-                        return Convert.COLLECTIONCONVERTER.toObject((Collection)fieldValue);
-                    }
-                    if (Map.class.isAssignableFrom(fieldClass))
-                    {
-                        return Convert.MAPCONVERTER.toObject((Map)fieldValue);
-                    }
+                    return Convert.toObject((Object[])fieldValue);
                 }
                 else
                 {

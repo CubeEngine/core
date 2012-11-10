@@ -1,8 +1,10 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.sql.Date;
 
-class DateConverter implements Converter<Date>
+public class DateConverter implements Converter<Date>
 {
     @Override
     public Object toObject(Date object) throws ConversionException

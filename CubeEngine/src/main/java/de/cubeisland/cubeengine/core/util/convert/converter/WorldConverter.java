@@ -1,5 +1,7 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import java.util.UUID;
 import org.bukkit.World;

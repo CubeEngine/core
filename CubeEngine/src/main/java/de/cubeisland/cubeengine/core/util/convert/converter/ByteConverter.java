@@ -1,4 +1,7 @@
-package de.cubeisland.cubeengine.core.util.converter;
+package de.cubeisland.cubeengine.core.util.convert.converter;
+
+import de.cubeisland.cubeengine.core.util.convert.BasicConverter;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 public class ByteConverter extends BasicConverter<Byte>
 {

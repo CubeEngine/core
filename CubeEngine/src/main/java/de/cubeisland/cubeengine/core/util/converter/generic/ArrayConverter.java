@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.util.converter.generic;
 
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
-import de.cubeisland.cubeengine.core.util.converter.Converter;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
