@@ -173,17 +173,4 @@ public class YamlCodec extends ConfigurationCodec
     {
         return "yml";
     }
-
-    @Override
-    public String revision()
-    {
-        {
-            if (revision != null)
-            {
-                return new StringBuilder("revision: ").append(this.revision).
-                    append(LINEBREAK).toString();
-            }
-            return "";
-        }
-    }
 }

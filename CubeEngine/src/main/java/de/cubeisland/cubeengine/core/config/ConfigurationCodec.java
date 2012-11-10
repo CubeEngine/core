@@ -114,13 +114,13 @@ public abstract class ConfigurationCodec
                 throw new IllegalStateException("Tried to save config without File.");
             }
             container = new CodecContainer();
-            container.values = container.fillFromFields(null, config, "", container.values);
-
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
                 this.revision = a_revision.value();
+                container.values.put("revision", this.revision);
             }
+            container.values = container.fillFromFields(null, config, "", container.values);
             container.saveIntoFile(file);
         }
         catch (Exception ex)
@@ -165,8 +165,6 @@ public abstract class ConfigurationCodec
      * @return the fileExtension
      */
     public abstract String getExtension();
-
-    public abstract String revision();
 
     /**
      * Converts the inputStream into a String->Object map
@@ -374,7 +372,6 @@ public abstract class ConfigurationCodec
             {
                 sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
             }
-            sb.append(revision());
             first = true;
             sb.append(convertMap("", values, 0));
             if (config.tail() != null)
