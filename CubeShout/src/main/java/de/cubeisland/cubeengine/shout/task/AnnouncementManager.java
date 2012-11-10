@@ -26,13 +26,15 @@ public class AnnouncementManager
     private Announcer taskManager;
     private Map<String, AnnouncementReceiver> receivers;
     private Map<String, Announcement> announcements;
+    private File announcementFolder;
 
-    public AnnouncementManager(Shout module)
+    public AnnouncementManager(Shout module, File announcementFolder)
     {
         this.module = module;
         this.taskManager = module.getTaskManager();
         this.receivers = new ConcurrentHashMap<String, AnnouncementReceiver>();
         this.announcements = new HashMap<String, Announcement>();
+        this.announcementFolder = announcementFolder;
     }
 
     /**
@@ -269,7 +271,7 @@ public class AnnouncementManager
         this.receivers = new ConcurrentHashMap<String, AnnouncementReceiver>();
         this.announcements = new HashMap<String, Announcement>();
 
-        this.loadAnnouncements(module.announcementFolder);
+        this.loadAnnouncements(this.announcementFolder);
         this.initUsers();
     }
     
@@ -454,7 +456,7 @@ public class AnnouncementManager
         messages.put(locale, message);
         Announcement.validate(name, locale, permNode, world, messages, parseDelay(delay));
 
-        File folder = new File(module.announcementFolder, name);
+        File folder = new File(this.announcementFolder, name);
         folder.mkdirs();
         File configFile = new File(folder, "meta.yml");
         configFile.createNewFile();
