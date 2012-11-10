@@ -7,13 +7,11 @@ import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportRequestCommands;
 import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Basics extends Module
 {
-    @From
-    protected BasicsConfiguration config;
+    private BasicsConfiguration config;
     private BasicUserManager basicUM;
     private MailManager mailManager;
     

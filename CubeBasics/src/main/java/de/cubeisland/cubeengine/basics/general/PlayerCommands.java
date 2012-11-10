@@ -7,7 +7,9 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import net.minecraft.server.EntityPlayer;
 import org.bukkit.GameMode;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -30,7 +32,7 @@ public class PlayerCommands
     @Command(
         desc = "Refills your hunger bar",
         max = 1,
-        flags = { @Flag(longName = "all", name = "a") },
+        flags = @Flag(longName = "all", name = "a"),
         usage = "[player]|[-a]")
     public void feed(CommandContext context)
     {
@@ -85,7 +87,7 @@ public class PlayerCommands
     @Command(
         desc = "Empties the hunger bar",
         max = 1,
-        flags = { @Flag(longName = "all", name = "a") },
+        flags = @Flag(longName = "all", name = "a"),
         usage = "[player]|[-a]")
     public void starve(CommandContext context)
     {
@@ -140,7 +142,7 @@ public class PlayerCommands
     @Command(
         desc = "Heals a Player",
         max = 1,
-        flags = { @Flag(longName = "all", name = "a") },
+        flags = @Flag(longName = "all", name = "a"),
         usage = "[player]|[-a]")
     public void heal(CommandContext context)
     {
@@ -196,8 +198,8 @@ public class PlayerCommands
     @Command(
         names = { "gamemode", "gm" },
         max = 2,
-        desc = "Changes the gamemode",
-        usage = "[gamemode] [player]")
+    desc = "Changes the gamemode",
+    usage = "[gamemode] [player]")
     public void gamemode(CommandContext context)
     {
         boolean changeOther = false;
@@ -251,21 +253,21 @@ public class PlayerCommands
         }
         if (changeOther)
         {
-            context.sendMessage("basics", "&You changed the gamemode of &2%s &ato &6%s&a!", 
+            context.sendMessage("basics", "&You changed the gamemode of &2%s &ato &6%s&a!",
                 user.getName(), _(sender, "basics", user.getGameMode().toString()));
-            user.sendMessage("basics", "&eYour Gamemode has been changed to &6%s&a!", 
+            user.sendMessage("basics", "&eYour Gamemode has been changed to &6%s&a!",
                 _(user, "basics", user.getGameMode().toString()));
         }
         else
         {
-            context. sendMessage("basics", "&aYou changed your gamemode to &6%s&a!", 
+            context.sendMessage("basics", "&aYou changed your gamemode to &6%s&a!",
                 _(user, "basics", user.getGameMode().toString()));
         }
     }
 
     @Command(
         desc = "Kills a player",
-        usage = "<player>|-a",
+    usage = "<player>|-a",
         flags = { @Flag(longName = "all", name = "a") })
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
@@ -275,7 +277,7 @@ public class PlayerCommands
         {
             if (!context.hasFlag("a"))
             {
-                paramNotFound(context, "core", "&cUser %s not found!",context.getString(0));
+                paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
             }
         }
         else
@@ -318,8 +320,8 @@ public class PlayerCommands
 
     @Command(
         desc = "Makes a player execute a command",
-        usage = "<player> <command>",
-        min = 2,
+    usage = "<player> <command>",
+    min = 2,
         flags = { @Flag(longName = "chat", name = "c") })
     public void sudo(CommandContext context)
     {
@@ -354,7 +356,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            illegalParameter(context, "basics", "&cUser %s not found!", context.getString(0));
+            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
         }
         if (user.isOnline())
         {
@@ -439,11 +441,50 @@ public class PlayerCommands
     }
 
     @Command(
-        desc = "Displays your current language settings.",
-        max = 0)
-    public void language(CommandContext context)
+        desc = "Toggles the god-mode!",
+        usage = "[player]")
+    public void god(CommandContext context)
     {
-        context.sendMessage("basics", "&eYour language is &6%s&e.",
-            context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
+        User user;
+        boolean other = false;
+        if (context.hasIndexed(0))
+        {
+            user = context.getUser(0);
+            if (user == null)
+            {
+                paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+            }
+            other = true;
+        }
+        else
+        {
+            user = context.getSenderAsUser("basics", "&aYou are god already!");
+        }
+        EntityPlayer player = ((CraftPlayer)user.getPlayer()).getHandle();
+        player.abilities.isInvulnerable = !player.abilities.isInvulnerable;
+        if (player.abilities.isInvulnerable)
+        {
+            if (other)
+            {
+                context.sendMessage("basics", "&aYou are now invincible!");
+                context.sendMessage("basics", "&2%s &ais now invincible!", user.getName());
+            }
+            else
+            {
+                context.sendMessage("basics", "&aYou are now invincible!");
+            }
+        }
+        else
+        {
+            if (other)
+            {
+                context.sendMessage("basics", "&eYou are no longer invincible!");
+                context.sendMessage("basics", "&2%s &eis no longer invincible!", user.getName());
+            }
+            else
+            {
+                context.sendMessage("basics", "&eYou are no longer invincible!");
+            }
+        }
     }
 }

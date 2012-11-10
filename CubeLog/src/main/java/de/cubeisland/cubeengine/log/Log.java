@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log;
 
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
@@ -12,8 +11,7 @@ import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
 public class Log extends Module
 {
     private static Log instance;
-    @From()
-    protected LogConfiguration mainconfig;
+    private LogConfiguration mainconfig;
 
     public Log()
     {

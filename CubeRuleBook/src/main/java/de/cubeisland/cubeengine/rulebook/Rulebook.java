@@ -17,7 +17,7 @@ public class Rulebook extends Module
     public void onEnable()
     {
         this.logger = this.getLogger();
-        CubeEngine.getFileManager().dropResources(RuleBookResource.values());
+        this.getFileManager().dropResources(RuleBookResource.values());
 
         this.config = new RuleBookConfiguration(this);
         this.registerListener(new RuleBookListener(this));

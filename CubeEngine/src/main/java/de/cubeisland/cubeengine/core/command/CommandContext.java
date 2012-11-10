@@ -33,7 +33,6 @@ public class CommandContext
     private int flagCount;
     private boolean empty;
     private boolean helpCall;
-    
     private static int offset;
 
     /**
@@ -80,7 +79,9 @@ public class CommandContext
             this.flags.put(flag.name().toLowerCase(Locale.ENGLISH), false);
             if (!"".equals(flag.longName()))
             {
-                flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
+                flagLongnameMap.
+                    put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().
+                    toLowerCase(Locale.ENGLISH));
             }
         }
 
@@ -121,7 +122,8 @@ public class CommandContext
             {
                 continue; // part is empty, ignoring...
             }
-            if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
+            if (commandLine[offset].length() >= 2 && commandLine[offset].
+                charAt(0) == '-') // is flag?
             {
                 String flag = commandLine[offset].substring(1);
                 if (flag.charAt(0) == '-')
@@ -152,7 +154,8 @@ public class CommandContext
             }
             else //else named param or indexed param
             {
-                String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
+                String paramName = commandLine[offset].
+                    toLowerCase(Locale.ENGLISH);
                 // has alias named Param ?
                 if (paramAliasMap.containsKey(paramName))
                 {
@@ -180,12 +183,14 @@ public class CommandContext
                             }
                             else
                             {
-                                values[typeOffset] = Convert.fromString(types[typeOffset], commandLine[offset]);
+                                values[typeOffset] = Convert.
+                                    fromString(types[typeOffset], commandLine[offset]);
                             }
                         }
                         catch (ConversionException e)
                         {
-                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s", paramName, typeOffset, commandLine[offset], types[typeOffset].toString());
+                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s", paramName, typeOffset, commandLine[offset], types[typeOffset].
+                                toString());
                         }
                     }
                     //added named param
@@ -242,7 +247,9 @@ public class CommandContext
             message = commandLine[offset];
             if (message.charAt(message.length() - 1) == quoteChar)
             {
-                return builder.append(message.substring(0, message.length() - 1)).toString();
+                return builder.
+                    append(message.substring(0, message.length() - 1)).
+                    toString();
             }
             builder.append(message);
             ++offset;
@@ -380,7 +387,34 @@ public class CommandContext
     }
 
     /**
-     * Gets a value of a named parameter as a String
+     * Returns the first value of a named parameters as a String or the given
+     * default value
+     *
+     * @param name the parameter name
+     * @param def  the default value
+     * @return the String or the default value if not found
+     */
+    public String getString(String name, String def)
+    {
+        return this.getNamed(name, String.class, def);
+    }
+
+    /**
+     * Returns a value of a named parameters as a String or the given
+     * default value
+     *
+     * @param name the parameter name
+     * @param i    the value index
+     * @param def  the default value
+     * @return the String or the default value if not found
+     */
+    public String getString(String name, int i, String def)
+    {
+        return this.getNamed(name, String.class, i, def);
+    }
+
+    /**
+     * Returns a value of a named parameter as a String
      *
      * @param name the parameter name
      * @param i    the value index
@@ -494,7 +528,8 @@ public class CommandContext
     }
 
     /**
-     * Returns the command sender as a User or throws an IllegalUsageException with the specified message
+     * Returns the command sender as a User or throws an IllegalUsageException
+     * with the specified message
      *
      * @param category the category of the message
      * @param message  the message
@@ -550,7 +585,8 @@ public class CommandContext
      * @param index the index
      * @param type  the Class of the value
      * @param def   the default value
-     * @return returns the requested value or the specified default value if the conversion failt or the parameters was not available
+     * @return returns the requested value or the specified default value if the
+     *         conversion failt or the parameters was not available
      */
     public <T> T getIndexed(int index, Class<T> type, T def)
     {
@@ -575,7 +611,8 @@ public class CommandContext
      * @param index the index of the value
      * @param type  the Class of the value
      * @return the value
-     * @throws ConversionException if the value could not be converter to the requested type
+     * @throws ConversionException if the value could not be converter to the
+     *                             requested type
      */
     public <T> T getIndexed(int index, Class<T> type) throws ConversionException
     {
@@ -585,7 +622,9 @@ public class CommandContext
         }
         catch (IndexOutOfBoundsException e)
         {
-            if (index < this.command.getMinimumParams() - 1 || (this.command.getMaximumParams() > -1 && index >= this.command.getMaximumParams()))
+            if (index < this.command.getMinimumParams() - 1 || (this.command.
+                getMaximumParams() > -1 && index >= this.command.
+                getMaximumParams()))
             {
                 throw e;
             }

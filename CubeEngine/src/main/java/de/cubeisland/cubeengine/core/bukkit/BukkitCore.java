@@ -117,7 +117,7 @@ public class BukkitCore extends JavaPlugin implements Core
         // register Listerer for UserManger
         pm.registerEvents(this.userManager, this);
         
-        pm.registerEvents(new CoreListener(), this);
+        pm.registerEvents(new CoreListener(this), this);
 
         // depends on: file manager, core config
         this.i18n = new I18n(this);
@@ -129,9 +129,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.moduleManager = new ModuleManager(this);
 
         // depends on: server
-       //TODO broken with 1.4 
         BukkitUtils.registerPacketHookInjector(this);
-
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
@@ -150,6 +148,8 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
+        BukkitUtils.cleanup();
+        
         CubeEngine.clean();
 
         if (this.moduleManager != null)

@@ -1,8 +1,12 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
+import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
 import net.minecraft.server.NBTTagCompound;
@@ -135,9 +139,19 @@ public class BukkitUtils
     {
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();
         public static boolean injected = false;
+        private final ExecutorService executorService;
+        private final TaskQueue taskQueue;
 
         private PacketHookInjector()
         {
+            this.executorService = Executors.newSingleThreadExecutor();
+            this.taskQueue = new AsyncTaskQueue(this.executorService);
+        }
+        
+        public void shutdown()
+        {
+            this.taskQueue.shutdown();
+            this.executorService.shutdown();
         }
 
         /**
@@ -162,7 +176,7 @@ public class BukkitUtils
 
                 if (oldHandler.getClass() != CubeEngineNetServerHandler.class)
                 {
-                    CubeEngineNetServerHandler handler = new CubeEngineNetServerHandler(playerEntity);
+                    CubeEngineNetServerHandler handler = new CubeEngineNetServerHandler(playerEntity, this.taskQueue);
 
                     Location loc = player.getLocation();
                     handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
@@ -257,5 +271,10 @@ public class BukkitUtils
         {
             return null;
         }
+    }
+    
+    public static void cleanup()
+    {
+        PacketHookInjector.INSTANCE.shutdown();
     }
 }

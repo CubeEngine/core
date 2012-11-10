@@ -12,10 +12,6 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FlyCommand
 {
     UserManager um;
@@ -37,7 +33,7 @@ public class FlyCommand
     usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {
-        if (!config.flycommand)
+        if (!this.config.flycommand)
         {
             denyAccess(context, "fly", "The fly-command is disabled in the configuration!");
             return;

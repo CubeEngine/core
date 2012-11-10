@@ -3,9 +3,8 @@ package de.cubeisland.cubeengine.test;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -25,7 +24,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.Packet0KeepAlive;
+import net.minecraft.server.ServerConfigurationManager;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -35,17 +41,16 @@ public class Test extends Module
 {
     public TestManager manager;
     public UserManager uM;
-    @From
     protected TestConfig config;
     public static List<String> aListOfPlayers;
     public Basics basicsModule;
     private BukkitCore core;
+    private Timer timer;
 
     @Override
     public void onEnable()
     {
-        Configuration.
-            load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
+        Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
         this.getFileManager().dropResources(TestRecource.values());
         this.uM = this.getUserManager();
         try
@@ -55,19 +60,15 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLogger().
-                log(Level.SEVERE, "Error while Enabling the TestModule", ex);
+            this.getLogger().log(Level.SEVERE, "Error while Enabling the TestModule", ex);
         }
         try
         {
-            this.getLogger().
-                addHandler(new CubeFileHandler(Level.ALL, new File(this.
-                getFileManager().getLogDir(), "test").toString()));
+            this.getLogger().addHandler(new CubeFileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
         {
-            this.getLogger().
-                log(Level.SEVERE, "Error while adding the FileHandler", ex);
+            this.getLogger().log(Level.SEVERE, "Error while adding the FileHandler", ex);
         }
         this.registerListener(new TestListener(this));
 
@@ -88,10 +89,11 @@ public class Test extends Module
             }
         });
 
-        this.getLogger().log(Level.INFO, "Basics-Module: {0}", String.
-            valueOf(basicsModule));
-        this.getLogger().log(Level.INFO, "BukkitCore-Plugin: {0}", String.
-            valueOf(core));
+        this.getLogger().log(Level.INFO, "Basics-Module: {0}", String.valueOf(basicsModule));
+        this.getLogger().log(Level.INFO, "BukkitCore-Plugin: {0}", String.valueOf(core));
+        
+        timer = new Timer("keepAliveTimer");
+        timer.schedule(new KeepAliveTimer() , 2 * 1000, 2 * 1000);
     }
 
     public void initializeDatabase() throws SQLException
@@ -111,6 +113,8 @@ public class Test extends Module
     @Override
     public void onDisable()
     {
+        this.timer.cancel();
+        this.timer = null;
     }
 
     public void testUserManager()
@@ -282,6 +286,27 @@ public class Test extends Module
         catch (Exception ex)
         {
             this.getLogger().log(Level.SEVERE, "Error in testsomeutils", ex);
+        }
+    }
+
+    private class KeepAliveTimer extends TimerTask
+    {
+        private final ServerConfigurationManager mojangServer;
+        private final Random random;
+
+        public KeepAliveTimer()
+        {
+            this.mojangServer = ((CraftServer)core.getServer()).getHandle();
+            this.random = new Random();
+        }
+
+        @Override
+        public void run()
+        {
+            for (EntityPlayer player : (List<EntityPlayer>)this.mojangServer.players)
+            {
+                player.netServerHandler.sendPacket(new Packet0KeepAlive(random.nextInt()));
+            }
         }
     }
 }

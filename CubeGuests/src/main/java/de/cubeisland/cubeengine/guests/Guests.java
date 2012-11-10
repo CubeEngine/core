@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.guests;
 
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import de.cubeisland.cubeengine.guests.prevention.preventions.*;
@@ -12,8 +11,6 @@ public class Guests extends Module
     private File dataFolder;
     private File preventionConfigFolder;
     private PreventionManager prevManager;
-    
-    @From
     private GuestsConfig config;
 
     @Override

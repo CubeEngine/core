@@ -324,4 +324,13 @@ public class InformationCommands
         memused += memUse;
         context.sendMessage("basics", "&6Uptime: &a%s\n&6Memory Usage: %s&f/%s&f/%s MB", uptime, memused, memcommited, memmax);
     }
+    
+    @Command(
+        desc = "Displays your current language settings.",
+        max = 0)
+    public void language(CommandContext context)
+    {
+        context.sendMessage("basics", "&eYour language is &6%s&e.",
+            context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
+    }
 }
