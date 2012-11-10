@@ -10,3 +10,5 @@ nb-actions.xml
 */.settings**
 */.externalToolBuilders**
 */maven-eclipse.xml
+.idea/
+*.iml
