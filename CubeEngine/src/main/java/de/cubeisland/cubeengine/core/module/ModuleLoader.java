@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.config.annotations.From;
+import de.cubeisland.cubeengine.core.config.annotations.LoadFrom;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
@@ -94,14 +94,17 @@ public class ModuleLoader
 
             for (Field field : moduleClass.getDeclaredFields())
             {
-                if (field.isAnnotationPresent(From.class))
+                if (Configuration.class.isAssignableFrom(field.getType()) && field.getType().isAnnotationPresent(Codec.class))
                 {
-                    if (Configuration.class.isAssignableFrom(field.getType()))
+                    Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
+                    String filename = "config";
+
+                    if (field.isAnnotationPresent(LoadFrom.class))
                     {
-                        field.setAccessible(true);
-                        field.set(module, Configuration.load(field.getType().asSubclass(Configuration.class),
-                            new File(module.getFolder(), field.getAnnotation(From.class).value() + "." + field.getType().getAnnotation(Codec.class).value())));
+                        filename = field.getAnnotation(LoadFrom.class).value();
                     }
+                    field.setAccessible(true);
+                    field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename + "." + configClass.getAnnotation(Codec.class).value())));
                 }
             }
 

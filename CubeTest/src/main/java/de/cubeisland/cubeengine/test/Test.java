@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -42,7 +41,6 @@ public class Test extends Module
 {
     public TestManager manager;
     public UserManager uM;
-    @From
     protected TestConfig config;
     public static List<String> aListOfPlayers;
     public Basics basicsModule;

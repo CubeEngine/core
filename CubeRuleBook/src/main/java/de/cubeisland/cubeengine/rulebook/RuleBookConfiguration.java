@@ -1,18 +1,13 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  *

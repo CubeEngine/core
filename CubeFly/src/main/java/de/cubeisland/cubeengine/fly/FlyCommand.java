@@ -33,7 +33,7 @@ public class FlyCommand
     usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {
-        if (!config.flycommand)
+        if (!this.config.flycommand)
         {
             denyAccess(context, "fly", "The fly-command is disabled in the configuration!");
             return;

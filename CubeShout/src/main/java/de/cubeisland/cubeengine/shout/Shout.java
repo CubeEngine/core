@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.shout;
 
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
 import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
@@ -18,7 +17,6 @@ public class Shout extends Module
     private ShoutCommand command;
     private ShoutSubCommands subCommands;
     private Announcer taskManager;
-    @From
     private ShoutConfiguration config;
     public File announcementFolder;
 

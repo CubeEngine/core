@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.fun;
 
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.fun.commands.FunCommands;
 import de.cubeisland.cubeengine.fun.listeners.NukeListener;
@@ -8,7 +7,6 @@ import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 
 public class Fun extends Module
 {
-    @From
     private FunConfiguration config;
     
     private RocketListener rocketListener;
