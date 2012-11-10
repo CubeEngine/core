@@ -1,7 +1,8 @@
 package de.cubeisland.cubeengine.shout.task;
 
-import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.Shout;
+import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
+import java.io.File;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -12,7 +13,7 @@ public class AnnouncementManagerTest
     @Test
     public void testParseDelay()
     {
-        AnnouncementManager testamanager = new AnnouncementManager(new Shout());
+        AnnouncementManager testamanager = new AnnouncementManager(new Shout(), null);
 
         assertEquals(1000l, testamanager.parseDelay("1 second"));
         assertEquals(60000l, testamanager.parseDelay("1 minute"));

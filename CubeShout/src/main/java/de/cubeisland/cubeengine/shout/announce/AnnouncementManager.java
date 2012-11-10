@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import org.bukkit.entity.Player;
 
 /**
  * Class to manage all the announcements and their receivers
