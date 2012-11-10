@@ -438,6 +438,7 @@ public class PlayerCommands
         }
         context.sendMessage("basics", "&eAFK: %s", user.getAttribute(basics, "afk") == null ? "&cfalse" : "&atrue");
         // TODO later money
+        //TODO event so other modules can add their information
     }
 
     @Command(
