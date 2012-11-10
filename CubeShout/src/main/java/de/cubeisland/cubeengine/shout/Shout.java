@@ -18,7 +18,7 @@ public class Shout extends Module
     private ShoutSubCommands subCommands;
     private Announcer taskManager;
     private ShoutConfiguration config;
-    public File announcementFolder;
+    private File announcementFolder;
 
     // TODO CubeRoles
     @Override
@@ -46,7 +46,7 @@ public class Shout extends Module
         this.getFileManager().dropResources(ShoutResource.values());
 
         this.taskManager = new Announcer(config.initDelay);
-        this.announcementManager = new AnnouncementManager(this);
+        this.announcementManager = new AnnouncementManager(this, announcementFolder);
         this.listener = new ShoutListener(this);
         this.command = new ShoutCommand(this);
         this.subCommands = new ShoutSubCommands(this);

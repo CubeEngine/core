@@ -13,10 +13,6 @@ public class ShoutConfiguration extends Configuration
     @Option("initial-delay")
     @Comment("The delay after a player joins before he receives his first message")
     public int initDelay = 20;
-    
-    @Option("messager-period")
-    @Comment("The period the task that sends the messages should run at")
-    public int messagerPeriod = 40;
 
     @Override
     public String[] head()
