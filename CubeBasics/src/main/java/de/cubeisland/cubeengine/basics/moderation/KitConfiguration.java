@@ -25,7 +25,7 @@ public class KitConfiguration extends Configuration
     @Comment("If not empty this message will be displayed when receiving this kit.")
     @Option("custom-receive-message")
     public String customReceiveMsg = "";
-    @Option(value = "items", genericType = ItemStack.class)
+    @Option(value = "items", valueType= ItemStack.class)
     public List<ItemStack> kitItems = new LinkedList<ItemStack>();
     @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
     @Option("generate-permission")
