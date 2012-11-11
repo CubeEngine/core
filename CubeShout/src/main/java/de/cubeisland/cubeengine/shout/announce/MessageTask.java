@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.task;
+package de.cubeisland.cubeengine.shout.announce;
 
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.user.User;

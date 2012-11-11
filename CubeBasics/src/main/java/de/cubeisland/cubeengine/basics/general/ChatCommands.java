@@ -169,10 +169,14 @@ public class ChatCommands
         {
             context.sendMessage("basics", "&2%s &ewas already muted!", user.getName());
         }
-        long delay = 0;
+        long delay = basics.getConfiguration().defaultMuteTime * 1000 * 60; //TODO use other format
+        if (delay < 1)
+        {
+            delay = System.currentTimeMillis() + 31104000000000L; // ~ 1k years
+        }
         if (context.hasIndexed(1))
         {
-            delay = context.getIndexed(1, LongArg.class, 60000L);//TODO default in config //TODO detect sec min etc/ default == -1  -> 1000 years
+            delay = context.getIndexed(1, Long.class, delay);
         }
         bUser.muted = new Timestamp(System.currentTimeMillis() + delay);
         this.basics.getBasicUserManager().update(bUser);

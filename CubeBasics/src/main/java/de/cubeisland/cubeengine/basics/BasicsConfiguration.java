@@ -30,7 +30,13 @@ public class BasicsConfiguration extends Configuration
     public String motd = "Welcome on our server. Have fun!";
     @Option("commands.near-defaultradius")
     public int nearDefaultRadius = 20;
-    @Option(value = "commands.item-blacklist", valueType = ItemStack.class)
+    @Option("afk.automatic-afk")
+    public String autoAfk = "5m";
+    @Option("afk.afk-check-delay")
+    public String afkCheck = "1s";
+    @Option("command.mute.default-mute-time")
+    public int defaultMuteTime = -1;
+    @Option(value = "commands.item-blacklist", genericType = ItemStack.class)
     public LinkedList<ItemStack> blacklist = new LinkedList<ItemStack>()
     {
         {

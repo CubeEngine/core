@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.task;
+package de.cubeisland.cubeengine.shout.announce;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-import org.bukkit.entity.Player;
 
 /**
  * Class to manage all the announcements and their receivers

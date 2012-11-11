@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.task;
+package de.cubeisland.cubeengine.shout.announce;
 
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.concurrent.Callable;

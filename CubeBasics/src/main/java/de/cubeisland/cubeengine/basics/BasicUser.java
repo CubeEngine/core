@@ -22,7 +22,7 @@ public class BasicUser implements Model<Integer>
     public final int key; // User Key
     
     @Attribute(type = AttrType.TIMESTAMP, notnull=false)
-    public Timestamp muted; //TODO NO on update current_timestamp
+    public Timestamp muted;
     
     public List<Mail> mailbox = new ArrayList<Mail>();
     

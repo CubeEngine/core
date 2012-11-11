@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.task;
+package de.cubeisland.cubeengine.shout.announce;
 
 import java.util.HashMap;
 import java.util.Map;
