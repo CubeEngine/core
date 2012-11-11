@@ -60,14 +60,7 @@ public abstract class ConfigurationCodec
                 }
             }
         }
-        try
-        {
-            container.dumpIntoFields(config, container.values);
-        }
-        catch (Exception e)
-        {
-            throw new InvalidConfigurationException("Error while dumping loaded Config into fields!", e);
-        }
+        container.dumpIntoFields(config, container.values);
         container = null;
         revision = null;
     }
@@ -315,32 +308,40 @@ public abstract class ConfigurationCodec
          * @throws IllegalArgumentException
          * @throws IllegalAccessException
          */
-        private void dumpIntoFields(Configuration config, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
+        private void dumpIntoFields(Configuration config, Map<String, Object> section)
         {
             this.config = config;
             this.values = section;
             for (Field field : config.getClass().getFields()) // ONLY public fields are allowed
             {
-                if (field.isAnnotationPresent(Option.class))
+
+                try
                 {
-                    String path = field.getAnnotation(Option.class).value();
-                    if (Configuration.class.isAssignableFrom(field.getType()))
+                    if (field.isAnnotationPresent(Option.class))
                     {
-                        Configuration subConfig = (Configuration)field.get(this.config);
-                        CodecContainer subContainer = new CodecContainer();
-                        subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section));
-                        continue;
+                        String path = field.getAnnotation(Option.class).value();
+                        if (Configuration.class.isAssignableFrom(field.getType()))
+                        {
+                            Configuration subConfig = (Configuration)field.get(this.config);
+                            CodecContainer subContainer = new CodecContainer();
+                            subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section));
+                            continue;
+                        }
+                        int mask = field.getModifiers();
+                        if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static and final fields
+                        {
+                            continue;
+                        }
+                        Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), section);//Get savedValue or default
+                        if (object != null)
+                        {
+                            field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
+                        }
                     }
-                    int mask = field.getModifiers();
-                    if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static and final fields
-                    {
-                        continue;
-                    }
-                    Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), section);//Get savedValue or default
-                    if (object != null)
-                    {
-                        field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
-                    }
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidConfigurationException("Error while dumping loaded Config into fields! Field: " + field.getName(), e);
                 }
             }
         }
@@ -633,7 +634,7 @@ public abstract class ConfigurationCodec
                             throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
                         }
                     }
-                    return Convert.toObject((Object[])fieldValue);
+                    return Convert.toObject(fieldValue); // array / collection / map-converter
                 }
                 else
                 {

@@ -37,7 +37,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)
-    public final OfflinePlayer player;
+    public final String player;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
@@ -51,7 +51,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     {
         super(CubeEngine.getOfflinePlayer((String)args.get(1)));
         this.key = Convert.fromObject(Integer.class, args.get(0));
-        this.player = this.offlinePlayer;
+        this.player = this.offlinePlayer.getName();
         this.nogc = (Boolean)args.get(2);
         this.lastseen = (Timestamp)args.get(3);
     }
@@ -60,7 +60,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     {
         super(player);
         this.key = key;
-        this.player = player;
+        this.player = player.getName();
         this.lastseen = new Timestamp(System.currentTimeMillis());
     }
 
@@ -79,7 +79,7 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public OfflinePlayer getOfflinePlayer()
     {
-        return this.player;
+        return this.offlinePlayer;
     }
 
     @Override

@@ -7,11 +7,10 @@ import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedList;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -54,7 +53,6 @@ public class TestConfig extends Configuration
     "This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
-        
         {
             put("default", 7);
         }
@@ -74,28 +72,25 @@ public class TestConfig extends Configuration
         server.getOfflinePlayer("Anselm Brehme"),
         server.getOfflinePlayer("Niemand")
     };
-    @Option("list.stringlist")
-    public List<String> stringlist = new ArrayList<String>()
+    @Option(value = "list.stringlist", valueType = String.class)
+    public Collection<String> stringlist = new LinkedList<String>()
     {
-        
         {
             add("quark");
             add("kekse");
         }
     };
     @Option(value = "list.playerlist", valueType = OfflinePlayer.class)
-    public List<OfflinePlayer> playerlist = new ArrayList<OfflinePlayer>()
+    public Collection<OfflinePlayer> playerlist = new LinkedList<OfflinePlayer>()
     {
-        
         {
             add(server.getOfflinePlayer("Anselm Brehme"));
             add(server.getOfflinePlayer("KekseSpieler"));
         }
     };
     @Option(value = "list.shortlist", valueType = Short.class)
-    public List<Short> shortlist = new ArrayList<Short>()
+    public Collection<Short> shortlist = new LinkedList<Short>()
     {
-        
         {
             short s = 123;
             add(s);
@@ -103,61 +98,19 @@ public class TestConfig extends Configuration
             add(s);
         }
     };
-    @Option(value = "list.listinmaps", valueType = List.class)
-    @Comment("list in maps ftw")
-    public Map<String, List<Integer>> pointlessmap = new LinkedHashMap<String, List<Integer>>()
-    {
-        
-        {
-            List<Integer> list1 = new ArrayList<Integer>();
-            list1.add(123);
-            list1.add(312);
-            List<Integer> list2 = new ArrayList<Integer>();
-            list2.add(124124);
-            list2.add(414141);
-            put("list1", list1);
-            put("list2", list2);
-        }
-    };
     @Option(value = "locationinmap", valueType = Location.class)
     @Comment("multi location")
     public LinkedHashMap<String, Location> locs;
-
-    
     {
         {
             locs = new LinkedHashMap<String, Location>();
-            locs.
-                put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.
-                put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.
-                put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.
-                put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            locs.put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
         }
-    }
-    ;
-    /*
-     @Option("role.role")
-     @Comment("a single role")
-     public Role role = new Role("Gast", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>());
-     @Option(value = "role.roles", valueType = Role.class)
-     @Comment("multi roles")
-     public LinkedHashMap<String, Role> roles;
+    };
 
-    
-     {
-     {
-     roles = new LinkedHashMap<String, Role>();
-     roles.put("role1", new Role("guest", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-     roles.put("role2", new Role("member", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-     roles.put("role3", new Role("mod", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-     roles.put("role4", new Role("admin", new ArrayList<String>(), new LinkedHashMap<String, String>(), new ArrayList<String>()));
-     }
-     }
-     ;
-     */
     @Option("subconfig")
     public TestSubConfig subConfig = new TestSubConfig();
 

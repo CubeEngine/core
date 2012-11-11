@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.logger;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
@@ -42,7 +43,15 @@ public class SignChangeLogger extends Logger<SignChangeLogger.SignChangeConfig>
                 return; //No change -> return
             }
         }
-        this.signChangeLogManager.store(new SignChangeLog(player, state, oldlines, lines));
+        User user = module.getUserManager().getExactUser(player);
+        if (user == null)
+        {
+            this.signChangeLogManager.store(new SignChangeLog(0, state, oldlines, lines));
+        }
+        else
+        {
+            this.signChangeLogManager.store(new SignChangeLog(user.key, state, oldlines, lines));
+        }
     }
 
     public static class SignChangeConfig extends SubLogConfig

@@ -3,7 +3,8 @@ package de.cubeisland.cubeengine.log.logger;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
 import de.cubeisland.cubeengine.log.storage.BlockData;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -56,7 +57,7 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
             this.enabled = true;
         }
         @Option(value = "no-logging", valueType = BlockData.class)
-        public ArrayList<BlockData> noLogging = new ArrayList<BlockData>();
+        public Collection<BlockData> noLogging = new LinkedList<BlockData>();
 
         @Override
         public String getName()

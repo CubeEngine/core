@@ -13,6 +13,12 @@ public class Log extends Module
     private static Log instance;
     private LogConfiguration mainconfig;
 
+    static
+    {
+        Convert.registerConverter(BlockData.class, new BlockDataConverter());
+        Convert.registerConverter(ItemData.class, new ItemDataConverter());
+    }
+
     public Log()
     {
         instance = this;
@@ -32,8 +38,7 @@ public class Log extends Module
         //possibility to select the region containing the last search results
         //this.lm = new LogManager(this);
         this.registerCommand(new LogCommands(this));
-        Convert.registerConverter(BlockData.class, new BlockDataConverter());
-        Convert.registerConverter(ItemData.class, new ItemDataConverter());
+
     }
 
     public LogConfiguration getConfiguration()

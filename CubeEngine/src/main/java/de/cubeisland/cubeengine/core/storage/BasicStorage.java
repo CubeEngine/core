@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -314,11 +313,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
             ArrayList<Object> values = new ArrayList<Object>();
             if (!keyIsAI)
             {
-                values.add(Convert.toObject(modelClass.getField(key).get(model)));
+                values.add(modelClass.getField(key).get(model));
             }
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(modelClass.getField(name).get(model)));
+                values.add(modelClass.getField(name).get(model));
             }
             if (keyIsAI)
             {
@@ -365,9 +364,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
             ArrayList<Object> values = new ArrayList<Object>();
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(this.modelClass.getField(name).get(model)));
+                values.add(this.modelClass.getField(name).get(model));
             }
-            values.add(Convert.toObject(this.modelClass.getField(this.key).get(model)));
+            values.add(this.modelClass.getField(this.key).get(model));
             if (async)
             {
                 this.database.asyncPreparedExecute(this.modelClass, "update", values.toArray());
@@ -404,10 +403,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
-            values.add(Convert.toObject(this.modelClass.getField(this.key).get(model)));
+            values.add(this.modelClass.getField(this.key).get(model));
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(this.modelClass.getField(name).get(model)));
+                values.add(this.modelClass.getField(name).get(model));
             }
 
             if (async)

@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import java.util.Collection;
 import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -36,9 +37,10 @@ public class BasicsConfiguration extends Configuration
     public String afkCheck = "1s";
     @Option("command.mute.default-mute-time")
     public int defaultMuteTime = -1;
-    @Option(value = "commands.item-blacklist", valueType= ItemStack.class)
-    public LinkedList<ItemStack> blacklist = new LinkedList<ItemStack>()
+    @Option(value = "commands.item-blacklist", valueType = ItemStack.class)
+    public Collection<ItemStack> blacklist = new LinkedList<ItemStack>()
     {
+        
         {
             this.add(new ItemStack(Material.BEDROCK));
             this.add(new ItemStack(Material.WATER));

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -23,7 +24,7 @@ public final class ModuleInfo
     private final boolean providesWorldGenerator;
     private final Map<String, Integer> dependencies;
     private final Map<String, Integer> softDependencies;
-    private final Set<String> pluginDependencies;
+    private final Collection<String> pluginDependencies;
 
     public ModuleInfo(File file, ModuleConfiguration config)
     {
@@ -205,7 +206,7 @@ public final class ModuleInfo
      *
      * @return the plugin dependencies
      */
-    public Set<String> getPluginDependencies()
+    public Collection<String> getPluginDependencies()
     {
         return this.pluginDependencies;
     }
