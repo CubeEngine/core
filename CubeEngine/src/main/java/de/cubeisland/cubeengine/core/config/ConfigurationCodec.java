@@ -546,10 +546,23 @@ public abstract class ConfigurationCodec
                     }
                 }
             }
+            boolean advanced = true;
+            try
+            {
+               Field field = clazz.getField("advanced");
+               advanced = field.getBoolean(config);
+            }
+            catch (Exception ignored)
+            {
+            }
             for (Field field : clazz.getFields())
             {
                 if (field.isAnnotationPresent(Option.class))
                 {
+                    if (!advanced && field.getAnnotation(Option.class).advanced())
+                    {
+                        continue;
+                    }
                     int mask = field.getModifiers();
                     if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
                     {

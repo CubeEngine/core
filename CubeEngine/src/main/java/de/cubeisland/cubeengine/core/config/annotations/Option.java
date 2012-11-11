@@ -32,4 +32,15 @@ public @interface Option
      * @return the keyType
      */
     public Class<?> keyType() default String.class;
+    
+    /**
+     * If true this option will not be shown in the config with disabled advanced mode.
+     * Keep in mind you will need a field:
+     * @Option("advanced")
+     * public boolean advanced
+     * in your config for this to work.
+     * 
+     * @return
+     */
+    public boolean advanced() default false;
 }
