@@ -19,18 +19,15 @@ public class KitConfiguration extends Configuration
     @Comment("The name to access this kit.")
     @Option("kit-name")
     public String kitName;
-    @Comment(
-    "Players that join your server the first time will receive this kit if set on true.")
+    @Comment("Players that join your server the first time will receive this kit if set on true.")
     @Option("give-on-first-join")
     public boolean giveOnFirstJoin = false;
-    @Comment(
-    "If not empty this message will be displayed when receiving this kit.")
+    @Comment("If not empty this message will be displayed when receiving this kit.")
     @Option("custom-receive-message")
     public String customReceiveMsg = "";
-    //TODO items to receive
+    @Option(value = "items", genericType = ItemStack.class)
     public List<ItemStack> kitItems = new LinkedList<ItemStack>();
-    @Comment(
-    "If a permission is generated the user needs the permission to bew able to receive this kit")
+    @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
     @Option("generate-permission")
     public boolean usePerm = false;
     @Comment("The delay between each usage of this kit.")
@@ -44,7 +41,7 @@ public class KitConfiguration extends Configuration
 
     public Kit getKit()
     {
-        Kit kit = new Kit(this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay, this.usePerm, this.kitItems);
+        Kit kit = new Kit(this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay, this.usePerm, this.customReceiveMsg, this.kitItems);
         return kit;
     }
 
@@ -54,7 +51,9 @@ public class KitConfiguration extends Configuration
         Kit kit = kitMap.get(lname);
         if (kit == null)
         {
-            File file = new File(basics.getFolder(), lname + ".yml");
+            File file = new File(basics.getFolder(), "kits");
+            file.mkdir();
+            file = new File(file, lname + ".yml");
             if (file.exists())
             {
                 try
@@ -71,7 +70,7 @@ public class KitConfiguration extends Configuration
         }
         return kit;
     }
-    
+
     public static void saveKit(Kit kit)
     {
         KitConfiguration config = kitConfigMap.get(kit);

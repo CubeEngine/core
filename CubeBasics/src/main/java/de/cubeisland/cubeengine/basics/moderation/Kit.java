@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 /**
  * A Kit of Items a User can receive
@@ -27,18 +27,20 @@ public class Kit
     private int limitUsagePerPlayer; // TODO good way to do this?
     private long limitUsageDelay;
     private Permission permission;
+    private String customMessage;
 
     // TODO ? add commands to execute to the kit (same with powertool)
     //e.g. /feed {PLAYER} | {PLAYER} will be replaced with the username that reveives the kit
-    public Kit(String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, Collection<ItemStack> items)
+    public Kit(String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, Collection<ItemStack> items)
     {
-        this(name, giveKitOnFirstJoin, limitUsagePerPlayer, limitUsageDelay, usePermission, items.toArray(new ItemStack[0]));
+        this(name, giveKitOnFirstJoin, limitUsagePerPlayer, limitUsageDelay, usePermission, customMessage, items.toArray(new ItemStack[0]));
     }
 
-    public Kit(final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, ItemStack... items)
+    public Kit(final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, ItemStack... items)
     {
         this.name = name;
         this.items = items;
+        this.customMessage = customMessage;
         if (usePermission)
         {
             this.permission = new Permission()
@@ -76,9 +78,12 @@ public class Kit
         //TODO get kits only x-time
         //TODO give kit to all players online (not here)
         //TODO starterKit on login (not here)
-        if (!this.getPermission().isAuthorized(sender))
+        if (this.getPermission() != null)
         {
-            denyAccess(sender, "basics", "You are not allowed to give this kit.");
+            if (!this.getPermission().isAuthorized(sender))
+            {
+                denyAccess(sender, "basics", "You are not allowed to give this kit.");
+            }
         }
         if (limitUsageDelay != 0)
         {
@@ -107,5 +112,10 @@ public class Kit
     public Permission getPermission()
     {
         return this.permission;
+    }
+    
+    public String getCustomMessage()
+    {
+        return this.customMessage;
     }
 }

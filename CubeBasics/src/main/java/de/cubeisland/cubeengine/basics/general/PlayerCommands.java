@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import java.sql.Timestamp;
 import net.minecraft.server.EntityPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -254,7 +255,7 @@ public class PlayerCommands
         }
         if (changeOther)
         {
-            context.sendMessage("basics", "&You changed the gamemode of &2%s &ato &6%s&a!",
+            context.sendMessage("basics", "&aYou changed the gamemode of &2%s &ato &6%s&a!",
                 user.getName(), _(sender, "basics", user.getGameMode().toString()));
             user.sendMessage("basics", "&eYour Gamemode has been changed to &6%s&a!",
                 _(user, "basics", user.getGameMode().toString()));
@@ -268,7 +269,7 @@ public class PlayerCommands
 
     @Command(
         desc = "Kills a player",
-    usage = "<player>|-a",
+        usage = "<player>|-a",
         flags = { @Flag(longName = "all", name = "a") })
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
@@ -399,7 +400,7 @@ public class PlayerCommands
     {
         User sender = context.getSenderAsUser("basics", "&cJust go!");
         sender.setAttribute(basics, "afk", true);
-        this.basics.getUserManager().broadcastMessage("basics", "%2%s &fis now afk.", sender.getName());
+        this.basics.getUserManager().broadcastMessage("basics", "&2%s &fis now afk.", sender.getName());
     }
 
     @Command(
@@ -417,28 +418,31 @@ public class PlayerCommands
         context.sendMessage("basics", "&eLife: &2%d&f/&2%d\n", user.getHealth(), user.getMaxHealth());
         context.sendMessage("basics", "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)\n", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
         context.sendMessage("basics", "&eLevel: &2%d &eExp: &2%d&f/&2100%% &eof the next Level\n", user.getLevel(), (int)(user.getExp() * 100));
-        Location loc = user.getLocation();
-        context.sendMessage("basics", "&ePosition: &2%d %d %d &ein world %2%s\n", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+        Location loc = user.getLocation(); // NPE when user is offline
+        if (loc != null)
+        {
+            context.sendMessage("basics", "&ePosition: &2%d %d %d &ein world %2%s\n", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+        }
         context.sendMessage("basics", "&eIP: &2%s\n", user.getAddress().getAddress().getHostAddress());
         context.sendMessage("basics", "&eGamemode: &2%s\n", user.getGameMode().toString());
         if (user.getAllowFlight())
         {
-            context.sendMessage("basics", "\"&eFlymode: &atrue %f(%s)\n", user.isFlying() ? "flying" : "not flying");
+            context.sendMessage("basics", "&eFlymode: &atrue &f(%s)\n", user.isFlying() ? "flying" : "not flying");
         }
         else
         {
-            context.sendMessage("basics", "\"&eFlymode: &cfalse\n");
+            context.sendMessage("basics", "&eFlymode: &cfalse\n");
         }
         context.sendMessage("basics", "&eOP: %s\n", user.isOp() ? "&atrue" : "&cfalse");
-        context.sendMessage("basics", "&eMuted: %s\n",
-            basics.getBasicUserManager().getBasicUser(user).muted.getTime() > System.currentTimeMillis() ? "&atrue" : "&cfalse");
+        Timestamp muted = basics.getBasicUserManager().getBasicUser(user).muted;
+        context.sendMessage("basics", "&eMuted: %s\n", (muted != null && muted.getTime() > System.currentTimeMillis()) ? "&atrue" : "&cfalse");
         if (user.getGameMode() != GameMode.CREATIVE && user.getPlayer() instanceof CraftPlayer)
         {
             context.sendMessage("basics", "&eGodMode: &2%s\n", ((CraftPlayer)user.getPlayer()).getHandle().abilities.isInvulnerable ? "&atrue" : "&cfalse");
         }
         context.sendMessage("basics", "&eAFK: %s", user.getAttribute(basics, "afk") == null ? "&cfalse" : "&atrue");
         // TODO later money
-        //TODO event so other modules can add their information
+        // TODO event so other modules can add their information
     }
 
     @Command(

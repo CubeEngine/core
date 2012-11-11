@@ -12,7 +12,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 
 public class KitCommand extends ContainerCommand
 {
-    public KitCommand(Module module, String name, String description)
+    public KitCommand(Module module)
     {
         super(module, "kit", "Manages item-kits");
     }
@@ -88,12 +88,26 @@ public class KitCommand extends ContainerCommand
             kit.give(context.getSender(), user, force);
             if (user.getName().equals(context.getSender().getName()))
             {
-                context.sendMessage("basics", "&aReceived the &6%s &akit!", kitname);
+                if (kit.getCustomMessage().equals(""))
+                {
+                    context.sendMessage(kit.getCustomMessage());
+                }
+                else
+                {
+                    context.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
+                }
             }
             else
             {
                 context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", user.getName(), kitname);
-                user.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
+                if (kit.getCustomMessage().equals(""))
+                {
+                    context.sendMessage(kit.getCustomMessage());
+                }
+                else
+                {
+                    context.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
+                }
             }
         }
     }

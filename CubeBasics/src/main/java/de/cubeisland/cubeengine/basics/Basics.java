@@ -52,6 +52,7 @@ public class Basics extends Module
         this.registerCommands(new TimeControlCommands());
         this.registerCommands(new WorldControlCommands(this));
         this.registerCommands(new PowerToolCommand());
+        this.registerCommand(new KitCommand(this));
 
         this.registerListener(new PowerToolListener());
         //Teleport:
