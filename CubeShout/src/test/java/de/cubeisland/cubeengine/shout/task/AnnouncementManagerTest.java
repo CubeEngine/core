@@ -11,7 +11,7 @@ public class AnnouncementManagerTest
     @Test
     public void testParseDelay()
     {
-        AnnouncementManager testamanager = new AnnouncementManager(new Shout());
+        AnnouncementManager testamanager = new AnnouncementManager(new Shout(), null);
 
         assertEquals(1000l, testamanager.parseDelay("1 second"));
         assertEquals(60000l, testamanager.parseDelay("1 minute"));
