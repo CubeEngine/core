@@ -46,4 +46,27 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> e
         this.query.append(" WHERE ");
         return (This)this;
     }
+
+    @Override
+    public This between()
+    {
+        this.query.append(" BETWEEN ? AND ?");
+        return (This)this;
+    }
+
+    @Override
+    public This asc()
+    {
+        this.query.append(" ASC ");
+        return (This)this;
+    }
+
+    @Override
+    public This desc()
+    {
+        this.query.append(" DESC ");
+        return (This)this;
+    }
+    
+    
 }

@@ -197,7 +197,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
 
             this.database.prepareAndStoreStatement(modelClass, "update", builder
                 .update(this.table)
-                .cols(fields)
+                .set(fields)
                 .where()
                 .field(key).is(EQUAL).value()
                 .end()
@@ -213,7 +213,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 .end());
 
             this.database.prepareAndStoreStatement(modelClass, "clear", builder
-                .clearTable(this.table)
+                .truncateTable(this.table)
                 .end());
         }
         catch (SQLException ex)

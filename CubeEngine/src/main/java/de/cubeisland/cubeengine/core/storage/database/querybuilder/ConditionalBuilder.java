@@ -27,9 +27,30 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends Com
     public This offset(int n);
 
     /**
-     * Adds WHERE condition.
+     * Starts a WHERE condition.
      * 
      * @return fluent interface
      */
     public This where();
+   
+    /**
+     * Adds a "BETWEEN ? AND ?" statement.
+     * 
+     * @return fluent interface
+     */
+    public This between();
+   
+    /**
+     * Adds ASCending keyword
+     * 
+     * @return fluent interface
+     */
+    public This asc();
+    
+    /**
+     * Adds DESCending keyword
+     * 
+     * @return  fluent interface
+     */
+    public This desc();
 }

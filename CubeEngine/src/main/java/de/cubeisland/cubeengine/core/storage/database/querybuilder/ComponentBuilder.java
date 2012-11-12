@@ -55,6 +55,14 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This value(Object value);
+    
+    /**
+     * Adds multiple variables which can be later replaced by values.
+     * 
+     * @param amount
+     * @return fluent interface
+     */
+    public This values(int amount);
 
     /**
      * Adds a variable which can be later replaced by a value.
@@ -70,6 +78,13 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This is(Integer operation);
+    
+    /**
+     * Adds an equal-operation
+     * 
+     * @return fluent interface
+     */
+    public This isEqual();
 
     /**
      * Adds a wildcard.
@@ -100,7 +115,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     public This or();
 
     /**
-     * Adds AS ...
+     * Adds AS @param<field> statement
      * 
      * @param field
      * @return fluent interface
@@ -121,6 +136,22 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This having();
+    
+    /**
+     * Adds LIKE statement.
+     * Dont forget to add a value after this!
+     * 
+     * @return fluent interface
+     */
+    public This like();
+    
+    /**
+     * Adds IN statement.
+     * Dont forget to add a value after this!
+     * 
+     * @return fluent interface
+     */
+    public This in();
 
     /**
      * Adds (

@@ -31,7 +31,7 @@ public class MySQLLockBuilder extends MySQLComponentBuilder<LockBuilder> impleme
 
         }
         multiple = true;
-        this.query.append(this.database.prepareName(table));
+        this.query.append(this.database.prepareTableName(table));
         return this;
     }
 

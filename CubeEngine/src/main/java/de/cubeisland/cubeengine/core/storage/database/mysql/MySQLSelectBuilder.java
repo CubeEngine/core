@@ -14,9 +14,15 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     }
 
     @Override
-    public MySQLSelectBuilder cols(String... cols)
+    public MySQLSelectBuilder select()
     {
         this.query = new StringBuilder("SELECT ");
+        return this;
+    }
+
+    @Override
+    public MySQLSelectBuilder cols(String... cols)
+    {
         if (cols.length > 0)
         {
             this.query.append(this.database.prepareFieldName(cols[0]));
@@ -32,12 +38,39 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     public MySQLSelectBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-
-        this.query.append(" FROM ").append(this.database.prepareName(tables[0]));
+        this.query.append(" FROM ").append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareName(tables[i]));
+            this.query.append(',').append(this.database.prepareTableName(tables[i]));
         }
+        return this;
+    }
+
+    @Override
+    public MySQLSelectBuilder distinct()
+    {
+        this.query.append(" DISTINCT");
+        return this;
+    }
+
+    @Override
+    public MySQLSelectBuilder union(boolean all)
+    {
+        this.query.append(" UNION ");
+        return this;
+    }
+
+    @Override
+    public SelectBuilder into(String table)
+    {
+        this.query.append(" INTO ").append(this.database.prepareTableName(table));
+        return this;
+    }
+
+    @Override
+    public SelectBuilder in(String database)
+    {
+        this.query.append(" IN ").append(this.database.prepareString(database));//TODO prepare db name correct?
         return this;
     }
 }

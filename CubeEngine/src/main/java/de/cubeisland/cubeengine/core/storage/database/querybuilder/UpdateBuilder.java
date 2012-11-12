@@ -11,7 +11,15 @@ public interface UpdateBuilder extends ConditionalBuilder<UpdateBuilder>
     public UpdateBuilder tables(String... tables);
 
     /**
-     * Sets the colsto update
+     * Adds the SET statement followed by cols
+     * 
+     * @param cols
+     * @return fluent interface 
+     */
+    public UpdateBuilder set(String... cols);
+    
+    /**
+     * Adds cols to update
      * 
      * @param cols
      * @return fluent interface 

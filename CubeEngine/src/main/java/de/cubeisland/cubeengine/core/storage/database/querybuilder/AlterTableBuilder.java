@@ -21,7 +21,18 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
      */
     public AlterTableBuilder add(String field, AttrType type);
     
-    public AlterTableBuilder addUnique(String field);
+    public AlterTableBuilder addUniques(String... fields);
+    public AlterTableBuilder addCheck();
+    public AlterTableBuilder setDefault(String field);
+    public AlterTableBuilder addForeignKey(String field, String foreignTable, String foreignField);
+    public AlterTableBuilder setPrimary(String field);
+    public AlterTableBuilder dropUnique(String field);
+    public AlterTableBuilder dropPrimary();
+    public AlterTableBuilder dropCheck(String field);
+    public AlterTableBuilder dropDefault(String field);
+    public AlterTableBuilder dropIndex(String field);
+    public AlterTableBuilder dropForeignKey(String field);
+    
     
     public AlterTableBuilder defaultValue(String value);
     public AlterTableBuilder defaultValue();

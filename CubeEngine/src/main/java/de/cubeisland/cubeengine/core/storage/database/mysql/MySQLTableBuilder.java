@@ -19,7 +19,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     protected MySQLTableBuilder create(String name, int actionIfExists)
     {
         this.fieldCounter = 0;
-        name = this.database.prepareName(name);
+        name = this.database.prepareTableName(name);
         switch (actionIfExists)
         {
             case 1: // DO NOTHING
@@ -116,9 +116,9 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     }
 
     @Override
-    public MySQLTableBuilder references(String otherTable, String key)
+    public MySQLTableBuilder references(String otherTable, String field)
     {
-        this.query.append("REFERENCES ").append(this.database.prepareName(otherTable)).append(" (").append(this.database.prepareFieldName(key)).append(')');
+        this.query.append("REFERENCES ").append(this.database.prepareTableName(otherTable)).append(" (").append(this.database.prepareFieldName(field)).append(')');
         return this;
     }
 
@@ -166,6 +166,13 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     public TableBuilder unique(String field)
     {
         this.query.append(",UNIQUE(").append(this.database.prepareFieldName(field)).append(")");
+        return this;
+    }
+
+    @Override
+    public TableBuilder check()
+    {
+        this.query.append(" CHECK ");
         return this;
     }
 }

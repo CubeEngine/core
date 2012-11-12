@@ -24,7 +24,7 @@ public interface Database
      * @param name the name to prepare
      * @return the prepared name
      */
-    String prepareName(String name);
+    String prepareTableName(String name);
 
     /**
      * Prepares a field name. (Quoting).

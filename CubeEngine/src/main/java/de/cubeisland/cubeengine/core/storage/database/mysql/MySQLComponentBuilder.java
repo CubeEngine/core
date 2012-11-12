@@ -69,6 +69,18 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     }
 
     @Override
+    public This values(int amount)
+    {
+        this.query.append(" VALUES (?");
+        for (int i = 1; i < amount; ++i)
+        {
+            this.query.append(",?");
+        }
+        this.query.append(')');
+        return (This)this;
+    }
+    
+    @Override
     public This value(Object value)
     {
         if (inFunction)
@@ -119,6 +131,13 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
             default:
                 throw new IllegalStateException("Invalid operation");
         }
+        return (This)this;
+    }
+    
+    @Override
+    public This isEqual()
+    {
+        this.query.append(" = ");
         return (This)this;
     }
 
@@ -177,12 +196,26 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     }
 
     @Override
+    public This like()
+    {
+        this.query.append(" LIKE");
+        return (This)this;
+    }
+    
+    @Override
     public This as(String field)
     {
         this.query.append(" AS ").append(this.database.prepareFieldName(field));
         return (This)this;
     }
 
+    @Override
+    public This in()
+    {
+        this.query.append(" IN ");
+        return (This)this;
+    }
+    
     @Override
     public This groupBy(String... field)
     {

@@ -122,7 +122,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 database.execute(
                     database.getQueryBuilder().
                     alterTable(table).
-                    addUnique("player").
+                    addUniques("player").
                     end().
                     end());
             }

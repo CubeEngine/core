@@ -20,7 +20,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> imple
     @Override
     public MySQLMergeBuilder into(String table)
     {
-        this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareName(table)).append(" ");
+        this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareTableName(table)).append(" ");
         this.updateColsSpecified = false;
         this.insertCols = null;
         return this;

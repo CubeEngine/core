@@ -61,7 +61,7 @@ public class MySQLDatabase extends AbstractDatabase
     }
 
     @Override
-    public String prepareName(String name)
+    public String prepareTableName(String name)
     {
         Validate.notNull(name, "The name must not be null!");
 
@@ -76,7 +76,7 @@ public class MySQLDatabase extends AbstractDatabase
         int dotOffset = name.indexOf('.');
         if (dotOffset >= 0)
         {
-            return this.prepareName(name.substring(0, dotOffset)) + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
+            return this.prepareTableName(name.substring(0, dotOffset)) + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
         }
         return NAME_QUOTE + name + NAME_QUOTE;
     }
