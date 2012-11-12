@@ -4,10 +4,6 @@ import java.util.logging.Level;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class LogLevel extends Level
 {
     public static final Level ALL = Level.ALL;
