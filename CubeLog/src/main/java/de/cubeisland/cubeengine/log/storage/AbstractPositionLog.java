@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import com.avaje.ebeaninternal.server.idgen.UuidIdGenerator;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;

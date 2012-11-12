@@ -118,7 +118,14 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     @Override
     public MySQLTableBuilder references(String otherTable, String field)
     {
-        this.query.append("REFERENCES ").append(this.database.prepareTableName(otherTable)).append(" (").append(this.database.prepareFieldName(field)).append(')');
+        this.query.append(" REFERENCES ").append(this.database.prepareTableName(otherTable)).append(" (").append(this.database.prepareFieldName(field)).append(')');
+        return this;
+    }
+
+    @Override
+    public TableBuilder onDelete(String doThis)
+    {
+        this.query.append(" ON DELETE ").append(doThis);
         return this;
     }
 

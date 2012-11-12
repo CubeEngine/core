@@ -1,11 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.*;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
@@ -100,6 +95,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 {
                     attributes.add(name);
                 }
+                if (field.isAnnotationPresent(ForeignKey.class))
+                {
+                    ForeignKey fKey = field.getAnnotation(ForeignKey.class);
+                    tbuilder.foreignKey(name).references(fKey.table(), fKey.field()).onDelete(fKey.onDelete());
+                }
                 if (attribute.unique())
                 {
                     tbuilder.unique(name);
@@ -124,8 +124,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
 //                query.append("(").append(relat.field()).append(")");
 //            }
 //        }
-        tbuilder
-            .engine(entity.engine()).defaultcharset(entity.charset());
+        tbuilder.engine(entity.engine()).defaultcharset(entity.charset());
         if (keyIsAI)
         {
             tbuilder.autoIncrement(1);

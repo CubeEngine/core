@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
+import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
@@ -20,6 +21,7 @@ public class Mail implements Model<Integer>
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String message;
+    @ForeignKey(table = "user", field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public int userId;
     @Attribute(type = AttrType.INT, unsigned = true)

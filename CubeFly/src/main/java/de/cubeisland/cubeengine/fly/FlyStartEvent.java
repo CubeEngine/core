@@ -6,10 +6,6 @@ import de.cubeisland.cubeengine.core.user.UserEvent;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FlyStartEvent extends UserEvent implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();

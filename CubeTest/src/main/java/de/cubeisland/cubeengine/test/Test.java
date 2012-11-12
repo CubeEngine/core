@@ -152,7 +152,7 @@ public class Test extends Module
         try
         {
             database.execute(database.getQueryBuilder()
-                .clearTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
+                .truncateTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
         }
         catch (Exception e)
         {

@@ -86,14 +86,6 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     public TableBuilder primaryKey(String key);
 
     /**
-     * Sets a foreign key.
-     * 
-     * @param key
-     * @return fluent interface 
-     */
-    public TableBuilder foreignKey(String key);
-    
-    /**
      * Sets given field to be unique
      * 
      * @param field
@@ -111,6 +103,14 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     public TableBuilder check();
     
     /**
+     * Sets a foreign key.
+     * 
+     * @param key
+     * @return fluent interface 
+     */
+    public TableBuilder foreignKey(String key);
+    
+    /**
      * Sets the reference for the foreign key
      * 
      * @param table
@@ -118,6 +118,15 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @return fluent interface 
      */
     public TableBuilder references(String table, String field);
+    
+    /**
+     * Sets what should be done when trying to remove a key.
+     * 
+     * @param table
+     * @param field
+     * @return fluent interface 
+     */
+    public TableBuilder onDelete(String doThis);
 
     /**
      * Finish accepting the fields
