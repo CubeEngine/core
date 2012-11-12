@@ -1,11 +1,13 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
+import java.util.logging.Level;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -47,7 +49,8 @@ public class YamlCodec extends ConfigurationCodec
         }
         catch (ConversionException ex)
         {
-        } // invalid revision //TODO handle this?
+            CubeEngine.getLogger().log(Level.WARNING, "Invalid revision in a configuration!", ex);
+        }
         return map;
     }
 

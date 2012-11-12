@@ -34,7 +34,7 @@ public class AsyncTaskQueue implements TaskQueue
     @Override
     public void addTask(Runnable runnable)
     {
-        if (!this.isShutdown)
+        if (this.isShutdown)
         {
             return;
         }

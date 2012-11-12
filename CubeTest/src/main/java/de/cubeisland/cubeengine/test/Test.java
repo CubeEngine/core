@@ -128,7 +128,7 @@ public class Test extends Module
         //Testing getall
         uM.getAll();
         //Testing delete
-        uM.delete(userToDel);
+        uM.removeUser(userToDel);
         //Test update
         user.nogc = true;
         user.lastseen = new Timestamp(50000);

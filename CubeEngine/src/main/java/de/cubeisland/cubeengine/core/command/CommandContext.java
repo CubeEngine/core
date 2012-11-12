@@ -154,7 +154,7 @@ public class CommandContext
             }
             else //else named param or indexed param
             {
-                String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length - 1);
+                String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
                 // has alias named Param ?
                 if (paramAliasMap.containsKey(paramName))

@@ -40,7 +40,7 @@ public @interface Option
      * public boolean advanced
      * in your config for this to work.
      * 
-     * @return
+     * @return if this option is an advanced option
      */
     public boolean advanced() default false;
 }

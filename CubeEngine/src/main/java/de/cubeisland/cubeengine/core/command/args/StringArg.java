@@ -13,7 +13,7 @@ public final class StringArg extends AbstractArgument<String>
     {
         super(String.class);
     }
-    
+
     @Override
     public int read(String... args) throws InvalidArgumentException
     {
@@ -21,8 +21,8 @@ public final class StringArg extends AbstractArgument<String>
         {
             throw new InvalidArgumentException();
         }
-        
-        if (!args[0].isEmpty())
+
+        if (args[0] != null && !args[0].isEmpty())
         {
             char quoteChar = args[0].charAt(0);
 
@@ -45,7 +45,7 @@ public final class StringArg extends AbstractArgument<String>
                 return i;
             }
         }
-        
+
         this.value = args[0];
         return 1;
     }

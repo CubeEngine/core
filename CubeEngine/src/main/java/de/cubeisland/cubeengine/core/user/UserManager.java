@@ -192,14 +192,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      */
     public UserManager removeUser(final User user)
     {
-        this.database.queueOperation(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                delete(user);
-            }
-        });
+        this.delete(user); //this is async
         this.users.remove(user.getName());
         return this;
     }
@@ -417,7 +410,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         for (User user : this.users.values())
         {
-            if (!user.isOnline())
+            if (!user.isOnline() && user.removalTaskId != null) // Do not delete users that will be deleted anyway
             {
                 this.users.remove(user.getName());
             }
@@ -441,14 +434,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             public void run()
             {
                 user.lastseen = new Timestamp(System.currentTimeMillis());
-                database.queueOperation(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        update(user);
-                    }
-                });
+                update(user); // is async
                 if (user.isOnline())
                 {
                     return;
@@ -456,7 +442,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 users.remove(event.getPlayer().getName());
             }
         }, this.core.getConfiguration().userManagerKeepUserLoaded);
-        user.removalTaskId = null;
+        user.removalTaskId = id;
         this.onlinePlayers.remove(player);
     }
 
