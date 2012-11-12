@@ -4,10 +4,6 @@ import de.cubeisland.cubeengine.auctions.Util.Util;
 import de.cubeisland.cubeengine.core.persistence.Model;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ItemPrice implements Model<String>
 {
     private final ItemStack item;

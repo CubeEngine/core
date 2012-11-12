@@ -18,8 +18,6 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Searchs for auctions
- *
- * @author Anselm Brehme
  */
 public class SearchCommand
 {

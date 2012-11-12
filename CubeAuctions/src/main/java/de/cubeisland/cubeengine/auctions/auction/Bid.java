@@ -2,10 +2,6 @@ package de.cubeisland.cubeengine.auctions.auction;
 
 import de.cubeisland.cubeengine.core.persistence.Model;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Bid implements Model<Integer>
 {
     private Integer key;

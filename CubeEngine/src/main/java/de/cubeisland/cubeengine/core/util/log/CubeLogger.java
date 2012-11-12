@@ -47,6 +47,10 @@ public class CubeLogger extends Logger
         {
             record.setLevel(Level.INFO); // Lower LogLevel can get logged in Console too
         }
+        if (!CubeEngine.isDebug())
+        {
+            record.setThrown(null);
+        }
         if (this.getParent() != null)
         {
             if (level.intValue() > loggingLevel.intValue())

@@ -18,8 +18,6 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Bids on an auction
- *
- * @author Anselm Brehme
  */
 public class BidCommand
 {

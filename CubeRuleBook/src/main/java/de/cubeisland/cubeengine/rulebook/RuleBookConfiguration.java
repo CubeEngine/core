@@ -9,10 +9,6 @@ import java.util.Map;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Wolfi
- */
 public class RuleBookConfiguration
 {
     private final static int NumberOfCharsPerPage = 260;
@@ -58,7 +54,7 @@ public class RuleBookConfiguration
         }
 
         String text = "";
-        String line = null;
+        String line;
         BufferedReader reader = new BufferedReader(new FileReader(file));
         while ((line = reader.readLine()) != null)
         {

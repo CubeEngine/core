@@ -5,9 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Sets a player on fire
- *
- * @author Phillip Schichtel
+ * Sets a player on fire.
  */
 public class BurnPunishment implements Punishment
 {

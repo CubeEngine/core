@@ -25,12 +25,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import static de.cubeisland.cubeengine.CubeEngine._;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class CubeAuctionListener implements Listener
 {
     CubeAuctions plugin;

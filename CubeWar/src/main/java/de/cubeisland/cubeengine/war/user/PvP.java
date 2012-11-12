@@ -18,10 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class PvP
 {
     private UserManager cuManager = CubeCore.getInstance().getUserManager();

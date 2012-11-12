@@ -19,10 +19,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ClaimCommands
 {
     private AreaControl areas = AreaControl.get();

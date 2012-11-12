@@ -5,9 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Drops the player players held item
- *
- * @author Phillip Schichtel
+ * Drops the player players held item.
  */
 public class DropitemPunishment implements Punishment
 {

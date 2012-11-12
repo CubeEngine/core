@@ -7,10 +7,6 @@ import de.cubeisland.cubeengine.war.user.UserControl;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
-/**
- *
- * @author Anselm Brehme
- */
 public enum Perm
 {
     //TODO Permissions dynamisch registrieren

@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core.webapi.server;
 
+import de.cubeisland.cubeengine.core.webapi.ApibukkitController;
 import de.cubeisland.cubeengine.core.webapi.server.serializer.JsonSerializer;
 import de.cubeisland.cubeengine.core.webapi.server.serializer.RawSerializer;
 import de.cubeisland.cubeengine.core.webapi.server.serializer.XmlSerializer;
-import de.cubeisland.cubeengine.core.webapi.ApibukkitController;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -16,9 +16,7 @@ import org.bukkit.plugin.Plugin;
 
 /**
  * The class manages all the registered API controllers, serializers,
- * white-/blacklisting and action disabling
- *
- * @author Phillip Schichtel
+ * white-/blacklisting and action disabling.
  */
 public final class ApiManager
 {

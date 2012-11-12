@@ -3,10 +3,6 @@ package de.cubeisland.cubeengine.war.user;
 import de.cubeisland.cubeengine.war.CubeWar;
 import de.cubeisland.cubeengine.war.CubeWarConfiguration;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Rank
 {
     private String name;

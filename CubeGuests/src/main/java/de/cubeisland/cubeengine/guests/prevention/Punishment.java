@@ -4,9 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Represents a punishment
- *
- * @author Phillip Schichtel
+ * Represents a punishment.
  */
 public interface Punishment
 {

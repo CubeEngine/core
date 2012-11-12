@@ -27,7 +27,7 @@ public class NukeListener implements Listener
         noBlockDamageSet.remove(tnt);
     }
     
-    public boolean contains(Object tnt)
+    public boolean contains(TNTPrimed tnt)
     {
         return noBlockDamageSet.contains(tnt);
     }
@@ -37,7 +37,7 @@ public class NukeListener implements Listener
     {
         try
         {
-            if(event.getEntityType() == EntityType.PRIMED_TNT && this.contains(event.getEntity()))
+            if(event.getEntityType() == EntityType.PRIMED_TNT && this.contains((TNTPrimed)event.getEntity()))
             {
                 event.blockList().clear();
                 remove((TNTPrimed)event.getEntity());

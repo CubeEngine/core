@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class GroupModel implements Model<Integer>
 {
     public static final int PVP_ON = 1;

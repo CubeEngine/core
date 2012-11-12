@@ -1,16 +1,14 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 /**
- * Prevents users from writing with too many capital letters
- *
- * @author Phillip Schichtel
+ * Prevents users from writing with too many capital letters.
  */
 public class CapsPrevention extends Prevention
 {

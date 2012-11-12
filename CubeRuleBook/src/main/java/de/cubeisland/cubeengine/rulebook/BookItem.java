@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.rulebook;
 import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NBTTagList;
 import net.minecraft.server.NBTTagString;
-
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 public class BookItem

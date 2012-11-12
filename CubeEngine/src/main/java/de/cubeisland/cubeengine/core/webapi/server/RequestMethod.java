@@ -3,9 +3,7 @@ package de.cubeisland.cubeengine.core.webapi.server;
 import java.util.HashMap;
 
 /**
- * A list of supported request methods
- *
- * @author Phillip Schichtel
+ * A list of supported request methods.
  */
 public enum RequestMethod
 {

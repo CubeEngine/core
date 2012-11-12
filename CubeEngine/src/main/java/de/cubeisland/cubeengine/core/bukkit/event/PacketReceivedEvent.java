@@ -4,10 +4,6 @@ import net.minecraft.server.Packet;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class PacketReceivedEvent extends PacketEvent
 {
     private static final HandlerList handlers = new HandlerList();

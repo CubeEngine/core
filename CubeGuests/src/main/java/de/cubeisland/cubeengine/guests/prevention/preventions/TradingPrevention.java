@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
@@ -13,9 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 /**
- * Prevents users from trading
- *
- * @author Phillip Schichtel
+ * Prevents users from trading.
  */
 public class TradingPrevention extends FilteredPrevention<Profession>
 {

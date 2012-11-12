@@ -5,10 +5,6 @@ import de.cubeisland.cubeengine.conomy.account.user.UserAccount;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.HashMap;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class AccountManager
 {
     HashMap<String, BankAccount> banks = new HashMap<String, BankAccount>();

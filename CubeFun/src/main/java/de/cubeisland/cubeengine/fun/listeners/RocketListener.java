@@ -7,18 +7,12 @@ import de.cubeisland.cubeengine.fun.commands.help.RocketCMDInstance;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-/**
- *
- * @author Wolfi
- */
 public class RocketListener implements Listener, Runnable
 {
     private final UserManager userManager;

@@ -5,10 +5,6 @@ import de.cubeisland.cubeengine.war.groups.Group;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class AreaModel implements Model<Integer>
 {
     private int key;

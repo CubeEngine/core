@@ -16,9 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 /**
- * Prevents the user from swearing
- *
- * @author Phillip Schichtel
+ * Prevents the user from swearing.
  */
 public class SwearPrevention extends Prevention
 {

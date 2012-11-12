@@ -16,9 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
- * Prevents idling players
- *
- * @author Phillip Schichtel
+ * Prevents idling players.
  */
 public class AfkPrevention extends Prevention
 {

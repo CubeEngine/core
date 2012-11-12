@@ -9,9 +9,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 /**
- * Prevents brewing
- *
- * @author Phillip Schichtel
+ * Prevents brewing.
  */
 public class BrewPrevention extends Prevention
 {

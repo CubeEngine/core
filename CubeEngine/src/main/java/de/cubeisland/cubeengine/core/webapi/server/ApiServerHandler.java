@@ -23,8 +23,6 @@ import org.jboss.netty.util.CharsetUtil;
 
 /**
  * This class handles all requests
- *
- * @author Phillip Schichtel
  */
 public class ApiServerHandler extends SimpleChannelUpstreamHandler
 {

@@ -7,9 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 
 /**
- * Prevents bed usage
- *
- * @author Phillip Schichtel
+ * Prevents bed usage.
  */
 public class BedPrevention extends Prevention
 {

@@ -11,10 +11,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BidderStorage implements Storage<User, Bidder>
 {
     private final Database database = CubeAuctions.getDB();

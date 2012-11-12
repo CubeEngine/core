@@ -5,9 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Bans a player
- *
- * @author Phillip Schichtel
+ * Bans a player.
  */
 public class LightningPunishment implements Punishment
 {

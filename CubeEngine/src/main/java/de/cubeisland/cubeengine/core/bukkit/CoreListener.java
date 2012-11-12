@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
-import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
+import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import net.minecraft.server.Packet204LocaleAndViewDistance;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

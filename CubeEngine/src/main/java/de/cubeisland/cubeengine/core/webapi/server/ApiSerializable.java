@@ -4,7 +4,6 @@ package de.cubeisland.cubeengine.core.webapi.server;
  * Classes which implement this interface can be directly passed to the
  * ApiResponse
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public interface ApiSerializable

@@ -8,9 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 /**
- * This class represents a filterable Prevention related to Materials
- *
- * @author Phillip Schichtel
+ * This class represents a filterable Prevention related to Materials.
  */
 public abstract class FilteredItemPrevention extends FilteredPrevention<Material>
 {

@@ -13,10 +13,6 @@ import java.util.Collection;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class AreaStorage implements Storage<Integer, AreaModel>
 {
     private final Database database = CubeWar.getDB();

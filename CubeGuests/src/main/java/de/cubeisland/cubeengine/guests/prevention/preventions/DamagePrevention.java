@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -20,9 +20,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
- * Prevents damage
- *
- * @author Phillip Schichtel
+ * Prevents damage.
  */
 public class DamagePrevention extends FilteredPrevention<DamageCause>
 {

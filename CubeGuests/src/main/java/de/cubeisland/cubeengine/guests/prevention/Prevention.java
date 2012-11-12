@@ -19,9 +19,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Listener;
 
 /**
- * This class represents a prevention
- *
- * @author Phillip Schichtel
+ * This class represents a prevention.
  */
 public abstract class Prevention implements Listener
 {

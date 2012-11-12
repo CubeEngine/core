@@ -2,10 +2,6 @@ package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 
-/**
- *
- * @author Anselm Brehme
- */
 public enum FlyResource implements Resource
 {
     

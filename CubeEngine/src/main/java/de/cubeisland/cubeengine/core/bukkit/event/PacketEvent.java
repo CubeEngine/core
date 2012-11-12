@@ -3,10 +3,6 @@ package de.cubeisland.cubeengine.core.bukkit.event;
 import net.minecraft.server.Packet;
 import org.bukkit.event.Event;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public abstract class PacketEvent extends Event
 {
     private final int packetId;

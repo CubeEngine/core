@@ -1,18 +1,10 @@
 package de.cubeisland.cubeengine.core.webapi;
 
-import de.cubeisland.cubeengine.core.webapi.server.Action;
-import de.cubeisland.cubeengine.core.webapi.server.ApiAction;
-import de.cubeisland.cubeengine.core.webapi.server.ApiController;
-import de.cubeisland.cubeengine.core.webapi.server.ApiManager;
-import de.cubeisland.cubeengine.core.webapi.server.ApiRequest;
-import de.cubeisland.cubeengine.core.webapi.server.ApiResponse;
-import de.cubeisland.cubeengine.core.webapi.server.Controller;
+import de.cubeisland.cubeengine.core.webapi.server.*;
 import org.bukkit.plugin.Plugin;
 
 /**
  * This controller is a basic controller that
- *
- * @author Phillip Schichtel
  */
 @Controller(name = "apibukkit", authenticate = true, serializer = "json")
 public class ApibukkitController extends ApiController

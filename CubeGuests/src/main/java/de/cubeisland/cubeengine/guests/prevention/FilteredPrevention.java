@@ -12,9 +12,7 @@ import org.bukkit.event.Cancellable;
 
 /**
  * This base class represents a prevention that can be filtered.
- * That means it is able to prevent only a subset of actions based an a whitelist or blacklist
- *
- * @author Phillip Schichtel
+ * That means it is able to prevent only a subset of actions based an a whitelist or blacklist.
  */
 public abstract class FilteredPrevention<T extends Object> extends Prevention
 {

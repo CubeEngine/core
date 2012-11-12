@@ -19,8 +19,6 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Adds an auction.
- *
- * @author Anselm Brehme
  */
 public class AddCommand
 {

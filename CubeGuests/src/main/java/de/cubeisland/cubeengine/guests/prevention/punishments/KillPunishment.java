@@ -5,9 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Kills a player
- *
- * @author Phillip Schichtel
+ * Kills a player.
  */
 public class KillPunishment implements Punishment
 {

@@ -11,10 +11,6 @@ import java.util.List;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class AreaControl
 {
     private AreaStorage areaDB;

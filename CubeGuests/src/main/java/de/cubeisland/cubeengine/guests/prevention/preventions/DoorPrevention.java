@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -12,9 +12,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
- * Prevents door usage
- *
- * @author Phillip Schichtel
+ * Prevents door usage.
  */
 public class DoorPrevention extends FilteredItemPrevention
 {

@@ -14,9 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
- * Prevents PVP
- *
- * @author Phillip Schichtel
+ * Prevents PVP.
  */
 public class FightPrevention extends Prevention
 {

@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.Map;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class AuctionManager
 {
     //TODO 2 storages for auctions

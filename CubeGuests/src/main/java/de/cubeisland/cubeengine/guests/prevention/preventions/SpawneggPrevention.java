@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.FilteredEntityPrevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredEntityPrevention;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Event;
@@ -12,9 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Prevents spawnegg usage
- *
- * @author Phillip Schichtel
+ * Prevents spawnegg usage.
  */
 public class SpawneggPrevention extends FilteredEntityPrevention
 {

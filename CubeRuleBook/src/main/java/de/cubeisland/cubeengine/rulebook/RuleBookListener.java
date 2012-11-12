@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,10 +9,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-/**
- *
- * @author Wolfi
- */
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
 class RuleBookListener implements Listener, Runnable
 {
     private static String playerName = null;

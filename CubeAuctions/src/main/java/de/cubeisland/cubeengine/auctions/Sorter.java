@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- *
- * @author Anselm Brehme
- */
 public enum Sorter
 {
     ID, PRICE, DATE, QUANTITY;

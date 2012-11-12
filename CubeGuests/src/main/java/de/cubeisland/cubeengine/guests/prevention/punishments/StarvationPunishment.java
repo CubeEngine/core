@@ -5,9 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Lets a user starve
- *
- * @author Phillip Schichtel
+ * Lets a user starve.
  */
 public class StarvationPunishment implements Punishment
 {
@@ -19,5 +17,6 @@ public class StarvationPunishment implements Punishment
     public void punish(Player player, ConfigurationSection config)
     {
         player.setSaturation(0);
+        player.setFoodLevel(0);
     }
 }

@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import org.bukkit.Material;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -10,9 +10,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
- * Prevents chest access
- *
- * @author Phillip Schichtel
+ * Prevents chest access.
  */
 public class ChestPrevention extends Prevention
 {

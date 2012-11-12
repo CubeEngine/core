@@ -7,10 +7,6 @@ import java.util.Map;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class ApiConfiguration
 {
     public final short port;

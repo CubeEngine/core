@@ -11,8 +11,6 @@ import org.bukkit.permissions.PermissionDefault;
 
 /**
  * This class manages the Prevention's.
- *
- * @author Phillip Schichtel
  */
 public class PreventionManager
 {

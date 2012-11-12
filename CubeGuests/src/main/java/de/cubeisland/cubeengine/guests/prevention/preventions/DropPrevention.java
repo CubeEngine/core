@@ -1,15 +1,13 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
 /**
- * Prevents item dropping
- *
- * @author Phillip Schichtel
+ * Prevents item dropping.
  */
 public class DropPrevention extends FilteredItemPrevention
 {

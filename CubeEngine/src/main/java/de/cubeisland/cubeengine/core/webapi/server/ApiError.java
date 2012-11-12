@@ -6,7 +6,6 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
  * This enum contains the different API errors which get return by the server if
  * something goes wrong while processing the request
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public enum ApiError

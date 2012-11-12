@@ -7,10 +7,6 @@ import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class ApiServerPipelineFactory implements ChannelPipelineFactory
 {
     @Override

@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
 import gnu.trove.set.hash.THashSet;
 import java.util.Arrays;
 import java.util.List;
@@ -11,9 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 /**
- * Prevents command usage
- *
- * @author Phillip Schichtel
+ * Prevents command usage.
  */
 public class CommandPrevention extends FilteredPrevention<String>
 {

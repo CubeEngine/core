@@ -14,10 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class AuctionBoxStorage implements Storage<Integer, AuctionItem>
 {
     private final Database database = CubeAuctions.getDB();
