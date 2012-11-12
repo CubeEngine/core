@@ -60,7 +60,7 @@ public abstract class ConfigurationCodec
                 }
             }
         }
-        container.dumpIntoFields(config, container.values);
+        container.dumpIntoFields(config, container.values, config.parent);
         container = null;
         revision = null;
     }
@@ -112,7 +112,7 @@ public abstract class ConfigurationCodec
                 this.revision = a_revision.value();
                 container.values.put("revision", this.revision);
             }
-            container.values = container.fillFromFields(null, config, "", container.values);
+            container.values = container.fillFromFields(null, null, config, "", container.values);
             container.saveIntoFile(file);
         }
         catch (Exception ex)
@@ -121,6 +121,32 @@ public abstract class ConfigurationCodec
         }
         container = null;
     }
+    
+    public void saveChildConfig(Configuration parentConfig, Configuration config, File file)
+    {
+        try
+        {
+            if (file == null)
+            {
+                throw new IllegalStateException("Tried to save config without File.");
+            }
+            container = new CodecContainer();
+            Revision a_revision = config.getClass().getAnnotation(Revision.class);
+            if (a_revision != null)
+            {
+                this.revision = a_revision.value();
+                container.values.put("revision", this.revision);
+            }
+            container.values = container.fillFromFields(null, parentConfig, config, "", container.values);
+            container.saveIntoFile(file);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidConfigurationException("Error while saving Configuration!", ex);
+        }
+        container = null;
+    }
+    
 
     /**
      * Serializes the values in the map
@@ -211,6 +237,7 @@ public abstract class ConfigurationCodec
         protected Configuration config;
         protected String currentPath;
         protected CodecContainer parentContainer = null;
+        private Configuration parentConfig;
 
         public CodecContainer()
         {
@@ -263,13 +290,21 @@ public abstract class ConfigurationCodec
                     Class valueType = field.getAnnotation(Option.class).valueType();
                     if (Configuration.class.isAssignableFrom(valueType))
                     {
-                        if (Map.class.isAssignableFrom(fieldClass)) // config in maps IMPORTANT: key.toString() is the key in the config
+                        if (Map.class.isAssignableFrom(fieldClass))
                         {
                             Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
                             Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
                             for (Object key : fieldMap.keySet())
                             {
-                                new CodecContainer().dumpIntoFields(fieldMap.get(key),this.getOrCreateSubSection(key.toString(), subvalues));
+                                if (parentConfig == null)
+                                {
+                                    new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subvalues), null);
+                                }
+                                else
+                                {
+                                    Configuration parentSubConfig = ((Map<Object, Configuration>)(field.get(this.parentConfig))).get(key);
+                                    new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subvalues), parentSubConfig);
+                                }
                             }
                             return fieldMap;
                         }
@@ -308,13 +343,13 @@ public abstract class ConfigurationCodec
          * @throws IllegalArgumentException
          * @throws IllegalAccessException
          */
-        private void dumpIntoFields(Configuration config, Map<String, Object> section)
+        private void dumpIntoFields(Configuration config, Map<String, Object> section, Configuration parent)
         {
             this.config = config;
+            this.parentConfig = parent;
             this.values = section;
             for (Field field : config.getClass().getFields()) // ONLY public fields are allowed
             {
-
                 try
                 {
                     if (field.isAnnotationPresent(Option.class))
@@ -324,7 +359,14 @@ public abstract class ConfigurationCodec
                         {
                             Configuration subConfig = (Configuration)field.get(this.config);
                             CodecContainer subContainer = new CodecContainer();
-                            subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section));
+                            if (parent == null)
+                            {
+                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), null);
+                            }
+                            else
+                            {
+                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), (Configuration)field.get(parent));
+                            }
                             continue;
                         }
                         int mask = field.getModifiers();
@@ -336,6 +378,10 @@ public abstract class ConfigurationCodec
                         if (object != null)
                         {
                             field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
+                        }
+                        else if (this.parentConfig != null)
+                        {
+                            field.set(config, field.get(this.parentConfig)); // If not found get from parentConfig (if childconfig)
                         }
                     }
                 }
@@ -526,10 +572,18 @@ public abstract class ConfigurationCodec
          * @throws ConversionException
          * @throws IllegalAccessException
          */
-        public Map<String, Object> fillFromFields(CodecContainer parentContainer, Configuration config, String basePath, Map<String, Object> section) throws IllegalArgumentException, ConversionException, IllegalAccessException
+        public Map<String, Object> fillFromFields(CodecContainer parentContainer, Configuration parentConfig, Configuration config, String basePath, Map<String, Object> section) throws IllegalArgumentException, ConversionException, IllegalAccessException
         {
             this.parentContainer = parentContainer;
+            this.parentConfig = parentConfig;
             this.config = config;
+            if (parentConfig != null)
+            {
+                if (!parentConfig.getClass().equals(config.getClass()))
+                {
+                    throw new IllegalStateException("parent and child-config have to be the same type of config!");
+                }
+            }
             Class<? extends Configuration> clazz = config.getClass();
             if (clazz.isAnnotationPresent(MapComments.class))
             {
@@ -582,10 +636,37 @@ public abstract class ConfigurationCodec
                         }
                     }
                     path = path.toLowerCase(Locale.ENGLISH);
-                    this.set(path, this.convertFromFieldValueToObject(field, field.get(config), basePath, this.getOrCreateSubSection(path, section)), section);
+                    Object value = this.convertFromFieldValueToObject(field, field.get(config), basePath, this.getOrCreateSubSection(path, section));
+                    if (parentConfig != null)
+                    {
+                        Object parentValue = this.convertFromFieldValueToObject(field, field.get(parentConfig), basePath, this.getOrCreateSubSection(path, section));
+                        if (parentValue.equals(value))
+                        {
+                            this.remove(path, section);
+                            continue;
+                        }
+                    }
+                    this.set(path, value, section);
                 }
             }
             return section;
+        }
+      
+        private void remove(String path, Map<String, Object> section)
+        {
+            if (path.contains("."))
+            {
+                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
+                this.remove(getSubPath(path), subsection);
+                if (subsection.isEmpty())
+                {
+                    section.remove(getBasePath(path));
+                }
+            }
+            else
+            {
+                section.remove(path);
+            }
         }
 
         /**
@@ -616,7 +697,11 @@ public abstract class ConfigurationCodec
                     {
                         newPath = basepath + "." + newPath;
                     }
-                    return new CodecContainer().fillFromFields(this, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
+                    if (this.parentConfig == null)
+                    {
+                        return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
+                    }
+                    return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
                 }
                 Converter converter = Convert.matchConverter(fieldClass);
                 if (converter == null)
@@ -637,7 +722,7 @@ public abstract class ConfigurationCodec
                                     newPath = basepath + "." + newPath;
                                 }
                                 map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                    new CodecContainer().fillFromFields(this, fieldMap.get(key),
+                                    new CodecContainer().fillFromFields(this, this.parentConfig, fieldMap.get(key),
                                     newPath, this.getOrCreateSubSection(key.toString(), map)));
                             }
                             return map;

@@ -23,9 +23,11 @@ import org.yaml.snakeyaml.reader.ReaderException;
 public abstract class Configuration
 {
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
+    protected Class<? extends Configuration> configurationClass;
     protected static final Logger logger = CubeEngine.getLogger();
     protected ConfigurationCodec codec = null;
     protected File file;
+    protected Configuration parent = null;
 
     static
     {
@@ -63,6 +65,47 @@ public abstract class Configuration
         }
         this.codec.save(this, targetFile);
         this.onSaved(targetFile);
+    }
+
+    public final void saveChild()
+    {
+        if (this.codec == null)
+        {
+            throw new IllegalStateException("A configuration cannot be saved without a valid codec!");
+        }
+        if (this.file == null)
+        {
+            throw new IllegalStateException("A configuration cannot be saved without a valid file!");
+        }
+        this.codec.saveChildConfig(this.parent, this, this.file);
+        this.onSaved(this.file);
+    }
+
+    public <T extends Configuration> T loadChild(File sourceFile) //and save
+    {
+        Configuration childConfig;
+        try
+        {
+            childConfig = this.configurationClass.newInstance();
+            childConfig.codec = this.codec;
+            childConfig.file = sourceFile;
+            childConfig.parent = this;
+            try
+            {
+                FileInputStream is = new FileInputStream(sourceFile);
+                childConfig.codec.load(childConfig, is);
+            }
+            catch (FileNotFoundException ignored) // not found load from parent / save child
+            {
+                childConfig.codec.load(childConfig, null);
+            }
+            childConfig.saveChild();
+            return (T)childConfig;
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Could not load ChildConfig!", ex);
+        }
     }
 
     /**
@@ -169,6 +212,7 @@ public abstract class Configuration
                 config.codec.load(config, is); //load config in maps -> updates -> sets fields
             }
             config.onLoaded();
+            config.configurationClass = clazz;
             return config;
         }
         catch (Exception e)

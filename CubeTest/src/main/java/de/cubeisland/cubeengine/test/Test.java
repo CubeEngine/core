@@ -50,6 +50,7 @@ public class Test extends Module
     @Override
     public void onEnable()
     {
+        config.loadChild(new File(this.getFolder(), "childConfig.yml"));
         Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
         this.getFileManager().dropResources(TestRecource.values());
         this.uM = this.getUserManager();
