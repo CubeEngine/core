@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.webapi.server;
 /**
  * This interface must be implemented by response serializers
  *
- * @author Philllip Schichtel
  * @since 1.0.0
  */
 public interface ApiResponseSerializer

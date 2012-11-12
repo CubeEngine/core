@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Gives you the next Item from your auctionbox
- *
- * @author Anselm Brehme
  */
 public class GetItemsCommand
 {

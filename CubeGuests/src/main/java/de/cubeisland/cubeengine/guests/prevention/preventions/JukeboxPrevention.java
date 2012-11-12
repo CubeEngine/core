@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,9 +9,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
- * Prevents jukebox usage
- *
- * @author Phillip Schichtel
+ * Prevents jukebox usage.
  */
 public class JukeboxPrevention extends Prevention
 {

@@ -3,10 +3,6 @@ package de.cubeisland.cubeengine.core.webapi.server.serializer;
 import de.cubeisland.cubeengine.core.webapi.server.ApiResponseSerializer;
 import de.cubeisland.cubeengine.core.webapi.server.MimeType;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class RawSerializer implements ApiResponseSerializer
 {
     @Override

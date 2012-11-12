@@ -9,9 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityShootBowEvent;
 
 /**
- * Prevents bow usage
- *
- * @author Phillip Schichtel
+ * Prevents bow usage.
  */
 public class BowPrevention extends Prevention
 {

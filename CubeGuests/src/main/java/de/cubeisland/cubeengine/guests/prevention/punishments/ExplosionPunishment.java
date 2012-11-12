@@ -5,9 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Creates an explosion on the player's position
- *
- * @author Phillip Schichtel
+ * Creates an explosion on the player's position.
  */
 public class ExplosionPunishment implements Punishment
 {

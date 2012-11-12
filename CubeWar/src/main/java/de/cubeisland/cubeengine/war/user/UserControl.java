@@ -14,10 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class UserControl
 {
     private CubeWar plugin = CubeWar.getInstance();

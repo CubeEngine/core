@@ -15,9 +15,7 @@ import org.bukkit.event.painting.PaintingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
- * Prevents block breaking
- *
- * @author Phillip Schichtel
+ * Prevents block breaking.
  */
 public class BreakblockPrevention extends FilteredItemPrevention
 {

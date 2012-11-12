@@ -4,10 +4,6 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 
-/**
- *
- * @author Anselm Brehme
- */
 public abstract class AccountModel implements IAccount, Model<Integer>
 {
     @Attribute(type = AttrType.DOUBLE)

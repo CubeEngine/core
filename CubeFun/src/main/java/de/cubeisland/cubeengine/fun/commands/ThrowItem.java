@@ -6,10 +6,6 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 
-/**
- *
- * @author Wolfi
- */
 public class ThrowItem implements Runnable
 {
     Class material;

@@ -6,7 +6,6 @@ import java.util.Map;
 /**
  * this class wrapps the data which will be send to the client
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public final class ApiResponse

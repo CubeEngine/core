@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 
-/**
- *
- * @author Wolfi
- */
 public enum RuleBookResource implements Resource
 {
     

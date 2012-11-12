@@ -6,9 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 /**
- * Shoots a player into the skys
- *
- * @author Phillip Schichtel
+ * Shoots a player into the skys.
  */
 public class RocketPunishment implements Punishment
 {

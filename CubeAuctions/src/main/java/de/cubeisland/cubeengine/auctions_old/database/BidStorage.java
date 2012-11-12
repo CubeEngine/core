@@ -13,10 +13,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BidStorage implements Storage<Integer, Bid>
 {
     private final Database database = CubeAuctions.getDB();

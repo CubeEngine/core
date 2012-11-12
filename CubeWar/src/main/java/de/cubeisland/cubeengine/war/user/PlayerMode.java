@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.war.user;
 
-/**
- *
- * @author Anselm Brehme
- */
 public enum PlayerMode
 {
     NORMAL,//kill+1 death+1

@@ -8,7 +8,6 @@ import java.util.HashMap;
  * execution. For example when the action expects a number as parameter, but a
  * letter was given.
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public class ApiRequestException extends RuntimeException implements ApiSerializable

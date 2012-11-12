@@ -11,8 +11,6 @@ import org.bukkit.plugin.Plugin;
 
 /**
  * This controller is a basic controller that
- *
- * @author Phillip Schichtel
  */
 @Controller(name = "apibukkit", authenticate = true, serializer = "json")
 public class ApibukkitController extends ApiController

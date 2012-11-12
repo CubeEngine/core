@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import gnu.trove.map.hash.TObjectLongHashMap;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.configuration.Configuration;
@@ -11,9 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 /**
- * Prevents spamming
- *
- * @author Phillip Schichtel
+ * Prevents spamming.
  */
 public class SpamPrevention extends Prevention
 {

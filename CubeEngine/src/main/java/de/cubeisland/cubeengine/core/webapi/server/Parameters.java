@@ -3,10 +3,6 @@ package de.cubeisland.cubeengine.core.webapi.server;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class Parameters extends HashMap<String, String>
 {
     public Parameters()

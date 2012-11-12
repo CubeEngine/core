@@ -14,8 +14,6 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Manages your Subscriptions
- *
- * @author Anselm Brehme
  */
 public class SubscribeCommand
 {

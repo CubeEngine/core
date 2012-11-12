@@ -13,10 +13,6 @@ import java.util.Collection;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class PriceStorage implements Storage<Integer, PricedItemStack>
 {
     private final Database database = CubeAuctions.getDB();

@@ -16,8 +16,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Provides Info for Auctions
- *
- * @author Anselm Brehme
  */
 public class InfoCommand
 {

@@ -5,9 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Sends a awkward message from the user
- *
- * @author Phillip Schichtel
+ * Sends a awkward message from the user.
  */
 public class MessagePunishment implements Punishment
 {

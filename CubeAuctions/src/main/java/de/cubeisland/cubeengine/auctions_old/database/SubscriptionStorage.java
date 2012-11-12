@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class SubscriptionStorage implements Storage<User, Bidder>
 {
     private final Database database = CubeAuctions.getDB();

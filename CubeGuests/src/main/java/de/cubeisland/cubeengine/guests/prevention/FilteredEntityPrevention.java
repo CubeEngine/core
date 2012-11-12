@@ -7,9 +7,7 @@ import java.util.Set;
 import org.bukkit.entity.EntityType;
 
 /**
- * This class represents a filterable Prevention related to Materials
- *
- * @author Phillip Schichtel
+ * This class represents a filterable Prevention related to Materials.
  */
 public abstract class FilteredEntityPrevention extends FilteredPrevention<EntityType>
 {

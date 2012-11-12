@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
  *
  * This class is usually not needed by controller developers
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public final class ApiAction

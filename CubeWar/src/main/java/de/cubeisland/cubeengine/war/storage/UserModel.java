@@ -10,10 +10,6 @@ import de.cubeisland.cubeengine.war.user.PlayerMode;
 import de.cubeisland.cubeengine.war.user.Rank;
 import java.util.HashSet;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class UserModel implements Model<User>
 {
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();

@@ -6,10 +6,6 @@ import java.io.IOException;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-/**
- *
- * @author CodeInfection
- */
 public class PreventionConfiguration extends YamlConfiguration
 {
     private final File file;

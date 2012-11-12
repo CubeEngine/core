@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.log.LogAction;
@@ -13,10 +9,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class ChatLogger extends Logger<ChatLogger.ChatConfig>
 {
     public ChatLogger()

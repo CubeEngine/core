@@ -6,9 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
- * Kicks a player
- *
- * @author Phillip Schichtel
+ * Kicks a player.
  */
 public class KickPunishment implements Punishment
 {

@@ -9,10 +9,6 @@ import java.util.Map;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
-/**
- *
- * @author Wolfi
- */
 public class RuleBookConfiguration
 {
     private final static int NumberOfCharsPerPage = 260;

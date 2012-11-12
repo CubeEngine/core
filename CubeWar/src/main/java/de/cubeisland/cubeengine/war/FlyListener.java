@@ -5,10 +5,6 @@ import de.cubeisland.cubeengine.war.user.PvP;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FlyListener implements Listener
 {
     @EventHandler

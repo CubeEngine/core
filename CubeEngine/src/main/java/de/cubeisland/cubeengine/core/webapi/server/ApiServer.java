@@ -13,7 +13,6 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  * This class represents the API server and provides methods to configure and
  * controll it
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public final class ApiServer

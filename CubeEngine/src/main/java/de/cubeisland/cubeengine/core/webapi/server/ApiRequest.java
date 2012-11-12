@@ -12,7 +12,6 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
  * This class contains all the information of the API request. It is only used
  * to pass the information the to executing action, nothing more.
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public final class ApiRequest

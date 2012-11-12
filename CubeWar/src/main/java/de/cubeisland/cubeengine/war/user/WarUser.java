@@ -14,10 +14,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class WarUser
 {
     private CubeWarConfiguration config = CubeWar.getInstance().getConfiguration();

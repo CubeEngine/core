@@ -9,10 +9,6 @@ import de.cubeisland.libMinecraft.command.Command;
 import de.cubeisland.libMinecraft.command.CommandArgs;
 import org.bukkit.command.CommandSender;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class UserCommands
 {
     private UserControl users = UserControl.get();

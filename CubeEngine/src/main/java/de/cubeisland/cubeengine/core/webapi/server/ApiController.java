@@ -14,7 +14,6 @@ import org.bukkit.plugin.PluginManager;
  *
  * @Controller annotation
  *
- * @author Phillip Schichtel
  * @since 1.0.0
  */
 public abstract class ApiController

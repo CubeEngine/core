@@ -13,8 +13,6 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Confirms a requested action
- *
- * @author Anselm Brehme
  */
 public class ConfirmCommand
 {

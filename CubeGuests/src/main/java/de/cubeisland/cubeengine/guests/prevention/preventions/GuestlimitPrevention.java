@@ -17,9 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 /**
- * This prevention limits the number of guests that can join the server
- *
- * @author Phillip Schichtel
+ * This prevention limits the number of guests that can join the server.
  */
 public class GuestlimitPrevention extends Prevention
 {

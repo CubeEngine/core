@@ -4,10 +4,6 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 
-/**
- *
- * @author Anselm Brehme
- */
 public enum Perm implements Permission
 {
     BYPASS_BID("bypass.bid", PermissionDefault.OP),;

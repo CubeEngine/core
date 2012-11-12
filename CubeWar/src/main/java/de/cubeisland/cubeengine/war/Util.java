@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Util
 {
     public Util()

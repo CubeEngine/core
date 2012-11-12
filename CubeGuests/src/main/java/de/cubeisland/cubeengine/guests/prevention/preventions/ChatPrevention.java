@@ -1,15 +1,13 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 /**
- * Prevents chatting
- *
- * @author Phillip Schichtel
+ * Prevents chatting.
  */
 public class ChatPrevention extends Prevention
 {

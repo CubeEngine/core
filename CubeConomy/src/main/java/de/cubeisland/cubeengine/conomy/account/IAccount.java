@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.conomy.account;
 
-/**
- *
- * @author Anselm Brehme
- */
 public interface IAccount
 {
     /**

@@ -2,10 +2,6 @@ package de.cubeisland.cubeengine.fun;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 
-/**
- *
- * @author Wolfi
- */
 public enum FunResource implements Resource
 {
     

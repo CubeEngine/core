@@ -6,8 +6,6 @@ import org.bukkit.permissions.Permissible;
 
 /**
  * Check permissions and send message to ths User
- *
- * @author Anselm Brehme
  */
 public enum Perm
 {

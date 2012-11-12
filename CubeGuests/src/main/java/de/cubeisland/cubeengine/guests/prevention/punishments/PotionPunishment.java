@@ -8,9 +8,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 /**
- * Poisons a player
- *
- * @author Phillip Schichtel
+ * Poisons a player.
  */
 public class PotionPunishment implements Punishment
 {

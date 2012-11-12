@@ -1,16 +1,14 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.painting.PaintingPlaceEvent;
 
 /**
- * Prevents placing blocks
- *
- * @author Phillip Schichtel
+ * Prevents placing blocks.
  */
 public class PlaceblockPrevention extends FilteredItemPrevention
 {

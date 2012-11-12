@@ -11,10 +11,6 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-/**
- *
- * @author Phillip Schichtel
- */
 public class ApiCommandSender implements CommandSender
 {
     private final String name;

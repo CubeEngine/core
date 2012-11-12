@@ -7,9 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 /**
- * Slaps a player
- *
- * @author Phillip Schichtel
+ * Slaps a player.
  */
 public class SlapPunishment implements Punishment
 {

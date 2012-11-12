@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class PriceManager
 {
     private Map<ItemStack, ItemPrice> prices;
