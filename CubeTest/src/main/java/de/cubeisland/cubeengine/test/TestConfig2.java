@@ -2,7 +2,11 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.ConfigurationUpdater;
-import de.cubeisland.cubeengine.core.config.annotations.*;
+import de.cubeisland.cubeengine.core.config.annotations.Codec;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.config.annotations.Revision;
+import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.test.TestConfig2.TestConfig2Updater;
 import java.util.Map;
 

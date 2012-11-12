@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.shout.task;
 
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
-import java.io.File;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

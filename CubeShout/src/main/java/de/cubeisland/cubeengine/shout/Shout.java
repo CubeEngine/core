@@ -1,11 +1,11 @@
 package de.cubeisland.cubeengine.shout;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
+import de.cubeisland.cubeengine.shout.announce.Announcer;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
 import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
-import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
-import de.cubeisland.cubeengine.shout.announce.Announcer;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;

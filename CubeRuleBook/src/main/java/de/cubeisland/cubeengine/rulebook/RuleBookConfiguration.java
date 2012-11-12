@@ -54,7 +54,7 @@ public class RuleBookConfiguration
         }
 
         String text = "";
-        String line = null;
+        String line;
         BufferedReader reader = new BufferedReader(new FileReader(file));
         while ((line = reader.readLine()) != null)
         {

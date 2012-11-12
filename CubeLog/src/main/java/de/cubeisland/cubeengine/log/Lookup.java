@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.log;
 
-import de.cubeisland.cubeengine.log.storage.AbstractPositionLog;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.log.storage.AbstractPositionLog;
 import de.cubeisland.cubeengine.log.storage.BlockLog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
