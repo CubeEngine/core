@@ -15,7 +15,7 @@ public class TestModel implements Model<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int id;
-    @Attribute(type = AttrType.VARCHAR, length = 16)
+    @Attribute(type = AttrType.DATE)
     public Date orderDate;
     @Attribute(type = AttrType.DOUBLE)
     public double orderPrice;

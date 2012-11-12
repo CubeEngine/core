@@ -319,11 +319,11 @@ public abstract class ConfigurationCodec
                     }
                     if (Collection.class.isAssignableFrom(fieldClass))
                     {
-                        return Convert.fromObjectToCollection(valueType, object);
+                        return Convert.fromObjectToCollection(fieldClass, valueType, object);
                     }
                     if (Map.class.isAssignableFrom(fieldClass))
                     {
-                        return Convert.fromObjectToMap(field.getAnnotation(Option.class).keyType(), valueType, object);
+                        return Convert.fromObjectToMap(fieldClass, field.getAnnotation(Option.class).keyType(), valueType, object);
                     }
                 }
                 else

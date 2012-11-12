@@ -132,14 +132,14 @@ public class Convert
         return converter.fromObject(object);
     }
 
-    public static <K, V> Map<K, V> fromObjectToMap(Class<K> keyType, Class<V> valType, Object object) throws ConversionException
+    public static <K, V, S extends Map<K, V>> S fromObjectToMap(Class<S> mapType, Class<K> keyType, Class<V> valType, Object object) throws ConversionException
     {
-        return MAP_CONVERTER.fromObject(object, keyType, valType);
+        return MAP_CONVERTER.fromObject(mapType, object, keyType, valType);
     }
 
-    public static <V> Collection<V> fromObjectToCollection(Class<V> valType, Object object) throws ConversionException
+    public static <V, S extends Collection<V>> S fromObjectToCollection(Class<S> collectionType, Class<V> valType, Object object) throws ConversionException
     {
-        return COLLECTION_CONVERTER.fromObject(object, valType);
+        return COLLECTION_CONVERTER.fromObject(collectionType, object, valType);
     }
 
     public static <V> V[] fromObjectToArray(Class<V> valType, Object object) throws ConversionException
