@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MapConverter
 {
