@@ -1,18 +1,12 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import java.sql.Timestamp;
 import java.util.List;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
 
 @Entity(name = "signchangelog")
 public class SignChangeLog extends AbstractPositionLog

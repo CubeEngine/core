@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +30,8 @@ public class BasicUser implements Model<Integer>
     @DatabaseConstructor
     public BasicUser(List<Object> args) throws ConversionException
     {
-        this.key = Convert.fromObject(Integer.class, args.get(0));
-        this.muted = Convert.fromObject(Timestamp.class, args.get(1));
+        this.key = Integer.valueOf(args.get(0).toString());
+        this.muted = (Timestamp)args.get(1);
     }
 
     public BasicUser(User user)

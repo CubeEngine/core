@@ -47,14 +47,14 @@ public abstract class AbstractPositionLog implements Model<Integer>
 
     public AbstractPositionLog(List<Object> args) throws ConversionException
     {
-        this.key = Convert.fromObject(Integer.class, args.get(0));
+        this.key = Integer.valueOf(args.get(0).toString());
         this.timestamp = (Timestamp)args.get(1);
-        this.causeID = Convert.fromObject(Integer.class, args.get(2));
+        this.causeID = Integer.valueOf(args.get(2).toString());
         this.worldName = args.get(3).toString();
         this.worldUUID = args.get(4).toString();
-        this.x = Convert.fromObject(Integer.class, args.get(5));
-        this.y = Convert.fromObject(Integer.class, args.get(6));
-        this.z = Convert.fromObject(Integer.class, args.get(7));
+        this.x = Integer.valueOf(args.get(5).toString());
+        this.y = Integer.valueOf(args.get(6).toString());
+        this.z = Integer.valueOf(args.get(7).toString());
     }
     
     public Location getLocation()

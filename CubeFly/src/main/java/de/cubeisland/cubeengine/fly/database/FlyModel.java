@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.util.List;
 
 @Entity(name = "fly")
@@ -25,7 +24,7 @@ public class FlyModel implements Model<Integer>
     @DatabaseConstructor
     public FlyModel(List<Object> args) throws ConversionException
     {
-        this.key = Convert.fromObject(Integer.class, args.get(0));
+        this.key = Integer.valueOf(args.get(0).toString());
         this.flying = (Boolean)args.get(1);
     }
 

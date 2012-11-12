@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.util.List;
 import org.bukkit.Location;
 
@@ -19,7 +18,7 @@ public class KillLog extends AbstractPositionLog
     public KillLog(List<Object> args) throws ConversionException
     {
         super(args.subList(0, 7));
-        this.killedId = Convert.fromObject(Integer.class, args.get(8));
+        this.killedId = Integer.valueOf(args.get(8).toString());
     }
 
     public KillLog(int killerId, int killedId, Location loc)

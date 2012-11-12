@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.util.List;
 
 @Entity(name = "mail")
@@ -37,10 +36,10 @@ public class Mail implements Model<Integer>
     @DatabaseConstructor
     public Mail(List<Object> args) throws ConversionException
     {
-        this.key = Convert.fromObject(Integer.class, args.get(0));
+        this.key = Integer.valueOf(args.get(0).toString());
         this.message = args.get(1).toString();
-        this.userId = Convert.fromObject(Integer.class, args.get(2));
-        this.senderId = Convert.fromObject(Integer.class, args.get(3));
+        this.userId = Integer.valueOf(args.get(2).toString());
+        this.senderId = Integer.valueOf(args.get(3).toString());
     }
 
     public Integer getKey()

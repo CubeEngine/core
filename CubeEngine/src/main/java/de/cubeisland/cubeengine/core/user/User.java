@@ -12,7 +12,6 @@ import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     public User(List<Object> args) throws ConversionException
     {
         super(CubeEngine.getOfflinePlayer((String)args.get(1)));
-        this.key = Convert.fromObject(Integer.class, args.get(0));
+        this.key = Integer.valueOf(args.get(0).toString());
         this.player = this.offlinePlayer.getName();
         this.nogc = (Boolean)args.get(2);
         this.lastseen = (Timestamp)args.get(3);
