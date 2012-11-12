@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.log;
 
-import de.cubeisland.cubeengine.log.storage.AbstractPositionLog;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.log.storage.AbstractPositionLog;
 import de.cubeisland.cubeengine.log.storage.BlockLog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,7 +43,8 @@ public class Lookup
                     {
                         sb.append(blog.getUser().getName());
                     }
-                    sb.append(" break ").append(MaterialMatcher.get().getNameFor(new ItemStack(blog.oldBlock.mat)));
+                    
+                    sb.append(" break ").append(MaterialMatcher.get().getNameFor(new ItemStack(blog.getOldBlockData().mat)));
                 }
                 else if (blog.isBlockPlace())
                 {
@@ -101,8 +102,8 @@ public class Lookup
         {
             for (ItemStack item : blocks)
             {
-                if (blocklog.oldBlock.mat.equals(item.getType())
-                    || blocklog.newBlock.mat.equals(item.getType()))
+                if (blocklog.getOldBlockData().mat.equals(item.getType())
+                    || blocklog.getNewBlockData().mat.equals(item.getType()))
                 {
                     newBlockLogs.add(blocklog);
                 }

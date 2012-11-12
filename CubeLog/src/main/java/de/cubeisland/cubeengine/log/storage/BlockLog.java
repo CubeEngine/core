@@ -6,61 +6,103 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import java.sql.Timestamp;
 import java.util.List;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
 @Entity(name = "blocklog")
-public class BlockLog extends AbstractPositionLog //implements Model<Integer>
+public class BlockLog extends AbstractPositionLog
 {
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public BlockData newBlock;
+    public String newBlock;
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public BlockData oldBlock; //contains Material and RawMetaData
+    public String oldBlock;
+    
+    private BlockData newBlockData = null;
+    private BlockData oldBlockData = null;
 
     @DatabaseConstructor
     public BlockLog(List<Object> args) throws ConversionException
     {
         super(args.subList(0, 7));
-        this.newBlock = Convert.fromObject(BlockData.class, args.get(8));
-        this.oldBlock = Convert.fromObject(BlockData.class, args.get(9));
+        this.newBlock = args.get(8).toString();
+        this.oldBlock = args.get(9).toString();
     }
 
     public BlockLog(int causeID, BlockState newBlock, BlockState oldBlock)
     {
         super(causeID, newBlock == null ? oldBlock.getLocation() : newBlock.getLocation());
-        if (newBlock == null)
+        try
         {
-            this.newBlock = new BlockData(Material.AIR, (byte)0);
+            if (newBlock == null)
+            {
+                this.newBlock = (String)Convert.toObject(new BlockData(Material.AIR, (byte)0));
+            }
+            else
+            {
+                this.newBlock = (String)Convert.toObject(new BlockData(newBlock.getType(), newBlock.getRawData()));
+            }
+            if (oldBlock == null)
+            {
+                this.oldBlock = (String)Convert.toObject(new BlockData(Material.AIR, (byte)0));
+            }
+            else
+            {
+                this.oldBlock = (String)Convert.toObject(new BlockData(oldBlock.getType(), oldBlock.getRawData()));
+            }
         }
-        else
+        catch (ConversionException ignored)
         {
-            this.newBlock = new BlockData(newBlock.getType(), newBlock.getRawData());
+            //TODO handle ?
         }
-        if (oldBlock == null)
+    }
+
+    private void initBlockData()
+    {
+        try
         {
-            this.oldBlock = new BlockData(Material.AIR, (byte)0);
+            if (oldBlockData == null)
+            {
+                this.oldBlockData = Convert.fromObject(BlockData.class, oldBlock);
+            }
+            if (newBlockData == null)
+            {
+                this.newBlockData = Convert.fromObject(BlockData.class, newBlock);
+            }
         }
-        else
+        catch (ConversionException ignored)
         {
-            this.oldBlock = new BlockData(oldBlock.getType(), oldBlock.getRawData());
         }
+
+    }
+    
+    public BlockData getNewBlockData()
+    {
+        this.initBlockData();
+        return this.newBlockData;
+    }
+    
+    public BlockData getOldBlockData()
+    {
+        this.initBlockData();
+        return this.oldBlockData;
     }
 
     public boolean isBlockBreak()
     {
-        return (newBlock.mat == Material.AIR);
+        this.initBlockData();
+        return this.newBlockData.mat == Material.AIR;
     }
 
     public boolean isBlockPlace()
     {
-        return (oldBlock.mat == Material.AIR);
+        this.initBlockData();
+        return (oldBlockData.mat == Material.AIR);
     }
 
     public boolean isBlockRePlace()
     {
-        return ((oldBlock.mat != Material.AIR) && (newBlock.mat != Material.AIR));
+        this.initBlockData();
+        return ((oldBlockData.mat != Material.AIR) && (newBlockData.mat != Material.AIR));
     }
 }
