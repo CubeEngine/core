@@ -15,6 +15,11 @@ public class AfkListener implements Listener
 {
     private Basics basics;
 
+    public AfkListener(Basics basics)
+    {
+        this.basics = basics;
+    }
+    
     @EventHandler(priority = EventPriority.LOW)
     public void onMove(PlayerMoveEvent event)
     {

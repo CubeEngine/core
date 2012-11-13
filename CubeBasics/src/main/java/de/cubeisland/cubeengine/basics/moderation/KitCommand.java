@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
@@ -7,6 +8,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 
@@ -32,7 +35,11 @@ public class KitCommand extends ContainerCommand
         String kitname = context.getString(0);
         User user;
         Kit kit = KitConfiguration.getKit(kitname);
-        boolean force = context.hasFlag("f"); //TODO check permission
+        boolean force = false;
+        if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()) )
+        {
+            force = true;
+        }
         if (kit == null)
         {
             paramNotFound(context, "basics", "&cKit &6%s &cnot found!", kitname);
