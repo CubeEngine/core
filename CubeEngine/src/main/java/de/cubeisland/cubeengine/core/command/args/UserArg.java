@@ -1,18 +1,19 @@
 package de.cubeisland.cubeengine.core.command.args;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.AbstractArgument;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.Pair;
 
 /**
  * This argument is used to get users
  */
-public class UserArg extends AbstractArgument<User>
+public class UserArg extends ArgumentReader<User>
 {
     private final UserManager um;
-    
+
     public UserArg()
     {
         super(User.class);
@@ -20,9 +21,9 @@ public class UserArg extends AbstractArgument<User>
     }
 
     @Override
-    public int read(String... args) throws InvalidArgumentException
+    public Pair<Integer, User> read(String... args) throws InvalidArgumentException
     {
-        this.value = this.um.getUser(args[0], false);
-        return this.value == null ? 0 : 1;
+        User value = this.um.getUser(args[0], false);
+        return new Pair<Integer, User>(value == null ? 0 : 1, value);
     }
 }

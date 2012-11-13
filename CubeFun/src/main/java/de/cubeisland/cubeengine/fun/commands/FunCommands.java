@@ -96,7 +96,7 @@ public class FunCommands
         User user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
 
         String material = context.getString(0);
-        int amount = context.getIndexed(1, IntArg.class, 1);
+        int amount = context.getIndexed(1, Integer.class, 1);
         Class materialClass = null;
 
         if(amount > this.config.maxThrowNumber || amount < 1)
@@ -133,7 +133,7 @@ public class FunCommands
     {
         User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
 
-        int amount = context.getIndexed(0, IntArg.class, 1);
+        int amount = context.getIndexed(0, Integer.class, 1);
         if(amount < 1 || amount > this.config.maxFireballNumber)
         {
             invalidUsage(context, "fun", "The amount has to be a number from 1 to %d", this.config.maxFireballNumber);
@@ -159,7 +159,7 @@ public class FunCommands
               invalidUsage(context, "core", "User not found!");
         }
         
-        int damage = context.getIndexed(1, IntArg.class, 3);
+        int damage = context.getIndexed(1, Integer.class, 3);
 
         if (damage < 1 || damage > 20)
         {
@@ -185,7 +185,7 @@ public class FunCommands
             invalidUsage(context, "core", "User not found!");
         }
         
-        int seconds = context.getIndexed(1, IntArg.class, 5);
+        int seconds = context.getIndexed(1, Integer.class, 5);
 
         if (context.hasFlag("u"))
         {
@@ -210,7 +210,7 @@ public class FunCommands
         RocketListener rocketListener = this.module.getRocketListener();
         int ticks = 20;
         
-        int height = context.getIndexed(0, IntArg.class, 10);
+        int height = context.getIndexed(0, Integer.class, 10);
         User user = (context.hasNamed("player")) ? 
             context.getNamed("player", User.class, null) : 
             context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
@@ -259,7 +259,7 @@ public class FunCommands
         
         int numberOfBlocks = 0;
         
-        int radius = context.getIndexed(0, IntArg.class, 0);
+        int radius = context.getIndexed(0, Integer.class, 0);
         int height = context.getNamed("height", Integer.class, Integer.valueOf(5));
         int concentration = 1;
         int concentrationOfBlocksPerCircle = 1;

@@ -143,7 +143,7 @@ public class InformationCommands
         int radius = this.basics.getConfiguration().nearDefaultRadius;
         if (context.hasIndexed(0))
         {
-            radius = context.getIndexed(0, IntArg.class, radius);
+            radius = context.getIndexed(0, Integer.class, radius);
         }
         int squareRadius = radius * radius;
         List<Entity> list = user.getWorld().getEntities();

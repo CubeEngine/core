@@ -278,18 +278,18 @@ public class TeleportCommands
     public void tppos(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
-        Integer x = context.getIndexed(0, IntArg.class);
+        Integer x = context.getIndexed(0, Integer.class);
         Integer y;
         Integer z;
         World world = sender.getWorld();
         if (context.hasIndexed(2))
         {
-            y = context.getIndexed(1, IntArg.class);
-            z = context.getIndexed(2, IntArg.class);
+            y = context.getIndexed(1, Integer.class);
+            z = context.getIndexed(2, Integer.class);
         }
         else
         {
-            z = context.getIndexed(1, IntArg.class);
+            z = context.getIndexed(1, Integer.class);
             if (x == null || z == null)
             {
                 illegalParameter(context, "basics", "&cCoordinates have to be numbers!");

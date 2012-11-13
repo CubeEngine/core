@@ -1,13 +1,10 @@
 package de.cubeisland.cubeengine.core.command.args;
 
-import de.cubeisland.cubeengine.core.command.AbstractArgument;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.util.Pair;
 
-/**
- *
- * @author Phillip Schichtel
- */
-public final class StringArg extends AbstractArgument<String>
+public final class StringArg extends ArgumentReader<String>
 {
     public StringArg()
     {
@@ -15,7 +12,7 @@ public final class StringArg extends AbstractArgument<String>
     }
 
     @Override
-    public int read(String... args) throws InvalidArgumentException
+    public Pair<Integer, String> read(String... args) throws InvalidArgumentException
     {
         if (args.length == 0)
         {
@@ -30,8 +27,7 @@ public final class StringArg extends AbstractArgument<String>
             {
                 if (args[0].charAt(args[0].length() - 1) == quoteChar)
                 {
-                    this.value = args[0].substring(1, args[0].length() - 1);
-                    return 1;
+                    return new Pair<Integer, String>(1, args[0].substring(1, args[0].length() - 1));
                 }
                 int i = 1;
                 StringBuilder builder = new StringBuilder(args[0].substring(1));
@@ -40,13 +36,9 @@ public final class StringArg extends AbstractArgument<String>
                 {
                     builder.append(' ').append(args[i]);
                 }
-
-                this.value = builder.toString();
-                return i;
+                return new Pair<Integer, String>(i, builder.toString());
             }
         }
-
-        this.value = args[0];
-        return 1;
+        return new Pair<Integer, String>(1, args[0]);
     }
 }

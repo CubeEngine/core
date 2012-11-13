@@ -195,7 +195,7 @@ public class ItemCommands
         {
             blockCommand(context, "basics", "&6ProTip: &eYou cannot enchant your fists!");
         }
-        Enchantment ench = context.getIndexed(0, EnchantmentArg.class, null);
+        Enchantment ench = context.getIndexed(0, Enchantment.class, null);
         if (ench == null)
         {
             String possibleEnchs = this.getPossibleEnchantments(item);
@@ -212,7 +212,7 @@ public class ItemCommands
         int level = ench.getMaxLevel();
         if (context.hasIndexed(1))
         {
-            level = context.getIndexed(1, IntArg.class, 0);
+            level = context.getIndexed(1, Integer.class, 0);
             if (level <= 0)
             {
                 illegalParameter(context, "basics", "&cThe enchantment-level has to be a number greater than 0!");
@@ -295,7 +295,7 @@ public class ItemCommands
         {
             paramNotFound(context, "core", "&cUser &2%s &cnot found!", context.getString(0));
         }
-        ItemStack item = context.getIndexed(1, ItemStackArg.class, null);
+        ItemStack item = context.getIndexed(1, ItemStack.class, null);
         if (item == null)
         {
             paramNotFound(context, "core", "&cUnknown Item: &6%s&c!", context.getString(1));
@@ -310,7 +310,7 @@ public class ItemCommands
         int amount = item.getMaxStackSize();
         if (context.hasIndexed(2))
         {
-            amount = context.getIndexed(2, IntArg.class, 0);
+            amount = context.getIndexed(2, Integer.class, 0);
             if (amount == 0)
             {
                 illegalParameter(context, "basics", "&cThe amount has to be a number greater than 0!");
@@ -334,7 +334,7 @@ public class ItemCommands
     public void item(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eDid you try to use &6/give &eon your new I-Tem?");
-        ItemStack item = context.getIndexed(0, ItemStackArg.class, null);
+        ItemStack item = context.getIndexed(0, ItemStack.class, null);
         if (item == null)
         {
             paramNotFound(context, "core", "&cUnknown Item: &6%s&c!", context.getString(0));
@@ -349,7 +349,7 @@ public class ItemCommands
         int amount = item.getMaxStackSize();
         if (context.hasIndexed(1))
         {
-            amount = context.getIndexed(1, IntArg.class, 0);
+            amount = context.getIndexed(1, Integer.class, 0);
             if (amount == 0)
             {
                 illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");

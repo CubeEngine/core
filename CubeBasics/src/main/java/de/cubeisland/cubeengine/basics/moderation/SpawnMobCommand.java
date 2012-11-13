@@ -70,7 +70,7 @@ public class SpawnMobCommand
         Integer amount = 1;
         if (context.hasIndexed(1))
         {
-            amount = context.getIndexed(1, IntArg.class, null);
+            amount = context.getIndexed(1, Integer.class, null);
             if (amount == null)
             {
                 illegalParameter(context, "basics", "&e%s is not a number! Really!", context.getString(1));

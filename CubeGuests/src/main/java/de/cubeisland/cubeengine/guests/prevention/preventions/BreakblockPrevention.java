@@ -11,7 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.painting.PaintingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
@@ -34,8 +34,8 @@ public class BreakblockPrevention extends FilteredItemPrevention
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void paintingBreak(PaintingBreakByEntityEvent event)
-    {
+    public void paintingBreak(HangingBreakByEntityEvent event)
+    { //TODO test it
         final Entity remover = event.getRemover();
         if (remover instanceof Player)
         {

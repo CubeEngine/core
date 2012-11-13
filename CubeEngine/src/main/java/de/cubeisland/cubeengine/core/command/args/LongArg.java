@@ -1,29 +1,28 @@
 package de.cubeisland.cubeengine.core.command.args;
 
-import de.cubeisland.cubeengine.core.command.AbstractArgument;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.util.Pair;
 
-public class LongArg extends AbstractArgument<Long>
+public class LongArg extends ArgumentReader<Long>
 {
-
     public LongArg()
     {
         super(Long.class);
     }
 
     @Override
-    public int read(String... args) throws InvalidArgumentException
+    public Pair<Integer, Long> read(String... args) throws InvalidArgumentException
     {
         String num = args[0].replace(',', '.').replace(".", "");
-        
         try
         {
-            this.value = Long.parseLong(num);
-            return 1;
+            Long value = Long.parseLong(num);
+            return new Pair<Integer, Long>(1, value);
         }
         catch (NumberFormatException e)
         {
-            return 0;
+            return new Pair<Integer, Long>(0, null);
         }
     }
 }

@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.writer;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.Argument;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -57,7 +56,7 @@ public class EditCommand
                 }
                 Sign sign = (Sign)target.getState();
                 String[] lines = sign.getLines();
-                Map<String, Argument<?>> params = context.getNamed();
+                Map<String, Object> params = context.getNamed();
                 for (String key : params.keySet()) // TODO refactor
                 {
                     lines[Integer.parseInt(key) - 1] = context.getNamed(key, String.class); 

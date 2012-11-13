@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.core.command.args;
 
-import de.cubeisland.cubeengine.core.command.AbstractArgument;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemStackArg extends AbstractArgument<ItemStack>
+public class ItemStackArg extends ArgumentReader<ItemStack>
 {
     public ItemStackArg()
     {
@@ -13,9 +14,9 @@ public class ItemStackArg extends AbstractArgument<ItemStack>
     }
 
     @Override
-    public int read(String... args) throws InvalidArgumentException
+    public Pair<Integer, ItemStack> read(String... args) throws InvalidArgumentException
     {
-        this.value = MaterialMatcher.get().matchItemStack(args[0]);
-        return this.value == null ? 0 : 1;
+        ItemStack value = MaterialMatcher.get().matchItemStack(args[0]);
+        return new Pair<Integer, ItemStack>(value == null ? 0 : 1, value);
     }
 }

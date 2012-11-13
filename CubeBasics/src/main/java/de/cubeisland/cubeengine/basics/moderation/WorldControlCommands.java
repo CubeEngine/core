@@ -72,7 +72,7 @@ public class WorldControlCommands
         }
         if (context.hasIndexed(1))
         {
-            duration = context.getIndexed(1, IntArg.class, 0);
+            duration = context.getIndexed(1, Integer.class, 0);
             if (duration == 0)
             {
                 illegalParameter(context, "basics", "&cThe given duration is invalid!");
@@ -139,7 +139,7 @@ public class WorldControlCommands
         }
         if (context.hasIndexed(1))
         {
-            radius = context.getIndexed(1, IntArg.class, 0);
+            radius = context.getIndexed(1, Integer.class, 0);
             if (radius <= 0)
             {
                 illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");

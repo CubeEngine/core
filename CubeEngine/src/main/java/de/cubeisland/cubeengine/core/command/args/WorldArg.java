@@ -1,15 +1,16 @@
 package de.cubeisland.cubeengine.core.command.args;
 
-import de.cubeisland.cubeengine.core.command.AbstractArgument;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 
-public class WorldArg extends AbstractArgument<World>
+public class WorldArg extends ArgumentReader<World>
 {
     private final Server server;
-    
+
     public WorldArg()
     {
         super(World.class);
@@ -17,9 +18,9 @@ public class WorldArg extends AbstractArgument<World>
     }
 
     @Override
-    public int read(String... args) throws InvalidArgumentException
+    public Pair<Integer, World> read(String... args) throws InvalidArgumentException
     {
-        this.value = this.server.getWorld(args[0]);
-        return this.value == null ? 0 : 1;
+        World value = this.server.getWorld(args[0]);
+        return new Pair<Integer, World>(value == null ? 0 : 1, value);
     }
 }

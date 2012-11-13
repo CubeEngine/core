@@ -176,7 +176,7 @@ public class ChatCommands
         }
         if (context.hasIndexed(1))
         {
-            delay = context.getIndexed(1, LongArg.class, delay);
+            delay = context.getIndexed(1, Long.class, delay);
         }
         bUser.muted = new Timestamp(System.currentTimeMillis() + delay);
         this.basics.getBasicUserManager().update(bUser);

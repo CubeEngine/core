@@ -61,9 +61,9 @@ public class SpawnCommands
 
         if (context.hasIndexed(3))
         {
-            x = context.getIndexed(1, IntArg.class, null);
-            y = context.getIndexed(2, IntArg.class, null);
-            z = context.getIndexed(3, IntArg.class, null);
+            x = context.getIndexed(1, Integer.class, null);
+            y = context.getIndexed(2, Integer.class, null);
+            z = context.getIndexed(3, Integer.class, null);
             if (x == null || y == null || z == null)
             {
                 illegalParameter(context, "basics", "&cCoordinates are invalid!");
@@ -179,7 +179,7 @@ public class SpawnCommands
     public void tpworld(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        World world = context.getIndexed(0, WorldArg.class, null);
+        World world = context.getIndexed(0, World.class, null);
         if (world == null)
         {
             illegalParameter(context, "basics", "&cWorld not found!");

@@ -3,10 +3,9 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.args.StringArg;
-import de.cubeisland.cubeengine.core.command.args.UserArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
 import java.util.*;
@@ -30,7 +29,7 @@ public class CommandContext
     private final Stack<String> labels;
     private final Map<String, Boolean> flags;
     private final LinkedList<String> indexedParams;
-    private final Map<String, Argument<?>> namedParams;
+    private final Map<String, Object> namedParams;
     private int flagCount;
     private boolean empty;
     private boolean helpCall;
@@ -57,7 +56,7 @@ public class CommandContext
         this.flags = new THashMap<String, Boolean>(0);
         this.flagCount = 0;
         this.indexedParams = new LinkedList<String>();
-        this.namedParams = new THashMap<String, Argument<?>>(0);
+        this.namedParams = new THashMap<String, Object>();
         this.helpCall = false;
     }
 
@@ -115,7 +114,6 @@ public class CommandContext
             }
         }
 
-        StringArg stringHelper = new StringArg();
         for (int offset = 0; offset < commandLine.length; ++offset)
         {
             if (commandLine[offset].isEmpty())
@@ -167,22 +165,10 @@ public class CommandContext
                 {
                     try
                     {
-                        Argument<?> arg = null;
-                        try
-                        {
-                            arg = param.type().newInstance();
-                        }
-                        catch (InstantiationException e)
-                        {
-                            throw new RuntimeException("Failed to instantiate argument " + param.type().getName() + "!", e);
-                        }
-                        catch (IllegalAccessException e)
-                        {
-                            throw new RuntimeException("Could not access the constructor of " + param.type().getName() + "!", e);
-                        }
-                        offset += arg.read(commandLineRange);
+                        Pair<Integer,?> pair = ArgumentReaderManager.read(param.type(), commandLineRange);
+                        offset += pair.x;
                         //added named param
-                        this.namedParams.put(paramName, arg);
+                        this.namedParams.put(paramName, pair.y);
                     }
                     catch (InvalidArgumentException ex)
                     {
@@ -191,14 +177,15 @@ public class CommandContext
                 }
                 else // else is indexed param
                 {
+                    
                     try
                     {
-                        offset += stringHelper.read(commandLineRange);
+                        Pair<Integer, String> pair = ArgumentReaderManager.read(String.class, commandLineRange);
+                        offset += pair.x;
+                        this.indexedParams.add(pair.y);// added indexed param
                     }
                     catch (InvalidArgumentException ignored)
                     {}
-                    // added indexed param
-                    this.indexedParams.add(stringHelper.value());
                 }
             }
         }
@@ -318,7 +305,7 @@ public class CommandContext
      */
     public String getString(int i)
     {
-        return this.getIndexed(i, StringArg.class, null);
+        return this.getIndexed(i, String.class, null);
     }
 
     /**
@@ -355,7 +342,7 @@ public class CommandContext
      */
     public String getString(int i, String def)
     {
-        return this.getIndexed(i, StringArg.class, def);
+        return this.getIndexed(i, String.class, def);
     }
 
     public String getStrings(int from)
@@ -380,7 +367,7 @@ public class CommandContext
      */
     public User getUser(int i)
     {
-        return this.getIndexed(i, UserArg.class);
+        return this.getIndexed(i, User.class);
     }
 
     /**
@@ -498,7 +485,7 @@ public class CommandContext
      * @return returns the requested value or the specified default value if the
      *         conversion failt or the parameters was not available
      */
-    public <T> T getIndexed(int index, Class<? extends Argument<T>> type, T def)
+    public <T> T getIndexed(int index, Class<T> type, T def)
     {
         T value = this.getIndexed(index, type);
         if (value != null)
@@ -518,23 +505,13 @@ public class CommandContext
      * @throws ConversionException if the value could not be converter to the
      *                             requested type
      */
-    public <T> T getIndexed(int index, Class<? extends Argument<T>> type)
+    public <T> T getIndexed(int index, Class<T> type)
     {
         try
         {
             try
             {
-                Argument<T> arg = type.newInstance();
-                arg.read(this.indexedParams.get(index));
-                return arg.value();
-            }
-            catch (InstantiationException e)
-            {
-                throw new RuntimeException("Failed to instantiate argument " + type.getName() + "!", e);
-            }
-            catch (IllegalAccessException e)
-            {
-                throw new RuntimeException("Could not access the constructor of " + type.getName() + "!", e);
+                return ArgumentReaderManager.read(type, this.indexedParams.get(index)).y;
             }
             catch (InvalidArgumentException e)
             {
@@ -567,7 +544,7 @@ public class CommandContext
      *
      * @return all named parameters
      */
-    public Map<String, Argument<?>> getNamed()
+    public Map<String, Object> getNamed()
     {
         return Collections.unmodifiableMap(this.namedParams);
     }
@@ -578,7 +555,7 @@ public class CommandContext
      * @param name the name of the parameter
      * @return an array of values or null if the parameter was not found
      */
-    public Argument<?> getNamed(String name)
+    public Object getNamed(String name)
     {
         if (name == null)
         {
@@ -598,15 +575,14 @@ public class CommandContext
      */
     public <T> T getNamed(String name, Class<T> type)
     {
-        Argument<?> arg = this.namedParams.get(name.toLowerCase(Locale.ENGLISH));
-        if (arg == null)
+        Object obj = this.namedParams.get(name.toLowerCase(Locale.ENGLISH));
+        if (obj == null)
         {
             return null;
         }
-        
-        if (type.isAssignableFrom(arg.getType()))
+        if (type.isAssignableFrom(obj.getClass()))
         {
-            return (T)arg.value();
+            return (T)obj;
         }
         return null;
     }
