@@ -76,6 +76,7 @@ public class Test extends Module
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
+        
         this.registerCommands(new TestCommands());
 
         this.registerListener(new Listener()
