@@ -32,6 +32,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
  * /item
  * /more
  * /repair
+ * /stack
  */
 public class ItemCommands
 {
@@ -393,7 +394,8 @@ public class ItemCommands
         usage = "[-all]") // without item in hand
     public void repair(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&eIf you do this you'll loose your warranty!");
+        User sender = context.getSenderAsUser("core", "&eIf you do this you'll &cloose &eyour warranty!");
+        sender.getItemInHand().setAmount(127);
         if (context.hasFlag("a"))
         {
             List<ItemStack> list = new ArrayList<ItemStack>();
@@ -434,6 +436,71 @@ public class ItemCommands
             {
                 sender.sendMessage("basics", "&eItem cannot be repaired!");
             }
+        }
+    }
+    
+    @Command(
+        desc = "Stacks your items up to 64")
+    public void stack(CommandContext context)
+    {
+        User user = context.getSenderAsUser("basics", "&eNo stacking for you.");
+        //TODO permission to stack to 64
+        boolean allow64 = true;// plugin.hasPermission(player, "worldguard.stack.illegitimate");
+
+        ItemStack[] items = user.getInventory().getContents();
+        int size = items.length;
+        boolean changed = false;
+        for (int i = 0; i < size; i++)
+        {
+            ItemStack item = items[i];
+            // no null / infinite or unstackable items (if not allowed)
+            if (item == null || item.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
+            {
+                continue;
+            }
+            int max = allow64 ? 64 : item.getMaxStackSize();
+            if (item.getAmount() < max)
+            {
+                int needed = max - item.getAmount();
+                for (int j = i + 1; j < size; j++) // search for same item
+                {
+                    ItemStack item2 = items[j];
+                    // no null / infinite or unstackable items (if not allowed)
+                    if (item2 == null || item2.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
+                    {
+                        continue;
+                    }
+                    // compare
+                    if (item2.getTypeId() == item.getTypeId()
+                        && item.getDurability() == item2.getDurability()
+                        && item.getEnchantments().equals(item2.getEnchantments())
+                        && (BukkitUtils.getItemStackName(item) == null ? BukkitUtils.getItemStackName(item2) == null : BukkitUtils.getItemStackName(item).equals(BukkitUtils.getItemStackName(item2))))
+                    {
+                        if (item2.getAmount() > needed) // not enough place -> fill up stack
+                        {
+                            item.setAmount(max);
+                            item2.setAmount(item2.getAmount() - needed);
+                            break;
+                        }
+                        else // enough place -> add to stack
+                        {
+                            items[j] = null;
+                            item.setAmount(item.getAmount() + item2.getAmount());
+                            needed = max - item.getAmount();
+                        }
+                        changed = true;
+                    }
+                }
+            }
+        }
+        if (changed)
+        {
+            user.getInventory().setContents(items);
+            user.sendMessage("&aItems stacked together!");
+        }
+        else
+        {
+            user.sendMessage("&eNothing to stack!");
         }
     }
 }

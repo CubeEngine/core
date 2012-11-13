@@ -42,6 +42,7 @@ public class SpawnMobCommand
         usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {
+        // TODO adjust MaxHealth of a mob
         User sender = context.getSenderAsUser();
         if (!context.hasIndexed(2) && sender == null)
         {
@@ -142,7 +143,7 @@ public class SpawnMobCommand
         }
         if (entityType == null)
         {
-            paramNotFound(context, "basics", "&cEntity-type &6%s &cnot found!", entityName);
+            paramNotFound(context, "basics", "&cUnknown mob-type: &6%s &cnot found!", entityName);
         }
         Entity[] spawnedMobs = new Entity[amount];
         for (int i = 0; i < amount; ++i)
@@ -161,8 +162,8 @@ public class SpawnMobCommand
     {
         if (data != null)
         {
-            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged"); //TODO this list configurable something like datavalues.txt
-
+            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged"); 
+            //TODO this list configurable something like datavalues.txt
             if (match.equals("baby"))
             {
                 if (entityType.isAnimal())
