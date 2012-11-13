@@ -135,6 +135,7 @@ public class Test extends Module
         user = uM.getUser("User1", true);
         user.lastseen = new Timestamp(50000);
         uM.update(user);
+        uM.run(); //removes offline users from loadedlist.
     }
 
     private Date getDate(int year, int month, int day)
