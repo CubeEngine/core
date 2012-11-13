@@ -296,6 +296,7 @@ public class MaterialMatcher
                     {
                         readData = new TreeMap<Short, List<String>>(); // New ID Create new ID & DATA
                         names = new ArrayList<String>(); // New DATA Create new nameList
+                        readData.put(data, names);
                         map.put(id, readData);
                         currentData = data;
                         currentId = id;

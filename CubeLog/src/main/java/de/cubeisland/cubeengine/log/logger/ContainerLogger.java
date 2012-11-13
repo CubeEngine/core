@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.log.logger;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
@@ -18,11 +19,13 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Furnace;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
@@ -88,6 +91,158 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             }
         }
     }
+/*
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true) //TODO figure out how it works...
+    public void onInventoryClick(InventoryClickEvent event)
+    {
+        // TODO check if is logging this
+        User user = CubeEngine.getUserManager().getExactUser((Player)event.getWhoClicked());
+        TObjectIntHashMap<ItemData> log = openedInventories.get(user.key);
+        ItemStack onCursor = event.getCursor();
+        ItemStack inInvent = event.getCurrentItem();
+        if (event.getSlot() == -999)
+        {
+            return;
+        }
+        if (inInvent.getTypeId() == 0 && onCursor.getTypeId() == 0)
+        {
+            return; //Nothing to log both empty
+        }
+        ItemData dataOnCursor = new ItemData(onCursor);
+        ItemData datainInvent = new ItemData(inInvent);
+        if (!event.isShiftClick() && event.getSlot() < event.getView().getTopInventory().getSize()) // No shift-click AND click on top inventory
+        {
+            if (event.isLeftClick())
+            {
+                if (onCursor == null || onCursor.getTypeId() == 0) // take items
+                {
+                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
+                }
+                else if (inInvent == null || inInvent.getTypeId() == 0) // add items
+                {
+                    log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? onCursor.getAmount() : log.get(dataOnCursor) + onCursor.getAmount());
+                }
+                else // both filled
+                {
+                    if (this.compareItemStacks(inInvent, onCursor)) // can be stacked together?
+                    {
+                        //action in+on = in+on
+                        //left:  32+1  = 16+17
+                        //left:  16+1  = 16+1
+                        //left:  32+31 = 6X 31+32  21X 16+47 <- thats the problem!!!
+                        
+                        
+                        //################TODO what happens here??
+                        int space = inInvent.getMaxStackSize() - inInvent.getAmount();
+                        if (space < 0) // oversized stack -> remove missing space (sometimes exchange why?)
+                        {
+                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) - space);
+                        }
+                        else // normal stack -> add items
+                        {
+                            if (space == 0) // No space
+                            {
+                                if ((onCursor.getMaxStackSize() - onCursor.getAmount()) < 0) // overstacked -> exchange
+                                {
+                                    int exchangeAmount = onCursor.getAmount() - inInvent.getAmount();
+                                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? exchangeAmount : log.get(datainInvent) + exchangeAmount);
+                                } // else to nothing
+                                return;
+                            }
+                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) + space);
+                        }
+                        //################TODO what happens here??
+                    }
+                    else // no stacking -> exchange
+                    {
+                        log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
+                        log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? onCursor.getAmount() : log.get(dataOnCursor) + onCursor.getAmount());
+                    }
+                }
+            }
+            else if (event.isRightClick())
+            {
+                if (onCursor == null || onCursor.getTypeId() == 0) // take half items (rounded up)
+                {
+                    int half = (int)Math.ceil(inInvent.getAmount() * 0.5);
+                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -half : log.get(datainInvent) - half);
+                }
+                else if (inInvent == null || inInvent.getTypeId() == 0) // add 1 item
+                {
+                    log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? 1 : log.get(dataOnCursor) + 1);
+                }
+                else // both filled
+                {
+                    if (this.compareItemStacks(inInvent, onCursor)) // can be stacked together?
+                    {
+                        //################TODO what happens here??
+                        int space = inInvent.getMaxStackSize() - inInvent.getAmount();
+                        if (space < 0) // oversized stack -> remove (sometimes exchange (with signs) why?)
+                        {
+                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) - space);
+                        }
+                        else // normal stack -> add items
+                        {
+                            if (space == 0) // No space -> do nothing
+                            {
+                                return;
+                            }
+                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) + space);
+                        }
+                        //################TODO what happens here??
+                    }
+                    else // no stacking -> exchange
+                    {
+                        log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
+                        log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? onCursor.getAmount() : log.get(dataOnCursor) + onCursor.getAmount());
+                    }
+                }
+            }
+        }
+        else // ShiftClick
+        {
+            if (event.getSlot() < event.getView().getTopInventory().getSize()) // Click on Top
+            {
+                if (InventoryUtil.checkForPlace(event.getView().getBottomInventory(), inInvent)) // place -> remove
+                {
+                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
+
+                }
+                // else no place -> no move
+            }
+            else // Click on Bottom
+            {
+                if (InventoryUtil.checkForPlace(event.getView().getTopInventory(), inInvent)) // place -> add
+                {
+                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? inInvent.getAmount() : log.get(datainInvent) + inInvent.getAmount());
+                }
+                // else no place -> no move
+            }
+        }
+    }
+
+    private boolean compareItemStacks(ItemStack item1, ItemStack item2)
+    {
+        if (item1.getTypeId() == item2.getTypeId())
+        {
+            if (item1.getDurability() == item2.getDurability())
+            {
+                if (item1 instanceof CraftItemStack && item2 instanceof CraftItemStack)
+                {
+                    if (((CraftItemStack)item1).getHandle().getTag().equals(((CraftItemStack)item1).getHandle().getTag()))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+    * */
 
     private boolean checkLog(ContainerType type)
     {
@@ -207,8 +362,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         DISPENSER(4),
         OTHER(5),
         STORAGEMINECART(6),
-        HUMANENTITY(7),
-        ;
+        HUMANENTITY(7),;
         private final int id;
         private static final TIntObjectHashMap<ContainerType> map;
 

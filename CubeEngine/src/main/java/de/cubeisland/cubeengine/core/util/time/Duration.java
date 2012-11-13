@@ -1,33 +1,115 @@
 package de.cubeisland.cubeengine.core.util.time;
 
-public class Duration
-{
-    /**
-     * This class should be able to convert at least
-     * 1ms 1millisec 1millisecond 2milliseconds
-     * 1t 1tick 2ticks
-     * 1s 1sec 1second 2seconds
-     * 1m 1min 1minutes 2mins 2minutes
-     * 1h 1hour 2hours
-     * 1d 1day 2days
-     * 
-     * 1W 1week 2weeks
-     * 1M 1month 2months
-     * 1Y 1year 2years
-     */
-    
-    private long time;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import gnu.trove.map.hash.TCharLongHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-    public Duration(long time)
+public class Duration extends Time
+{
+    private final static TObjectLongHashMap<String> longerNames = new TObjectLongHashMap<String>();
+    private final static TObjectLongHashMap<String> shortNames = new TObjectLongHashMap<String>();
+    private final static TCharLongHashMap veryShortNames = new TCharLongHashMap();
+    private final static long MS = TimeUnit.MILLISECONDS.toMillis(1L);
+    private final static long SEC = TimeUnit.SECONDS.toMillis(1L);
+    private final static long MIN = TimeUnit.MINUTES.toMillis(1L);
+    private final static long HOUR = TimeUnit.HOURS.toMillis(1L);
+    private final static long DAY = TimeUnit.DAYS.toMillis(1L);
+    private final static long WEEK = TimeUnit.DAYS.toMillis(1L) * 7;
+
+    static
     {
-        this.time = time;
+        veryShortNames.put('S', MS);
+        veryShortNames.put('s', SEC);
+        veryShortNames.put('m', MIN);
+        veryShortNames.put('h', HOUR);
+        veryShortNames.put('d', DAY);
+        veryShortNames.put('w', WEEK);
+
+        shortNames.put("ms", MS);
+        shortNames.put("sec", SEC);
+        shortNames.put("min", MIN);
+
+        longerNames.put("milliseconds", MS);
+        longerNames.put("seconds", SEC);
+        longerNames.put("minutes", MIN);
+        longerNames.put("hours", HOUR);
+        longerNames.put("days", DAY);
+        longerNames.put("weeks", WEEK);
     }
-    
-    public Duration(String timeString)
+
+    public Duration(String[] timeStrings)
     {
-        this.time = time;
+        super(parseDuration(timeStrings));
     }
-    
+
+    public static long parseDuration(String[] timeStrings) throws IllegalArgumentException
+    {
+        long result = 0;
+        for (int i = 0; i < timeStrings.length; ++i)
+        {
+            String timeString = timeStrings[i];
+            long time = 0;
+            Long timeUnitFactor = null;
+            try
+            {
+                time = Long.parseLong(timeString);
+                String timeUnitString = timeStrings[i + 1];
+                String unit = StringUtils.matchString(timeUnitString, longerNames.keySet());
+                if (unit == null)
+                {
+                    List<String> matches = StringUtils.getBestMatches(timeUnitString, shortNames.keySet(), 1);
+                    if (!matches.isEmpty())
+                    {
+                        timeUnitFactor = shortNames.get(matches.get(0));
+                    }
+                }
+                else
+                {
+                    timeUnitFactor = longerNames.get(unit);
+                }
+                i++;
+            }
+            catch (NumberFormatException e) // now try 1d, 1m etc. values
+            {
+                for (Character c : veryShortNames.keys())
+                {
+                    if (timeString.endsWith(c.toString()))
+                    {
+                        try
+                        {
+                            time = Long.parseLong(timeString.substring(0, timeString.length() - 1));
+                            timeUnitFactor = veryShortNames.get(c);
+                        }
+                        catch (NumberFormatException ex)
+                        {
+                            break;
+                        }
+                    }
+                }
+                if (timeString.endsWith("ms"))
+                {
+                    try
+                    {
+                        time = Long.parseLong(timeString.substring(0, timeString.length() - 2));
+                        timeUnitFactor = MS;
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        break;
+                    }
+                }
+            }
+            if (timeUnitFactor == null)
+            {
+                throw new IllegalArgumentException("Could not parse time! " + timeStrings.toString());
+            }
+            result += time * timeUnitFactor;
+        }
+        return result;
+    }
+
     public long toTicks()
     {
         return this.time / 50;
@@ -35,95 +117,54 @@ public class Duration
 
     public long toTimeUnit(TimeUnit timeUnit)
     {
-        return this.time / timeUnit.millisPerTimeUnit;
+        return timeUnit.convert(this.time, TimeUnit.MILLISECONDS);
     }
-    
-    @Override
-    public String toString()
-    {
-        return "";
-        // TODO detect which unit would be the best and then convert to this one (or 2 (should be 2 near units))
-    }
-    
-    public enum TimeUnit
-    {
-        MILLISECOND(1,"ms","millisec","millisecond","milliseconds"),
-        TICK(50,"t","tick","tick","ticks"),
-        SECOND(1000,"s","sec","second","seconds"),
-        MINUTE(60000,"m","min","minute","minutes"),
-        HOUR(3600000,"h","hour","hour","hours"),
-        DAY(86400000,"d","day","day","days"),
-        WEEK(604800000,"W","week","week","weeks"),
-        MONTH(2592000000L,"M","month","month","months"),
-        YEAR(31536000000L,"Y","year","year","years");
 
-        private TimeUnit(long MillisPerTimeUnit, String veryShortName, String shortName, String longName, String longNamePlural)
-        {
-            this.millisPerTimeUnit = MillisPerTimeUnit;
-            this.veryShortName = veryShortName;
-            this.shortName = shortName;
-            this.longName = longName;
-            this.longNamePlural = longNamePlural;
-        }
-        
-        public final long millisPerTimeUnit;
-        public final String veryShortName;
-        public final String shortName;
-        public final String longName;
-        public final String longNamePlural;
-    }
-    
-    /*
-    public static long convertTimeToMillis(String str) throws ConversionException
+    public String format() // good for config
     {
-        Pattern pattern = Pattern.compile("^(\\d+)([sSmhHdDwWMyY])?$");
-        Matcher matcher = pattern.matcher(str);
-        matcher.find();
-
-        long time;
-        try
+        //search greatest unit:
+        long convertTime = this.time;
+        StringBuilder sb = new StringBuilder();
+        while (convertTime > 0)
         {
-            time = Integer.parseInt(String.valueOf(matcher.group(1)));
+            if (convertTime / WEEK > 0)
+            {
+                sb.append(convertTime / WEEK).append("w ");
+                convertTime -= convertTime / WEEK * WEEK;
+            }
+            else if (convertTime / DAY > 0)
+            {
+                sb.append(convertTime / DAY).append("d ");
+                convertTime -= convertTime / DAY * DAY;
+            }
+            else if (convertTime / HOUR > 0)
+            {
+                sb.append(convertTime / HOUR).append("h ");
+                convertTime -= convertTime / HOUR * HOUR;
+            }
+            else if (convertTime / MIN > 0)
+            {
+                sb.append(convertTime / MIN).append("m ");
+                convertTime -= convertTime / MIN * MIN;
+            }
+            else if (convertTime / SEC > 0)
+            {
+                sb.append(convertTime / SEC).append("s ");
+                convertTime -= convertTime / SEC * SEC;
+            }
+            else if (convertTime / MS > 0)
+            {
+                sb.append(convertTime / MS).append("ms ");
+                convertTime -= convertTime / MS * MS;
+            }
+            else
+            {
+                return sb.toString();
+            }
         }
-        catch (Exception e)
-        {
-            throw new ConversionException("Error while Converting String to time in millis");
-        }
-        if (time < 0)
-        {
-            return -1;
-        }
-        String unitSuffix = matcher.group(2);
-        if (unitSuffix == null)
-        {
-            unitSuffix = "m";
-        }
-        switch (unitSuffix.charAt(0))
-        {
-            case 'y':
-            case 'Y':
-                time *= 365;
-            case 'd':
-            case 'D':
-                time *= 24;
-            case 'h':
-            case 'H':
-                time *= 60;
-            case 'm':
-                time *= 60;
-            case 's':
-            case 'S':
-                time *= 1000;
-                break;
-            case 'W':
-            case 'w':
-                time *= 7 * DAY;
-                break;
-            case 'M':
-                time *= 30 * DAY;
-                break;
-        }
-        return time;
+        return sb.toString();
     }
-     */
+
+
+    //TODO format method for chat output!
 }

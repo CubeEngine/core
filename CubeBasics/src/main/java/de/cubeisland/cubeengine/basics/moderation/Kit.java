@@ -78,7 +78,7 @@ public class Kit
         //TODO get kits only x-time
         //TODO give kit to all players online (not here)
         //TODO starterKit on login (not here)
-        if (this.getPermission() != null)
+        if (!force && this.getPermission() != null)
         {
             if (!this.getPermission().isAuthorized(sender))
             {

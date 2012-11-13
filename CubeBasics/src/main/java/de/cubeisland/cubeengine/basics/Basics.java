@@ -43,6 +43,7 @@ public class Basics extends Module
         this.registerCommands(new PlayerCommands(this));
         this.registerListener(new GeneralsListener(this));
         this.registerListener(new MuteListener(this));
+        
 
         //Moderation:
         this.registerCommands(new InventoryCommands(this));
@@ -77,39 +78,11 @@ public class Basics extends Module
         {
             throw new IllegalStateException("illegal time format in configuration!");
         }
+        AfkListener afkListener = new AfkListener(this, autoAfk,afkCheck);
+        this.registerListener(afkListener);
         if (autoAfk > 0)
         {
-            this.getTaskManger().scheduleSyncRepeatingTask(this, new Runnable()
-            {
-                public void run()
-                {
-                    for (User user : getUserManager().getLoadedUsers())
-                    {
-                        Boolean isAfk = user.getAttribute(instance, "afk");
-                        Long lastAction = user.getAttribute(instance, "lastAction");
-                        if (lastAction == null)
-                        {
-                            return;
-                        }
-                        if (isAfk != null && isAfk)
-                        {
-                            if (System.currentTimeMillis() - lastAction < autoAfk)
-                            {
-                                user.removeAttribute(instance, "afk");
-                                getUserManager().broadcastMessage("basics", "* %s is no longer afk!", user.getName());
-                            }
-                        }
-                        else
-                        {
-                            if (System.currentTimeMillis() - lastAction > autoAfk)
-                            {
-                                user.setAttribute(instance, "afk", true);
-                                getUserManager().broadcastMessage("basics", "* %s is now afk!", user.getName());
-                            }
-                        }
-                    }
-                }
-            }, autoAfk / 50, afkCheck / 50); // this is in ticks so /50
+            this.getTaskManger().scheduleSyncRepeatingTask(this, afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
 
         //TODO register permissions of kits in config

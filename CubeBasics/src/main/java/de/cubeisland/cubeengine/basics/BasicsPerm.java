@@ -33,6 +33,7 @@ public enum BasicsPerm implements Permission
     COMMAND_TPHEREALL_PREVENT(PermissionDefault.FALSE), // can not tpedhere(all) except forced
     COMMAND_BACK_ONDEATH,
     POWERTOOL_USE, //allows to use powertools
+    COMMAND_KIT_GIVE_FORCE, 
     ;
     private String permission;
     private PermissionDefault def;

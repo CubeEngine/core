@@ -12,10 +12,13 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
+import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.List;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
@@ -104,7 +107,7 @@ public class WorldControlCommands
 
     @Command(
         desc = "Removes entity",
-        usage = "<entityType> [radius] [in <world>] [-a]",
+        usage = "<entityType[:itemMaterial]> [radius] [in <world>] [-a]",
         flags = { @Flag(longName = "all", name = "a") },
         params = @Param(names = { "in" }, type = WorldArg.class),
         min = 1
@@ -142,14 +145,24 @@ public class WorldControlCommands
                 illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
             }
         }
-        EntityType type = EntityMatcher.get().matchEntity(context.getString(0));
+        String s_type = context.getString(0);
+        EntityType type = EntityMatcher.get().matchEntity(s_type);
+        Material itemtype = null;
         if (type == null)
         {
-            paramNotFound(context, "basics", "&cInvalid entity-type!\n&eUse &6"
-                + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
-                + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
-                + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
-                + EntityType.EXPERIENCE_ORB);
+            if (s_type.contains(":"))
+            {
+                type = EntityMatcher.get().matchEntity(s_type.substring(0, s_type.indexOf(":")));
+                itemtype = MaterialMatcher.get().matchMaterial(s_type.substring(s_type.indexOf(":") + 1));
+            }
+            if (type == null)
+            {
+                paramNotFound(context, "basics", "&cInvalid entity-type!\n&eUse &6"
+                    + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
+                    + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
+                    + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
+                    + EntityType.EXPERIENCE_ORB);
+            }
         }
         if (type.isAlive())
         {
@@ -160,11 +173,11 @@ public class WorldControlCommands
         {
             loc = sender.getLocation();
         }
-        int entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, type);
+        int entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, type, itemtype);
         context.sendMessage("basics", "&aRemoved &e%d &aentities!", entitiesRemoved);
     }
 
-    private int removeEntityType(List<Entity> list, Location loc, int radius, EntityType type)
+    private int removeEntityType(List<Entity> list, Location loc, int radius, EntityType type, Material itemtype)
     {
         if (loc == null && radius != -1)
         {
@@ -182,6 +195,13 @@ public class WorldControlCommands
             {
                 int distance = (int)(entity.getLocation().subtract(loc)).lengthSquared();
                 if (radius * radius < distance)
+                {
+                    continue;
+                }
+            }
+            if (entity instanceof Item && itemtype != null)
+            {
+                if (!((Item)entity).getItemStack().getType().equals(itemtype))
                 {
                     continue;
                 }

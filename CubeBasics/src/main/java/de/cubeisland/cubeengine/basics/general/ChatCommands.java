@@ -32,7 +32,7 @@ public class ChatCommands
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastMessage("basics", "* %s %s", context.getSender().getName(), message); // Here no category so -> no Translation
+        this.um.broadcastMessage("basics", "* &2%s &f%s", context.getSender().getName(), message); // Here no category so -> no Translation
     }
 
     @Command(
@@ -54,8 +54,8 @@ public class ChatCommands
             if (context.getString(0).equalsIgnoreCase("console"))
             {
                 context.getSender().getServer().getConsoleSender().
-                    sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().getName(), message));
-                context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", message);
+                    sendMessage(_("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message));
+                context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", "CONSOLE", message);
             }
             else
             {
@@ -68,8 +68,8 @@ public class ChatCommands
             {
                 paramNotFound(context, "basics", "&eTalking to yourself?");
             }
-            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), message);
-            context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), message));
+            user.sendMessage("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
+            context.sendMessage(_("basics", "&eYou &6-> &2%s&e: &f%s", user.getName(), message));
         }
 
         if (sender == null)
@@ -129,12 +129,12 @@ public class ChatCommands
         if (replyToConsole)
         {
             sender.getServer().getConsoleSender().sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().getName(), message));
-            context.sendMessage("basics", "&eYou -> %s: &f%s", "CONSOLE", message);
+            context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", "CONSOLE", message);
         }
         else
         {
-            user.sendMessage("basics", "&e%s -> You: &f%s", context.getSender().getName(), message);
-            context.sendMessage(_("basics", "&eYou -> %s: &f%s", user.getName(), message));
+            user.sendMessage("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
+            context.sendMessage(_("basics", "&eYou &6-> %&2s&e: &f%s", user.getName(), message));
         }
     }
 

@@ -11,13 +11,26 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class AfkListener implements Listener
+public class AfkListener implements Listener,Runnable
 {
     private Basics basics;
+    private long autoAfk;
+    private long afkCheck;
+
+    public AfkListener(Basics basics, long autoAfk, long afkCheck)
+    {
+        this.basics = basics;
+        this.autoAfk = autoAfk;
+        this.afkCheck = afkCheck;
+    }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onMove(PlayerMoveEvent event)
     {
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ())
+        {
+            return;
+        }
         User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
         user.setAttribute(basics, "lastAction", System.currentTimeMillis());
     }
@@ -37,5 +50,34 @@ public class AfkListener implements Listener
     {
         User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
         user.setAttribute(basics, "lastAction", System.currentTimeMillis());
+    }
+    
+    public void run()
+    {
+        for (User user : basics.getUserManager().getLoadedUsers())
+        {
+            Boolean isAfk = user.getAttribute(basics, "afk");
+            Long lastAction = user.getAttribute(basics, "lastAction");
+            if (lastAction == null)
+            {
+                continue;
+            }
+            if (isAfk != null && isAfk)
+            {
+                if (System.currentTimeMillis() - lastAction < afkCheck)
+                {
+                    user.removeAttribute(basics, "afk");
+                    basics.getUserManager().broadcastMessage("basics", "* &2%s &fis no longer afk!", user.getName());
+                }
+            }
+            else
+            {
+                if (System.currentTimeMillis() - lastAction > autoAfk)
+                {
+                    user.setAttribute(basics, "afk", true);
+                    basics.getUserManager().broadcastMessage("basics", "* &2%s &fis now afk!", user.getName());
+                }
+            }
+        }
     }
 }
