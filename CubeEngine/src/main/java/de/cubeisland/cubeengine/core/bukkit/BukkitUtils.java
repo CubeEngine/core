@@ -239,6 +239,10 @@ public class BukkitUtils
             return null;
         }
         CraftItemStack cis = ((CraftItemStack)itemStack);
+        if (cis.getHandle() == null)
+        {
+            return null;
+        }
         NBTTagCompound tag = cis.getHandle().getTag();
         if (tag == null)
         {
