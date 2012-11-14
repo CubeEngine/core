@@ -27,7 +27,7 @@ public final class StringArg extends ArgumentReader<String>
             {
                 if (args[0].charAt(args[0].length() - 1) == quoteChar)
                 {
-                    return new Pair<Integer, String>(1, args[0].substring(1, args[0].length() - 1));
+                    return new Pair<Integer, String>(0, args[0].substring(1, args[0].length() - 1));
                 }
                 int i = 1;
                 StringBuilder builder = new StringBuilder(args[0].substring(1));
@@ -36,9 +36,9 @@ public final class StringArg extends ArgumentReader<String>
                 {
                     builder.append(' ').append(args[i]);
                 }
-                return new Pair<Integer, String>(i, builder.toString());
+                return new Pair<Integer, String>(i - 1, builder.toString());
             }
         }
-        return new Pair<Integer, String>(1, args[0]);
+        return new Pair<Integer, String>(0, args[0]);
     }
 }

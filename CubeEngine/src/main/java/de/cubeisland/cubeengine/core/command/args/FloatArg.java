@@ -20,7 +20,7 @@ public class FloatArg extends ArgumentReader<Float>
         try
         {
             Float value = Float.parseFloat(num);
-            return new Pair<Integer, Float>(1, value);
+            return new Pair<Integer, Float>(0, value);
         }
         catch (NumberFormatException e)
         {

@@ -120,8 +120,7 @@ public class CommandContext
             {
                 continue; // part is empty, ignoring...
             }
-            if (commandLine[offset].length() >= 2 && commandLine[offset].
-                charAt(0) == '-') // is flag?
+            if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
             {
                 String flag = commandLine[offset].substring(1);
                 if (flag.charAt(0) == '-')
@@ -165,7 +164,7 @@ public class CommandContext
                 {
                     try
                     {
-                        Pair<Integer,?> pair = ArgumentReaderManager.read(param.type(), commandLineRange);
+                        Pair<Integer, ?> pair = ArgumentReaderManager.read(param.type(), commandLineRange);
                         offset += pair.x;
                         //added named param
                         this.namedParams.put(paramName, pair.y);
@@ -177,7 +176,7 @@ public class CommandContext
                 }
                 else // else is indexed param
                 {
-                    
+
                     try
                     {
                         Pair<Integer, String> pair = ArgumentReaderManager.read(String.class, commandLineRange);
@@ -185,7 +184,8 @@ public class CommandContext
                         this.indexedParams.add(pair.y);// added indexed param
                     }
                     catch (InvalidArgumentException ignored)
-                    {}
+                    {
+                    }
                 }
             }
         }

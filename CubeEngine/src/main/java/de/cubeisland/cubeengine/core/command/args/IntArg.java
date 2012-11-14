@@ -18,7 +18,7 @@ public class IntArg extends ArgumentReader<Integer>
         try
         {
             Integer value = Integer.parseInt(num);
-            return new Pair<Integer, Integer>(1, value);
+            return new Pair<Integer, Integer>(0, value);
         }
         catch (NumberFormatException e)
         {

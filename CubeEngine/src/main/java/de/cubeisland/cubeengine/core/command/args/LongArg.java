@@ -18,7 +18,7 @@ public class LongArg extends ArgumentReader<Long>
         try
         {
             Long value = Long.parseLong(num);
-            return new Pair<Integer, Long>(1, value);
+            return new Pair<Integer, Long>(0, value);
         }
         catch (NumberFormatException e)
         {

@@ -24,6 +24,6 @@ public class UserArg extends ArgumentReader<User>
     public Pair<Integer, User> read(String... args) throws InvalidArgumentException
     {
         User value = this.um.getUser(args[0], false);
-        return new Pair<Integer, User>(value == null ? 0 : 1, value);
+        return new Pair<Integer, User>(0, value);
     }
 }

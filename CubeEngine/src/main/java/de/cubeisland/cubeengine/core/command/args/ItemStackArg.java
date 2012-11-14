@@ -17,6 +17,6 @@ public class ItemStackArg extends ArgumentReader<ItemStack>
     public Pair<Integer, ItemStack> read(String... args) throws InvalidArgumentException
     {
         ItemStack value = MaterialMatcher.get().matchItemStack(args[0]);
-        return new Pair<Integer, ItemStack>(value == null ? 0 : 1, value);
+        return new Pair<Integer, ItemStack>(0, value);
     }
 }
