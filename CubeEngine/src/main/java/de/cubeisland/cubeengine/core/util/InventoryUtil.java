@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.Map;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -24,13 +25,16 @@ public class InventoryUtil
     
     public static boolean checkForPlace(Inventory inventory, ItemStack... items)
     {
-        ItemStack[] oldInventory = inventory.getContents();
-        Map map = inventory.addItem(items);
-        inventory.clear();
-        inventory.setContents(oldInventory);
-        if (!map.isEmpty())
+        Inventory inv = Bukkit.createInventory(null, inventory.getSize());
+        inv.setContents(inventory.getContents().clone());
+        Map map;
+        for (ItemStack item : items)
         {
-            return false;
+            map = inv.addItem(new ItemStack(item));
+            if (!map.isEmpty())
+            {
+                return false;
+            }
         }
         return true;
     }

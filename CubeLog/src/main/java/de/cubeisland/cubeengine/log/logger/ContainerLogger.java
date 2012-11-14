@@ -51,31 +51,28 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
     {
-        // TODO problem logging items multiple times when 2 players looking into the same inventory
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
-        TObjectIntHashMap<ItemData> oldItems = openedInventories.get(user.getKey());
-        if (oldItems == null)
+        TObjectIntHashMap<ItemData> loggedItems = openedInventories.get(user.getKey());
+        if (loggedItems == null)
         {
             return;
         }
         ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
         if (this.checkLog(type))
         {
-            if (event.getPlayer() instanceof Player)
+
+            Location loc;
+            if (event.getView().getTopInventory().getHolder() instanceof DoubleChest)
             {
-                Location loc;
-                if (event.getView().getTopInventory().getHolder() instanceof DoubleChest)
-                {
-                    loc = ((BlockState)((DoubleChest)event.getView().getTopInventory().getHolder()).getLeftSide()).getLocation();
-                }
-                else
-                {
-                    loc = ((BlockState)event.getView().getTopInventory().getHolder()).getLocation();
-                }
-                this.logContainerChanges(user, type, oldItems, this.compressInventory(event.getView().getTopInventory().getContents()), loc);
-                openedInventories.remove(user.getKey());
+                loc = ((BlockState)((DoubleChest)event.getView().getTopInventory().getHolder()).getLeftSide()).getLocation();
             }
+            else
+            {
+                loc = ((BlockState)event.getView().getTopInventory().getHolder()).getLocation();
+            }
+            this.logContainerChanges(user, type, loggedItems, loc);
         }
+        openedInventories.remove(user.key);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -87,17 +84,21 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             if (event.getPlayer() instanceof Player)
             {
                 User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
-                openedInventories.put(user.getKey(), this.compressInventory(event.getView().getTopInventory().getContents())); //saveTopInventory
+                openedInventories.put(user.getKey(), new TObjectIntHashMap<ItemData>());
             }
         }
     }
-/*
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true) //TODO figure out how it works...
     public void onInventoryClick(InventoryClickEvent event)
     {
         // TODO check if is logging this
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getWhoClicked());
         TObjectIntHashMap<ItemData> log = openedInventories.get(user.key);
+        if (log == null)
+        {
+            return;
+        }
         ItemStack onCursor = event.getCursor();
         ItemStack inInvent = event.getCurrentItem();
         if (event.getSlot() == -999)
@@ -112,111 +113,40 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         ItemData datainInvent = new ItemData(inInvent);
         if (!event.isShiftClick() && event.getSlot() < event.getView().getTopInventory().getSize()) // No shift-click AND click on top inventory
         {
-            if (event.isLeftClick())
+            if (onCursor == null || onCursor.getTypeId() == 0) // take items
             {
-                if (onCursor == null || onCursor.getTypeId() == 0) // take items
+                int take = event.isLeftClick() ? inInvent.getAmount() : (inInvent.getAmount() + 1) / 2;
+                log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -take : log.get(datainInvent) - take);
+            }
+            else if (inInvent == null || inInvent.getTypeId() == 0) // add items
+            {
+                int put = event.isLeftClick() ? inInvent.getAmount() : 1;
+                log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? put : log.get(dataOnCursor) + put);
+            }
+            else // both filled
+            {
+                if (this.compareItemStacks(inInvent, onCursor)) // can be stacked together?
+                {
+                    int toput = event.isLeftClick() ? inInvent.getAmount() : 1;
+                    if (toput > inInvent.getMaxStackSize() - inInvent.getAmount()) //if stack to big
+                    {
+                        toput = inInvent.getMaxStackSize() - inInvent.getAmount(); //set to missing to fill
+                    }
+                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? toput : log.get(datainInvent) + toput);
+                }
+                else // no stacking -> exchange
                 {
                     log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
-                }
-                else if (inInvent == null || inInvent.getTypeId() == 0) // add items
-                {
                     log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? onCursor.getAmount() : log.get(dataOnCursor) + onCursor.getAmount());
-                }
-                else // both filled
-                {
-                    if (this.compareItemStacks(inInvent, onCursor)) // can be stacked together?
-                    {
-                        //action in+on = in+on
-                        //left:  32+1  = 16+17
-                        //left:  16+1  = 16+1
-                        //left:  32+31 = 6X 31+32  21X 16+47 <- thats the problem!!!
-                        
-                        
-                        //################TODO what happens here??
-                        int space = inInvent.getMaxStackSize() - inInvent.getAmount();
-                        if (space < 0) // oversized stack -> remove missing space (sometimes exchange why?)
-                        {
-                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) - space);
-                        }
-                        else // normal stack -> add items
-                        {
-                            if (space == 0) // No space
-                            {
-                                if ((onCursor.getMaxStackSize() - onCursor.getAmount()) < 0) // overstacked -> exchange
-                                {
-                                    int exchangeAmount = onCursor.getAmount() - inInvent.getAmount();
-                                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? exchangeAmount : log.get(datainInvent) + exchangeAmount);
-                                } // else to nothing
-                                return;
-                            }
-                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) + space);
-                        }
-                        //################TODO what happens here??
-                    }
-                    else // no stacking -> exchange
-                    {
-                        log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
-                        log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? onCursor.getAmount() : log.get(dataOnCursor) + onCursor.getAmount());
-                    }
-                }
-            }
-            else if (event.isRightClick())
-            {
-                if (onCursor == null || onCursor.getTypeId() == 0) // take half items (rounded up)
-                {
-                    int half = (int)Math.ceil(inInvent.getAmount() * 0.5);
-                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -half : log.get(datainInvent) - half);
-                }
-                else if (inInvent == null || inInvent.getTypeId() == 0) // add 1 item
-                {
-                    log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? 1 : log.get(dataOnCursor) + 1);
-                }
-                else // both filled
-                {
-                    if (this.compareItemStacks(inInvent, onCursor)) // can be stacked together?
-                    {
-                        //################TODO what happens here??
-                        int space = inInvent.getMaxStackSize() - inInvent.getAmount();
-                        if (space < 0) // oversized stack -> remove (sometimes exchange (with signs) why?)
-                        {
-                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) - space);
-                        }
-                        else // normal stack -> add items
-                        {
-                            if (space == 0) // No space -> do nothing
-                            {
-                                return;
-                            }
-                            log.put(datainInvent, (Integer)log.get(datainInvent) == null ? space : log.get(datainInvent) + space);
-                        }
-                        //################TODO what happens here??
-                    }
-                    else // no stacking -> exchange
-                    {
-                        log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
-                        log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? onCursor.getAmount() : log.get(dataOnCursor) + onCursor.getAmount());
-                    }
                 }
             }
         }
         else // ShiftClick
         {
-            if (event.getSlot() < event.getView().getTopInventory().getSize()) // Click on Top
+            int giveOrTake = event.getRawSlot() < event.getView().getTopInventory().getSize() ? -1 : 1; //top or bot inv ?
+            if (InventoryUtil.checkForPlace(giveOrTake == 1 ? event.getView().getTopInventory() : event.getView().getBottomInventory(), inInvent)) //check for enough space
             {
-                if (InventoryUtil.checkForPlace(event.getView().getBottomInventory(), inInvent)) // place -> remove
-                {
-                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
-
-                }
-                // else no place -> no move
-            }
-            else // Click on Bottom
-            {
-                if (InventoryUtil.checkForPlace(event.getView().getTopInventory(), inInvent)) // place -> add
-                {
-                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? inInvent.getAmount() : log.get(datainInvent) + inInvent.getAmount());
-                }
-                // else no place -> no move
+                log.put(datainInvent, (Integer)log.get(datainInvent) == null ? giveOrTake * inInvent.getAmount() : log.get(datainInvent) + giveOrTake * inInvent.getAmount());
             }
         }
     }
@@ -229,20 +159,16 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             {
                 if (item1 instanceof CraftItemStack && item2 instanceof CraftItemStack)
                 {
-                    if (((CraftItemStack)item1).getHandle().getTag().equals(((CraftItemStack)item1).getHandle().getTag()))
+                    if (!((CraftItemStack)item1).getHandle().getTag().equals(((CraftItemStack)item1).getHandle().getTag()))
                     {
-                        return true;
+                        return false;
                     }
                 }
-                else
-                {
-                    return true;
-                }
+                return true;
             }
         }
-        return true;
+        return false;
     }
-    * */
 
     private boolean checkLog(ContainerType type)
     {
@@ -264,37 +190,14 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         }
     }
 
-    private void logContainerChanges(User user, ContainerType type, TObjectIntHashMap<ItemData> oldInv, TObjectIntHashMap<ItemData> newInv, Location loc)
+    private void logContainerChanges(User user, ContainerType type, TObjectIntHashMap<ItemData> loggedChanges, Location loc)
     {
-        //Compare and compute difference
-        TObjectIntHashMap<ItemData> diff = new TObjectIntHashMap<ItemData>();
-        for (ItemData data : oldInv.keySet())
-        {
-            Integer amount_old = oldInv.get(data);
-            Integer amount_new = newInv.get(data);
-            if (amount_new == null || amount_new == 0)
-            {
-                diff.put(data, -amount_old); // Item removed
-            }
-            else
-            {
-                diff.put(data, amount_new - amount_old); // Item amount changed
-            }
-        }
-        for (ItemData data : newInv.keySet())
-        {
-            if (!oldInv.containsKey(data))
-            {
-                diff.put(data, newInv.get(data)); // Item added
-            }
-        }
-        //difference created! Logging every change:
         boolean logged = false;
-        for (ItemData data : diff.keySet())
+        for (ItemData data : loggedChanges.keySet())
         {
-            if (diff.get(data) != 0)
+            if (loggedChanges.get(data) != 0)
             {
-                this.logContainerChange(user, data, diff.get(data), loc, type.getId());
+                this.logContainerChange(user, data, loggedChanges.get(data), loc, type.getId());
                 logged = true;
             }
         }
