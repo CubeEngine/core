@@ -111,17 +111,17 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         }
         ItemData dataOnCursor = new ItemData(onCursor);
         ItemData datainInvent = new ItemData(inInvent);
-        if (!event.isShiftClick() && event.getSlot() < event.getView().getTopInventory().getSize()) // No shift-click AND click on top inventory
+        if (!event.isShiftClick() && event.getRawSlot() < event.getView().getTopInventory().getSize()) // No shift-click AND click on top inventory
         {
             if (onCursor == null || onCursor.getTypeId() == 0) // take items
             {
                 int take = event.isLeftClick() ? inInvent.getAmount() : (inInvent.getAmount() + 1) / 2;
-                log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -take : log.get(datainInvent) - take);
+                log.put(datainInvent, log.get(datainInvent) - take);
             }
             else if (inInvent == null || inInvent.getTypeId() == 0) // add items
             {
-                int put = event.isLeftClick() ? inInvent.getAmount() : 1;
-                log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? put : log.get(dataOnCursor) + put);
+                int put = event.isLeftClick() ? onCursor.getAmount() : 1;
+                log.put(dataOnCursor, log.get(dataOnCursor) + put);
             }
             else // both filled
             {
@@ -132,21 +132,21 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
                     {
                         toput = inInvent.getMaxStackSize() - inInvent.getAmount(); //set to missing to fill
                     }
-                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? toput : log.get(datainInvent) + toput);
+                    log.put(datainInvent, log.get(datainInvent) + toput);
                 }
                 else // no stacking -> exchange
                 {
-                    log.put(datainInvent, (Integer)log.get(datainInvent) == null ? -inInvent.getAmount() : log.get(datainInvent) - inInvent.getAmount());
-                    log.put(dataOnCursor, (Integer)log.get(dataOnCursor) == null ? onCursor.getAmount() : log.get(dataOnCursor) + onCursor.getAmount());
+                    log.put(datainInvent, log.get(datainInvent) - inInvent.getAmount());
+                    log.put(dataOnCursor, log.get(dataOnCursor) + onCursor.getAmount());
                 }
             }
         }
-        else // ShiftClick
+        else if (event.isShiftClick()) // ShiftClick
         {
             int giveOrTake = event.getRawSlot() < event.getView().getTopInventory().getSize() ? -1 : 1; //top or bot inv ?
             if (InventoryUtil.checkForPlace(giveOrTake == 1 ? event.getView().getTopInventory() : event.getView().getBottomInventory(), inInvent)) //check for enough space
             {
-                log.put(datainInvent, (Integer)log.get(datainInvent) == null ? giveOrTake * inInvent.getAmount() : log.get(datainInvent) + giveOrTake * inInvent.getAmount());
+                log.put(datainInvent, log.get(datainInvent) + giveOrTake * inInvent.getAmount());
             }
         }
     }
