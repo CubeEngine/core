@@ -5,11 +5,11 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import gnu.trove.set.hash.THashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import org.bukkit.command.CommandSender;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -341,7 +341,7 @@ public class Commands extends ContainerCommand
     {
         if (context != null)
         {
-            this.guests.getLogger().log(Level.INFO, message);
+            this.guests.getLogger().log(LogLevel.INFO, message);
         }
         final User sender = context.getSenderAsUser();
         for (User user : this.guests.getCore().getUserManager().getOnlineUsers())

@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
@@ -123,7 +123,7 @@ public abstract class Configuration
         }
         catch (FileNotFoundException e)
         {
-            logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
+            logger.log(LogLevel.NOTICE, "{0} not found! Creating new config...", file.getName());
         }
         T config = load(clazz, inputStream); //loading config from InputSream or Default
 

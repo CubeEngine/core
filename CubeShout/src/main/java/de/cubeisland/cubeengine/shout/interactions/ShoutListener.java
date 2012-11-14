@@ -1,11 +1,11 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.announce.Announcer;
 import de.cubeisland.cubeengine.shout.announce.MessageTask;
-import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,13 +33,13 @@ public class ShoutListener implements Listener
 
         if (this.module.getCore().isDebug())
         {
-            this.module.getLogger().log(Level.INFO, "Loading user: {0}", user.getName());
+            this.module.getLogger().log(LogLevel.DEBUG, "Loading user: {0}", user.getName());
         }
         this.am.initializeUser(user);
 
         if (module.getCore().isDebug())
         {
-            this.module.getLogger().log(Level.INFO, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), this.am.getGreatestCommonDivisor(user.getName())));
+            this.module.getLogger().log(LogLevel.DEBUG, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), this.am.getGreatestCommonDivisor(user.getName())));
         }
         this.announcner.scheduleTask(user.getName(), new MessageTask(am, module.getTaskManger(), user), this.am.getGreatestCommonDivisor(user.getName()));
     }

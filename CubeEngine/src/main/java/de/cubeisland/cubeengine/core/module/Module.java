@@ -12,12 +12,12 @@ import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
 
@@ -312,7 +312,7 @@ public abstract class Module
         {
             try
             {
-                this.logger.log(Level.FINER, "Enabling {0}-r{1}", new Object[]
+                this.logger.log(LogLevel.INFO, "Enabling {0}-r{1}", new Object[]
                     {
                         this.getInfo().getName(), this.getInfo().getRevision()
                     });
@@ -322,8 +322,8 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
-                this.logger.log(Level.INFO, "{0} disabled", this.getInfo().getName());
+                this.logger.log(LogLevel.ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
+                this.logger.log(LogLevel.NOTICE, "{0} disabled", this.getInfo().getName());
             }
         }
         return this.enabled;
@@ -342,7 +342,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+                this.logger.log(LogLevel.ERROR, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
             }
             this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;

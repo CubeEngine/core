@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.guests;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import de.cubeisland.cubeengine.guests.prevention.preventions.*;
 import de.cubeisland.cubeengine.guests.prevention.punishments.*;
@@ -83,7 +84,7 @@ public class Guests extends Module
             .registerPrevention(new WorkbenchPrevention(this))
             .enablePreventions();
 
-        this.getLogger().info(this.prevManager.getPreventions().size() + " Prevention(s) have been registered!");
+        this.getLogger().log(LogLevel.NOTICE, this.prevManager.getPreventions().size() + " Prevention(s) have been registered!");
     }
 
     @Override

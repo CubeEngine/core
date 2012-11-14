@@ -120,17 +120,17 @@ public class CubeAuctions extends ModuleBase implements TranslatablePlugin
 
     public static void log(String msg)
     {
-        logger.log(Level.INFO, msg);
+        logger.log(LogLevelINFO, msg);
     }
 
     public static void error(String msg)
     {
-        logger.log(Level.SEVERE, msg);
+        logger.log(LogLevelERROR, msg);
     }
 
     public static void error(String msg, Throwable t)
     {
-        logger.log(Level.SEVERE, msg, t);
+        logger.log(LogLevelERROR, msg, t);
     }
 
     public static void debug(String msg)

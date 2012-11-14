@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  */
 public class CubeLogger extends Logger
 {
-    private static Level loggingLevel = Level.ALL;
+    private static Level loggingLevel = LogLevel.ALL;
 
     /**
      * Creates a new Logger by this name
@@ -35,7 +35,7 @@ public class CubeLogger extends Logger
         {
             this.setParent(parent);
         }
-        this.setLevel(Level.ALL);
+        this.setLevel(LogLevel.ALL);
         this.setUseParentHandlers(false);
     }
 
@@ -43,7 +43,7 @@ public class CubeLogger extends Logger
     public void log(LogRecord record)
     {
         Level level = record.getLevel();
-        if (level.intValue() < Level.INFO.intValue())
+        if (level.intValue() < LogLevel.INFO.intValue())
         {
             record.setLevel(Level.INFO); // Lower LogLevel can get logged in Console too
         }
@@ -63,7 +63,7 @@ public class CubeLogger extends Logger
 
     public void exception(String msg, Throwable t)
     {
-        this.log(Level.SEVERE, msg, t);
+        this.log(LogLevel.ERROR, msg, t);
     }
 
     /**
@@ -75,7 +75,7 @@ public class CubeLogger extends Logger
     {
         if (CubeEngine.isDebug())
         {
-            this.log(Level.INFO, "[Debug] " + msg);
+            this.log(LogLevel.DEBUG, "[Debug] " + msg);
         }
     }
 

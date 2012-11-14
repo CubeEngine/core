@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core.util.converter;
 
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.util.logging.Level;
 
-public class LevelConverter implements Converter<Level>
+public class LogLevelConverter implements Converter<Level>
 {
     @Override
     public Object toObject(Level object) throws ConversionException
@@ -13,7 +14,7 @@ public class LevelConverter implements Converter<Level>
     @Override
     public Level fromObject(Object object) throws ConversionException
     {
-        return Level.parse(object.toString());
+        return LogLevel.parse(object.toString());
     }
 
     @Override
@@ -25,6 +26,6 @@ public class LevelConverter implements Converter<Level>
     @Override
     public Level fromString(String string) throws ConversionException
     {
-        return Level.parse(string);
+        return LogLevel.parse(string);
     }
 }

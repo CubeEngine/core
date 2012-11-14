@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         {
             if (CubeEngine.getCore().isDebug())
             {
-                CubeEngine.getLogger().warning("A module sent an untranslated message!");
+                CubeEngine.getLogger().log(LogLevel.DEBUG, "A module sent an untranslated message!");
             }
         }
         super.sendMessage(ChatFormat.parseFormats(string));
