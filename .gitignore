@@ -12,3 +12,5 @@ nb-actions.xml
 */maven-eclipse.xml
 .idea/
 *.iml
+.settings/
+.project
