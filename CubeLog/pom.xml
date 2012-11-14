@@ -7,52 +7,13 @@
     </parent>
 
     <artifactId>log</artifactId>
-    <name>CubeLog</name>
+    <name>Log</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>${bukkitVersion}</version>
-        </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <finalName>${project.name}</finalName>
-        <defaultGoal>${defaultGoal}</defaultGoal>
-        <resources>
-            <resource>
-                <targetPath>.</targetPath>
-                <directory>${basedir}/src/main/resources/</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>module.yml</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>./resources/language</targetPath>
-                <directory>${basedir}/src/main/resources/language/</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
-        
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
-            </plugin>   
-        </plugins>
-    </build>
 </project>
