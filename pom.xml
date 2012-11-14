@@ -4,7 +4,7 @@
     <groupId>de.cubeisland</groupId>
     <artifactId>cubeengine-aggregator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>CubeEngine</name>
+    <name>CubeEngine-Aggregator</name>
     <url>http://cubeisland.de</url>
     <packaging>pom</packaging>
     <description>Minecraft module framework.</description>
@@ -15,6 +15,103 @@
             <url>http://repo.cubeisland.de/</url>
         </repository>
     </repositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>${bukkitVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>${bukkitVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>minecraft-server</artifactId>
+            <version>${minecraftVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>[2.0.0,)</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>[2.6,)</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>[3.0.0,)</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>[4.10,)</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>[1.4.12,)</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>[1.4.12,)</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.name}</finalName>
+        <defaultGoal>clean install</defaultGoal>
+
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${basedir}/src/main/resources/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>module.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>./resources</targetPath>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <showDeprecation>true</showDeprecation>
+                    <source>${jdkVersion}</source>
+                    <target>${jdkVersion}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jalopy-maven-plugin</artifactId>
+                <version>1.0-alpha-1</version>
+                <configuration>
+                    <convention>multi/jalopy.xml</convention>
+                    <failOnError>true</failOnError>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <modules>
         <module>CubeEngine</module>
@@ -38,10 +135,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <minecraftVersion>1.4.2</minecraftVersion>
-        <bukkitVersion>1.4.2-R0.2</bukkitVersion>
+        <minecraftVersion>1.4.4</minecraftVersion>
+        <bukkitVersion>1.4.4-R0.1-SNAPSHOT</bukkitVersion>
         <jdkVersion>1.6</jdkVersion>
-        <defaultGoal>clean install</defaultGoal>
         
         <!-- Netbeans Format Settings -->
         <org-netbeans-modules-editor-indent.CodeStyle.usedProfile>project</org-netbeans-modules-editor-indent.CodeStyle.usedProfile>
