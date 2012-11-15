@@ -93,8 +93,62 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <includeEmptyDirs>false</includeEmptyDirs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <!--
+                <executions>
+                    <execution>
+                        <id>javadoc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                -->
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <forkMode>never</forkMode>
+                    <printSummary>true</printSummary>
+                    <skipTests>false</skipTests>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <showSuccess>true</showSuccess>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -116,9 +170,9 @@
                 <configuration>
                     <configFile>${basedir}/../style.xml</configFile>
                     <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
-                    <compilerSource>1.6</compilerSource>
-                    <compilerCompliance>1.6</compilerCompliance>
-                    <compilerTargetPlatform>1.6</compilerTargetPlatform>
+                    <compilerSource>${jdkVersion}</compilerSource>
+                    <compilerCompliance>${jdkVersion}</compilerCompliance>
+                    <compilerTargetPlatform>${jdkVersion}</compilerTargetPlatform>
                     <lineEnding>LF</lineEnding>
                 </configuration>
                 <!-- enable this once all the branches are merged
