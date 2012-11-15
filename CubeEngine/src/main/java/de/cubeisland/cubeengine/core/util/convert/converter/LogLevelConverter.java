@@ -14,8 +14,13 @@ public class LogLevelConverter implements Converter<Level>
     }
 
     @Override
-    public Level fromObject(Object object) throws ConversionException
+    public LogLevel fromObject(Object object) throws ConversionException
     {
-        return LogLevel.parse(object.toString());
+        LogLevel lv = LogLevel.parse(object.toString());
+        if (lv == null)
+        {
+            throw new ConversionException("Unknown LogLevel. " + object.toString());
+        }
+        return lv;
     }
 }

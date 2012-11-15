@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
-import java.util.logging.Level;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -43,7 +42,7 @@ public class CoreConfiguration extends Configuration
     public String database = "mysql";
     @Option("logging.Level")
     @Comment("Logging into Console \nALL > DEBUG > INFO > NOTICE > FINE > WARN > ERROR > OFF")
-    public Level loggingLevel = LogLevel.NOTICE;
+    public LogLevel loggingLevel = LogLevel.NOTICE;
     @Option("after-join-event-delay")
     @Comment("How many ticks after PlayerJoinEvent the AfterJoingEvent is fired")
     public long afterJoinEventDelay = 1;

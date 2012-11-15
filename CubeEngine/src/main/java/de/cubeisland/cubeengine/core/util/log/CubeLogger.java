@@ -51,14 +51,25 @@ public class CubeLogger extends Logger
         {
             record.setThrown(null);
         }
+        super.log(record);
         if (this.getParent() != null)
         {
             if (level.intValue() > loggingLevel.intValue())
             {
+                switch (record.getLevel().intValue())
+                {
+                    case 1000:
+                        record.setLevel(Level.SEVERE);
+                    case 900:
+                        record.setLevel(Level.WARNING);
+                    case 800:
+                    case 700:
+                    case 600:
+                        record.setLevel(Level.INFO);
+                }
                 this.getParent().log(record);
             }
         }
-        super.log(record);
     }
 
     public void exception(String msg, Throwable t)
@@ -86,7 +97,10 @@ public class CubeLogger extends Logger
      */
     public static void setLoggingLevel(Level level)
     {
-        loggingLevel = level;
+        if (level != null)
+        {
+            loggingLevel = level;
+        }
     }
 
     /**
