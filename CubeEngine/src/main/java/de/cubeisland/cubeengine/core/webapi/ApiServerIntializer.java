@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.webapi.server;
+package de.cubeisland.cubeengine.core.webapi;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

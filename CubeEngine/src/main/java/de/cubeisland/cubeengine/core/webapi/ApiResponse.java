@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.webapi.server;
+package de.cubeisland.cubeengine.core.webapi;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.webapi.server.ApiServer;
+import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 

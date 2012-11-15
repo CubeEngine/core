@@ -1,11 +1,11 @@
-package de.cubeisland.cubeengine.core.webapi.server;
+package de.cubeisland.cubeengine.core.webapi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static de.cubeisland.cubeengine.core.webapi.server.RequestMethod.GET;
+import static de.cubeisland.cubeengine.core.webapi.RequestMethod.GET;
 
 /**
  *

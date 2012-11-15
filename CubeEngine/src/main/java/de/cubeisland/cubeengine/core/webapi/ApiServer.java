@@ -1,9 +1,9 @@
-package de.cubeisland.cubeengine.core.webapi.server;
+package de.cubeisland.cubeengine.core.webapi;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
-import de.cubeisland.cubeengine.core.webapi.server.exception.ApiStartupException;
+import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 import gnu.trove.set.hash.THashSet;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;

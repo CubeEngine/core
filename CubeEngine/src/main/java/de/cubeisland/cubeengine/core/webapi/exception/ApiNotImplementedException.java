@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.webapi.server.exception;
+package de.cubeisland.cubeengine.core.webapi.exception;
 
 /**
  * This exception should be thrown when the called action is not yet

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.webapi.server;
+package de.cubeisland.cubeengine.core.webapi;
 
 /**
  * Common mime types for dynamic content
