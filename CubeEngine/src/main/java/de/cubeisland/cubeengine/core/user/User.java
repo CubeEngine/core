@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;

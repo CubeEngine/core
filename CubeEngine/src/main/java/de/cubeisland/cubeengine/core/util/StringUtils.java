@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
