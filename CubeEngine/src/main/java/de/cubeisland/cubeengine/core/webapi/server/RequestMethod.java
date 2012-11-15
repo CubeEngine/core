@@ -16,6 +16,7 @@ public enum RequestMethod
     PATCH,
     TRACE,
     CONNECT;
+    
     private static final HashMap<String, RequestMethod> BY_NAME;
 
     static

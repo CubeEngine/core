@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.webapi.server.ApiServer;
 import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -233,5 +234,10 @@ public final class CubeEngine
     public static ObjectMapper getJsonObjectMapper()
     {
         return core.getJsonObjectMapper();
+    }
+    
+    public static ApiServer getApiServer()
+    {
+        return core.getApiServer();
     }
 }

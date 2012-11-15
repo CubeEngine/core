@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.webapi.server.exception;
 
-import de.cubeisland.cubeengine.core.webapi.server.ApiSerializable;
 import java.util.HashMap;
 
 /**
@@ -10,7 +9,7 @@ import java.util.HashMap;
  *
  * @since 1.0.0
  */
-public class ApiRequestException extends RuntimeException implements ApiSerializable
+public class ApiRequestException extends RuntimeException
 {
     private int code;
 
@@ -58,7 +57,9 @@ public class ApiRequestException extends RuntimeException implements ApiSerializ
         return this.getMessage();
     }
 
-    @Override
+    /**
+     * TODO switch to converter
+     */
     public Object serialize()
     {
         HashMap<String, Object> data = new HashMap<String, Object>(2);

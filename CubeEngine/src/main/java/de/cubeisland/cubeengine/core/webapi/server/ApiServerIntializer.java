@@ -13,19 +13,11 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
  */
 public class ApiServerIntializer extends ChannelInitializer<SocketChannel>
 {
-    private final int maxContentLength;
-    private final boolean compress;
-    private final int compressionLevel;
-    private final int windowBits;
-    private final int memLevel;
+    private final ApiServer server;
 
-    public ApiServerIntializer(int maxContentLength, boolean compress, int compressionLevel, int windowBits, int memLevel)
+    ApiServerIntializer(ApiServer server)
     {
-        this.maxContentLength = maxContentLength;
-        this.compress = compress;
-        this.compressionLevel = Math.max(1, Math.min(9, compressionLevel));
-        this.windowBits = Math.max(9, Math.min(15, windowBits));
-        this.memLevel = Math.max(1, Math.min(9, memLevel));
+        this.server = server;
     }
     
     @Override
@@ -33,13 +25,13 @@ public class ApiServerIntializer extends ChannelInitializer<SocketChannel>
     {
         ch.pipeline()
             .addLast("decoder", new HttpRequestDecoder()) 
-            .addLast("aggregator", new HttpChunkAggregator(this.maxContentLength))
+            .addLast("aggregator", new HttpChunkAggregator(server.getMaxContentLength()))
             .addLast("encoder", new HttpResponseEncoder())
-            .addLast("handler", new ApiServerHandler());
+            .addLast("handler", new ApiRequestHandler(this.server));
         
-        if (this.compress)
+        if (this.server.isCompressionEnabled())
         {
-            ch.pipeline().addLast("deflater", new HttpContentCompressor(this.compressionLevel, this.windowBits, this.memLevel));
+            ch.pipeline().addLast("deflater", new HttpContentCompressor(this.server.getCompressionLevel(), this.server.getCompressionWindowBits(), this.server.getCompressionMemoryLevel()));
         }
     }
 }

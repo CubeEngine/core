@@ -8,12 +8,10 @@ import java.lang.reflect.Method;
  * from the annotation and to link the method with its controller.
  *
  * This class is usually not needed by controller developers
- *
- * @since 1.0.0
  */
 public final class ApiAction
 {
-    private final ApiController controller;
+    private final ApiHolder controller;
     private final String name;
     private final Method method;
     private final boolean authNeeded;
@@ -28,7 +26,7 @@ public final class ApiAction
      * @param method     the method to invoke
      * @param authNeeded whether authentication is needed
      */
-    public ApiAction(ApiController controller, String name, Method method, boolean authNeeded, String[] parameters, String serializer)
+    public ApiAction(ApiHolder controller, String name, Method method, boolean authNeeded, String[] parameters, String serializer)
     {
         this.controller = controller;
         this.name = name;

@@ -18,7 +18,9 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.webapi.ApiConfig;
+import de.cubeisland.cubeengine.core.webapi.server.ApiServer;
+import de.cubeisland.cubeengine.core.webapi.server.exception.ApiStartupException;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -26,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -47,6 +51,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private TaskManager taskManager;
     private TableManager tableManager;
     private ObjectMapper jsonObjectMapper;
+    private ApiServer apiServer;
 
     @Override
     public void onEnable()
@@ -86,10 +91,22 @@ public class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: file manager
-        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
+        this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
         this.debug = this.config.debugMode;
+        
+        // depends on: object mapper
+        this.apiServer = new ApiServer(this);
+        this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
+        try
+        {
+            this.apiServer.start();
+        }
+        catch (ApiStartupException e)
+        {
+            this.logger.log(ERROR, "The web API will not be available as the server failed to start properly...", e);
+        }
 
         // depends on: core config, server
         this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
@@ -98,7 +115,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
-            this.logger.log(LogLevel.ERROR, "Could not connect to the database type ''{0}''", this.config.database);
+            this.logger.log(ERROR, "Could not connect to the database type ''{0}''", this.config.database);
             pm.disablePlugin(this);
             return;
         }
@@ -156,6 +173,12 @@ public class BukkitCore extends JavaPlugin implements Core
         {
             this.moduleManager.clean();
             this.moduleManager = null;
+        }
+        
+        if (this.apiServer != null)
+        {
+            this.apiServer.stop();
+            this.apiServer = null;
         }
 
         this.fileManager = null;
@@ -273,5 +296,11 @@ public class BukkitCore extends JavaPlugin implements Core
     public ObjectMapper getJsonObjectMapper()
     {
         return this.jsonObjectMapper;
+    }
+    
+    @Override
+    public ApiServer getApiServer()
+    {
+        return this.apiServer;
     }
 }

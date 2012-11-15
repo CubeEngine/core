@@ -11,8 +11,6 @@ import java.util.Map;
 /**
  * This class contains all the information of the API request. It is only used
  * to pass the information the to executing action, nothing more.
- *
- * @since 1.0.0
  */
 public final class ApiRequest
 {

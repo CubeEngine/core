@@ -11,7 +11,6 @@ import java.util.Map;
 public final class ApiResponse
 {
     private final Map<String, String> headers;
-    private ApiResponseSerializer serializer;
     private Object content;
 
     /**
@@ -19,11 +18,10 @@ public final class ApiResponse
      *
      * @param serializer the serializer instance
      */
-    public ApiResponse(ApiResponseSerializer serializer)
+    public ApiResponse()
     {
         this.headers = new HashMap<String, String>();
         this.content = null;
-        this.serializer = serializer;
     }
 
     /**
@@ -101,31 +99,6 @@ public final class ApiResponse
                 this.headers.put(header.getKey().toLowerCase(), header.getValue());
             }
         }
-        return this;
-    }
-
-    /**
-     * Returns the serialier
-     *
-     * @return the serializer
-     */
-    public ApiResponseSerializer getSerializer()
-    {
-        return this.serializer;
-    }
-
-    /**
-     * Sets the serializer
-     *
-     * @param serializer the serialzer instance €return fluent interface
-     */
-    public ApiResponse setSerializer(ApiResponseSerializer serializer)
-    {
-        if (serializer == null)
-        {
-            throw new IllegalArgumentException("serializer must not be null!");
-        }
-        this.serializer = serializer;
         return this;
     }
 
