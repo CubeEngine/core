@@ -17,7 +17,6 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
     {
         super(LogAction.BLOCKCHANGE);
         this.blockLogManager = new BlockLogManager(module.getDatabase());
-
     }
 
     public void logBlockChange(BlockChangeCause cause, Player player, BlockState oldState, BlockState newState)

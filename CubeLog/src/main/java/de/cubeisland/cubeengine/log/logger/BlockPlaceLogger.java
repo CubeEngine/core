@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -27,9 +28,9 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
     {
         if (event.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY))
         {
-            this.logBlockChange(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
+            this.log(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
         }
-        this.logBlockChange(PLAYER, event.getPlayer(), event.getBlockReplacedState(), event.getBlockPlaced().getState());
+        this.log(PLAYER, event.getPlayer(), event.getBlockReplacedState(), event.getBlockPlaced().getState());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -47,7 +48,15 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
                 break;
         }
         newState.setType(mat);
-        this.logBlockChange(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(event.getBlockFace()).getState(), newState);
+        this.log(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(event.getBlockFace()).getState(), newState);
+    }
+
+    private void log(BlockChangeCause cause, Player player, BlockState oldState, BlockState newState)
+    {
+        if (!this.config.noLogging.contains(newState.getType()))
+        {
+            this.logBlockChange(cause, player, oldState, newState);
+        }
     }
 
     public static class BlockPlaceConfig extends SubLogConfig
@@ -57,7 +66,7 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
             this.enabled = true;
         }
         @Option(value = "no-logging", valueType = BlockData.class)
-        public Collection<BlockData> noLogging = new LinkedList<BlockData>();
+        public Collection<Material> noLogging = new LinkedList<Material>();
 
         @Override
         public String getName()

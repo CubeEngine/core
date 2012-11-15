@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.logger;
 
+import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.EntityType;
@@ -23,12 +24,22 @@ public class EndermanLogger extends BlockLogger<EndermanLogger.EndermanConfig>
         {
             BlockState newState = event.getBlock().getState();
             newState.setType(event.getTo());
+            if ((newState.getTypeId() == 0 && !this.config.logTake)
+                || event.getBlock().getState().getTypeId() == 0 && !this.config.logPlace)
+            {
+                return;
+            }
             this.logBlockChange(ENDERMAN, null, event.getBlock().getState(), newState);
         }
     }
 
     public static class EndermanConfig extends SubLogConfig
     {
+        @Option(value = "log-enderman-place")
+        public boolean logPlace = false;
+        @Option(value = "log-enderman-take")
+        public boolean logTake = false;
+        
         @Override
         public String getName()
         {

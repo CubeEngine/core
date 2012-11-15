@@ -25,7 +25,6 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
         super(LogAction.KILL);
         this.config = new KillConfig();
         this.killLogManager = new KillLogManager(module.getDatabase());
-
     }
 
     public void logKill(DamageCause cause, Entity damager, Entity damagee, Location loc)

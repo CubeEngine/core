@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -26,10 +28,9 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakCon
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
-        //TODO SAND stuff later...
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
-            this.logBlockChange(PLAYER, event.getPlayer(), block.getState(), null);
+            this.log(PLAYER, event.getPlayer(), block.getState());
         }
         switch (event.getBlock().getRelative(BlockFace.UP).getType())
         {
@@ -54,9 +55,10 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakCon
             case DIODE_BLOCK_OFF:
             case DIODE_BLOCK_ON:
             case CACTUS:
-                this.logBlockChange(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
+                this.log(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState());
         }
-        this.logBlockChange(PLAYER, event.getPlayer(), event.getBlock().getState(), null);
+        this.log(PLAYER, event.getPlayer(), event.getBlock().getState());
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -64,9 +66,17 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakCon
     {
         if (event.getBlockClicked().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY))
         {
-            this.logBlockChange(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(BlockFace.UP).getState(), null);
+            this.log(PLAYER, event.getPlayer(), event.getBlockClicked().getRelative(BlockFace.UP).getState());
         }
-        this.logBlockChange(PLAYER, event.getPlayer(), event.getBlockClicked().getState(), null);
+        this.log(PLAYER, event.getPlayer(), event.getBlockClicked().getState());
+    }
+
+    private void log(BlockChangeCause cause, Player player, BlockState oldState)
+    {
+        if (!this.config.noLogging.contains(oldState.getType()))
+        {
+            this.logBlockChange(cause, player, oldState, null);
+        }
     }
 
     public static class BlockBreakConfig extends SubLogConfig
@@ -76,7 +86,7 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakCon
             this.enabled = true;
         }
         @Option(value = "no-logging", valueType = BlockData.class)
-        public Collection<BlockData> noLogging = new LinkedList<BlockData>();
+        public Collection<Material> noLogging = new LinkedList<Material>();
 
         @Override
         public String getName()

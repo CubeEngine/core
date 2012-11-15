@@ -60,7 +60,6 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
         if (this.checkLog(type))
         {
-
             Location loc;
             if (event.getView().getTopInventory().getHolder() instanceof DoubleChest)
             {
@@ -92,7 +91,6 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true) //TODO figure out how it works...
     public void onInventoryClick(InventoryClickEvent event)
     {
-        // TODO check if is logging this
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getWhoClicked());
         TObjectIntHashMap<ItemData> log = openedInventories.get(user.key);
         if (log == null)
@@ -153,19 +151,16 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 
     private boolean compareItemStacks(ItemStack item1, ItemStack item2)
     {
-        if (item1.getTypeId() == item2.getTypeId())
+        if (item1.getTypeId() == item2.getTypeId() && item1.getDurability() == item2.getDurability())
         {
-            if (item1.getDurability() == item2.getDurability())
+            if (item1 instanceof CraftItemStack && item2 instanceof CraftItemStack)
             {
-                if (item1 instanceof CraftItemStack && item2 instanceof CraftItemStack)
+                if (!((CraftItemStack)item1).getHandle().getTag().equals(((CraftItemStack)item1).getHandle().getTag()))
                 {
-                    if (!((CraftItemStack)item1).getHandle().getTag().equals(((CraftItemStack)item1).getHandle().getTag()))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                return true;
             }
+            return true;
         }
         return false;
     }
@@ -206,7 +201,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             this.logContainerChange(user, new ItemData(0, (short)0), 0, loc, type.getId());
         }
     }
-
+/**
     private TObjectIntHashMap<ItemData> compressInventory(ItemStack[] items)
     {
         TObjectIntHashMap<ItemData> map = new TObjectIntHashMap<ItemData>();
@@ -227,6 +222,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         }
         return map;
     }
+    //*/
 
     public static class ContainerConfig extends SubLogConfig
     {

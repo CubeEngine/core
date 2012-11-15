@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.logger;
 
+import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -15,14 +16,22 @@ public class BlockGrowLogger extends BlockLogger<BlockGrowLogger.BlockGrowConfig
     {
         this.config = new BlockGrowConfig();
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onStructureGrow(StructureGrowEvent event)
     {
         Player player = null;
         if (event.isFromBonemeal())
         {
+            if (!this.config.logPlayer)
+            {
+                return;
+            }
             player = event.getPlayer();
+        }
+        else if (!this.config.logNatural)
+        {
+            return;
         }
         for (BlockState block : event.getBlocks())
         {
@@ -36,9 +45,14 @@ public class BlockGrowLogger extends BlockLogger<BlockGrowLogger.BlockGrowConfig
             }
         }
     }
-
+    
     public static class BlockGrowConfig extends SubLogConfig
     {
+        @Option(value = "log-natural-grow")
+        public boolean logNatural = false;
+        @Option(value = "log-player-grow")
+        public boolean logPlayer = true;
+        
         @Override
         public String getName()
         {
