@@ -1,12 +1,12 @@
-package de.cubeisland.cubeengine.core.command.args;
+package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.util.Pair;
 
-public class FloatArg extends ArgumentReader<Float>
+public class FloatReader extends ArgumentReader<Float>
 {
-    public FloatArg()
+    public FloatReader()
     {
         super(Float.class);
     }

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command.args;
+package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
@@ -7,11 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 
-public class WorldArg extends ArgumentReader<World>
+public class WorldReader extends ArgumentReader<World>
 {
     private final Server server;
 
-    public WorldArg()
+    public WorldReader()
     {
         super(World.class);
         this.server = Bukkit.getServer();

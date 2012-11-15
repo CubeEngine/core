@@ -1,12 +1,12 @@
-package de.cubeisland.cubeengine.core.command.args;
+package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.util.Pair;
 
-public final class StringArg extends ArgumentReader<String>
+public final class StringReader extends ArgumentReader<String>
 {
-    public StringArg()
+    public StringReader()
     {
         super(String.class);
     }

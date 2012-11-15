@@ -1,12 +1,12 @@
-package de.cubeisland.cubeengine.core.command.args;
+package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.util.Pair;
 
-public class IntArg extends ArgumentReader<Integer>
+public class IntReader extends ArgumentReader<Integer>
 {
-    public IntArg()
+    public IntReader()
     {
         super(Integer.class);
     }

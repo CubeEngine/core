@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command.args;
+package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
@@ -6,9 +6,9 @@ import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import org.bukkit.enchantments.Enchantment;
 
-public class EnchantmentArg extends ArgumentReader<Enchantment>
+public class EnchantmentReader extends ArgumentReader<Enchantment>
 {
-    public EnchantmentArg()
+    public EnchantmentReader()
     {
         super(Enchantment.class);
     }

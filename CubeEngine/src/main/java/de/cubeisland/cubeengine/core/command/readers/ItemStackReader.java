@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command.args;
+package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
@@ -6,9 +6,9 @@ import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemStackArg extends ArgumentReader<ItemStack>
+public class ItemStackReader extends ArgumentReader<ItemStack>
 {
-    public ItemStackArg()
+    public ItemStackReader()
     {
         super(ItemStack.class);
     }

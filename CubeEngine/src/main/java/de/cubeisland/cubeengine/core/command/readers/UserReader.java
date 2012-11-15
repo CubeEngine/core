@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command.args;
+package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
@@ -10,11 +10,11 @@ import de.cubeisland.cubeengine.core.util.Pair;
 /**
  * This argument is used to get users
  */
-public class UserArg extends ArgumentReader<User>
+public class UserReader extends ArgumentReader<User>
 {
     private final UserManager um;
 
-    public UserArg()
+    public UserReader()
     {
         super(User.class);
         this.um = CubeEngine.getUserManager();
