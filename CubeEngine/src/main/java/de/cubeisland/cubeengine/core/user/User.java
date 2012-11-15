@@ -100,7 +100,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         {
             if (CubeEngine.getCore().isDebug())
             {
-                CubeEngine.getLogger().warning("A module sent an untranslated message!");
+                CubeEngine.getLogger().log(LogLevel.DEBUG, "A module sent an untranslated message!");
             }
         }
         super.sendMessage(ChatFormat.parseFormats(string));

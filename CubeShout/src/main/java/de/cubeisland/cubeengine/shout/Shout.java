@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.shout;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.announce.Announcer;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
@@ -8,7 +9,6 @@ import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 
 public class Shout extends Module
 {
@@ -38,7 +38,7 @@ public class Shout extends Module
         {
             if (this.getCore().isDebug())
             {
-                this.getLogger().log(Level.WARNING, "There was an error creating a file!", ex);
+                this.getLogger().log(LogLevel.WARNING, "There was an error creating a file!", ex);
             }
         }
         
@@ -60,11 +60,11 @@ public class Shout extends Module
             }
             catch (Exception ex)
             {
-                this.getLogger().log(Level.WARNING, "An exception occured when creating the example announcement");
-                this.getLogger().log(Level.WARNING, "The message was: " + ex.getLocalizedMessage());
+                this.getLogger().log(LogLevel.WARNING, "An exception occured when creating the example announcement");
+                this.getLogger().log(LogLevel.WARNING, "The message was: " + ex.getLocalizedMessage());
                 if (this.getCore().getConfiguration().debugMode)
                 {
-                    this.getLogger().log(Level.WARNING, null, ex);
+                    this.getLogger().log(LogLevel.WARNING, null, ex);
                 }
             }
         }

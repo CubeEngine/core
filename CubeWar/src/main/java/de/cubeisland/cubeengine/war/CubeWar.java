@@ -19,7 +19,6 @@ import de.cubeisland.libMinecraft.command.BaseCommand;
 import de.cubeisland.libMinecraft.translation.TranslatablePlugin;
 import de.cubeisland.libMinecraft.translation.Translation;
 import java.io.File;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
@@ -161,17 +160,17 @@ public class CubeWar extends ModuleBase implements TranslatablePlugin
 
     public static void log(String msg)
     {
-        logger.log(Level.INFO, msg);
+        logger.log(LogLevelINFO, msg);
     }
 
     public static void error(String msg)
     {
-        logger.log(Level.SEVERE, msg);
+        logger.log(LogLevelERROR, msg);
     }
 
     public static void error(String msg, Throwable t)
     {
-        logger.log(Level.SEVERE, msg, t);
+        logger.log(LogLevelERROR, msg, t);
     }
 
     public static void debug(String msg)

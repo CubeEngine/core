@@ -58,11 +58,11 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
 
     private HttpResponse processRequest(ApiRequest request)
     {
-        // ApiBukkit.log(String.format("'%s' requested '%s'", request.getRemoteAddress().getAddress().getHostAddress(), request.getPath()), ApiLogLevel.INFO); -- TODO fix logging
+        // ApiBukkit.log(String.format("'%s' requested '%s'", request.getRemoteAddress().getAddress().getHostAddress(), request.getPath()), ApiLogLevelINFO); -- TODO fix logging
         String useragent = request.headers.get("user-agent");
         if (useragent != null)
         {
-            // ApiBukkit.log("Useragent: " + useragent, ApiLogLevel.INFO); -- TODO fix logging
+            // ApiBukkit.log("Useragent: " + useragent, ApiLogLevelINFO); -- TODO fix logging
         }
 
         String controllerName = request.getController();

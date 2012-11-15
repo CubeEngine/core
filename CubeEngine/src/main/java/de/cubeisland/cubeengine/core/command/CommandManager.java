@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.bukkit.CubeCommandMap;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -28,7 +28,6 @@ import org.bukkit.craftbukkit.CraftServer;
 public class CommandManager
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
-    
     private final CubeCommandMap commandMap;
     private final Map<String, Command> knownCommands;
 
@@ -175,7 +174,7 @@ public class CommandManager
 
             this.registerCommands(command.getModule(), command, newParents);
         }
-        
+
         // if the module is already enabled we have to reload the help map
         if (command.getModule().isEnabled())
         {
@@ -210,7 +209,7 @@ public class CommandManager
             Class<?>[] params = method.getParameterTypes();
             if (params.length != 1 || params[0] != CommandContext.class)
             {
-                LOGGER.log(Level.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", new Object[]
+                LOGGER.log(LogLevel.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", new Object[]
                     {
                         commandHolder.getClass().getSimpleName(), method.getName(), method.getName()
                     });

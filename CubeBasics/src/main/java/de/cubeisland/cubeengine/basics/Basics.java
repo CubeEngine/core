@@ -8,7 +8,6 @@ import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportRequestCommands;
 import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 

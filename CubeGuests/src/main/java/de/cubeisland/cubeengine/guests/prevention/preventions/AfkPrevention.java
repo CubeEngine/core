@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.guests.Guests;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import gnu.trove.map.hash.THashMap;
-import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -145,7 +145,7 @@ public class AfkPrevention extends Prevention
                 this.taskId = taskManager.scheduleSyncDelayedTask(getModule(), this, timeout);
                 if (this.taskId < 0)
                 {
-                    getModule().getLogger().log(Level.SEVERE, "Tracker for {0} failed to schedule!", this.player.getName());
+                    getModule().getLogger().log(LogLevel.ERROR, "Tracker for {0} failed to schedule!", this.player.getName());
                 }
             }
         }

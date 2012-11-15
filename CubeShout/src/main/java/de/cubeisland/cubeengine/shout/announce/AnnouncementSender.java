@@ -17,6 +17,7 @@ public class AnnouncementSender implements Callable
         this.message = message;
     }
 
+    @Override
     public Object call() throws Exception
     {
         this.user.sendMessage(message);

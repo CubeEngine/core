@@ -18,11 +18,11 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -60,7 +60,7 @@ public class BukkitCore extends JavaPlugin implements Core
         PluginManager pm = this.server.getPluginManager();
 
         this.logger = new CubeLogger("Core", this.getLogger());
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
+        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevelERROR, this));
 
         try
         {
@@ -68,7 +68,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         catch (IOException e)
         {
-            this.logger.log(Level.SEVERE, "Failed to initialize the FileManager", e);
+            this.logger.log(LogLevel.ERROR, "Failed to initialize the FileManager", e);
             pm.disablePlugin(this);
             return;
         }
@@ -78,11 +78,11 @@ public class BukkitCore extends JavaPlugin implements Core
         try
         {
             // depends on: file manager
-            this.logger.addHandler(new CubeFileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
+            this.logger.addHandler(new CubeFileHandler(LogLevel.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
         }
         catch (IOException e)
         {
-            this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+            this.logger.log(LogLevel.ERROR, e.getLocalizedMessage(), e);
         }
 
         // depends on: file manager
@@ -98,7 +98,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
-            this.logger.log(Level.SEVERE, "Could not connect to the database type ''{0}''", this.config.database);
+            this.logger.log(LogLevel.ERROR, "Could not connect to the database type ''{0}''", this.config.database);
             pm.disablePlugin(this);
             return;
         }
@@ -182,7 +182,7 @@ public class BukkitCore extends JavaPlugin implements Core
             }
             catch (InterruptedException ex)
             {
-                this.logger.log(Level.SEVERE, "Could not execute all pending tasks", ex);
+                this.logger.log(LogLevel.ERROR, "Could not execute all pending tasks", ex);
             }
             finally
             {

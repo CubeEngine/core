@@ -8,8 +8,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 

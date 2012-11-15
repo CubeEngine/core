@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import java.util.logging.Level;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 
 /**
  * Main Class
@@ -21,7 +21,7 @@ public class Rulebook extends Module
 
     public void error(String msg, Throwable t)
     {
-        this.getLogger().log(Level.SEVERE, msg, t);
+        this.getLogger().log(LogLevel.ERROR, msg, t);
     }
 
     public RuleBookConfiguration getConfig()

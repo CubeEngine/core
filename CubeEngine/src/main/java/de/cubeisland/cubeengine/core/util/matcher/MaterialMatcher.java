@@ -5,12 +5,12 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -357,7 +357,7 @@ public class MaterialMatcher
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
             if (jarinput != null && this.readItems(readItems, jarinput, true))
             {
-                CubeEngine.getLogger().log(Level.FINER, "Updated items.txt");
+                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated items.txt");
                 StringBuilder sb = new StringBuilder();
                 for (Integer item : readItems.keySet())
                 {

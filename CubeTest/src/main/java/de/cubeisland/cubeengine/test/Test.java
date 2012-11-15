@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet0KeepAlive;
 import net.minecraft.server.ServerConfigurationManager;
@@ -61,15 +61,15 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLogger().log(Level.SEVERE, "Error while Enabling the TestModule", ex);
+            this.getLogger().log(LogLevel.ERROR, "Error while Enabling the TestModule", ex);
         }
         try
         {
-            this.getLogger().addHandler(new CubeFileHandler(Level.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
+            this.getLogger().addHandler(new CubeFileHandler(LogLevel.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
         {
-            this.getLogger().log(Level.SEVERE, "Error while adding the FileHandler", ex);
+            this.getLogger().log(LogLevel.ERROR, "Error while adding the FileHandler", ex);
         }
         this.registerListener(new TestListener(this));
 
@@ -91,8 +91,8 @@ public class Test extends Module
             }
         });
 
-        this.getLogger().log(Level.INFO, "Basics-Module: {0}", String.valueOf(basicsModule));
-        this.getLogger().log(Level.INFO, "BukkitCore-Plugin: {0}", String.valueOf(core));
+        this.getLogger().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(basicsModule));
+        this.getLogger().log(LogLevel.DEBUG, "BukkitCore-Plugin: {0}", String.valueOf(core));
         
         timer = new Timer("keepAliveTimer");
         timer.schedule(new KeepAliveTimer() , 2 * 1000, 2 * 1000);
@@ -288,7 +288,7 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLogger().log(Level.SEVERE, "Error in testsomeutils", ex);
+            this.getLogger().log(LogLevel.ERROR, "Error in testsomeutils", ex);
         }
     }
 

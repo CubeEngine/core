@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.ShoutException;
 import java.io.BufferedWriter;
@@ -14,7 +15,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 /**
  * Class to manage all the announcements and their receivers
@@ -299,7 +299,7 @@ public class AnnouncementManager
             {
                 if (module.getCore().isDebug())
                 {
-                    module.getLogger().log(Level.INFO, "Loading announcement {0}", f.getName());
+                    module.getLogger().log(LogLevel.DEBUG, "Loading announcement {0}", f.getName());
                 }
                 try
                 {
@@ -307,10 +307,10 @@ public class AnnouncementManager
                 }
                 catch (ShoutException e)
                 {
-                    module.getLogger().log(Level.WARNING, "There was an error loading the announcement: {0}", f.getName());
+                    module.getLogger().log(LogLevel.WARNING, "There was an error loading the announcement: {0}", f.getName());
                     if (module.getCore().isDebug())
                     {
-                        module.getLogger().log(Level.SEVERE, "The error message was: ", e);
+                        module.getLogger().log(LogLevel.ERROR, "The error message was: ", e);
                     }
                 }
             }
@@ -382,11 +382,11 @@ public class AnnouncementManager
 
         if (this.module.getCore().isDebug())
         {
-            this.module.getLogger().log(Level.INFO, "Languages: {0}", messages.keySet().toString());
-            this.module.getLogger().log(Level.INFO, "World: {0}", world);
-            this.module.getLogger().log(Level.INFO, "Delay(in millisecounds): {0}", delay);
-            this.module.getLogger().log(Level.INFO, "Permission: {0}", permNode);
-            this.module.getLogger().log(Level.INFO, "Group: {0}", group);
+            this.module.getLogger().log(LogLevel.DEBUG, "Languages: {0}", messages.keySet().toString());
+            this.module.getLogger().log(LogLevel.DEBUG, "World: {0}", world);
+            this.module.getLogger().log(LogLevel.DEBUG, "Delay(in millisecounds): {0}", delay);
+            this.module.getLogger().log(LogLevel.DEBUG, "Permission: {0}", permNode);
+            this.module.getLogger().log(LogLevel.DEBUG, "Group: {0}", group);
         }
         try
         {

@@ -14,11 +14,13 @@ public enum ShoutResource implements Resource
         this.target = target;
     }
 
+    @Override
     public String getSource()
     {
         return this.source;
     }
 
+    @Override
     public String getTarget()
     {
         return this.target;
