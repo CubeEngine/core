@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import java.util.UUID;
 import org.bukkit.World;
 
@@ -26,14 +26,17 @@ public class WorldConverter implements Converter<World>
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('('), string.indexOf(')') - 1));
                 world = CubeEngine.getServer().getWorld(uid);
+                string = string.substring(0,string.indexOf('('));
             }
             if (world == null)
             {
                 world = CubeEngine.getServer().getWorld(string);
-
             }
-            return world;
+            if (world != null)
+            {
+                return world;
+            }
         }
-        throw new ConversionException("Could not convert to World!");
+        throw new ConversionException("Could not \"" + object + "\" convert to World!");
     }
 }

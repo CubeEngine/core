@@ -1,16 +1,10 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.util.convert.BasicConverter;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Converter;
 
-public class BooleanConverter implements Converter<Boolean>
+public class BooleanConverter extends BasicConverter<Boolean>
 {
-    @Override
-    public Object toObject(Boolean object) throws ConversionException
-    {
-        return object;
-    }
-
     @Override
     public Boolean fromObject(Object object) throws ConversionException
     {
@@ -19,16 +13,13 @@ public class BooleanConverter implements Converter<Boolean>
         {
             return true;
         }
+        else if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("off") || s.equalsIgnoreCase("no") || s.equalsIgnoreCase("0"))
+        {
+            return false;
+        }
         else
         {
-            if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("off") || s.equalsIgnoreCase("no") || s.equalsIgnoreCase("0"))
-            {
-                return false;
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

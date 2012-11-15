@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
-import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.Location;

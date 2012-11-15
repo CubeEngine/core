@@ -16,7 +16,7 @@ public class MapConverter
      * @return the serializable map
      * @throws ConversionException
      */
-    public Object toObject(Map<?, ?> map) throws ConversionException
+    public Object toObject(Map<?, ?> map) throws ConversionException  
     {
         Map<Object, Object> result = new LinkedHashMap<Object, Object>();
         if (map.isEmpty())
@@ -71,11 +71,19 @@ public class MapConverter
                 }
                 return result;
             }
-            throw new IllegalStateException("Cannot convert not a map to a map.");
+            throw new IllegalStateException("Map-conversion failed: Cannot convert not a map to a map.");
         }
-        catch (Exception ex)
+        catch (IllegalAccessException ex)
         {
-            throw new IllegalStateException("Error while converting a map.", ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + mapType.getCanonicalName(), ex);
+        }
+        catch (InstantiationException ex)
+        {
+            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + mapType.getCanonicalName(), ex);
+        }
+        catch (ConversionException ex)
+        {
+            throw new IllegalStateException("Map-conversion failed: Error while converting the values in the map.", ex);
         }
     }
 }

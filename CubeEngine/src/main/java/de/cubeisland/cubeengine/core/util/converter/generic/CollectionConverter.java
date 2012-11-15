@@ -4,13 +4,7 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class CollectionConverter
 {
@@ -94,12 +88,20 @@ public class CollectionConverter
             }
             else
             {
-                throw new IllegalStateException("Cannot convert not a collection to a collection.");
+                throw new IllegalStateException("Collection-conversion failed: Cannot convert not a collection to a collection.");
             }
         }
-        catch (Exception ex)
+        catch (IllegalAccessException ex)
         {
-            throw new IllegalStateException("Error while converting a collection.", ex);
+            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + collectionType.getCanonicalName(), ex);
+        }
+        catch (InstantiationException ex)
+        {
+            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + collectionType.getCanonicalName(), ex);
+        }
+        catch (ConversionException ex)
+        {
+            throw new IllegalStateException("Collection-conversion failed: Error while converting the values in the collection.", ex);
         }
     }
 }

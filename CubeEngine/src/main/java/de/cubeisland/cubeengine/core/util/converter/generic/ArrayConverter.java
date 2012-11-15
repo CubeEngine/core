@@ -27,20 +27,27 @@ public class ArrayConverter
 
     public <V> V[] fromObject(Object object, Class<V> valType) throws ConversionException
     {
-        Collection<V> result = new LinkedList<V>();
-        if (object instanceof Collection)
+        try
         {
-            Converter<V> valConverter = Convert.matchConverter(valType);
-            Collection col = (Collection)object;
-            for (Object o : col)
+            Collection<V> result = new LinkedList<V>();
+            if (object instanceof Collection)
             {
-                result.add(valConverter.fromObject(o));
+                Converter<V> valConverter = Convert.matchConverter(valType);
+                Collection col = (Collection)object;
+                for (Object o : col)
+                {
+                    result.add(valConverter.fromObject(o));
+                }
+                return result.toArray((V[])Array.newInstance(valType, result.size()));
             }
-            return result.toArray((V[])Array.newInstance(valType, result.size()));
+            else
+            {
+                throw new IllegalStateException("Array-conversion failed: Cannot convert not a collection to an array.");
+            }
         }
-        else
+        catch (ConversionException ex)
         {
-            throw new IllegalStateException("Cannot convert not a collection to an array.");
+            throw new IllegalStateException("Array-conversion failed: Error while converting the values in the array.");
         }
     }
 }

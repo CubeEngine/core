@@ -1,8 +1,5 @@
 package de.cubeisland.cubeengine.core.util.convert;
 
-import java.util.Collection;
-import java.util.Map;
-
 public abstract class BasicConverter<T> implements Converter<T>
 {
     @Override
@@ -12,11 +9,7 @@ public abstract class BasicConverter<T> implements Converter<T>
         if (clazz.isPrimitive()
             || Number.class.isAssignableFrom(clazz)
             || CharSequence.class.isAssignableFrom(clazz)
-            || Boolean.class.isAssignableFrom(clazz)
-            || Map.class.isAssignableFrom(clazz)
-            || Collection.class.isAssignableFrom(clazz)
-            || clazz.isArray()
-        )
+            || Boolean.class.isAssignableFrom(clazz))
         {
             return object;
         }
