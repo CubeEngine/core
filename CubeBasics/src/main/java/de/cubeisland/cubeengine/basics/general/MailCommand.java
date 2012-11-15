@@ -88,10 +88,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "spymail")
-    @Command(
-        desc = "Shows the mails of other players.",
-        usage = "<player>",
-        max = 1)
+    @Command(desc = "Shows the mails of other players.", usage = "<player>", max = 1)
     public void spy(CommandContext context)
     {
         User user = context.getUser(0);
