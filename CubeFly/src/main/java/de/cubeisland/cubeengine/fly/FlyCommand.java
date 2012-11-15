@@ -4,8 +4,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.args.FloatArg;
-import de.cubeisland.cubeengine.core.command.args.UserArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 
@@ -29,7 +27,7 @@ public class FlyCommand
     max = 1,
     params =
     {
-        @Param(names = "player", type = UserArg.class)
+        @Param(names = "player", type = User.class)
     },
     usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)

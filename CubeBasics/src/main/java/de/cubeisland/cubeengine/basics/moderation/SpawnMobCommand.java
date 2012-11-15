@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;

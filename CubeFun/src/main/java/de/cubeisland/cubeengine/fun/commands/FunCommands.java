@@ -5,8 +5,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.args.IntArg;
-import de.cubeisland.cubeengine.core.command.args.UserArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
@@ -45,9 +43,9 @@ public class FunCommands
         desc = "strucks a player or the location you are looking at by lightning.",
         max = 0,
         params = {
-            @Param(names = {"player", "p"}, type = UserArg.class),
-            @Param(names = {"damage", "d"}, type = IntArg.class),
-            @Param(names = {"fireticks", "f"}, type = IntArg.class)
+            @Param(names = {"player", "p"}, type = User.class),
+            @Param(names = {"damage", "d"}, type = Integer.class),
+            @Param(names = {"fireticks", "f"}, type = Integer.class)
         },
         usage = "[player <name>]"
     )
@@ -203,7 +201,7 @@ public class FunCommands
         desc = "rockets a player",
         max = 1,
         usage = "[height]",
-        params = @Param(names = {"player", "p"}, type = UserArg.class)
+        params = @Param(names = {"player", "p"}, type = User.class)
     )
     public void rocket(CommandContext context)
     {
@@ -247,8 +245,8 @@ public class FunCommands
         flags = {@Flag(longName = "unsafe", name = "u")},
         usage = "[radius] [height <value>] [player <name>] [-unsafe]",
         params = {
-            @Param(names = {"player", "p"}, type = UserArg.class),
-            @Param(names = {"height", "h"}, type = IntArg.class),
+            @Param(names = {"player", "p"}, type = User.class),
+            @Param(names = {"height", "h"}, type = Integer.class),
             @Param(names = {"concentration", "c"})
         }
     )

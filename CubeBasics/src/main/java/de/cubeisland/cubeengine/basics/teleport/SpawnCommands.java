@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.args.IntArg;
-import de.cubeisland.cubeengine.core.command.args.WorldArg;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -87,7 +85,7 @@ public class SpawnCommands
         desc = "Teleport directly to the worlds spawn.",
         usage = "[player] [world <world>]",
         max = 2,
-        params = @Param(names = {"world", "w"}, type = WorldArg.class),
+        params = @Param(names = {"world", "w"}, type = World.class),
         flags = {
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "all", name = "a")

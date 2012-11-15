@@ -7,8 +7,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.args.IntArg;
-import de.cubeisland.cubeengine.core.command.args.WorldArg;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -272,7 +270,7 @@ public class TeleportCommands
         usage = "<x> [y] <z> [world <world>]",
         min = 2,
         max = 4,
-        params = @Param(names = {"world", "w"}, type = WorldArg.class),
+        params = @Param(names = {"world", "w"}, type = World.class),
         flags = @Flag(longName = "unsafe", name = "u")
     )
     public void tppos(CommandContext context)

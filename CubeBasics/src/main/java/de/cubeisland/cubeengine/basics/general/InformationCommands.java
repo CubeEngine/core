@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -118,13 +117,13 @@ public class InformationCommands
 
     @Command(
         desc = "Displays near players(entities/mobs) to you.",
-        max = 2,
-        usage = "[radius] [player] [-entity]|[-mob]",
-        flags =
-        {
-            @Flag(longName = "entity", name = "e"),
-            @Flag(longName = "mob", name = "m")
-        })
+    max = 2,
+    usage = "[radius] [player] [-entity]|[-mob]",
+    flags =
+    {
+        @Flag(longName = "entity", name = "e"),
+        @Flag(longName = "mob", name = "m")
+    })
     public void near(CommandContext context)
     {
         User user;
@@ -210,7 +209,7 @@ public class InformationCommands
                     }
                     else
                     {
-                        pair.y++;
+                        pair.setRight(pair.getRight() + 1);
                     }
                 }
             }
@@ -218,7 +217,7 @@ public class InformationCommands
         StringBuilder groupedOutput = new StringBuilder();
         for (String key : groupedEntities.keySet())
         {
-            groupedOutput.append(String.format("\n&6%dx %s &f(&e%dm+&f)", groupedEntities.get(key).y, key, MathHelper.round(groupedEntities.get(key).x)));
+            groupedOutput.append(String.format("\n&6%dx %s &f(&e%dm+&f)", groupedEntities.get(key).getRight(), key, MathHelper.round(groupedEntities.get(key).getLeft())));
         }
         if (outputlist.isEmpty())
         {
@@ -325,10 +324,10 @@ public class InformationCommands
         memused += memUse;
         context.sendMessage("basics", "&6Uptime: &a%s\n&6Memory Usage: %s&f/%s&f/%s MB", uptime, memused, memcommited, memmax);
     }
-    
+
     @Command(
         desc = "Displays your current language settings.",
-        max = 0)
+    max = 0)
     public void language(CommandContext context)
     {
         context.sendMessage("basics", "&eYour language is &6%s&e.",

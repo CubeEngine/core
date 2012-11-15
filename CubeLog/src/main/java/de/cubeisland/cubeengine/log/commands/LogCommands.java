@@ -5,11 +5,7 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.command.args.IntArg;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.user.User;
-import java.util.Date;
-import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 public class LogCommands extends ContainerCommand
@@ -45,7 +41,7 @@ public class LogCommands extends ContainerCommand
     },
     params = {
         //@Param(names ={"player", "p"}, type = User[].class), TODO
-        @Param(names = "area", type = IntArg.class),
+        @Param(names = "area", type = Integer.class),
         //@Param(names = "block", type = ItemStack[].class), TODO
         //@Param(names = {"since", "time"}, type = Date.class), TODO
         //@Param(names = "before", type = Date.class),
