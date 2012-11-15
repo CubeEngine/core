@@ -1,12 +1,19 @@
 package de.cubeisland.cubeengine.core.webapi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiRequestException;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
@@ -16,14 +23,19 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
 import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 
 /**
@@ -33,22 +45,37 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
  */
 public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Object>
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
+    private static final Logger LOGGER = new CubeLogger("webapi");
+
+    static
+    {
+        try
+        {
+            LOGGER.addHandler(new FileHandler("webapi.log"));
+        }
+        catch (IOException e)
+        {
+            CubeEngine.getLogger().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
+        }
+    }
     
     private static final Charset UTF8 = Charset.forName("UTF-8");
     private static final String WEBSOCKET_ROUTE = "websocket";
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
+    private ObjectMapper objectMapper;
     
     ApiRequestHandler(ApiServer server)
     {
         this.server = server;
+        this.objectMapper = CubeEngine.getJsonObjectMapper();
     }
     
     @Override
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
         this.error(context, UNKNOWN_ERROR);
+        LOGGER.log(ERROR, "An error occurred while processing an API request: " + t.getMessage(), t);
     }
     
     @Override
@@ -84,7 +111,6 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         {
             this.error(context, UNKNOWN_ERROR);
             LOGGER.log(INFO, "the decoder failed on this request...", request.getDecoderResult().cause());
-            // TODO return error response: bad request
             return;
         }
         
@@ -154,20 +180,15 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         {
             handler.execute(apiRequest, apiResponse);
             this.success(context, apiResponse);
-            return;
         }
         catch (ApiRequestException e)
         {
-            // TODO add info to the error
-            this.error(context, REQUEST_EXCEPTION);
+            this.error(context, REQUEST_EXCEPTION, e);
         }
         catch (Throwable t)
         {
-            // TODO add info to the error
             this.error(context, UNKNOWN_ERROR);
         }
-
-        this.error(context, UNKNOWN_ERROR);
     }
 
     private void handleWebSocketFrame(ChannelHandlerContext context, WebSocketFrame frame)
@@ -258,7 +279,28 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
     private void error(ChannelHandlerContext context, RequestError error)
     {
-        context.close();
+        this.error(context, error, null);
+    }
+
+    private void error(ChannelHandlerContext context, RequestError error, ApiRequestException e)
+    {
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("id", error.getCode());
+        data.put("desc", error.getDescription());
+
+        if (e != null)
+        {
+            Map<String, Object> reason = new HashMap<String, Object>();
+            reason.put("id", e.getCode());
+            reason.put("desc", e.getMessage());
+            data.put("reason", reason);
+        }
+
+        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, error.getRepsonseStatus());
+        response.setContent(Unpooled.copiedBuffer(this.serialize(data), UTF8));
+        response.setHeader(CONTENT_TYPE, MimeType.JSON.toString());
+
+        context.write(response).addListener(ChannelFutureListener.CLOSE).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
     public static String normalizeRoute(String route)
@@ -273,6 +315,30 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             route = route.substring(0, route.length() - 1);
         }
         return route;
+    }
+
+    public String serialize(Object object)
+    {
+        if (object == null)
+        {
+            return "null";
+        }
+        if (object instanceof Map)
+        {
+            try
+            {
+                return this.objectMapper.writer().writeValueAsString(object);
+            }
+            catch (JsonProcessingException e)
+            {
+                LOGGER.log(ERROR, "Failed to generate the JSON code for a response!", e);
+                return "null";
+            }
+        }
+        else
+        {
+            return String.valueOf(object);
+        }
     }
 
     public void handleEvent(String event, Map<String, Object> data)

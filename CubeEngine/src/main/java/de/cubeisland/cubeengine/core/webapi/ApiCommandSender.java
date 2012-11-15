@@ -1,9 +1,7 @@
 package de.cubeisland.cubeengine.core.webapi;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import org.bukkit.ChatColor;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -11,37 +9,32 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 public class ApiCommandSender implements CommandSender
 {
     private final String name;
-    private final Server server;
+    private final Core core;
     private final List<String> messages;
-    private boolean active;
 
-    public ApiCommandSender(final Server server)
+    public ApiCommandSender(final Core server)
     {
         this("ApiCommandSender", server);
     }
 
-    public ApiCommandSender(final String name, final Server server)
+    public ApiCommandSender(final String name, final Core core)
     {
         this.name = name;
-        this.server = server;
+        this.core = core;
         this.messages = new ArrayList<String>();
-        this.active = false;
     }
 
-    public void toggleActive()
+    public Core getCore()
     {
-        if (active)
-        {
-            this.active = false;
-        }
-        else
-        {
-            this.messages.clear();
-            this.active = true;
-        }
+        return this.core;
     }
 
     @Override
@@ -53,10 +46,7 @@ public class ApiCommandSender implements CommandSender
     @Override
     public void sendMessage(String message)
     {
-        if (active)
-        {
-            this.messages.add(message.replaceAll("(?i)" + ChatColor.COLOR_CHAR + "([a-fk0-9])", "&$1"));
-        }
+        // TODO implement
     }
 
     @Override
@@ -68,15 +58,6 @@ public class ApiCommandSender implements CommandSender
         }
     }
 
-    public List<String> getResponse()
-    {
-        if (!active)
-        {
-            return this.messages;
-        }
-        return null;
-    }
-
     @Override
     public boolean isOp()
     {
@@ -86,7 +67,7 @@ public class ApiCommandSender implements CommandSender
     @Override
     public Server getServer()
     {
-        return this.server;
+        return ((BukkitCore)this.core).getServer();
     }
 
     @Override
@@ -139,25 +120,19 @@ public class ApiCommandSender implements CommandSender
 
     @Override
     public void removeAttachment(PermissionAttachment attachment)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    {}
 
     @Override
     public void recalculatePermissions()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    {}
 
     @Override
     public Set<PermissionAttachmentInfo> getEffectivePermissions()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Collections.emptySet();
     }
 
     @Override
     public void setOp(boolean value)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    {}
 }

@@ -47,7 +47,7 @@ public enum RequestError
      *
      * @return the response status
      */
-    public HttpResponseStatus getRepsonseStatus()
+    HttpResponseStatus getRepsonseStatus()
     {
         return this.responseStatus;
     }

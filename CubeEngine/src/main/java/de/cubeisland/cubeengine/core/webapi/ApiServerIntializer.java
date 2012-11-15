@@ -25,7 +25,7 @@ public class ApiServerIntializer extends ChannelInitializer<SocketChannel>
     {
         ch.pipeline()
             .addLast("decoder", new HttpRequestDecoder()) 
-            .addLast("aggregator", new HttpChunkAggregator(server.getMaxContentLength()))
+            .addLast("aggregator", new HttpChunkAggregator(this.server.getMaxContentLength()))
             .addLast("encoder", new HttpResponseEncoder())
             .addLast("handler", new ApiRequestHandler(this.server));
         

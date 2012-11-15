@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.webapi;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * A list of supported request methods.
@@ -41,6 +42,6 @@ public enum RequestMethod
         {
             return null;
         }
-        return BY_NAME.get(name.toUpperCase());
+        return BY_NAME.get(name.toUpperCase(Locale.ENGLISH));
     }
 }
