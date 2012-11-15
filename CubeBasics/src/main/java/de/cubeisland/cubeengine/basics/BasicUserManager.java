@@ -1,8 +1,10 @@
 package de.cubeisland.cubeengine.basics;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
+import org.bukkit.entity.Player;
 
 public class BasicUserManager extends BasicStorage<BasicUser>
 {
@@ -14,6 +16,11 @@ public class BasicUserManager extends BasicStorage<BasicUser>
         this.initialize();
     }
 
+    public BasicUser getBasicUser(Player player)
+    {
+        return this.getBasicUser(CubeEngine.getUserManager().getExactUser(player));
+    }
+
     public BasicUser getBasicUser(User user)
     {
         BasicUser model = user.getAttachment(BasicUser.class);
@@ -23,6 +30,7 @@ public class BasicUserManager extends BasicStorage<BasicUser>
             if (model == null)
             {
                 model = new BasicUser(user);
+                this.store(model);
             }
             user.attach(model);
         }

@@ -48,16 +48,19 @@ public class Kit
                 private String permission = "cubeengine.basics.kits." + name.toLowerCase(Locale.ENGLISH);
                 private PermissionDefault def = PermissionDefault.OP;
 
+                @Override
                 public boolean isAuthorized(Permissible player)
                 {
                     return player.hasPermission(permission);
                 }
 
+                @Override
                 public String getPermission()
                 {
                     return this.permission;
                 }
 
+                @Override
                 public PermissionDefault getPermissionDefault()
                 {
                     return this.def;

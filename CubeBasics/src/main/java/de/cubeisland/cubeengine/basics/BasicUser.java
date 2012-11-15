@@ -14,24 +14,25 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name="basicuser")
+@Entity(name = "basicuser")
 public class BasicUser implements Model<Integer>
 {
     @Key
     @ForeignKey(table = "user", field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public final int key; // User Key
-    
-    @Attribute(type = AttrType.TIMESTAMP, notnull=false)
+    @Attribute(type = AttrType.TIMESTAMP, notnull = false)
     public Timestamp muted;
-    
+    @Attribute(type = AttrType.BOOLEAN)
+    public boolean godMode;
     public List<Mail> mailbox = new ArrayList<Mail>();
-    
+
     @DatabaseConstructor
     public BasicUser(List<Object> args) throws ConversionException
     {
         this.key = Integer.valueOf(args.get(0).toString());
         this.muted = (Timestamp)args.get(1);
+        this.godMode = (Boolean)args.get(2);
     }
 
     public BasicUser(User user)
@@ -39,13 +40,15 @@ public class BasicUser implements Model<Integer>
         this.key = user.getKey();
     }
 
+    @Override
     public Integer getKey()
     {
         return key;
     }
 
+    @Override
     public void setKey(Integer key)
     {
-        throw new UnsupportedOperationException("Not supported.");
+        throw new UnsupportedOperationException("Not supported. The BasicUserKey is final!");
     }
 }

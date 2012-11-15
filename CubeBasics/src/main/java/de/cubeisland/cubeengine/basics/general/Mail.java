@@ -42,11 +42,13 @@ public class Mail implements Model<Integer>
         this.senderId = Integer.valueOf(args.get(3).toString());
     }
 
+    @Override
     public Integer getKey()
     {
         return key;
     }
 
+    @Override
     public void setKey(Integer key)
     {
         this.key = key;

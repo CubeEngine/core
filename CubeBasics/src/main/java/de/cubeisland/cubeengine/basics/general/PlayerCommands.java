@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.general;
 
+import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -460,14 +461,20 @@ public class PlayerCommands
                 paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
             }
             other = true;
+            if (!BasicsPerm.COMMAND_GOD_OTHER.isAuthorized(context.getSender()))
+            {
+                denyAccess(context, "basics", "You are not allowed to god others!");
+            }
         }
         else
         {
             user = context.getSenderAsUser("basics", "&aYou are god already!");
         }
+        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
+        bUser.godMode = !bUser.godMode;
         EntityPlayer player = ((CraftPlayer)user.getPlayer()).getHandle();
-        player.abilities.isInvulnerable = !player.abilities.isInvulnerable;
-        if (player.abilities.isInvulnerable)
+        player.abilities.isInvulnerable = bUser.godMode;
+        if (bUser.godMode)
         {
             if (other)
             {

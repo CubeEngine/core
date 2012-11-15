@@ -34,6 +34,8 @@ public enum BasicsPerm implements Permission
     COMMAND_BACK_ONDEATH,
     POWERTOOL_USE, //allows to use powertools
     COMMAND_KIT_GIVE_FORCE, 
+    COMMAND_GOD_OTHER, 
+    COMMAND_GOD_KEEP,
     ;
     private String permission;
     private PermissionDefault def;
