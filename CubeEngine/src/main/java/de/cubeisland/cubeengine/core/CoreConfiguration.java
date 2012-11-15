@@ -41,7 +41,7 @@ public class CoreConfiguration extends Configuration
     @Comment("Currently available: mysql")
     public String database = "mysql";
     @Option("logging.Level")
-    @Comment("Logging into Console \nALL > DEBUG > INFO > NOTICE > FINE > WARN > ERROR > OFF")
+    @Comment("Logging into Console \nALL > DEBUG > INFO > NOTICE > WARNING > ERROR > OFF")
     public LogLevel loggingLevel = LogLevel.NOTICE;
     @Option("after-join-event-delay")
     @Comment("How many ticks after PlayerJoinEvent the AfterJoingEvent is fired")
