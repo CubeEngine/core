@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,11 +31,11 @@ public class ModuleConfiguration extends Configuration
     public boolean provideWorldGenerator = false;
     
     @Option(value = "dependencies", valueType = String.class)
-    public Collection<String> dependencies = new HashSet<String>();
+    public Set<String> dependencies = new HashSet<String>();
     
     @Option(value = "soft-dependencies", valueType = String.class)
-    public Collection<String> softDependencies = new HashSet<String>();
+    public Set<String> softDependencies = new HashSet<String>();
     
     @Option(value = "plugin-dependencies", valueType = String.class)
-    public Collection<String> pluginDependencies = new HashSet<String>();
+    public Set<String> pluginDependencies = new HashSet<String>();
 }

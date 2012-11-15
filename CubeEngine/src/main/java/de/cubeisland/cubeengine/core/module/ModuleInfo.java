@@ -223,7 +223,7 @@ public final class ModuleInfo
      *
      * @return the plugin dependencies
      */
-    public Collection<String> getPluginDependencies()
+    public Set<String> getPluginDependencies()
     {
         return this.pluginDependencies;
     }
