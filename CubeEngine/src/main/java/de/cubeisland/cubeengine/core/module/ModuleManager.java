@@ -5,19 +5,32 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
-import de.cubeisland.cubeengine.core.module.exception.*;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
-import java.io.File;
-import java.io.FileFilter;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * This class manages the modules.
@@ -397,7 +410,8 @@ public class ModuleManager implements Cleanable
         this.core.getPermissionManager().unregisterPermissions(module);
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().unregister(module);
-
+        this.core.getApiServer().unregisterApiHandlers(module);
+        
         if (reloadHelp)
         {
             BukkitUtils.reloadHelpMap();

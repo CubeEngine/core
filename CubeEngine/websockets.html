@@ -14,24 +14,24 @@
                     socket.onopen = function()
                     {
                         console.log("connection open!");
-                    }
+                    };
                     socket.onmessage = function(event)
                     {
                         console.log("message received: " + event.data);
-                    }
+                    };
                     socket.onerror = function()
                     {
                         console.log("error received!");
-                    }
+                    };
                     socket.onclose = function()
                     {
                         console.log("connection closed!");
-                    }
-                }
+                    };
+                };
                 window.onunload = function()
                 {
                     socket.close();
-                }
+                };
                 window.onkeyup = function(event)
                 {
                     if (event.keyCode == 32)
@@ -39,7 +39,7 @@
                         console.log("sending a message...");
                         socket.send("test\n" + prompt("INput:"));
                     }
-                }
+                };
             }
             else
             {

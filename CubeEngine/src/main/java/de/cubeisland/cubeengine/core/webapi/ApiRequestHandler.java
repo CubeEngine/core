@@ -1,16 +1,21 @@
 package de.cubeisland.cubeengine.core.webapi;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import io.netty.buffer.Unpooled;
+import de.cubeisland.cubeengine.core.webapi.exception.ApiRequestException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
-import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
+import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -18,11 +23,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
-import static io.netty.handler.codec.http.HttpHeaders.*;
-import static io.netty.handler.codec.http.HttpMethod.*;
-import static io.netty.handler.codec.http.HttpResponseStatus.*;
-import static io.netty.handler.codec.http.HttpVersion.*;
+import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
+import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 
 /**
  * This class handles all requests
@@ -46,14 +48,19 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     @Override
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
-        LOGGER.log(INFO, "error inc!");
-        context.close();
+        this.error(context, UNKNOWN_ERROR);
     }
     
     @Override
     public void messageReceived(ChannelHandlerContext context, Object message) throws Exception
     {
         LOGGER.log(INFO, "{0} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
+        if (!this.server.isAddressAccepted((InetSocketAddress)context.channel().remoteAddress()))
+        {
+            LOGGER.log(INFO, "Access denied!");
+            context.channel().close();
+        }
+
         if (message instanceof HttpRequest)
         {
             LOGGER.log(INFO, "this is a HTTP request...");
@@ -75,6 +82,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     {
         if (request.getDecoderResult().isFailure())
         {
+            this.error(context, UNKNOWN_ERROR);
             LOGGER.log(INFO, "the decoder failed on this request...", request.getDecoderResult().cause());
             // TODO return error response: bad request
             return;
@@ -87,9 +95,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         
         if (path.length() == 0 || "/".equals(path))
         {
-            LOGGER.log(INFO, "no proper path...");
-            context.close();
-            // TODO return error response
+            this.error(context, ROUTE_NOT_FOUND);
             return;
         }
         
@@ -133,13 +139,37 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             }
             return;
         }
-        
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_0, OK);
-        response.setContent(Unpooled.copiedBuffer(path, UTF8));
-        
-        context.write(response).addListener(ChannelFutureListener.CLOSE);
+
+        ApiHandler handler = this.server.getApiHandler(path);
+        if (handler == null)
+        {
+            this.error(context, ROUTE_NOT_FOUND);
+            return;
+        }
+
+        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), RequestMethod.getByName(request.getMethod().getName()), null, request.getHeaders());
+        ApiResponse apiResponse = new ApiResponse();
+
+        try
+        {
+            handler.execute(apiRequest, apiResponse);
+            this.success(context, apiResponse);
+            return;
+        }
+        catch (ApiRequestException e)
+        {
+            // TODO add info to the error
+            this.error(context, REQUEST_EXCEPTION);
+        }
+        catch (Throwable t)
+        {
+            // TODO add info to the error
+            this.error(context, UNKNOWN_ERROR);
+        }
+
+        this.error(context, UNKNOWN_ERROR);
     }
-    
+
     private void handleWebSocketFrame(ChannelHandlerContext context, WebSocketFrame frame)
     {
         if (frame instanceof CloseWebSocketFrame)
@@ -161,7 +191,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         else
         {
             LOGGER.log(INFO, "recevied unknown incompatible frame");
-            context.close().addListener(ChannelFutureListener.CLOSE);
+            context.close();
         }
     }
 
@@ -169,7 +199,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     {
         String text = frame.getText();
         
-        final int newLinePos = text.indexOf('\n');
+        int newLinePos = text.indexOf('\n');
         if (newLinePos == -1)
         {
             LOGGER.log(INFO, "the frame data didn't contain a newline !");
@@ -178,7 +208,75 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         }
         String command = text.substring(0, newLinePos).trim();
         text = text.substring(newLinePos).trim();
+
+        if ("request".equals(command))
+        {
+            String route;
+            newLinePos = text.indexOf('\n');
+            if (newLinePos == -1)
+            {
+                route = text;
+            }
+            else
+            {
+                route = normalizeRoute(text.substring(0, newLinePos));
+                text = text.substring(newLinePos).trim();
+            }
+
+            ApiHandler handler = this.server.getApiHandler(route);
+            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), null, null, null);
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                handler.execute(request, response);
+            }
+            catch (ApiRequestException e)
+            {
+
+            }
+            catch (Throwable t)
+            {
+
+            }
+        }
+        else if ("subscribe".equals(command))
+        {
+            this.server.subscribe(text.trim(), this);
+        }
+        else if ("unsubscribe".equals(command))
+        {
+            this.server.unsubscribe(text.trim(), this);
+        }
         
         context.write(new TextWebSocketFrame(command + " -- " + text));
+    }
+
+    private void success(ChannelHandlerContext context, ApiResponse apiResponse)
+    {
+        context.write(apiResponse.getContent()).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    private void error(ChannelHandlerContext context, RequestError error)
+    {
+        context.close();
+    }
+
+    public static String normalizeRoute(String route)
+    {
+        route = route.trim().replace('\\', '/');
+        if (route.charAt(0) == '/')
+        {
+            route = route.substring(1);
+        }
+        if (route.charAt(route.length() - 1) == '/')
+        {
+            route = route.substring(0, route.length() - 1);
+        }
+        return route;
+    }
+
+    public void handleEvent(String event, Map<String, Object> data)
+    {
+
     }
 }

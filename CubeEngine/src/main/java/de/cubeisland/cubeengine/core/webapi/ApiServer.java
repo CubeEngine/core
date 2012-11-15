@@ -2,19 +2,31 @@ package de.cubeisland.cubeengine.core.webapi;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.webapi.ApiConfig;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
-import gnu.trove.set.hash.THashSet;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.apache.commons.lang.Validate;
+
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 import static java.util.logging.Level.WARNING;
@@ -27,51 +39,59 @@ public class ApiServer
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
     private final Core core;
+
+    private final AtomicInteger maxContentLength;
+    private final AtomicBoolean compress;
+    private final AtomicInteger compressionLevel;
+    private final AtomicInteger windowBits;
+    private final AtomicInteger memoryLevel;
     
-    private int maxContentLength;
-    private boolean compress;
-    private int compressionLevel;
-    private int windowBits;
-    private int memoryLevel;
-    
-    private InetAddress bindAddress;
-    private short port;
-    private ServerBootstrap bootstrap;
-    private Channel channel;
+    private final AtomicReference<InetAddress> bindAddress;
+    private final AtomicInteger port;
+    private final AtomicReference<ServerBootstrap> bootstrap;
+    private final AtomicReference<Channel> channel;
+    private final AtomicInteger maxThreads;
     
     private final Set<String> disabledRoutes;
-    private boolean enableWhitelist;
+    private final AtomicBoolean enableWhitelist;
     private final Set<String> whitelist;
-    private boolean enableBlacklist;
+    private final AtomicBoolean enableBlacklist;
     private final Set<String> blacklist;
+
+    private final ConcurrentMap<String, ApiHandler> handlers;
+    private final ConcurrentMap<String, List<ApiRequestHandler>> subscriptions;
 
     public ApiServer(Core core)
     {
         this.core = core;
-        this.bootstrap = null;
-        this.channel = null;
-        
+        this.bootstrap = new AtomicReference<ServerBootstrap>(null);
+        this.channel = new AtomicReference<Channel>(null);
+        this.bindAddress = new AtomicReference<InetAddress>(null);
+        this.maxThreads = new AtomicInteger(2);
         try
         {
-            this.bindAddress = InetAddress.getLocalHost();
+            this.bindAddress.set(InetAddress.getLocalHost());
         }
         catch (UnknownHostException ignored)
         {
             LOGGER.log(WARNING, "Failed to get the localhost!");
         }
-        this.port = 6561;
-        this.maxContentLength = 1048576;
+        this.port = new AtomicInteger(6561);
+        this.maxContentLength = new AtomicInteger(1048576);
 
-        this.compress = false;
-        this.compressionLevel = 9;
-        this.windowBits = 15;
-        this.memoryLevel = 9;
+        this.compress = new AtomicBoolean(false);
+        this.compressionLevel = new AtomicInteger(9);
+        this.windowBits = new AtomicInteger(15);
+        this.memoryLevel = new AtomicInteger(9);
         
-        this.disabledRoutes = new THashSet<String>();
-        this.enableWhitelist = false;
-        this.whitelist = new THashSet<String>();
-        this.enableBlacklist = false;
-        this.blacklist = new THashSet<String>();
+        this.disabledRoutes = new CopyOnWriteArraySet<String>();
+        this.enableWhitelist = new AtomicBoolean(false);
+        this.whitelist = new CopyOnWriteArraySet<String>();
+        this.enableBlacklist = new AtomicBoolean(false);
+        this.blacklist = new CopyOnWriteArraySet<String>();
+
+        this.handlers = new ConcurrentHashMap<String, ApiHandler>();
+        this.subscriptions = new ConcurrentHashMap<String, List<ApiRequestHandler>>();
     }
     
     public void configure(final ApiConfig config)
@@ -87,6 +107,7 @@ public class ApiServer
             LOGGER.log(WARNING, "Failed to resolve the host {0}, ignoring the value...");
         }
         this.setPort(config.port);
+        this.setMaxThreads(config.maxThreads);
         
         this.setCompressionEnabled(config.compression);
         this.setCompressionLevel(config.compressionLevel);
@@ -109,20 +130,21 @@ public class ApiServer
     {
         if (!this.isRunning())
         {
-            this.bootstrap = new ServerBootstrap();
+            final ServerBootstrap serverBootstrap = new ServerBootstrap();
             
             try
             {
-                this.bootstrap.group(new NioEventLoopGroup())
+                serverBootstrap.group(new NioEventLoopGroup(this.maxThreads.get()))
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ApiServerIntializer(this))
-                    .localAddress(this.bindAddress, this.port);
-                
-                this.channel = this.bootstrap.bind().sync().channel();
+                    .localAddress(this.bindAddress.get(), this.port.get());
+
+                this.bootstrap.set(serverBootstrap);
+                this.channel.set(serverBootstrap.bind().sync().channel());
             }
             catch (Exception e)
             {
-                this.bootstrap.shutdown();
+                serverBootstrap.shutdown();
                 throw new ApiStartupException("The API server failed to start!", e);
             }
         }
@@ -140,16 +162,14 @@ public class ApiServer
         {
             try
             {
-                this.channel.close().await(5000);
+                this.channel.getAndSet(null).close().await(5000);
             }
             catch (InterruptedException e)
             {
                 LOGGER.log(ERROR, "Shutting down the server was interrupted!");
                 LOGGER.log(ERROR, "Cleaning up as much as possible...");
             }
-            this.channel = null;
-            this.bootstrap.shutdown();
-            this.bootstrap = null;
+            this.bootstrap.getAndSet(null).shutdown();
         }
         return this;
     }
@@ -161,7 +181,73 @@ public class ApiServer
      */
     public boolean isRunning()
     {
-        return (this.channel != null && this.channel.isOpen());
+        return (this.channel != null && this.channel.get().isOpen());
+    }
+
+    public ApiHandler getApiHandler(String route)
+    {
+        if (route == null)
+        {
+            return null;
+        }
+        return this.handlers.get(route);
+    }
+
+    public void registerApiHandlers(final ApiHolder holder)
+    {
+        Validate.notNull(holder, "The API holder must not be null!");
+
+        String route;
+        Action actionAnnotation;
+        for (Method method : holder.getClass().getDeclaredMethods())
+        {
+            actionAnnotation = method.getAnnotation(Action.class);
+            if (actionAnnotation != null)
+            {
+                route = ApiRequestHandler.normalizeRoute(actionAnnotation.route());
+                this.handlers.put(route, new ApiHandler(holder, route, method, actionAnnotation.auth(), actionAnnotation.parameters(), actionAnnotation.methods()));
+            }
+        }
+    }
+
+    public void unregisterApiHandler(String route)
+    {
+        this.handlers.remove(route);
+    }
+
+    public void unregisterApiHandlers(Module module)
+    {
+        Iterator<Map.Entry<String, ApiHandler>> iter = this.handlers.entrySet().iterator();
+
+        ApiHandler handler;
+        while (iter.hasNext())
+        {
+            handler = iter.next().getValue();
+            if (handler.getModule() == module)
+            {
+                iter.remove();
+            }
+        }
+    }
+
+    public void unregisterApiHandlers(ApiHolder holder)
+    {
+        Iterator<Map.Entry<String, ApiHandler>> iter = this.handlers.entrySet().iterator();
+
+        ApiHandler handler;
+        while (iter.hasNext())
+        {
+            handler = iter.next().getValue();
+            if (handler.getHolder() == holder)
+            {
+                iter.remove();
+            }
+        }
+    }
+
+    public void unregisterApiHandlers()
+    {
+        this.handlers.clear();
     }
     
     public void setBindAddress(String address) throws UnknownHostException
@@ -179,7 +265,7 @@ public class ApiServer
     {
         Validate.notNull(address, "The address must not be null!");
         
-        this.bindAddress = address;
+        this.bindAddress.set(address);
     }
 
     /**
@@ -189,21 +275,21 @@ public class ApiServer
      */
     public InetAddress getBindAddress()
     {
-        return this.bindAddress;
+        return this.bindAddress.get();
     }
     
     public InetAddress getBoundAddress()
     {
         if (this.isRunning())
         {
-            return ((InetSocketAddress)this.channel.localAddress()).getAddress();
+            return ((InetSocketAddress)this.channel.get().localAddress()).getAddress();
         }
         return null;
     }
 
     public void setPort(short port)
     {
-        this.port = port;
+        this.port.set(port);
     }
     
     /**
@@ -211,23 +297,33 @@ public class ApiServer
      *
      * @return the post
      */
-    public short getPort()
+    public int getPort()
     {
-        return this.port;
+        return this.port.get();
     }
     
     public short getBoundPort()
     {
         if (this.isRunning())
         {
-            return (short)((InetSocketAddress)this.channel.localAddress()).getPort();
+            return (short)((InetSocketAddress)this.channel.get().localAddress()).getPort();
         }
         return -1;
     }
 
+    public void setMaxThreads(int maxThreads)
+    {
+        this.maxThreads.set(maxThreads);
+    }
+
+    public int getMaxThreads()
+    {
+        return this.maxThreads.get();
+    }
+
     public void setMaxContentLength(int mcl)
     {
-        this.maxContentLength = mcl;
+        this.maxContentLength.set(mcl);
     }
 
     /**
@@ -237,47 +333,47 @@ public class ApiServer
      */
     public int getMaxContentLength()
     {
-        return this.maxContentLength;
+        return this.maxContentLength.get();
     }
     
     public void setCompressionEnabled(boolean state)
     {
-        this.compress = state;
+        this.compress.set(state);
     }
     
     public boolean isCompressionEnabled()
     {
-        return this.compress;
+        return this.compress.get();
     }
     
     public void setCompressionLevel(int level)
     {
-        this.compressionLevel = Math.max(1, Math.min(9, level));
+        this.compressionLevel.set(Math.max(1, Math.min(9, level)));
     }
     
     public int getCompressionLevel()
     {
-        return this.compressionLevel;
+        return this.compressionLevel.get();
     }
     
     public void setCompressionWindowBits(int bits)
     {
-        this.windowBits = Math.max(9, Math.min(15, bits));
+        this.windowBits.set(Math.max(9, Math.min(15, bits)));
     }
     
     public int getCompressionMemoryLevel()
     {
-        return this.memoryLevel;
+        return this.memoryLevel.get();
+    }
+
+    public void setCompressionMemoryLevel(int level)
+    {
+        this.memoryLevel.set(Math.max(1, Math.min(9, level)));
     }
     
     public int getCompressionWindowBits()
     {
-        return this.windowBits;
-    }
-    
-    public void setCompressionMemoryLevel(int level)
-    {
-        this.memoryLevel = Math.max(1, Math.min(9, level));
+        return this.windowBits.get();
     }
 
     /**
@@ -287,7 +383,7 @@ public class ApiServer
      */
     public boolean isWhitelistEnabled()
     {
-        return this.enableWhitelist;
+        return this.enableWhitelist.get();
     }
 
     /**
@@ -298,7 +394,7 @@ public class ApiServer
      */
     public void setWhitelistEnabled(boolean state)
     {
-        this.enableWhitelist = state;
+        this.enableWhitelist.set(state);
     }
     
     public void whitelistAddress(String address)
@@ -348,7 +444,7 @@ public class ApiServer
      */
     public boolean isWhitelisted(String ip)
     {
-        return this.enableWhitelist ? this.whitelist.contains(ip) : true;
+        return !this.enableWhitelist.get() || this.whitelist.contains(ip);
     }
 
     /**
@@ -381,7 +477,7 @@ public class ApiServer
      */
     public void setBlacklistEnabled(boolean state)
     {
-        this.enableBlacklist = state;
+        this.enableBlacklist.set(state);
     }
     
     public void blacklistAddress(String address)
@@ -430,7 +526,7 @@ public class ApiServer
      */
     public boolean isBlacklistEnabled()
     {
-        return this.enableBlacklist;
+        return this.enableBlacklist.get();
     }
 
     /**
@@ -463,7 +559,7 @@ public class ApiServer
      */
     public boolean isBlacklisted(String ip)
     {
-        return this.enableBlacklist ? this.blacklist.contains(ip) : false;
+        return this.enableBlacklist.get() && this.blacklist.contains(ip);
     }
 
     public boolean isRouteDisabled(String route)
@@ -486,6 +582,71 @@ public class ApiServer
         for (String route : routes)
         {
             this.reenableRoute(route);
+        }
+    }
+
+    public boolean isAddressAccepted(String address)
+    {
+        return this.isWhitelisted(address) && !this.isBlacklisted(address);
+    }
+
+    public boolean isAddressAccepted(InetAddress address)
+    {
+        return this.isAddressAccepted(address.getHostAddress());
+    }
+
+    public boolean isAddressAccepted(InetSocketAddress address)
+    {
+        return this.isAddressAccepted(address.getAddress());
+    }
+
+    public void subscribe(String event, ApiRequestHandler requestHandler)
+    {
+        Validate.notNull(event, "The event name must not be null!");
+        Validate.notNull(requestHandler, "The request handler must not be null!");
+        event = event.toLowerCase(Locale.ENGLISH);
+
+        List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        if (subscribedHandlers == null)
+        {
+            this.subscriptions.put(event, subscribedHandlers = new CopyOnWriteArrayList<ApiRequestHandler>());
+        }
+        subscribedHandlers.add(requestHandler);
+    }
+
+    public void unsubscribe(String event, ApiRequestHandler requestHandler)
+    {
+        Validate.notNull(event, "The event name must not be null!");
+        Validate.notNull(requestHandler, "The request handler must not be null!");
+        event = event.toLowerCase(Locale.ENGLISH);
+
+        List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        if (subscribedHandlers != null)
+        {
+            subscribedHandlers.remove(requestHandler);
+        }
+    }
+
+    public void unsubscribe(String event)
+    {
+        Validate.notNull(event, "The event name must not be null!");
+        event = event.toLowerCase(Locale.ENGLISH);
+
+        this.subscriptions.remove(event);
+    }
+
+    public void fireEvent(String event, Map<String, Object> data)
+    {
+        Validate.notNull(event, "The event name must not be null!");
+        event = event.toLowerCase(Locale.ENGLISH);
+
+        List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        if (subscribedHandlers != null)
+        {
+            for (ApiRequestHandler handler : subscribedHandlers)
+            {
+                handler.handleEvent(event, data);
+            }
         }
     }
 }

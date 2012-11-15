@@ -1,12 +1,14 @@
 package de.cubeisland.cubeengine.core.module;
 
+import de.cubeisland.cubeengine.core.Core;
+import org.apache.commons.lang.Validate;
+
 import java.io.File;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class provides information about a module.
@@ -24,7 +26,22 @@ public final class ModuleInfo
     private final boolean providesWorldGenerator;
     private final Map<String, Integer> dependencies;
     private final Map<String, Integer> softDependencies;
-    private final Collection<String> pluginDependencies;
+    private final Set<String> pluginDependencies;
+
+    ModuleInfo()
+    {
+        this.file = null;
+        this.main = null;
+        this.id = CoreModule.ID;
+        this.name = CoreModule.NAME;
+        this.revision = Core.REVISION;
+        this.description = "This is the core meta module.";
+        this.minCoreVersion = Core.REVISION;
+        this.providesWorldGenerator = false;
+        this.dependencies = Collections.emptyMap();
+        this.softDependencies = Collections.emptyMap();
+        this.pluginDependencies = Collections.emptySet();
+    }
 
     public ModuleInfo(File file, ModuleConfiguration config)
     {

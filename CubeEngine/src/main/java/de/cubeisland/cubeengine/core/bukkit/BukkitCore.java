@@ -21,6 +21,10 @@ import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
+import org.bukkit.Server;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -178,6 +182,7 @@ public class BukkitCore extends JavaPlugin implements Core
         if (this.apiServer != null)
         {
             this.apiServer.stop();
+            this.apiServer.unregisterApiHandlers();
             this.apiServer = null;
         }
 

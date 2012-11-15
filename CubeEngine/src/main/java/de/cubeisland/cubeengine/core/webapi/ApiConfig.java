@@ -12,15 +12,19 @@ import java.util.Set;
 @Revision(1)
 public class ApiConfig extends Configuration
 {
-    @Option("address")
+    @Option("network.address")
     @Comment("This specifies the address to bind the server to")
     public String address = "localhost";
     
-    @Option("port")
+    @Option("network.port")
     @Comment("The port to bind the server to")
     public short port = 6561;
+
+    @Option("network.max-threads")
+    @Comment("The maximum number of threads for the API server")
+    public int maxThreads = 2;
     
-    @Option("max-content-length")
+    @Option("network.max-content-length")
     @Comment("The maximum amount of data written from a request")
     public int maxContentLength = 1048576;
     
