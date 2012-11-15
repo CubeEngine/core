@@ -181,7 +181,7 @@ public class ApiServer
      */
     public boolean isRunning()
     {
-        return (this.channel != null && this.channel.get().isOpen());
+        return (this.channel.get() != null && this.channel.get().isOpen());
     }
 
     public ApiHandler getApiHandler(String route)

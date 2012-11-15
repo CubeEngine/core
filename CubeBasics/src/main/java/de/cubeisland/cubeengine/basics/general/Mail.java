@@ -22,7 +22,8 @@ public class Mail implements Model<Integer>
     public String message;
     @ForeignKey(table = "user", field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public int    userId;
+    public int userId;
+    @ForeignKey(table = "user", field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public int    senderId;
 
@@ -60,7 +61,7 @@ public class Mail implements Model<Integer>
         User user = CubeEngine.getUserManager().getUser(this.senderId);
         if (user == null)
         {
-            return "&cCONSOLE%f: " + this.message;
+            return "&cCONSOLE&f: " + this.message;
         }
         return "&2" + user.getName() + "&f: " + this.message;
     }

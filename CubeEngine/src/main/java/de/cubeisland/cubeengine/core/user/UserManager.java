@@ -301,6 +301,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
     public User getUser(int key)
     {
         User user = this.get(key);
+        if (user == null)
+        {
+            return null;
+        }
         User savedUser = this.users.get(user.getName());
         if (savedUser == null)
         {

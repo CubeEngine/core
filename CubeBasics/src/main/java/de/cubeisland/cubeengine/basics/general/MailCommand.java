@@ -81,17 +81,41 @@ public class MailCommand extends ContainerCommand
             for (Mail mail : mails)
             {
                 i++;
-                sb.append("\n").append(i).append(": ").append(mail.toString());
+                sb.append("\n&f").append(i).append(": ").append(mail.toString());
             }
             context.sendMessage("basics", "&aYour mails:%s", sb.toString());
         }
     }
 
     @Alias(names = "spymail")
-    @Command(desc = "Reads your mails.", usage = "[player]")
+    @Command(
+        desc = "Shows the mails of other players.",
+        usage = "<player>",
+        max = 1)
     public void spy(CommandContext context)
     {
-    //TODO
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+        }
+        mailManager.getMails(user);
+        List<Mail> mails = mailManager.getMails(user);
+        if (mails.isEmpty()) // Mailbox is not empty but no message from that player
+        {
+            context.sendMessage("basics", "&2%s &edo not have any mails!", user.getName());
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            for (Mail mail : mails)
+            {
+                i++;
+                sb.append("\n&f").append(i).append(": ").append(mail.toString());
+            }
+            context.sendMessage("basics", "&2%s's mails:%s", user.getName(), sb.toString());
+        }
     }
 
     @Alias(names = "sendmail")
