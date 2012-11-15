@@ -35,10 +35,10 @@ public class VehiclePrevention extends Prevention
     {
         super.enable();
 
-        this.access      = getConfig().getBoolean("prevent.access");
+        this.access = getConfig().getBoolean("prevent.access");
         this.destruction = getConfig().getBoolean("prevent.destruction");
-        this.collision   = getConfig().getBoolean("prevent.collision");
-        this.creation    = getConfig().getBoolean("prevent.creation");
+        this.collision = getConfig().getBoolean("prevent.collision");
+        this.creation = getConfig().getBoolean("prevent.creation");
     }
 
     @Override
@@ -127,5 +127,5 @@ public class VehiclePrevention extends Prevention
                 }
             }
         }
-    }    
+    }
 }

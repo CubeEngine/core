@@ -22,7 +22,7 @@ public class EnchantMatcher
     private THashMap<String, Enchantment> bukkitnames;
     private THashMap<Enchantment, String> enchantmentName;
 
-    private static EnchantMatcher instance = null;
+    private static EnchantMatcher         instance = null;
 
     private EnchantMatcher()
     {
@@ -39,7 +39,7 @@ public class EnchantMatcher
         for (Enchantment enchantment : Enchantment.values())
         {
             this.bukkitnames.put(enchantment.getName(), enchantment);
-        }            
+        }
     }
 
     /**
@@ -96,8 +96,7 @@ public class EnchantMatcher
             return Enchantment.getById(enchId);
         }
         catch (NumberFormatException e)
-        {
-        }
+        {}
         if (ench == null)
         {
             if (s.length() < 4)

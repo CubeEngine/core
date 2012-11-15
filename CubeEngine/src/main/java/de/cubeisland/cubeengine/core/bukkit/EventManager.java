@@ -17,8 +17,8 @@ import org.bukkit.plugin.PluginManager;
  */
 public class EventManager
 {
-    private final BukkitCore corePlugin;
-    private final PluginManager pm;
+    private final BukkitCore                 corePlugin;
+    private final PluginManager              pm;
     private final Map<Module, Set<Listener>> listenerMap;
 
     public EventManager(Core core)

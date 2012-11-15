@@ -37,28 +37,28 @@ import static java.util.logging.Level.WARNING;
  */
 public class ApiServer
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
-    private final Core core;
+    private static final Logger                                  LOGGER = CubeEngine.getLogger();
+    private final Core                                           core;
 
-    private final AtomicInteger maxContentLength;
-    private final AtomicBoolean compress;
-    private final AtomicInteger compressionLevel;
-    private final AtomicInteger windowBits;
-    private final AtomicInteger memoryLevel;
-    
-    private final AtomicReference<InetAddress> bindAddress;
-    private final AtomicInteger port;
-    private final AtomicReference<ServerBootstrap> bootstrap;
-    private final AtomicReference<Channel> channel;
-    private final AtomicInteger maxThreads;
-    
-    private final Set<String> disabledRoutes;
-    private final AtomicBoolean enableWhitelist;
-    private final Set<String> whitelist;
-    private final AtomicBoolean enableBlacklist;
-    private final Set<String> blacklist;
+    private final AtomicInteger                                  maxContentLength;
+    private final AtomicBoolean                                  compress;
+    private final AtomicInteger                                  compressionLevel;
+    private final AtomicInteger                                  windowBits;
+    private final AtomicInteger                                  memoryLevel;
 
-    private final ConcurrentMap<String, ApiHandler> handlers;
+    private final AtomicReference<InetAddress>                   bindAddress;
+    private final AtomicInteger                                  port;
+    private final AtomicReference<ServerBootstrap>               bootstrap;
+    private final AtomicReference<Channel>                       channel;
+    private final AtomicInteger                                  maxThreads;
+
+    private final Set<String>                                    disabledRoutes;
+    private final AtomicBoolean                                  enableWhitelist;
+    private final Set<String>                                    whitelist;
+    private final AtomicBoolean                                  enableBlacklist;
+    private final Set<String>                                    blacklist;
+
+    private final ConcurrentMap<String, ApiHandler>              handlers;
     private final ConcurrentMap<String, List<ApiRequestHandler>> subscriptions;
 
     public ApiServer(Core core)
@@ -83,7 +83,7 @@ public class ApiServer
         this.compressionLevel = new AtomicInteger(9);
         this.windowBits = new AtomicInteger(15);
         this.memoryLevel = new AtomicInteger(9);
-        
+
         this.disabledRoutes = new CopyOnWriteArraySet<String>();
         this.enableWhitelist = new AtomicBoolean(false);
         this.whitelist = new CopyOnWriteArraySet<String>();
@@ -93,11 +93,11 @@ public class ApiServer
         this.handlers = new ConcurrentHashMap<String, ApiHandler>();
         this.subscriptions = new ConcurrentHashMap<String, List<ApiRequestHandler>>();
     }
-    
+
     public void configure(final ApiConfig config)
     {
         Validate.notNull(config, "The config must not be null!");
-        
+
         try
         {
             this.setBindAddress(config.address);
@@ -108,15 +108,15 @@ public class ApiServer
         }
         this.setPort(config.port);
         this.setMaxThreads(config.maxThreads);
-        
+
         this.setCompressionEnabled(config.compression);
         this.setCompressionLevel(config.compressionLevel);
         this.setCompressionWindowBits(config.windowBits);
         this.setCompressionMemoryLevel(config.memoryLevel);
-        
+
         this.setWhitelistEnabled(config.whitelistEnable);
         this.setWhitelist(config.whitelist);
-        
+
         this.setBlacklistEnabled(config.blacklistEnable);
         this.setBlacklist(config.blacklist);
     }
@@ -131,7 +131,7 @@ public class ApiServer
         if (!this.isRunning())
         {
             final ServerBootstrap serverBootstrap = new ServerBootstrap();
-            
+
             try
             {
                 serverBootstrap.group(new NioEventLoopGroup(this.maxThreads.get()))
@@ -249,7 +249,7 @@ public class ApiServer
     {
         this.handlers.clear();
     }
-    
+
     public void setBindAddress(String address) throws UnknownHostException
     {
         this.setBindAddress(InetAddress.getByName(address));
@@ -264,7 +264,7 @@ public class ApiServer
     public void setBindAddress(InetAddress address)
     {
         Validate.notNull(address, "The address must not be null!");
-        
+
         this.bindAddress.set(address);
     }
 
@@ -277,7 +277,7 @@ public class ApiServer
     {
         return this.bindAddress.get();
     }
-    
+
     public InetAddress getBoundAddress()
     {
         if (this.isRunning())
@@ -291,7 +291,7 @@ public class ApiServer
     {
         this.port.set(port);
     }
-    
+
     /**
      * Returns the port the server is/will be listening on
      *
@@ -301,7 +301,7 @@ public class ApiServer
     {
         return this.port.get();
     }
-    
+
     public short getBoundPort()
     {
         if (this.isRunning())
@@ -335,32 +335,32 @@ public class ApiServer
     {
         return this.maxContentLength.get();
     }
-    
+
     public void setCompressionEnabled(boolean state)
     {
         this.compress.set(state);
     }
-    
+
     public boolean isCompressionEnabled()
     {
         return this.compress.get();
     }
-    
+
     public void setCompressionLevel(int level)
     {
         this.compressionLevel.set(Math.max(1, Math.min(9, level)));
     }
-    
+
     public int getCompressionLevel()
     {
         return this.compressionLevel.get();
     }
-    
+
     public void setCompressionWindowBits(int bits)
     {
         this.windowBits.set(Math.max(9, Math.min(15, bits)));
     }
-    
+
     public int getCompressionMemoryLevel()
     {
         return this.memoryLevel.get();
@@ -370,7 +370,7 @@ public class ApiServer
     {
         this.memoryLevel.set(Math.max(1, Math.min(9, level)));
     }
-    
+
     public int getCompressionWindowBits()
     {
         return this.windowBits.get();
@@ -396,42 +396,42 @@ public class ApiServer
     {
         this.enableWhitelist.set(state);
     }
-    
+
     public void whitelistAddress(String address)
     {
         this.whitelist.add(address);
     }
-    
+
     public void whitelistAddress(InetAddress address)
     {
         this.whitelistAddress(address.getHostAddress());
     }
-    
+
     public void whitelistAddress(InetSocketAddress address)
     {
         this.whitelistAddress(address.getAddress());
     }
-    
+
     public void unWhitelistAddress(String address)
     {
         this.whitelist.remove(address);
     }
-    
+
     public void unWhitelistAddress(InetAddress address)
     {
         this.unWhitelistAddress(address.getHostAddress());
     }
-    
+
     public void unWhitelistAddress(InetSocketAddress address)
     {
         this.unWhitelistAddress(address.getAddress());
     }
-    
+
     public void setWhitelist(Set<String> newWhitelist)
     {
         Validate.notNull(newWhitelist, "The whitelist must not be null!");
         Validate.noNullElements(newWhitelist, "The whitelist must not contain null values!");
-        
+
         this.whitelist.clear();
         this.whitelist.addAll(newWhitelist);
     }
@@ -479,42 +479,42 @@ public class ApiServer
     {
         this.enableBlacklist.set(state);
     }
-    
+
     public void blacklistAddress(String address)
     {
         this.blacklist.add(address);
     }
-    
+
     public void blacklistAddress(InetAddress address)
     {
         this.blacklistAddress(address.getHostAddress());
     }
-    
+
     public void blacklistAddress(InetSocketAddress address)
     {
         this.blacklistAddress(address.getAddress());
     }
-    
+
     public void unBlacklistAddress(String address)
     {
         this.blacklist.remove(address);
     }
-    
+
     public void unBlacklistAddress(InetAddress address)
     {
         this.unBlacklistAddress(address.getHostAddress());
     }
-    
+
     public void unBlacklistAddress(InetSocketAddress address)
     {
         this.unBlacklistAddress(address.getAddress());
     }
-    
+
     public void setBlacklist(Set<String> newBlacklist)
     {
         Validate.notNull(newBlacklist, "The blacklist must not be null!");
         Validate.noNullElements(newBlacklist, "The blacklist must not contain null values!");
-        
+
         this.blacklist.clear();
         this.blacklist.addAll(newBlacklist);
     }

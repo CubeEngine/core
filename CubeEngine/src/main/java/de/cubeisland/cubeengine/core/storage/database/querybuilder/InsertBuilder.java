@@ -17,7 +17,7 @@ public interface InsertBuilder extends ComponentBuilder<InsertBuilder>
      * @return fluent interface
      */
     public InsertBuilder cols(String... cols);
-    
+
     /**
      * Signals to insert into all col.
      * Dont forget to call values(...) with the correct amount of cols
@@ -26,7 +26,7 @@ public interface InsertBuilder extends ComponentBuilder<InsertBuilder>
      * @return fluent interface
      */
     public InsertBuilder allCols();
-    
+
     /**
      * Adds the VALUES statement with the amount of values
      * 

@@ -16,16 +16,21 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 
 public class EditCommand
 {
-    @Command(
-    names = {"edit", "rewrite"},
-    desc = "Edit a sign or unsign a book",
-    usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ",
-    params =
-    {
-        @Param(names = {"1", "Line1"}),
-        @Param(names = {"2", "Line2"}),
-        @Param(names = {"3", "Line3"}),
-        @Param(names = {"4", "Line4"})
+    @Command(names = {
+        "edit", "rewrite"
+    }, desc = "Edit a sign or unsign a book", usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ", params = {
+        @Param(names = {
+            "1", "Line1"
+        }),
+        @Param(names = {
+            "2", "Line2"
+        }),
+        @Param(names = {
+            "3", "Line3"
+        }),
+        @Param(names = {
+            "4", "Line4"
+        })
     })
     public void edit(CommandContext context)
     {
@@ -59,7 +64,7 @@ public class EditCommand
                 Map<String, Object> params = context.getNamed();
                 for (String key : params.keySet()) // TODO refactor
                 {
-                    lines[Integer.parseInt(key) - 1] = context.getNamed(key, String.class); 
+                    lines[Integer.parseInt(key) - 1] = context.getNamed(key, String.class);
                 }
                 SignChangeEvent event = new SignChangeEvent(sign.getBlock(), user, sign.getLines());
                 CubeEngine.getEventManager().fireEvent(event);
@@ -73,8 +78,7 @@ public class EditCommand
                     sign.setLine(i, lines[i]);
                 }
                 sign.update();
-                
-                
+
                 user.sendMessage("writer", "The sign has been changed");
             }
             else

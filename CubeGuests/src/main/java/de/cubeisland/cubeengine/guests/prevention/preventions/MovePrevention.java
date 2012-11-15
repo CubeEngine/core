@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
  */
 public class MovePrevention extends Prevention
 {
-    private int width;
+    private int          width;
     private final Server server;
 
     public MovePrevention(Guests guests)
@@ -65,7 +65,7 @@ public class MovePrevention extends Prevention
         {
             return;
         }
-        
+
         final Player player = event.getPlayer();
         if (!can(player))
         {
@@ -74,7 +74,7 @@ public class MovePrevention extends Prevention
             final Square spawnSquare = new Square(
                 new Vector2(spawnLocation.getBlockX() - this.width, spawnLocation.getBlockZ() - this.width),
                 this.width * 2
-            );
+                );
 
             // is the new location inside the spawn square?
             if (!spawnSquare.contains(new Vector2(to.getBlockX(), to.getBlockZ())))

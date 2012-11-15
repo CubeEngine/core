@@ -14,20 +14,20 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public class CoreListener implements Listener
 {
-    private final BukkitCore bukkitCore;
-    private final PluginManager pm;
-    private final BukkitScheduler scheduler;
+    private final BukkitCore        bukkitCore;
+    private final PluginManager     pm;
+    private final BukkitScheduler   scheduler;
     private final CoreConfiguration config;
-    
+
     CoreListener(Core core)
     {
         this.bukkitCore = (BukkitCore)core;
-        
+
         this.pm = this.bukkitCore.getServer().getPluginManager();
         this.scheduler = this.bukkitCore.getServer().getScheduler();
         this.config = core.getConfiguration();
     }
-    
+
     @EventHandler
     public void onJoin(final PlayerJoinEvent event)
     {
@@ -36,12 +36,12 @@ public class CoreListener implements Listener
             @Override
             public void run()
             {
-                AfterJoinEvent afterJoinEvent = new AfterJoinEvent(event.getPlayer(),event.getJoinMessage());
+                AfterJoinEvent afterJoinEvent = new AfterJoinEvent(event.getPlayer(), event.getJoinMessage());
                 CubeEngine.getEventManager().fireEvent(afterJoinEvent);
             }
         }, config.afterJoinEventDelay);
     }
-    
+
     @EventHandler
     public void onPacket(PacketReceivedEvent event)
     {

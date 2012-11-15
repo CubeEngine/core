@@ -23,16 +23,16 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class CommandContext
 {
-    private final Core core;
-    private final CommandSender sender;
-    private final CubeCommand command;
-    private final Stack<String> labels;
+    private final Core                 core;
+    private final CommandSender        sender;
+    private final CubeCommand          command;
+    private final Stack<String>        labels;
     private final Map<String, Boolean> flags;
-    private final LinkedList<String> indexedParams;
-    private final Map<String, Object> namedParams;
-    private int flagCount;
-    private boolean empty;
-    private boolean helpCall;
+    private final LinkedList<String>   indexedParams;
+    private final Map<String, Object>  namedParams;
+    private int                        flagCount;
+    private boolean                    empty;
+    private boolean                    helpCall;
 
     /**
      * Initializes the CommandContext object with an array of arguments
@@ -80,7 +80,7 @@ public class CommandContext
             {
                 flagLongnameMap.
                     put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().
-                    toLowerCase(Locale.ENGLISH));
+                        toLowerCase(Locale.ENGLISH));
             }
         }
 
@@ -149,7 +149,8 @@ public class CommandContext
                     this.indexedParams.add(commandLine[offset]); // flag not found, adding it as an indexed param
                 }
             }
-            else //else named param or indexed param
+            else
+            //else named param or indexed param
             {
                 String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
@@ -174,7 +175,8 @@ public class CommandContext
                         illegalParameter(this, "core", "", paramName);
                     }
                 }
-                else // else is indexed param
+                else
+                // else is indexed param
                 {
 
                     try
@@ -184,8 +186,7 @@ public class CommandContext
                         this.indexedParams.add(pair.getRight());// added indexed param
                     }
                     catch (InvalidArgumentException ignored)
-                    {
-                    }
+                    {}
                 }
             }
         }

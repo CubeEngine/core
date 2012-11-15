@@ -34,8 +34,7 @@ public class InformationCommands
         this.basics = basics;
     }
 
-    @Command(
-        desc = "Displays the direction in which you are looking.")
+    @Command(desc = "Displays the direction in which you are looking.")
     public void compass(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
@@ -80,8 +79,7 @@ public class InformationCommands
         sender.sendMessage("basics", "&eYou are looking to &6%s&e!", _(sender, "basics", dir));
     }
 
-    @Command(
-        desc = "Displays your current depth.")
+    @Command(desc = "Displays your current depth.")
     public void depth(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&cYou dug too deep!");
@@ -96,16 +94,14 @@ public class InformationCommands
         }
     }
 
-    @Command(
-        desc = "Displays your current location.")
+    @Command(desc = "Displays your current location.")
     public void getPos(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYour position: &cRight in front of your screen!");
         sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
     }
 
-    @Command(
-        desc = "Displays the message of the day!")
+    @Command(desc = "Displays the message of the day!")
     public void motd(CommandContext context)
     {
         context.sendMessage(basics.getConfiguration().motd);//TODO translatable other lang in config else default
@@ -115,12 +111,7 @@ public class InformationCommands
          */
     }
 
-    @Command(
-        desc = "Displays near players(entities/mobs) to you.",
-    max = 2,
-    usage = "[radius] [player] [-entity]|[-mob]",
-    flags =
-    {
+    @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags = {
         @Flag(longName = "entity", name = "e"),
         @Flag(longName = "mob", name = "m")
     })
@@ -262,13 +253,9 @@ public class InformationCommands
         }
     }
 
-    @Command(
-        names =
-    {
+    @Command(names = {
         "ping", "pong"
-    },
-    desc = "Pong!",
-    max = 0)
+    }, desc = "Pong!", max = 0)
     public void ping(CommandContext context)
     {
         if (context.getLabel().equalsIgnoreCase("ping"))
@@ -284,9 +271,7 @@ public class InformationCommands
         }
     }
 
-    @Command(
-        desc = "Displays chunk, memory, and world information.",
-    max = 0)
+    @Command(desc = "Displays chunk, memory, and world information.", max = 0)
     public void lag(CommandContext context)
     {
         //uptime
@@ -325,9 +310,7 @@ public class InformationCommands
         context.sendMessage("basics", "&6Uptime: &a%s\n&6Memory Usage: %s&f/%s&f/%s MB", uptime, memused, memcommited, memmax);
     }
 
-    @Command(
-        desc = "Displays your current language settings.",
-    max = 0)
+    @Command(desc = "Displays your current language settings.", max = 0)
     public void language(CommandContext context)
     {
         context.sendMessage("basics", "&eYour language is &6%s&e.",

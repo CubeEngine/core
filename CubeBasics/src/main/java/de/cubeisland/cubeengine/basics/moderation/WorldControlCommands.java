@@ -35,13 +35,7 @@ public class WorldControlCommands
         config = basics.getConfiguration();
     }
 
-    @Command(
-        desc = "Changes the weather",
-        min = 1,
-        max = 3,
-        usage = "<sun|rain|storm> [duration] [in <world>]",
-        params = @Param(names = "in", type = World.class)
-    )
+    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -103,13 +97,11 @@ public class WorldControlCommands
         context.sendMessage("basics", "&aChanged wheather in &6%s &ato &e%s&a!", world.getName(), weather);
     }
 
-    @Command(
-        desc = "Removes entity",
-        usage = "<entityType[:itemMaterial]> [radius] [in <world>] [-a]",
-        flags = { @Flag(longName = "all", name = "a") },
-        params = @Param(names = { "in" }, type = World.class),
-        min = 1
-    )
+    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius] [in <world>] [-a]", flags = {
+        @Flag(longName = "all", name = "a")
+    }, params = @Param(names = {
+        "in"
+    }, type = World.class), min = 1)
     public void remove(CommandContext context)
     {
         User sender = context.getSenderAsUser();

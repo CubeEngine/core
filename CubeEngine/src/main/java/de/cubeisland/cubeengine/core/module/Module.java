@@ -26,15 +26,15 @@ import org.bukkit.event.Listener;
  */
 public abstract class Module
 {
-    private boolean initialized = false;
-    private Core core;
-    private ModuleInfo info;
-    private ModuleLogger logger;
-    private Set<Module> dependingModules = new HashSet<Module>();
-    private ModuleLoader loader;
+    private boolean           initialized      = false;
+    private Core              core;
+    private ModuleInfo        info;
+    private ModuleLogger      logger;
+    private Set<Module>       dependingModules = new HashSet<Module>();
+    private ModuleLoader      loader;
     private ModuleClassLoader classLoader;
-    private File folder;
-    private boolean enabled;
+    private File              folder;
+    private boolean           enabled;
 
     protected final void initialize(Core core, ModuleInfo info, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {
@@ -195,15 +195,13 @@ public abstract class Module
      * registration
      */
     public void install()
-    {
-    }
+    {}
 
     /**
      * This method will be called if a module gets uninstalled
      */
     public void uninstall()
-    {
-    }
+    {}
 
     /**
      * This method will be called if the currently loaded module revision is
@@ -212,36 +210,31 @@ public abstract class Module
      * @param oldRevision the old revision form the database
      */
     public void update(int oldRevision)
-    {
-    }
+    {}
 
     /**
      * This method gets called right after the module initialization
      */
     public void onLoad()
-    {
-    }
+    {}
 
     /**
      * This method gets called when the module got enabled
      */
     public void onEnable()
-    {
-    }
+    {}
 
     /**
      * This method gets called when the module got disabled
      */
     public void onDisable()
-    {
-    }
+    {}
 
     /**
      * This method should be overridden to do reloading
      */
     public void reload()
-    {
-    }
+    {}
 
     @Override
     public int hashCode()

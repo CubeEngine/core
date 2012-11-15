@@ -7,7 +7,8 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for inserting into tables.
  */
-public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> implements InsertBuilder
+public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder>
+    implements InsertBuilder
 {
     protected MySQLInsertBuilder(MySQLQueryBuilder parent)
     {
@@ -16,7 +17,7 @@ public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> imp
 
     private boolean colsSet;
     private boolean valuesSet;
-    
+
     @Override
     public MySQLInsertBuilder into(String table)
     {
@@ -37,11 +38,11 @@ public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder> imp
         {
             this.query.append(',').append(this.database.prepareFieldName(cols[i]));
         }
-        this.query.append(")"); 
+        this.query.append(")");
         this.colsSet = true;
         return this.values(cols.length);
     }
-    
+
     @Override
     public MySQLInsertBuilder allCols()
     {

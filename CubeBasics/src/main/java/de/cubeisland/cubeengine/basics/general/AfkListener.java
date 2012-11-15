@@ -11,11 +11,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class AfkListener implements Listener,Runnable
+public class AfkListener implements Listener, Runnable
 {
     private Basics basics;
-    private long autoAfk;
-    private long afkCheck;
+    private long   autoAfk;
+    private long   afkCheck;
 
     public AfkListener(Basics basics, long autoAfk, long afkCheck)
     {
@@ -44,14 +44,14 @@ public class AfkListener implements Listener,Runnable
             user.setAttribute(basics, "lastAction", System.currentTimeMillis());
         }
     }
-    
+
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClick(PlayerInteractEvent event)
     {
         User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
         user.setAttribute(basics, "lastAction", System.currentTimeMillis());
     }
-    
+
     public void run()
     {
         for (User user : basics.getUserManager().getLoadedUsers())

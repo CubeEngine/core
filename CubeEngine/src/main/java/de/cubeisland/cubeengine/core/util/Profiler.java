@@ -10,7 +10,7 @@ import org.apache.commons.lang.Validate;
 public class Profiler
 {
     private static final TObjectLongMap<String> startTimes = new TObjectLongHashMap<String>();
-    
+
     public static void startProfiling(String id)
     {
         final long nanos = System.nanoTime();
@@ -23,7 +23,7 @@ public class Profiler
             startTimes.put(id, nanos);
         }
     }
-    
+
     public static long getCurrentDelta(String id)
     {
         final long nanos = System.nanoTime();
@@ -37,7 +37,7 @@ public class Profiler
             return nanos - startTimes.get(id);
         }
     }
-    
+
     public static long endProfiling(String id)
     {
         final long delta = System.nanoTime();

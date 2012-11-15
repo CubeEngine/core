@@ -43,10 +43,7 @@ public class ItemCommands
         this.basics = basics;
     }
 
-    @Command(
-        desc = "Looks up an item for you!",
-        max = 1,
-        usage = "[item]")
+    @Command(desc = "Looks up an item for you!", max = 1, usage = "[item]")
     public void itemDB(CommandContext context)
     {
         if (context.hasIndexed(0))
@@ -74,7 +71,7 @@ public class ItemCommands
                 String found = MaterialMatcher.get().getNameFor(sender.getItemInHand());
                 if (found == null)
                 {
-                    context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f", 
+                    context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
                         sender.getItemInHand().getType().getId(),
                         sender.getItemInHand().getDurability());
                     return;
@@ -87,10 +84,7 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        desc = "Changes the display name of the item in your hand.",
-        usage = "<name>",
-        min = 1)
+    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name>", min = 1)
     public void rename(CommandContext context)
     {
         String name = context.getStrings(0);
@@ -104,11 +98,9 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        names = { "headchange", "skullchange" },
-        desc = "Changes a skull to a players skin.",
-        usage = "<name>",
-        min = 1)
+    @Command(names = {
+        "headchange", "skullchange"
+    }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1)
     public void headchange(CommandContext context)
     {
         //TODO later listener to drop the custom heads
@@ -127,10 +119,7 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        desc = "The user can use unlimited items",
-        max = 1,
-        usage = "[on|off]")
+    @Command(desc = "The user can use unlimited items", max = 1, usage = "[on|off]")
     public void unlimited(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -174,11 +163,9 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        desc = "Adds an Enchantment to the item in your hand",
-        max = 2,
-        flags = { @Flag(longName = "unsafe", name = "u") },
-        usage = "<enchantment> [level] [-unsafe]")
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = {
+        @Flag(longName = "unsafe", name = "u")
+    }, usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
         if (!context.hasIndexed(0))
@@ -277,14 +264,9 @@ public class ItemCommands
         return sb.toString();
     }
 
-    @Command(
-        desc = "Gives the specified Item to a player",
-    flags =
-    {
+    @Command(desc = "Gives the specified Item to a player", flags = {
         @Flag(name = "b", longName = "blacklist")
-    },
-    min = 2, max = 3,
-    usage = "<player> <material[:data]> [amount] [-blacklist]")
+    }, min = 2, max = 3, usage = "<player> <material[:data]> [amount] [-blacklist]")
     public void give(CommandContext context)
     {
         User user = context.getUser(0);
@@ -321,13 +303,11 @@ public class ItemCommands
         user.sendMessage("basics", "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
     }
 
-    @Command(
-        names = { "item", "i" },
-        desc = "Gives the specified Item to you",
-        max = 2,
-        min = 1,
-        flags = { @Flag(longName = "blacklist", name = "b") },
-        usage = "<material[:data]> [amount] [-blacklist]")
+    @Command(names = {
+        "item", "i"
+    }, desc = "Gives the specified Item to you", max = 2, min = 1, flags = {
+        @Flag(longName = "blacklist", name = "b")
+    }, usage = "<material[:data]> [amount] [-blacklist]")
     public void item(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eDid you try to use &6/give &eon your new I-Tem?");
@@ -358,11 +338,9 @@ public class ItemCommands
         sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
     }
 
-    @Command(
-        desc = "Refills the stack in hand",
-        usage = "[-a]",
-        flags = { @Flag( longName = "all", name = "a") },
-        max = 0)
+    @Command(desc = "Refills the stack in hand", usage = "[-a]", flags = {
+        @Flag(longName = "all", name = "a")
+    }, max = 0)
     public void more(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cYou can't get enough of it. Don't you?");
@@ -388,10 +366,10 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        desc = "Repairs your items",
-        flags = { @Flag(longName = "all", name = "a") },
-        usage = "[-all]") // without item in hand
+    @Command(desc = "Repairs your items", flags = {
+        @Flag(longName = "all", name = "a")
+    }, usage = "[-all]")
+    // without item in hand
     public void repair(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eIf you do this you'll &cloose &eyour warranty!");
@@ -438,9 +416,8 @@ public class ItemCommands
             }
         }
     }
-    
-    @Command(
-        desc = "Stacks your items up to 64")
+
+    @Command(desc = "Stacks your items up to 64")
     public void stack(CommandContext context)
     {
         User user = context.getSenderAsUser("basics", "&eNo stacking for you.");
@@ -482,7 +459,8 @@ public class ItemCommands
                             item2.setAmount(item2.getAmount() - needed);
                             break;
                         }
-                        else // enough place -> add to stack
+                        else
+                        // enough place -> add to stack
                         {
                             items[j] = null;
                             item.setAmount(item.getAmount() + item2.getAmount());

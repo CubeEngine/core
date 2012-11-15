@@ -7,7 +7,7 @@ import org.bukkit.block.BlockState;
 public class BlockData
 {
     public Material mat;
-    public byte data;
+    public byte     data;
 
     public BlockData(Material mat, byte data)
     {

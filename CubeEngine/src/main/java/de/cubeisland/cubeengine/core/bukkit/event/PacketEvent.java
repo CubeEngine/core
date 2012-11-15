@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 
 public abstract class PacketEvent extends Event
 {
-    private final int packetId;
+    private final int    packetId;
     private final Packet packet;
 
     public PacketEvent(Packet packet)
@@ -14,7 +14,7 @@ public abstract class PacketEvent extends Event
         this.packetId = packet.k();
         this.packet = packet;
     }
-    
+
     /**
      * Returns the packet of this event
      *
@@ -24,7 +24,7 @@ public abstract class PacketEvent extends Event
     {
         return this.packet;
     }
-    
+
     /**
      * Returns the ID of the packet
      *

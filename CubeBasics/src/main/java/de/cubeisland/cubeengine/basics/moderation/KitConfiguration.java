@@ -15,29 +15,29 @@ import org.bukkit.inventory.ItemStack;
 @Codec("yml")
 public class KitConfiguration extends Configuration
 {
-    private static Basics basics = Basics.getInstance();
+    private static Basics                          basics           = Basics.getInstance();
     @Comment("The name to access this kit.")
     @Option("kit-name")
-    public String kitName;
+    public String                                  kitName;
     @Comment("Players that join your server the first time will receive this kit if set on true.")
     @Option("give-on-first-join")
-    public boolean giveOnFirstJoin = false;
+    public boolean                                 giveOnFirstJoin  = false;
     @Comment("If not empty this message will be displayed when receiving this kit.")
     @Option("custom-receive-message")
-    public String customReceiveMsg = "";
-    @Option(value = "items", valueType= ItemStack.class)
-    public List<ItemStack> kitItems = new LinkedList<ItemStack>();
+    public String                                  customReceiveMsg = "";
+    @Option(value = "items", valueType = ItemStack.class)
+    public List<ItemStack>                         kitItems         = new LinkedList<ItemStack>();
     @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
     @Option("generate-permission")
-    public boolean usePerm = false;
+    public boolean                                 usePerm          = false;
     @Comment("The delay between each usage of this kit.")
     @Option("limit-usage-delay")
-    public long limitUsageDelay = 0L; //TODO better!
+    public long                                    limitUsageDelay  = 0L;                                   //TODO better!
     @Comment("Limits the usage to x amount. Use 0 for infinite.")
     @Option("limit-usage")
-    public int limitUsage = 0;
-    private static THashMap<String, Kit> kitMap = new THashMap<String, Kit>();
-    private static THashMap<Kit, KitConfiguration> kitConfigMap = new THashMap<Kit, KitConfiguration>();
+    public int                                     limitUsage       = 0;
+    private static THashMap<String, Kit>           kitMap           = new THashMap<String, Kit>();
+    private static THashMap<Kit, KitConfiguration> kitConfigMap     = new THashMap<Kit, KitConfiguration>();
 
     public Kit getKit()
     {
@@ -64,8 +64,7 @@ public class KitConfiguration extends Configuration
                     kitMap.put(lname, kit);
                 }
                 catch (Exception ignored)
-                {
-                }
+                {}
             }
         }
         return kit;

@@ -9,19 +9,18 @@ import java.io.File;
 
 public class Guests extends Module
 {
-    private File dataFolder;
-    private File preventionConfigFolder;
+    private File              dataFolder;
+    private File              preventionConfigFolder;
     private PreventionManager prevManager;
-    private GuestsConfig config;
+    private GuestsConfig      config;
 
     @Override
     public void onEnable()
     {
         this.dataFolder = this.getFolder();
         this.preventionConfigFolder = new File(this.dataFolder, "preventions");
-        
-        this.registerCommand(new Commands(this));
 
+        this.registerCommand(new Commands(this));
 
         this.prevManager = new PreventionManager(this)
             .registerPunishment(new BanPunishment())
@@ -36,7 +35,7 @@ public class Guests extends Module
             .registerPunishment(new RocketPunishment())
             .registerPunishment(new SlapPunishment())
             .registerPunishment(new StarvationPunishment())
-            
+
             .registerPrevention(new AfkPrevention(this))
             .registerPrevention(new BedPrevention(this))
             .registerPrevention(new BowPrevention(this))
@@ -93,13 +92,12 @@ public class Guests extends Module
         this.prevManager.disablePreventions();
         this.prevManager = null;
     }
-    
+
     public PreventionManager getPreventionManager()
     {
         return this.prevManager;
     }
-    
-    
+
     public boolean allowPunishments()
     {
         return this.config.punishments;

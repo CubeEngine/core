@@ -21,7 +21,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class SwearPrevention extends Prevention
 {
     private static final String REGEX_PREFIX = "regex:";
-    private Set<Pattern> swearPatterns;
+    private Set<Pattern>        swearPatterns;
 
     public SwearPrevention(Guests guests)
     {
@@ -98,8 +98,7 @@ public class SwearPrevention extends Prevention
             for (int i = 0; i < string.length(); ++i)
             {
                 current = string.charAt(i);
-                ignore:
-                if (!ignoreNext)
+                ignore: if (!ignoreNext)
                 {
                     if (current == '\\')
                     {
@@ -137,16 +136,16 @@ public class SwearPrevention extends Prevention
                         ignoreNext = true;
                         break ignore;
                     }
-                    
+
                     pattern.append(Pattern.quote(plain.toString()));
                     plain = null;
-                    
+
                     if (replacement != null)
                     {
                         pattern.append(replacement);
                         replacement = null;
                     }
-                    
+
                     continue;
                 }
                 if (ignoreNext)
@@ -159,12 +158,12 @@ public class SwearPrevention extends Prevention
                 }
                 plain.append(current);
             }
-            
+
             if (plain != null)
             {
                 pattern.append(Pattern.quote(plain.toString()));
             }
-            
+
             return Pattern.compile("\\b" + pattern.append("\\b").toString(), Pattern.CASE_INSENSITIVE);
         }
     }
@@ -176,7 +175,7 @@ public class SwearPrevention extends Prevention
         if (!can(player))
         {
             final String message = event.getMessage();
-            synchronized(this)
+            synchronized (this)
             {
                 for (Pattern badword : this.swearPatterns)
                 {
@@ -206,7 +205,7 @@ public class SwearPrevention extends Prevention
                 config.set("words", words);
                 saveConfig();
 
-                synchronized(this)
+                synchronized (this)
                 {
                     this.swearPatterns.add(this.compile(word));
                 }

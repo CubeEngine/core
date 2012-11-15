@@ -19,7 +19,7 @@ public class FlyModel implements Model<Integer>
     @Attribute(type = AttrType.INT, unsigned = true)
     public final int key;
     @Attribute(type = AttrType.BOOLEAN)
-    public boolean flying;
+    public boolean   flying;
 
     @DatabaseConstructor
     public FlyModel(List<Object> args) throws ConversionException

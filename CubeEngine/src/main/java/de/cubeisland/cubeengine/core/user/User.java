@@ -32,19 +32,19 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 @Entity(name = "user")
 public class User extends UserBase implements LinkingModel<Integer>
 {
-    public static int NO_ID = -1;
+    public static int                                                    NO_ID      = -1;
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
-    public int key;
+    public int                                                           key;
     @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)
-    public final String player;
+    public final String                                                  player;
     @Attribute(type = AttrType.BOOLEAN)
-    public boolean nogc = false;
+    public boolean                                                       nogc       = false;
     @Attribute(type = AttrType.DATETIME)
-    public Timestamp lastseen;
-    private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
+    public Timestamp                                                     lastseen;
+    private ConcurrentHashMap<Class<? extends Model>, Model>             attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
-    Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
+    Integer                                                              removalTaskId;                                                                  // only used in UserManager no AccesModifier is inteded
 
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
@@ -197,7 +197,7 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public <T extends Object> T getAttribute(Module module, String name)
     {
-        return this.<T>getAttribute(module, name, null);
+        return this.<T> getAttribute(module, name, null);
     }
 
     /**
@@ -224,8 +224,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             }
         }
         catch (ClassCastException ignored)
-        {
-        }
+        {}
         return def;
     }
 
@@ -247,8 +246,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     public void safeTeleport(Location location)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
-        while (!((location.getBlock().getType().equals(Material.AIR))
-            && (checkLocation.getBlock().getType().equals(Material.AIR))))
+        while (!((location.getBlock().getType().equals(Material.AIR)) && (checkLocation.getBlock().getType().equals(Material.AIR))))
         {
             location.add(0, 1, 0);
             checkLocation.add(0, 1, 0);

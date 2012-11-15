@@ -8,15 +8,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang.Validate;
 
 /**
-* This TaskQueue will execute all tasks in an async thread.
-*/
+ * This TaskQueue will execute all tasks in an async thread.
+ */
 public class AsyncTaskQueue implements TaskQueue
 {
-    private final Worker workerTask = new Worker();
-    private final ExecutorService executorService;
-    private final Queue<Runnable> taskQueue;
+    private final Worker                     workerTask = new Worker();
+    private final ExecutorService            executorService;
+    private final Queue<Runnable>            taskQueue;
     private final AtomicReference<Future<?>> exectorFuture;
-    private boolean isShutdown;
+    private boolean                          isShutdown;
 
     public AsyncTaskQueue(ExecutorService executorService)
     {
@@ -56,7 +56,7 @@ public class AsyncTaskQueue implements TaskQueue
             this.exectorFuture.set(this.executorService.submit(this.workerTask));
         }
     }
-    
+
     @Override
     public void shutdown()
     {
@@ -64,7 +64,7 @@ public class AsyncTaskQueue implements TaskQueue
         this.taskQueue.clear();
         this.stop();
     }
-    
+
     @Override
     public boolean isShutdown()
     {

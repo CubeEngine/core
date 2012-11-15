@@ -27,9 +27,9 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class CubeCommandMap extends SimpleCommandMap
 {
-    private final Core core;
+    private final Core        core;
     private final UserManager um;
-    
+
     public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
     {
         super(server);
@@ -41,7 +41,7 @@ public class CubeCommandMap extends SimpleCommandMap
             this.register(command);
         }
     }
-    
+
     /**
      * Returns a map of the known commands
      *
@@ -61,7 +61,7 @@ public class CubeCommandMap extends SimpleCommandMap
         }
         return super.getCommand(name.toLowerCase(Locale.ENGLISH));
     }
-    
+
     @Override
     public Command getFallback(final String name)
     {
@@ -71,6 +71,7 @@ public class CubeCommandMap extends SimpleCommandMap
         }
         return super.getFallback(name);
     }
+
     /**
      * {@inheritDoc}
      */
@@ -100,7 +101,7 @@ public class CubeCommandMap extends SimpleCommandMap
                 sender.sendMessage(_(sender, "core", "Couldn't find /%s, but /%s seems to be the one you searched...", label, matches.get(0)));
                 label = matches.get(0);
                 command = this.getCommand(label);
-              
+
             }
             else if (matches.size() > 1 && matches.size() <= 5) // TODO maximum configurable
             {
@@ -112,7 +113,7 @@ public class CubeCommandMap extends SimpleCommandMap
                 sender.sendMessage(_(sender, "core", "I could not find any matching command for /%s ...", label));
             }
         }
-        
+
         if (command == null || this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command, commandLine)).isCancelled())
         {
             return false;
@@ -135,17 +136,17 @@ public class CubeCommandMap extends SimpleCommandMap
         // return true as command was handled
         return true;
     }
-    
+
     public boolean register(Command command)
     {
         return this.register(null, command);
     }
-    
+
     protected synchronized boolean registerAndOverwrite(String label, String fallbackPrefix, Command command, boolean isAlias)
     {
         label = label.trim().toLowerCase();
         Command oldCommand = this.knownCommands.get(label);
-        
+
         if (isAlias && oldCommand != null && !this.aliases.contains(label) && !(oldCommand instanceof CubeCommand))
         {
             // Request is for an alias and it conflicts with a existing command or previous alias ignore it
@@ -169,7 +170,7 @@ public class CubeCommandMap extends SimpleCommandMap
                 label = fallback = fallbackPrefix.toLowerCase(Locale.ENGLISH) + ":" + label;
                 command.setLabel(label);
             }
-            
+
             if (fallback != label)
             {
                 knownCommands.remove(label);

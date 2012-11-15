@@ -14,11 +14,11 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 public class Basics extends Module
 {
     private BasicsConfiguration config;
-    private BasicUserManager basicUM;
-    private MailManager mailManager;
-    
-    private static Basics instance;
-    
+    private BasicUserManager    basicUM;
+    private MailManager         mailManager;
+
+    private static Basics       instance;
+
     public static Basics getInstance()
     {
         return instance;
@@ -42,7 +42,6 @@ public class Basics extends Module
         this.registerCommands(new PlayerCommands(this));
         this.registerListener(new GeneralsListener(this));
         this.registerListener(new MuteListener(this));
-        
 
         //Moderation:
         this.registerCommands(new InventoryCommands(this));
@@ -77,7 +76,7 @@ public class Basics extends Module
         {
             throw new IllegalStateException("illegal time format in configuration!");
         }
-        AfkListener afkListener = new AfkListener(this, autoAfk,afkCheck);
+        AfkListener afkListener = new AfkListener(this, autoAfk, afkCheck);
         this.registerListener(afkListener);
         if (autoAfk > 0)
         {
@@ -85,7 +84,6 @@ public class Basics extends Module
         }
 
         //TODO register permissions of kits in config
-
 
         /**
          * * //commands TODO

@@ -14,7 +14,5 @@ public @interface Alias
 {
     public String[] names();
 
-    public String[] parentPath() default 
-    {
-    };
+    public String[] parentPath() default {};
 }

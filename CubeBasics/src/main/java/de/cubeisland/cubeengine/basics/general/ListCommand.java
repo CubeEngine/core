@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 
 public class ListCommand
 {
-    @Command(
-        desc = "Displays all the online players.")
+    @Command(desc = "Displays all the online players.")
     public void list(CommandContext context)
     {
         //TODO do not show hidden players

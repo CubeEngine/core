@@ -19,9 +19,9 @@ import org.bukkit.util.Vector;
 
 public class FlyListener implements Listener
 {
-    private UserManager usermanager;
+    private UserManager           usermanager;
     private HashMap<Player, Task> tasks = new HashMap<Player, Task>();
-    private Fly fly;
+    private Fly                   fly;
 
     public FlyListener(Fly fly)
     {
@@ -60,8 +60,7 @@ public class FlyListener implements Listener
     public void playerInteract(final PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
-        if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR)
-            || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
+        if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
         {
             return;
         }

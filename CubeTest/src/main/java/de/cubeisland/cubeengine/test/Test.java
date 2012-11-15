@@ -39,13 +39,13 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 
 public class Test extends Module
 {
-    public TestManager manager;
-    public UserManager uM;
-    protected TestConfig config;
+    public TestManager         manager;
+    public UserManager         uM;
+    protected TestConfig       config;
     public static List<String> aListOfPlayers;
-    public Basics basicsModule;
-    private BukkitCore core;
-    private Timer timer;
+    public Basics              basicsModule;
+    private BukkitCore         core;
+    private Timer              timer;
 
     @Override
     public void onEnable()
@@ -77,7 +77,7 @@ public class Test extends Module
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
-        
+
         this.registerCommands(new TestCommands());
 
         this.registerListener(new Listener()
@@ -87,15 +87,15 @@ public class Test extends Module
             {
                 System.out.
                     print("Player: " + event.getPlayer().getName() + " Lang: " + event.
-                    getLanguage());
+                        getLanguage());
             }
         });
 
         this.getLogger().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(basicsModule));
         this.getLogger().log(LogLevel.DEBUG, "BukkitCore-Plugin: {0}", String.valueOf(core));
-        
+
         timer = new Timer("keepAliveTimer");
-        timer.schedule(new KeepAliveTimer() , 2 * 1000, 2 * 1000);
+        timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
     }
 
     public void initializeDatabase() throws SQLException
@@ -106,8 +106,7 @@ public class Test extends Module
                 dropTable("Orders").end());
         }
         catch (Exception e)
-        {
-        }
+        {}
         manager = new TestManager(this.getDatabase());
 
     }
@@ -157,8 +156,7 @@ public class Test extends Module
                 .truncateTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
         }
         catch (Exception e)
-        {
-        }
+        {}
 
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"), false);
         this.manager.store(new TestModel(this.getDate(2012, 6, 8), 30, "Hans"), false);
@@ -176,33 +174,33 @@ public class Test extends Module
 
         database.query(
             database.getQueryBuilder()
-            .select()
-            .beginFunction("AVG")
-            .field("OrderPrice")
-            .endFunction()
-            .as("OrderAverage")
-            .from("Orders")
-            .end()
-            .end());
+                .select()
+                .beginFunction("AVG")
+                .field("OrderPrice")
+                .endFunction()
+                .as("OrderAverage")
+                .from("Orders")
+                .end()
+                .end());
 
         database.query(
             database.getQueryBuilder()
-            .select().cols("id", "Customer")
-            .rawSQL(",")
-            .beginFunction("SUM")
-            .field("OrderPrice")
-            .endFunction()
-            .as("OrderAverage")
-            .from("Orders")
-            .groupBy("Customer")
-            .having()
-            .beginFunction("sum")
-            .field("OrderPrice")
-            .endFunction()
-            .is(GREATER)
-            .value(100)
-            .end()
-            .end());
+                .select().cols("id", "Customer")
+                .rawSQL(",")
+                .beginFunction("SUM")
+                .field("OrderPrice")
+                .endFunction()
+                .as("OrderAverage")
+                .from("Orders")
+                .groupBy("Customer")
+                .having()
+                .beginFunction("sum")
+                .field("OrderPrice")
+                .endFunction()
+                .is(GREATER)
+                .value(100)
+                .end()
+                .end());
 
         //SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
         database.getQueryBuilder()
@@ -295,7 +293,7 @@ public class Test extends Module
     private class KeepAliveTimer extends TimerTask
     {
         private final ServerConfigurationManager mojangServer;
-        private final Random random;
+        private final Random                     random;
 
         public KeepAliveTimer()
         {

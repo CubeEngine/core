@@ -15,7 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  */
 public class SpamPrevention extends Prevention
 {
-    private long spamLockDuration;
+    private long                       spamLockDuration;
     private TObjectLongHashMap<Player> chatTimestamps;
 
     public SpamPrevention(Guests guests)
@@ -42,7 +42,7 @@ public class SpamPrevention extends Prevention
 
         return config;
     }
-    
+
     @Override
     public void enable()
     {
@@ -81,7 +81,7 @@ public class SpamPrevention extends Prevention
     {
         this.chatTimestamps.put(player, System.currentTimeMillis() + this.spamLockDuration);
     }
-    
+
     private synchronized boolean isChatLocked(final Player player)
     {
         final long nextPossible = this.chatTimestamps.get(player);

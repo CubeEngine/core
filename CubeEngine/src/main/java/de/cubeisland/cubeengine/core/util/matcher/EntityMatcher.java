@@ -70,8 +70,7 @@ public class EntityMatcher
             return EntityType.fromId(entityId);
         }
         catch (NumberFormatException e)
-        {
-        }
+        {}
         if (entity == null)
         {
             if (s.length() < 4)

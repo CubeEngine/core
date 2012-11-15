@@ -19,6 +19,7 @@ public class InvseeListener implements Listener
     {
         this.basics = basics;
     }
+
     private Map<User, Boolean> openedInventories = new THashMap<User, Boolean>();
 
     public void addInventory(User sender, boolean canModify)
@@ -57,7 +58,7 @@ public class InvseeListener implements Listener
                 if (openedInventories.isEmpty())
                 {
                     basics.getEventManager().unregisterListener(this.basics, this);
-                }                
+                }
                 return;
             }
         }

@@ -10,25 +10,25 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 public class ModuleCommands extends ContainerCommand
 {
     private final ModuleManager mm;
-    
+
     public ModuleCommands(Basics basics)
     {
         super(basics, "module", "Provides ingame module plugin management functionality");
         this.mm = basics.getModuleManager();
     }
-    
-    @Alias(names = {"modules"})
-    @Command(
-        names = {"list", "show"},
-        desc = "Lists all the loaded modules",
-        max = 0
-    )
+
+    @Alias(names = {
+        "modules"
+    })
+    @Command(names = {
+        "list", "show"
+    }, desc = "Lists all the loaded modules", max = 0)
     public void list(CommandContext context)
     {
         context.sendMessage("basics", "These are the loaded modules.");
         context.sendMessage("basics", "&aGreen&r stands for enabled, &cred&r for disabled.");
         context.sendMessage(" ");
-        
+
         for (Module module : this.mm.getModules())
         {
             if (module.isEnabled())
@@ -41,12 +41,8 @@ public class ModuleCommands extends ContainerCommand
             }
         }
     }
- 
-    @Command(
-        desc = "Enables a module",
-        min = 1,
-        max = 1
-    )
+
+    @Command(desc = "Enables a module", min = 1, max = 1)
     public void enable(CommandContext context)
     {
         Module module = this.mm.getModule(context.getString(0));
@@ -63,12 +59,8 @@ public class ModuleCommands extends ContainerCommand
             context.sendMessage("basics", "An error occurred while enabling the module!");
         }
     }
- 
-    @Command(
-        desc = "Disables a module",
-        min = 1,
-        max = 1
-    )
+
+    @Command(desc = "Disables a module", min = 1, max = 1)
     public void disable(CommandContext context)
     {
         Module module = this.mm.getModule(context.getString(0));
@@ -82,12 +74,8 @@ public class ModuleCommands extends ContainerCommand
             context.sendMessage("basics", "The given module was successfully disabled!");
         }
     }
- 
-    @Command(
-        desc = "Unloaded a module and all the modules that depend on it",
-        min = 1,
-        max = 1
-    )
+
+    @Command(desc = "Unloaded a module and all the modules that depend on it", min = 1, max = 1)
     public void unload(CommandContext context)
     {
         Module module = this.mm.getModule(context.getString(0));

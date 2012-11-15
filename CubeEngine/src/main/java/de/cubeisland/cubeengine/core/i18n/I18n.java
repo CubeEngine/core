@@ -30,10 +30,10 @@ import org.bukkit.command.CommandSender;
  */
 public class I18n implements Cleanable
 {
-    private static final Logger LOGGER = new CubeLogger("language", null);
-    public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
+    private static final Logger         LOGGER          = new CubeLogger("language", null);
+    public static final SourceLanguage  SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;
-    private String defaultLanguage;
+    private String                      defaultLanguage;
 
     public I18n(Core core)
     {
@@ -199,7 +199,7 @@ public class I18n implements Cleanable
     {
         Validate.notNull(language, "The language must not be null!");
         Validate.notNull(category, "The category must not be null!");
-        
+
         if (category.isEmpty())
         {
             return message;
@@ -243,7 +243,7 @@ public class I18n implements Cleanable
                 }
             }
         }
-        
+
         // Gets Formatted with this: http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html
         return String.format(locale, translation, params);
     }

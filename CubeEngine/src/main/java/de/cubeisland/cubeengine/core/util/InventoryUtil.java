@@ -22,7 +22,7 @@ public class InventoryUtil
         }
         return true;
     }
-    
+
     public static boolean checkForPlace(Inventory inventory, ItemStack... items)
     {
         Inventory inv = Bukkit.createInventory(null, inventory.getSize());

@@ -13,7 +13,9 @@ import java.lang.annotation.Target;
 public @interface ForeignKey
 {
     public String table();
+
     public String field();
+
     /**
      * default: CASCADE.
      * other: SET NULL; RESTRICT; NO ACTION

@@ -8,7 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class InteractionLogger extends Logger<InteractionLogger.InteractionConfig>
+public class InteractionLogger extends
+    Logger<InteractionLogger.InteractionConfig>
 {
     public InteractionLogger()
     {
@@ -21,8 +22,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
     {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
         {
-            switch (event.getClickedBlock().getType())
-            {
+            switch (event.getClickedBlock().getType()) {
                 //TODO
                 case WOODEN_DOOR:
                 case TRAP_DOOR:

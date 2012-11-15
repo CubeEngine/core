@@ -15,9 +15,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ShoutListener implements Listener
 {
-    private Shout module;
+    private Shout               module;
     private AnnouncementManager am;
-    private Announcer announcner;
+    private Announcer           announcner;
 
     public ShoutListener(Shout module)
     {

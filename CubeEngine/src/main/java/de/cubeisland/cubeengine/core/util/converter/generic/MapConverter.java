@@ -16,7 +16,7 @@ public class MapConverter
      * @return the serializable map
      * @throws ConversionException
      */
-    public Object toObject(Map<?, ?> map) throws ConversionException  
+    public Object toObject(Map<?, ?> map) throws ConversionException
     {
         Map<Object, Object> result = new LinkedHashMap<Object, Object>();
         if (map.isEmpty())

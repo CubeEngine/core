@@ -25,17 +25,18 @@ public class TradingPrevention extends FilteredPrevention<Profession>
     }
 
     @Override
-    public Set<Profession> decodeList(List<String> list) {
+    public Set<Profession> decodeList(List<String> list)
+    {
         Set<Profession> professions = EnumSet.noneOf(Profession.class);
-        
+
         for (String name : list)
         {
             professions.add(Profession.valueOf(name.trim().toUpperCase(Locale.ENGLISH)));
         }
-        
+
         return professions;
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityInteract(PlayerInteractEntityEvent event)
     {

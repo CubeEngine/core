@@ -10,7 +10,7 @@ import org.bukkit.event.Event;
 public abstract class CubeEvent extends Event implements Cancellable
 {
     private final Core core;
-    private boolean cancelled;
+    private boolean    cancelled;
 
     public CubeEvent(Core core)
     {

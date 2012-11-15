@@ -29,11 +29,9 @@ public class RemoteHandler extends Handler
 
     @Override
     public void flush()
-    {
-    }
+    {}
 
     @Override
     public void close() throws SecurityException
-    {
-    }
+    {}
 }

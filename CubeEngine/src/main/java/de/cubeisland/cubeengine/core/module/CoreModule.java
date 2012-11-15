@@ -4,11 +4,11 @@ import java.util.Locale;
 
 public final class CoreModule extends Module
 {
-    public static final String NAME = "Core";
-    public static final String ID = NAME.toLowerCase(Locale.ENGLISH);
-    private static CoreModule INSTANCE = null;
+    public static final String NAME     = "Core";
+    public static final String ID       = NAME.toLowerCase(Locale.ENGLISH);
+    private static CoreModule  INSTANCE = null;
 
-    private final ModuleInfo module;
+    private final ModuleInfo   module;
 
     private CoreModule()
     {

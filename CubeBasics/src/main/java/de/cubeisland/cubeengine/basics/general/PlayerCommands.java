@@ -24,7 +24,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class PlayerCommands
 {
     private UserManager um;
-    private Basics basics;
+    private Basics      basics;
 
     public PlayerCommands(Basics basics)
     {
@@ -32,11 +32,7 @@ public class PlayerCommands
         this.um = basics.getUserManager();
     }
 
-    @Command(
-        desc = "Refills your hunger bar",
-        max = 1,
-        flags = @Flag(longName = "all", name = "a"),
-        usage = "[player]|[-a]")
+    @Command(desc = "Refills your hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void feed(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -87,11 +83,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(
-        desc = "Empties the hunger bar",
-        max = 1,
-        flags = @Flag(longName = "all", name = "a"),
-        usage = "[player]|[-a]")
+    @Command(desc = "Empties the hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void starve(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -142,11 +134,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(
-        desc = "Heals a Player",
-        max = 1,
-        flags = @Flag(longName = "all", name = "a"),
-        usage = "[player]|[-a]")
+    @Command(desc = "Heals a Player", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void heal(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -198,11 +186,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(
-        names = { "gamemode", "gm" },
-        max = 2,
-    desc = "Changes the gamemode",
-    usage = "[gamemode] [player]")
+    @Command(names = {
+        "gamemode", "gm"
+    }, max = 2, desc = "Changes the gamemode", usage = "[gamemode] [player]")
     public void gamemode(CommandContext context)
     {
         boolean changeOther = false;
@@ -244,8 +230,7 @@ public class PlayerCommands
         else
         {
             GameMode gamemode = user.getGameMode();
-            switch (gamemode)
-            {
+            switch (gamemode) {
                 case ADVENTURE:
                 case CREATIVE:
                     user.setGameMode(GameMode.SURVIVAL);
@@ -268,10 +253,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(
-        desc = "Kills a player",
-        usage = "<player>|-a",
-        flags = { @Flag(longName = "all", name = "a") })
+    @Command(desc = "Kills a player", usage = "<player>|-a", flags = {
+        @Flag(longName = "all", name = "a")
+    })
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightning
@@ -321,11 +305,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(
-        desc = "Makes a player execute a command",
-    usage = "<player> <command>",
-    min = 2,
-        flags = { @Flag(longName = "chat", name = "c") })
+    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = {
+        @Flag(longName = "chat", name = "c")
+    })
     public void sudo(CommandContext context)
     {
         User user = context.getUser(0);
@@ -349,11 +331,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(
-        desc = "Shows when given player was online the last time",
-        min = 1,
-        max = 1,
-        usage = "<player>")
+    @Command(desc = "Shows when given player was online the last time", min = 1, max = 1, usage = "<player>")
     public void seen(CommandContext context)
     {
         User user = context.getUser(0);
@@ -379,9 +357,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(
-        desc = "Kills yourself",
-        max = 0)
+    @Command(desc = "Kills yourself", max = 0)
     public void suicide(CommandContext context)
     {
         User sender = um.getExactUser(context.getSender());
@@ -394,9 +370,7 @@ public class PlayerCommands
         context.sendMessage("bascics", "&eYou ended your pitiful life. &cWhy? &4:(");
     }
 
-    @Command(
-        desc = "Displays that you are afk",
-        max = 0)
+    @Command(desc = "Displays that you are afk", max = 0)
     public void afk(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&cJust go!");
@@ -404,10 +378,7 @@ public class PlayerCommands
         this.basics.getUserManager().broadcastMessage("basics", "&2%s &fis now afk.", sender.getName());
     }
 
-    @Command(
-        desc = "Displays informations from a player!",
-        usage = "<player>",
-        min = 1)
+    @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1)
     public void whois(CommandContext context)
     {
         User user = context.getUser(0);
@@ -446,9 +417,7 @@ public class PlayerCommands
         // TODO event so other modules can add their information
     }
 
-    @Command(
-        desc = "Toggles the god-mode!",
-        usage = "[player]")
+    @Command(desc = "Toggles the god-mode!", usage = "[player]")
     public void god(CommandContext context)
     {
         User user;

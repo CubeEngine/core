@@ -17,7 +17,7 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 public class MailManager extends BasicStorage<Mail>
 {
     private final BasicUserManager bUserManager;
-    private static final int REVISION = 1;
+    private static final int       REVISION = 1;
 
     public MailManager(Database database, BasicUserManager bUserManager)
     {

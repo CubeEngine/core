@@ -6,7 +6,8 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for selecting from tables.
  */
-public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> implements SelectBuilder
+public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder>
+    implements SelectBuilder
 {
     protected MySQLSelectBuilder(MySQLQueryBuilder parent)
     {

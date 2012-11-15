@@ -6,7 +6,8 @@ import org.apache.commons.lang.Validate;
 /**
  * Abstract MYSQLlQueryBuilder used by other builders.
  */
-public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
+public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
+    extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
 {
     protected MySQLConditionalBuilder(MySQLQueryBuilder parent)
     {
@@ -67,6 +68,5 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> e
         this.query.append(" DESC ");
         return (This)this;
     }
-    
-    
+
 }

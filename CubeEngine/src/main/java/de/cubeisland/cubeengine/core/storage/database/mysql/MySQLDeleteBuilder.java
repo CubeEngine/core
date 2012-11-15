@@ -6,7 +6,8 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for deleting tables.
  */
-public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder> implements DeleteBuilder
+public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder>
+    implements DeleteBuilder
 {
     protected MySQLDeleteBuilder(MySQLQueryBuilder parent)
     {

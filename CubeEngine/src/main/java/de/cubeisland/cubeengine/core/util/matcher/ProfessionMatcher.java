@@ -8,7 +8,7 @@ import org.bukkit.entity.Villager.Profession;
 
 public class ProfessionMatcher
 {
-    private List<String> professions;
+    private List<String>             professions;
     private static ProfessionMatcher instance = null;
 
     public static ProfessionMatcher get()

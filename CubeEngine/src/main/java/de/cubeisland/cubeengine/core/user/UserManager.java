@@ -40,14 +40,15 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
  * This Manager provides methods to access the Users and saving/loading from
  * database.
  */
-public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
+public class UserManager extends BasicStorage<User> implements Cleanable,
+    Runnable, Listener
 {
-    private final Core core;
-    private final List<Player> onlinePlayers;
+    private final Core                            core;
+    private final List<Player>                    onlinePlayers;
     private final ConcurrentHashMap<String, User> users;
-    private final Server server;
-    private final ScheduledExecutorService executor;
-    private static final int REVISION = 3;
+    private final Server                          server;
+    private final ScheduledExecutorService        executor;
+    private static final int                      REVISION = 3;
 
     public UserManager(final Core core)
     {
@@ -100,18 +101,18 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             {
                 database.execute(
                     database.getQueryBuilder().
-                    alterTable(table).
-                    add("nogc", AttrType.BOOLEAN).
-                    defaultValue("false").
-                    end().
-                    end());
+                        alterTable(table).
+                        add("nogc", AttrType.BOOLEAN).
+                        defaultValue("false").
+                        end().
+                        end());
                 database.execute(
                     database.getQueryBuilder().
-                    alterTable(table).
-                    add("lastseen", AttrType.TIMESTAMP).
-                    defaultValue().value().
-                    end().
-                    end(), new Timestamp(System.currentTimeMillis()));
+                        alterTable(table).
+                        add("lastseen", AttrType.TIMESTAMP).
+                        defaultValue().value().
+                        end().
+                        end(), new Timestamp(System.currentTimeMillis()));
             }
         }, 1);
         this.registerUpdater(new DatabaseUpdater()
@@ -121,10 +122,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             {
                 database.execute(
                     database.getQueryBuilder().
-                    alterTable(table).
-                    addUniques("player").
-                    end().
-                    end());
+                        alterTable(table).
+                        addUniques("player").
+                        end().
+                        end());
             }
         }, 2);
     }
@@ -337,7 +338,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
 
         return onlineUsers;
     }
-    
+
     public Collection<User> getLoadedUsers()
     {
         return this.users.values();
@@ -503,7 +504,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             this.getExactUser(player).sendMessage(category, message, args);
         }
     }
-    
+
     public void clearAttributes(Module module)
     {
         for (User user : this.users.values())

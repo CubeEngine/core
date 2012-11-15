@@ -36,22 +36,22 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
  */
 public class BukkitCore extends JavaPlugin implements Core
 {
-    private boolean debug = true;
-    private Database database;
+    private boolean           debug = true;
+    private Database          database;
     private PermissionManager permissionRegistration;
-    private UserManager userManager;
-    private FileManager fileManager;
-    private ModuleManager moduleManager;
-    private I18n i18n;
+    private UserManager       userManager;
+    private FileManager       fileManager;
+    private ModuleManager     moduleManager;
+    private I18n              i18n;
     private CoreConfiguration config;
-    private CubeLogger logger;
-    private EventManager eventRegistration;
-    private Server server;
-    private CommandManager commandManager;
-    private TaskManager taskManager;
-    private TableManager tableManager;
-    private ObjectMapper jsonObjectMapper;
-    private ApiServer apiServer;
+    private CubeLogger        logger;
+    private EventManager      eventRegistration;
+    private Server            server;
+    private CommandManager    commandManager;
+    private TaskManager       taskManager;
+    private TableManager      tableManager;
+    private ObjectMapper      jsonObjectMapper;
+    private ApiServer         apiServer;
 
     @Override
     public void onEnable()
@@ -95,7 +95,7 @@ public class BukkitCore extends JavaPlugin implements Core
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
         this.debug = this.config.debugMode;
-        
+
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
         this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
@@ -133,7 +133,7 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // register Listerer for UserManger
         pm.registerEvents(this.userManager, this);
-        
+
         pm.registerEvents(new CoreListener(this), this);
 
         // depends on: file manager, core config
@@ -166,7 +166,7 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onDisable()
     {
         BukkitUtils.cleanup();
-        
+
         CubeEngine.clean();
 
         if (this.moduleManager != null)
@@ -174,7 +174,7 @@ public class BukkitCore extends JavaPlugin implements Core
             this.moduleManager.clean();
             this.moduleManager = null;
         }
-        
+
         if (this.apiServer != null)
         {
             this.apiServer.stop();
@@ -298,7 +298,7 @@ public class BukkitCore extends JavaPlugin implements Core
     {
         return this.jsonObjectMapper;
     }
-    
+
     @Override
     public ApiServer getApiServer()
     {

@@ -19,20 +19,20 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {
-    protected static TableManager tableManager = null;//Init in TableManager.class
-    protected final Database database;
-    protected final Class<V> modelClass;
-    protected Constructor<V> modelConstructor = null;
-    protected final String table;
-    protected Collection<Callback> createCallbacks = new ArrayList<Callback>();
-    protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
-    protected Collection<Callback> updateCallbacks = new ArrayList<Callback>();
-    protected String key = null;
-    protected boolean keyIsAI = false;
-    protected ArrayList<String> attributes;
+    protected static TableManager                tableManager     = null;                     //Init in TableManager.class
+    protected final Database                     database;
+    protected final Class<V>                     modelClass;
+    protected Constructor<V>                     modelConstructor = null;
+    protected final String                       table;
+    protected Collection<Callback>               createCallbacks  = new ArrayList<Callback>();
+    protected Collection<Callback>               deleteCallbacks  = new ArrayList<Callback>();
+    protected Collection<Callback>               updateCallbacks  = new ArrayList<Callback>();
+    protected String                             key              = null;
+    protected boolean                            keyIsAI          = false;
+    protected ArrayList<String>                  attributes;
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
-    private int revision;
-    private boolean initialized = false;
+    private int                                  revision;
+    private boolean                              initialized      = false;
 
     public BasicStorage(Database database, Class<V> model, int revision)
     {
@@ -115,15 +115,15 @@ public class BasicStorage<V extends Model> implements Storage<V>
 
         //TODO foreign keys
         //        if (!foreignKey.isEmpty())
-//        {
-//            for (Field field : foreignKey)
-//            {
-//                Relation relat = field.getAnnotation(Relation.class);
-//                query.append(", FOREIGN KEY (").append(this.database.quote(field.getName()));
-//                //query.append(") REFERENCES ").append(this.database.prefix(relat.model().getAnnotation(Entity.class).name()));
-//                query.append("(").append(relat.field()).append(")");
-//            }
-//        }
+        //        {
+        //            for (Field field : foreignKey)
+        //            {
+        //                Relation relat = field.getAnnotation(Relation.class);
+        //                query.append(", FOREIGN KEY (").append(this.database.quote(field.getName()));
+        //                //query.append(") REFERENCES ").append(this.database.prefix(relat.model().getAnnotation(Entity.class).name()));
+        //                query.append("(").append(relat.field()).append(")");
+        //            }
+        //        }
         tbuilder.engine(entity.engine()).defaultcharset(entity.charset());
         if (keyIsAI)
         {
@@ -224,8 +224,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void subscribe(SubcribeType type, Callback callback)
     {
-        switch (type)
-        {
+        switch (type) {
             case CREATE:
                 this.createCallbacks.add(callback);
                 break;
@@ -519,7 +518,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             this.updaters.put(i, updater);
         }
     }
-    
+
     public void notAssignKey()
     {
         this.keyIsAI = false;

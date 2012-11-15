@@ -27,8 +27,8 @@ public class TestListener implements Listener
 
     @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
-    {
-    }
+    {}
+
     //TODO this as cmd or smth else
 
     private void testI18n(AsyncPlayerChatEvent event)

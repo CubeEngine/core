@@ -9,7 +9,8 @@ import org.bukkit.event.block.BlockFadeEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.FADE;
 
-public class BlockFadeLogger extends BlockLogger<BlockFadeLogger.BlockFadeConfig>
+public class BlockFadeLogger extends
+    BlockLogger<BlockFadeLogger.BlockFadeConfig>
 {
     public BlockFadeLogger()
     {
@@ -31,7 +32,7 @@ public class BlockFadeLogger extends BlockLogger<BlockFadeLogger.BlockFadeConfig
         @Option(value = "log-snow-melt")
         public boolean logSnowMelt = false;
         @Option(value = "log-ice-melt")
-        public boolean logIceMelt = false;
+        public boolean logIceMelt  = false;
 
         @Override
         public String getName()

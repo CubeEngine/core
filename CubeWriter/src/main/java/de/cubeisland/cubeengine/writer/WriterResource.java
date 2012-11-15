@@ -4,8 +4,10 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
 
 public enum WriterResource implements Resource
 {
-    
-    NORWEGIAN_MESSAGES("resources/language/messages/nb_NO.json", "language/nb_NO/writer.json");
+
+    NORWEGIAN_MESSAGES(
+        "resources/language/messages/nb_NO.json",
+        "language/nb_NO/writer.json");
     private final String target;
     private final String source;
 

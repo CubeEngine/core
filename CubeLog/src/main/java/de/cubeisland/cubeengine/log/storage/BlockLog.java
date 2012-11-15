@@ -14,10 +14,10 @@ import org.bukkit.block.BlockState;
 public class BlockLog extends AbstractPositionLog
 {
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public String newBlock;
+    public String     newBlock;
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public String oldBlock;
-    
+    public String     oldBlock;
+
     private BlockData newBlockData = null;
     private BlockData oldBlockData = null;
 
@@ -71,17 +71,16 @@ public class BlockLog extends AbstractPositionLog
             }
         }
         catch (ConversionException ignored)
-        {
-        }
+        {}
 
     }
-    
+
     public BlockData getNewBlockData()
     {
         this.initBlockData();
         return this.newBlockData;
     }
-    
+
     public BlockData getOldBlockData()
     {
         this.initBlockData();

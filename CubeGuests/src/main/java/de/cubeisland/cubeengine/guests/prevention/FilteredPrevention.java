@@ -16,7 +16,7 @@ import org.bukkit.event.Cancellable;
  */
 public abstract class FilteredPrevention<T extends Object> extends Prevention
 {
-    private Set<T> filterItems;
+    private Set<T>     filterItems;
     private FilterMode filterMode;
 
     public FilteredPrevention(String name, Guests guests)
@@ -143,8 +143,7 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
     {
         if (!can(player))
         {
-            switch (this.filterMode)
-            {
+            switch (this.filterMode) {
                 case NONE:
                     return false;
                 case WHITELIST:
@@ -191,15 +190,27 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
      */
     public enum FilterMode
     {
-        NONE("none", "-1", "nolist", "all"),
-        WHITELIST("whitelist", "0", "white", "positivlist"),
-        BLACKLIST("blacklist", "1", "black", "negativlist");
+        NONE(
+            "none",
+            "-1",
+            "nolist",
+            "all"),
+        WHITELIST(
+            "whitelist",
+            "0",
+            "white",
+            "positivlist"),
+        BLACKLIST(
+            "blacklist",
+            "1",
+            "black",
+            "negativlist");
 
         private static final HashMap<String, FilterMode> ALIAS_MAP = new HashMap<String, FilterMode>(values().length);
 
-        private final String name;
-        private final String[] aliases;
-        
+        private final String                             name;
+        private final String[]                           aliases;
+
         FilterMode(String name, String... aliases)
         {
             this.name = name;

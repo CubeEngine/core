@@ -12,16 +12,16 @@ import org.apache.commons.lang.Validate;
  */
 public class MySQLDatabase extends AbstractDatabase
 {
-    private static final char NAME_QUOTE = '`';
-    private static final char STRING_QUOTE = '\'';
-    private final String host;
-    private final short port;
-    private final String user;
-    private final String pass;
-    private final String database;
-    private final String tablePrefix;
+    private static final char       NAME_QUOTE     = '`';
+    private static final char       STRING_QUOTE   = '\'';
+    private final String            host;
+    private final short             port;
+    private final String            user;
+    private final String            pass;
+    private final String            database;
+    private final String            tablePrefix;
     private final MySQLQueryBuilder queryBuilder;
-    private final Thread creationThread = Thread.currentThread();
+    private final Thread            creationThread = Thread.currentThread();
 
     public MySQLDatabase(DatabaseConfiguration config) throws SQLException
     {

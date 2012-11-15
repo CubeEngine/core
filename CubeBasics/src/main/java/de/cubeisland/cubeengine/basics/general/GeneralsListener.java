@@ -26,9 +26,9 @@ public class GeneralsListener implements Listener
     public void blockplace(final BlockPlaceEvent event)
     {
         User user = basics.getUserManager().getExactUser(event.getPlayer());
-        if (user.getAttribute(basics,"unlimitedItems") != null)
+        if (user.getAttribute(basics, "unlimitedItems") != null)
         {
-            if (user.getAttribute(basics,"unlimitedItems"))
+            if (user.getAttribute(basics, "unlimitedItems"))
             {
                 ItemStack itemInHand = event.getPlayer().getItemInHand();
                 itemInHand.setAmount(itemInHand.getAmount() + 1);

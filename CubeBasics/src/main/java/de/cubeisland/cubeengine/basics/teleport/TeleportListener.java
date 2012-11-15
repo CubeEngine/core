@@ -21,8 +21,7 @@ public class TeleportListener implements Listener
     public void onTeleport(PlayerTeleportEvent event)
     {
         User user = basics.getUserManager().getExactUser(event.getPlayer());
-        switch (event.getCause())
-        {
+        switch (event.getCause()) {
             case COMMAND:
             case PLUGIN:
             case UNKNOWN:

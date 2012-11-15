@@ -7,6 +7,6 @@ public abstract class SubLogConfig extends Configuration
 {
     @Option(value = "enabled")
     public boolean enabled = false;
-    
+
     public abstract String getName();
 }

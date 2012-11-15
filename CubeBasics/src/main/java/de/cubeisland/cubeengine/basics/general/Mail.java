@@ -17,14 +17,14 @@ public class Mail implements Model<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
-    public int key;
+    public int    key;
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String message;
     @ForeignKey(table = "user", field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public int userId;
+    public int    userId;
     @Attribute(type = AttrType.INT, unsigned = true)
-    public int senderId;
+    public int    senderId;
 
     public Mail(int userId, int senderId, String message)
     {

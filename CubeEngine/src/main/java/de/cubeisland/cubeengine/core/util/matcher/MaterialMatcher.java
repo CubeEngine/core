@@ -21,11 +21,11 @@ import org.bukkit.inventory.ItemStack;
 public class MaterialMatcher
 {
     //TODO rename item ; is it possible?
-    private THashMap<String, ItemStack> items;
-    private THashMap<ItemStack, String> itemnames;
+    private THashMap<String, ItemStack>                items;
+    private THashMap<ItemStack, String>                itemnames;
     private TIntObjectHashMap<THashMap<String, Short>> datavalues;
-    private static MaterialMatcher instance = null;
-    private THashMap<String, ItemStack> bukkitnames;
+    private static MaterialMatcher                     instance = null;
+    private THashMap<String, ItemStack>                bukkitnames;
 
     private MaterialMatcher()
     {
@@ -103,7 +103,7 @@ public class MaterialMatcher
                 if (mat != null)
                 {
                     return new ItemStack(mat, 1);
-                }                
+                }
             }
             catch (NumberFormatException e)
             {
@@ -117,8 +117,7 @@ public class MaterialMatcher
                     }
                 }
                 catch (Exception ex)
-                {
-                }
+                {}
             }
             if (s.contains(":"))
             { // name match with data
@@ -185,8 +184,7 @@ public class MaterialMatcher
         }
         catch (NumberFormatException e)
         { // check for special cases
-            switch (item.getType())
-            {
+            switch (item.getType()) {
                 case WOOD:
                 case LOG:
                 case LEAVES:
@@ -248,8 +246,7 @@ public class MaterialMatcher
             return Material.getMaterial(matId);
         }
         catch (NumberFormatException e)
-        {
-        }
+        {}
         ItemStack item = this.matchItemStack(s);
         if (item != null)
         {
@@ -433,18 +430,55 @@ public class MaterialMatcher
      */
     public enum RepairableMaterials
     {
-        IRON_SPADE, IRON_PICKAXE, IRON_AXE, IRON_SWORD,
-        WOOD_SPADE, WOOD_PICKAXE, WOOD_AXE, WOOD_SWORD,
-        STONE_SPADE, STONE_PICKAXE, STONE_AXE, STONE_SWORD,
-        DIAMOND_SPADE, DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SWORD,
-        GOLD_SPADE, GOLD_PICKAXE, GOLD_AXE, GOLD_SWORD,
-        WOOD_HOE, STONE_HOE, IRON_HOE, DIAMOND_HOE, GOLD_HOE,
-        LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS,
-        CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS,
-        IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS,
-        DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS,
-        GOLD_HELMET, GOLD_CHESTPLATE, GOLD_LEGGINGS, GOLD_BOOTS,
-        FLINT_AND_STEEL, BOW, FISHING_ROD, SHEARS;
+        IRON_SPADE,
+        IRON_PICKAXE,
+        IRON_AXE,
+        IRON_SWORD,
+        WOOD_SPADE,
+        WOOD_PICKAXE,
+        WOOD_AXE,
+        WOOD_SWORD,
+        STONE_SPADE,
+        STONE_PICKAXE,
+        STONE_AXE,
+        STONE_SWORD,
+        DIAMOND_SPADE,
+        DIAMOND_PICKAXE,
+        DIAMOND_AXE,
+        DIAMOND_SWORD,
+        GOLD_SPADE,
+        GOLD_PICKAXE,
+        GOLD_AXE,
+        GOLD_SWORD,
+        WOOD_HOE,
+        STONE_HOE,
+        IRON_HOE,
+        DIAMOND_HOE,
+        GOLD_HOE,
+        LEATHER_HELMET,
+        LEATHER_CHESTPLATE,
+        LEATHER_LEGGINGS,
+        LEATHER_BOOTS,
+        CHAINMAIL_HELMET,
+        CHAINMAIL_CHESTPLATE,
+        CHAINMAIL_LEGGINGS,
+        CHAINMAIL_BOOTS,
+        IRON_HELMET,
+        IRON_CHESTPLATE,
+        IRON_LEGGINGS,
+        IRON_BOOTS,
+        DIAMOND_HELMET,
+        DIAMOND_CHESTPLATE,
+        DIAMOND_LEGGINGS,
+        DIAMOND_BOOTS,
+        GOLD_HELMET,
+        GOLD_CHESTPLATE,
+        GOLD_LEGGINGS,
+        GOLD_BOOTS,
+        FLINT_AND_STEEL,
+        BOW,
+        FISHING_ROD,
+        SHEARS;
         private static final Set<Material> mats = Collections.synchronizedSet(EnumSet.noneOf(Material.class));
 
         static

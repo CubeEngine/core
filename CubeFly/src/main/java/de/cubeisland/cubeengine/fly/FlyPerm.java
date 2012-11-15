@@ -10,8 +10,8 @@ public enum FlyPerm implements Permission
     COMMAND_FLY_SELF,
     COMMAND_FLY_OTHER,
     FLY_CANFLY,
-    FLY_FEATHER,;
-    private final String permission;
+    FLY_FEATHER, ;
+    private final String      permission;
     private PermissionDefault def;
 
     private FlyPerm()

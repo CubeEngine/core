@@ -7,7 +7,8 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for updating tables.
  */
-public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> implements UpdateBuilder
+public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder>
+    implements UpdateBuilder
 {
     private boolean hasCols;
 
@@ -37,11 +38,10 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
         Validate.notEmpty(cols, "No cols specified!");
 
         this.query.append(" SET ");
-        
 
         return this.cols(cols);
     }
-  
+
     @Override
     public MySQLUpdateBuilder cols(String... cols)
     {

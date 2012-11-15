@@ -19,22 +19,17 @@ public class KitCommand extends ContainerCommand
     }
 
     @Alias(names = "kit")
-    @Command(
-        desc = "Gives a kit of items.",
-        usage = "<kitname> [player]",
-        min = 1, max = 2,
-        flags =
-        {
+    @Command(desc = "Gives a kit of items.", usage = "<kitname> [player]", min = 1, max = 2, flags = {
             @Flag(longName = "all", name = "a"),
             @Flag(longName = "force", name = "f")
-        })
+    })
     public void give(CommandContext context)
     {
         String kitname = context.getString(0);
         User user;
         Kit kit = KitConfiguration.getKit(kitname);
         boolean force = false;
-        if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()) )
+        if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
         {
             force = true;
         }

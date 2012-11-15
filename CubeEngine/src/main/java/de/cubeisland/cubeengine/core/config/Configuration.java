@@ -23,11 +23,11 @@ import org.yaml.snakeyaml.reader.ReaderException;
 public abstract class Configuration
 {
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
-    protected Class<? extends Configuration> configurationClass;
-    protected static final Logger logger = CubeEngine.getLogger();
-    protected ConfigurationCodec codec = null;
-    protected File file;
-    protected Configuration parent = null;
+    protected Class<? extends Configuration>             configurationClass;
+    protected static final Logger                        logger = CubeEngine.getLogger();
+    protected ConfigurationCodec                         codec  = null;
+    protected File                                       file;
+    protected Configuration                              parent = null;
 
     static
     {
@@ -177,8 +177,7 @@ public abstract class Configuration
                 inputStream.close();
             }
             catch (IOException ignored)
-            {
-            }
+            {}
         }
 
         config.file = file;
@@ -308,15 +307,13 @@ public abstract class Configuration
      * This method is called right after the configuration got loaded.
      */
     public void onLoaded()
-    {
-    }
+    {}
 
     /**
      * This method gets called right after the configration get saved.
      */
     public void onSaved(File file)
-    {
-    }
+    {}
 
     /**
      * Returns the lines to be added in front of the Configuration.

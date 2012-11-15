@@ -13,7 +13,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 
 public class FlyCommand
 {
-    UserManager um;
+    UserManager      um;
     FlyConfiguration config;
 
     public FlyCommand(Fly module)
@@ -22,14 +22,9 @@ public class FlyCommand
         this.config = module.getConfiguration();
     }
 
-    @Command(
-    desc = "Lets you fly away",
-    max = 1,
-    params =
-    {
+    @Command(desc = "Lets you fly away", max = 1, params = {
         @Param(names = "player", type = User.class)
-    },
-    usage = "[flyspeed] [player <player>]")
+    }, usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {
         if (!this.config.flycommand)

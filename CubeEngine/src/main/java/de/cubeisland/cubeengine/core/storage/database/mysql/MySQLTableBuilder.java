@@ -7,7 +7,8 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 /**
  * MYSQLQueryBuilder for creating new tables.
  */
-public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> implements TableBuilder
+public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
+    implements TableBuilder
 {
     private int fieldCounter;
 
@@ -20,8 +21,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     {
         this.fieldCounter = 0;
         name = this.database.prepareTableName(name);
-        switch (actionIfExists)
-        {
+        switch (actionIfExists) {
             case 1: // DO NOTHING
                 this.query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(name).append(" ");
                 break;

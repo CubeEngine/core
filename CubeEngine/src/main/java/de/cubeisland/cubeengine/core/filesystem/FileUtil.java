@@ -86,8 +86,7 @@ public class FileUtil
                 bufferedReader.close();
             }
             catch (IOException ex1)
-            {
-            }
+            {}
         }
         return list;
     }

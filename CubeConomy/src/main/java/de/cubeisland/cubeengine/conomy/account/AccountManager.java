@@ -7,8 +7,8 @@ import java.util.HashMap;
 
 public class AccountManager
 {
-    HashMap<String, BankAccount> banks = new HashMap<String, BankAccount>();
-    HashMap<User, UserAccount> useraccs = new HashMap<User, UserAccount>();
+    HashMap<String, BankAccount> banks    = new HashMap<String, BankAccount>();
+    HashMap<User, UserAccount>   useraccs = new HashMap<User, UserAccount>();
 
     public BankAccount createBank(String name)
     {

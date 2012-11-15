@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.Core;
 import org.bukkit.event.HandlerList;
 
-//TODO do we use this ????? We have Callbacks
+// TODO do we use this ????? We have Callbacks
 /**
  * This Event is fired when a new User got created and added to the database.
  */

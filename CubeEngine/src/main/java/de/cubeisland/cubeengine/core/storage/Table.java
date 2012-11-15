@@ -17,11 +17,11 @@ public class Table implements Model<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
-    public int key;
+    public int          key;
     @Attribute(type = AttrType.VARCHAR, length = 32)
     public final String table;
     @Attribute(type = AttrType.INT, unsigned = true)
-    public int revision;
+    public int          revision;
 
     @DatabaseConstructor
     public Table(List<Object> args)

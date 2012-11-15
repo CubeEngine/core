@@ -19,10 +19,9 @@ public class ShoutSubCommands
         this.module = module;
     }
 
-    @Command(
-        names = {"list", "announcements"},
-        desc = "List all announcements"
-    )
+    @Command(names = {
+        "list", "announcements"
+    }, desc = "List all announcements")
     public void list(CommandContext context)
     {
         Iterator<Announcement> iter = this.module.getAnnouncementManager().getAnnouncemets().iterator();
@@ -40,18 +39,24 @@ public class ShoutSubCommands
         }
     }
 
-    @Command(
-        desc = "Create the structure for a new announcement",
-        min = 1,
-        params = {
-            @Param(names = {"delay", "d"}),
-            @Param(names = {"world", "w"}),
+    @Command(desc = "Create the structure for a new announcement", min = 1, params = {
+            @Param(names = {
+                "delay", "d"
+            }),
+            @Param(names = {
+                "world", "w"
+            }),
             //@Param(names = {"permission", "p"}, type = Permission.class), TODO
-            @Param(names = {"group", "g"}),
-            @Param(names = {"message", "m"}),
-            @Param(names = {"locale", "l"})
-        }
-    )
+            @Param(names = {
+                "group", "g"
+            }),
+            @Param(names = {
+                "message", "m"
+            }),
+            @Param(names = {
+                "locale", "l"
+            })
+    })
     public void create(CommandContext context)
     {
         if (!context.hasNamed("message"))
@@ -81,7 +86,7 @@ public class ShoutSubCommands
                 context.getString("group", "*"),
                 context.getString("permission", "*"),
                 locale
-            );
+                );
         }
         catch (IllegalArgumentException ex)
         {
@@ -99,9 +104,7 @@ public class ShoutSubCommands
         context.sendMessage("shout", "Your announcement have been created and loaded into the plugin");
     }
 
-    @Command(
-        desc = "clean all loaded announcements form memory and load from disk"
-    )
+    @Command(desc = "clean all loaded announcements form memory and load from disk")
     public void reload(CommandContext context)
     {
         module.getAnnouncementManager().reload();

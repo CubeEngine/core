@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class PreventionConfiguration extends YamlConfiguration
 {
-    private final File file;
+    private final File          file;
     private static final String FILE_EXTENTION = ".yml";
 
     private PreventionConfiguration(File file)
@@ -61,7 +61,6 @@ public class PreventionConfiguration extends YamlConfiguration
     {
         this.load(this.file);
     }
-
 
     public void save() throws IOException
     {

@@ -29,19 +29,35 @@ public enum LogAction
      * TODO: ActionType detection / stopp logging in the listener if not
      * enabled!
      */
-    BLOCKCHANGE(true,
-    BlockBreakLogger.class, BlockBurnLogger.class,
-    BlockDecayLogger.class, BlockExplosionLogger.class,
-    BlockFadeLogger.class, BlockFluidFlowLogger.class,
-    BlockFormLogger.class, BlockGrowLogger.class,
-    BlockPlaceLogger.class, EndermanLogger.class),
-    SIGNCHANGE(false, SignChangeLogger.class),
-    CONTAINER(true, ContainerLogger.class),
-    CHAT(false, ChatLogger.class),
-    INTERACTION(false, InteractionLogger.class),
-    KILL(false, KillLogger.class),;
-    private Class<? extends Logger>[] loggerClasses;
-    private LogActionConfig configuration;
+    BLOCKCHANGE(
+        true,
+        BlockBreakLogger.class,
+        BlockBurnLogger.class,
+        BlockDecayLogger.class,
+        BlockExplosionLogger.class,
+        BlockFadeLogger.class,
+        BlockFluidFlowLogger.class,
+        BlockFormLogger.class,
+        BlockGrowLogger.class,
+        BlockPlaceLogger.class,
+        EndermanLogger.class),
+    SIGNCHANGE(
+        false,
+        SignChangeLogger.class),
+    CONTAINER(
+        true,
+        ContainerLogger.class),
+    CHAT(
+        false,
+        ChatLogger.class),
+    INTERACTION(
+        false,
+        InteractionLogger.class),
+    KILL(
+        false,
+        KillLogger.class), ;
+    private Class<? extends Logger>[]       loggerClasses;
+    private LogActionConfig                 configuration;
     private static THashMap<String, Logger> loggers = new THashMap<String, Logger>();
 
     private LogAction(boolean defaultEnabled, Class<? extends Logger>... logger)
@@ -78,16 +94,16 @@ public enum LogAction
     }
     //BlockFormEvent & BlockFadeEvent for SnowCover and Ice
     //
-//BlockIgniteEvent for setting fire with fireball flint_and_steel || ?? lava , lightning , spread
-//BlockPistonEvent or BlockPistonExtendEvent / BlockPistonRetractEvent piston movements ??   
-//BlockFromToEvent ?? water lava dragoneggs
-//BlockGrowEvent ?? for wheat sugarcane cactus watermelon pumpkin
-//BlockPhysicsEvent ?? for when phyics is checked
-//BlockRedstoneEvent ?? when redstone update
-//BrewEvent ??
-//FurnaceBurnEvent ?? when fuel burned
-//FurnaceSmeltEvent ?? when block smelted
-//NotePlayEvent ?? noteblock by player or redstone
+    //BlockIgniteEvent for setting fire with fireball flint_and_steel || ?? lava , lightning , spread
+    //BlockPistonEvent or BlockPistonExtendEvent / BlockPistonRetractEvent piston movements ??   
+    //BlockFromToEvent ?? water lava dragoneggs
+    //BlockGrowEvent ?? for wheat sugarcane cactus watermelon pumpkin
+    //BlockPhysicsEvent ?? for when phyics is checked
+    //BlockRedstoneEvent ?? when redstone update
+    //BrewEvent ??
+    //FurnaceBurnEvent ?? when fuel burned
+    //FurnaceSmeltEvent ?? when block smelted
+    //NotePlayEvent ?? noteblock by player or redstone
     /* FOR SAND:
      * private boolean canFall(Location loc)
      * {

@@ -17,7 +17,7 @@ public interface UpdateBuilder extends ConditionalBuilder<UpdateBuilder>
      * @return fluent interface 
      */
     public UpdateBuilder set(String... cols);
-    
+
     /**
      * Adds cols to update
      * 

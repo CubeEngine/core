@@ -26,8 +26,7 @@ public final class StringUtils
     }
 
     private StringUtils()
-    {
-    }
+    {}
 
     /**
      * This method splits a string without RegExes
@@ -164,6 +163,7 @@ public final class StringUtils
             return string;
         }
     }
+
     private static final long DAY = (long)24 * 60 * 60 * 1000;
 
     /**
@@ -193,8 +193,7 @@ public final class StringUtils
         {
             unitSuffix = "m";
         }
-        switch (unitSuffix.charAt(0))
-        {
+        switch (unitSuffix.charAt(0)) {
             case 'y':
             case 'Y':
                 time *= 365;
@@ -300,6 +299,7 @@ public final class StringUtils
         // actually has the most recent cost counts
         return p[n];
     }
+
     static final int wd = 1, wi = 1, wc = 1, ws = 1;
 
     /**
@@ -357,7 +357,7 @@ public final class StringUtils
                     H[i + 1][j] + wi,
                     H[i][j + 1] + wd,
                     H[i1][j1] + ((i - i1 - 1) * wd)
-                    + ws + ((j - j1 - 1) * wi));
+                        + ws + ((j - j1 - 1) * wi));
             }
             DA.put(a.charAt(i - 1), i);
         }

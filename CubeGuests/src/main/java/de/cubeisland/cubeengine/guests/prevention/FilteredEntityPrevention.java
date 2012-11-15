@@ -9,7 +9,8 @@ import org.bukkit.entity.EntityType;
 /**
  * This class represents a filterable Prevention related to Materials.
  */
-public abstract class FilteredEntityPrevention extends FilteredPrevention<EntityType>
+public abstract class FilteredEntityPrevention extends
+    FilteredPrevention<EntityType>
 {
     public FilteredEntityPrevention(final String name, final Guests guests)
     {

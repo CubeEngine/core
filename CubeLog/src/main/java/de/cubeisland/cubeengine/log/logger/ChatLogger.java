@@ -20,19 +20,19 @@ public class ChatLogger extends Logger<ChatLogger.ChatConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        //TODO
+    //TODO
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
-        //TODO
+    //TODO
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent event)
     {
-        //TODO
+    //TODO
     }
 
     public static class ChatConfig extends SubLogConfig

@@ -29,11 +29,11 @@ import org.apache.commons.lang.Validate;
  */
 public class ModuleLoader
 {
-    private final Core core;
-    private final LibraryClassLoader libClassLoader;
+    private final Core                           core;
+    private final LibraryClassLoader             libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
-    protected String classPrefix = "Cube";
-    protected final String infoFileName = "module.yml";
+    protected String                             classPrefix  = "Cube";
+    protected final String                       infoFileName = "module.yml";
 
     protected ModuleLoader(Core core)
     {
@@ -174,8 +174,7 @@ public class ModuleLoader
                     configStream.close();
                 }
                 catch (IOException ignored)
-                {
-                }
+                {}
             }
         }
         catch (IOException e)
@@ -191,8 +190,7 @@ public class ModuleLoader
                     jarFile.close();
                 }
                 catch (IOException ignored)
-                {
-                }
+                {}
             }
         }
         return info;
@@ -217,8 +215,7 @@ public class ModuleLoader
             clazz = this.libClassLoader.findClass(name);
         }
         catch (ClassNotFoundException e)
-        {
-        }
+        {}
 
         if (clazz != null)
         {
@@ -240,8 +237,7 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException e)
-            {
-            }
+            {}
         }
 
         for (String dep : info.getDependencies().keySet())
@@ -260,8 +256,7 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException e)
-            {
-            }
+            {}
         }
 
         for (String module : this.classLoaders.keySet())
@@ -277,8 +272,7 @@ public class ModuleLoader
                     }
                 }
                 catch (ClassNotFoundException ignored)
-                {
-                }
+                {}
             }
         }
 

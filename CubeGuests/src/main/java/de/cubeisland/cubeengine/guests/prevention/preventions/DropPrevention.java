@@ -16,7 +16,7 @@ public class DropPrevention extends FilteredItemPrevention
         super("drop", guests);
         setEnablePunishing(true);
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void dropItem(PlayerDropItemEvent event)
     {

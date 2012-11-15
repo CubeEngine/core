@@ -17,8 +17,9 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Lookup
 {
-    boolean showCoords;
+    boolean                showCoords;
     private List<BlockLog> blocklogs;
+
     //private List<ChatLog> chatlogs;
     //private List<ChestLog> chestlogs;
 
@@ -33,7 +34,7 @@ public class Lookup
             if (log instanceof BlockLog)
             {
                 BlockLog blog = (BlockLog)log;
-                
+
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                 sb.append(sdf.format(new Date(log.getTimeStamp()))).append(" - ");
                 if (blog.isBlockBreak())
@@ -43,7 +44,7 @@ public class Lookup
                     {
                         sb.append(blog.getUser().getName());
                     }
-                    
+
                     sb.append(" break ").append(MaterialMatcher.get().getNameFor(new ItemStack(blog.getOldBlockData().mat)));
                 }
                 else if (blog.isBlockPlace())

@@ -20,6 +20,6 @@ public @interface Action
     public boolean auth() default true;
 
     public String[] parameters() default {};
-    
+
     public RequestMethod[] methods() default GET;
 }

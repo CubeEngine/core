@@ -27,8 +27,7 @@ public final class CubeEngine
      * Standard Constructor
      */
     private CubeEngine()
-    {
-    }
+    {}
 
     /**
      * Checks whether the CubeEngine class has been initialized.
@@ -235,7 +234,7 @@ public final class CubeEngine
     {
         return core.getJsonObjectMapper();
     }
-    
+
     public static ApiServer getApiServer()
     {
         return core.getApiServer();

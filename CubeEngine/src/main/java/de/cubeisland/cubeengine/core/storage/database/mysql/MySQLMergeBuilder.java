@@ -7,9 +7,10 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for merging into tables.
  */
-public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder> implements MergeBuilder
+public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
+    implements MergeBuilder
 {
-    private boolean updateColsSpecified;
+    private boolean  updateColsSpecified;
     private String[] insertCols;
 
     protected MySQLMergeBuilder(MySQLQueryBuilder parent)

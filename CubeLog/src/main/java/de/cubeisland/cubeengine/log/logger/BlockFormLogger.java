@@ -9,7 +9,8 @@ import org.bukkit.event.block.BlockFormEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.FORM;
 
-public class BlockFormLogger extends BlockLogger<BlockFormLogger.BlockFormConfig>
+public class BlockFormLogger extends
+    BlockLogger<BlockFormLogger.BlockFormConfig>
 {
     public BlockFormLogger()
     {
@@ -31,7 +32,7 @@ public class BlockFormLogger extends BlockLogger<BlockFormLogger.BlockFormConfig
         @Option(value = "log-snow-form")
         public boolean logSnowForm = false;
         @Option(value = "log-ice-form")
-        public boolean logIceForm = false;
+        public boolean logIceForm  = false;
 
         @Override
         public String getName()

@@ -14,7 +14,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 class RuleBookListener implements Listener, Runnable
 {
     private static String playerName = null;
-    Rulebook module;
+    Rulebook              module;
 
     public RuleBookListener(Rulebook module)
     {
@@ -37,7 +37,7 @@ class RuleBookListener implements Listener, Runnable
     {
         if (playerName != null)
         {
-            User user = this.module.getCore().getUserManager().getUser(playerName , true);
+            User user = this.module.getCore().getUserManager().getUser(playerName, true);
             String language = user.getLanguage();
 
             if (!this.module.getConfig().getLanguages().contains(language))

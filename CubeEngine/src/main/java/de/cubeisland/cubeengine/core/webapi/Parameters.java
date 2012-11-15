@@ -45,8 +45,7 @@ public class Parameters extends HashMap<String, String>
                 return Integer.parseInt(value);
             }
             catch (NumberFormatException e)
-            {
-            }
+            {}
         }
         return def;
     }
@@ -66,8 +65,7 @@ public class Parameters extends HashMap<String, String>
                 return Long.parseLong(value);
             }
             catch (NumberFormatException e)
-            {
-            }
+            {}
         }
         return def;
     }
@@ -87,8 +85,7 @@ public class Parameters extends HashMap<String, String>
                 return Double.parseDouble(value);
             }
             catch (NumberFormatException e)
-            {
-            }
+            {}
         }
         return def;
     }
@@ -108,8 +105,7 @@ public class Parameters extends HashMap<String, String>
                 return Boolean.parseBoolean(value);
             }
             catch (NumberFormatException e)
-            {
-            }
+            {}
         }
         return def;
     }

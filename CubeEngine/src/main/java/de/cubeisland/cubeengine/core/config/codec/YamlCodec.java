@@ -16,7 +16,7 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlCodec extends ConfigurationCodec
 {
     private final Yaml yaml;
-    private boolean useLineBreak = false;
+    private boolean    useLineBreak = false;
 
     public YamlCodec()
     {
@@ -30,7 +30,7 @@ public class YamlCodec extends ConfigurationCodec
     }
 
     //TODO \n in Strings do get lost when restarting
-    
+
     @Override
     public Map<String, Object> loadFromInputStream(InputStream is)
     {

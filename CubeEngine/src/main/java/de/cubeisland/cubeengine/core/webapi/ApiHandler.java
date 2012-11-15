@@ -16,11 +16,11 @@ import java.util.Set;
  */
 public final class ApiHandler
 {
-    private final ApiHolder holder;
-    private final String route;
-    private final Method method;
-    private final boolean authNeeded;
-    private final String[] parameters;
+    private final ApiHolder          holder;
+    private final String             route;
+    private final Method             method;
+    private final boolean            authNeeded;
+    private final String[]           parameters;
     private final Set<RequestMethod> requestMethods;
 
     /**

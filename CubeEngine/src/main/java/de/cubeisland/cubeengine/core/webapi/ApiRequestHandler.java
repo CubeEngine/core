@@ -43,9 +43,10 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
  *
  * @author Phillip Schichtel
  */
-public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Object>
+public class ApiRequestHandler extends
+    ChannelInboundMessageHandlerAdapter<Object>
 {
-    private static final Logger LOGGER = new CubeLogger("webapi");
+    private static final Logger       LOGGER          = new CubeLogger("webapi");
 
     static
     {
@@ -58,26 +59,26 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             CubeEngine.getLogger().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
         }
     }
-    
-    private static final Charset UTF8 = Charset.forName("UTF-8");
-    private static final String WEBSOCKET_ROUTE = "websocket";
-    private final ApiServer server;
-    private WebSocketServerHandshaker handshaker = null;
-    private ObjectMapper objectMapper;
-    
+
+    private static final Charset      UTF8            = Charset.forName("UTF-8");
+    private static final String       WEBSOCKET_ROUTE = "websocket";
+    private final ApiServer           server;
+    private WebSocketServerHandshaker handshaker      = null;
+    private ObjectMapper              objectMapper;
+
     ApiRequestHandler(ApiServer server)
     {
         this.server = server;
         this.objectMapper = CubeEngine.getJsonObjectMapper();
     }
-    
+
     @Override
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
         this.error(context, UNKNOWN_ERROR);
         LOGGER.log(ERROR, "An error occurred while processing an API request: " + t.getMessage(), t);
     }
-    
+
     @Override
     public void messageReceived(ChannelHandlerContext context, Object message) throws Exception
     {
@@ -104,7 +105,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             context.close();
         }
     }
-    
+
     private void handleHttpRequest(ChannelHandlerContext context, HttpRequest request)
     {
         if (request.getDecoderResult().isFailure())
@@ -113,18 +114,18 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             LOGGER.log(INFO, "the decoder failed on this request...", request.getDecoderResult().cause());
             return;
         }
-        
+
         QueryStringDecoder qsDecoder = new QueryStringDecoder(request.getUri(), UTF8, true, 100);
-        
+
         String path = qsDecoder.getPath().trim();
         final Map<String, List<String>> getParams = qsDecoder.getParameters();
-        
+
         if (path.length() == 0 || "/".equals(path))
         {
             this.error(context, ROUTE_NOT_FOUND);
             return;
         }
-        
+
         if (path.charAt(0) == '/')
         {
             path = path.substring(1);
@@ -133,7 +134,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         {
             path = path.substring(0, path.length() - 1);
         }
-        
+
         // is this request intended to initialize a websockets connection?
         if ("websocket".equals(path))
         {
@@ -219,7 +220,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     private void handleTextWebSocketFrame(ChannelHandlerContext context, TextWebSocketFrame frame)
     {
         String text = frame.getText();
-        
+
         int newLinePos = text.indexOf('\n');
         if (newLinePos == -1)
         {
@@ -268,7 +269,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         {
             this.server.unsubscribe(text.trim(), this);
         }
-        
+
         context.write(new TextWebSocketFrame(command + " -- " + text));
     }
 

@@ -36,10 +36,7 @@ public class SpawnMobCommand
         config = basics.getConfiguration();
     }
 
-    @Command(
-        desc = "Spawns the specified Mob",
-        max = 3,
-        usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
+    @Command(desc = "Spawns the specified Mob", max = 3, usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {
         // TODO adjust MaxHealth of a mob
@@ -58,7 +55,7 @@ public class SpawnMobCommand
             User user = context.getUser(2);
             if (user == null)
             {
-                illegalParameter(context, "core", "&cUser %s not found!",context.getString(2));
+                illegalParameter(context, "core", "&cUser %s not found!", context.getString(2));
             }
             loc = user.getLocation();
         }
@@ -162,7 +159,7 @@ public class SpawnMobCommand
     {
         if (data != null)
         {
-            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged"); 
+            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged");
             //TODO this list configurable something like datavalues.txt
             if (match.equals("baby"))
             {

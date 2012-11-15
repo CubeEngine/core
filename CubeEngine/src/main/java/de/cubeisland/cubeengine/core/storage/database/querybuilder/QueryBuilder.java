@@ -119,7 +119,7 @@ public interface QueryBuilder
      * @return the query as String
      */
     public String end();
-    
+
     //TODO create DB
     //TODO create Index
 }

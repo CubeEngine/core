@@ -8,15 +8,15 @@ public class AfterJoinEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
 
-    private String joinMessage;
-    private Player player;
-    
+    private String                   joinMessage;
+    private Player                   player;
+
     public AfterJoinEvent(Player player, String joinMessage)
     {
         this.joinMessage = joinMessage;
         this.player = player;
     }
-    
+
     @Override
     public HandlerList getHandlers()
     {

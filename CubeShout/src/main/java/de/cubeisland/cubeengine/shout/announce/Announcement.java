@@ -8,12 +8,12 @@ import org.apache.commons.lang.Validate;
  */
 public class Announcement
 {
-    private final String name;
-    private final String defaultLocale;
-    private final String permNode;
-    private final String world;
+    private final String              name;
+    private final String              defaultLocale;
+    private final String              permNode;
+    private final String              world;
     private final Map<String, String> messages;
-    private final long delay;
+    private final long                delay;
 
     /**
      * Constructor of Announcement

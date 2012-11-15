@@ -34,7 +34,7 @@ public class RequiredDefaultConstructorProcessor extends AbstractProcessor
         }
         return true;
     }
-    
+
     private boolean hasDefaultConstructor(Element main)
     {
         for (Element sub : main.getEnclosedElements())
@@ -46,13 +46,13 @@ public class RequiredDefaultConstructorProcessor extends AbstractProcessor
         }
         return false;
     }
-    
+
     private static final TypeVisitor<Boolean, Void> DEFAULT_CONSTRUCTOR_VISITOR = new SimpleTypeVisitor6<Boolean, Void>() {
 
-        @Override
-        public Boolean visitExecutable(ExecutableType t, Void p)
-        {
-            return t.getParameterTypes().isEmpty();
-        }
-    };
+                                                                                    @Override
+                                                                                    public Boolean visitExecutable(ExecutableType t, Void p)
+                                                                                {
+                                                                                    return t.getParameterTypes().isEmpty();
+                                                                                }
+                                                                                };
 }

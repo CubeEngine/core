@@ -7,13 +7,14 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 /**
  * Abstract MYSQLlQueryBuilder used by other builders.
  */
-public abstract class MySQLComponentBuilder<This extends ComponentBuilder> implements ComponentBuilder<This>
+public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
+    implements ComponentBuilder<This>
 {
-    protected StringBuilder query = new StringBuilder();
-    protected Database database;
-    private boolean inFunction = false;
-    private boolean deepInFunction = false;
-    protected Integer subDepth = 0;
+    protected StringBuilder     query          = new StringBuilder();
+    protected Database          database;
+    private boolean             inFunction     = false;
+    private boolean             deepInFunction = false;
+    protected Integer           subDepth       = 0;
     protected MySQLQueryBuilder parent;
 
     public MySQLComponentBuilder(MySQLQueryBuilder parent)
@@ -79,7 +80,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         this.query.append(')');
         return (This)this;
     }
-    
+
     @Override
     public This value(Object value)
     {
@@ -108,8 +109,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @Override
     public This is(Integer operation)
     {
-        switch (operation)
-        {
+        switch (operation) {
             case 1:
                 this.query.append('=');
                 break;
@@ -133,7 +133,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         }
         return (This)this;
     }
-    
+
     @Override
     public This isEqual()
     {
@@ -201,7 +201,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         this.query.append(" LIKE");
         return (This)this;
     }
-    
+
     @Override
     public This as(String field)
     {
@@ -215,7 +215,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         this.query.append(" IN ");
         return (This)this;
     }
-    
+
     @Override
     public This groupBy(String... field)
     {

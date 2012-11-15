@@ -7,14 +7,14 @@ import org.bukkit.event.HandlerList;
 public class PacketReceivedEvent extends PacketEvent
 {
     private static final HandlerList handlers = new HandlerList();
-    private final Player player;
+    private final Player             player;
 
     public PacketReceivedEvent(Player player, Packet packet)
     {
         super(packet);
         this.player = player;
     }
-    
+
     /**
      * Returns the player of this event
      *

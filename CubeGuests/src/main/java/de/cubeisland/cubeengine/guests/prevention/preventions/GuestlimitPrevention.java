@@ -22,10 +22,10 @@ import org.bukkit.event.player.PlayerLoginEvent;
 public class GuestlimitPrevention extends Prevention
 {
     private Map<Player, String> kickMessages;
-    private int minimumPlayers;
-    private int guestLimit;
-    private boolean kickGuests;
-    private Server server;
+    private int                 minimumPlayers;
+    private int                 guestLimit;
+    private boolean             kickGuests;
+    private Server              server;
 
     public GuestlimitPrevention(Guests guests)
     {
@@ -60,12 +60,10 @@ public class GuestlimitPrevention extends Prevention
                 "    kickGuests: whether to kick a guest from hte full server if a member wants to join\n";
     }
 
-
-
     @Override
     public Configuration getDefaultConfig()
     {
-        Configuration defaultConfig =  super.getDefaultConfig();
+        Configuration defaultConfig = super.getDefaultConfig();
 
         defaultConfig.set("minimumPlayers", Math.round(this.server.getMaxPlayers() * .7));
         defaultConfig.set("guestLimit", Math.round(this.server.getMaxPlayers() * .3));
@@ -96,7 +94,7 @@ public class GuestlimitPrevention extends Prevention
         if (!can(player))
         {
             final boolean tooManyGuests = guests.size() >= this.guestLimit && onlinePlayers > minimumPlayers;
-            
+
             // server full or too many guests?
             if (serverIsFull || tooManyGuests)
             {

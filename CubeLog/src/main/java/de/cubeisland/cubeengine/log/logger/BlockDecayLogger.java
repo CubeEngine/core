@@ -7,7 +7,8 @@ import org.bukkit.event.block.LeavesDecayEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.DECAY;
 
-public class BlockDecayLogger extends BlockLogger<BlockDecayLogger.BlockDecayConfig>
+public class BlockDecayLogger extends
+    BlockLogger<BlockDecayLogger.BlockDecayConfig>
 {
     public BlockDecayLogger()
     {

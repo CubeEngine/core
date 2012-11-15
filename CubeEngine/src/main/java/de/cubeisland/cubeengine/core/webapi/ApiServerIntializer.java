@@ -19,16 +19,16 @@ public class ApiServerIntializer extends ChannelInitializer<SocketChannel>
     {
         this.server = server;
     }
-    
+
     @Override
     public void initChannel(SocketChannel ch) throws Exception
     {
         ch.pipeline()
-            .addLast("decoder", new HttpRequestDecoder()) 
+            .addLast("decoder", new HttpRequestDecoder())
             .addLast("aggregator", new HttpChunkAggregator(this.server.getMaxContentLength()))
             .addLast("encoder", new HttpResponseEncoder())
             .addLast("handler", new ApiRequestHandler(this.server));
-        
+
         if (this.server.isCompressionEnabled())
         {
             ch.pipeline().addLast("deflater", new HttpContentCompressor(this.server.getCompressionLevel(), this.server.getCompressionWindowBits(), this.server.getCompressionMemoryLevel()));

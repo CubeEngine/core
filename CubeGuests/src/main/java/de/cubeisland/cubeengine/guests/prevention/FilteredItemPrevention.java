@@ -10,7 +10,8 @@ import org.bukkit.entity.Player;
 /**
  * This class represents a filterable Prevention related to Materials.
  */
-public abstract class FilteredItemPrevention extends FilteredPrevention<Material>
+public abstract class FilteredItemPrevention extends
+    FilteredPrevention<Material>
 {
     private boolean ignoreBlocks = false;
 

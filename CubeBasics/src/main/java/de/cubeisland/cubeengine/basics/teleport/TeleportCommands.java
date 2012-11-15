@@ -53,16 +53,10 @@ public class TeleportCommands
         }
     }
 
-    @Command(
-        desc = "Teleport directly to a player.",
-        usage = "<player> [player] [-unsafe]",
-        min = 1,
-        max = 2,
-        flags =
-        {
+    @Command(desc = "Teleport directly to a player.", usage = "<player> [player] [-unsafe]", min = 1, max = 2, flags = {
             @Flag(longName = "force", name = "f"), // is not shown directly in usage
             @Flag(longName = "unsafe", name = "u")
-        })
+    })
     public void tp(CommandContext context)
     {
         User user = context.getSenderAsUser();
@@ -138,16 +132,10 @@ public class TeleportCommands
         context.sendMessage("basics", "&aYou teleported to &2%s&a!", target.getName());
     }
 
-    @Command(
-        desc = "Teleport everyone directly to a player.",
-        usage = "<player> [-unsafe]",
-        min = 1,
-        max = 1,
-        flags =
-        {
+    @Command(desc = "Teleport everyone directly to a player.", usage = "<player> [-unsafe]", min = 1, max = 1, flags = {
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "unsafe", name = "u")
-        })
+    })
     public void tpall(CommandContext context)
     {
         User user = context.getUser(0);
@@ -185,16 +173,10 @@ public class TeleportCommands
         context.getCore().getUserManager().broadcastMessage("basucs", "&aTeleporting everyone to %s", user.getName());
     }
 
-    @Command(
-        desc = "Teleport a player directly to you.",
-        usage = "<player>",
-        min = 1,
-        max = 1,
-        flags =
-        {
+    @Command(desc = "Teleport a player directly to you.", usage = "<player>", min = 1, max = 1, flags = {
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "unsafe", name = "u")
-        })
+    })
     public void tphere(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
@@ -230,14 +212,10 @@ public class TeleportCommands
         target.sendMessage("basics", "&aYou were teleported to %s", sender.getName());
     }
 
-    @Command(
-        desc = "Teleport every player directly to you.",
-        max = 0,
-        flags =
-        {
+    @Command(desc = "Teleport every player directly to you.", max = 0, flags = {
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "unsafe", name = "u")
-        })
+    })
     public void tphereall(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
@@ -265,14 +243,9 @@ public class TeleportCommands
         context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", sender.getName());
     }
 
-    @Command(
-        desc = "Teleport a directly to you.",
-        usage = "<x> [y] <z> [world <world>]",
-        min = 2,
-        max = 4,
-        params = @Param(names = {"world", "w"}, type = World.class),
-        flags = @Flag(longName = "unsafe", name = "u")
-    )
+    @Command(desc = "Teleport a directly to you.", usage = "<x> [y] <z> [world <world>]", min = 2, max = 4, params = @Param(names = {
+        "world", "w"
+    }, type = World.class), flags = @Flag(longName = "unsafe", name = "u"))
     public void tppos(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");

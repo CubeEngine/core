@@ -24,9 +24,9 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class DamagePrevention extends FilteredPrevention<DamageCause>
 {
-    private String damagerMessage;
+    private String  damagerMessage;
     private boolean preventPotions;
-    private String potionMessage;
+    private String  potionMessage;
 
     public DamagePrevention(Guests guests)
     {

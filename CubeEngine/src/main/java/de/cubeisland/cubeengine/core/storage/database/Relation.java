@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-//TODO this is never used why?
+// TODO this is never used why?
 /**
  * This is used to describe a relation from one model to an other.
  */

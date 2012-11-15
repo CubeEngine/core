@@ -75,6 +75,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @return fluent interface
      */
     public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai);
+
     // TODO default
 
     /**
@@ -92,7 +93,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @return  fluent interface 
      */
     public TableBuilder unique(String field);
-    
+
     /**
      * Starts a CHECK statement.
      * Dont forget to use beginSub and endSub.
@@ -101,7 +102,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @return  fluent interface 
      */
     public TableBuilder check();
-    
+
     /**
      * Sets a foreign key.
      * 
@@ -109,7 +110,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @return fluent interface 
      */
     public TableBuilder foreignKey(String key);
-    
+
     /**
      * Sets the reference for the foreign key
      * 
@@ -118,7 +119,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @return fluent interface 
      */
     public TableBuilder references(String table, String field);
-    
+
     /**
      * Sets what should be done when trying to remove a key.
      * 

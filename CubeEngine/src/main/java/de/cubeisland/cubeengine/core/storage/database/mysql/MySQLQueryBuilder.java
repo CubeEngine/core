@@ -9,17 +9,17 @@ import org.apache.commons.lang.Validate;
  */
 public class MySQLQueryBuilder implements QueryBuilder
 {
-    private MySQLInsertBuilder insertBuilder;
-    private MySQLMergeBuilder mergeBuilder;
-    private MySQLSelectBuilder selectBuilder;
-    private MySQLUpdateBuilder updateBuilder;
-    private MySQLDeleteBuilder deleteBuilder;
-    private MySQLTableBuilder tableBuilder;
-    private MySQLLockBuilder lockBuilder;
+    private MySQLInsertBuilder     insertBuilder;
+    private MySQLMergeBuilder      mergeBuilder;
+    private MySQLSelectBuilder     selectBuilder;
+    private MySQLUpdateBuilder     updateBuilder;
+    private MySQLDeleteBuilder     deleteBuilder;
+    private MySQLTableBuilder      tableBuilder;
+    private MySQLLockBuilder       lockBuilder;
     private MySQLAlterTableBuilder alterTableBuilder;
-    protected Database database;
-    protected StringBuilder query;
-    private boolean nextQuery = false;
+    protected Database             database;
+    protected StringBuilder        query;
+    private boolean                nextQuery = false;
 
     protected MySQLQueryBuilder(MySQLDatabase database)
     {

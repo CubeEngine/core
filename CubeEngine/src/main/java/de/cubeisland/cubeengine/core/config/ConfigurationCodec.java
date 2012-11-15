@@ -27,13 +27,13 @@ import java.util.Map;
  */
 public abstract class ConfigurationCodec
 {
-    protected String COMMENT_PREFIX;
-    protected String SPACES;
-    protected String LINEBREAK;
-    protected String QUOTE;
-    protected Integer revision = null;
+    protected String       COMMENT_PREFIX;
+    protected String       SPACES;
+    protected String       LINEBREAK;
+    protected String       QUOTE;
+    protected Integer      revision  = null;
     private CodecContainer container = null;
-    protected boolean first;
+    protected boolean      first;
 
     /**
      * Loads in the given configuration using the inputstream
@@ -121,7 +121,7 @@ public abstract class ConfigurationCodec
         }
         container = null;
     }
-    
+
     public void saveChildConfig(Configuration parentConfig, Configuration config, File file)
     {
         try
@@ -146,7 +146,6 @@ public abstract class ConfigurationCodec
         }
         container = null;
     }
-    
 
     /**
      * Serializes the values in the map
@@ -234,10 +233,10 @@ public abstract class ConfigurationCodec
         protected Map<String, Object> values;
         protected Map<String, String> comments;
         protected Map<String, String> loadedKeys;
-        protected Configuration config;
-        protected String currentPath;
-        protected CodecContainer parentContainer = null;
-        private Configuration parentConfig;
+        protected Configuration       config;
+        protected String              currentPath;
+        protected CodecContainer      parentContainer = null;
+        private Configuration         parentConfig;
 
         public CodecContainer()
         {
@@ -603,12 +602,11 @@ public abstract class ConfigurationCodec
             boolean advanced = true;
             try
             {
-               Field field = clazz.getField("advanced");
-               advanced = field.getBoolean(config);
+                Field field = clazz.getField("advanced");
+                advanced = field.getBoolean(config);
             }
             catch (Exception ignored)
-            {
-            }
+            {}
             for (Field field : clazz.getFields())
             {
                 if (field.isAnnotationPresent(Option.class))
@@ -651,7 +649,7 @@ public abstract class ConfigurationCodec
             }
             return section;
         }
-      
+
         private void remove(String path, Map<String, Object> section)
         {
             if (path.contains("."))
@@ -722,7 +720,7 @@ public abstract class ConfigurationCodec
                                     newPath = basepath + "." + newPath;
                                 }
                                 map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                    new CodecContainer().fillFromFields(this, this.parentConfig, fieldMap.get(key),
+                                new CodecContainer().fillFromFields(this, this.parentConfig, fieldMap.get(key),
                                     newPath, this.getOrCreateSubSection(key.toString(), map)));
                             }
                             return map;

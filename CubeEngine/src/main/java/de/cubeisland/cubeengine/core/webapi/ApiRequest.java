@@ -13,9 +13,9 @@ import java.util.Map;
  */
 public final class ApiRequest
 {
-    private final InetSocketAddress remoteAddress;
-    private final RequestMethod method;
-    private final Parameters params;
+    private final InetSocketAddress         remoteAddress;
+    private final RequestMethod             method;
+    private final Parameters                params;
     private final Map<String, List<String>> headers;
 
     /**
@@ -48,7 +48,7 @@ public final class ApiRequest
     public RequestMethod getMethod()
     {
         return this.method;
-}
+    }
 
     public Parameters getParams()
     {

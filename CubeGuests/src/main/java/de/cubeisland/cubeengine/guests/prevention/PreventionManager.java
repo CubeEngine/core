@@ -14,12 +14,12 @@ import org.bukkit.permissions.PermissionDefault;
  */
 public class PreventionManager
 {
-    private final Guests guests;
-    private final PermissionManager pm;
-    private final EventManager em;
+    private final Guests                       guests;
+    private final PermissionManager            pm;
+    private final EventManager                 em;
     private final THashMap<String, Prevention> preventions;
     private final THashMap<String, Punishment> punishments;
-    
+
     public PreventionManager(Guests guests)
     {
         this.guests = guests;
@@ -71,7 +71,7 @@ public class PreventionManager
             this.preventions.put(prevention.getName(), prevention);
             this.pm.registerPermission(this.guests, prevention.getPermission(), PermissionDefault.OP);
         }
-        
+
         return this;
     }
 

@@ -128,7 +128,7 @@ public interface Core
      * @return the global ObjectMapper of Jackson
      */
     public ObjectMapper getJsonObjectMapper();
-    
+
     /**
      * This method returns the web API server
      *

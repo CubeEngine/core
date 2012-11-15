@@ -16,7 +16,8 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.PLAYER;
 
-public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceConfig>
+public class BlockPlaceLogger extends
+    BlockLogger<BlockPlaceLogger.BlockPlaceConfig>
 {
     public BlockPlaceLogger()
     {
@@ -38,8 +39,7 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
     {
         BlockState newState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
         Material mat = event.getBucket();
-        switch (mat)
-        {
+        switch (mat) {
             case LAVA_BUCKET:
                 mat = Material.STATIONARY_LAVA;
                 break;
@@ -65,6 +65,7 @@ public class BlockPlaceLogger extends BlockLogger<BlockPlaceLogger.BlockPlaceCon
         {
             this.enabled = true;
         }
+
         @Option(value = "no-logging", valueType = BlockData.class)
         public Collection<Material> noLogging = new LinkedList<Material>();
 

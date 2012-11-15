@@ -38,7 +38,7 @@ public class PowerToolListener implements Listener
                         return;
                     }
                     ArrayList<String> list = new ArrayList<String>();
-                    for (int i = 0; i < ptVals.size();i++)
+                    for (int i = 0; i < ptVals.size(); i++)
                     {
                         list.add(((NBTTagString)ptVals.get(i)).data);
                     }

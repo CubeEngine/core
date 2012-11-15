@@ -37,13 +37,13 @@ import java.util.logging.Logger;
  */
 public class ModuleManager implements Cleanable
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
-    private final Core core;
-    private final ModuleLoader loader;
-    private final Map<String, Module> modules;
-    private final Map<String, ModuleInfo> moduleInfos;
+    private static final Logger                        LOGGER = CubeEngine.getLogger();
+    private final Core                                 core;
+    private final ModuleLoader                         loader;
+    private final Map<String, Module>                  modules;
+    private final Map<String, ModuleInfo>              moduleInfos;
     private final Map<Class<? extends Module>, Module> classMap;
-    private final PluginManager pluginManager;
+    private final PluginManager                        pluginManager;
 
     public ModuleManager(Core core)
     {
@@ -308,7 +308,6 @@ public class ModuleManager implements Cleanable
             }
         }
 
-
         if (!module.enable())
         {
             return null;
@@ -411,7 +410,7 @@ public class ModuleManager implements Cleanable
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().unregister(module);
         this.core.getApiServer().unregisterApiHandlers(module);
-        
+
         if (reloadHelp)
         {
             BukkitUtils.reloadHelpMap();

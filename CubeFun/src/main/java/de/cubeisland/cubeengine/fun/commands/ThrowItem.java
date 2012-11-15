@@ -8,8 +8,8 @@ import org.bukkit.entity.Fireball;
 
 public class ThrowItem implements Runnable
 {
-    Class material;
-    String name;
+    Class       material;
+    String      name;
     UserManager userManager;
 
     public ThrowItem(UserManager userManager, String name, Class materialClass)
@@ -26,9 +26,9 @@ public class ThrowItem implements Runnable
     public void run()
     {
         User user = userManager.getUser(name, true);
-        if(material == Fireball.class)
+        if (material == Fireball.class)
         {
-            Fireball fireball = (Fireball) user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection()), EntityType.FIREBALL);
+            Fireball fireball = (Fireball)user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection()), EntityType.FIREBALL);
             fireball.setShooter(user);
             fireball.setVelocity(user.getLocation().getDirection());
         }

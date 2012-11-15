@@ -12,9 +12,10 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.List;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
+
 public class MailCommand extends ContainerCommand
 {
-    private Basics basics;
+    private Basics      basics;
     private MailManager mailManager;
 
     public MailCommand(Basics basics)
@@ -25,9 +26,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "readmail")
-    @Command(
-        desc = "Reads your mails.",
-        usage = "[player]")
+    @Command(desc = "Reads your mails.", usage = "[player]")
     public void read(CommandContext context)
     {
         User sender;
@@ -66,7 +65,8 @@ public class MailCommand extends ContainerCommand
         {
             mails = mailManager.getMails(sender);
         }
-        else //Search for mail of that user
+        else
+        //Search for mail of that user
         {
             mails = mailManager.getMails(sender, mailof);
         }
@@ -86,21 +86,16 @@ public class MailCommand extends ContainerCommand
             context.sendMessage("basics", "&aYour mails:%s", sb.toString());
         }
     }
-    
+
     @Alias(names = "spymail")
-    @Command(
-        desc = "Reads your mails.",
-        usage = "[player]")
+    @Command(desc = "Reads your mails.", usage = "[player]")
     public void spy(CommandContext context)
     {
-        //TODO
+    //TODO
     }
 
     @Alias(names = "sendmail")
-    @Command(
-        desc = "Sends mails to other players.",
-        usage = "<player> <message>",
-        min = 2)
+    @Command(desc = "Sends mails to other players.", usage = "<player> <message>", min = 2)
     public void send(CommandContext context)
     {
         User user = context.getUser(0);
@@ -114,9 +109,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "sendallmail")
-    @Command(
-        desc = "Sends mails to all players.",
-        usage = "<message>")
+    @Command(desc = "Sends mails to all players.", usage = "<message>")
     public void sendAll(CommandContext context)
     {
         List<User> users = this.basics.getUserManager().getOnlineUsers();
@@ -128,7 +121,7 @@ public class MailCommand extends ContainerCommand
             this.mailManager.addMail(user, sender, message);
             alreadySend.add(user.key);
         }
-        this.basics.getTaskManger().getExecutorService().submit(new Runnable() 
+        this.basics.getTaskManger().getExecutorService().submit(new Runnable()
         {
             public void run() // Async sending to all Users ever
             {
@@ -144,10 +137,9 @@ public class MailCommand extends ContainerCommand
         context.sendMessage("basics", "&aMail send to everyone!");
     }
 
-    @Command(
-        names = { "clear", "remove" },
-        desc = "Clears your mails.",
-        usage = "[player]")
+    @Command(names = {
+        "clear", "remove"
+    }, desc = "Clears your mails.", usage = "[player]")
     public void clear(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&cYou will never have mails here!");

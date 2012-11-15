@@ -244,7 +244,6 @@
                     <lineEnding>LF</lineEnding>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
-                <!-- enable this once all the branches are merged
                 <executions>
                     <execution>
                         <id>format</id>
@@ -254,7 +253,6 @@
                         </goals>
                     </execution>
                 </executions>
-                -->
             </plugin>
             
             <!--

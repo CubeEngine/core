@@ -2,11 +2,11 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
 public interface ComponentBuilder<This extends ComponentBuilder>
 {
-    public static final int EQUAL = 1;
-    public static final int NOT_EQUAL = 2;
-    public static final int LESS = 3;
-    public static final int LESS_OR_EQUAL = 4;
-    public static final int GREATER = 5;
+    public static final int EQUAL            = 1;
+    public static final int NOT_EQUAL        = 2;
+    public static final int LESS             = 3;
+    public static final int LESS_OR_EQUAL    = 4;
+    public static final int GREATER          = 5;
     public static final int GREATER_OR_EQUAL = 6;
 
     /**
@@ -55,7 +55,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This value(Object value);
-    
+
     /**
      * Adds multiple variables which can be later replaced by values.
      * 
@@ -78,7 +78,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This is(Integer operation);
-    
+
     /**
      * Adds an equal-operation
      * 
@@ -106,7 +106,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This and();
-    
+
     /**
      * Adds OR.
      * 
@@ -136,7 +136,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This having();
-    
+
     /**
      * Adds LIKE statement.
      * Dont forget to add a value after this!
@@ -144,7 +144,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This like();
-    
+
     /**
      * Adds IN statement.
      * Dont forget to add a value after this!

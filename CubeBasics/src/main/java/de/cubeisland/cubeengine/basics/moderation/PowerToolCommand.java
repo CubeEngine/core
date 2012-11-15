@@ -22,20 +22,17 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
  */
 public class PowerToolCommand
 {
-    @Command(
-        names = { "pt", "powertool" },
-        desc = "Binds a command to the item in hand.",
-        usage = "<command> [arguments] [-add][-rem][-rema][-c][-l][-la][-ren]",
-        flags =
-        {
-            @Flag(longName = "append", name = "add"), 
+    @Command(names = {
+        "pt", "powertool"
+    }, desc = "Binds a command to the item in hand.", usage = "<command> [arguments] [-add][-rem][-rema][-c][-l][-la][-ren]", flags = {
+            @Flag(longName = "append", name = "add"),
             @Flag(longName = "remove", name = "rem"),
             @Flag(longName = "removeall", name = "rema"),
             @Flag(longName = "chat", name = "c"),
             @Flag(longName = "list", name = "l"),
             @Flag(longName = "listall", name = "la"),
             @Flag(longName = "rename", name = "ren")
-        })
+    })
     public void powertool(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
@@ -56,11 +53,11 @@ public class PowerToolCommand
                 String itemName = BukkitUtils.getItemStackName(item);
                 if (itemName == null)
                 {
-                    sender.sendMessage("&6"+MaterialMatcher.get().getNameFor(item) + "&6:");
+                    sender.sendMessage("&6" + MaterialMatcher.get().getNameFor(item) + "&6:");
                 }
                 else
                 {
-                    sender.sendMessage("&6"+itemName + "&6:");
+                    sender.sendMessage("&6" + itemName + "&6:");
                 }
                 this.printList(sender, list, false, false);
             }
@@ -94,7 +91,7 @@ public class PowerToolCommand
             NBTTagCompound tag = this.getTag(sender.getItemInHand(), true);
             this.printList(sender, (NBTTagList)tag.get("powerToolCommands"), false, false);
             return;
-        }    
+        }
         if (context.hasIndexed(0))
         {
             String cmd = context.getStrings(0);
@@ -126,7 +123,7 @@ public class PowerToolCommand
             }
             else
             {
-                this.addPowerTool(sender, cmd, context.hasFlag("add"),context.hasFlag("ren"));
+                this.addPowerTool(sender, cmd, context.hasFlag("add"), context.hasFlag("ren"));
             }
         }
         else
@@ -160,7 +157,7 @@ public class PowerToolCommand
             }
         }
     }
-    
+
     private NBTTagCompound getTag(ItemStack item, boolean create)
     {
         if (item == null)
@@ -175,7 +172,7 @@ public class PowerToolCommand
         }
         return tag;
     }
-    
+
     private void printList(User user, NBTTagList ptVals, boolean lastAsNew, boolean rename)
     {
         if (ptVals == null || ptVals.size() == 0)
@@ -216,7 +213,7 @@ public class PowerToolCommand
 
     private void addPowerTool(User user, String command, boolean add, boolean rename)
     {
-        
+
         NBTTagCompound tag = this.getTag(user.getItemInHand(), true);
         NBTTagList ptVals;
         if (add)

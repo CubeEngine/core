@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class General  //TODO remove this class
+public class General //TODO remove this class
 {
     public String randomDeathMessage(User user, EntityDamageByEntityEvent lastDmg)
     {

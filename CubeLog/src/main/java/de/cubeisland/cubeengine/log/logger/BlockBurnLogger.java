@@ -10,7 +10,8 @@ import org.bukkit.event.block.BlockBurnEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.FIRE;
 
-public class BlockBurnLogger extends BlockLogger<BlockBurnLogger.BlockBurnConfig>
+public class BlockBurnLogger extends
+    BlockLogger<BlockBurnLogger.BlockBurnConfig>
 {
     public BlockBurnLogger()
     {
@@ -24,8 +25,7 @@ public class BlockBurnLogger extends BlockLogger<BlockBurnLogger.BlockBurnConfig
         {
             this.logBlockChange(FIRE, null, block.getState(), null);
         }
-        switch (event.getBlock().getRelative(BlockFace.UP).getType())
-        {
+        switch (event.getBlock().getRelative(BlockFace.UP).getType()) {
             case WOODEN_DOOR:
             case IRON_DOOR:
             case SNOW:

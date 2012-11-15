@@ -5,32 +5,32 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 
-@Codec("yml") 
+@Codec("yml")
 public class FunConfiguration extends Configuration
 {
     @Comment("Sets the maximum distance of the lightning")
     @Option("lightning.distance")
     public int lightningDistance = 200;
-    
+
     @Comment("Sets the maximum number of thrown Objects")
     @Option("throw.number")
-    public int maxThrowNumber = 20;
-    
+    public int maxThrowNumber    = 20;
+
     @Comment("Sets the maximum number of fireballs")
     @Option("fireball.number")
     public int maxFireballNumber = 10;
-    
+
     @Comment("Sets the maximum height a player can jump. Maximum is 100")
     @Option("rocket.height")
-    public int maxRocketHeight = 100;
-    
+    public int maxRocketHeight   = 100;
+
     @Comment("Set the maximum distance of the tnt carpet")
     @Option("nuke.distance")
-    public int maxNukeDistance = 50;
+    public int maxNukeDistance   = 50;
     @Comment("Set the nuke radius limit")
     @Option("nuke.radius_limit")
-    public int nukeRadiusLimit = 10;
-    
+    public int nukeRadiusLimit   = 10;
+
     /*
     @Option("nuke.concentrationradius")
     public Map<Integer, Integer> nukeRadius = new HashMap<Integer, Integer>()
@@ -43,5 +43,5 @@ public class FunConfiguration extends Configuration
             put(5, 25);
         }
     };
-    */
+     */
 }

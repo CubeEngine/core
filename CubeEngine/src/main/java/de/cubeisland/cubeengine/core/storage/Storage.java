@@ -31,7 +31,7 @@ public interface Storage<V extends Model>
      * @param model the model to store
      */
     public void store(V model);
-    
+
     /**
      * Stores the model into the DataBase asynchonous
      *

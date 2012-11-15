@@ -13,7 +13,7 @@ import org.bukkit.permissions.PermissionDefault;
 @Target(ElementType.METHOD)
 public @interface Command
 {
-    public String[] names() default  {};
+    public String[] names() default {};
 
     public String desc();
 

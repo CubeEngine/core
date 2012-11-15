@@ -8,7 +8,7 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
      * @return fluent interface
      */
     public SelectBuilder select();
-    
+
     /**
      * Adds the cols to select.
      *
@@ -25,7 +25,7 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
      * @return fluent interface
      */
     public SelectBuilder into(String table);
-    
+
     /**
      * Adds the IN statement to specify in which database a table is.
      * Use after INTO
@@ -35,7 +35,7 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
      * @return fluent interface
      */
     public SelectBuilder in(String database);
-    
+
     /**
      * Adds the tables to select from.
      * 
@@ -43,14 +43,14 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
      * @return fluent interface
      */
     public SelectBuilder from(String... tables);
-    
+
     /**
      * Adds the distinct statement
      * 
      * @return fluent interface
      */
     public SelectBuilder distinct();
-    
+
     /**
      * Creates a UNION of to SELECT statements
      * 
@@ -58,7 +58,7 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
      * @return fluent interface
      */
     public SelectBuilder union(boolean all);
-   
+
     // TODO Inner / Left / Right / Full Join
-    
+
 }

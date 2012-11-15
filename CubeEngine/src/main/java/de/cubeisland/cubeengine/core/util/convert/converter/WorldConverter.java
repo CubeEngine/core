@@ -26,7 +26,7 @@ public class WorldConverter implements Converter<World>
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('('), string.indexOf(')') - 1));
                 world = CubeEngine.getServer().getWorld(uid);
-                string = string.substring(0,string.indexOf('('));
+                string = string.substring(0, string.indexOf('('));
             }
             if (world == null)
             {

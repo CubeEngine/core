@@ -13,7 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class CapsPrevention extends Prevention
 {
     private double maxCapsRatio;
-    
+
     public CapsPrevention(Guests guests)
     {
         super("caps", guests);
@@ -39,14 +39,12 @@ public class CapsPrevention extends Prevention
     public Configuration getDefaultConfig()
     {
         Configuration config = super.getDefaultConfig();
-        
+
         config.set("max-caps-ratio", (int)(this.maxCapsRatio * 100));
-        
+
         return config;
     }
-    
-    
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent event)
     {
@@ -54,7 +52,7 @@ public class CapsPrevention extends Prevention
         {
             String message = event.getMessage();
             final int length = message.length();
-            
+
             int caps = 0;
             for (int i = 0; i < message.length(); ++i)
             {
@@ -63,7 +61,7 @@ public class CapsPrevention extends Prevention
                     ++caps;
                 }
             }
-            
+
             if ((double)caps / (double)length > this.maxCapsRatio)
             {
                 prevent(event, event.getPlayer());

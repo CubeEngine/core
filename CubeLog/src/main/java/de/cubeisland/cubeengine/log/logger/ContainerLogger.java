@@ -41,6 +41,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         this.config = new ContainerConfig();
         this.chestLogManager = new ChestLogManager(module.getDatabase());
     }
+
     private static TIntObjectHashMap<TObjectIntHashMap<ItemData>> openedInventories = new TIntObjectHashMap<TObjectIntHashMap<ItemData>>();
 
     public void logContainerChange(User user, ItemData data, int amount, Location loc, int type)
@@ -88,7 +89,8 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true) //TODO figure out how it works...
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    //TODO figure out how it works...
     public void onInventoryClick(InventoryClickEvent event)
     {
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getWhoClicked());
@@ -121,7 +123,8 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
                 int put = event.isLeftClick() ? onCursor.getAmount() : 1;
                 log.put(dataOnCursor, log.get(dataOnCursor) + put);
             }
-            else // both filled
+            else
+            // both filled
             {
                 if (this.compareItemStacks(inInvent, onCursor)) // can be stacked together?
                 {
@@ -132,7 +135,8 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
                     }
                     log.put(datainInvent, log.get(datainInvent) + toput);
                 }
-                else // no stacking -> exchange
+                else
+                // no stacking -> exchange
                 {
                     log.put(datainInvent, log.get(datainInvent) - inInvent.getAmount());
                     log.put(dataOnCursor, log.get(dataOnCursor) + onCursor.getAmount());
@@ -167,8 +171,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 
     private boolean checkLog(ContainerType type)
     {
-        switch (type)
-        {
+        switch (type) {
             case BREWINGSTAND:
                 return this.config.logBrewingstand;
             case CHEST:
@@ -181,7 +184,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
                 return this.config.logOtherBlock;
             default:
                 return false;
-            //TODO storage minecart
+                //TODO storage minecart
         }
     }
 
@@ -201,45 +204,46 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             this.logContainerChange(user, new ItemData(0, (short)0), 0, loc, type.getId());
         }
     }
-/**
-    private TObjectIntHashMap<ItemData> compressInventory(ItemStack[] items)
-    {
-        TObjectIntHashMap<ItemData> map = new TObjectIntHashMap<ItemData>();
-        for (ItemStack item : items)
-        {
-            if (item == null)
-            {
-                continue;
-            }
-            ItemData itemData = new ItemData(item);
-            Integer amount = map.get(itemData);
-            if (amount == null)
-            {
-                amount = 0;
-            }
-            amount += item.getAmount();
-            map.put(itemData, amount);
-        }
-        return map;
-    }
-    //*/
+
+    /**
+     private TObjectIntHashMap<ItemData> compressInventory(ItemStack[] items)
+     {
+     TObjectIntHashMap<ItemData> map = new TObjectIntHashMap<ItemData>();
+     for (ItemStack item : items)
+     {
+     if (item == null)
+     {
+     continue;
+     }
+     ItemData itemData = new ItemData(item);
+     Integer amount = map.get(itemData);
+     if (amount == null)
+     {
+     amount = 0;
+     }
+     amount += item.getAmount();
+     map.put(itemData, amount);
+     }
+     return map;
+     }
+     //*/
 
     public static class ContainerConfig extends SubLogConfig
     {
         @Option(value = "log-chest")
-        public boolean logChest = true;
+        public boolean logChest           = true;
         @Option(value = "log-furnace")
-        public boolean logFurnace = false;
+        public boolean logFurnace         = false;
         @Option(value = "log-brewing")
-        public boolean logBrewingstand = false;
+        public boolean logBrewingstand    = false;
         @Option(value = "log-dispenser")
-        public boolean logDispenser = true;
+        public boolean logDispenser       = true;
         @Option(value = "log-other-block")
-        public boolean logOtherBlock = true;
+        public boolean logOtherBlock      = true;
         @Option(value = "log-storage-minecart")
         public boolean logStorageMinecart = false;
         @Option(value = "log-looked-into-chest")
-        public boolean logNothing = true;
+        public boolean logNothing         = true;
 
         public ContainerConfig()
         {
@@ -255,14 +259,21 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 
     public static enum ContainerType
     {
-        CHEST(1),
-        FURNACE(2),
-        BREWINGSTAND(3),
-        DISPENSER(4),
-        OTHER(5),
-        STORAGEMINECART(6),
-        HUMANENTITY(7),;
-        private final int id;
+        CHEST(
+            1),
+        FURNACE(
+            2),
+        BREWINGSTAND(
+            3),
+        DISPENSER(
+            4),
+        OTHER(
+            5),
+        STORAGEMINECART(
+            6),
+        HUMANENTITY(
+            7), ;
+        private final int                                     id;
         private static final TIntObjectHashMap<ContainerType> map;
 
         static

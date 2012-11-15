@@ -8,7 +8,7 @@ public interface LockBuilder extends ComponentBuilder<LockBuilder>
      * @return fluent interface
      */
     public LockBuilder lock();
-    
+
     /**
      * locks for READ-ACCESS
      * 
@@ -31,5 +31,4 @@ public interface LockBuilder extends ComponentBuilder<LockBuilder>
      */
     public LockBuilder table(String table);
 
-    
 }

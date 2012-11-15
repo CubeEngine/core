@@ -7,13 +7,27 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
  */
 public enum CoreResource implements Resource
 {
-    GERMAN_META("resources/language/de_DE.yml", "language/de_DE.yml"),
-    FRENCH_META("resources/language/fr_FR.yml", "language/fr_FR.yml"),
-    GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/core.json"),
-    ENCHANTMENTS("resources/enchantments.txt", "data/enchantments.txt"),
-    ITEMS("resources/items.txt", "data/items.txt"),
-    DATAVALUES("resources/datavalues.txt", "data/datavalues.txt"),
-    ENTITIES("resources/entities.txt", "data/entities.txt");
+    GERMAN_META(
+        "resources/language/de_DE.yml",
+        "language/de_DE.yml"),
+    FRENCH_META(
+        "resources/language/fr_FR.yml",
+        "language/fr_FR.yml"),
+    GERMAN_MESSAGES(
+        "resources/language/messages/de_DE.json",
+        "language/de_DE/core.json"),
+    ENCHANTMENTS(
+        "resources/enchantments.txt",
+        "data/enchantments.txt"),
+    ITEMS(
+        "resources/items.txt",
+        "data/items.txt"),
+    DATAVALUES(
+        "resources/datavalues.txt",
+        "data/datavalues.txt"),
+    ENTITIES(
+        "resources/entities.txt",
+        "data/entities.txt");
     private final String target;
     private final String source;
 

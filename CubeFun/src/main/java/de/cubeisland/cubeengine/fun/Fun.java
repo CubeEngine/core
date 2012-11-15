@@ -8,9 +8,9 @@ import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 public class Fun extends Module
 {
     private FunConfiguration config;
-    
-    private RocketListener rocketListener;
-    private NukeListener nukeListener;
+
+    private RocketListener   rocketListener;
+    private NukeListener     nukeListener;
 
     @Override
     public void onEnable()
@@ -28,12 +28,12 @@ public class Fun extends Module
     {
         return this.rocketListener;
     }
-    
+
     public NukeListener getNukeListener()
     {
         return this.nukeListener;
     }
-    
+
     public FunConfiguration getConfig()
     {
         return this.config;

@@ -56,8 +56,7 @@ public class CubeLogger extends Logger
         {
             if (level.intValue() > loggingLevel.intValue())
             {
-                switch (record.getLevel().intValue())
-                {
+                switch (record.getLevel().intValue()) {
                     case 1000:
                         record.setLevel(Level.SEVERE);
                     case 900:

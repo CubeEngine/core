@@ -18,7 +18,7 @@ public class TramplePrevention extends Prevention
     {
         super("trample", guests);
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void interact(PlayerInteractEvent event)
     {

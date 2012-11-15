@@ -27,8 +27,8 @@ import org.bukkit.craftbukkit.CraftServer;
  */
 public class CommandManager
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
-    private final CubeCommandMap commandMap;
+    private static final Logger        LOGGER = CubeEngine.getLogger();
+    private final CubeCommandMap       commandMap;
     private final Map<String, Command> knownCommands;
 
     public CommandManager(Core core)
@@ -216,7 +216,6 @@ public class CommandManager
                 continue;
             }
 
-
             String[] names = commandAnnotation.names();
             if (names.length == 0)
             {
@@ -263,7 +262,7 @@ public class CommandManager
                 }
                 else
                 {
-                    aliases = Collections.<String>emptyList();
+                    aliases = Collections.<String> emptyList();
                 }
                 this.registerCommand(new AliasCommand(names[0], aliases, cmd), aliasAnnotation.parentPath());
             }

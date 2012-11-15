@@ -18,7 +18,8 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.PLAYER;
 
-public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakConfig>
+public class BlockBreakLogger extends
+    BlockLogger<BlockBreakLogger.BlockBreakConfig>
 {
     public BlockBreakLogger()
     {
@@ -32,8 +33,7 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakCon
         {
             this.log(PLAYER, event.getPlayer(), block.getState());
         }
-        switch (event.getBlock().getRelative(BlockFace.UP).getType())
-        {
+        switch (event.getBlock().getRelative(BlockFace.UP).getType()) {
             case WOODEN_DOOR:
             case IRON_DOOR:
             case SNOW:
@@ -85,6 +85,7 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakLogger.BlockBreakCon
         {
             this.enabled = true;
         }
+
         @Option(value = "no-logging", valueType = BlockData.class)
         public Collection<Material> noLogging = new LinkedList<Material>();
 

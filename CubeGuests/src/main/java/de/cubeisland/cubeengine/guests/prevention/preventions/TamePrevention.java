@@ -17,7 +17,7 @@ public class TamePrevention extends Prevention
     {
         super("tame", guests);
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void tame(EntityTameEvent event)
     {

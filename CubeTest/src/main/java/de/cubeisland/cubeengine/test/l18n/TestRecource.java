@@ -4,8 +4,12 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
 
 public enum TestRecource implements Resource
 {
-    GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/test.json"),
-    FRENCH_MESSAGES("resources/language/messages/fr_FR.json", "language/fr_FR/test.json"),;
+    GERMAN_MESSAGES(
+        "resources/language/messages/de_DE.json",
+        "language/de_DE/test.json"),
+    FRENCH_MESSAGES(
+        "resources/language/messages/fr_FR.json",
+        "language/fr_FR/test.json"), ;
     private final String target;
     private final String source;
 

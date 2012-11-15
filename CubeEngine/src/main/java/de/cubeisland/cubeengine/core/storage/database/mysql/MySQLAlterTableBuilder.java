@@ -6,7 +6,8 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.AlterTableBui
 /**
  * MYSQLQueryBuilder for altering tables.
  */
-public class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuilder> implements AlterTableBuilder
+public class MySQLAlterTableBuilder extends
+    MySQLComponentBuilder<AlterTableBuilder> implements AlterTableBuilder
 {
     public MySQLAlterTableBuilder(MySQLQueryBuilder parent)
     {

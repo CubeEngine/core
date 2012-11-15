@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
-public interface ConditionalBuilder<This extends ConditionalBuilder> extends ComponentBuilder<This>
+public interface ConditionalBuilder<This extends ConditionalBuilder> extends
+    ComponentBuilder<This>
 {
     /**
      * Adds ordering by column
@@ -32,21 +33,21 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends Com
      * @return fluent interface
      */
     public This where();
-   
+
     /**
      * Adds a "BETWEEN ? AND ?" statement.
      * 
      * @return fluent interface
      */
     public This between();
-   
+
     /**
      * Adds ASCending keyword
      * 
      * @return fluent interface
      */
     public This asc();
-    
+
     /**
      * Adds DESCending keyword
      * 

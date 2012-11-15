@@ -38,7 +38,7 @@ import org.bukkit.plugin.SimplePluginManager;
 public class BukkitUtils
 {
     private static final Field localeStringField;
-    private static Field nshListField = null;
+    private static Field       nshListField = null;
 
     static
     {
@@ -58,13 +58,11 @@ public class BukkitUtils
             nshListField.setAccessible(true);
         }
         catch (Exception e)
-        {
-        }
+        {}
     }
 
     private BukkitUtils()
-    {
-    }
+    {}
 
     /**
      * Returns the locale string of a player.
@@ -81,8 +79,7 @@ public class BukkitUtils
                 return (String)localeStringField.get(((CraftPlayer)player).getHandle().getLocale());
             }
             catch (Exception e)
-            {
-            }
+            {}
         }
         return null;
     }
@@ -116,8 +113,7 @@ public class BukkitUtils
                     pmField.set(pm, commandMap);
                 }
                 catch (Exception ignored)
-                {
-                }
+                {}
             }
         }
     }
@@ -138,16 +134,16 @@ public class BukkitUtils
     private static class PacketHookInjector implements Listener
     {
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();
-        public static boolean injected = false;
-        private final ExecutorService executorService;
-        private final TaskQueue taskQueue;
+        public static boolean                  injected = false;
+        private final ExecutorService          executorService;
+        private final TaskQueue                taskQueue;
 
         private PacketHookInjector()
         {
             this.executorService = Executors.newSingleThreadExecutor();
             this.taskQueue = new AsyncTaskQueue(this.executorService);
         }
-        
+
         public void shutdown()
         {
             this.taskQueue.shutdown();
@@ -276,7 +272,7 @@ public class BukkitUtils
             return null;
         }
     }
-    
+
     public static void cleanup()
     {
         PacketHookInjector.INSTANCE.shutdown();
