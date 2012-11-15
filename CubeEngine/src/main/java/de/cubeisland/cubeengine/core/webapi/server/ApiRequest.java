@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.core.webapi.server;
 
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpRequest;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.HttpRequest;
 
 /**
  * This class contains all the information of the API request. It is only used
@@ -69,7 +69,7 @@ public final class ApiRequest
 
         Map<String, String> tempParams = new HashMap<String, String>();
         StringUtils.parseQueryString(this.queryString, tempParams);
-        final ChannelBuffer content = request.getContent();
+        final ByteBuf content = request.getContent();
         if (content.readable())
         {
             StringUtils.parseQueryString(content.toString(), tempParams);

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.webapi.server;
 
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpResponseStatus;
+
 
 /**
  * This enum contains the different API errors which get return by the server if
@@ -14,11 +15,11 @@ public enum ApiError
     ACTION_DISABLED(101, HttpResponseStatus.FORBIDDEN, "The requested action is disabled"),
     AUTHENTICATION_FAILURE(200, HttpResponseStatus.UNAUTHORIZED, "Wrong authentication key given"),
     REQUEST_EXCEPTION(201, HttpResponseStatus.BAD_REQUEST, "The called action was not satiesfied by the request"),
-    ACTION_NOT_IMPLEMENTED(301, HttpResponseStatus.NOT_IMPLEMENTED, "The called action is not yet implemented"),
     CONTROLLER_NOT_FOUND(202, HttpResponseStatus.NOT_FOUND, "The requested controller was not found"),
     ACTION_NOT_FOUND(203, HttpResponseStatus.NOT_FOUND, "The requested action was not found"),
     METHOD_NOT_ALLOWED(204, HttpResponseStatus.METHOD_NOT_ALLOWED, "The method you used is not allowed here"),
-    MISSING_PARAMETERS(204, HttpResponseStatus.BAD_REQUEST, "Not all needed parameters where given");
+    MISSING_PARAMETERS(205, HttpResponseStatus.BAD_REQUEST, "Not all needed parameters where given"),
+    ACTION_NOT_IMPLEMENTED(301, HttpResponseStatus.NOT_IMPLEMENTED, "The called action is not yet implemented");
     private final int errorCode;
     private final HttpResponseStatus responseStatus;
     private final String description;

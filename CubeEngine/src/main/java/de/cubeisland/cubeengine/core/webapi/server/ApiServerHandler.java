@@ -1,87 +1,92 @@
 package de.cubeisland.cubeengine.core.webapi.server;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.webapi.server.exception.ApiNotImplementedException;
 import de.cubeisland.cubeengine.core.webapi.server.exception.ApiRequestException;
 import de.cubeisland.cubeengine.core.webapi.server.exception.UnauthorizedRequestException;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.util.CharsetUtil;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.util.CharsetUtil;
+import java.util.logging.Logger;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 
 /**
  * This class handles all requests
+ *
+ * @author Phillip Schichtel
  */
-public class ApiServerHandler extends SimpleChannelUpstreamHandler
+public class ApiServerHandler extends ChannelInboundMessageHandlerAdapter<Object>
 {
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    
     private final static ApiServer server = ApiServer.getInstance();
     private final static ApiManager manager = ApiManager.getInstance();
     private ApiRequest request;
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext context, ExceptionEvent event)
+    public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
-        // ApiBukkit.logException(event.getCause()); -- TODO fix logging
-        context.getChannel().write(toResponse(ApiError.UNKNOWN_ERROR)).addListener(ChannelFutureListener.CLOSE);
+        LOGGER.log(ERROR, t.getLocalizedMessage(), t);
+        errorResponse(context, ApiError.UNKNOWN_ERROR);
     }
-
+    
     @Override
-    public void messageReceived(ChannelHandlerContext context, MessageEvent message) throws Exception
+    public void messageReceived(ChannelHandlerContext context, Object message) throws Exception
     {
-        final InetSocketAddress remoteAddress = (InetSocketAddress)message.getRemoteAddress();
+        HttpRequest httpRequest = (HttpRequest)message;
+        if (httpRequest.getDecoderResult().isFailure())
+        {
+            LOGGER.log(ERROR, "The decoder failed on this request!");
+            errorResponse(context, ApiError.UNKNOWN_ERROR);
+            return;
+        }
+        
+        final InetSocketAddress remoteAddress = (InetSocketAddress)context.channel().remoteAddress();
         if (manager.isBlacklisted(remoteAddress) || !manager.isWhitelisted(remoteAddress))
         {
-            message.getChannel().close();
+            context.close();
             return;
         }
 
-        message.getFuture().addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-        request = new ApiRequest(remoteAddress, (HttpRequest)message.getMessage());
+        context.channel().newFuture().addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+        request = new ApiRequest(remoteAddress, httpRequest);
         HttpResponse response = this.processRequest(request);
 
-        ChannelFuture future = message.getChannel().write(response);
+        ChannelFuture future = context.write(response);
 
         future.addListener(ChannelFutureListener.CLOSE);
     }
 
     private HttpResponse processRequest(ApiRequest request)
     {
-        // ApiBukkit.log(String.format("'%s' requested '%s'", request.getRemoteAddress().getAddress().getHostAddress(), request.getPath()), ApiLogLevelINFO); -- TODO fix logging
+        LOGGER.log(INFO, String.format("'%s' requested '%s'", request.getRemoteAddress().getAddress().getHostAddress(), request.getPath()));
         String useragent = request.headers.get("user-agent");
         if (useragent != null)
         {
-            // ApiBukkit.log("Useragent: " + useragent, ApiLogLevelINFO); -- TODO fix logging
+            LOGGER.log(INFO, "Useragent: {0}", useragent);
         }
 
-        String controllerName = request.getController();
-        String actionName = request.getAction();
-
-//            if (actionName != null)
-//            {
-//                debug("Controller: " + controllerName);
-//            }
-//            if (actionName != null)
-//            {
-//                debug("Action: " + actionName);
-//            }
+        final String controllerName = request.getController();
+        final String actionName = request.getAction();
 
         ApiController controller = manager.getController(controllerName);
         ApiResponse response = new ApiResponse(manager.getDefaultSerializer());
         if (controller != null)
         {
-            // debug("Controller found: " + controller.getClass().getName()); -- TODO fix logging
+            LOGGER.log(DEBUG, "Controller found: {0}", controller.getClass().getName());
 
             try
             {
@@ -90,7 +95,7 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
                     ApiAction action = controller.getAction(actionName);
                     if (manager.isActionDisabled(controllerName, actionName))
                     {
-                        // ApiBukkit.error("Requested action is disabled!"); -- TODO fix logging
+                        LOGGER.log(ERROR, "Requested action is disabled!");
                         return toResponse(ApiError.ACTION_DISABLED);
                     }
                     if (action != null)
@@ -101,13 +106,13 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
                         {
                             if (!request.params.containsKey(param))
                             {
-                                // ApiBukkit.error("Request had to few arguments!"); -- TODO fix logging
+                                LOGGER.log(ERROR, "Request had to few arguments!");
                                 return toResponse(ApiError.MISSING_PARAMETERS);
                             }
                         }
 
                         response.setSerializer(getSerializer(request, action.getSerializer()));
-                        // ApiBukkit.debug("Action found: " + actionName); -- TODO fix logging
+                        LOGGER.log(DEBUG, "Action found: {0}", actionName);
                         action.execute(request, response);
                     }
                     else
@@ -117,12 +122,12 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
                             authorized(request, controller);
 
                             response.setSerializer(getSerializer(request, controller.getSerializer()));
-                            // ApiBukkit.debug("action not found, routing to default action"); -- TODO fix logging
+                            LOGGER.log(DEBUG, "action not found, routing to default action");
                             controller.defaultAction(request, response);
                         }
                         else
                         {
-                            // ApiBukkit.log("Action not found"); -- TODO fix logging
+                            LOGGER.log(NOTICE, "Action not found");
                             return toResponse(ApiError.ACTION_NOT_FOUND);
                         }
                     }
@@ -132,34 +137,34 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
                     authorized(request, controller);
 
                     response.setSerializer(getSerializer(request, controller.getSerializer()));
-                    // ApiBukkit.debug("Runnung default action"); -- TODO fix logging
+                    LOGGER.log(DEBUG, "Runnung default action");
                     controller.defaultAction(request, response);
                 }
             }
             catch (UnauthorizedRequestException e)
             {
-                // ApiBukkit.error("Wrong authentication key!"); -- TODO fix logging
+                LOGGER.log(ERROR, "Wrong authentication key!");
                 return toResponse(ApiError.AUTHENTICATION_FAILURE);
             }
             catch (ApiRequestException e)
             {
-                // ApiBukkit.error("ControllerException: " + e.getMessage()); -- TODO fix logging
+                LOGGER.log(ERROR, "ControllerException: {0}", e.getLocalizedMessage());
                 return toResponse(ApiError.REQUEST_EXCEPTION, e);
             }
             catch (ApiNotImplementedException e)
             {
-                // ApiBukkit.error("action not implemented"); -- TODO fix logging
+                LOGGER.log(ERROR, "action not implemented");
                 return toResponse(ApiError.ACTION_NOT_IMPLEMENTED);
             }
             catch (Throwable t)
             {
-                // ApiBukkit.logException(t); -- TODO fix logging
+                LOGGER.log(ERROR, t.getLocalizedMessage(), t);
                 return toResponse(ApiError.UNKNOWN_ERROR);
             }
         }
         else
         {
-            // ApiBukkit.log("Controller not found!"); -- TODO fix logging
+            LOGGER.log(NOTICE, "Controller not found!");
             return toResponse(ApiError.CONTROLLER_NOT_FOUND);
         }
 
@@ -168,7 +173,7 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
 
     private static void authorized(ApiRequest request, ApiController controller)
     {
-        // ApiBukkit.debug("Authkey: " + request.getAuthenticationKey()); -- TODO fix logging
+        LOGGER.log(DEBUG, "Authkey: {0}", request.getAuthenticationKey());
         if (controller.isAuthNeeded() && !server.getAuthenticationKey().equals(request.getAuthenticationKey()))
         {
             throw new UnauthorizedRequestException();
@@ -177,7 +182,7 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
 
     private static void authorized(ApiRequest request, ApiAction action)
     {
-        // ApiBukkit.debug("Authkey: " + request.getAuthenticationKey()); -- TODO fix logging
+        LOGGER.log(DEBUG, "Authkey: {0}", request.getAuthenticationKey());
         if (action.isAuthNeeded() && !server.getAuthenticationKey().equals(request.getAuthenticationKey()))
         {
             throw new UnauthorizedRequestException();
@@ -236,7 +241,7 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
     private HttpResponse toResponse(HttpVersion version, HttpResponseStatus status, Map<String, String> headers, final String content)
     {
         HttpResponse response = new DefaultHttpResponse(version, status);
-        response.setContent(ChannelBuffers.copiedBuffer(content, CharsetUtil.UTF_8));
+        response.setContent(Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
         for (Entry<String, String> header : headers.entrySet())
         {
             response.setHeader(header.getKey(), header.getValue());
@@ -263,6 +268,11 @@ public class ApiServerHandler extends SimpleChannelUpstreamHandler
     private HttpResponse toResponse(ApiError error)
     {
         return toResponse(error, null);
+    }
+    
+    private void errorResponse(ChannelHandlerContext context, ApiError error)
+    {
+        context.write(this.toResponse(error)).addListener(ChannelFutureListener.CLOSE);
     }
 
     private HttpResponse toResponse(ApiError error, ApiRequestException cause)

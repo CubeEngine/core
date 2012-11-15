@@ -1,13 +1,15 @@
 package de.cubeisland.cubeengine.core.webapi.server;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import java.util.logging.Logger;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 
 /**
  * This class represents the API server and provides methods to configure and
@@ -17,14 +19,20 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  */
 public final class ApiServer
 {
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    
     private static ApiServer instance = null;
-    private short port;
     private int maxContentLength;
+    private boolean compress;
+    private int compressionLevel;
+    private int windowBits;
+    private int memLevel;
     private String authenticationKey;
+    
     private InetAddress ip;
-    private Channel channel;
-    private ChannelFactory channelFactory;
+    private short port;
     private ServerBootstrap bootstrap;
+    private Channel channel;
 
     private ApiServer()
     {
@@ -36,12 +44,10 @@ public final class ApiServer
         }
         catch (UnknownHostException e)
         {
-            // error("Could not receive the localhost..."); -- TODO fix logging
+            LOGGER.log(ERROR, "Could not receive the localhost...");
         }
 
         this.bootstrap = null;
-        this.channel = null;
-        this.channelFactory = null;
     }
 
     /**
@@ -65,7 +71,7 @@ public final class ApiServer
      */
     public boolean isRunning()
     {
-        return (this.channel != null);
+        return (this.channel != null && this.channel.isOpen());
     }
 
     /**
@@ -164,17 +170,26 @@ public final class ApiServer
      *
      * @return fluent interface
      */
-    public ApiServer start()
+    public ApiServer start() throws ApiStartupException
     {
         if (!this.isRunning())
         {
-            this.channelFactory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
-
-
-            this.bootstrap = new ServerBootstrap(this.channelFactory);
-            this.bootstrap.setPipelineFactory(new ApiServerPipelineFactory());
-
-            this.channel = bootstrap.bind(new InetSocketAddress(this.ip, this.port));
+            this.bootstrap = new ServerBootstrap();
+            
+            try
+            {
+                this.bootstrap.group(new NioEventLoopGroup())
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ApiServerIntializer(this.maxContentLength, this.compress, this.compressionLevel, this.windowBits, this.memLevel))
+                    .localAddress(this.ip, this.port);
+                
+                this.channel = this.bootstrap.bind().sync().channel();
+            }
+            catch (Exception e)
+            {
+                this.bootstrap.shutdown();
+                throw new ApiStartupException("The API server failed to start!", e);
+            }
         }
         return this;
     }
@@ -194,13 +209,11 @@ public final class ApiServer
             }
             catch (InterruptedException e)
             {
-                // error("Shutting down the server was interrupted!"); -- TODO fix logging
-                // error("Cleaning up as much as possible..."); -- TODO fix logging
+                LOGGER.log(ERROR, "Shutting down the server was interrupted!");
+                LOGGER.log(ERROR, "Cleaning up as much as possible...");
             }
             this.channel = null;
-            this.channelFactory.releaseExternalResources();
-            this.channelFactory = null;
-            this.bootstrap.releaseExternalResources();
+            this.bootstrap.shutdown();
             this.bootstrap = null;
         }
         return this;

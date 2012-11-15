@@ -18,7 +18,12 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty</artifactId>
-            <version>[3.0.0.Final,4.0.0.Alpha)</version>
+            <version>[4.0.0.Alpha6,)</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>[4.0.0.Alpha6,)</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
