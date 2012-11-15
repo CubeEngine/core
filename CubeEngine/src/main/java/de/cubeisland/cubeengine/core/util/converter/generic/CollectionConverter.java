@@ -25,7 +25,7 @@ public class CollectionConverter
         Converter valConverter = Convert.matchConverter(col.iterator().next().getClass());
         if (valConverter == null)
         {
-            throw new IllegalStateException("Converter not found for: " + col.iterator().next().getClass().getCanonicalName());
+            throw new IllegalStateException("Converter not found for: " + col.iterator().next().getClass().getName());
         }
         for (Object value : col)
         {
@@ -93,11 +93,11 @@ public class CollectionConverter
         }
         catch (IllegalAccessException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + collectionType.getCanonicalName(), ex);
+            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + collectionType.getName(), ex);
         }
         catch (InstantiationException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + collectionType.getCanonicalName(), ex);
+            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + collectionType.getName(), ex);
         }
         catch (ConversionException ex)
         {

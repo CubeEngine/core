@@ -75,11 +75,11 @@ public class MapConverter
         }
         catch (IllegalAccessException ex)
         {
-            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + mapType.getCanonicalName(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + mapType.getName(), ex);
         }
         catch (InstantiationException ex)
         {
-            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + mapType.getCanonicalName(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + mapType.getName(), ex);
         }
         catch (ConversionException ex)
         {

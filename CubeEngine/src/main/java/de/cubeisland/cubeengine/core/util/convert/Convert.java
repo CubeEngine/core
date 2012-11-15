@@ -101,7 +101,7 @@ public class Convert
         {
             return null;
         }
-        throw new IllegalStateException("Converter not found for: " + objectClass.getCanonicalName());
+        throw new IllegalStateException("Converter not found for: " + objectClass.getName());
     }
 
     public static <T> Object toObject(T object) throws ConversionException
