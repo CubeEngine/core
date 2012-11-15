@@ -1,13 +1,23 @@
 package de.cubeisland.cubeengine.core.util;
 
-public class Pair<X, Y>
+public class Pair<L, R>
 {
-    public X x;
-    public Y y;
+    private final L left;
+    private final R right;
 
-    public Pair(X x, Y y)
+    public Pair(L left, R right)
     {
-        this.x = x;
-        this.y = y;
+        this.left = left;
+        this.right = right;
+    }
+    
+    public L getLeft()
+    {
+        return this.left;
+    }
+    
+    public R getRight()
+    {
+        return this.right;
     }
 }

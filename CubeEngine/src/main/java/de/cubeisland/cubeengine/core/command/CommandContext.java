@@ -165,9 +165,9 @@ public class CommandContext
                     try
                     {
                         Pair<Integer, ?> pair = ArgumentReader.read(param.type(), commandLineRange);
-                        offset += pair.x;
+                        offset += pair.getLeft();
                         //added named param
-                        this.namedParams.put(paramName, pair.y);
+                        this.namedParams.put(paramName, pair.getRight());
                     }
                     catch (InvalidArgumentException ex)
                     {
@@ -180,8 +180,8 @@ public class CommandContext
                     try
                     {
                         Pair<Integer, String> pair = ArgumentReader.read(String.class, commandLineRange);
-                        offset += pair.x;
-                        this.indexedParams.add(pair.y);// added indexed param
+                        offset += pair.getLeft();
+                        this.indexedParams.add(pair.getRight());// added indexed param
                     }
                     catch (InvalidArgumentException ignored)
                     {
@@ -511,7 +511,7 @@ public class CommandContext
         {
             try
             {
-                return ArgumentReader.read(type, this.indexedParams.get(index)).y;
+                return ArgumentReader.read(type, this.indexedParams.get(index)).getRight();
             }
             catch (InvalidArgumentException e)
             {
