@@ -27,7 +27,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class CubeCommandMap extends SimpleCommandMap
 {
-    private final Core        core;
+    private final Core core;
     private final UserManager um;
 
     public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)

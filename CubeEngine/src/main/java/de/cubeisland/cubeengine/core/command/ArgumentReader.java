@@ -21,7 +21,7 @@ public abstract class ArgumentReader<T>
         registerReader(new UserReader());
         registerReader(new WorldReader());
     }
-    private final Class<T>                                       type;
+    private final Class<T> type;
 
     public ArgumentReader(Class<T> type)
     {

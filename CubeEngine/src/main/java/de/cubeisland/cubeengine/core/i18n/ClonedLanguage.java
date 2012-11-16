@@ -9,8 +9,8 @@ import org.apache.commons.lang.Validate;
  */
 public class ClonedLanguage implements Language
 {
-    private final String   code;
-    private final Locale   locale;
+    private final String code;
+    private final Locale locale;
     private final Language original;
 
     public ClonedLanguage(String code, Language original)

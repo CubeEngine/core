@@ -27,8 +27,8 @@ import org.bukkit.craftbukkit.CraftServer;
  */
 public class CommandManager
 {
-    private static final Logger        LOGGER = CubeEngine.getLogger();
-    private final CubeCommandMap       commandMap;
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    private final CubeCommandMap commandMap;
     private final Map<String, Command> knownCommands;
 
     public CommandManager(Core core)

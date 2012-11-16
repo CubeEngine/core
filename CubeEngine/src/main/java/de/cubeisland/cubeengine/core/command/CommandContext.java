@@ -23,16 +23,16 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class CommandContext
 {
-    private final Core                 core;
-    private final CommandSender        sender;
-    private final CubeCommand          command;
-    private final Stack<String>        labels;
+    private final Core core;
+    private final CommandSender sender;
+    private final CubeCommand command;
+    private final Stack<String> labels;
     private final Map<String, Boolean> flags;
-    private final LinkedList<String>   indexedParams;
-    private final Map<String, Object>  namedParams;
-    private int                        flagCount;
-    private boolean                    empty;
-    private boolean                    helpCall;
+    private final LinkedList<String> indexedParams;
+    private final Map<String, Object> namedParams;
+    private int flagCount;
+    private boolean empty;
+    private boolean helpCall;
 
     /**
      * Initializes the CommandContext object with an array of arguments

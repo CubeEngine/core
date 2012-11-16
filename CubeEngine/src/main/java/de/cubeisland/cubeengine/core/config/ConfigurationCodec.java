@@ -27,13 +27,13 @@ import java.util.Map;
  */
 public abstract class ConfigurationCodec
 {
-    protected String       COMMENT_PREFIX;
-    protected String       SPACES;
-    protected String       LINEBREAK;
-    protected String       QUOTE;
-    protected Integer      revision  = null;
+    protected String COMMENT_PREFIX;
+    protected String SPACES;
+    protected String LINEBREAK;
+    protected String QUOTE;
+    protected Integer revision = null;
     private CodecContainer container = null;
-    protected boolean      first;
+    protected boolean first;
 
     /**
      * Loads in the given configuration using the inputstream
@@ -233,10 +233,10 @@ public abstract class ConfigurationCodec
         protected Map<String, Object> values;
         protected Map<String, String> comments;
         protected Map<String, String> loadedKeys;
-        protected Configuration       config;
-        protected String              currentPath;
-        protected CodecContainer      parentContainer = null;
-        private Configuration         parentConfig;
+        protected Configuration config;
+        protected String currentPath;
+        protected CodecContainer parentContainer = null;
+        private Configuration parentConfig;
 
         public CodecContainer()
         {

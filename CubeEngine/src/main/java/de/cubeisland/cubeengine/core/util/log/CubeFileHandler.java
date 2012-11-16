@@ -47,7 +47,7 @@ public class CubeFileHandler extends FileHandler
 
     public class FileFormatter extends Formatter
     {
-        private static final String    LINEBREAK = "\n";
+        private static final String LINEBREAK = "\n";
         private final SimpleDateFormat dateFormat;
 
         public FileFormatter()

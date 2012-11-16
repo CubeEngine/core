@@ -12,8 +12,8 @@ import org.bukkit.event.HandlerList;
 public class PlayerLanguageReceivedEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
-    private final String             language;
-    private final Player             player;
+    private final String language;
+    private final Player player;
 
     public PlayerLanguageReceivedEvent(Player player, String language)
     {

@@ -46,7 +46,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 public class ApiRequestHandler extends
     ChannelInboundMessageHandlerAdapter<Object>
 {
-    private static final Logger       LOGGER          = new CubeLogger("webapi");
+    private static final Logger LOGGER = new CubeLogger("webapi");
 
     static
     {
@@ -60,11 +60,11 @@ public class ApiRequestHandler extends
         }
     }
 
-    private static final Charset      UTF8            = Charset.forName("UTF-8");
-    private static final String       WEBSOCKET_ROUTE = "websocket";
-    private final ApiServer           server;
-    private WebSocketServerHandshaker handshaker      = null;
-    private ObjectMapper              objectMapper;
+    private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final String WEBSOCKET_ROUTE = "websocket";
+    private final ApiServer server;
+    private WebSocketServerHandshaker handshaker = null;
+    private ObjectMapper objectMapper;
 
     ApiRequestHandler(ApiServer server)
     {

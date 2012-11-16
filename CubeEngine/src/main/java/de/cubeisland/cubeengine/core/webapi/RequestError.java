@@ -41,9 +41,9 @@ public enum RequestError
         HttpResponseStatus.NOT_IMPLEMENTED,
         "The called action is not yet implemented");
 
-    private final int                errorCode;
+    private final int errorCode;
     private final HttpResponseStatus responseStatus;
-    private final String             description;
+    private final String description;
 
     /**
      * initializes the RequestError with an error code and an HttpResponseStatus

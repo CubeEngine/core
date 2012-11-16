@@ -19,20 +19,20 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {
-    protected static TableManager                tableManager     = null;                     //Init in TableManager.class
-    protected final Database                     database;
-    protected final Class<V>                     modelClass;
-    protected Constructor<V>                     modelConstructor = null;
-    protected final String                       table;
-    protected Collection<Callback>               createCallbacks  = new ArrayList<Callback>();
-    protected Collection<Callback>               deleteCallbacks  = new ArrayList<Callback>();
-    protected Collection<Callback>               updateCallbacks  = new ArrayList<Callback>();
-    protected String                             key              = null;
-    protected boolean                            keyIsAI          = false;
-    protected ArrayList<String>                  attributes;
+    protected static TableManager tableManager = null; //Init in TableManager.class
+    protected final Database database;
+    protected final Class<V> modelClass;
+    protected Constructor<V> modelConstructor = null;
+    protected final String table;
+    protected Collection<Callback> createCallbacks = new ArrayList<Callback>();
+    protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
+    protected Collection<Callback> updateCallbacks = new ArrayList<Callback>();
+    protected String key = null;
+    protected boolean keyIsAI = false;
+    protected ArrayList<String> attributes;
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
-    private int                                  revision;
-    private boolean                              initialized      = false;
+    private int revision;
+    private boolean initialized = false;
 
     public BasicStorage(Database database, Class<V> model, int revision)
     {

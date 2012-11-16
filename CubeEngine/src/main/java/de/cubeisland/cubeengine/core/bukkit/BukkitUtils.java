@@ -38,7 +38,7 @@ import org.bukkit.plugin.SimplePluginManager;
 public class BukkitUtils
 {
     private static final Field localeStringField;
-    private static Field       nshListField = null;
+    private static Field nshListField = null;
 
     static
     {
@@ -134,9 +134,9 @@ public class BukkitUtils
     private static class PacketHookInjector implements Listener
     {
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();
-        public static boolean                  injected = false;
-        private final ExecutorService          executorService;
-        private final TaskQueue                taskQueue;
+        public static boolean injected = false;
+        private final ExecutorService executorService;
+        private final TaskQueue taskQueue;
 
         private PacketHookInjector()
         {

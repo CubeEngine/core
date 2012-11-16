@@ -29,11 +29,11 @@ import org.apache.commons.lang.Validate;
  */
 public class ModuleLoader
 {
-    private final Core                           core;
-    private final LibraryClassLoader             libClassLoader;
+    private final Core core;
+    private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
-    protected String                             classPrefix  = "Cube";
-    protected final String                       infoFileName = "module.yml";
+    protected String classPrefix = "Cube";
+    protected final String infoFileName = "module.yml";
 
     protected ModuleLoader(Core core)
     {

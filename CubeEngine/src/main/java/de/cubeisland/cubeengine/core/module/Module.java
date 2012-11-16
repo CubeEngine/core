@@ -26,15 +26,15 @@ import org.bukkit.event.Listener;
  */
 public abstract class Module
 {
-    private boolean           initialized      = false;
-    private Core              core;
-    private ModuleInfo        info;
-    private ModuleLogger      logger;
-    private Set<Module>       dependingModules = new HashSet<Module>();
-    private ModuleLoader      loader;
+    private boolean initialized = false;
+    private Core core;
+    private ModuleInfo info;
+    private ModuleLogger logger;
+    private Set<Module> dependingModules = new HashSet<Module>();
+    private ModuleLoader loader;
     private ModuleClassLoader classLoader;
-    private File              folder;
-    private boolean           enabled;
+    private File folder;
+    private boolean enabled;
 
     protected final void initialize(Core core, ModuleInfo info, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {

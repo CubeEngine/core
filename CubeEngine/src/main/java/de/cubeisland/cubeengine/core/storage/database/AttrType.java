@@ -173,7 +173,7 @@ public enum AttrType
         "SET",
         true,
         false);
-    private final String  type;
+    private final String type;
     private final boolean length;
     private final boolean signed;
 

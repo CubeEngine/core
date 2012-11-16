@@ -25,7 +25,7 @@ public class CommandExecuteEvent extends CubeEvent implements Cancellable
     }
 
     private final Command command;
-    private final String  commandLine;
+    private final String commandLine;
 
     public CommandExecuteEvent(Core core, Command command, String commandLine)
     {

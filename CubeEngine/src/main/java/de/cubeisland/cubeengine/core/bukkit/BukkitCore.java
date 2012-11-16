@@ -36,22 +36,22 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
  */
 public class BukkitCore extends JavaPlugin implements Core
 {
-    private boolean           debug = true;
-    private Database          database;
+    private boolean debug = true;
+    private Database database;
     private PermissionManager permissionRegistration;
-    private UserManager       userManager;
-    private FileManager       fileManager;
-    private ModuleManager     moduleManager;
-    private I18n              i18n;
+    private UserManager userManager;
+    private FileManager fileManager;
+    private ModuleManager moduleManager;
+    private I18n i18n;
     private CoreConfiguration config;
-    private CubeLogger        logger;
-    private EventManager      eventRegistration;
-    private Server            server;
-    private CommandManager    commandManager;
-    private TaskManager       taskManager;
-    private TableManager      tableManager;
-    private ObjectMapper      jsonObjectMapper;
-    private ApiServer         apiServer;
+    private CubeLogger logger;
+    private EventManager eventRegistration;
+    private Server server;
+    private CommandManager commandManager;
+    private TaskManager taskManager;
+    private TableManager tableManager;
+    private ObjectMapper jsonObjectMapper;
+    private ApiServer apiServer;
 
     @Override
     public void onEnable()

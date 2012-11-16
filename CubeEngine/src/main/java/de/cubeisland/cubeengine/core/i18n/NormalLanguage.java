@@ -21,15 +21,15 @@ import org.apache.commons.lang.Validate;
  */
 public class NormalLanguage implements Cleanable, Language
 {
-    private static final Logger                    LOGGER       = CubeEngine.getLogger();
-    private final String                           code;
-    private final String                           name;
-    private final String                           localName;
-    private final Language                         parent;
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    private final String code;
+    private final String name;
+    private final String localName;
+    private final Language parent;
     private final Map<String, Map<String, String>> messages;
-    private final File                             messageDir;
-    private final Locale                           locale;
-    private final ObjectMapper                     objectMapper = CubeEngine.getJsonObjectMapper();
+    private final File messageDir;
+    private final Locale locale;
+    private final ObjectMapper objectMapper = CubeEngine.getJsonObjectMapper();
 
     public NormalLanguage(LanguageConfiguration config, File languageDir, Language parent)
     {

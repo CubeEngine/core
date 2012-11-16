@@ -23,10 +23,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Convert
 {
-    private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS           = new ConcurrentHashMap<Class<?>, Converter<?>>();
-    private final static MapConverter                              MAP_CONVERTER        = new MapConverter();
-    private final static ArrayConverter                            ARRAY_CONVERTER      = new ArrayConverter();
-    private final static CollectionConverter                       COLLECTION_CONVERTER = new CollectionConverter();
+    private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
+    private final static MapConverter MAP_CONVERTER = new MapConverter();
+    private final static ArrayConverter ARRAY_CONVERTER = new ArrayConverter();
+    private final static CollectionConverter COLLECTION_CONVERTER = new CollectionConverter();
 
     static
     {

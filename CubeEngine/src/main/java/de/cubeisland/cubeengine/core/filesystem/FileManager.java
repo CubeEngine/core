@@ -17,11 +17,11 @@ import org.apache.commons.lang.Validate;
  */
 public class FileManager
 {
-    private static final Logger           LOGGER = CubeEngine.getLogger();
-    private final File                    dataFolder;
-    private final File                    languageDir;
-    private final File                    logDir;
-    private final File                    modulesDir;
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    private final File dataFolder;
+    private final File languageDir;
+    private final File logDir;
+    private final File modulesDir;
     private ConcurrentMap<File, Resource> fileSources;
 
     public FileManager(File dataFolder) throws IOException

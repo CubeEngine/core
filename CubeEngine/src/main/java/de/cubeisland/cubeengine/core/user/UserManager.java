@@ -43,12 +43,12 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 public class UserManager extends BasicStorage<User> implements Cleanable,
     Runnable, Listener
 {
-    private final Core                            core;
-    private final List<Player>                    onlinePlayers;
+    private final Core core;
+    private final List<Player> onlinePlayers;
     private final ConcurrentHashMap<String, User> users;
-    private final Server                          server;
-    private final ScheduledExecutorService        executor;
-    private static final int                      REVISION = 3;
+    private final Server server;
+    private final ScheduledExecutorService executor;
+    private static final int REVISION = 3;
 
     public UserManager(final Core core)
     {

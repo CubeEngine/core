@@ -20,15 +20,15 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class ReflectedCommand extends CubeCommand
 {
-    private final Object            commandContainer;
-    private final Method            commandMethod;
-    private final int               min;
-    private final int               max;
-    private final boolean           checkPermision;
-    private final String            permissionNode;
+    private final Object commandContainer;
+    private final Method commandMethod;
+    private final int min;
+    private final int max;
+    private final boolean checkPermision;
+    private final String permissionNode;
     private final PermissionDefault permissionDefault;
-    private final Flag[]            flags;
-    private final Param[]           params;
+    private final Flag[] flags;
+    private final Param[] params;
 
     public ReflectedCommand(Module module, Object commandContainer, Method method, Command annotation, String name, String description, String usage, List<String> aliases)
     {

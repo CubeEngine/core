@@ -19,10 +19,10 @@ import org.bukkit.scheduler.BukkitScheduler;
  */
 public class TaskManager
 {
-    private final BukkitCore               corePlugin;
+    private final BukkitCore corePlugin;
     private final ScheduledExecutorService executorService;
-    private final BukkitScheduler          bukkitScheduler;
-    private final Map<Module, TIntSet>     moduleTasks;
+    private final BukkitScheduler bukkitScheduler;
+    private final Map<Module, TIntSet> moduleTasks;
 
     public TaskManager(Core core, ScheduledExecutorService executorService, BukkitScheduler bukkitScheduler)
     {
@@ -244,9 +244,9 @@ public class TaskManager
 
     private class Task implements Runnable
     {
-        protected int          taskID;
+        protected int taskID;
         private final Runnable task;
-        private final TIntSet  taskIDs;
+        private final TIntSet taskIDs;
 
         public Task(Runnable task, TIntSet taskIDs)
         {

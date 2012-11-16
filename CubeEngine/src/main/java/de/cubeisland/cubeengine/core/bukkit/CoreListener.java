@@ -14,9 +14,9 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public class CoreListener implements Listener
 {
-    private final BukkitCore        bukkitCore;
-    private final PluginManager     pm;
-    private final BukkitScheduler   scheduler;
+    private final BukkitCore bukkitCore;
+    private final PluginManager pm;
+    private final BukkitScheduler scheduler;
     private final CoreConfiguration config;
 
     CoreListener(Core core)

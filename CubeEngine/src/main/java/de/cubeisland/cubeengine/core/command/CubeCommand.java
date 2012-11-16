@@ -20,12 +20,12 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public abstract class CubeCommand extends Command
 {
-    protected static final Flag[]          NO_FLAGS  = new Flag[0];
-    protected static final Param[]         NO_PARAMS = new Param[0];
-    private CubeCommand                    parent;
-    private final Module                   module;
+    protected static final Flag[] NO_FLAGS = new Flag[0];
+    protected static final Param[] NO_PARAMS = new Param[0];
+    private CubeCommand parent;
+    private final Module module;
     private final Map<String, CubeCommand> children;
-    private final String                   usageBase;
+    private final String usageBase;
 
     public CubeCommand(Module module, String name, String description)
     {

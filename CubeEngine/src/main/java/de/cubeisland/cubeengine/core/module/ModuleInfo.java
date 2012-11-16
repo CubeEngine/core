@@ -15,18 +15,18 @@ import java.util.Set;
  */
 public final class ModuleInfo
 {
-    private static final char          DEP_VERSION_DELIM = '/';
-    private final File                 file;
-    private final String               main;
-    private final String               id;
-    private final String               name;
-    private final int                  revision;
-    private final String               description;
-    private final int                  minCoreVersion;
-    private final boolean              providesWorldGenerator;
+    private static final char DEP_VERSION_DELIM = '/';
+    private final File file;
+    private final String main;
+    private final String id;
+    private final String name;
+    private final int revision;
+    private final String description;
+    private final int minCoreVersion;
+    private final boolean providesWorldGenerator;
     private final Map<String, Integer> dependencies;
     private final Map<String, Integer> softDependencies;
-    private final Set<String>          pluginDependencies;
+    private final Set<String> pluginDependencies;
 
     ModuleInfo()
     {

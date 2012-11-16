@@ -2,11 +2,11 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
 public interface ComponentBuilder<This extends ComponentBuilder>
 {
-    public static final int EQUAL            = 1;
-    public static final int NOT_EQUAL        = 2;
-    public static final int LESS             = 3;
-    public static final int LESS_OR_EQUAL    = 4;
-    public static final int GREATER          = 5;
+    public static final int EQUAL = 1;
+    public static final int NOT_EQUAL = 2;
+    public static final int LESS = 3;
+    public static final int LESS_OR_EQUAL = 4;
+    public static final int GREATER = 5;
     public static final int GREATER_OR_EQUAL = 6;
 
     /**

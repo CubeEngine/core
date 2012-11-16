@@ -11,16 +11,16 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 public class LanguageConfiguration extends Configuration
 {
     @Option("code")
-    public String   code;
+    public String code;
 
     @Option("name")
-    public String   name;
+    public String name;
 
     @Option("localname")
-    public String   localName;
+    public String localName;
 
     @Option("parent")
-    public String   parent = null;
+    public String parent = null;
 
     @Option(value = "clones", valueType = String.class)
     public String[] clones = null;

@@ -23,11 +23,11 @@ import org.yaml.snakeyaml.reader.ReaderException;
 public abstract class Configuration
 {
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
-    protected Class<? extends Configuration>             configurationClass;
-    protected static final Logger                        logger = CubeEngine.getLogger();
-    protected ConfigurationCodec                         codec  = null;
-    protected File                                       file;
-    protected Configuration                              parent = null;
+    protected Class<? extends Configuration> configurationClass;
+    protected static final Logger logger = CubeEngine.getLogger();
+    protected ConfigurationCodec codec = null;
+    protected File file;
+    protected Configuration parent = null;
 
     static
     {

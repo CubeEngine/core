@@ -13,7 +13,7 @@ public class BlockUtil
 {
     private static final BlockFace[] blockFaces =
                                                 {
-                                                BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH
+                                                    BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH
                                                 };
 
     /**

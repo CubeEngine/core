@@ -11,9 +11,9 @@ import java.util.Map;
  */
 public class ModuleClassLoader extends URLClassLoader
 {
-    private final ModuleLoader          moduleLoader;
+    private final ModuleLoader moduleLoader;
     private final Map<String, Class<?>> classMap;
-    private ModuleInfo                  moduleInfo;
+    private ModuleInfo moduleInfo;
 
     public ModuleClassLoader(ModuleLoader moduleLoader, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {

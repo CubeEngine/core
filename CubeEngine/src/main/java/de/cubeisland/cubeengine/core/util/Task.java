@@ -8,8 +8,8 @@ import de.cubeisland.cubeengine.core.module.Module;
  */
 public abstract class Task implements Runnable
 {
-    private int               taskid;
-    private final Module      module;
+    private int taskid;
+    private final Module module;
     private final TaskManager tm;
 
     public Task(Module module)

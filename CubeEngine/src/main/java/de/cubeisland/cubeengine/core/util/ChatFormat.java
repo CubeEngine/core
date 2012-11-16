@@ -53,11 +53,11 @@ public enum ChatFormat
         'o'),
     RESET(
         'r');
-    private static final char                       BASE_CHAR           = '\u00A7';
+    private static final char BASE_CHAR = '\u00A7';
     private static final TCharObjectMap<ChatFormat> FORMAT_CHARS_MAP;
-    private static final String                     FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
-    private static final Pattern                    STRIP_FORMATS       = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
-    private final char                              formatChar;
+    private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
+    private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
+    private final char formatChar;
 
     private ChatFormat(char formatChar)
     {

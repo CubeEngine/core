@@ -11,7 +11,7 @@ import java.util.Map;
 public final class ApiResponse
 {
     private final Map<String, String> headers;
-    private Object                    content;
+    private Object content;
 
     /**
      * Initlaizes the the response with a default serializer

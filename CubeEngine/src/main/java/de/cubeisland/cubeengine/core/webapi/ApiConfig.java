@@ -14,53 +14,53 @@ public class ApiConfig extends Configuration
 {
     @Option("network.address")
     @Comment("This specifies the address to bind the server to")
-    public String      address          = "localhost";
+    public String address = "localhost";
 
     @Option("network.port")
     @Comment("The port to bind the server to")
-    public short       port             = 6561;
+    public short port = 6561;
 
     @Option("network.max-threads")
     @Comment("The maximum number of threads for the API server")
-    public int         maxThreads       = 2;
+    public int maxThreads = 2;
 
     @Option("network.max-content-length")
     @Comment("The maximum amount of data written from a request")
-    public int         maxContentLength = 1048576;
+    public int maxContentLength = 1048576;
 
     @Option("compression.enable")
     @Comment("This enables response compression")
-    public boolean     compression      = false;
+    public boolean compression = false;
 
     @Option("compression.level")
     @Comment("The compression level, higher => better compression + more load")
-    public int         compressionLevel = 9;
+    public int compressionLevel = 9;
 
     @Option("compression.window-bits")
     @Comment("The window bits, higher => better compression + more load")
-    public int         windowBits       = 15;
+    public int windowBits = 15;
 
     @Option("compression.memory-level")
     @Comment("The memory level, higher => better compression + higher memory usage")
-    public int         memoryLevel      = 9;
+    public int memoryLevel = 9;
 
     @Option(value = "disabled-routes", valueType = String.class)
     @Comment("This is a list of disables routes")
-    public Set<String> disabledRoutes   = Collections.emptySet();
+    public Set<String> disabledRoutes = Collections.emptySet();
 
     @Option("blacklist.enable")
     @Comment("This enables the IP blacklisting")
-    public boolean     blacklistEnable  = false;
+    public boolean blacklistEnable = false;
 
     @Option(value = "blacklist.ips", valueType = String.class)
     @Comment("The IPs to block")
-    public Set<String> blacklist        = Collections.emptySet();
+    public Set<String> blacklist = Collections.emptySet();
 
     @Option("whitelist.enable")
     @Comment("This enables the IP whitelisting")
-    public boolean     whitelistEnable  = false;
+    public boolean whitelistEnable = false;
 
     @Option(value = "whitelist.ips", valueType = String.class)
     @Comment("The IPs to allow")
-    public Set<String> whitelist        = Collections.emptySet();
+    public Set<String> whitelist = Collections.emptySet();
 }

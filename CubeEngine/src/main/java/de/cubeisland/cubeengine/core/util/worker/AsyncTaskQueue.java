@@ -12,11 +12,11 @@ import org.apache.commons.lang.Validate;
  */
 public class AsyncTaskQueue implements TaskQueue
 {
-    private final Worker                     workerTask = new Worker();
-    private final ExecutorService            executorService;
-    private final Queue<Runnable>            taskQueue;
+    private final Worker workerTask = new Worker();
+    private final ExecutorService executorService;
+    private final Queue<Runnable> taskQueue;
     private final AtomicReference<Future<?>> exectorFuture;
-    private boolean                          isShutdown;
+    private boolean isShutdown;
 
     public AsyncTaskQueue(ExecutorService executorService)
     {

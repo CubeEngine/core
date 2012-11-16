@@ -30,10 +30,10 @@ import org.bukkit.command.CommandSender;
  */
 public class I18n implements Cleanable
 {
-    private static final Logger         LOGGER          = new CubeLogger("language", null);
-    public static final SourceLanguage  SOURCE_LANGUAGE = SourceLanguage.getInstance();
+    private static final Logger LOGGER = new CubeLogger("language", null);
+    public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;
-    private String                      defaultLanguage;
+    private String defaultLanguage;
 
     public I18n(Core core)
     {

@@ -10,7 +10,7 @@ import org.apache.commons.lang.Validate;
 public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
     implements MergeBuilder
 {
-    private boolean  updateColsSpecified;
+    private boolean updateColsSpecified;
     private String[] insertCols;
 
     protected MySQLMergeBuilder(MySQLQueryBuilder parent)

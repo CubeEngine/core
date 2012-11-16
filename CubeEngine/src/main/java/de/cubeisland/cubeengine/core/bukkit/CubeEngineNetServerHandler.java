@@ -14,8 +14,8 @@ import org.bukkit.plugin.PluginManager;
 public class CubeEngineNetServerHandler extends NetServerHandler
 {
     private final PluginManager pm;
-    private final TaskQueue     taskQueue;
-    private final Player        bukkitPlayer;
+    private final TaskQueue taskQueue;
+    private final Player bukkitPlayer;
 
     public CubeEngineNetServerHandler(EntityPlayer player, TaskQueue taskQueue)
     {

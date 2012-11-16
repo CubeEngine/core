@@ -12,12 +12,12 @@ import org.bukkit.scheduler.BukkitScheduler;
  */
 public class SyncTaskQueue implements TaskQueue
 {
-    private final Worker          workerTask = new Worker();
-    private final BukkitCore      corePlugin;
+    private final Worker workerTask = new Worker();
+    private final BukkitCore corePlugin;
     private final BukkitScheduler scheduler;
     private final Queue<Runnable> taskQueue;
-    private int                   taskID;
-    private boolean               isShutdown;
+    private int taskID;
+    private boolean isShutdown;
 
     public SyncTaskQueue(Core core)
     {

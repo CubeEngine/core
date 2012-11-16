@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 
 public abstract class PacketEvent extends Event
 {
-    private final int    packetId;
+    private final int packetId;
     private final Packet packet;
 
     public PacketEvent(Packet packet)

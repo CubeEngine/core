@@ -16,7 +16,7 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlCodec extends ConfigurationCodec
 {
     private final Yaml yaml;
-    private boolean    useLineBreak = false;
+    private boolean useLineBreak = false;
 
     public YamlCodec()
     {

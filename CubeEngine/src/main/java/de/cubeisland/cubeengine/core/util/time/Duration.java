@@ -8,15 +8,15 @@ import java.util.concurrent.TimeUnit;
 
 public class Duration extends Time
 {
-    private final static TObjectLongHashMap<String> longerNames    = new TObjectLongHashMap<String>();
-    private final static TObjectLongHashMap<String> shortNames     = new TObjectLongHashMap<String>();
-    private final static TCharLongHashMap           veryShortNames = new TCharLongHashMap();
-    private final static long                       MS             = TimeUnit.MILLISECONDS.toMillis(1L);
-    private final static long                       SEC            = TimeUnit.SECONDS.toMillis(1L);
-    private final static long                       MIN            = TimeUnit.MINUTES.toMillis(1L);
-    private final static long                       HOUR           = TimeUnit.HOURS.toMillis(1L);
-    private final static long                       DAY            = TimeUnit.DAYS.toMillis(1L);
-    private final static long                       WEEK           = TimeUnit.DAYS.toMillis(1L) * 7;
+    private final static TObjectLongHashMap<String> longerNames = new TObjectLongHashMap<String>();
+    private final static TObjectLongHashMap<String> shortNames = new TObjectLongHashMap<String>();
+    private final static TCharLongHashMap veryShortNames = new TCharLongHashMap();
+    private final static long MS = TimeUnit.MILLISECONDS.toMillis(1L);
+    private final static long SEC = TimeUnit.SECONDS.toMillis(1L);
+    private final static long MIN = TimeUnit.MINUTES.toMillis(1L);
+    private final static long HOUR = TimeUnit.HOURS.toMillis(1L);
+    private final static long DAY = TimeUnit.DAYS.toMillis(1L);
+    private final static long WEEK = TimeUnit.DAYS.toMillis(1L) * 7;
 
     static
     {

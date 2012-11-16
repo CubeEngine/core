@@ -10,11 +10,11 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     implements ComponentBuilder<This>
 {
-    protected StringBuilder     query          = new StringBuilder();
-    protected Database          database;
-    private boolean             inFunction     = false;
-    private boolean             deepInFunction = false;
-    protected Integer           subDepth       = 0;
+    protected StringBuilder query = new StringBuilder();
+    protected Database database;
+    private boolean inFunction = false;
+    private boolean deepInFunction = false;
+    protected Integer subDepth = 0;
     protected MySQLQueryBuilder parent;
 
     public MySQLComponentBuilder(MySQLQueryBuilder parent)

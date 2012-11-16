@@ -32,19 +32,19 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 @Entity(name = "user")
 public class User extends UserBase implements LinkingModel<Integer>
 {
-    public static int                                                    NO_ID      = -1;
+    public static int NO_ID = -1;
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
-    public int                                                           key;
+    public int key;
     @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)
-    public final String                                                  player;
+    public final String player;
     @Attribute(type = AttrType.BOOLEAN)
-    public boolean                                                       nogc       = false;
+    public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
-    public Timestamp                                                     lastseen;
-    private ConcurrentHashMap<Class<? extends Model>, Model>             attachments;
+    public Timestamp lastseen;
+    private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
-    Integer                                                              removalTaskId;                                                                  // only used in UserManager no AccesModifier is inteded
+    Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
 
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException

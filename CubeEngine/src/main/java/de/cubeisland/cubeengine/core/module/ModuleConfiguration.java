@@ -13,29 +13,29 @@ import java.util.Set;
 public class ModuleConfiguration extends Configuration
 {
     @Option("main")
-    public String      main;
+    public String main;
 
     @Option("name")
-    public String      name;
+    public String name;
 
     @Option("revision")
-    public int         revision              = 1;
+    public int revision = 1;
 
     @Option("description")
-    public String      description;
+    public String description;
 
     @Option("core-version")
-    public int         minCoreRevision       = -1;
+    public int minCoreRevision = -1;
 
     @Option("world-generator")
-    public boolean     provideWorldGenerator = false;
+    public boolean provideWorldGenerator = false;
 
     @Option(value = "dependencies", valueType = String.class)
-    public Set<String> dependencies          = new HashSet<String>();
+    public Set<String> dependencies = new HashSet<String>();
 
     @Option(value = "soft-dependencies", valueType = String.class)
-    public Set<String> softDependencies      = new HashSet<String>();
+    public Set<String> softDependencies = new HashSet<String>();
 
     @Option(value = "plugin-dependencies", valueType = String.class)
-    public Set<String> pluginDependencies    = new HashSet<String>();
+    public Set<String> pluginDependencies = new HashSet<String>();
 }

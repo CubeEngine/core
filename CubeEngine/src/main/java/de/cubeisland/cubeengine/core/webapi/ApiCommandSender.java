@@ -16,8 +16,8 @@ import java.util.Set;
 
 public class ApiCommandSender implements CommandSender
 {
-    private final String       name;
-    private final Core         core;
+    private final String name;
+    private final Core core;
     private final List<String> messages;
 
     public ApiCommandSender(final Core server)
