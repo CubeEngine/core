@@ -56,8 +56,8 @@ public enum LogAction
     KILL(
         false,
         KillLogger.class), ;
-    private Class<? extends Logger>[]       loggerClasses;
-    private LogActionConfig                 configuration;
+    private Class<? extends Logger>[] loggerClasses;
+    private LogActionConfig configuration;
     private static THashMap<String, Logger> loggers = new THashMap<String, Logger>();
 
     private LogAction(boolean defaultEnabled, Class<? extends Logger>... logger)

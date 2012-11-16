@@ -52,7 +52,7 @@ public class BlockGrowLogger extends
         @Option(value = "log-natural-grow")
         public boolean logNatural = false;
         @Option(value = "log-player-grow")
-        public boolean logPlayer  = true;
+        public boolean logPlayer = true;
 
         @Override
         public String getName()

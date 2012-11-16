@@ -13,30 +13,30 @@ import org.bukkit.inventory.ItemStack;
 public class BasicsConfiguration extends Configuration
 {
     @Option("commands.spawnmob-limit")
-    public int                   spawnmobLimit          = 20;
+    public int spawnmobLimit = 20;
     @Option("commands.remove-defaultradius")
-    public int                   removeCmdDefaultRadius = 20;
+    public int removeCmdDefaultRadius = 20;
     @Comment("The world to teleport to when using /spawn"
         + "\nUse {} if you want to use the spawn of the world the player is in.")
     @Option("commands.spawn-mainworld")
-    public String                spawnMainWorld         = "world";
+    public String spawnMainWorld = "world";
     @Comment("The seconds until a teleportrequest is automaticly denied."
         + "\nUse -1 to never automaticly deny. (Will loose information after some time when disconecting)")
     @Option("commands.teleport-request-wait")
-    public int                   tpRequestWait          = -1;
+    public int tpRequestWait = -1;
     @Comment("This message will be displayed to everyone with the permission on joining!")
     @Option("commands.motd")
-    public String                motd                   = "Welcome on our server. Have fun!";
+    public String motd = "Welcome on our server. Have fun!";
     @Option("commands.near-defaultradius")
-    public int                   nearDefaultRadius      = 20;
+    public int nearDefaultRadius = 20;
     @Option("afk.automatic-afk")
-    public String                autoAfk                = "5m";
+    public String autoAfk = "5m";
     @Option("afk.afk-check-delay")
-    public String                afkCheck               = "1s";
+    public String afkCheck = "1s";
     @Option("command.mute.default-mute-time")
-    public int                   defaultMuteTime        = -1;
+    public int defaultMuteTime = -1;
     @Option(value = "commands.item-blacklist")
-    public Collection<ItemStack> blacklist              = new LinkedList<ItemStack>()
+    public Collection<ItemStack> blacklist = new LinkedList<ItemStack>()
                                                         {
 
                                                             {

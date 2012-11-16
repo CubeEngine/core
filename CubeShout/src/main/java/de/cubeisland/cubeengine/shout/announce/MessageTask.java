@@ -7,10 +7,10 @@ import java.util.TimerTask;
 public class MessageTask extends TimerTask
 {
     private final AnnouncementManager am;
-    private final TaskManager         tm;
-    private final User                user;
-    private int                       runs;
-    private int                       nextExcecution;
+    private final TaskManager tm;
+    private final User user;
+    private int runs;
+    private int nextExcecution;
 
     public MessageTask(AnnouncementManager am, TaskManager taskManager, User user)
     {

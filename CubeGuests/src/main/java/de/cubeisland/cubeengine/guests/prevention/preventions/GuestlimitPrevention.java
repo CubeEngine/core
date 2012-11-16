@@ -22,10 +22,10 @@ import org.bukkit.event.player.PlayerLoginEvent;
 public class GuestlimitPrevention extends Prevention
 {
     private Map<Player, String> kickMessages;
-    private int                 minimumPlayers;
-    private int                 guestLimit;
-    private boolean             kickGuests;
-    private Server              server;
+    private int minimumPlayers;
+    private int guestLimit;
+    private boolean kickGuests;
+    private Server server;
 
     public GuestlimitPrevention(Guests guests)
     {

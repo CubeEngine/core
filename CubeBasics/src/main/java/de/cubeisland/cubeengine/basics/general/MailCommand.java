@@ -15,7 +15,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 
 public class MailCommand extends ContainerCommand
 {
-    private Basics      basics;
+    private Basics basics;
     private MailManager mailManager;
 
     public MailCommand(Basics basics)

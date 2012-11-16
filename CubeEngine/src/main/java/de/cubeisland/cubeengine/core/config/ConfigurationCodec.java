@@ -234,10 +234,10 @@ public abstract class ConfigurationCodec
         protected Map<String, Object> values;
         protected Map<String, String> comments;
         protected Map<String, Object> loadedKeys;
-        protected Configuration       config;
-        protected String              currentPath;
-        protected CodecContainer      parentContainer = null;
-        private Configuration         parentConfig;
+        protected Configuration config;
+        protected String currentPath;
+        protected CodecContainer parentContainer = null;
+        private Configuration parentConfig;
 
         public CodecContainer()
         {

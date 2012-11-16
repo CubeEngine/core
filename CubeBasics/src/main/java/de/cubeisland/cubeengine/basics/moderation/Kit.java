@@ -21,13 +21,13 @@ public class Kit
 {
     private static Basics basics = Basics.getInstance();
     //TODO command to create those
-    private String        name;
-    private ItemStack[]   items;
-    private boolean       giveKitOnFirstJoin;
-    private int           limitUsagePerPlayer;          // TODO good way to do this?
-    private long          limitUsageDelay;
-    private Permission    permission;
-    private String        customMessage;
+    private String name;
+    private ItemStack[] items;
+    private boolean giveKitOnFirstJoin;
+    private int limitUsagePerPlayer; // TODO good way to do this?
+    private long limitUsageDelay;
+    private Permission permission;
+    private String customMessage;
 
     // TODO ? add commands to execute to the kit (same with powertool)
     //e.g. /feed {PLAYER} | {PLAYER} will be replaced with the username that reveives the kit
@@ -45,8 +45,8 @@ public class Kit
         {
             this.permission = new Permission()
             {
-                private String            permission = "cubeengine.basics.kits." + name.toLowerCase(Locale.ENGLISH);
-                private PermissionDefault def        = PermissionDefault.OP;
+                private String permission = "cubeengine.basics.kits." + name.toLowerCase(Locale.ENGLISH);
+                private PermissionDefault def = PermissionDefault.OP;
 
                 @Override
                 public boolean isAuthorized(Permissible player)

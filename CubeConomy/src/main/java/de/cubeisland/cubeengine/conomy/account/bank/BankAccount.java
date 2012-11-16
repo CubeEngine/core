@@ -11,7 +11,7 @@ public class BankAccount extends AccountModel
 {
     @Key
     @Attribute(type = AttrType.INT)
-    protected int          key;
+    protected int key;
     @Attribute(type = AttrType.VARCHAR, length = 16)
     protected final String name;
 

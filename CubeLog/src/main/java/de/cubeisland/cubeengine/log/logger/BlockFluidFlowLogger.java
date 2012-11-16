@@ -28,9 +28,9 @@ public class BlockFluidFlowLogger extends
 
     //TODO do this better
     private static final Set<Integer> nonFluidProofBlocks = new HashSet<Integer>(Arrays.asList(7, 8, 9, 10, 27, 28, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 69, 70, 75, 76, 78, 93, 94, 104, 105, 106));
-    private static final BlockFace[]  DIRECTIONS          = new BlockFace[]
+    private static final BlockFace[] DIRECTIONS = new BlockFace[]
                                                           {
-                                                          BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
+                                                              BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
                                                           };
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -136,8 +136,8 @@ public class BlockFluidFlowLogger extends
     }
 
     private static Set<Material> fluids = EnumSet.of(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA);
-    private static Set<Material> lava   = EnumSet.of(Material.LAVA, Material.STATIONARY_LAVA);
-    private static Set<Material> water  = EnumSet.of(Material.WATER, Material.STATIONARY_WATER);
+    private static Set<Material> lava = EnumSet.of(Material.LAVA, Material.STATIONARY_LAVA);
+    private static Set<Material> water = EnumSet.of(Material.WATER, Material.STATIONARY_WATER);
 
     public void log(BlockChangeCause cause, BlockState oldState, BlockState newState)
     {
@@ -194,22 +194,22 @@ public class BlockFluidFlowLogger extends
     {
         @Comment("Logging water flowing normally and replacing air or water")
         @Option(value = "log-water-flow")
-        public boolean logWaterFlow         = false;
+        public boolean logWaterFlow = false;
         @Comment("Logging lava flowing normally and replacing air or lava")
         @Option(value = "log-lava-flow")
-        public boolean logLavaFlow          = false;
+        public boolean logLavaFlow = false;
         @Comment("Logging water destroying blocks like redstone etc.")
         @Option(value = "log-water-destruction")
-        public boolean logWaterDestruct     = true;
+        public boolean logWaterDestruct = true;
         @Comment("Logging lava destroying blocks like redstone etc.")
         @Option(value = "log-lava-destruction")
-        public boolean logLavaDestruct      = true;
+        public boolean logLavaDestruct = true;
         @Comment("Logging lava or water creating stone, cobblestone or obsidian")
         @Option(value = "log-water-lava-creation")
         public boolean logLavaWaterCreation = true;
         @Comment("Logging obsidian creation with redstone")
         @Option(value = "log-redstone-obsidian-creation")
-        public boolean logRedsObsiCreation  = true;
+        public boolean logRedsObsiCreation = true;
 
         @Override
         public String getName()

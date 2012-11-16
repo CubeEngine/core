@@ -21,7 +21,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class SwearPrevention extends Prevention
 {
     private static final String REGEX_PREFIX = "regex:";
-    private Set<Pattern>        swearPatterns;
+    private Set<Pattern> swearPatterns;
 
     public SwearPrevention(Guests guests)
     {

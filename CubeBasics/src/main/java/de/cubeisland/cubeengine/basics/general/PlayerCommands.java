@@ -24,7 +24,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class PlayerCommands
 {
     private UserManager um;
-    private Basics      basics;
+    private Basics basics;
 
     public PlayerCommands(Basics basics)
     {

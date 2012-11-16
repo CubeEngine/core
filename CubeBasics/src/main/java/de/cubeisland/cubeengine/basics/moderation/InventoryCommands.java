@@ -20,7 +20,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 public class InventoryCommands
 {
     private InvseeListener listener;
-    private Basics         basics;
+    private Basics basics;
 
     public InventoryCommands(Basics basics)
     {

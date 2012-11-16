@@ -21,8 +21,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class AfkPrevention extends Prevention
 {
     private THashMap<Player, PlayerAfkTracker> trackerMap;
-    private final TaskManager                  taskManager;
-    private int                                timeout;
+    private final TaskManager taskManager;
+    private int timeout;
 
     public AfkPrevention(Guests guests)
     {
@@ -112,9 +112,9 @@ public class AfkPrevention extends Prevention
     private class PlayerAfkTracker implements Runnable
     {
         private final static int UPDATE_DELAY = 250;
-        private final Player     player;
-        private int              taskId;
-        private long             nextUpdate;
+        private final Player player;
+        private int taskId;
+        private long nextUpdate;
 
         public PlayerAfkTracker(Player player)
         {

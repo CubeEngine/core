@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
  */
 public class AnnouncementSender implements Callable
 {
-    private final User   user;
+    private final User user;
     private final String message;
 
     public AnnouncementSender(User user, String message)

@@ -26,9 +26,9 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 public class FunCommands
 {
     private final FunConfiguration config;
-    private final Fun              module;
-    private final UserManager      userManager;
-    private final TaskManager      taskManager;
+    private final Fun module;
+    private final UserManager userManager;
+    private final TaskManager taskManager;
 
     public FunCommands(Fun module)
     {

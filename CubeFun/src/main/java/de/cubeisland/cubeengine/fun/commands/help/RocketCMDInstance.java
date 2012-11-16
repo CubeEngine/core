@@ -8,9 +8,9 @@ import org.bukkit.Material;
 public class RocketCMDInstance
 {
     private final String name;
-    private final int    maxTicks;
+    private final int maxTicks;
 
-    private int          ticks;
+    private int ticks;
 
     public RocketCMDInstance(String name, int ticks)
     {

@@ -9,10 +9,10 @@ import java.io.File;
 
 public class Guests extends Module
 {
-    private File              dataFolder;
-    private File              preventionConfigFolder;
+    private File dataFolder;
+    private File preventionConfigFolder;
     private PreventionManager prevManager;
-    private GuestsConfig      config;
+    private GuestsConfig config;
 
     @Override
     public void onEnable()

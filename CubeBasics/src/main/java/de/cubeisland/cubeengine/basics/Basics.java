@@ -14,10 +14,10 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 public class Basics extends Module
 {
     private BasicsConfiguration config;
-    private BasicUserManager    basicUM;
-    private MailManager         mailManager;
+    private BasicUserManager basicUM;
+    private MailManager mailManager;
 
-    private static Basics       instance;
+    private static Basics instance;
 
     public static Basics getInstance()
     {

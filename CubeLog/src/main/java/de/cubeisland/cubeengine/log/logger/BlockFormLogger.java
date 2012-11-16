@@ -32,7 +32,7 @@ public class BlockFormLogger extends
         @Option(value = "log-snow-form")
         public boolean logSnowForm = false;
         @Option(value = "log-ice-form")
-        public boolean logIceForm  = false;
+        public boolean logIceForm = false;
 
         @Override
         public String getName()

@@ -8,8 +8,8 @@ import org.bukkit.entity.Fireball;
 
 public class ThrowItem implements Runnable
 {
-    Class       material;
-    String      name;
+    Class material;
+    String name;
     UserManager userManager;
 
     public ThrowItem(UserManager userManager, String name, Class materialClass)

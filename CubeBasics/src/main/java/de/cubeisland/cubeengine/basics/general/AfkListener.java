@@ -14,8 +14,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class AfkListener implements Listener, Runnable
 {
     private Basics basics;
-    private long   autoAfk;
-    private long   afkCheck;
+    private long autoAfk;
+    private long afkCheck;
 
     public AfkListener(Basics basics, long autoAfk, long afkCheck)
     {

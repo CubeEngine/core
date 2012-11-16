@@ -13,12 +13,12 @@ import java.io.IOException;
 public class Shout extends Module
 {
     private AnnouncementManager announcementManager;
-    private ShoutListener       listener;
-    private ShoutCommand        command;
-    private ShoutSubCommands    subCommands;
-    private Announcer           taskManager;
-    private ShoutConfiguration  config;
-    private File                announcementFolder;
+    private ShoutListener listener;
+    private ShoutCommand command;
+    private ShoutSubCommands subCommands;
+    private Announcer taskManager;
+    private ShoutConfiguration config;
+    private File announcementFolder;
 
     // TODO CubeRoles
     @Override

@@ -14,9 +14,9 @@ import org.bukkit.permissions.PermissionDefault;
  */
 public class PreventionManager
 {
-    private final Guests                       guests;
-    private final PermissionManager            pm;
-    private final EventManager                 em;
+    private final Guests guests;
+    private final PermissionManager pm;
+    private final EventManager em;
     private final THashMap<String, Prevention> preventions;
     private final THashMap<String, Punishment> punishments;
 

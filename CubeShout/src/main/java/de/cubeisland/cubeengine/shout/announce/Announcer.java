@@ -10,9 +10,9 @@ import java.util.TimerTask;
  */
 public class Announcer
 {
-    private Timer                  timer;
+    private Timer timer;
     private Map<String, TimerTask> tasks;
-    private int                    initDelay;
+    private int initDelay;
 
     public Announcer(int initDelay)
     {

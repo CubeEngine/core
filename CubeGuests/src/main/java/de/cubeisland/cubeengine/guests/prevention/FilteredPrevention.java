@@ -16,7 +16,7 @@ import org.bukkit.event.Cancellable;
  */
 public abstract class FilteredPrevention<T extends Object> extends Prevention
 {
-    private Set<T>     filterItems;
+    private Set<T> filterItems;
     private FilterMode filterMode;
 
     public FilteredPrevention(String name, Guests guests)
@@ -208,8 +208,8 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
 
         private static final HashMap<String, FilterMode> ALIAS_MAP = new HashMap<String, FilterMode>(values().length);
 
-        private final String                             name;
-        private final String[]                           aliases;
+        private final String name;
+        private final String[] aliases;
 
         FilterMode(String name, String... aliases)
         {

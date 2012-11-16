@@ -13,13 +13,13 @@ import org.bukkit.Location;
 public class ChestLog extends AbstractPositionLog
 {
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public String    item;           //ID:DATA
+    public String item; //ID:DATA
     @Attribute(type = AttrType.INT)
-    public int       amount;         //+ added to chest - took from chest
+    public int amount; //+ added to chest - took from chest
     @Attribute(type = AttrType.INT)
-    public int       typeId;
+    public int typeId;
     @Attribute(type = AttrType.VARCHAR, length = 100)
-    public String    itemName = null;
+    public String itemName = null;
     private ItemData itemData = null;
 
     //causeID is the player or = 0 if unknown

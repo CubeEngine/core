@@ -23,27 +23,27 @@ import org.bukkit.event.Listener;
  */
 public abstract class Prevention implements Listener
 {
-    private static final PunishmentProcedure                          PUNISHMENT_PROCEDURE = new PunishmentProcedure();
-    private static final String                                       PERMISSION_BASE      = "cubeengine.guests.prevention.";
+    private static final PunishmentProcedure PUNISHMENT_PROCEDURE = new PunishmentProcedure();
+    private static final String PERMISSION_BASE = "cubeengine.guests.prevention.";
 
-    private final String                                              name;
-    private final String                                              permission;
-    private final Guests                                              guests;
-    private final boolean                                             allowPunishing;
+    private final String name;
+    private final String permission;
+    private final Guests guests;
+    private final boolean allowPunishing;
 
-    private boolean                                                   loaded;
-    private String                                                    message;
-    private int                                                       throttleDelay;
-    private boolean                                                   enabled;
-    private boolean                                                   enableByDefault;
-    private PreventionConfiguration                                   config;
-    private TObjectLongMap<Player>                                    messageThrottleTimestamps;
+    private boolean loaded;
+    private String message;
+    private int throttleDelay;
+    private boolean enabled;
+    private boolean enableByDefault;
+    private PreventionConfiguration config;
+    private TObjectLongMap<Player> messageThrottleTimestamps;
 
-    private boolean                                                   enablePunishing;
+    private boolean enablePunishing;
     private TIntObjectMap<THashMap<Punishment, ConfigurationSection>> violationPunishmentMap;
-    private TObjectIntMap<Player>                                     playerViolationMap;
-    private TObjectLongMap<Player>                                    punishThrottleTimestamps;
-    private int                                                       highestPunishmentViolation;
+    private TObjectIntMap<Player> playerViolationMap;
+    private TObjectLongMap<Player> punishThrottleTimestamps;
+    private int highestPunishmentViolation;
 
     /**
      * Initializes the prevention with its name, the corresponding plugin and

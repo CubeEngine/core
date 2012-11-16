@@ -39,13 +39,13 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 
 public class Test extends Module
 {
-    public TestManager         manager;
-    public UserManager         uM;
-    protected TestConfig       config;
+    public TestManager manager;
+    public UserManager uM;
+    protected TestConfig config;
     public static List<String> aListOfPlayers;
-    public Basics              basicsModule;
-    private BukkitCore         core;
-    private Timer              timer;
+    public Basics basicsModule;
+    private BukkitCore core;
+    private Timer timer;
 
     @Override
     public void onEnable()
@@ -293,7 +293,7 @@ public class Test extends Module
     private class KeepAliveTimer extends TimerTask
     {
         private final ServerConfigurationManager mojangServer;
-        private final Random                     random;
+        private final Random random;
 
         public KeepAliveTimer()
         {

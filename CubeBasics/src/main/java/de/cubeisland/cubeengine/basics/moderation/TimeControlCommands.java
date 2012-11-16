@@ -52,10 +52,10 @@ public class TimeControlCommands
         AFTERNOON(
             9000,
             "afternoon");
-        private static final HashMap<String, Time> times     = new HashMap<String, Time>();
+        private static final HashMap<String, Time> times = new HashMap<String, Time>();
         private static final HashMap<Long, String> timeNames = new HashMap<Long, String>();
-        protected String[]                         names;
-        protected long                             longTime;
+        protected String[] names;
+        protected long longTime;
 
         static
         {

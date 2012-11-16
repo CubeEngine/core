@@ -6,8 +6,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemData
 {
-    public int    mat;
-    public short  data;
+    public int mat;
+    public short data;
     public String name = "";
 
     public ItemData(ItemStack item)

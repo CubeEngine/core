@@ -21,11 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AnnouncementManager
 {
-    private Shout                             module;
-    private Announcer                         taskManager;
+    private Shout module;
+    private Announcer taskManager;
     private Map<String, AnnouncementReceiver> receivers;
-    private Map<String, Announcement>         announcements;
-    private File                              announcementFolder;
+    private Map<String, Announcement> announcements;
+    private File announcementFolder;
 
     public AnnouncementManager(Shout module, File announcementFolder)
     {
@@ -493,7 +493,7 @@ public class AnnouncementManager
     private class AnnouncementReceiver
     {
         public Queue<Announcement> messages;
-        public String              world;
+        public String world;
 
         public AnnouncementReceiver(Queue<Announcement> messages, String world)
         {

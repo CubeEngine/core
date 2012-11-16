@@ -11,11 +11,11 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class RuleBookConfiguration
 {
-    private final static int  NumberOfCharsPerPage = 260;
-    private final static int  NumberOfCharsPerLine = 20;
-    Rulebook                  ruleBook;
-    Map<String, String>       ruleMap              = new HashMap<String, String>();
-    Map<String, List<String>> convertedRuleMap     = new HashMap<String, List<String>>();
+    private final static int NumberOfCharsPerPage = 260;
+    private final static int NumberOfCharsPerLine = 20;
+    Rulebook ruleBook;
+    Map<String, String> ruleMap = new HashMap<String, String>();
+    Map<String, List<String>> convertedRuleMap = new HashMap<String, List<String>>();
 
     public RuleBookConfiguration(Rulebook ruleBook)
     {

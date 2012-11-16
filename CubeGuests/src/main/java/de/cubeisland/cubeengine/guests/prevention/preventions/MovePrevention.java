@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
  */
 public class MovePrevention extends Prevention
 {
-    private int          width;
+    private int width;
     private final Server server;
 
     public MovePrevention(Guests guests)

@@ -15,7 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  */
 public class SpamPrevention extends Prevention
 {
-    private long                       spamLockDuration;
+    private long spamLockDuration;
     private TObjectLongHashMap<Player> chatTimestamps;
 
     public SpamPrevention(Guests guests)

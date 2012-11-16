@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Lookup
 {
-    boolean                showCoords;
+    boolean showCoords;
     private List<BlockLog> blocklogs;
 
     //private List<ChatLog> chatlogs;

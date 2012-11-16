@@ -16,8 +16,8 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class Commands extends ContainerCommand
 {
-    private final Guests             guests;
-    private final PreventionManager  pm;
+    private final Guests guests;
+    private final PreventionManager pm;
     private final Set<CommandSender> resetRequest;
 
     public Commands(Guests guests)

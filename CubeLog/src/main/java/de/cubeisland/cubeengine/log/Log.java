@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
 
 public class Log extends Module
 {
-    private static Log       instance;
+    private static Log instance;
     private LogConfiguration mainconfig;
 
     static

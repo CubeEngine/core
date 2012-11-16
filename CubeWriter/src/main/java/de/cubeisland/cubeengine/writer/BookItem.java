@@ -7,8 +7,8 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 public class BookItem
 {
-    private net.minecraft.server.ItemStack item  = null;
-    private CraftItemStack                 stack = null;
+    private net.minecraft.server.ItemStack item = null;
+    private CraftItemStack stack = null;
 
     public BookItem(org.bukkit.inventory.ItemStack item)
     {

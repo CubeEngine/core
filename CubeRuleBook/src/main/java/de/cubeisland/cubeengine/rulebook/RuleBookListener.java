@@ -14,7 +14,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 class RuleBookListener implements Listener, Runnable
 {
     private static String playerName = null;
-    Rulebook              module;
+    Rulebook module;
 
     public RuleBookListener(Rulebook module)
     {

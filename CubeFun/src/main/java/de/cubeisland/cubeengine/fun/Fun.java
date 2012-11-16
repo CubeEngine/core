@@ -9,8 +9,8 @@ public class Fun extends Module
 {
     private FunConfiguration config;
 
-    private RocketListener   rocketListener;
-    private NukeListener     nukeListener;
+    private RocketListener rocketListener;
+    private NukeListener nukeListener;
 
     @Override
     public void onEnable()

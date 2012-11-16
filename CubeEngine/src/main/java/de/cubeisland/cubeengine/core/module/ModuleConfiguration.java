@@ -31,11 +31,11 @@ public class ModuleConfiguration extends Configuration
     public boolean provideWorldGenerator = false;
 
     @Option(value = "dependencies")
-    public Set<String> dependencies          = new HashSet<String>();
+    public Set<String> dependencies = new HashSet<String>();
 
     @Option(value = "soft-dependencies")
-    public Set<String> softDependencies      = new HashSet<String>();
+    public Set<String> softDependencies = new HashSet<String>();
 
     @Option(value = "plugin-dependencies")
-    public Set<String> pluginDependencies    = new HashSet<String>();
+    public Set<String> pluginDependencies = new HashSet<String>();
 }

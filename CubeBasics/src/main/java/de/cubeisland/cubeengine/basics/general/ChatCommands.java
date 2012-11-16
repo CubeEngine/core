@@ -15,8 +15,8 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class ChatCommands
 {
     private UserManager um;
-    private String      lastWhisperOfConsole = null;
-    private Basics      basics;
+    private String lastWhisperOfConsole = null;
+    private Basics basics;
 
     public ChatCommands(Basics basics)
     {

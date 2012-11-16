@@ -5,8 +5,8 @@ import org.bukkit.event.Listener;
 public abstract class Logger<T extends SubLogConfig> implements Listener
 {
     public static final Log module = Log.getInstance();
-    protected T             config;
-    public final LogAction  action;
+    protected T config;
+    public final LogAction action;
 
     public Logger(LogAction action)
     {

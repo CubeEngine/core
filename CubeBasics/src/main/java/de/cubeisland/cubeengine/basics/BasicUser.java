@@ -20,11 +20,11 @@ public class BasicUser implements Model<Integer>
     @Key
     @ForeignKey(table = "user", field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public final int  key;                            // User Key
+    public final int key; // User Key
     @Attribute(type = AttrType.TIMESTAMP, notnull = false)
-    public Timestamp  muted;
+    public Timestamp muted;
     @Attribute(type = AttrType.BOOLEAN)
-    public boolean    godMode;
+    public boolean godMode;
     public List<Mail> mailbox = new ArrayList<Mail>();
 
     @DatabaseConstructor

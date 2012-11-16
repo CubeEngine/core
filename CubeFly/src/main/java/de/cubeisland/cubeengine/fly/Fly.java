@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.fly.database.FlyManager;
 public class Fly extends Module
 {
     private FlyConfiguration config;
-    private FlyManager       flyManager;
+    private FlyManager flyManager;
 
     @Override
     public void onEnable()

@@ -32,7 +32,7 @@ public class BlockFadeLogger extends
         @Option(value = "log-snow-melt")
         public boolean logSnowMelt = false;
         @Option(value = "log-ice-melt")
-        public boolean logIceMelt  = false;
+        public boolean logIceMelt = false;
 
         @Override
         public String getName()

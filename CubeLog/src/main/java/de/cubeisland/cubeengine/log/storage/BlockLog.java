@@ -14,9 +14,9 @@ import org.bukkit.block.BlockState;
 public class BlockLog extends AbstractPositionLog
 {
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public String     newBlock;
+    public String newBlock;
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public String     oldBlock;
+    public String oldBlock;
 
     private BlockData newBlockData = null;
     private BlockData oldBlockData = null;

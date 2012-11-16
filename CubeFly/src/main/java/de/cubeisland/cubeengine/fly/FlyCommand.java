@@ -13,7 +13,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 
 public class FlyCommand
 {
-    UserManager      um;
+    UserManager um;
     FlyConfiguration config;
 
     public FlyCommand(Fly module)

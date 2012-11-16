@@ -18,21 +18,21 @@ public abstract class AbstractPositionLog implements Model<Integer>
 {
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
-    public int       key;
+    public int key;
     @Attribute(type = AttrType.DATETIME)
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
-    public int       causeID;
+    public int causeID;
     @Attribute(type = AttrType.VARCHAR, length = 64)
-    public String    worldName;
+    public String worldName;
     @Attribute(type = AttrType.VARCHAR, length = 64)
-    public String    worldUUID;
+    public String worldUUID;
     @Attribute(type = AttrType.INT)
-    public int       x;
+    public int x;
     @Attribute(type = AttrType.INT)
-    public int       y;
+    public int y;
     @Attribute(type = AttrType.INT)
-    public int       z;
+    public int z;
 
     public AbstractPositionLog(int causeID, Location loc)
     {

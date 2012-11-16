@@ -231,19 +231,19 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     public static class ContainerConfig extends SubLogConfig
     {
         @Option(value = "log-chest")
-        public boolean logChest           = true;
+        public boolean logChest = true;
         @Option(value = "log-furnace")
-        public boolean logFurnace         = false;
+        public boolean logFurnace = false;
         @Option(value = "log-brewing")
-        public boolean logBrewingstand    = false;
+        public boolean logBrewingstand = false;
         @Option(value = "log-dispenser")
-        public boolean logDispenser       = true;
+        public boolean logDispenser = true;
         @Option(value = "log-other-block")
-        public boolean logOtherBlock      = true;
+        public boolean logOtherBlock = true;
         @Option(value = "log-storage-minecart")
         public boolean logStorageMinecart = false;
         @Option(value = "log-looked-into-chest")
-        public boolean logNothing         = true;
+        public boolean logNothing = true;
 
         public ContainerConfig()
         {
@@ -273,7 +273,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             6),
         HUMANENTITY(
             7), ;
-        private final int                                     id;
+        private final int id;
         private static final TIntObjectHashMap<ContainerType> map;
 
         static

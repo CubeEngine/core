@@ -19,9 +19,9 @@ import org.bukkit.util.Vector;
 
 public class FlyListener implements Listener
 {
-    private UserManager           usermanager;
+    private UserManager usermanager;
     private HashMap<Player, Task> tasks = new HashMap<Player, Task>();
-    private Fly                   fly;
+    private Fly fly;
 
     public FlyListener(Fly fly)
     {
