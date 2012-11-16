@@ -20,20 +20,6 @@ public @interface Option
     public String value();
 
     /**
-     * Needed to deserialize Objects in Collections or Maps correctly
-     *
-     * @return the valueType
-     */
-    public Class<?> valueType() default Object.class;
-
-    /**
-     * Needed to deserialize Keys of Maps that are not Strings correctly
-     *
-     * @return the keyType
-     */
-    public Class<?> keyType() default String.class;
-
-    /**
      * If true this option will not be shown in the config with disabled advanced mode.
      * Keep in mind you will need a field:
      * @Option("advanced")

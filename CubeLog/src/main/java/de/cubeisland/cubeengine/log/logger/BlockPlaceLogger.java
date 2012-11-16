@@ -66,7 +66,7 @@ public class BlockPlaceLogger extends
             this.enabled = true;
         }
 
-        @Option(value = "no-logging", valueType = BlockData.class)
+        @Option(value = "no-logging")
         public Collection<Material> noLogging = new LinkedList<Material>();
 
         @Override

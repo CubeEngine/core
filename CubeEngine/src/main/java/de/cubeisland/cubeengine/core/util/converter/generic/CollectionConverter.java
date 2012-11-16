@@ -2,8 +2,9 @@ package de.cubeisland.cubeengine.core.util.converter.generic;
 
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class CollectionConverter
@@ -22,14 +23,9 @@ public class CollectionConverter
         {
             return result;
         }
-        Converter valConverter = Convert.matchConverter(col.iterator().next().getClass());
-        if (valConverter == null)
-        {
-            throw new IllegalStateException("Converter not found for: " + col.iterator().next().getClass().getName());
-        }
         for (Object value : col)
         {
-            result.add(valConverter.toObject(value));
+            result.add(Convert.toObject(value));
         }
         return result;
     }
@@ -45,59 +41,65 @@ public class CollectionConverter
      * @return the converted collection
      * @throws ConversionException
      */
-    public <V, S extends Collection<V>> S fromObject(Class<S> collectionType, Object object, Class<V> valueType) throws ConversionException
+    public <V, S extends Collection<V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
     {
         try
         {
-            S result;
-            if (collectionType.isInterface() || Modifier.isAbstract(collectionType.getModifiers()))
+            if (ptype.getRawType() instanceof Class)
             {
-                if (Set.class.isAssignableFrom(collectionType))
+                Class<S> collectionType = (Class)ptype.getRawType();
+                S result;
+                Type subType = ptype.getActualTypeArguments()[0];
+                if (collectionType.isInterface() || Modifier.isAbstract(collectionType.getModifiers()))
                 {
-                    if (SortedSet.class.isAssignableFrom(collectionType))
+                    if (Set.class.isAssignableFrom(collectionType))
                     {
-                        result = (S)new TreeSet<V>();
+                        if (SortedSet.class.isAssignableFrom(collectionType))
+                        {
+                            result = (S)new TreeSet<V>();
+                        }
+                        else
+                        {
+                            result = (S)new HashSet<V>();
+                        }
+                    }
+                    else if (List.class.isAssignableFrom(collectionType))
+                    {
+                        result = (S)new LinkedList<S>();
                     }
                     else
                     {
-                        result = (S)new HashSet<V>();
+                        result = (S)new LinkedList<S>(); // other collection
                     }
-                }
-                else if (List.class.isAssignableFrom(collectionType))
-                {
-                    result = (S)new LinkedList<S>();
                 }
                 else
                 {
-                    result = (S)new LinkedList<S>(); // other collections ??
+                    result = collectionType.newInstance();
                 }
-            }
-            else
-            {
-                result = collectionType.newInstance();
-            }
-            if (object instanceof Collection)
-            {
-                Converter<V> valConverter = Convert.matchConverter(valueType);
-                Collection col = (Collection)object;
-                for (Object o : col)
+                if (object instanceof Collection)
                 {
-                    result.add(valConverter.fromObject(o));
+                    Collection col = (Collection)object;
+                    for (Object o : col)
+                    {
+                        V value = Convert.fromObject(subType, o);
+                        result.add(value);
+                    }
+                    return result;
                 }
-                return result;
+                else
+                {
+                    throw new IllegalStateException("Collection-conversion failed: Cannot convert not a collection to a collection.");
+                }
             }
-            else
-            {
-                throw new IllegalStateException("Collection-conversion failed: Cannot convert not a collection to a collection.");
-            }
+            throw new IllegalArgumentException("Unkown Collection-Type: " + ptype);
         }
         catch (IllegalAccessException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + collectionType.getName(), ex);
+            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
         }
         catch (InstantiationException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + collectionType.getName(), ex);
+            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
         }
         catch (ConversionException ex)
         {

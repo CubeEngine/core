@@ -30,12 +30,12 @@ public class ModuleConfiguration extends Configuration
     @Option("world-generator")
     public boolean provideWorldGenerator = false;
 
-    @Option(value = "dependencies", valueType = String.class)
-    public Set<String> dependencies = new HashSet<String>();
+    @Option(value = "dependencies")
+    public Set<String> dependencies          = new HashSet<String>();
 
-    @Option(value = "soft-dependencies", valueType = String.class)
-    public Set<String> softDependencies = new HashSet<String>();
+    @Option(value = "soft-dependencies")
+    public Set<String> softDependencies      = new HashSet<String>();
 
-    @Option(value = "plugin-dependencies", valueType = String.class)
-    public Set<String> pluginDependencies = new HashSet<String>();
+    @Option(value = "plugin-dependencies")
+    public Set<String> pluginDependencies    = new HashSet<String>();
 }

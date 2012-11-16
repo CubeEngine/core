@@ -17,7 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -232,16 +233,16 @@ public abstract class ConfigurationCodec
     {
         protected Map<String, Object> values;
         protected Map<String, String> comments;
-        protected Map<String, String> loadedKeys;
-        protected Configuration config;
-        protected String currentPath;
-        protected CodecContainer parentContainer = null;
-        private Configuration parentConfig;
+        protected Map<String, Object> loadedKeys;
+        protected Configuration       config;
+        protected String              currentPath;
+        protected CodecContainer      parentContainer = null;
+        private Configuration         parentConfig;
 
         public CodecContainer()
         {
             this.comments = new THashMap<String, String>();
-            this.loadedKeys = new THashMap<String, String>();
+            this.loadedKeys = new THashMap<String, Object>();
             this.values = new LinkedHashMap<String, Object>();
         }
 
@@ -280,57 +281,31 @@ public abstract class ConfigurationCodec
          */
         public Object convertFromObjectToFieldValue(Object object, Field field, String path) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
-            Class fieldClass = field.getType();
-            if (!String.class.isAssignableFrom(fieldClass))
+            Type fieldType = field.getGenericType();
+            if (fieldType instanceof Class)
             {
-                Converter converter = Convert.matchConverter(fieldClass);
-                if (converter == null)
+                return Convert.fromObject(fieldType, object);
+            }
+            if (fieldType instanceof ParameterizedType // can be a map?
+                && ((ParameterizedType)fieldType).getRawType() instanceof Class // rawIsClass
+                && Map.class.isAssignableFrom((Class)((ParameterizedType)fieldType).getRawType()) // isMap
+                && ((ParameterizedType)fieldType).getActualTypeArguments()[1] instanceof Class // mapValue is class
+                && Configuration.class.isAssignableFrom(((Class)((ParameterizedType)fieldType).getActualTypeArguments()[1]))) // mapValue is Config
+            {
+                Type valType = ((ParameterizedType)fieldType).getActualTypeArguments()[1];
+                if (valType instanceof Class)
                 {
-                    Class valueType = field.getAnnotation(Option.class).valueType();
-                    if (Configuration.class.isAssignableFrom(valueType))
+                    Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
+                    Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
+                    for (Object key : fieldMap.keySet())
                     {
-                        if (Map.class.isAssignableFrom(fieldClass))
-                        {
-                            Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
-                            Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
-                            for (Object key : fieldMap.keySet())
-                            {
-                                if (parentConfig == null)
-                                {
-                                    new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subvalues), null);
-                                }
-                                else
-                                {
-                                    Configuration parentSubConfig = ((Map<Object, Configuration>)(field.get(this.parentConfig))).get(key);
-                                    new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subvalues), parentSubConfig);
-                                }
-                            }
-                            return fieldMap;
-                        }
-                        else
-                        {
-                            throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
-                        }
+                        new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subvalues),
+                            parentConfig == null ? null : ((Map<Object, Configuration>)(field.get(this.parentConfig))).get(key));
                     }
-                    if (fieldClass.isArray())
-                    {
-                        return Convert.fromObjectToArray(valueType, object);
-                    }
-                    if (Collection.class.isAssignableFrom(fieldClass))
-                    {
-                        return Convert.fromObjectToCollection(fieldClass, valueType, object);
-                    }
-                    if (Map.class.isAssignableFrom(fieldClass))
-                    {
-                        return Convert.fromObjectToMap(fieldClass, field.getAnnotation(Option.class).keyType(), valueType, object);
-                    }
-                }
-                else
-                {
-                    return converter.fromObject(object);
+                    return fieldMap;
                 }
             }
-            return object;
+            return Convert.fromObject(fieldType, object); // this covers the genericConversion
         }
 
         /**
@@ -504,9 +479,9 @@ public abstract class ConfigurationCodec
          * @param key
          * @return the coressponding key
          */
-        private String findKey(String key)
+        private Object findKey(String key)
         {
-            String foundKey = this.loadedKeys.get(key);
+            Object foundKey = this.loadedKeys.get(key);
             if (foundKey == null)
             {
                 return key;
@@ -521,9 +496,9 @@ public abstract class ConfigurationCodec
          */
         private void loadKeys(Map<String, Object> section)
         {
-            for (String key : section.keySet())
+            for (Object key : section.keySet()) //need object ere because key could be an integer when in a subMap
             {
-                this.loadedKeys.put(key.toLowerCase(Locale.ENGLISH), key);
+                this.loadedKeys.put(key.toString().toLowerCase(Locale.ENGLISH), key);
                 if (section.get(key) instanceof Map)
                 {
                     this.loadKeys((Map<String, Object>)section.get(key));
@@ -686,58 +661,49 @@ public abstract class ConfigurationCodec
                 return null;
             }
             Class fieldClass = fieldValue.getClass();
-            if (!String.class.isAssignableFrom(fieldClass))
+            if (fieldValue instanceof Configuration)
             {
-                if (fieldValue instanceof Configuration)
+                String newPath = field.getAnnotation(Option.class).value();
+                if (!basepath.isEmpty())
                 {
-                    String newPath = field.getAnnotation(Option.class).value();
-                    if (!basepath.isEmpty())
-                    {
-                        newPath = basepath + "." + newPath;
-                    }
-                    if (this.parentConfig == null)
-                    {
-                        return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
-                    }
-                    return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
+                    newPath = basepath + "." + newPath;
                 }
-                Converter converter = Convert.matchConverter(fieldClass);
-                if (converter == null)
+                if (this.parentConfig == null)
                 {
-                    Class valueType = field.getAnnotation(Option.class).valueType();
-                    if (Configuration.class.isAssignableFrom(valueType))
-                    {
-                        if (Map.class.isAssignableFrom(fieldClass))
-                        {
-                            Map<Object, ? extends Configuration> fieldMap = (Map)fieldValue;
-                            Map<String, Object> map = new LinkedHashMap<String, Object>();
-                            Converter keyConverter = Convert.matchConverter(fieldMap.keySet().iterator().next().getClass());
-                            for (Object key : fieldMap.keySet())
-                            {
-                                String newPath = field.getAnnotation(Option.class).value() + "." + this.findKey(key.toString());
-                                if (!basepath.isEmpty())
-                                {
-                                    newPath = basepath + "." + newPath;
-                                }
-                                map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                new CodecContainer().fillFromFields(this, this.parentConfig, fieldMap.get(key),
-                                    newPath, this.getOrCreateSubSection(key.toString(), map)));
-                            }
-                            return map;
-                        }
-                        else
-                        {
-                            throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
-                        }
-                    }
-                    return Convert.toObject(fieldValue); // array / collection / map-converter
+                    return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
                 }
-                else
-                {
-                    return converter.toObject(fieldValue);
-                }
+                return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
             }
-            return fieldValue;
+            Converter converter = Convert.matchConverter(fieldClass);
+            if (converter == null)
+            {
+                if (Map.class.isAssignableFrom(fieldClass))
+                {
+                    if (!((Map)fieldValue).isEmpty() && ((Map)fieldValue).values().iterator().next() instanceof Configuration)
+                    {
+                        Map<Object, ? extends Configuration> fieldMap = (Map)fieldValue;
+                        Map<String, Object> map = new LinkedHashMap<String, Object>();
+                        Converter keyConverter = Convert.matchConverter(fieldMap.keySet().iterator().next().getClass());
+                        for (Object key : fieldMap.keySet())
+                        {
+                            String newPath = field.getAnnotation(Option.class).value() + "." + this.findKey(key.toString());
+                            if (!basepath.isEmpty())
+                            {
+                                newPath = basepath + "." + newPath;
+                            }
+                            map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
+                            new CodecContainer().fillFromFields(this, this.parentConfig, fieldMap.get(key),
+                                newPath, this.getOrCreateSubSection(key.toString(), map)));
+                        }
+                        return map;
+                    }
+                }
+                return Convert.toObject(fieldValue); // array / collection / map-converter
+            }
+            else
+            {
+                return converter.toObject(fieldValue);
+            }
         }
     }
 }

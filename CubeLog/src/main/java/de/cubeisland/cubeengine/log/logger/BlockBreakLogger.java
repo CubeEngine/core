@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.log.logger;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.BlockData;
 import java.util.Collection;
 import java.util.LinkedList;
 import org.bukkit.Material;
@@ -86,7 +85,7 @@ public class BlockBreakLogger extends
             this.enabled = true;
         }
 
-        @Option(value = "no-logging", valueType = BlockData.class)
+        @Option(value = "no-logging")
         public Collection<Material> noLogging = new LinkedList<Material>();
 
         @Override

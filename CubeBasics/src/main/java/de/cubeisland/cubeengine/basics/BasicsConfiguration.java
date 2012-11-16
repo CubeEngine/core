@@ -35,7 +35,7 @@ public class BasicsConfiguration extends Configuration
     public String                afkCheck               = "1s";
     @Option("command.mute.default-mute-time")
     public int                   defaultMuteTime        = -1;
-    @Option(value = "commands.item-blacklist", valueType = ItemStack.class)
+    @Option(value = "commands.item-blacklist")
     public Collection<ItemStack> blacklist              = new LinkedList<ItemStack>()
                                                         {
 

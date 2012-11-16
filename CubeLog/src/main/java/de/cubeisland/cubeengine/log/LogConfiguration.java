@@ -9,7 +9,7 @@ import java.util.Map;
 @Codec("yml")
 public class LogConfiguration extends Configuration
 {
-    @Option(value = "log-actions", valueType = Configuration.class)
+    @Option(value = "log-actions")
     public Map<String, LogActionConfig> configs = new THashMap<String, LogActionConfig>();
 
     public LogConfiguration()

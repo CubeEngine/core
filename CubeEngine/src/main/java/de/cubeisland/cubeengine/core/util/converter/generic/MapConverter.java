@@ -2,8 +2,9 @@ package de.cubeisland.cubeengine.core.util.converter.generic;
 
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,11 +26,9 @@ public class MapConverter
         }
         Class<?> keyType = map.entrySet().iterator().next().getKey().getClass();
         Class<?> valType = map.entrySet().iterator().next().getValue().getClass();
-        Converter keyConverter = Convert.matchConverter(keyType);
-        Converter valConverter = Convert.matchConverter(valType);
         for (Object key : map.keySet())
         {
-            result.put(keyConverter.toObject(key), valConverter.toObject(map.get(key)));
+            result.put(Convert.toObject(key), Convert.toObject(map.get(key)));
         }
         return result;
     }
@@ -40,46 +39,53 @@ public class MapConverter
      * @param <K>     the KeyType
      * @param <V>     the ValueType
      * @param <S>     the MapType
-     * @param mapType the MapTypeClass
+     * @param ptype   the MapTypeClass
      * @param object  the object to convert
      * @param keyType the KeyTypeClass
      * @param valType the ValueTypeClass
      * @return the converted map
      * @throws ConversionException
      */
-    public <K, V, S extends Map<K, V>> S fromObject(Class<S> mapType, Object object, Class<K> keyType, Class<V> valType) throws ConversionException
+    public <K, V, S extends Map<K, V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
     {
         try
         {
-            S result;
-            if (mapType.isInterface() || Modifier.isAbstract(mapType.getModifiers()))
+            if (ptype.getRawType() instanceof Class)
             {
-                result = (S)new LinkedHashMap<K, V>();
-            }
-            else
-            {
-                result = mapType.newInstance();
-            }
-            if (object instanceof Map)
-            {
-                Converter<K> keyConverter = Convert.matchConverter(keyType);
-                Converter<V> valConverter = Convert.matchConverter(valType);
-                Map<?, ?> objectmap = (Map<?, ?>)object;
-                for (Object key : objectmap.keySet())
+                Class<S> mapType = (Class)ptype.getRawType();
+                Type keyType = ptype.getActualTypeArguments()[0];
+                Type valType = ptype.getActualTypeArguments()[1];
+                S result;
+                if (mapType.isInterface() || Modifier.isAbstract(mapType.getModifiers()))
                 {
-                    result.put(keyConverter.fromObject(key), valConverter.fromObject(objectmap.get(key)));
+                    result = (S)new LinkedHashMap<K, V>();
                 }
-                return result;
+                else
+                {
+                    result = mapType.newInstance();
+                }
+                if (object instanceof Map)
+                {
+                    Map<?, ?> objectmap = (Map<?, ?>)object;
+                    for (Object key : objectmap.keySet())
+                    {
+                        K newkey = Convert.fromObject(keyType, key);
+                        V newVal = Convert.fromObject(valType, objectmap.get(key));
+                        result.put(newkey, newVal);
+                    }
+                    return result;
+                }
+                throw new IllegalStateException("Map-conversion failed: Cannot convert not a map to a map.");
             }
-            throw new IllegalStateException("Map-conversion failed: Cannot convert not a map to a map.");
+            throw new IllegalArgumentException("Unkown Map-Type: " + ptype);
         }
         catch (IllegalAccessException ex)
         {
-            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + mapType.getName(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
         }
         catch (InstantiationException ex)
         {
-            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + mapType.getName(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
         }
         catch (ConversionException ex)
         {

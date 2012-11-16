@@ -44,7 +44,7 @@ public class ApiConfig extends Configuration
     @Comment("The memory level, higher => better compression + higher memory usage")
     public int memoryLevel = 9;
 
-    @Option(value = "disabled-routes", valueType = String.class)
+    @Option(value = "disabled-routes")
     @Comment("This is a list of disables routes")
     public Set<String> disabledRoutes = Collections.emptySet();
 
@@ -52,7 +52,7 @@ public class ApiConfig extends Configuration
     @Comment("This enables the IP blacklisting")
     public boolean blacklistEnable = false;
 
-    @Option(value = "blacklist.ips", valueType = String.class)
+    @Option(value = "blacklist.ips")
     @Comment("The IPs to block")
     public Set<String> blacklist = Collections.emptySet();
 
@@ -60,7 +60,7 @@ public class ApiConfig extends Configuration
     @Comment("This enables the IP whitelisting")
     public boolean whitelistEnable = false;
 
-    @Option(value = "whitelist.ips", valueType = String.class)
+    @Option(value = "whitelist.ips")
     @Comment("The IPs to allow")
     public Set<String> whitelist = Collections.emptySet();
 }

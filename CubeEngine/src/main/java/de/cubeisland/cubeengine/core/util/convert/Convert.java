@@ -8,6 +8,9 @@ import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Map;
@@ -81,6 +84,10 @@ public class Convert
      */
     public static <T> Converter<T> matchConverter(Class<? extends T> objectClass)
     {
+        if (objectClass == null)
+        {
+            return null;
+        }
         Converter converter = CONVERTERS.get(objectClass);
         if (converter == null)
         {
@@ -126,24 +133,39 @@ public class Convert
         return converter.toObject(object);
     }
 
-    public static <T> T fromObject(Class<T> type, Object object) throws ConversionException
+    public static <T> T fromObject(Type type, Object object) throws ConversionException
     {
-        Converter<T> converter = matchConverter(type);
-        return converter.fromObject(object);
-    }
-
-    public static <K, V, S extends Map<K, V>> S fromObjectToMap(Class<S> mapType, Class<K> keyType, Class<V> valType, Object object) throws ConversionException
-    {
-        return MAP_CONVERTER.fromObject(mapType, object, keyType, valType);
-    }
-
-    public static <V, S extends Collection<V>> S fromObjectToCollection(Class<S> collectionType, Class<V> valType, Object object) throws ConversionException
-    {
-        return COLLECTION_CONVERTER.fromObject(collectionType, object, valType);
-    }
-
-    public static <V> V[] fromObjectToArray(Class<V> valType, Object object) throws ConversionException
-    {
-        return ARRAY_CONVERTER.fromObject(object, valType);
+        if (type == null)
+        {
+            return null;
+        }
+        if (type instanceof Class)
+        {
+            if (!((Class)type).isArray())
+            {
+                Converter<T> converter = matchConverter((Class)type);
+                return converter.fromObject(object);
+            }
+            else
+            {
+                return (T)ARRAY_CONVERTER.fromObject((Class)type, object);
+            }
+        }
+        else if (type instanceof ParameterizedType)
+        {
+            ParameterizedType ptype = (ParameterizedType)type;
+            if (ptype.getRawType() instanceof Class)
+            {
+                if (Collection.class.isAssignableFrom((Class)ptype.getRawType()))
+                {
+                    return (T)COLLECTION_CONVERTER.fromObject(ptype, object);
+                }
+                else if (Map.class.isAssignableFrom((Class)ptype.getRawType()))
+                {
+                    return (T)MAP_CONVERTER.fromObject(ptype, object);
+                }
+            }
+        }
+        throw new IllegalArgumentException("Unkown Type: " + type);
     }
 }
