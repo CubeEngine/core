@@ -103,7 +103,14 @@ public abstract class AbstractDatabase implements Database
     @Override
     public boolean execute(String query, Object... params) throws SQLException
     {
-        return this.createAndBindValues(query, params).execute();
+        try
+        {
+            return this.createAndBindValues(query, params).execute();
+        }
+        catch (SQLException e)
+        {
+            throw new SQLException("SQL-Error while executing: " + query, e);
+        }
     }
 
     @Override

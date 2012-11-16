@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.test;
 
+import com.avaje.ebean.validation.AssertTrue;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
@@ -31,6 +32,7 @@ import java.util.TimerTask;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet0KeepAlive;
 import net.minecraft.server.ServerConfigurationManager;
+import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -120,6 +122,7 @@ public class Test extends Module
         //Testing get
         User userToDel = uM.getUser("userGetsDel", true);
         User user = uM.getUser("UserU", true);
+        user.setPassword("myPass");
         uM.getUser("User1", true);
         uM.getUser("User2", true);
         //Testing getall
@@ -133,6 +136,8 @@ public class Test extends Module
         user = uM.getUser("User1", true);
         user.lastseen = new Timestamp(50000);
         uM.update(user);
+        user = uM.getUser("UserU", false);
+        Validate.isTrue(user.checkPassword("myPass"));
         uM.run(); //removes offline users from loadedlist.
     }
 

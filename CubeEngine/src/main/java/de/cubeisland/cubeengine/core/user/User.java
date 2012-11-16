@@ -13,7 +13,10 @@ import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,9 +45,25 @@ public class User extends UserBase implements LinkingModel<Integer>
     public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
     public Timestamp lastseen;
+    @Attribute(type = AttrType.VARBINARY, length = 128, notnull = false)
+    public byte[] passwd;
+    @Attribute(type = AttrType.DATETIME)
+    public final Timestamp firstseen;
+
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
+
+    private static MessageDigest hasher;
+    static
+    {
+        try
+        {
+            hasher = MessageDigest.getInstance("SHA1");
+        }
+        catch (NoSuchAlgorithmException ignored)
+        {}
+    }
 
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
@@ -54,6 +73,8 @@ public class User extends UserBase implements LinkingModel<Integer>
         this.player = this.offlinePlayer.getName();
         this.nogc = (Boolean)args.get(2);
         this.lastseen = (Timestamp)args.get(3);
+        this.firstseen = (Timestamp)args.get(3);
+        this.passwd = (byte[])args.get(4);
     }
 
     public User(int key, OfflinePlayer player)
@@ -62,6 +83,8 @@ public class User extends UserBase implements LinkingModel<Integer>
         this.key = key;
         this.player = player.getName();
         this.lastseen = new Timestamp(System.currentTimeMillis());
+        this.firstseen = lastseen;
+        this.passwd = new byte[0];
     }
 
     public User(OfflinePlayer player)
@@ -271,5 +294,22 @@ public class User extends UserBase implements LinkingModel<Integer>
     public void clearAttributes(Module module)
     {
         this.attributes.remove(module);
+    }
+
+    public void setPassword(String password)
+    {
+        hasher.reset();
+        password += CubeEngine.getConfiguration().salt;
+        password += this.firstseen.toString();
+        this.passwd = hasher.digest(password.getBytes());
+        CubeEngine.getUserManager().update(this);
+    }
+
+    public boolean checkPassword(String password)
+    {
+        hasher.reset();
+        password += CubeEngine.getConfiguration().salt;
+        password += this.firstseen.toString();
+        return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
     }
 }
