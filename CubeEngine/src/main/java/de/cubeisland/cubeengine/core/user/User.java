@@ -49,17 +49,16 @@ public class User extends UserBase implements LinkingModel<Integer>
     public byte[] passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
-
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
-
     private static MessageDigest hasher;
+
     static
     {
         try
         {
-            hasher = MessageDigest.getInstance("SHA1");
+            hasher = MessageDigest.getInstance("SHA-512");
         }
         catch (NoSuchAlgorithmException ignored)
         {}
@@ -194,7 +193,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     /**
      * Adds an attribute to this user
      *
-     * @param name  the name/key
+     * @param name the name/key
      * @param value the value
      */
     public void setAttribute(Module module, String name, Object value)
@@ -214,7 +213,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     /**
      * Returns an attribute value
      *
-     * @param <T>  the type of the value
+     * @param <T> the type of the value
      * @param name the name/key
      * @return the value or null
      */
@@ -226,9 +225,9 @@ public class User extends UserBase implements LinkingModel<Integer>
     /**
      * Gets an attribute value or the given default value
      *
-     * @param <T>  the value type
+     * @param <T> the value type
      * @param name the name/key
-     * @param def  the default value
+     * @param def the default value
      * @return the attribute value or the default value
      */
     public <T extends Object> T getAttribute(Module module, String name, T def)
@@ -298,18 +297,24 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     public void setPassword(String password)
     {
-        hasher.reset();
-        password += CubeEngine.getConfiguration().salt;
-        password += this.firstseen.toString();
-        this.passwd = hasher.digest(password.getBytes());
-        CubeEngine.getUserManager().update(this);
+        synchronized (hasher)
+        {
+            hasher.reset();
+            password += UserManager.salt;
+            password += this.firstseen.toString();
+            this.passwd = hasher.digest(password.getBytes());
+            CubeEngine.getUserManager().update(this);
+        }
     }
 
     public boolean checkPassword(String password)
     {
-        hasher.reset();
-        password += CubeEngine.getConfiguration().salt;
-        password += this.firstseen.toString();
-        return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
+        synchronized (hasher)
+        {
+            hasher.reset();
+            password += UserManager.salt;
+            password += this.firstseen.toString();
+            return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
+        }
     }
 }

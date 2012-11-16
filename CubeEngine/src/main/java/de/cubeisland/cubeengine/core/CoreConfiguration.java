@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
-import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -47,10 +46,6 @@ public class CoreConfiguration extends Configuration
     @Option("after-join-event-delay")
     @Comment("How many ticks after PlayerJoinEvent the AfterJoingEvent is fired")
     public long afterJoinEventDelay = 1;
-
-    @Option("security.password-salt")
-    @Comment("Do NOT change this! Or all passwords cannot be used any longer!")
-    public String salt = RandomStringUtils.randomAscii(32);
 
     @Override
     public String[] head()
