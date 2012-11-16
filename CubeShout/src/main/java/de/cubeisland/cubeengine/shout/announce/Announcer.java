@@ -23,8 +23,8 @@ public class Announcer
 
     /**
      * Schedule a task based on system time.
-     * 
-     * @param	task	The task to scheduler
+     *
+     * @param	task	 The task to scheduler
      * @param	delay	Delay between each time this task in run.
      */
     public void scheduleTask(String user, TimerTask task, long delay)
@@ -35,7 +35,7 @@ public class Announcer
 
     /**
      * Stops a user from receiving announcements
-     * 
+     *
      * @param user
      */
     public void stopUser(String user)

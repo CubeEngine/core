@@ -59,7 +59,6 @@ public class ApiRequestHandler extends
             CubeEngine.getLogger().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
         }
     }
-
     private static final Charset UTF8 = Charset.forName("UTF-8");
     private static final String WEBSOCKET_ROUTE = "websocket";
     private final ApiServer server;
@@ -149,7 +148,8 @@ public class ApiRequestHandler extends
             else
             {
                 LOGGER.log(INFO, "handshaking now...");
-                this.handshaker.handshake(context.channel(), request).addListener(new ChannelFutureListener() {
+                this.handshaker.handshake(context.channel(), request).addListener(new ChannelFutureListener()
+                {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception
                     {
@@ -253,13 +253,9 @@ public class ApiRequestHandler extends
                 handler.execute(request, response);
             }
             catch (ApiRequestException e)
-            {
-
-            }
+            {}
             catch (Throwable t)
-            {
-
-            }
+            {}
         }
         else if ("subscribe".equals(command))
         {
@@ -343,7 +339,5 @@ public class ApiRequestHandler extends
     }
 
     public void handleEvent(String event, Map<String, Object> data)
-    {
-
-    }
+    {}
 }

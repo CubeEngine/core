@@ -14,7 +14,6 @@ public class KillLog extends AbstractPositionLog
     public int killedId; // positive values for Players / negative EntityId for mobs
 
     //causeID is the killer
-
     @DatabaseConstructor
     public KillLog(List<Object> args) throws ConversionException
     {

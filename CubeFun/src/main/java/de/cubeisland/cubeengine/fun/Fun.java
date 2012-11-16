@@ -8,7 +8,6 @@ import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 public class Fun extends Module
 {
     private FunConfiguration config;
-
     private RocketListener rocketListener;
     private NukeListener nukeListener;
 

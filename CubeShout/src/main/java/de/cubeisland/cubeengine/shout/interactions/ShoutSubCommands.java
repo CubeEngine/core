@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import java.io.IOException;
@@ -40,22 +39,27 @@ public class ShoutSubCommands
     }
 
     @Command(desc = "Create the structure for a new announcement", min = 1, params = {
-            @Param(names = {
-                "delay", "d"
-            }),
-            @Param(names = {
-                "world", "w"
-            }),
-            //@Param(names = {"permission", "p"}, type = Permission.class), TODO
-            @Param(names = {
-                "group", "g"
-            }),
-            @Param(names = {
-                "message", "m"
-            }),
-            @Param(names = {
-                "locale", "l"
-            })
+        @Param(names =
+        {
+            "delay", "d"
+        }),
+        @Param(names =
+        {
+            "world", "w"
+        }),
+        //@Param(names = {"permission", "p"}, type = Permission.class), TODO
+        @Param(names =
+        {
+            "group", "g"
+        }),
+        @Param(names =
+        {
+            "message", "m"
+        }),
+        @Param(names =
+        {
+            "locale", "l"
+        })
     })
     public void create(CommandContext context)
     {
@@ -85,8 +89,7 @@ public class ShoutSubCommands
                 context.getString("world", "*"),
                 context.getString("group", "*"),
                 context.getString("permission", "*"),
-                locale
-                );
+                locale);
         }
         catch (IllegalArgumentException ex)
         {

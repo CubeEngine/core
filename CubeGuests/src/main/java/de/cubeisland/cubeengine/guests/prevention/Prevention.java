@@ -25,12 +25,10 @@ public abstract class Prevention implements Listener
 {
     private static final PunishmentProcedure PUNISHMENT_PROCEDURE = new PunishmentProcedure();
     private static final String PERMISSION_BASE = "cubeengine.guests.prevention.";
-
     private final String name;
     private final String permission;
     private final Guests guests;
     private final boolean allowPunishing;
-
     private boolean loaded;
     private String message;
     private int throttleDelay;
@@ -38,7 +36,6 @@ public abstract class Prevention implements Listener
     private boolean enableByDefault;
     private PreventionConfiguration config;
     private TObjectLongMap<Player> messageThrottleTimestamps;
-
     private boolean enablePunishing;
     private TIntObjectMap<THashMap<Punishment, ConfigurationSection>> violationPunishmentMap;
     private TObjectIntMap<Player> playerViolationMap;
@@ -49,7 +46,7 @@ public abstract class Prevention implements Listener
      * Initializes the prevention with its name, the corresponding plugin and
      * allowed punishing.
      *
-     * @param name the name of the prevention
+     * @param name   the name of the prevention
      * @param guests the plugin
      */
     public Prevention(final String name, final Guests guests)
@@ -61,8 +58,8 @@ public abstract class Prevention implements Listener
      * Initializes the prevention with its name, the corresponding plugin and
      * whether to allow punishing.
      *
-     * @param name the name of the prevention
-     * @param guests the plugin
+     * @param name           the name of the prevention
+     * @param guests         the plugin
      * @param allowPunishing whether to allow punishing
      */
     public Prevention(final String name, final Guests guests, final boolean allowPunishing)
@@ -344,7 +341,7 @@ public abstract class Prevention implements Listener
 
     /**
      * Returns the prevention's name
-     * 
+     *
      * @return the name
      */
     public final String getName()
@@ -404,7 +401,7 @@ public abstract class Prevention implements Listener
 
     /**
      * Sets whether this prevention enables punishing
-     * 
+     *
      * @param enable true to enable it
      */
     public void setEnablePunishing(boolean enable)
@@ -434,8 +431,9 @@ public abstract class Prevention implements Listener
     }
 
     /**
-     * Does the same as sendMessage(Player), except that this method throttles the messages sending
-     * 
+     * Does the same as sendMessage(Player), except that this method throttles
+     * the messages sending
+     *
      * @param player hte player to send to
      */
     public void sendMessage(final Player player)
@@ -467,7 +465,7 @@ public abstract class Prevention implements Listener
      * the given cancellable event gets cancelled and the message is sent to the
      * player.
      *
-     * @param event a cancellable event
+     * @param event  a cancellable event
      * @param player the player
      * @return true if the action was prevented
      */

@@ -28,9 +28,9 @@ public class SpamPrevention extends Prevention
     @Override
     public String getConfigHeader()
     {
-        return super.getConfigHeader() +
-                "Configuration info:\n" +
-                "    lockDuration: the time in seconds a player has to wait between messages";
+        return super.getConfigHeader()
+            + "Configuration info:\n"
+            + "    lockDuration: the time in seconds a player has to wait between messages";
     }
 
     @Override

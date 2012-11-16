@@ -12,7 +12,6 @@ import org.bukkit.event.entity.EntityTameEvent;
  */
 public class TamePrevention extends Prevention
 {
-
     public TamePrevention(Guests guests)
     {
         super("tame", guests);

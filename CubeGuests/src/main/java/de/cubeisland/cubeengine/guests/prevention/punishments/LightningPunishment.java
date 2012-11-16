@@ -9,11 +9,13 @@ import org.bukkit.entity.Player;
  */
 public class LightningPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "lightning";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.getWorld().strikeLightningEffect(player.getLocation());

@@ -21,7 +21,6 @@ public class EnchantMatcher
     private THashMap<String, Enchantment> enchantments;
     private THashMap<String, Enchantment> bukkitnames;
     private THashMap<Enchantment, String> enchantmentName;
-
     private static EnchantMatcher instance = null;
 
     private EnchantMatcher()

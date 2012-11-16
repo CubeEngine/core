@@ -6,7 +6,8 @@ import java.util.Collection;
 
 /**
  * This interface provides basic access-methods for accessing the model V
- * @param <V> 
+ *
+ * @param <V>
  */
 public interface Storage<V extends Model>
 {

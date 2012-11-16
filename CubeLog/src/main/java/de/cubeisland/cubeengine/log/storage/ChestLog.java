@@ -23,7 +23,6 @@ public class ChestLog extends AbstractPositionLog
     private ItemData itemData = null;
 
     //causeID is the player or = 0 if unknown
-
     @DatabaseConstructor
     public ChestLog(List<Object> args) throws ConversionException
     {

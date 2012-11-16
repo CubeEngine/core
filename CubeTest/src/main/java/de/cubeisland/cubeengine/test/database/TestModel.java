@@ -39,11 +39,13 @@ public class TestModel implements Model<Integer>
         this.customer = customer;
     }
 
+    @Override
     public Integer getKey()
     {
         return this.id;
     }
 
+    @Override
     public void setKey(Integer key)
     {
         this.id = key;

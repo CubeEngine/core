@@ -1980,7 +1980,6 @@ public class UserBase implements Player
      * }
      * return I18n.SOURCE_LANGUAGE;
      * } */
-
     @Override
     public void giveExpLevels(int amount)
     {

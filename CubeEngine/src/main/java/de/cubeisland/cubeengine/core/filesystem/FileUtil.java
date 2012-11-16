@@ -93,10 +93,10 @@ public class FileUtil
 
     /**
      * Saves given String into the file
-     * 
+     *
      * @param string the string
-     * @param file the file to save to
-     * @throws IOException 
+     * @param file   the file to save to
+     * @throws IOException
      */
     public static void saveFile(String string, File file) throws IOException
     {

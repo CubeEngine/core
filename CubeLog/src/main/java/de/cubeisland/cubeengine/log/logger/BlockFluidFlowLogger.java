@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
@@ -29,9 +28,9 @@ public class BlockFluidFlowLogger extends
     //TODO do this better
     private static final Set<Integer> nonFluidProofBlocks = new HashSet<Integer>(Arrays.asList(7, 8, 9, 10, 27, 28, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 69, 70, 75, 76, 78, 93, 94, 104, 105, 106));
     private static final BlockFace[] DIRECTIONS = new BlockFace[]
-                                                          {
-                                                              BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
-                                                          };
+    {
+        BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
+    };
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event)

@@ -9,7 +9,6 @@ public class RocketCMDInstance
 {
     private final String name;
     private final int maxTicks;
-
     private int ticks;
 
     public RocketCMDInstance(String name, int ticks)

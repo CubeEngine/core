@@ -41,15 +41,18 @@ public class FunCommands
     @Command(names = {
         "lightning", "strike"
     }, desc = "strucks a player or the location you are looking at by lightning.", max = 0, params = {
-            @Param(names = {
-                "player", "p"
-            }, type = User.class),
-            @Param(names = {
-                "damage", "d"
-            }, type = Integer.class),
-            @Param(names = {
-                "fireticks", "f"
-            }, type = Integer.class)
+        @Param(names =
+        {
+            "player", "p"
+        }, type = User.class),
+        @Param(names =
+        {
+            "damage", "d"
+        }, type = Integer.class),
+        @Param(names =
+        {
+            "fireticks", "f"
+        }, type = Integer.class)
     }, usage = "[player <name>]")
     public void lightning(CommandContext context)
     {
@@ -191,9 +194,9 @@ public class FunCommands
         int ticks = 20;
 
         int height = context.getIndexed(0, Integer.class, 10);
-        User user = (context.hasNamed("player")) ?
-            context.getNamed("player", User.class, null) :
-            context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+        User user = (context.hasNamed("player"))
+            ? context.getNamed("player", User.class, null)
+            : context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
 
         if (user == null)
         {
@@ -224,15 +227,18 @@ public class FunCommands
     @Command(desc = "an tnt carpet is falling at a player or the place the player is looking at", max = 1, flags = {
         @Flag(longName = "unsafe", name = "u")
     }, usage = "[radius] [height <value>] [player <name>] [-unsafe]", params = {
-            @Param(names = {
-                "player", "p"
-            }, type = User.class),
-            @Param(names = {
-                "height", "h"
-            }, type = Integer.class),
-            @Param(names = {
-                "concentration", "c"
-            })
+        @Param(names =
+        {
+            "player", "p"
+        }, type = User.class),
+        @Param(names =
+        {
+            "height", "h"
+        }, type = Integer.class),
+        @Param(names =
+        {
+            "concentration", "c"
+        })
     })
     public void nuke(CommandContext context)
     {
@@ -327,8 +333,7 @@ public class FunCommands
                     new Location(centerOfTheCircle.getWorld(),
                         Math.cos(j * angle) * i + centerOfTheCircle.getX(),
                         centerOfTheCircle.getY(),
-                        Math.sin(j * angle) * i + centerOfTheCircle.getZ()
-                    ), TNTPrimed.class);
+                        Math.sin(j * angle) * i + centerOfTheCircle.getZ()), TNTPrimed.class);
                 tnt.setVelocity(new Vector(0, 0, 0));
                 numberOfBlocks++;
 

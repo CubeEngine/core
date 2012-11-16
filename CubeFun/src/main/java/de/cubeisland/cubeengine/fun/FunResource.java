@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
 
 public enum FunResource implements Resource
 {
-
     GERMAN_MESSAGES(
         "resources/language/messages/de_DE.json",
         "language/de_DE/fun.json");

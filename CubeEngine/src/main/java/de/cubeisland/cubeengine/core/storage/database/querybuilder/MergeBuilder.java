@@ -4,7 +4,7 @@ public interface MergeBuilder extends ComponentBuilder<MergeBuilder>
 {
     /**
      * Adds the tables to merge into.
-     * 
+     *
      * @param table
      * @return fluent interface
      */
@@ -12,7 +12,7 @@ public interface MergeBuilder extends ComponentBuilder<MergeBuilder>
 
     /**
      * Adds the cols to merge into
-     * 
+     *
      * @param cols
      * @return fluent interface
      */
@@ -20,7 +20,7 @@ public interface MergeBuilder extends ComponentBuilder<MergeBuilder>
 
     /**
      * Adds the cols to update when merging.
-     * 
+     *
      * @param cols
      * @return fluent interface
      */

@@ -76,7 +76,7 @@ public class NormalLanguage implements Cleanable, Language
     /**
      * This method adds a map of translations to a category
      *
-     * @param cat the category
+     * @param cat      the category
      * @param messages the translations
      */
     public void addMessages(String cat, Map<String, String> messages)

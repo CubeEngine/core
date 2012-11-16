@@ -32,7 +32,8 @@ public class CubeEngineNetServerHandler extends NetServerHandler
         {
             return;
         }
-        this.taskQueue.addTask(new Runnable() {
+        this.taskQueue.addTask(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -50,7 +51,8 @@ public class CubeEngineNetServerHandler extends NetServerHandler
         {
             return;
         }
-        this.taskQueue.addTask(new Runnable() {
+        this.taskQueue.addTask(new Runnable()
+        {
             @Override
             public void run()
             {

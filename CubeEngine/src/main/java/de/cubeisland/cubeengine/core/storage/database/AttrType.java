@@ -5,7 +5,6 @@ package de.cubeisland.cubeengine.core.storage.database;
  */
 public enum AttrType
 {
-
     // Numbers
     /**
      * -2147483648 to 2147483647 normal. 0 to 4294967295 UNSIGNED.

@@ -17,7 +17,6 @@ public class BlockLog extends AbstractPositionLog
     public String newBlock;
     @Attribute(type = AttrType.VARCHAR, length = 10)
     public String oldBlock;
-
     private BlockData newBlockData = null;
     private BlockData oldBlockData = null;
 

@@ -4,7 +4,7 @@ public interface DeleteBuilder extends ConditionalBuilder<DeleteBuilder>
 {
     /**
      * Adds deletion from tables
-     * 
+     *
      * @param tables
      * @return fluent interface
      */

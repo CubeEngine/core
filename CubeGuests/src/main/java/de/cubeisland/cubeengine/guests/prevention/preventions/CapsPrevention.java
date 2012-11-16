@@ -23,9 +23,9 @@ public class CapsPrevention extends Prevention
     @Override
     public String getConfigHeader()
     {
-        return super.getConfigHeader() +
-                "Configuration info:\n" +
-                "    max-caps-ratio: the rate of capital letters compared to the length of the message in percent (0 - 100)\n";
+        return super.getConfigHeader()
+            + "Configuration info:\n"
+            + "    max-caps-ratio: the rate of capital letters compared to the length of the message in percent (0 - 100)\n";
     }
 
     @Override

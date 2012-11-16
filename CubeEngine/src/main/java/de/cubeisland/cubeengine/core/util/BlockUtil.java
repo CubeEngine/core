@@ -12,13 +12,13 @@ import org.bukkit.material.Attachable;
 public class BlockUtil
 {
     private static final BlockFace[] blockFaces =
-                                                {
-                                                    BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH
-                                                };
+    {
+        BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH
+    };
 
     /**
      * Searches for blocks that are attached onto given block.
-     * 
+     *
      * @param block
      * @return the attached blocks
      */

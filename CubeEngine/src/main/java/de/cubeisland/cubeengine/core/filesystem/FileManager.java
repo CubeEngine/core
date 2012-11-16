@@ -160,9 +160,9 @@ public class FileManager
     /**
      * Drops an resource
      *
-     * @param clazz the class of the resource
-     * @param resPath the resource path
-     * @param filePath the target file path
+     * @param clazz     the class of the resource
+     * @param resPath   the resource path
+     * @param filePath  the target file path
      * @param overwrite wheter to overwrite an existing file
      * @return a file
      */
@@ -181,9 +181,9 @@ public class FileManager
     /**
      * Drops an resource
      *
-     * @param clazz the class of the resource
-     * @param resPath the resource path
-     * @param file the target file
+     * @param clazz     the class of the resource
+     * @param resPath   the resource path
+     * @param file      the target file
      * @param overwrite wheter to overwrite an existing file
      * @return a file
      */

@@ -5,11 +5,13 @@ import de.cubeisland.cubeengine.core.util.convert.Converter;
 
 public class ItemDataConverter implements Converter<ItemData>
 {
+    @Override
     public Object toObject(ItemData object) throws ConversionException
     {
         return this.toString(object);
     }
 
+    @Override
     public ItemData fromObject(Object object) throws ConversionException
     {
         if (object instanceof String)

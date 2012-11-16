@@ -15,7 +15,6 @@ public class MimeType
     public static final MimeType GIF = new MimeType("image/gif");
     public static final MimeType JPEG = new MimeType("image/jpeg");
     public static final MimeType PNG = new MimeType("image/png");
-
     private final String typeString;
     private final static String CHARSET = "charset=utf-8";
 

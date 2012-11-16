@@ -18,11 +18,13 @@ public class SlapPunishment implements Punishment
         this.rand = new Random();
     }
 
+    @Override
     public String getName()
     {
         return "slap";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.damage(config.getInt("damage", 3));

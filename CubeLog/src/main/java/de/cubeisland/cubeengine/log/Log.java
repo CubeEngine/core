@@ -26,7 +26,6 @@ public class Log extends Module
 
     //TODO config for each world -> config should be empty!
     //but inherit from global config how to do this???
-
     @Override
     public void onEnable()
     {

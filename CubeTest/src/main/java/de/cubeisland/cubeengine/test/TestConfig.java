@@ -49,55 +49,60 @@ public class TestConfig extends Configuration
     @Option(value = "regions.max-region-count-per-player")
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
-                                                                                                                           {
-                                                                                                                               {
-                                                                                                                                   put("default", 7);
-                                                                                                                               }
-                                                                                                                           };
+    {
+
+        {
+            put("default", 7);
+        }
+    };
     @Option("regions.the42")
     public Integer the42 = 42;
     @Option("regions.the21")
     public int the21 = 21;
     @Option(value = "arrays.stringtest")
     public String[] stringarray =
-                                                                                                                           {
-                                                                                                                               "text1", "text2"
-                                                                                                                           };
+    {
+        "text1", "text2"
+    };
     @Option(value = "arrays.playertest")
     public OfflinePlayer[] playerarray =
-                                                                                                                           {
-                                                                                                                               server.getOfflinePlayer("Anselm Brehme"),
-                                                                                                                               server.getOfflinePlayer("Niemand")
-                                                                                                                           };
+    {
+        server.getOfflinePlayer("Anselm Brehme"),
+        server.getOfflinePlayer("Niemand")
+    };
     @Option(value = "list.stringlist")
     public Collection<String> stringlist = new LinkedList<String>()
-                                                                                                                           {
-                                                                                                                               {
-                                                                                                                                   add("quark");
-                                                                                                                                   add("kekse");
-                                                                                                                               }
-                                                                                                                           };
+    {
+
+        {
+            add("quark");
+            add("kekse");
+        }
+    };
     @Option(value = "list.playerlist")
     public Collection<OfflinePlayer> playerlist = new LinkedList<OfflinePlayer>()
-                                                                                                                           {
-                                                                                                                               {
-                                                                                                                                   add(server.getOfflinePlayer("Anselm Brehme"));
-                                                                                                                                   add(server.getOfflinePlayer("KekseSpieler"));
-                                                                                                                               }
-                                                                                                                           };
+    {
+
+        {
+            add(server.getOfflinePlayer("Anselm Brehme"));
+            add(server.getOfflinePlayer("KekseSpieler"));
+        }
+    };
     @Option(value = "list.shortlist")
     public Collection<Short> shortlist = new LinkedList<Short>()
-                                                                                                                           {
-                                                                                                                               {
-                                                                                                                                   short s = 123;
-                                                                                                                                   add(s);
-                                                                                                                                   s = 124;
-                                                                                                                                   add(s);
-                                                                                                                               }
-                                                                                                                           };
+    {
+
+        {
+            short s = 123;
+            add(s);
+            s = 124;
+            add(s);
+        }
+    };
     @Option(value = "locationinmap")
     @Comment("multi location")
     public LinkedHashMap<String, Location> locs;
+
     {
         {
             locs = new LinkedHashMap<String, Location>();
@@ -111,25 +116,26 @@ public class TestConfig extends Configuration
     @Option(value = "mapinmapinmap")
     @Comment("multimapinmap")
     public LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>> thingy = new LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>>()
-                                                                                                                           {
+    {
 
-                                                                                                                               {
-                                                                                                                                   LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>> intmap = new LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>()
-                                                                                                                                   {
-                                                                                                                                       {
-                                                                                                                                           LinkedHashMap<String, OfflinePlayer> pmap = new LinkedHashMap<String, OfflinePlayer>()
-                                                                                                                                           {
-                                                                                                                                               {
-                                                                                                                                                   this.put("theplayer", player);
-                                                                                                                                               }
-                                                                                                                                           };
-                                                                                                                                           this.put("iOncewasAnInt", pmap);
-                                                                                                                                       }
-                                                                                                                                   };
-                                                                                                                                   this.put("keks", intmap);
-                                                                                                                               }
-                                                                                                                           };
+        {
+            LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>> intmap = new LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>()
+            {
 
+                {
+                    LinkedHashMap<String, OfflinePlayer> pmap = new LinkedHashMap<String, OfflinePlayer>()
+                    {
+
+                        {
+                            this.put("theplayer", player);
+                        }
+                    };
+                    this.put("iOncewasAnInt", pmap);
+                }
+            };
+            this.put("keks", intmap);
+        }
+    };
     @Option("subconfig")
     public TestSubConfig subConfig = new TestSubConfig();
 

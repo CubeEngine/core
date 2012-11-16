@@ -99,10 +99,10 @@ public class PreventionManager
 
     /**
      * Enables the named prevention if registered
-     * 
+     *
      * @param prevention the preventions name
-     * @param server an Server instance
-     * @param config the prevention's configuration
+     * @param server     an Server instance
+     * @param config     the prevention's configuration
      * @return true if the intialization was successful
      */
     public boolean enablePrevention(final Prevention prevention)
@@ -126,9 +126,11 @@ public class PreventionManager
     }
 
     /**
-     * This method loads all registered preventions based on the given ConfigurationSection and the default configuraiton.
-     * The given ConfigurationSection should have a key "preventions" on top level, otherwise this will fail
-     * 
+     * This method loads all registered preventions based on the given
+     * ConfigurationSection and the default configuraiton.
+     * The given ConfigurationSection should have a key "preventions" on top
+     * level, otherwise this will fail
+     *
      * @param config the configuration
      * @return fluent interface
      */

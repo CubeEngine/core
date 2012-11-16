@@ -22,7 +22,6 @@ public class Lookup
 
     //private List<ChatLog> chatlogs;
     //private List<ChestLog> chestlogs;
-
     //TODO possibility to "give" the lookup to an other User
     public void printLookup(User user)
     {

@@ -11,7 +11,6 @@ import java.util.logging.Level;
 public class LogLevel extends Level
 {
     private static final ConcurrentMap<String, LogLevel> levels = new ConcurrentHashMap<String, LogLevel>(7);
-
     public static final LogLevel ALL = new LogLevel("ALL", Integer.MIN_VALUE);
     public static final LogLevel OFF = new LogLevel("OFF", Integer.MAX_VALUE);
     public static final LogLevel ERROR = new LogLevel("Error", 1000);

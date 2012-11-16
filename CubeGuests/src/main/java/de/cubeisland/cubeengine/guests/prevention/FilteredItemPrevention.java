@@ -80,7 +80,7 @@ public abstract class FilteredItemPrevention extends
     /**
      * This method checks whether the player can do the subaction
      *
-     * @param player the player
+     * @param player   the player
      * @param material the material
      * @return true if he can
      */

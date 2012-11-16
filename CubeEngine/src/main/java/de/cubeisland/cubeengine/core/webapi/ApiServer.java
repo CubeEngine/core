@@ -39,25 +39,21 @@ public class ApiServer
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
     private final Core core;
-
     private final AtomicInteger maxContentLength;
     private final AtomicBoolean compress;
     private final AtomicInteger compressionLevel;
     private final AtomicInteger windowBits;
     private final AtomicInteger memoryLevel;
-
     private final AtomicReference<InetAddress> bindAddress;
     private final AtomicInteger port;
     private final AtomicReference<ServerBootstrap> bootstrap;
     private final AtomicReference<Channel> channel;
     private final AtomicInteger maxThreads;
-
     private final Set<String> disabledRoutes;
     private final AtomicBoolean enableWhitelist;
     private final Set<String> whitelist;
     private final AtomicBoolean enableBlacklist;
     private final Set<String> blacklist;
-
     private final ConcurrentMap<String, ApiHandler> handlers;
     private final ConcurrentMap<String, List<ApiRequestHandler>> subscriptions;
 

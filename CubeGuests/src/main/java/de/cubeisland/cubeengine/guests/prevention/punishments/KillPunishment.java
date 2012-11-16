@@ -9,11 +9,13 @@ import org.bukkit.entity.Player;
  */
 public class KillPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "kill";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.setHealth(0);

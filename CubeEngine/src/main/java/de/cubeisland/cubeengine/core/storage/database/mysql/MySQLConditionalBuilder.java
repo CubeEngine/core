@@ -68,5 +68,4 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
         this.query.append(" DESC ");
         return (This)this;
     }
-
 }

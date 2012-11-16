@@ -130,7 +130,7 @@ public enum EntityType
     {
         return ID_MAP.get(id);
     }
-    
+
     public static EntityType fromBukkitType(org.bukkit.entity.EntityType type)
     {
         return ID_MAP.get(type.getTypeId());

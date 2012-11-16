@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;

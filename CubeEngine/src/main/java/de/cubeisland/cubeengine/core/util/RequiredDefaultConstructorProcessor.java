@@ -47,12 +47,12 @@ public class RequiredDefaultConstructorProcessor extends AbstractProcessor
         return false;
     }
 
-    private static final TypeVisitor<Boolean, Void> DEFAULT_CONSTRUCTOR_VISITOR = new SimpleTypeVisitor6<Boolean, Void>() {
-
+    private static final TypeVisitor<Boolean, Void> DEFAULT_CONSTRUCTOR_VISITOR = new SimpleTypeVisitor6<Boolean, Void>()
+    {
         @Override
         public Boolean visitExecutable(ExecutableType t, Void p)
-                                                                                {
-                                                                                    return t.getParameterTypes().isEmpty();
-                                                                                }
+        {
+            return t.getParameterTypes().isEmpty();
+        }
     };
 }

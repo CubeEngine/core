@@ -10,11 +10,13 @@ import org.bukkit.entity.Player;
  */
 public class BanPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "ban";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.setBanned(true);

@@ -6,7 +6,7 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
 {
     /**
      * Alter the table.
-     * 
+     *
      * @param table
      * @return fluent interface
      */
@@ -14,7 +14,7 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
 
     /**
      * Add a field to the table
-     * 
+     *
      * @param field
      * @param type
      * @return fluent interface
@@ -49,7 +49,7 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
 
     /**
      * Drop a field from the table
-     * 
+     *
      * @param field
      * @return fluent interface
      */
@@ -57,7 +57,7 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
 
     /**
      * Modify a field from the table
-     * 
+     *
      * @param field
      * @param type
      * @return fluent interface

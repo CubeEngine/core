@@ -9,7 +9,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 /**
- * Prevents sneaking (the player still ducks, but the player's name above the head stays visible as of Bukkit 1.1-R5-SNAPSHOT).
+ * Prevents sneaking (the player still ducks, but the player's name above the
+ * head stays visible as of Bukkit 1.1-R5-SNAPSHOT).
  */
 public class SneakPrevention extends Prevention
 {

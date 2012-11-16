@@ -12,17 +12,17 @@ public interface UpdateBuilder extends ConditionalBuilder<UpdateBuilder>
 
     /**
      * Adds the SET statement followed by cols
-     * 
+     *
      * @param cols
-     * @return fluent interface 
+     * @return fluent interface
      */
     public UpdateBuilder set(String... cols);
 
     /**
      * Adds cols to update
-     * 
+     *
      * @param cols
-     * @return fluent interface 
+     * @return fluent interface
      */
     public UpdateBuilder cols(String... cols);
 }

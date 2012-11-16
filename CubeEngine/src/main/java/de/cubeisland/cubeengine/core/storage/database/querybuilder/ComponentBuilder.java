@@ -11,7 +11,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Inserts RawSQL-Code.
-     * 
+     *
      * @param sql
      * @return fluent interface
      */
@@ -19,7 +19,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds a function.
-     * 
+     *
      * @param function
      * @return fluent interface
      */
@@ -27,7 +27,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Begins a function.
-     * 
+     *
      * @param function
      * @return fluent interface
      */
@@ -35,14 +35,14 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Ends the current function.
-     * 
+     *
      * @return fluent interface
      */
     public This endFunction();
 
     /**
      * Adds a quoted field.
-     * 
+     *
      * @param field
      * @return fluent interface
      */
@@ -50,7 +50,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds a value.
-     * 
+     *
      * @param value
      * @return fluent interface
      */
@@ -58,7 +58,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds multiple variables which can be later replaced by values.
-     * 
+     *
      * @param amount
      * @return fluent interface
      */
@@ -66,14 +66,14 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds a variable which can be later replaced by a value.
-     * 
+     *
      * @return fluent interface
      */
     public This value();
 
     /**
      * Adds an operation
-     * 
+     *
      * @param operation
      * @return fluent interface
      */
@@ -81,42 +81,45 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds an equal-operation
-     * 
+     *
      * @return fluent interface
      */
     public This isEqual();
 
     /**
      * Adds a wildcard.
-     * 
+     *
      * @return fluent interface
      */
     public This wildcard();
 
     /**
      * Adds NOT.
-     * 
+     *
      * @return fluent interface
      */
     public This not();
 
     /**
      * Adds AND.
-     * 
+     *
      * @return fluent interface
      */
     public This and();
 
     /**
      * Adds OR.
-     * 
+     *
      * @return fluent interface
      */
     public This or();
 
     /**
-     * Adds AS @param<field> statement
-     * 
+     * Adds AS
+     *
+     * @param<fstatement
+     *
+
      * @param field
      * @return fluent interface
      */
@@ -124,7 +127,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds grouping by given fields
-     * 
+     *
      * @param field
      * @return fluent interface
      */
@@ -132,7 +135,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds HAVING.
-     * 
+     *
      * @return fluent interface
      */
     public This having();
@@ -140,7 +143,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds LIKE statement.
      * Dont forget to add a value after this!
-     * 
+     *
      * @return fluent interface
      */
     public This like();
@@ -148,28 +151,28 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds IN statement.
      * Dont forget to add a value after this!
-     * 
+     *
      * @return fluent interface
      */
     public This in();
 
     /**
      * Adds (
-     * 
+     *
      * @return fluent interface
      */
     public This beginSub();
 
     /**
      * Adds )
-     * 
+     *
      * @return fluent interface
      */
     public This endSub();
 
     /**
      * Ends the querypart and returns the QueryBuilder
-     * 
+     *
      * @return the QueryBuilder
      */
     public QueryBuilder end();

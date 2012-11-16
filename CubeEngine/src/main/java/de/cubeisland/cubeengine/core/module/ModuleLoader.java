@@ -44,14 +44,14 @@ public class ModuleLoader
 
     /**
      * Loads a module from a file
-     * 
+     *
      * @param file the file to load from
      * @return the loaded module
-     * 
-     * @throws InvalidModuleException if the file is not a valid module
-     * @throws MissingDependencyException if the module has missing hard dependencies
+     *
+     * @throws InvalidModuleException          if the file is not a valid module
+     * @throws MissingDependencyException      if the module has missing hard dependencies
      * @throws IncompatibleDependencyException if the module depends on a newer version of a module
-     * @throws IncompatibleCoreException if the module depends on a newer core version
+     * @throws IncompatibleCoreException       if the module depends on a newer core version
      */
     public synchronized Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
@@ -60,14 +60,14 @@ public class ModuleLoader
 
     /**
      * Loads a module from a ModuleInfo instance
-     * 
+     *
      * @param info the module info
      * @return the loaded module
-     * 
-     * @throws InvalidModuleException if the file is not a valid module
-     * @throws MissingDependencyException if the module has missing hard dependencies
+     *
+     * @throws InvalidModuleException          if the file is not a valid module
+     * @throws MissingDependencyException      if the module has missing hard dependencies
      * @throws IncompatibleDependencyException if the module depends on a newer version of a module
-     * @throws IncompatibleCoreException if the module depends on a newer core version
+     * @throws IncompatibleCoreException       if the module depends on a newer core version
      */
     public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
@@ -133,10 +133,10 @@ public class ModuleLoader
 
     /**
      * Loads a module info from a file
-     * 
+     *
      * @param file the file to load from
      * @return the loaded module info
-     * 
+     *
      * @throws InvalidModuleException if the file is not a valid module
      */
     public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
@@ -281,7 +281,7 @@ public class ModuleLoader
 
     /**
      * Adds a new file to the library classloader
-     * 
+     *
      * @param file the file to add
      * @throws MalformedURLException if the file is invalid
      */

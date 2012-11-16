@@ -73,7 +73,7 @@ public enum ChatFormat
      * Gets a chat format by it's char
      *
      * @param theChar the char to look for
-     * @return 
+     * @return
      */
     public static ChatFormat getByChar(char theChar)
     {
@@ -97,7 +97,7 @@ public enum ChatFormat
 
     /**
      * Parses the chat format strings
-     * 
+     *
      * @param string the string to parse
      * @return the parsed string
      */
@@ -112,9 +112,9 @@ public enum ChatFormat
 
     /**
      * Parses the chat format strings
-     * 
+     *
      * @param baseChar the char used to indicate a format code
-     * @param string the string to parse
+     * @param string   the string to parse
      * @return the parsed string
      */
     public static String parseFormats(char baseChar, String string)

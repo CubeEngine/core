@@ -20,7 +20,6 @@ public class PermissionManager
 {
     private static final String CUBEENGINE_BASE = "cubeengine";
     private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(CUBEENGINE_BASE + ".*", PermissionDefault.OP);
-
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;

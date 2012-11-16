@@ -206,28 +206,27 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     }
 
     /**
-     private TObjectIntHashMap<ItemData> compressInventory(ItemStack[] items)
-     {
-     TObjectIntHashMap<ItemData> map = new TObjectIntHashMap<ItemData>();
-     for (ItemStack item : items)
-     {
-     if (item == null)
-     {
-     continue;
-     }
-     ItemData itemData = new ItemData(item);
-     Integer amount = map.get(itemData);
-     if (amount == null)
-     {
-     amount = 0;
-     }
-     amount += item.getAmount();
-     map.put(itemData, amount);
-     }
-     return map;
-     }
-     //*/
-
+     * private TObjectIntHashMap<ItemData> compressInventory(ItemStack[] items)
+     * {
+     * TObjectIntHashMap<ItemData> map = new TObjectIntHashMap<ItemData>();
+     * for (ItemStack item : items)
+     * {
+     * if (item == null)
+     * {
+     * continue;
+     * }
+     * ItemData itemData = new ItemData(item);
+     * Integer amount = map.get(itemData);
+     * if (amount == null)
+     * {
+     * amount = 0;
+     * }
+     * amount += item.getAmount();
+     * map.put(itemData, amount);
+     * }
+     * return map;
+     * }
+     * // */
     public static class ContainerConfig extends SubLogConfig
     {
         @Option(value = "log-chest")

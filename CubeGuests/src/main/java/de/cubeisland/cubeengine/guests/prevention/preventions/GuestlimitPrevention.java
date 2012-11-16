@@ -53,11 +53,11 @@ public class GuestlimitPrevention extends Prevention
     @Override
     public String getConfigHeader()
     {
-        return super.getConfigHeader() + "\n" +
-                "Configuration info:\n" +
-                "    minimumPlayer: the number of players on the server to enable the guest limit\n" +
-                "    guestLimit: the number of guests that can join the server\n" +
-                "    kickGuests: whether to kick a guest from hte full server if a member wants to join\n";
+        return super.getConfigHeader() + "\n"
+            + "Configuration info:\n"
+            + "    minimumPlayer: the number of players on the server to enable the guest limit\n"
+            + "    guestLimit: the number of guests that can join the server\n"
+            + "    kickGuests: whether to kick a guest from hte full server if a member wants to join\n";
     }
 
     @Override

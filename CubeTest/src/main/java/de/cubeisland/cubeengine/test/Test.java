@@ -85,9 +85,7 @@ public class Test extends Module
             @EventHandler
             public void onLanguageReceived(PlayerLanguageReceivedEvent event)
             {
-                System.out.
-                    print("Player: " + event.getPlayer().getName() + " Lang: " + event.
-                        getLanguage());
+                System.out.print("Player: " + event.getPlayer().getName() + " Lang: " + event.getLanguage());
             }
         });
 
@@ -102,10 +100,9 @@ public class Test extends Module
     {
         try
         {
-            this.getDatabase().execute(this.getDatabase().getQueryBuilder().
-                dropTable("Orders").end());
+            this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").end());
         }
-        catch (Exception e)
+        catch (Exception ingore)
         {}
         manager = new TestManager(this.getDatabase());
 
@@ -151,9 +148,8 @@ public class Test extends Module
         Database database = this.getDatabase();
 
         try
-        {
-            database.execute(database.getQueryBuilder()
-                .truncateTable("test_log").end());//Clears the TestLogs in Database (This does always fail with new db)
+        {//Clears the TestLogs in Database (This does always fail with new db)
+            database.execute(database.getQueryBuilder().truncateTable("test_log").end());
         }
         catch (Exception e)
         {}

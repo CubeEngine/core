@@ -9,11 +9,13 @@ import org.bukkit.entity.Player;
  */
 public class StarvationPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "starvation";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.setSaturation(0);

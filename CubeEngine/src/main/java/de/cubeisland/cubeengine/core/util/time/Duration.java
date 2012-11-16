@@ -164,6 +164,5 @@ public class Duration extends Time
         }
         return sb.toString();
     }
-
     //TODO format method for chat output!
 }

@@ -132,7 +132,7 @@ public interface Core
     /**
      * This method returns the web API server
      *
-     * @return 
+     * @return
      */
     public ApiServer getApiServer();
 }

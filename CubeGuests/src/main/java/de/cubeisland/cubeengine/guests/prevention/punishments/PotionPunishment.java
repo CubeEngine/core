@@ -12,11 +12,13 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class PotionPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "potion";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.addPotionEffect(new PotionEffect(PotionEffectType.getByName(config.getString("effect").toUpperCase(Locale.ENGLISH)), config.getInt("duration", 3) * 20, config.getInt("amplifier", 1)));

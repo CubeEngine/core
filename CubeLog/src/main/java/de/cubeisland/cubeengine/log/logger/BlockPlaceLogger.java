@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.BlockData;
 import java.util.Collection;
 import java.util.LinkedList;
 import org.bukkit.Material;

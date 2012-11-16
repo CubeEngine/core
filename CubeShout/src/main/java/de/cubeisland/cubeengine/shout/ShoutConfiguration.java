@@ -18,8 +18,8 @@ public class ShoutConfiguration extends Configuration
     public String[] head()
     {
         return new String[] {
-            "The global config for all announcements.",
-            "All times are in millisecounds"
+                "The global config for all announcements.",
+                "All times are in millisecounds"
         };
     }
 }

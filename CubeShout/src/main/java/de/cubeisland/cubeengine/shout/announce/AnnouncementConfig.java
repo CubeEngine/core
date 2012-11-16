@@ -9,13 +9,10 @@ public class AnnouncementConfig extends Configuration
 {
     @Option("delay")
     public String delay = "10 minutes";
-
     @Option("world")
     public String world = "*";
-
     @Option("permission")
     public String permNode = "*";
-
     @Option("group")
     public String group = "*";
 }

@@ -26,8 +26,8 @@ public final class ApiHandler
     /**
      * Initializes the request action.
      *
-     * @param holder the parent
-     * @param route       the route of the action
+     * @param holder     the parent
+     * @param route      the route of the action
      * @param method     the method to invoke
      * @param authNeeded whether authentication is needed
      */

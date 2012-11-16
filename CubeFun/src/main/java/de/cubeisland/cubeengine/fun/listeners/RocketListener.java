@@ -16,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 public class RocketListener implements Listener, Runnable
 {
     private final UserManager userManager;
-
     private final Set<RocketCMDInstance> instances;
     private final Set<RocketCMDInstance> garbageCollection;
 

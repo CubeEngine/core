@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.filesystem.Resource;
 
 public enum RuleBookResource implements Resource
 {
-
     GERMAN_MESSAGES(
         "resources/language/messages/de_DE.json",
         "language/de_DE/rulebook.json"),
@@ -20,11 +19,13 @@ public enum RuleBookResource implements Resource
         this.target = target;
     }
 
+    @Override
     public String getSource()
     {
         return this.source;
     }
 
+    @Override
     public String getTarget()
     {
         return this.target;

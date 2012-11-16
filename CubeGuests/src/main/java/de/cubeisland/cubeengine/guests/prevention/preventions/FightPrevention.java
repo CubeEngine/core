@@ -72,9 +72,9 @@ public class FightPrevention extends Prevention
     public boolean prevent(EntityDamageByEntityEvent event, Player player)
     {
         Entity damageTarget = event.getEntity();
-        if ((damageTarget instanceof Player && this.players) ||
-            (damageTarget instanceof Monster && this.monsters) ||
-            (damageTarget instanceof Animals && this.animals))
+        if ((damageTarget instanceof Player && this.players)
+            || (damageTarget instanceof Monster && this.monsters)
+            || (damageTarget instanceof Animals && this.animals))
         {
             return super.prevent(event, player);
         }

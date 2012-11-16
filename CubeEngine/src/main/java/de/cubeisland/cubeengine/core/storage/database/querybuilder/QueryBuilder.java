@@ -18,7 +18,7 @@ public interface QueryBuilder
 
     /**
      * Starts an SELECT query.
-     * 
+     *
      * @param tables the tables to select from
      * @return the SelectBuilder
      */
@@ -26,7 +26,7 @@ public interface QueryBuilder
 
     /**
      * Starts an UPDATE query.
-     * 
+     *
      * @param tables the tables to update from
      * @return the UpdateBuilder
      */
@@ -34,14 +34,14 @@ public interface QueryBuilder
 
     /**
      * Starts an DELETE query.
-     * 
+     *
      * @return the DeleteBuilder
      */
     public DeleteBuilder delete();
 
     /**
      * STARTS a CREATE TABLE query
-     * 
+     *
      * @param name
      * @param ifNoExist
      * @return the TableBuilder
@@ -50,7 +50,7 @@ public interface QueryBuilder
 
     /**
      * Clears the table
-     * 
+     *
      * @param table
      * @return fluent interface
      */
@@ -58,7 +58,7 @@ public interface QueryBuilder
 
     /**
      * Drops the table
-     * 
+     *
      * @param table
      * @return fluent interface
      */
@@ -66,60 +66,59 @@ public interface QueryBuilder
 
     /**
      * Starts a LOCK query
-     * 
+     *
      * @return the LockBuilder
      */
     public LockBuilder lock();
 
     /**
      * Starts a transaction
-     * 
+     *
      * @return fluent interface
      */
     public QueryBuilder startTransaction();
 
     /**
      * Commits transactions
-     * 
+     *
      * @return fluent interface
      */
     public QueryBuilder commit();
 
     /**
      * Rollbacks transactions
-     * 
+     *
      * @return fluent interface
      */
     public QueryBuilder rollback();
 
     /**
      * Unlocks tables.
-     * 
+     *
      * @return fluent interface
      */
     public QueryBuilder unlockTables();
 
     /**
      * Starts an other query.
-     * 
+     *
      * @return fluent interface
      */
     public QueryBuilder nextQuery();
 
     /**
      * Starts an ALTER TABLE query.
-     * 
+     *
      * @return the AlterTableBuilder
      */
     public AlterTableBuilder alterTable(String table);
 
     /**
      * Returns the finished query.
-     * 
+     *
      * @return the query as String
      */
     public String end();
-
     //TODO create DB
     //TODO create Index
 }

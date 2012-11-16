@@ -10,11 +10,13 @@ import org.bukkit.entity.Player;
  */
 public class KickPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "kick";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.kickPlayer(ChatFormat.parseFormats(config.getString("reason", "&cYou were kicked as a punishment!")));

@@ -24,6 +24,7 @@ public class TestConfig2 extends Configuration
 
     public static class TestConfig2Updater implements ConfigurationUpdater
     {
+        @Override
         public Map<String, Object> update(Map<String, Object> loadedConfig, int fromRevision)
         {
             if (fromRevision == 1)

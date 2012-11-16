@@ -12,7 +12,8 @@ import org.bukkit.event.Cancellable;
 
 /**
  * This base class represents a prevention that can be filtered.
- * That means it is able to prevent only a subset of actions based an a whitelist or blacklist.
+ * That means it is able to prevent only a subset of actions based an a
+ * whitelist or blacklist.
  */
 public abstract class FilteredPrevention<T extends Object> extends Prevention
 {
@@ -115,7 +116,7 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
 
     /**
      * This method reads the additional entries "mode" and "list"
-     * 
+     *
      * @param server
      * @param config
      */
@@ -136,7 +137,7 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
      * This method checks whether the player can do the subaction
      *
      * @param player the player
-     * @param item the item representing the subaction
+     * @param item   the item representing the subaction
      * @return true if he can
      */
     public boolean can(final Player player, final T item)
@@ -157,10 +158,10 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
 
     /**
      * Prevents the action if the player can't pass it
-     * 
-     * @param event a cancellable event
+     *
+     * @param event  a cancellable event
      * @param player the player
-     * @param item the item representing the subaction
+     * @param item   the item representing the subaction
      * @return true if the action was prevented
      */
     public boolean prevent(final Cancellable event, final Player player, final T item)
@@ -205,9 +206,7 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
             "1",
             "black",
             "negativlist");
-
         private static final HashMap<String, FilterMode> ALIAS_MAP = new HashMap<String, FilterMode>(values().length);
-
         private final String name;
         private final String[] aliases;
 

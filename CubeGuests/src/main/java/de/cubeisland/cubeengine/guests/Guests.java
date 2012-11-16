@@ -35,7 +35,6 @@ public class Guests extends Module
             .registerPunishment(new RocketPunishment())
             .registerPunishment(new SlapPunishment())
             .registerPunishment(new StarvationPunishment())
-
             .registerPrevention(new AfkPrevention(this))
             .registerPrevention(new BedPrevention(this))
             .registerPrevention(new BowPrevention(this))

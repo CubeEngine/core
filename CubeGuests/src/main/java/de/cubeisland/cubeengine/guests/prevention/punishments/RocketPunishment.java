@@ -10,11 +10,13 @@ import org.bukkit.util.Vector;
  */
 public class RocketPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "rocket";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.setVelocity(player.getVelocity().add(new Vector(0, config.getInt("height", 50), 0)));

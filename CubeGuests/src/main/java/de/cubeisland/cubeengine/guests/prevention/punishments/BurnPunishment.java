@@ -9,11 +9,13 @@ import org.bukkit.entity.Player;
  */
 public class BurnPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "burn";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.setFireTicks(config.getInt("duration", 3) * 20);

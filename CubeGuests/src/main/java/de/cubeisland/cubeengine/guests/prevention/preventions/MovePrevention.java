@@ -32,9 +32,9 @@ public class MovePrevention extends Prevention
     @Override
     public String getConfigHeader()
     {
-        return super.getConfigHeader() + "\n" +
-                "Configuration info:\n" +
-                "    width: the number of blocks a player can move awy from the spawn\n";
+        return super.getConfigHeader() + "\n"
+            + "Configuration info:\n"
+            + "    width: the number of blocks a player can move awy from the spawn\n";
     }
 
     @Override
@@ -73,8 +73,7 @@ public class MovePrevention extends Prevention
             // create a square around the spawn
             final Square spawnSquare = new Square(
                 new Vector2(spawnLocation.getBlockX() - this.width, spawnLocation.getBlockZ() - this.width),
-                this.width * 2
-                );
+                this.width * 2);
 
             // is the new location inside the spawn square?
             if (!spawnSquare.contains(new Vector2(to.getBlockX(), to.getBlockZ())))

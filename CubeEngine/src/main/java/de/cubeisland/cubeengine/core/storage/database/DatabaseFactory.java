@@ -25,8 +25,8 @@ public class DatabaseFactory
 
     /**
      * Creates a new database.
-     * 
-     * @param name the databaseType
+     *
+     * @param name       the databaseType
      * @param configFile the configurationFile for the database
      * @return the prepared database
      */

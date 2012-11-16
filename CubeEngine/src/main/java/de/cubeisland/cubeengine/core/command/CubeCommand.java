@@ -75,7 +75,7 @@ public abstract class CubeCommand extends Command
 
     /**
      * Returns the minimum number of indexed parameters this command requires
-     * 
+     *
      * @return minimum params
      */
     public int getMinimumParams()
@@ -86,7 +86,7 @@ public abstract class CubeCommand extends Command
     /**
      * Returns the maximum number of indexed parameters this command allowes.
      * A value lower than 0 indicates that there is no limit
-     * 
+     *
      * @return maximum params
      */
     public int getMaximumParams()
@@ -102,7 +102,7 @@ public abstract class CubeCommand extends Command
 
     /**
      * This overload returns the usage translated for the given CommandSender
-     * 
+     *
      * @param sender the command sender
      * @return the usage string
      */
@@ -114,7 +114,7 @@ public abstract class CubeCommand extends Command
     /**
      * This overload returns the usage translated for the given CommandContext
      * using the correct labels
-     * 
+     *
      * @param context the command context
      * @return the usage string
      */
@@ -126,8 +126,8 @@ public abstract class CubeCommand extends Command
     /**
      * This overload returns the usage translated for the given CommandSender
      * using the correct labels
-     * 
-     * @param sender the command sender
+     *
+     * @param sender       the command sender
      * @param parentLabels a list of labels
      * @return the usage string
      */
@@ -150,7 +150,7 @@ public abstract class CubeCommand extends Command
     /**
      * Returns a child command and tries to correct the name of specified.
      *
-     * @param name the name
+     * @param name    the name
      * @param correct whether to correct the name
      * @return the child or null if not found
      */

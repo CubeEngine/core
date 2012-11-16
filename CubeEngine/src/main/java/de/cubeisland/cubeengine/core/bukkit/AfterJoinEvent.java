@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList;
 public class AfterJoinEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
-
     private String joinMessage;
     private Player player;
 

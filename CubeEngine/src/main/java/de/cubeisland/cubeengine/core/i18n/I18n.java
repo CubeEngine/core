@@ -191,8 +191,8 @@ public class I18n implements Cleanable
      *
      * @param language the language to translate to
      * @param category the category to load the messages from
-     * @param message the message to translate
-     * @param params the parameters to insert into the language after translation
+     * @param message  the message to translate
+     * @param params   the parameters to insert into the language after translation
      * @return the translated language
      */
     public String translate(String language, String category, String message, Object... params)

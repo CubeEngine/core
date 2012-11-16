@@ -9,11 +9,13 @@ import org.bukkit.entity.Player;
  */
 public class ExplosionPunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "explosion";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         player.getWorld().createExplosion(player.getLocation(), 0);

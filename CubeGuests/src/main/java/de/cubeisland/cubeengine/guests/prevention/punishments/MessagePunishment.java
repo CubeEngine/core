@@ -9,11 +9,13 @@ import org.bukkit.entity.Player;
  */
 public class MessagePunishment implements Punishment
 {
+    @Override
     public String getName()
     {
         return "message";
     }
 
+    @Override
     public void punish(Player player, ConfigurationSection config)
     {
         if (config.contains("message"))

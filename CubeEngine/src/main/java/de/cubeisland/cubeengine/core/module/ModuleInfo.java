@@ -136,7 +136,7 @@ public final class ModuleInfo
 
     /**
      * The module id (basicly the lowercased name)
-     * 
+     *
      * @return the module name
      */
     public String getId()

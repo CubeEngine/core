@@ -40,7 +40,6 @@ public enum RequestError
         301,
         HttpResponseStatus.NOT_IMPLEMENTED,
         "The called action is not yet implemented");
-
     private final int errorCode;
     private final HttpResponseStatus responseStatus;
     private final String description;

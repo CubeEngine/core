@@ -29,7 +29,7 @@ public abstract class Task implements Runnable
     /**
      * Schedules the task async repeating
      *
-     * @param delay the delay
+     * @param delay  the delay
      * @param repeat the interval
      */
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
@@ -50,7 +50,7 @@ public abstract class Task implements Runnable
     /**
      * Schedules the task sync repeating
      *
-     * @param delay the delay
+     * @param delay  the delay
      * @param repeat the interval
      */
     public void scheduleSyncRepeatingTask(int delay, int repeat)

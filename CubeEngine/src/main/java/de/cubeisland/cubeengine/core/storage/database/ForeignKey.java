@@ -19,8 +19,8 @@ public @interface ForeignKey
     /**
      * default: CASCADE.
      * other: SET NULL; RESTRICT; NO ACTION
-     * 
-     * @return 
+     *
+     * @return
      */
     public String onDelete() default "CASCADE";
 }

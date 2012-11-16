@@ -22,10 +22,11 @@ public @interface Option
     /**
      * If true this option will not be shown in the config with disabled advanced mode.
      * Keep in mind you will need a field:
+     *
      * @Option("advanced")
      * public boolean advanced
      * in your config for this to work.
-     * 
+     *
      * @return if this option is an advanced option
      */
     public boolean advanced() default false;
