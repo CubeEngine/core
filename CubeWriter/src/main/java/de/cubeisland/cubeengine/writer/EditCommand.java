@@ -19,19 +19,23 @@ public class EditCommand
     @Command(names = {
         "edit", "rewrite"
     }, desc = "Edit a sign or unsign a book", usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ", params = {
-        @Param(names = {
+        @Param(names =
+        {
             "1", "Line1"
         }),
-        @Param(names = {
+        @Param(names =
+        {
             "2", "Line2"
         }),
-        @Param(names = {
+        @Param(names =
+        {
             "3", "Line3"
         }),
-        @Param(names = {
+        @Param(names =
+        {
             "4", "Line4"
         })
-    })
+    }, max = 0)
     public void edit(CommandContext context)
     {
         User user = context.getSenderAsUser("writer", "This command can only be used by players");

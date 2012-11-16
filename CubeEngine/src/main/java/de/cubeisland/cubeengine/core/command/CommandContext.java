@@ -165,7 +165,8 @@ public class CommandContext
                 {
                     try
                     {
-                        String[] commandLineRange = Arrays.copyOfRange(commandLine, offset + 1, commandLine.length); // End-Index is exclusive
+                        offset++;
+                        String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
                         Pair<Integer, ?> pair = ArgumentReader.read(param.type(), commandLineRange);
                         offset += pair.getLeft();
                         //added named param
@@ -179,7 +180,6 @@ public class CommandContext
                 else
                 // else is indexed param
                 {
-
                     try
                     {
                         String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
