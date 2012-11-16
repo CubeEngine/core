@@ -1,16 +1,31 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.cubeengine.core.module.CoreModule;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import java.util.*;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
@@ -305,7 +320,14 @@ public abstract class CubeCommand extends Command
         {
             context.sendMessage("core", "&4An unknown error occurred while executing this command!");
             context.sendMessage("core", "&4Please report this error to an administrator.");
-            this.module.getLogger().exception(e.getMessage(), e);
+            if (this.module instanceof CoreModule)
+            {
+                CubeEngine.getLogger().log(ERROR, e.getLocalizedMessage(), e);
+            }
+            else
+            {
+                this.module.getLogger().log(ERROR, e.getLocalizedMessage(), e);
+            }
         }
 
         return true;

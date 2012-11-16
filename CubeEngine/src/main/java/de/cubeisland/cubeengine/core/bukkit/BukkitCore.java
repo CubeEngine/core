@@ -7,6 +7,8 @@ import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
+import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -21,15 +23,17 @@ import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -46,7 +50,6 @@ public class BukkitCore extends JavaPlugin implements Core
     private CoreConfiguration config;
     private CubeLogger logger;
     private EventManager eventRegistration;
-    private Server server;
     private CommandManager commandManager;
     private TaskManager taskManager;
     private TableManager tableManager;
@@ -61,8 +64,8 @@ public class BukkitCore extends JavaPlugin implements Core
         this.jsonObjectMapper = new ObjectMapper();
         this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
-        this.server = this.getServer();
-        PluginManager pm = this.server.getPluginManager();
+        final Server server = this.getServer();
+        final PluginManager pm = server.getPluginManager();
 
         this.logger = new CubeLogger("Core", this.getLogger());
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevelERROR, this));
@@ -139,11 +142,15 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: file manager, core config
         this.i18n = new I18n(this);
 
-        // depends on: Server
+        // depends on: server
         this.commandManager = new CommandManager(this);
 
         // depends on: database
         this.moduleManager = new ModuleManager(this);
+
+        // depends on: server, module manager
+        this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
+        this.commandManager.registerCommand(new CoreCommands(this));
 
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this);
@@ -156,7 +163,7 @@ public class BukkitCore extends JavaPlugin implements Core
                 // depends on: file manager
                 BukkitCore.this.moduleManager.loadModules(BukkitCore.this.fileManager.getModulesDir());
 
-                // depends on: finshed loading modules
+                // depends on: finished loading modules
                 BukkitCore.this.userManager.cleanup();
             }
         });
@@ -167,12 +174,16 @@ public class BukkitCore extends JavaPlugin implements Core
     {
         BukkitUtils.cleanup();
 
-        CubeEngine.clean();
-
         if (this.moduleManager != null)
         {
             this.moduleManager.clean();
             this.moduleManager = null;
+        }
+
+        if (this.commandManager != null)
+        {
+            this.commandManager.unregister();
+            this.commandManager = null;
         }
 
         if (this.apiServer != null)
@@ -202,7 +213,7 @@ public class BukkitCore extends JavaPlugin implements Core
             try
             {
                 this.taskManager.getExecutorService().shutdown();
-                this.taskManager.getExecutorService().awaitTermination(config.executorTermination, TimeUnit.SECONDS);
+                this.taskManager.getExecutorService().awaitTermination(this.config.executorTermination, TimeUnit.SECONDS);
             }
             catch (InterruptedException ex)
             {
@@ -213,6 +224,8 @@ public class BukkitCore extends JavaPlugin implements Core
                 this.taskManager = null;
             }
         }
+
+        CubeEngine.clean();
     }
 
     @Override

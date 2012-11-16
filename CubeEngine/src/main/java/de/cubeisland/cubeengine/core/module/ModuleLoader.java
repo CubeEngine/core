@@ -5,12 +5,15 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.LoadFrom;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
+import org.apache.commons.lang.Validate;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class is used to load modules and provide a centralized place for class lookups.
@@ -91,6 +93,8 @@ public class ModuleLoader
                 new ModuleLogger(this.core, info),
                 this,
                 classLoader);
+
+            this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
 
             for (Field field : moduleClass.getDeclaredFields())
             {

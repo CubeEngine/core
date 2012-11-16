@@ -8,6 +8,11 @@ import de.cubeisland.cubeengine.core.bukkit.CubeCommandMap;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.CraftServer;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -17,10 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.CraftServer;
 
 /**
  * This class manages the registration of commands.
@@ -43,7 +44,7 @@ public class CommandManager
     /**
      * Removes a command by its name
      *
-     * @param name the name of the command to remove
+     * @param names the names of the commands to remove
      */
     public void unregister(String... names)
     {
@@ -113,13 +114,12 @@ public class CommandManager
      */
     public void unregister()
     {
-        Command command;
-        for (String name : this.knownCommands.keySet())
+        Iterator<Map.Entry<String, Command>> iter = this.knownCommands.entrySet().iterator();
+        while (iter.hasNext())
         {
-            command = this.knownCommands.get(name);
-            if (command instanceof CubeCommand)
+            if (iter.next().getValue() instanceof CubeCommand)
             {
-                this.unregister(name);
+                iter.remove();
             }
         }
     }

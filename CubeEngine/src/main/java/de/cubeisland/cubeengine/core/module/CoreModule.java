@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+
 import java.util.Locale;
 
 public final class CoreModule extends Module
@@ -7,11 +9,10 @@ public final class CoreModule extends Module
     public static final String NAME = "Core";
     public static final String ID = NAME.toLowerCase(Locale.ENGLISH);
     private static CoreModule INSTANCE = null;
-    private final ModuleInfo module;
 
     private CoreModule()
     {
-        this.module = new ModuleInfo();
+        this.initialize(CubeEngine.getCore(), new ModuleInfo(), CubeEngine.getFileManager().getDataFolder(), null, null, null);
     }
 
     public static CoreModule get()
@@ -33,11 +34,5 @@ public final class CoreModule extends Module
     public String getId()
     {
         return ID;
-    }
-
-    @Override
-    public ModuleInfo getInfo()
-    {
-        return this.module;
     }
 }

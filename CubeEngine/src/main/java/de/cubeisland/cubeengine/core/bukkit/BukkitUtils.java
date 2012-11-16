@@ -1,12 +1,15 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
 import net.minecraft.server.NBTTagCompound;
@@ -37,6 +40,7 @@ import org.bukkit.plugin.SimplePluginManager;
  */
 public class BukkitUtils
 {
+    private static final Logger LOGGER = CubeEngine.getLogger();
     private static final Field localeStringField;
     private static Field nshListField = null;
 
@@ -46,7 +50,6 @@ public class BukkitUtils
         {
             localeStringField = LocaleLanguage.class.getDeclaredField("d");
             localeStringField.setAccessible(true);
-
         }
         catch (Exception e)
         {
@@ -180,14 +183,14 @@ public class BukkitUtils
                     ServerConnection sc = playerEntity.server.ae();
                     ((List<NetServerHandler>)nshListField.get(sc)).remove(oldHandler);
                     sc.a(handler);
-                    System.out.print("Replaced the NetServerHandler of player '" + player.getName() + "'"); // TODO log this as debug or smt like this
+                    LOGGER.log(LogLevel.DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
                     oldHandler.disconnected = true;
                 }
             }
             catch (Exception e)
             {
                 playerEntity.netServerHandler = oldHandler;
-                e.printStackTrace(System.err);
+                LOGGER.log(LogLevel.ERROR, e.getLocalizedMessage(), e);
             }
         }
     }

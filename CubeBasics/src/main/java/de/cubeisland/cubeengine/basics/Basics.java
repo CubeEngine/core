@@ -1,7 +1,23 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.basics.general.*;
-import de.cubeisland.cubeengine.basics.moderation.*;
+import de.cubeisland.cubeengine.basics.general.AfkListener;
+import de.cubeisland.cubeengine.basics.general.ChatCommands;
+import de.cubeisland.cubeengine.basics.general.GeneralsListener;
+import de.cubeisland.cubeengine.basics.general.InformationCommands;
+import de.cubeisland.cubeengine.basics.general.ListCommand;
+import de.cubeisland.cubeengine.basics.general.MailCommand;
+import de.cubeisland.cubeengine.basics.general.MailManager;
+import de.cubeisland.cubeengine.basics.general.MuteListener;
+import de.cubeisland.cubeengine.basics.general.PlayerCommands;
+import de.cubeisland.cubeengine.basics.moderation.InventoryCommands;
+import de.cubeisland.cubeengine.basics.moderation.ItemCommands;
+import de.cubeisland.cubeengine.basics.moderation.KickBanCommands;
+import de.cubeisland.cubeengine.basics.moderation.KitCommand;
+import de.cubeisland.cubeengine.basics.moderation.PowerToolCommand;
+import de.cubeisland.cubeengine.basics.moderation.PowerToolListener;
+import de.cubeisland.cubeengine.basics.moderation.SpawnMobCommand;
+import de.cubeisland.cubeengine.basics.moderation.TimeControlCommands;
+import de.cubeisland.cubeengine.basics.moderation.WorldControlCommands;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
@@ -31,10 +47,8 @@ public class Basics extends Module
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.registerPermissions(BasicsPerm.values());
-        //Modules:
-        this.registerCommand(new ModuleCommands(this));
-        //General:
 
+        //General:
         this.registerCommands(new ChatCommands(this));
         this.registerCommands(new InformationCommands(this));
         this.registerCommands(new ListCommand());
@@ -52,8 +66,8 @@ public class Basics extends Module
         this.registerCommands(new WorldControlCommands(this));
         this.registerCommands(new PowerToolCommand());
         this.registerCommand(new KitCommand(this));
-
         this.registerListener(new PowerToolListener());
+
         //Teleport:
         this.registerCommands(new MovementCommands(this));
         this.registerCommands(new SpawnCommands(this));

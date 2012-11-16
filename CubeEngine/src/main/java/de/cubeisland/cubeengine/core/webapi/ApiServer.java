@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 import static java.util.logging.Level.WARNING;
 
 /**
@@ -156,16 +155,8 @@ public class ApiServer
     {
         if (this.isRunning())
         {
-            try
-            {
-                this.channel.getAndSet(null).close().await(5000);
-            }
-            catch (InterruptedException e)
-            {
-                LOGGER.log(ERROR, "Shutting down the server was interrupted!");
-                LOGGER.log(ERROR, "Cleaning up as much as possible...");
-            }
-            this.bootstrap.getAndSet(null).shutdown();
+            ServerBootstrap serverBootstrap = this.bootstrap.getAndSet(null);
+            serverBootstrap.shutdown();
         }
         return this;
     }
