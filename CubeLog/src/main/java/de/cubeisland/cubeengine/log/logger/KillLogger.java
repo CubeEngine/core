@@ -197,41 +197,41 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
 
     public static class KillConfig extends SubLogConfig
     {
-        @Option(value = "log-when-killer-is.player")
+        @Option("log-when-killer-is.player")
         public boolean logKillsByPlayer = true;
-        @Option(value = "log-when-killer-is.monster")
+        @Option("log-when-killer-is.monster")
         public boolean logKillsByMonster = false;
-        @Option(value = "log-when-killer-is.boss")
+        @Option("log-when-killer-is.boss")
         public boolean logKillsByBoss = false;
         @Comment("Environemental damage such as: lightning, fall-damage, drowning, suffocation, cacti, starvation BUT NOT lava")
-        @Option(value = "log-when-killer-is.environement")
+        @Option("log-when-killer-is.environement")
         public boolean logKillsByEnvironement = false;
-        @Option(value = "log-when-killer-is.lava")
+        @Option("log-when-killer-is.lava")
         public boolean logKillsByLava = false;
-        @Option(value = "log-when-killer-is.magic")
+        @Option("log-when-killer-is.magic")
         public boolean logKillsByMagic = true;
-        @Option(value = "log-when-killer-is.unkown")
+        @Option("log-when-killer-is.unkown")
         public boolean logKillsByOther = true;
         @Comment("Log player-deaths BUT NOT pvp")
-        @Option(value = "log-when-killed-is.player")
+        @Option("log-when-killed-is.player")
         public boolean logPlayerKilled = true;
         @Comment("Will log pvp even if killer and/or killed is player is disabled")
-        @Option(value = "log-pvp")
+        @Option("log-pvp")
         public boolean logPvp = true;
-        @Option(value = "log-when-killed-is.monster")
+        @Option("log-when-killed-is.monster")
         public boolean logMonsterKilled = false;
-        @Option(value = "log-when-killed-is.boss")
+        @Option("log-when-killed-is.boss")
         public boolean logBossKilled = true;
         @Comment("Animals are here: chickens, cows, pigs, sheeps")
-        @Option(value = "log-when-killed-is.animal")
+        @Option("log-when-killed-is.animal")
         public boolean logAnimalKilled = true;
         @Comment("Pets are here: Tamed wolfes and ocelots")
-        @Option(value = "log-when-killed-is.pet")
+        @Option("log-when-killed-is.pet")
         public boolean logPetKilled = true;
-        @Option(value = "log-when-killed-is.npc")
+        @Option("log-when-killed-is.npc")
         public boolean logNpcKilled = true;
         @Comment("Other are here: bats, squid, golems and more")
-        @Option(value = "log-when-killed-is.other")
+        @Option("log-when-killed-is.other")
         public boolean logOtherKilled = false;
 
         public KillConfig()

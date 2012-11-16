@@ -18,6 +18,6 @@ public class LanguageConfiguration extends Configuration
     public String localName;
     @Option("parent")
     public String parent = null;
-    @Option(value = "clones")
+    @Option("clones")
     public String[] clones = null;
 }

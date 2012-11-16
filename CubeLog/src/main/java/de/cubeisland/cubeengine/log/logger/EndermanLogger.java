@@ -35,9 +35,9 @@ public class EndermanLogger extends BlockLogger<EndermanLogger.EndermanConfig>
 
     public static class EndermanConfig extends SubLogConfig
     {
-        @Option(value = "log-enderman-place")
+        @Option("log-enderman-place")
         public boolean logPlace = false;
-        @Option(value = "log-enderman-take")
+        @Option("log-enderman-take")
         public boolean logTake = false;
 
         @Override

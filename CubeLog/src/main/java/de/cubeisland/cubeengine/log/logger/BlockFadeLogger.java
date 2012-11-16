@@ -29,9 +29,9 @@ public class BlockFadeLogger extends
 
     public static class BlockFadeConfig extends SubLogConfig
     {
-        @Option(value = "log-snow-melt")
+        @Option("log-snow-melt")
         public boolean logSnowMelt = false;
-        @Option(value = "log-ice-melt")
+        @Option("log-ice-melt")
         public boolean logIceMelt = false;
 
         @Override

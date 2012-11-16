@@ -46,7 +46,7 @@ public class TestConfig extends Configuration
     public String sql_username = "worldguard";
     @Option("regions.sql.password")
     public String sql_password = "worldguard";
-    @Option(value = "regions.max-region-count-per-player")
+    @Option("regions.max-region-count-per-player")
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
@@ -59,18 +59,18 @@ public class TestConfig extends Configuration
     public Integer the42 = 42;
     @Option("regions.the21")
     public int the21 = 21;
-    @Option(value = "arrays.stringtest")
+    @Option("arrays.stringtest")
     public String[] stringarray =
     {
         "text1", "text2"
     };
-    @Option(value = "arrays.playertest")
+    @Option("arrays.playertest")
     public OfflinePlayer[] playerarray =
     {
         server.getOfflinePlayer("Anselm Brehme"),
         server.getOfflinePlayer("Niemand")
     };
-    @Option(value = "list.stringlist")
+    @Option("list.stringlist")
     public Collection<String> stringlist = new LinkedList<String>()
     {
 
@@ -79,7 +79,7 @@ public class TestConfig extends Configuration
             add("kekse");
         }
     };
-    @Option(value = "list.playerlist")
+    @Option("list.playerlist")
     public Collection<OfflinePlayer> playerlist = new LinkedList<OfflinePlayer>()
     {
 
@@ -88,7 +88,7 @@ public class TestConfig extends Configuration
             add(server.getOfflinePlayer("KekseSpieler"));
         }
     };
-    @Option(value = "list.shortlist")
+    @Option("list.shortlist")
     public Collection<Short> shortlist = new LinkedList<Short>()
     {
 
@@ -99,7 +99,7 @@ public class TestConfig extends Configuration
             add(s);
         }
     };
-    @Option(value = "locationinmap")
+    @Option("locationinmap")
     @Comment("multi location")
     public LinkedHashMap<String, Location> locs;
 
@@ -113,7 +113,7 @@ public class TestConfig extends Configuration
         }
     };
 
-    @Option(value = "mapinmapinmap")
+    @Option("mapinmapinmap")
     @Comment("multimapinmap")
     public LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>> thingy = new LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>>()
     {

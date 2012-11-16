@@ -49,9 +49,9 @@ public class BlockGrowLogger extends
 
     public static class BlockGrowConfig extends SubLogConfig
     {
-        @Option(value = "log-natural-grow")
+        @Option("log-natural-grow")
         public boolean logNatural = false;
-        @Option(value = "log-player-grow")
+        @Option("log-player-grow")
         public boolean logPlayer = true;
 
         @Override

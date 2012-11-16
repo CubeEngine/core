@@ -192,22 +192,22 @@ public class BlockFluidFlowLogger extends
     public static class BlockFluidFlowConfig extends SubLogConfig
     {
         @Comment("Logging water flowing normally and replacing air or water")
-        @Option(value = "log-water-flow")
+        @Option("log-water-flow")
         public boolean logWaterFlow = false;
         @Comment("Logging lava flowing normally and replacing air or lava")
-        @Option(value = "log-lava-flow")
+        @Option("log-lava-flow")
         public boolean logLavaFlow = false;
         @Comment("Logging water destroying blocks like redstone etc.")
-        @Option(value = "log-water-destruction")
+        @Option("log-water-destruction")
         public boolean logWaterDestruct = true;
         @Comment("Logging lava destroying blocks like redstone etc.")
-        @Option(value = "log-lava-destruction")
+        @Option("log-lava-destruction")
         public boolean logLavaDestruct = true;
         @Comment("Logging lava or water creating stone, cobblestone or obsidian")
-        @Option(value = "log-water-lava-creation")
+        @Option("log-water-lava-creation")
         public boolean logLavaWaterCreation = true;
         @Comment("Logging obsidian creation with redstone")
-        @Option(value = "log-redstone-obsidian-creation")
+        @Option("log-redstone-obsidian-creation")
         public boolean logRedsObsiCreation = true;
 
         @Override

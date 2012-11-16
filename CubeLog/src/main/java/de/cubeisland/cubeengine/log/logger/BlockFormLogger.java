@@ -29,9 +29,9 @@ public class BlockFormLogger extends
 
     public static class BlockFormConfig extends SubLogConfig
     {
-        @Option(value = "log-snow-form")
+        @Option("log-snow-form")
         public boolean logSnowForm = false;
-        @Option(value = "log-ice-form")
+        @Option("log-ice-form")
         public boolean logIceForm = false;
 
         @Override

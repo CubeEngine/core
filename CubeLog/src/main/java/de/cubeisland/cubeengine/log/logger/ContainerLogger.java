@@ -229,19 +229,19 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
      * // */
     public static class ContainerConfig extends SubLogConfig
     {
-        @Option(value = "log-chest")
+        @Option("log-chest")
         public boolean logChest = true;
-        @Option(value = "log-furnace")
+        @Option("log-furnace")
         public boolean logFurnace = false;
-        @Option(value = "log-brewing")
+        @Option("log-brewing")
         public boolean logBrewingstand = false;
-        @Option(value = "log-dispenser")
+        @Option("log-dispenser")
         public boolean logDispenser = true;
-        @Option(value = "log-other-block")
+        @Option("log-other-block")
         public boolean logOtherBlock = true;
-        @Option(value = "log-storage-minecart")
+        @Option("log-storage-minecart")
         public boolean logStorageMinecart = false;
-        @Option(value = "log-looked-into-chest")
+        @Option("log-looked-into-chest")
         public boolean logNothing = true;
 
         public ContainerConfig()

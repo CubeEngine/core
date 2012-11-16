@@ -85,7 +85,7 @@ public class BlockBreakLogger extends
             this.enabled = true;
         }
 
-        @Option(value = "no-logging")
+        @Option("no-logging")
         public Collection<Material> noLogging = new LinkedList<Material>();
 
         @Override

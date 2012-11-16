@@ -24,10 +24,10 @@ public class ModuleConfiguration extends Configuration
     public int minCoreRevision = -1;
     @Option("world-generator")
     public boolean provideWorldGenerator = false;
-    @Option(value = "dependencies")
+    @Option("dependencies")
     public Set<String> dependencies = new HashSet<String>();
-    @Option(value = "soft-dependencies")
+    @Option("soft-dependencies")
     public Set<String> softDependencies = new HashSet<String>();
-    @Option(value = "plugin-dependencies")
+    @Option("plugin-dependencies")
     public Set<String> pluginDependencies = new HashSet<String>();
 }
