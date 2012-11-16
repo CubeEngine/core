@@ -624,6 +624,10 @@ public class ApiServer
         if (subscribedHandlers != null)
         {
             subscribedHandlers.remove(requestHandler);
+            if (subscribedHandlers.isEmpty())
+            {
+                this.subscriptions.remove(event);
+            }
         }
     }
 
