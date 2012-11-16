@@ -152,7 +152,7 @@ public class CommandContext
             else
             //else named param or indexed param
             {
-                String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
+
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
                 // has alias named Param ?
                 if (paramAliasMap.containsKey(paramName))
@@ -165,6 +165,7 @@ public class CommandContext
                 {
                     try
                     {
+                        String[] commandLineRange = Arrays.copyOfRange(commandLine, offset + 1, commandLine.length); // End-Index is exclusive
                         Pair<Integer, ?> pair = ArgumentReader.read(param.type(), commandLineRange);
                         offset += pair.getLeft();
                         //added named param
@@ -181,6 +182,7 @@ public class CommandContext
 
                     try
                     {
+                        String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
                         Pair<Integer, String> pair = ArgumentReader.read(String.class, commandLineRange);
                         offset += pair.getLeft();
                         this.indexedParams.add(pair.getRight());// added indexed param
