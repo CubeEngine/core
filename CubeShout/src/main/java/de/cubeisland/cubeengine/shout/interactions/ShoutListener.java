@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.announce.Announcer;
 import de.cubeisland.cubeengine.shout.announce.MessageTask;
+import de.cubeisland.cubeengine.shout.announce.UserReceiver;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -35,19 +36,12 @@ public class ShoutListener implements Listener
         {
             this.module.getLogger().log(LogLevel.DEBUG, "Loading user: {0}", user.getName());
         }
-        this.am.initializeUser(user);
-
-        if (module.getCore().isDebug())
-        {
-            this.module.getLogger().log(LogLevel.DEBUG, String.format("Scheduling a task for: %s every %d ticks.", user.getName(), this.am.getGreatestCommonDivisor(user.getName())));
-        }
-        this.announcner.scheduleTask(user.getName(), new MessageTask(am, module.getTaskManger(), user), this.am.getGreatestCommonDivisor(user.getName()));
+        this.am.initializeReceiver(new UserReceiver(user, am));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void PlayerLeaveEvent(PlayerQuitEvent event)
     {
-        this.announcner.stopUser(event.getPlayer().getName());
         this.am.clean(event.getPlayer().getName());
     }
 

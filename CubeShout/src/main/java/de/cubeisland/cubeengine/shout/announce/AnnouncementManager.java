@@ -43,9 +43,9 @@ public class AnnouncementManager
      * @return	A list of all announcements that should be displayed to this
      *         user.
      */
-    public List<Announcement> getAnnouncemets(String user)
+    public List<Announcement> getAnnouncements(String user)
     {
-        return new ArrayList<Announcement>(receivers.get(user).messages);
+        return new ArrayList<Announcement>(receivers.get(user).getAllAnnouncements());
     }
 
     /**
@@ -84,12 +84,12 @@ public class AnnouncementManager
      * Get the greatest common divisor of the delays form the announcements this
      * user should receive.
      *
-     * @param user	The user to get the gcd of their announcements.
+     * @param receiver	The user to get the gcd of their announcements.
      * @return	The gcd of the users announcements.
      */
-    public long getGreatestCommonDivisor(String user)
+    public long getGreatestCommonDivisor(AnnouncementReceiver receiver)
     {
-        List<Announcement> tmpAnnouncements = this.getAnnouncemets(user);
+        List<Announcement> tmpAnnouncements = this.getAnnouncements(receiver.getName());
         long[] delays = new long[tmpAnnouncements.size()];
         for (int x = 0; x < delays.length; x++)
         {
@@ -101,19 +101,19 @@ public class AnnouncementManager
     /**
      * Get the greatest common divisor of a list of integers.
      *
-     * @param	ints	The list to get the gcd from.
+     * @param	integers	The list to get the gcd from.
      * @return	gcd of all the integers in the list.
      */
-    private long greatestCommonDivisor(long[] ints)
+    private long greatestCommonDivisor(long[] integers)
     {
-        long result = ints[0];
+        long result = integers[0];
 
-        for (int x = 1; x < ints.length; x++)
+        for (int x = 1; x < integers.length; x++)
         {
-            while (ints[x] > 0)
+            while (integers[x] > 0)
             {
-                long t = ints[x];
-                ints[x] = result % ints[x];
+                long t = integers[x];
+                integers[x] = result % integers[x];
                 result = t;
             }
         }
@@ -123,59 +123,29 @@ public class AnnouncementManager
     /**
      * Get next message that should be displayed to this user.
      *
-     * @param	user	User to get the next message of.
+     * @param	receiver	User to get the next message of.
      * @return	The next message that should be displayed to the user.
      */
-    public String getNextMessage(String user)
+    public String getNextMessage(String receiver)
     {
-        User us = module.getUserManager().getUser(user, false);
-        Announcement announcement = null;
-        boolean used = false;
-        //Skip all announcements that don't apply to this world.
-        while (!used)
-        {
-            if (receivers.get(user).messages.element().hasWorld(receivers.get(user).world))
-            {
-                announcement = receivers.get(user).messages.poll();
-                receivers.get(user).messages.add(announcement);
-                used = true;
-            }
-        }
-        if (announcement == null)
-        {
-            return null;
-        }
-        return announcement.getMessage(us.getLanguage());
+        AnnouncementReceiver announcementReceiver = receivers.get(receiver);
+        Announcement announcement = announcementReceiver.getNextAnnouncement();
+        return announcement.getMessage(announcementReceiver.getLanguage());
     }
 
     /**
      * Get the next delay for this users MessageTask
      *
-     * @param	user	The user to get the next delay of.
+     * @param	receiver	The receiver to get the next delay of.
      * @return	The next delay that should be used for this users MessageTask in
      *         milliseconds.
      * @see	MessageTask
      */
-    public int getNextDelay(String user)
+    public int getNextDelay(String receiver)
     {
-        Announcement announcement = null;
-        boolean used = false;
-
-        //Skip all announcements that don't apply to the users current world.
-        while (!used)
-        {
-            if (receivers.get(user).messages.element().hasWorld(receivers.get(user).world))
-            {
-                announcement = receivers.get(user).messages.poll();
-                receivers.get(user).messages.add(announcement);
-                used = true;
-            }
-        }
-        if (announcement == null)
-        {
-            return 0;
-        }
-        return (int)(announcement.getDelay() / getGreatestCommonDivisor(user));
+        AnnouncementReceiver announcementReceiver = receivers.get(receiver);
+        int delay = announcementReceiver.getNextDelay();
+        return (int)(delay / getGreatestCommonDivisor(announcementReceiver));
     }
 
     /**
@@ -191,7 +161,7 @@ public class AnnouncementManager
      */
     public void addAnnouncement(String name, Map<String, String> messages, String world, long delay,
         String permNode, String group) throws ShoutException
-    {
+    { //TODO change this for some kind of new permission
         try
         {
             Announcement.validate(name, permNode, module.getCore().getConfiguration().defaultLanguage,
@@ -214,47 +184,44 @@ public class AnnouncementManager
     /**
      * initialize this users announcements
      *
-     * @param user	The user
+     * @param receiver	The user
      */
-    public void initializeUser(User user)
+    public void initializeReceiver(AnnouncementReceiver receiver)
     {
-        String name = user.getName();
         Queue<Announcement> messages = new LinkedList<Announcement>();
-        String world = user.getWorld().getName();
+        String world = receiver.getWorld();
 
         // Load what announcements should be displayed to the user
         for (Announcement a : announcements.values())
         {
-            if (a.getPermNode().equals("*") || user.hasPermission(a.getPermNode()))// TODO CubeRoles
-            {
-                messages.add(a);
-            }
-
+            messages.add(a); // TODO some kind of permission and CubeRoles
         }
 
-        this.receivers.put(name, new AnnouncementReceiver(messages, world));
+        receiver.setAllAnnouncements(messages);
+
+        this.receivers.put(receiver.getName(), receiver);
     }
 
     /**
      * Set the world for the user
      *
-     * @param user	 The user
+     * @param receiver	 The user
      * @param world	The new world
      */
-    public void setWorld(String user, String world)
+    public void setWorld(String receiver, String world)
     {
-        receivers.get(user).world = world;
+        receivers.get(receiver).setWorld(world);
     }
 
     /**
      * Clean all stored information of that user
      *
-     * @param user	the user to clean
+     * @param receiver	the receiver to clean
      */
-    public void clean(String user)
+    public void clean(String receiver)
     {
-        this.receivers.remove(user);
-        this.taskManager.stopUser(user);
+        this.receivers.remove(receiver);
+        this.taskManager.stopUser(receiver);
     }
 
     /**
@@ -262,9 +229,9 @@ public class AnnouncementManager
      */
     public void reload()
     {
-        for (String s : receivers.keySet())
+        for (AnnouncementReceiver receiver : receivers.values())
         {
-            this.clean(s);
+            this.clean(receiver.getName());
         }
 
         this.receivers = new ConcurrentHashMap<String, AnnouncementReceiver>();
@@ -278,9 +245,9 @@ public class AnnouncementManager
     {
         for (User user : module.getUserManager().getOnlineUsers())
         {
-            this.initializeUser(user);
+            this.initializeReceiver(new UserReceiver(user));
             taskManager.scheduleTask(user.getName(), new MessageTask(this, module.getTaskManger(), user),
-                this.getGreatestCommonDivisor(user.getName()));
+                this.getGreatestCommonDivisor(receivers.get(user.getName())));
         }
     }
 
@@ -484,21 +451,6 @@ public class AnnouncementManager
         finally
         {
             bw.close();
-        }
-    }
-
-    /**
-     * Class to reperesent someone receiving announcements
-     */
-    private class AnnouncementReceiver
-    {
-        public Queue<Announcement> messages;
-        public String world;
-
-        public AnnouncementReceiver(Queue<Announcement> messages, String world)
-        {
-            this.messages = messages;
-            this.world = world;
         }
     }
 }

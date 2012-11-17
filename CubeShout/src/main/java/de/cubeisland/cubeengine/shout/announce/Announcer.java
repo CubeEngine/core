@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.shout.announce;
 
+import de.cubeisland.cubeengine.core.user.User;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -27,20 +29,20 @@ public class Announcer
      * @param	task	 The task to scheduler
      * @param	delay	Delay between each time this task in run.
      */
-    public void scheduleTask(String user, TimerTask task, long delay)
+    public void scheduleTask(String receiver, TimerTask task, long delay)
     {
-        tasks.put(user, task);
+        tasks.put(receiver, task);
         timer.schedule(task, this.initDelay, delay);
     }
 
     /**
      * Stops a user from receiving announcements
      *
-     * @param user
+     * @param receiver
      */
-    public void stopUser(String user)
+    public void stopUser(String receiver)
     {
-        tasks.get(user).cancel();
+        tasks.get(receiver).cancel();
     }
 
     public void stopAll()
