@@ -29,6 +29,7 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
 
     public void logKill(DamageCause cause, Entity damager, Entity damagee, Location loc)
     {
+        //TODO save additional data for mobs e.g. colored sheeps
         KillCause killCause = KillCause.getKillCause(cause, damager);
         int causeID;
         if (this.checkLog(killCause, damagee))

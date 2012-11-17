@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -52,6 +53,14 @@ public class AfkListener implements Listener, Runnable
         user.setAttribute(basics, "lastAction", System.currentTimeMillis());
     }
 
+    @EventHandler(priority = EventPriority.LOW)
+    public void onChat(AsyncPlayerChatEvent event)
+    {
+        User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
+        user.setAttribute(basics, "lastAction", System.currentTimeMillis());
+    }
+
+    @Override
     public void run()
     {
         for (User user : basics.getUserManager().getLoadedUsers())

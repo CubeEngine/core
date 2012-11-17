@@ -49,7 +49,7 @@ public class ShoutSubCommands
             "world", "w"
         }),
         @Param(names = {
-        "permission", "p"
+            "permission", "p"
         }, type = Permission.class),
         @Param(names =
         {

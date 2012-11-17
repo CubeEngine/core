@@ -90,7 +90,7 @@ public class InventoryCommands
     }
 
     @Command(names = {
-        "clearinventory", "ci"
+        "clearinventory", "ci", "clear"
     }, desc = "Clears the inventory", usage = "[player]", flags = {
         @Flag(longName = "removeArmor", name = "ra")
     }, max = 1)

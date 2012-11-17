@@ -91,7 +91,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
         {
             this.query.append(" UNSIGNED");
         }
-        this.query.append(notnull ? " NOT NULL" : "");
+        this.query.append(notnull ? " NOT NULL" : " NULL");
         if (ai)
         {
             this.query.append(" AUTO_INCREMENT");

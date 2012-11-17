@@ -23,7 +23,7 @@ public class UserReader extends ArgumentReader<User>
     @Override
     public Pair<Integer, User> read(String... args) throws InvalidArgumentException
     {
-        User value = this.um.getUser(args[0], false);
+        User value = this.um.findUser(args[0]);
         return new Pair<Integer, User>(0, value);
     }
 }

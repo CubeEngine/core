@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.basics.general;
+package de.cubeisland.cubeengine.basics.mail;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;

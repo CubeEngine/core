@@ -6,7 +6,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class Duration extends Time
+public class Duration
 {
     private final static TObjectLongHashMap<String> longerNames = new TObjectLongHashMap<String>();
     private final static TObjectLongHashMap<String> shortNames = new TObjectLongHashMap<String>();
@@ -17,7 +17,7 @@ public class Duration extends Time
     private final static long HOUR = TimeUnit.HOURS.toMillis(1L);
     private final static long DAY = TimeUnit.DAYS.toMillis(1L);
     private final static long WEEK = TimeUnit.DAYS.toMillis(1L) * 7;
-    
+    private long time;
     private long week;
     private long day;
     private long hour;
@@ -48,22 +48,31 @@ public class Duration extends Time
 
     public Duration(String[] timeStrings)
     {
-        super(parseDuration(timeStrings));
+        this.time = parseDuration(timeStrings);
     }
 
     public Duration(long duration)
     {
-        super(duration);
+        this.time = duration;
     }
 
     public Duration(long from, long to)
     {
-        super(to - from < 0 ? from - to : to - from);
+        this.time = to - from < 0 ? from - to : to - from;
+    }
+
+    public Duration(String timeString)
+    {
+        this(StringUtils.explode(" ", timeString));
     }
 
     public static long parseDuration(String[] timeStrings) throws IllegalArgumentException
     {
         long result = 0;
+        if (timeStrings.length == 1 && timeStrings[0].equals("-1"))
+        {
+            return -1;
+        }
         for (int i = 0; i < timeStrings.length; ++i)
         {
             String timeString = timeStrings[i];
@@ -71,6 +80,10 @@ public class Duration extends Time
             Long timeUnitFactor = null;
             try
             {
+                if (timeStrings.length <= i + 1)
+                {
+                    throw new NumberFormatException(); // not realy but i want do avoid IndexOutOfBounds
+                }
                 time = Long.parseLong(timeString);
                 String timeUnitString = timeStrings[i + 1];
                 String unit = StringUtils.matchString(timeUnitString, longerNames.keySet());
@@ -127,9 +140,19 @@ public class Duration extends Time
         return result;
     }
 
+    public boolean isInfinite()
+    {
+        return this.time == -1;
+    }
+
     public long toTicks()
     {
         return this.time / 50;
+    }
+
+    public long toMillis()
+    {
+        return this.time;
     }
 
     public long toTimeUnit(TimeUnit timeUnit)
@@ -140,6 +163,10 @@ public class Duration extends Time
     public String format() // good for config
     {
         //search greatest unit:
+        if (this.time == -1)
+        {
+            return "-1";
+        }
         long convertTime = this.time;
         StringBuilder sb = new StringBuilder();
         while (convertTime > 0)
@@ -198,10 +225,11 @@ public class Duration extends Time
         this.milsec = convertTime / MS;
         convertTime -= convertTime / MS * MS;
     }
-    
+
     //TODO format method for chat output! DO IT BETTER.
     public String format(String pattern)
     {
+        this.update();
         String result = pattern;
         if (result.contains("%www") || result.contains("%ww") || result.contains("%w"))
         {

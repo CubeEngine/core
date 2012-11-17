@@ -37,12 +37,12 @@ public class LogCommands extends ContainerCommand
         @Flag(longName = "descending", name = "desc"), //sort in descending order (default ascending)
     }, params = {
         @Param(names = {
-        "player", "p"
+            "player", "p"
         }, type = User[].class),
         @Param(names = "area", type = Integer.class),
         @Param(names = "block", type = ItemStack[].class),
         @Param(names = {
-        "since", "time"
+            "since", "time"
         }, type = Date.class),
         @Param(names = "before", type = Date.class),
         @Param(names = "limit", type = Date.class),

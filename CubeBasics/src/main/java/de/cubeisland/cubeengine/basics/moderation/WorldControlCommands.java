@@ -35,6 +35,8 @@ public class WorldControlCommands
         config = basics.getConfiguration();
     }
 
+    //TODO butcher
+
     @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
     {

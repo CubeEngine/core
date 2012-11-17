@@ -253,7 +253,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Kills a player", usage = "<player>|-a", flags = {
+    @Command(names = {
+        "kill", "slay"
+    }, desc = "Kills a player", usage = "<player>|-a", flags = {
         @Flag(longName = "all", name = "a")
     })
     public void kill(CommandContext context)
@@ -305,9 +307,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = {
-        @Flag(longName = "chat", name = "c")
-    })
+    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = @Flag(longName = "chat", name = "c"))
     public void sudo(CommandContext context)
     {
         User user = context.getUser(0);
@@ -413,7 +413,6 @@ public class PlayerCommands
             context.sendMessage("basics", "&eGodMode: &2%s\n", ((CraftPlayer)user.getPlayer()).getHandle().abilities.isInvulnerable ? "&atrue" : "&cfalse");
         }
         context.sendMessage("basics", "&eAFK: %s", user.getAttribute(basics, "afk") == null ? "&cfalse" : "&atrue");
-        // TODO later money
         // TODO event so other modules can add their information
     }
 

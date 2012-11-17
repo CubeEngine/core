@@ -4,13 +4,13 @@ import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import java.sql.Timestamp;
-
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import java.sql.Timestamp;
 
 public class ChatCommands
 {
@@ -48,7 +48,7 @@ public class ChatCommands
             if (context.getString(0).equalsIgnoreCase("console"))
             {
                 context.getSender().getServer().getConsoleSender().
-                    sendMessage(_("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message));
+                        sendMessage(_("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message));
                 context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", "CONSOLE", message);
             }
             else
@@ -143,7 +143,7 @@ public class ChatCommands
         this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.toString());
     }
 
-    @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1, max = 2)
+    @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1)
     public void mute(CommandContext context) // mute will be unset when user is unloaded
     {
         User user = context.getUser(0);
@@ -156,19 +156,23 @@ public class ChatCommands
         {
             context.sendMessage("basics", "&2%s &ewas already muted!", user.getName());
         }
-        long delay = basics.getConfiguration().defaultMuteTime * 1000 * 60; //TODO use other format
-        if (delay < 1)
-        {
-            delay = System.currentTimeMillis() + 31104000000000L; // ~ 1k years
-        }
+        Duration dura = basics.getConfiguration().defaultMuteTime;
         if (context.hasIndexed(1))
         {
-            delay = context.getIndexed(1, Long.class, delay);
+            try
+            {
+                dura = new Duration(context.getStrings(1));
+            }
+            catch (IllegalArgumentException e)
+            {
+                blockCommand(context, "basics", "&cInvalid duration format!");
+            }
         }
-        bUser.muted = new Timestamp(System.currentTimeMillis() + delay);
+        bUser.muted = new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? 500 * 24 * 3600000 : dura.toMillis()));
         this.basics.getBasicUserManager().update(bUser);
-        user.sendMessage("basics", "&cYou are now muted for &6%d &cseconds!", (int)delay / 20);//TODO message / time value
-        context.sendMessage("basics", "&eYou muted &2%s &efor &6%d &esec!", user.getName(), (int)delay / 20);
+        String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www %ddd %hhh %mmm %sss");
+        user.sendMessage("basics", "&cYou are now muted for &6%s&c!", timeString);
+        context.sendMessage("basics", "&eYou muted &2%s &efor &6%s&c!", user.getName(), timeString);
     }
 
     @Command(desc = "Unmutes a player", usage = "<player>", min = 1, max = 1)

@@ -26,7 +26,7 @@ public class MuteListener implements Listener
             if (user != null)
             {
                 BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
-                if (bUser.muted != null && System.currentTimeMillis() > bUser.muted.getTime())
+                if (bUser.muted != null && System.currentTimeMillis() < bUser.muted.getTime())
                 {
                     event.setCancelled(true);
                     user.sendMessage("basics", "&cYou try to speak but nothing happens!");

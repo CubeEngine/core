@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
 import org.bukkit.Material;
@@ -34,7 +35,7 @@ public class BasicsConfiguration extends Configuration
     @Option("afk.afk-check-delay")
     public String afkCheck = "1s";
     @Option("command.mute.default-mute-time")
-    public int defaultMuteTime = -1;
+    public Duration defaultMuteTime = new Duration(-1);
     @Option("commands.item-blacklist")
     public Collection<ItemStack> blacklist = new LinkedList<ItemStack>()
                                                         {

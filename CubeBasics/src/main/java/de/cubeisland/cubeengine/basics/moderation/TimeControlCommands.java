@@ -17,6 +17,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
  * Commands changing time.
  * /time
  * /ptime
+ * //TODO show time
  */
 public class TimeControlCommands
 {
