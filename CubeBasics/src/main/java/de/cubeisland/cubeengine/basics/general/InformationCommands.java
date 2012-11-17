@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class InformationCommands
 {
@@ -279,7 +280,7 @@ public class InformationCommands
         //nutz/reserviert/max Memory
 
         //alle worlds mit gel. chunks und entity
-        String uptime = new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).toString();
+        Duration dura = new Duration(new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).getTime(), System.currentTimeMillis());
         long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;
         long memCom = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() / 1048576;
         long memMax = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax() / 1048576;
@@ -307,7 +308,7 @@ public class InformationCommands
             memused = "&a";
         }
         memused += memUse;
-        context.sendMessage("basics", "&6Uptime: &a%s\n&6Memory Usage: %s&f/%s&f/%s MB", uptime, memused, memcommited, memmax);
+        context.sendMessage("basics", "&6Uptime: &a%s\n&6Memory Usage: %s&f/%s&f/%s MB", dura.format("%www %ddd %hhh %mmm %sss"), memused, memcommited, memmax);
     }
 
     @Command(desc = "Displays your current language settings.", max = 0)

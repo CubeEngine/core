@@ -17,6 +17,13 @@ public class Duration extends Time
     private final static long HOUR = TimeUnit.HOURS.toMillis(1L);
     private final static long DAY = TimeUnit.DAYS.toMillis(1L);
     private final static long WEEK = TimeUnit.DAYS.toMillis(1L) * 7;
+    
+    private long week;
+    private long day;
+    private long hour;
+    private long minute;
+    private long second;
+    private long milsec;
 
     static
     {
@@ -42,6 +49,16 @@ public class Duration extends Time
     public Duration(String[] timeStrings)
     {
         super(parseDuration(timeStrings));
+    }
+
+    public Duration(long duration)
+    {
+        super(duration);
+    }
+
+    public Duration(long from, long to)
+    {
+        super(to - from < 0 ? from - to : to - from);
     }
 
     public static long parseDuration(String[] timeStrings) throws IllegalArgumentException
@@ -164,5 +181,84 @@ public class Duration extends Time
         }
         return sb.toString();
     }
-    //TODO format method for chat output!
+
+    private void update()
+    {
+        long convertTime = this.time;
+        this.week = convertTime / WEEK;
+        convertTime -= convertTime / WEEK * WEEK;
+        this.day = convertTime / DAY;
+        convertTime -= convertTime / DAY * DAY;
+        this.hour = convertTime / HOUR;
+        convertTime -= convertTime / HOUR * HOUR;
+        this.minute = convertTime / MIN;
+        convertTime -= convertTime / MIN * MIN;
+        this.second = convertTime / SEC;
+        convertTime -= convertTime / SEC * SEC;
+        this.milsec = convertTime / MS;
+        convertTime -= convertTime / MS * MS;
+    }
+    
+    //TODO format method for chat output! DO IT BETTER.
+    public String format(String pattern)
+    {
+        String result = pattern;
+        if (result.contains("%www") || result.contains("%ww") || result.contains("%w"))
+        {
+            result = result.replaceAll("%www", week == 0 ? "" : week + (week == 1 ? " week" : " weeks"));
+            result = result.replaceAll("%ww", week == 0 ? "" : week + "w");
+            result = result.replaceAll("%w", week == 0 ? "" : week + "");
+        }
+        else
+        {
+            day += week * 7;
+        }
+        if (result.contains("%ddd") || result.contains("%dd") || result.contains("%d"))
+        {
+            result = result.replaceAll("%ddd", day == 0 ? "" : day + (day == 1 ? " day" : " days"));
+            result = result.replaceAll("%dd", day == 0 ? "" : day + "d");
+            result = result.replaceAll("%d", day == 0 ? "" : day + "");
+        }
+        else
+        {
+            hour += hour * 24;
+        }
+        if (result.contains("%hhh") || result.contains("%hh") || result.contains("%h"))
+        {
+            result = result.replaceAll("%hhh", hour == 0 ? "" : hour + (hour == 1 ? " hour" : " hours"));
+            result = result.replaceAll("%hh", hour == 0 ? "" : hour + "h");
+            result = result.replaceAll("%h", hour == 0 ? "" : hour + "");
+        }
+        else
+        {
+            minute += minute * 60;
+        }
+        if (result.contains("%mmm") || result.contains("%mm") || result.contains("%m"))
+        {
+            result = result.replaceAll("%mmm", minute == 0 ? "" : minute + (minute == 1 ? " minute" : " minutes"));
+            result = result.replaceAll("%mm", minute == 0 ? "" : minute + "min");
+            result = result.replaceAll("%m", minute == 0 ? "" : minute + "");
+        }
+        else
+        {
+            second += second * 60;
+        }
+        if (result.contains("%sss") || result.contains("%ss") || result.contains("%s"))
+        {
+            result = result.replaceAll("%sss", second == 0 ? "" : second + (second == 1 ? " second" : " seconds"));
+            result = result.replaceAll("%ss", second == 0 ? "" : second + "sec");
+            result = result.replaceAll("%s", second == 0 ? "" : second + "");
+        }
+        else
+        {
+            milsec += milsec * 60;
+        }
+        if (result.contains("%SSS") || result.contains("%SSS") || result.contains("%SSS"))
+        {
+            result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + (milsec == 1 ? " millisecond" : " milliseconds"));
+            result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + "ms");
+            result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + "");
+        }
+        return result;
+    }
 }
