@@ -23,11 +23,16 @@ public abstract class AbstractReceiver implements AnnouncementReceiver
 
     public Pair<Announcement, Integer> getNextDelayAndAnnouncement()
     {
-        Pair<Announcement, Integer> pair = new Pair<Announcement, Integer>(null, null);
-        pair.setLeft(announcements.poll());
-        pair.setRight((int)(pair.getLeft().getDelay()/announcementManager.getGreatestCommonDivisor(this)));
-        announcements.add(pair.getLeft());
-        return pair;
+        for (int x = 0; x > announcements.size(); x++)
+        {
+            Announcement announcement = announcements.poll();
+            announcements.add(announcement);
+            if(announcement.hasWorld(this.getWorld()))
+            {
+                return new Pair<Announcement, Integer>(announcement, (int)(announcement.getDelay()/announcementManager.getGreatestCommonDivisor(this)));
+            }
+        }
+        return null;
     }
 
     public Queue<Announcement> getAllAnnouncements()
