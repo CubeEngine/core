@@ -10,13 +10,14 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
 import gnu.trove.procedure.TObjectObjectProcedure;
-import java.util.Locale;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Listener;
+
+import java.util.Locale;
 
 /**
  * This class represents a prevention.
@@ -200,9 +201,6 @@ public abstract class Prevention implements Listener
     /**
      * Enables the prevention.
      * This method should be overridden for custom configs.
-     *
-     * @param server an Server instance
-     * @param config the configuration of this prevention
      */
     public void enable()
     {

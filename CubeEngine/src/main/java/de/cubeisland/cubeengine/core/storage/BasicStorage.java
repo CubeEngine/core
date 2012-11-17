@@ -113,17 +113,6 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
         tbuilder.primaryKey(key).endFields();
 
-        //TODO foreign keys
-        //        if (!foreignKey.isEmpty())
-        //        {
-        //            for (Field field : foreignKey)
-        //            {
-        //                Relation relat = field.getAnnotation(Relation.class);
-        //                query.append(", FOREIGN KEY (").append(this.database.quote(field.getName()));
-        //                //query.append(") REFERENCES ").append(this.database.prefix(relat.model().getAnnotation(Entity.class).name()));
-        //                query.append("(").append(relat.field()).append(")");
-        //            }
-        //        }
         tbuilder.engine(entity.engine()).defaultcharset(entity.charset());
         if (keyIsAI)
         {

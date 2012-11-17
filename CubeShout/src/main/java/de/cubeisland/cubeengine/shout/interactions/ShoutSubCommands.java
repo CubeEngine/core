@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import java.io.IOException;
@@ -47,7 +48,9 @@ public class ShoutSubCommands
         {
             "world", "w"
         }),
-        //@Param(names = {"permission", "p"}, type = Permission.class), TODO
+        @Param(names = {
+        "permission", "p"
+        }, type = Permission.class),
         @Param(names =
         {
             "group", "g"

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
+// TODO an enum goes against abstraction, replace with classes
 /**
  * The possible AttributeTypes for the database.
  */
