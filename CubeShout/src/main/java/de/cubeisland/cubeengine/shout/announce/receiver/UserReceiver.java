@@ -1,6 +1,8 @@
-package de.cubeisland.cubeengine.shout.announce;
+package de.cubeisland.cubeengine.shout.announce.receiver;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.shout.announce.Announcement;
+import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 
 import java.util.Queue;
 

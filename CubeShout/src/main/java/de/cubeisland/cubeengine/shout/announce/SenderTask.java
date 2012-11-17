@@ -6,12 +6,12 @@ import java.util.concurrent.Callable;
 /**
  * A class to actually send a message to a user
  */
-public class AnnouncementSender implements Callable
+public class SenderTask implements Callable
 {
     private final User user;
     private final String message;
 
-    public AnnouncementSender(User user, String message)
+    public SenderTask(User user, String message)
     {
         this.user = user;
         this.message = message;
