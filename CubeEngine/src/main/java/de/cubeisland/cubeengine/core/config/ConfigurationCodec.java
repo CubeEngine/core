@@ -344,7 +344,7 @@ public abstract class ConfigurationCodec
                             continue;
                         }
                         int mask = field.getModifiers();
-                        if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static and final fields
+                        if ((((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static fields
                         {
                             continue;
                         }
