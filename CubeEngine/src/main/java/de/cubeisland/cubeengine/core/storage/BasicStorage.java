@@ -463,7 +463,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 this.database.preparedExecute(this.modelClass, "delete", key);
             }
 
-            for (Callback cb : this.createCallbacks)
+            for (Callback cb : this.deleteCallbacks)
             {
                 cb.call(key);
             }
