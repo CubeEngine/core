@@ -17,13 +17,11 @@ public class ShoutListener implements Listener
 {
     private Shout module;
     private AnnouncementManager am;
-    private Announcer announcner;
 
     public ShoutListener(Shout module)
     {
         this.module = module;
         this.am = module.getAnnouncementManager();
-        this.announcner = module.getTaskManager();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -35,18 +33,12 @@ public class ShoutListener implements Listener
         {
             this.module.getLogger().log(LogLevel.DEBUG, "Loading user: {0}", user.getName());
         }
-        this.am.initializeReceiver(new UserReceiver(user, am));
+        this.am.initializeUser(user);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void PlayerLeaveEvent(PlayerQuitEvent event)
     {
         this.am.clean(event.getPlayer().getName());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void PlayerChangedWorld(PlayerChangedWorldEvent event)
-    {
-        this.am.setWorld(event.getPlayer().getName(), event.getPlayer().getWorld().getName());
     }
 }

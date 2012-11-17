@@ -39,6 +39,8 @@ public class AnnouncementManager
         this.announcementFolder = announcementFolder;
     }
 
+
+
     /**
      * Get all the announcements this user should receive.
      *
@@ -83,6 +85,8 @@ public class AnnouncementManager
         return this.announcements.containsKey(name);
     }
 
+
+
     /**
      * Get the greatest common divisor of the delays form the announcements this
      * user should receive.
@@ -123,71 +127,16 @@ public class AnnouncementManager
         return result;
     }
 
-    /**
-     * Get next message that should be displayed to this user.
-     *
-     * @param	receiver	User to get the next message of.
-     * @return	The next message that should be displayed to the user.
-     */
-    public String getNextMessage(String receiver)
+    public void initializeUser(User user)
     {
-        AnnouncementReceiver announcementReceiver = receivers.get(receiver);
-        Announcement announcement = announcementReceiver.getNextAnnouncement();
-        return announcement.getMessage(announcementReceiver.getLanguage());
+        AnnouncementReceiver receiver = new UserReceiver(user, this);
+        this.initializeReceiver(receiver);
     }
 
     /**
-     * Get the next delay for this users MessageTask
+     * initialize this receivers announcements
      *
-     * @param	receiver	The receiver to get the next delay of.
-     * @return	The next delay that should be used for this users MessageTask in
-     *         milliseconds.
-     * @see	MessageTask
-     */
-    public int getNextDelay(String receiver)
-    {
-        AnnouncementReceiver announcementReceiver = receivers.get(receiver);
-        int delay = announcementReceiver.getNextDelay();
-        return (int)(delay / getGreatestCommonDivisor(announcementReceiver));
-    }
-
-    /**
-     * Adds an announcement.
-     * Most be done before ay player joins!
-     *
-     * @param messages
-     * @param world
-     * @param delay
-     * @param permNode
-     * @param group
-     * @throws ShoutException if there is something wrong with the values
-     */
-    public void addAnnouncement(String name, Map<String, String> messages, String world, long delay,
-        String permNode, String group) throws ShoutException
-    { //TODO change this for some kind of new permission
-        try
-        {
-            Announcement.validate(name, permNode, module.getCore().getConfiguration().defaultLanguage,
-                world, messages, delay);
-            Announcement announcement = new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
-                permNode, world, messages, delay);
-            this.addAnnouncement(announcement);
-        }
-        catch (IllegalArgumentException ex)
-        {
-            throw new ShoutException("The announcement was not valid", ex);
-        }
-    }
-
-    public void addAnnouncement(Announcement announcement)
-    {
-        this.announcements.put(announcement.getName(), announcement);
-    }
-
-    /**
-     * initialize this users announcements
-     *
-     * @param receiver	The user
+     * @param receiver	The receiver
      */
     public void initializeReceiver(AnnouncementReceiver receiver)
     {
@@ -203,18 +152,11 @@ public class AnnouncementManager
         receiver.setAllAnnouncements(messages);
 
         this.receivers.put(receiver.getName(), receiver);
+        taskManager.scheduleTask(receiver.getName(), new MessageTask(this, module.getTaskManger(), receiver),
+                this.getGreatestCommonDivisor(receiver));
     }
 
-    /**
-     * Set the world for the user
-     *
-     * @param receiver	 The user
-     * @param world	The new world
-     */
-    public void setWorld(String receiver, String world)
-    {
-        receivers.get(receiver).setWorld(world);
-    }
+
 
     /**
      * Clean all stored information of that user
@@ -228,7 +170,7 @@ public class AnnouncementManager
     }
 
     /**
-     * Clean all loaded announcements and users
+     * Reload all loaded announcements and users
      */
     public void reload()
     {
@@ -248,10 +190,44 @@ public class AnnouncementManager
     {
         for (User user : module.getUserManager().getOnlineUsers())
         {
-            this.initializeReceiver(new UserReceiver(user));
-            taskManager.scheduleTask(user.getName(), new MessageTask(this, module.getTaskManger(), user),
-                this.getGreatestCommonDivisor(receivers.get(user.getName())));
+            this.initializeReceiver(new UserReceiver(user, this));
+
         }
+    }
+
+
+
+    /**
+     * Adds an announcement.
+     * Most be done before ay player joins!
+     *
+     * @param messages
+     * @param world
+     * @param delay
+     * @param permNode
+     * @param group
+     * @throws ShoutException if there is something wrong with the values
+     */
+    public void addAnnouncement(String name, Map<String, String> messages, String world, long delay,
+                                String permNode, String group) throws ShoutException
+    { //TODO change this for some kind of new permission
+        try
+        {
+            Announcement.validate(name, permNode, module.getCore().getConfiguration().defaultLanguage,
+                    world, messages, delay);
+            Announcement announcement = new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
+                    permNode, world, messages, delay);
+            this.addAnnouncement(announcement);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            throw new ShoutException("The announcement was not valid", ex);
+        }
+    }
+
+    public void addAnnouncement(Announcement announcement)
+    {
+        this.announcements.put(announcement.getName(), announcement);
     }
 
     /**

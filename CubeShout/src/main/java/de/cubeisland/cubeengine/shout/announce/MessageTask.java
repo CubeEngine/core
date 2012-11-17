@@ -2,21 +2,24 @@ package de.cubeisland.cubeengine.shout.announce;
 
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.shout.announce.receiver.AnnouncementReceiver;
+
 import java.util.TimerTask;
 
 public class MessageTask extends TimerTask
 {
     private final AnnouncementManager am;
     private final TaskManager tm;
-    private final User user;
+    private final AnnouncementReceiver receiver;
     private int runs;
     private int nextExcecution;
 
-    public MessageTask(AnnouncementManager am, TaskManager taskManager, User user)
+    public MessageTask(AnnouncementManager am, TaskManager taskManager, AnnouncementReceiver receiver)
     {
         this.am = am;
         this.tm = taskManager;
-        this.user = user;
+        this.receiver = receiver;
         this.runs = 0;
         this.nextExcecution = 0;
     }
@@ -26,10 +29,11 @@ public class MessageTask extends TimerTask
     {
         if (this.runs == this.nextExcecution)
         {
-            if (am.getNextMessage(user.getName()) != null)
+            Pair<Announcement, Integer>  pair = receiver.getNextDelayAndAnnouncement();
+            if (pair != null && pair.getLeft() != null && pair.getRight() != null)
             {
-                this.tm.callSyncMethod(new AnnouncementSender(this.user, this.am.getNextMessage(this.user.getName())));
-                this.nextExcecution = this.runs + this.am.getNextDelay(user.getName());
+                this.tm.callSyncMethod(new SenderTask(this.receiver, pair.getLeft().getMessage(receiver.getLanguage())));
+                this.nextExcecution = this.runs + pair.getRight();
             }
             else
             {
