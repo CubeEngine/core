@@ -103,7 +103,7 @@ public class ItemCommands
     }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1)
     public void headchange(CommandContext context)
     {
-        //TODO later listener to drop the custom heads
+        //TODO later listener to drop the custom heads (perhaps bukkit wil fix it)
         String name = context.getString(0);
         User sender = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?");
         CraftItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
@@ -421,9 +421,7 @@ public class ItemCommands
     public void stack(CommandContext context)
     {
         User user = context.getSenderAsUser("basics", "&eNo stacking for you.");
-        //TODO permission to stack to 64
-        boolean allow64 = true;// plugin.hasPermission(player, "worldguard.stack.illegitimate");
-
+        boolean allow64 = BasicsPerm.COMMAND_STACK_FULLSTACK.isAuthorized(user);
         ItemStack[] items = user.getInventory().getContents();
         int size = items.length;
         boolean changed = false;

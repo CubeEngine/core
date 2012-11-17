@@ -141,9 +141,6 @@ public class InformationCommands
         List<Entity> list = user.getWorld().getEntities();
         LinkedList<String> outputlist = new LinkedList<String>();
         TreeMap<Double, List<Entity>> sortedMap = new TreeMap<Double, List<Entity>>();
-        //TODO if list contains too many objects show nearest normally then
-        //e.g.:  100x Zombie (250m+)
-        //TODO only show the flag is there for
         for (Entity entity : list)
         {
             double distance = entity.getLocation().distanceSquared(user.getLocation());

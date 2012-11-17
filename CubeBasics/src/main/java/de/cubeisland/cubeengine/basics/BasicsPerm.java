@@ -13,12 +13,10 @@ public enum BasicsPerm implements Permission
     COMMAND_GAMEMODE_OTHER,
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,
-    COMMAND_KILL_PREVENT(
-        PermissionDefault.FALSE),
+    COMMAND_KILL_PREVENT(PermissionDefault.FALSE),
     COMMAND_KILL_ALL,
     COMMAND_INVSEE_MODIFY, // allows to modify the inventory
-    COMMAND_INVSEE_PREVENTMODIFY(
-        PermissionDefault.FALSE), // prevents from modifying the inventory
+    COMMAND_INVSEE_PREVENTMODIFY(PermissionDefault.FALSE), // prevents from modifying the inventory
     COMMAND_INVSEE_NOTIFY, // notify if someone looks into your inventory
     COMMAND_KICK_ALL,
     COMMAND_SPAWN_ALL, // spawn all players
@@ -29,19 +27,16 @@ public enum BasicsPerm implements Permission
     COMMAND_TPHERE_FORCE, // ignore tphere prevent perms
     COMMAND_TPHEREALL_FORCE, // ignore tphere prevent perms
     COMMAND_TP_OTHER, // can tp other person
-    COMMAND_TP_PREVENT_TP(
-        PermissionDefault.FALSE), // can not be tped except forced
-    COMMAND_TP_PREVENT_TPTO(
-        PermissionDefault.FALSE), // can not be tped to except forced
-    COMMAND_TPHERE_PREVENT(
-        PermissionDefault.FALSE), // can not tpedhere except forced
-    COMMAND_TPHEREALL_PREVENT(
-        PermissionDefault.FALSE), // can not tpedhere(all) except forced
+    COMMAND_TP_PREVENT_TP(PermissionDefault.FALSE), // can not be tped except forced
+    COMMAND_TP_PREVENT_TPTO(PermissionDefault.FALSE), // can not be tped to except forced
+    COMMAND_TPHERE_PREVENT(PermissionDefault.FALSE), // can not tpedhere except forced
+    COMMAND_TPHEREALL_PREVENT(PermissionDefault.FALSE), // can not tpedhere(all) except forced
     COMMAND_BACK_ONDEATH,
     POWERTOOL_USE, //allows to use powertools
     COMMAND_KIT_GIVE_FORCE,
     COMMAND_GOD_OTHER,
-    COMMAND_GOD_KEEP, ;
+    COMMAND_GOD_KEEP,
+    COMMAND_STACK_FULLSTACK;
     private String permission;
     private PermissionDefault def;
 
@@ -53,7 +48,7 @@ public enum BasicsPerm implements Permission
     private BasicsPerm(PermissionDefault def)
     {
         this.permission = "cubeengine.basics." + this.name().
-            toLowerCase(Locale.ENGLISH).replace('_', '.');
+                toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
     }
 

@@ -157,8 +157,6 @@ public class SpawnMobCommand
 
     private void applyDataToMob(CommandSender sender, EntityType entityType, Entity entity, String data)
     {
-        //TODO fix sheepcolor
-        //TODO pig saddled
         //TODO other additional data?
         if (data != null)
         {

@@ -20,6 +20,7 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class PlayerCommands
 {
@@ -242,14 +243,14 @@ public class PlayerCommands
         if (changeOther)
         {
             context.sendMessage("basics", "&aYou changed the gamemode of &2%s &ato &6%s&a!",
-                user.getName(), _(sender, "basics", user.getGameMode().toString()));
+                    user.getName(), _(sender, "basics", user.getGameMode().toString()));
             user.sendMessage("basics", "&eYour Gamemode has been changed to &6%s&a!",
-                _(user, "basics", user.getGameMode().toString()));
+                    _(user, "basics", user.getGameMode().toString()));
         }
         else
         {
             context.sendMessage("basics", "&aYou changed your gamemode to &6%s&a!",
-                _(user, "basics", user.getGameMode().toString()));
+                    _(user, "basics", user.getGameMode().toString()));
         }
     }
 
@@ -261,6 +262,8 @@ public class PlayerCommands
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightning
+        //TODO prevent if in godmode 
+        //TODO force flag
         User user = context.getUser(0);
         if (user == null)
         {
@@ -352,8 +355,9 @@ public class PlayerCommands
             }
             else
             {
-                context.sendMessage("basics", "&2%s &ewas last seen %2$te days %2$tk hours %2$tM minutes ago.", user.getName(), System.currentTimeMillis() - lastPlayed);
-            } //TODO output formatting durations is wrong ... .(
+                context.sendMessage("basics", "&2%s &ewas last seen %s %2$te days %2$tk hours %2$tM minutes ago.", user.getName(),
+                        new Duration(System.currentTimeMillis(), lastPlayed).format("%www %ddd %hhh %mmm %sss"));
+            }
         }
     }
 

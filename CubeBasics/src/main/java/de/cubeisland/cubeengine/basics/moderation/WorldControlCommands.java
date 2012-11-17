@@ -116,7 +116,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                invalidUsage(context, "basics", "&cIf not used ingame you have to specify a world!");//TODO funny msg
+                invalidUsage(context, "basics", "&cI will try my best to remove YOU!");
             }
             world = sender.getWorld();
         }
@@ -127,7 +127,7 @@ public class WorldControlCommands
         }
         else if (sender == null)
         {
-            invalidUsage(context, "basics", "&cIf not used ingame you can only remove all!");//TODO funny msg
+            invalidUsage(context, "basics", "&cIf not used ingame you can only remove all!");
         }
         if (context.hasIndexed(1))
         {
