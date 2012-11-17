@@ -1,15 +1,15 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
 import net.minecraft.server.NBTTagCompound;
@@ -20,7 +20,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.help.SimpleHelpMap;
@@ -28,44 +32,39 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
  */
 public class BukkitUtils
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
-    private static final Field localeStringField;
-    private static Field nshListField = null;
+    private static boolean hackSucceeded = false;
+    private static final Field LOCALE_STRING_FIELD = findFirstField(String.class, LocaleLanguage.class);
+    private static final Field NSH_LIST_FIELD = findFirstField(List.class, ServerConnection.class);
 
     static
     {
-        try
+        if (LOCALE_STRING_FIELD != null && NSH_LIST_FIELD != null)
         {
-            localeStringField = LocaleLanguage.class.getDeclaredField("d");
-            localeStringField.setAccessible(true);
+            hackSucceeded = true;
         }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Failed to initialize the Bukkit-Language-Hack!");
-        }
-        try
-        {
-            nshListField = ServerConnection.class.getDeclaredField("d");
-            nshListField.setAccessible(true);
-        }
-        catch (Exception e)
-        {}
     }
 
     private BukkitUtils()
     {}
+
+    public static boolean isCompatible()
+    {
+        return (hackSucceeded && CraftServer.class == Bukkit.getServer().getClass() && SimplePluginManager.class == Bukkit.getPluginManager().getClass() && SimpleHelpMap.class == Bukkit.getHelpMap().getClass());
+    }
 
     /**
      * Returns the locale string of a player.
@@ -79,7 +78,7 @@ public class BukkitUtils
         {
             try
             {
-                return (String)localeStringField.get(((CraftPlayer)player).getHandle().getLocale());
+                return (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
             }
             catch (Exception e)
             {}
@@ -87,11 +86,16 @@ public class BukkitUtils
         return null;
     }
 
-    private static Field findCommandMapField(Object o)
+    private static Field findFirstField(Class type, Object o)
     {
-        for (Field field : o.getClass().getDeclaredFields())
+        return findFirstField(type, o.getClass());
+    }
+
+    private static Field findFirstField(Class type, Class clazz)
+    {
+        for (Field field : clazz.getDeclaredFields())
         {
-            if (CommandMap.class.isAssignableFrom(field.getType()))
+            if (type.isAssignableFrom(field.getType()))
             {
                 field.setAccessible(true);
                 return field;
@@ -100,24 +104,62 @@ public class BukkitUtils
         return null;
     }
 
-    public static void swapCommandMap(Server server, PluginManager pm, CommandMap commandMap)
+    public static SimpleCommandMap swapCommandMap(SimpleCommandMap commandMap)
     {
         Validate.notNull(commandMap, "The command map must not be null!");
 
-        if (pm.getClass() == SimplePluginManager.class && server.getClass() == CraftServer.class)
+        final Server server = Bukkit.getServer();
+        final PluginManager pm = Bukkit.getPluginManager();
+
+        Field serverField = findFirstField(CommandMap.class, server);
+        Field pmField = findFirstField(CommandMap.class, pm);
+
+        SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
+        if (serverField != null && pmField != null)
         {
-            Field serverField = findCommandMapField(server);
-            Field pmField = findCommandMapField(pm);
-            if (serverField != null && pmField != null)
+            try
             {
-                try
-                {
-                    serverField.set(server, commandMap);
-                    pmField.set(pm, commandMap);
-                }
-                catch (Exception ignored)
-                {}
+                serverField.set(server, commandMap);
+                pmField.set(pm, commandMap);
             }
+            catch (Exception e)
+            {
+                CubeEngine.getLogger().log(DEBUG, e.getLocalizedMessage(), e);
+            }
+        }
+        return oldMap;
+    }
+
+    public static void resetCommandMap()
+    {
+        SimpleCommandMap current = ((CraftServer)Bukkit.getServer()).getCommandMap();
+        if (current instanceof CubeCommandMap)
+        {
+            CubeCommandMap cubeMap = (CubeCommandMap)current;
+            swapCommandMap(current = new SimpleCommandMap(Bukkit.getServer()));
+
+            Collection<Command> commands = cubeMap.getKnownCommands().values();
+
+            for (Command command : commands)
+            {
+                command.unregister(cubeMap);
+                if (command instanceof CubeCommand)
+                {
+                    continue;
+                }
+                String prefix = "";
+                if (command instanceof PluginCommand)
+                {
+                    prefix = ((PluginCommand)command).getPlugin().getName();
+                }
+                else if (command instanceof BukkitCommand)
+                {
+                    prefix = "bukkit";
+                }
+                current.register(command.getLabel(), prefix, command);
+            }
+
+            reloadHelpMap();
         }
     }
 
@@ -130,7 +172,12 @@ public class BukkitUtils
     {
         if (!PacketHookInjector.injected)
         {
-            plugin.getServer().getPluginManager().registerEvents(PacketHookInjector.INSTANCE, plugin);
+            Bukkit.getPluginManager().registerEvents(PacketHookInjector.INSTANCE, plugin);
+
+            for (Player player : Bukkit.getOnlinePlayers())
+            {
+                PacketHookInjector.INSTANCE.swap(player);
+            }
         }
     }
 
@@ -163,36 +210,50 @@ public class BukkitUtils
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerJoin(PlayerJoinEvent event)
         {
-            if (nshListField == null)
-            {
-                return;
-            }
-            final Player player = event.getPlayer();
-            EntityPlayer playerEntity = ((CraftPlayer)player).getHandle();
-            NetServerHandler oldHandler = playerEntity.netServerHandler;
-            try
-            {
+            this.swap(event.getPlayer());
+        }
 
-                if (oldHandler.getClass() != CubeEngineNetServerHandler.class)
-                {
-                    CubeEngineNetServerHandler handler = new CubeEngineNetServerHandler(playerEntity, this.taskQueue);
+        public void swap(final Player player)
+        {
+            final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
-                    Location loc = player.getLocation();
-                    handler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+            swapPlayerNetServerHandler(entity, new CubeEngineNetServerHandler(entity, this.taskQueue));
+        }
+    }
 
-                    ServerConnection sc = playerEntity.server.ae();
-                    ((List<NetServerHandler>)nshListField.get(sc)).remove(oldHandler);
-                    sc.a(handler);
-                    LOGGER.log(LogLevel.DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
-                    oldHandler.disconnected = true;
-                }
-            }
-            catch (Exception e)
+    public static void swapPlayerNetServerHandler(EntityPlayer player, NetServerHandler newHandler)
+    {
+        if (NSH_LIST_FIELD == null)
+        {
+            return;
+        }
+        NetServerHandler oldHandler = player.netServerHandler;
+        try
+        {
+            if (oldHandler.getClass() != newHandler.getClass())
             {
-                playerEntity.netServerHandler = oldHandler;
-                LOGGER.log(LogLevel.ERROR, e.getLocalizedMessage(), e);
+                Location loc = player.getBukkitEntity().getLocation();
+                newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+
+                ServerConnection sc = player.server.ae();
+                ((List<NetServerHandler>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
+                sc.a(newHandler);
+                CubeEngine.getLogger().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
+                oldHandler.disconnected = true;
             }
         }
+        catch (Exception e)
+        {
+            player.netServerHandler = oldHandler;
+            CubeEngine.getLogger().log(DEBUG, e.getLocalizedMessage(), e);
+        }
+    }
+
+    public static void resetPlayerNetServerHandler(Player player)
+    {
+        final EntityPlayer entity = ((CraftPlayer)player).getHandle();
+
+        swapPlayerNetServerHandler(entity, new NetServerHandler(entity.server, entity.netServerHandler.networkManager, entity));
     }
 
     public static void reloadHelpMap()
@@ -279,5 +340,14 @@ public class BukkitUtils
     public static void cleanup()
     {
         PacketHookInjector.INSTANCE.shutdown();
+        HandlerList.unregisterAll(PacketHookInjector.INSTANCE);
+        PacketHookInjector.injected = false;
+
+        for (Player player : Bukkit.getOnlinePlayers())
+        {
+            resetPlayerNetServerHandler(player);
+        }
+
+        resetCommandMap();
     }
 }

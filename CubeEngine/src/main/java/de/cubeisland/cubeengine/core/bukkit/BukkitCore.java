@@ -20,6 +20,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
@@ -59,6 +60,11 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
+        if (!BukkitUtils.isCompatible())
+        {
+            this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine.");
+            return;
+        }
         CubeEngine.initialize(this);
 
         this.jsonObjectMapper = new ObjectMapper();

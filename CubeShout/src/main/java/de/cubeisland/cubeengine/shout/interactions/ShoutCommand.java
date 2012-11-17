@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import java.util.Arrays;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class ShoutCommand
@@ -31,11 +32,11 @@ public class ShoutCommand
 
             if (announcement.getWorld().equals("*"))
             {
-                players = Arrays.asList(this.module.getCore().getServer().getOnlinePlayers());
+                players = Arrays.asList(Bukkit.getOnlinePlayers());
             }
             else
             {
-                players = this.module.getCore().getServer().getWorld(announcement.getWorld()).getPlayers();
+                players = Bukkit.getWorld(announcement.getWorld()).getPlayers();
             }
 
             for (Player player : players)

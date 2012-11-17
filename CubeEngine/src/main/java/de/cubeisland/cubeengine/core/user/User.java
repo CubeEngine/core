@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -67,7 +68,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
-        super(CubeEngine.getOfflinePlayer((String)args.get(1)));
+        super(Bukkit.getOfflinePlayer((String)args.get(1)));
         this.key = Integer.valueOf(args.get(0).toString());
         this.player = this.offlinePlayer.getName();
         this.nogc = (Boolean)args.get(2);
@@ -93,7 +94,7 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     public User(String playername)
     {
-        this(NO_ID, CubeEngine.getOfflinePlayer(playername));
+        this(NO_ID, Bukkit.getOfflinePlayer(playername));
     }
 
     /**

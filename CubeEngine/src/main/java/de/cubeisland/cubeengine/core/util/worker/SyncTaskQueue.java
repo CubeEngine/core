@@ -27,7 +27,7 @@ public class SyncTaskQueue implements TaskQueue
     public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
     {
         this.corePlugin = (BukkitCore)core;
-        this.scheduler = core.getServer().getScheduler();
+        this.scheduler = this.corePlugin.getServer().getScheduler();
         this.taskQueue = taskQueue;
         this.taskID = -1;
         this.isShutdown = false;

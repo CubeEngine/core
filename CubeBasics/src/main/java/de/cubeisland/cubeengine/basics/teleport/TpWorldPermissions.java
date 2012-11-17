@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import gnu.trove.map.hash.THashMap;
 import java.util.Map;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
@@ -27,22 +28,25 @@ public class TpWorldPermissions
 
     public TpWorldPermissions(Basics basics)
     {
-        for (final World world : basics.getCore().getServer().getWorlds())
+        for (final World world : Bukkit.getWorlds())
         {
             permissions.put(world.getName(), new Permission()
             {
                 private String permission = "cubeengine.basics.command.tpworld." + world.getName();
 
+                @Override
                 public boolean isAuthorized(Permissible player)
                 {
                     return player.hasPermission(permission);
                 }
 
+                @Override
                 public String getPermission()
                 {
                     return this.permission;
                 }
 
+                @Override
                 public PermissionDefault getPermissionDefault()
                 {
                     return PermissionDefault.OP;

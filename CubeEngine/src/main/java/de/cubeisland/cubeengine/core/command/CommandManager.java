@@ -38,7 +38,7 @@ public class CommandManager
         SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
         this.commandMap = new CubeCommandMap(core, server, oldMap);
         this.knownCommands = this.commandMap.getKnownCommands();
-        BukkitUtils.swapCommandMap(server, server.getPluginManager(), this.commandMap);
+        BukkitUtils.swapCommandMap(this.commandMap);
     }
 
     /**

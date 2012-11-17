@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.user.User;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,11 +29,11 @@ class RuleBookListener implements Listener, Runnable
         if (!player.hasPlayedBefore())
         {
             playerName = player.getName();
-            player.getServer().getScheduler().
-                scheduleSyncDelayedTask((Plugin)this.module.getCore(), this, 15);
+            player.getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.module.getCore(), this, 15);
         }
     }
 
+    @Override
     public void run()
     {
         if (playerName != null)
@@ -47,8 +48,7 @@ class RuleBookListener implements Listener, Runnable
 
             BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
 
-            ruleBook.
-                setAuthor(this.module.getCore().getServer().getServerName());
+            ruleBook.setAuthor(Bukkit.getServerName());
             ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
             ruleBook.setPages(this.module.getConfig().getPages(language));
 

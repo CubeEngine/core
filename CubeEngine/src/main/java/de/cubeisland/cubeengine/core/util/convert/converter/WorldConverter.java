@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 public class WorldConverter implements Converter<World>
@@ -25,12 +25,12 @@ public class WorldConverter implements Converter<World>
             if (string.contains("(") && string.contains(")"))
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('('), string.indexOf(')') - 1));
-                world = CubeEngine.getServer().getWorld(uid);
+                world = Bukkit.getWorld(uid);
                 string = string.substring(0, string.indexOf('('));
             }
             if (world == null)
             {
-                world = CubeEngine.getServer().getWorld(string);
+                world = Bukkit.getWorld(string);
             }
             if (world != null)
             {

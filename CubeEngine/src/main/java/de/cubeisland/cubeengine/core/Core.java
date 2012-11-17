@@ -25,13 +25,6 @@ public interface Core
     public static final int REVISION = 1;
 
     /**
-     * The method returns the Server
-     *
-     * @return the server instance
-     */
-    public Server getServer();
-
-    /**
      * The method returns the database
      *
      * @return the database instance

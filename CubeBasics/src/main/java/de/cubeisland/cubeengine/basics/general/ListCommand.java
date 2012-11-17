@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class ListCommand
@@ -21,7 +22,7 @@ public class ListCommand
         DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(Basics.getInstance(), context.getSender(), players);
         if (!(Basics.getInstance().getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
-            context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getPlayers().size(), context.getCore().getServer().getMaxPlayers());
+            context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getPlayers().size(), Bukkit.getMaxPlayers());
             context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getPlayers()));
         }
     }

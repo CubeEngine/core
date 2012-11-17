@@ -1,17 +1,26 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.TestCore;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.NetHandler;
 import net.minecraft.server.Packet;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class PacketHackTest
+public class HackTest
 {
+    @BeforeClass
+    public static void init()
+    {
+        CubeEngine.initialize(new TestCore());
+    }
+
     @Test
     public void testImplementedPacketMethods()
     {
@@ -22,6 +31,12 @@ public class PacketHackTest
         System.out.println("ce methods: " + ceMethods.length);
 
         assertTrue("Not all packet methods are implemented.", nhMethods.length == ceMethods.length);
+    }
+
+    //@Test
+    public void testBukkitUtils()
+    {
+        assertTrue("The BukkitUtils couldn't find a field!", BukkitUtils.isCompatible());
     }
 
     private static Method[] readMethods(final Class clazz)

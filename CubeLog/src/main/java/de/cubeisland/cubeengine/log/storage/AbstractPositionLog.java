@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -58,19 +59,21 @@ public abstract class AbstractPositionLog implements Model<Integer>
 
     public Location getLocation()
     {
-        World world = CubeEngine.getServer().getWorld(UUID.fromString(worldUUID));
+        World world = Bukkit.getWorld(UUID.fromString(worldUUID));
         if (world == null)
         {
-            world = CubeEngine.getServer().getWorld(worldName);
+            world = Bukkit.getWorld(worldName);
         }
         return new Location(world, x, y, z);
     }
 
+    @Override
     public Integer getKey()
     {
         return key;
     }
 
+    @Override
     public void setKey(Integer key)
     {
         this.key = key;
