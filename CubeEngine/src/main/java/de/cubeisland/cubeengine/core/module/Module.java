@@ -13,13 +13,12 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
-import org.apache.commons.lang.Validate;
-import org.bukkit.event.Listener;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.lang.Validate;
+import org.bukkit.event.Listener;
 
 /**
  * Module for CubeEngine.
