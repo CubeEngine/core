@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
 public class LocationUtil
@@ -11,9 +12,9 @@ public class LocationUtil
         double yaw = Math.toRadians(user.getLocation().getYaw() + 90);
         double pitch = Math.toRadians(-user.getLocation().getPitch());
 
-        double x = 0.2 * Math.cos(yaw) * Math.cos(pitch);
-        double y = 0.2 * Math.sin(pitch);
-        double z = 0.2 * Math.sin(yaw) * Math.cos(pitch);
+        double x = 0.5 * Math.cos(yaw) * Math.cos(pitch);
+        double y = 0.5 * Math.sin(pitch);
+        double z = 0.5 * Math.sin(yaw) * Math.cos(pitch);
         Vector v = new Vector(x, y, z);
         Location loc = user.getEyeLocation();
         Location originalLoc = user.getEyeLocation();
@@ -30,7 +31,18 @@ public class LocationUtil
             }
             if (passed && loc.getBlock().getTypeId() == 0)
             {
-                return loc;
+                if (loc.getBlock().getRelative(BlockFace.UP).getTypeId() != 0)
+                {
+                    if (loc.getBlock().getRelative(BlockFace.DOWN).getTypeId() == 0)
+                    {
+                        loc.add(0, -1, 0);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    return loc;
+                }
             }
             else if (loc.getBlock().getTypeId() != 0)
             {
