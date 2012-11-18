@@ -254,15 +254,19 @@ public class PlayerCommands
         }
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "kill", "slay"
-    }, desc = "Kills a player", usage = "<player>|-a", flags = {
+    }, desc = "Kills a player", usage = "<player>|-a", flags =
+    {
         @Flag(longName = "all", name = "a"),
-            @Flag(longName = "force", name = "f")
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "lightning", name = "l")
     })
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightning
+        boolean lightning = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
         boolean force = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
         User user = context.getUser(0);
         if (user == null)
@@ -303,12 +307,20 @@ public class PlayerCommands
                 }
                 if (!player.getName().equals(context.getSender().getName()))
                 {
+                    if (lightning)
+                    {
+                        user.getWorld().strikeLightningEffect(user.getLocation());
+                    }
                     user.setHealth(0);
                 }
             }
         }
         else
         {
+            if (lightning)
+            {
+                user.getWorld().strikeLightningEffect(user.getLocation());
+            }
             user.setHealth(0);
             //TODO broadcast alternative Deathmsgs
             context.sendMessage("basics", "&aYou killed &2%s&a!", user.getName());
