@@ -198,7 +198,7 @@ public class WorldControlCommands
         }
         if (context.hasIndexed(0))
         {
-            radius = context.getIndexed(1, Integer.class, 0);
+            radius = context.getIndexed(0, Integer.class, 0);
             if (radius <= 0)
             {
                 illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
@@ -276,6 +276,10 @@ public class WorldControlCommands
                 {
                     continue;
                 }
+            }
+            if (lightning)
+            {
+                entity.getWorld().strikeLightningEffect(entity.getLocation());
             }
             entity.remove();
             removed++;
