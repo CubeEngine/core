@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
@@ -14,31 +15,31 @@ import java.util.logging.LogRecord;
  */
 public class CubeFileHandler extends FileHandler
 {
-    public CubeFileHandler(LogLevel level, String pattern) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern) throws IOException, SecurityException
     {
         super(pattern + "_%g.log", 500000, 3, true);
         this.init(level);
     }
 
-    public CubeFileHandler(LogLevel level, String pattern, boolean append) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern, boolean append) throws IOException, SecurityException
     {
         super(pattern + "_%g.log", 500000, 3, append);
         this.init(level);
     }
 
-    public CubeFileHandler(LogLevel level, String pattern, int limit, int count) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern, int limit, int count) throws IOException, SecurityException
     {
         super(pattern + "_%g.log", limit, count, true);
         this.init(level);
     }
 
-    public CubeFileHandler(LogLevel level, String pattern, int limit, int count, boolean append) throws IOException, SecurityException
+    public CubeFileHandler(Level level, String pattern, int limit, int count, boolean append) throws IOException, SecurityException
     {
         super(pattern, limit, count, append);
         this.init(level);
     }
 
-    private void init(LogLevel level) throws SecurityException, UnsupportedEncodingException
+    private void init(Level level) throws SecurityException, UnsupportedEncodingException
     {
         this.setFormatter(new FileFormatter());
         this.setEncoding("UTF-8");

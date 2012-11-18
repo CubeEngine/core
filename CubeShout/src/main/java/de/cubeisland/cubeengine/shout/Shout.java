@@ -62,10 +62,7 @@ public class Shout extends Module
             {
                 this.getLogger().log(LogLevel.WARNING, "An exception occured when creating the example announcement");
                 this.getLogger().log(LogLevel.WARNING, "The message was: " + ex.getLocalizedMessage());
-                if (this.getCore().getConfiguration().debugMode)
-                {
-                    this.getLogger().log(LogLevel.WARNING, null, ex);
-                }
+                this.getLogger().log(LogLevel.DEBUG, ex.getLocalizedMessage(), ex);
             }
         }
         this.announcementManager.loadAnnouncements(this.announcementFolder);

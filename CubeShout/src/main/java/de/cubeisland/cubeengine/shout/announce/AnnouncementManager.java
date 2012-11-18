@@ -354,7 +354,7 @@ public class AnnouncementManager
      * @return the delay in ticks
      * @throws IllegalArgumentException if the delay was not in a valid format
      */
-    public long parseDelay(String delayText) throws IllegalArgumentException
+    public static long parseDelay(String delayText) throws IllegalArgumentException
     {
         String[] parts = delayText.split(" ", 2);
         if (parts.length < 2) // at least 2 parts, more will be ignored for now

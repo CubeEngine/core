@@ -20,6 +20,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
@@ -102,7 +103,6 @@ public class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
-        this.debug = this.config.debugMode;
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
@@ -308,7 +308,7 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public boolean isDebug()
     {
-        return this.debug;
+        return this.logger.getLevel().intValue() <= LogLevel.DEBUG.intValue();
     }
 
     @Override
