@@ -5,12 +5,18 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+
 /**
  * This logger is used for all of CubeEngine's messages.
  */
 public class CubeLogger extends Logger
 {
-    private static Level loggingLevel = LogLevel.ALL;
+    private static Level loggingLevel = ALL;
 
     /**
      * Creates a new Logger by this name
@@ -26,7 +32,7 @@ public class CubeLogger extends Logger
      * Creates a new Logger by this name
      *
      * @param name            the name
-     * @param useBukkitLogger log into console or not
+     * @param parent the parent logger
      */
     public CubeLogger(String name, Logger parent)
     {
@@ -35,7 +41,7 @@ public class CubeLogger extends Logger
         {
             this.setParent(parent);
         }
-        this.setLevel(LogLevel.ALL);
+        this.setLevel(ALL);
         this.setUseParentHandlers(false);
     }
 
@@ -45,7 +51,7 @@ public class CubeLogger extends Logger
         Level level = record.getLevel();
         if (level.intValue() < LogLevel.INFO.intValue())
         {
-            record.setLevel(Level.INFO); // Lower LogLevel can get logged in Console too
+            record.setLevel(INFO); // Lower LogLevel can get logged in Console too
         }
         if (!CubeEngine.isDebug())
         {
@@ -58,13 +64,13 @@ public class CubeLogger extends Logger
             {
                 switch (record.getLevel().intValue()) {
                     case 1000:
-                        record.setLevel(Level.SEVERE);
+                        record.setLevel(SEVERE);
                     case 900:
-                        record.setLevel(Level.WARNING);
+                        record.setLevel(WARNING);
                     case 800:
                     case 700:
                     case 600:
-                        record.setLevel(Level.INFO);
+                        record.setLevel(INFO);
                 }
                 this.getParent().log(record);
             }
@@ -81,12 +87,19 @@ public class CubeLogger extends Logger
      *
      * @param msg the message
      */
-    public void debug(Object msg)
+    public void debug(String msg)
     {
-        if (CubeEngine.isDebug())
-        {
-            this.log(LogLevel.DEBUG, "[Debug] " + msg);
-        }
+        this.log(DEBUG, msg);
+    }
+
+    /**
+     * This method logs a messages only if the CubeEngine is in debug mode
+     *
+     * @param msg the message
+     */
+    public void debug(String msg, Throwable t)
+    {
+        this.log(DEBUG, msg, t);
     }
 
     /**
