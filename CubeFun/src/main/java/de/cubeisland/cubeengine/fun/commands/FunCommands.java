@@ -24,6 +24,7 @@ import org.bukkit.util.Vector;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import org.bukkit.Bukkit;
 
 public class FunCommands
 {
@@ -44,7 +45,7 @@ public class FunCommands
         desc = "rockets a player",
         max = 1,
         usage = "[height]",
-        params = {@Param(names = {"player", "p"}, types = {User.class})}
+        params = {@Param(names = {"player", "p"}, type = User.class)}
     )
     public void rocket(CommandContext context)
     {
@@ -97,7 +98,7 @@ public class FunCommands
         }
         else
         {
-            for(Player player : this.module.getCore().getServer().getOnlinePlayers())
+            for(Player player : Bukkit.getOnlinePlayers())
             {
                 player.getWorld().spawnEntity(player.getTargetBlock(null, 5).getLocation(), entityType.getBukkitType());
             }

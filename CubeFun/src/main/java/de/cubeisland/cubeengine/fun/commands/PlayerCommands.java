@@ -24,9 +24,9 @@ public class PlayerCommands
         desc = "strucks a player or the location you are looking at by lightning.",
         max = 0,
         params = {
-            @Param(names = {"player", "p"}, types = {User.class}),
-            @Param(names = {"damage", "d"}, types = {Integer.class}),
-            @Param(names = {"fireticks", "f"}, types = {Integer.class})
+            @Param(names = {"player", "p"}, type = User.class),
+            @Param(names = {"damage", "d"}, type = Integer.class),
+            @Param(names = {"fireticks", "f"}, type = Integer.class)
         },
         usage = "[player <name>] [damage <value>] [fireticks <seconds>]"
     )

@@ -35,9 +35,9 @@ public class NukeCommand
         flags = {@Flag(longName = "unsafe", name = "u")},
         usage = "[radius] [height <value>] [player <name>] [-unsafe]",
         params = {
-            @Param(names = {"player", "p"}, types = {User.class}),
-            @Param(names = {"height", "h"}, types = {Integer.class}),
-            @Param(names = {"concentration", "c"}, types = {String.class})
+            @Param(names = {"player", "p"}, type = User.class),
+            @Param(names = {"height", "h"}, type = Integer.class),
+            @Param(names = {"concentration", "c"}, type = String.class)
         }
     )
     public void nuke(CommandContext context)
@@ -79,19 +79,19 @@ public class NukeCommand
         }
         if(radius > this.config.nukeRadiusLimit)
         {
-            invalidUsage(context, "fun", "&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
+            illegalParameter(context, "fun", "&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
         }
         if(concentration < 1)
         {
-            invalidUsage(context, "fun", "&cThe concentration should not be smaller than 1");
+            illegalParameter(context, "fun", "&cThe concentration should not be smaller than 1");
         }
         if(concentrationOfBlocksPerCircle < 1)
         {
-            invalidUsage(context, "fun", "&cThe concentration of Blocks per Circle should not be smaller than 1");
+            illegalParameter(context, "fun", "&cThe concentration of Blocks per Circle should not be smaller than 1");
         }
         if(height < 1)
         {
-            invalidUsage(context, "fun", "&cThe height can't be less than 1");
+            illegalParameter(context, "fun", "&cThe height can't be less than 1");
         }
         
         if(context.hasNamed("player"))
