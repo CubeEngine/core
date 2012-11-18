@@ -34,6 +34,11 @@ public final class StringReader extends ArgumentReader<String>
 
                 for (; i < args.length; ++i)
                 {
+                    if (args[i].charAt(args[i].length() - 1) == quoteChar)
+                    {
+                        builder.append(' ').append(args[i].substring(0, args[i].length() - 1));
+                        break;
+                    }
                     builder.append(' ').append(args[i]);
                 }
                 return new Pair<Integer, String>(i - 1, builder.toString());
