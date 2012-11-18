@@ -6,8 +6,7 @@ import org.bukkit.util.Vector;
 
 public class LocationUtil
 {
-
-    public static Location getBlockBehindWall(User user)
+    public static Location getBlockBehindWall(User user, int maxDistanceToWall, int maxThicknessOfWall)
     {
         double yaw = Math.toRadians(user.getLocation().getYaw() + 90);
         double pitch = Math.toRadians(-user.getLocation().getPitch());
@@ -16,8 +15,9 @@ public class LocationUtil
         double y = 0.2 * Math.sin(pitch);
         double z = 0.2 * Math.sin(yaw) * Math.cos(pitch);
         Vector v = new Vector(x, y, z);
-        Location loc = user.getLocation();
-        Location originalLoc = user.getLocation();
+        Location loc = user.getEyeLocation();
+        Location originalLoc = user.getEyeLocation();
+        Location locBeginWall = null;
         boolean passed = false;
         while (true)
         {
@@ -28,16 +28,28 @@ public class LocationUtil
             {
                 return null;
             }
-            if (passed)
+            if (passed && loc.getBlock().getTypeId() == 0)
             {
-                if (loc.getBlock().getTypeId() == 0)
-                {
-                    return loc;
-                }
+                return loc;
             }
             else if (loc.getBlock().getTypeId() != 0)
             {
-                passed = true;
+                if (!passed)
+                {
+                    passed = true;
+                    locBeginWall = loc.clone();
+                }
+                if (loc.distanceSquared(locBeginWall) > maxThicknessOfWall * maxThicknessOfWall)
+                {
+                    return null;
+                }
+            }
+            else // if Type is AIR
+            {
+                if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall)
+                {
+                    return null;
+                }
             }
         }
     }

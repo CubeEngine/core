@@ -26,7 +26,8 @@ public class TeleportListener implements Listener
     public void onTeleport(PlayerTeleportEvent event)
     {
         User user = basics.getUserManager().getExactUser(event.getPlayer());
-        switch (event.getCause()) {
+        switch (event.getCause())
+        {
             case COMMAND:
             case PLUGIN:
             case UNKNOWN:
@@ -43,7 +44,7 @@ public class TeleportListener implements Listener
             user.setAttribute(basics, "lastLocation", user.getLocation());
         }
     }
-    
+
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
@@ -59,25 +60,35 @@ public class TeleportListener implements Listener
                         if (block.getTypeId() != 0)
                         {
                             User user = this.basics.getUserManager().getExactUser(event.getPlayer());
-                            user.safeTeleport(block.getLocation().add(0.5, 1, 0.5));
+                            Location loc = block.getLocation().add(0.5, 1, 0.5);
+                            loc.setYaw(user.getLocation().getYaw());
+                            loc.setPitch(user.getLocation().getPitch());
+                            user.safeTeleport(loc);
                             user.sendMessage("basics", "&ePoof!");
+                            event.setCancelled(true);
                         }
                     }
                     return;
-                    //TODO tp onto block
+                //TODO tp onto block
                 case RIGHT_CLICK_AIR:
                 case RIGHT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
                         User user = this.basics.getUserManager().getExactUser(event.getPlayer());
-                        Location loc = LocationUtil.getBlockBehindWall(user);
+                        Location loc = LocationUtil.getBlockBehindWall(user, 20, 30); //TODO these values in config
                         if (loc == null)
                         {
-                            //TODO msg
+                            user.sendMessage("basics", "&cNothing to pass through!");
                             return;
                         }
+                        loc.setX(loc.getBlockX()+0.5);
+                        loc.setY(loc.getBlockY());
+                        loc.setZ(loc.getBlockZ()+0.5);
+                        loc.setYaw(user.getLocation().getYaw());
+                        loc.setPitch(user.getLocation().getPitch());
                         user.safeTeleport(loc);
-                        user.sendMessage("basics", "&ePassed the wall");
+                        user.sendMessage("basics", "&eYou passed the wall");
+                        event.setCancelled(true);
                     }
             }
         }
