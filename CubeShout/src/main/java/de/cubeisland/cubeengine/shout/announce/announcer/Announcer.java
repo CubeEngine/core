@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.shout.announce;
+package de.cubeisland.cubeengine.shout.announce.announcer;
 
 import de.cubeisland.cubeengine.core.user.User;
 
@@ -24,10 +24,10 @@ public class Announcer
     }
 
     /**
-     * Schedule a task based on system time.
+     * Schedule a task based on the system time.
      *
-     * @param	task	 The task to scheduler
-     * @param	delay	Delay between each time this task in run.
+     * @param	task	 The task to schedule
+     * @param	delay	 Delay between each time this task in run.
      */
     public void scheduleTask(String receiver, TimerTask task, long delay)
     {
@@ -36,7 +36,7 @@ public class Announcer
     }
 
     /**
-     * Stops a user from receiving announcements
+     * Stops a receiver from receiving any more announcements
      *
      * @param receiver
      */
@@ -45,6 +45,9 @@ public class Announcer
         tasks.get(receiver).cancel();
     }
 
+    /**
+     * Stop all announcements to all receivers
+     */
     public void stopAll()
     {
         for (TimerTask task : tasks.values())

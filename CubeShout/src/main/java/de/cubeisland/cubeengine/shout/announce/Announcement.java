@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.shout.announce;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.Validate;
 
@@ -11,25 +13,43 @@ public class Announcement
     private final String name;
     private final String defaultLocale;
     private final String permNode;
-    private final String world;
+    private final List<String> worlds;
     private final Map<String, String> messages;
     private final long delay;
 
     /**
-     * Constructor of Announcement
+     * Constructor of announcement
      *
-     * @param	defaultLocale Default Locale for this message
-     * @param	messages      The message in different languages
-     * @param	delay         The delay after this message in millitseconds
+     * @param name          This announcements unique name
+     * @param defaultLocale This announcements default locale
+     * @param permNode      This announcements permNode
+     * @param worlds        This announcements worlds
+     * @param messages      This announcements messages
+     * @param delay         This announcements delay
      */
-    public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay)
+    public Announcement(String name, String defaultLocale, String permNode, List<String> worlds, Map<String, String> messages, long delay)
     {
         this.name = name;
         this.defaultLocale = defaultLocale;
         this.permNode = permNode;
-        this.world = world;
+        this.worlds = worlds;
         this.messages = messages;
         this.delay = delay;
+    }
+
+    /**
+     * Constructor of announcement
+     *
+     * @param name          This announcements unique name
+     * @param defaultLocale This announcements default locale
+     * @param permNode      This announcements permNode
+     * @param world        This announcements world
+     * @param messages      This announcements messages
+     * @param delay         This announcements delay
+     */
+    public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay)
+    {
+        this(name, defaultLocale, permNode, Arrays.asList(world), messages, delay);
     }
 
     /**
@@ -75,18 +95,18 @@ public class Announcement
     }
 
     /**
-     * Get the world this announcement should be displayed in
+     * Get the worlds this announcement should be displayed in
      *
-     * @return	The world this announcement should be displayed in.
+     * @return	The worlds this announcement should be displayed in.
      */
-    public String getWorld()
+    public List<String> getWorlds()
     {
-        return this.world;
+        return this.worlds;
     }
 
     public boolean hasWorld(String world)
     {
-        return (this.world.equals("*") || this.world.equals(world));
+        return (this.worlds.get(0).equals("*") || this.worlds.contains(world));
     }
 
     public String getName()
@@ -94,17 +114,22 @@ public class Announcement
         return this.name;
     }
 
-    public static void validate(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay) throws IllegalArgumentException
+    public static void validate(String name, String defaultLocale, String permNode, List<String> worlds, Map<String, String> messages, long delay) throws IllegalArgumentException
     {
         Validate.notEmpty(name, "The announcement most have a name");
         Validate.notEmpty(defaultLocale, "The announcement most have a default locale");
         Validate.notEmpty(permNode, "The announcement most have a permission");
-        Validate.notEmpty(world, "The announcement most have a world");
+        Validate.notEmpty(worlds, "The announcement most have a world");
         Validate.notEmpty(messages, "The announcement most have one or more messages");
         Validate.notNull(delay, "The announcement most have a delay");
         if (delay == 0)
         {
             throw new IllegalArgumentException("The announcement modt have a delay");
         }
+    }
+
+    public static void validate(String name, String defaultLocale, String permNode, String world,  Map<String, String> messages, long delay) throws IllegalArgumentException
+    {
+        Announcement.validate(name, defaultLocale, permNode, Arrays.asList(world), messages, delay);
     }
 }

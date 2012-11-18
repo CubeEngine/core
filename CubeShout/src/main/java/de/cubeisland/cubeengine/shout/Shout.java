@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.shout;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
-import de.cubeisland.cubeengine.shout.announce.Announcer;
+import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
 import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
