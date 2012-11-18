@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -7,7 +8,6 @@ import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ShoutListener implements Listener
@@ -22,7 +22,7 @@ public class ShoutListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void PlayerJoinEvent(PlayerJoinEvent event)
+    public void PlayerJoinEvent(AfterJoinEvent event)
     {
         User user = this.module.getUserManager().getExactUser(event.getPlayer());
 

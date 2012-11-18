@@ -204,19 +204,19 @@ public class AnnouncementManager
 
     /**
      * Adds an announcement.
-     * Most be done before ay player joins!
+     * Most be done before any player joins!
      *
      * @throws ShoutException if there is something wrong with the values
      */
     public void addAnnouncement(String name, Map<String, String> messages, List<String> worlds, long delay,
-                                String permNode) throws ShoutException
+                                String permNode, boolean motd) throws ShoutException
     {
         try
         {
             Announcement.validate(name, permNode, module.getCore().getConfiguration().defaultLanguage,
                     worlds, messages, delay);
             Announcement announcement = new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
-                    permNode, worlds, messages, delay);
+                    permNode, worlds, messages, delay, motd);
             this.addAnnouncement(announcement);
         }
         catch (IllegalArgumentException ex)
@@ -238,26 +238,39 @@ public class AnnouncementManager
     public void loadAnnouncements(File announcementFolder)
     {
         List<File> announcementFiles = Arrays.asList(announcementFolder.listFiles());
+        File motd = new File(announcementFolder, "motd");
+        if (!motd.exists())
+        {
+            motd = new File(announcementFolder, "MOTD");
+        }
+        if (motd.exists())
+        {
+            try
+            {
+                this.loadAnnouncement(motd, true);
+            }
+            catch (ShoutException ex)
+            {
+                module.getLogger().log(LogLevel.WARNING, "Could not load the MOTD");
+                module.getLogger().log(LogLevel.DEBUG, "The error message was: ", ex);
+            }
+        }
 
         for (File f : announcementFiles)
         {
+            if (f.getName().equalsIgnoreCase("motd"))
+                continue;
             if (f.isDirectory())
             {
-                if (module.getCore().isDebug())
-                {
-                    module.getLogger().log(LogLevel.DEBUG, "Loading announcement {0}", f.getName());
-                }
+                module.getLogger().log(LogLevel.DEBUG, "Loading announcement {0}", f.getName());
                 try
                 {
-                    this.loadAnnouncement(f);
+                    this.loadAnnouncement(f, false);
                 }
-                catch (ShoutException e)
+                catch (ShoutException ex)
                 {
                     module.getLogger().log(LogLevel.WARNING, "There was an error loading the announcement: {0}", f.getName());
-                    if (module.getCore().isDebug())
-                    {
-                        module.getLogger().log(LogLevel.ERROR, "The error message was: ", e);
-                    }
+                    module.getLogger().log(LogLevel.DEBUG, "The error message was: ", ex);
                 }
             }
         }
@@ -271,7 +284,7 @@ public class AnnouncementManager
      * @throws ShoutException if folder is not an folder or don't contain
      *                        required information
      */
-    private void loadAnnouncement(File file) throws ShoutException
+    private void loadAnnouncement(File file, boolean motd) throws ShoutException
     {
         if (file.isFile())
         {
@@ -326,17 +339,15 @@ public class AnnouncementManager
             messages.put(I18n.normalizeLanguage(lang.getName().replace(".txt", "")), message.toString());
         }
 
-        if (this.module.getCore().isDebug())
-        {
-            this.module.getLogger().log(LogLevel.DEBUG, "Languages: {0}", messages.keySet().toString());
-            this.module.getLogger().log(LogLevel.DEBUG, "Worlds: {0}", worlds);
-            this.module.getLogger().log(LogLevel.DEBUG, "Delay(in millisecounds): {0}", delay);
-            this.module.getLogger().log(LogLevel.DEBUG, "Permission: {0}", permNode);
-            this.module.getLogger().log(LogLevel.DEBUG, "Group: {0}", group);
-        }
+        this.module.getLogger().log(LogLevel.DEBUG, "Languages: {0}", messages.keySet().toString());
+        this.module.getLogger().log(LogLevel.DEBUG, "Worlds: {0}", worlds);
+        this.module.getLogger().log(LogLevel.DEBUG, "Delay(in millisecounds): {0}", delay);
+        this.module.getLogger().log(LogLevel.DEBUG, "Permission: {0}", permNode);
+        this.module.getLogger().log(LogLevel.DEBUG, "Group: {0}", group);
+
         try
         {
-            this.addAnnouncement(file.getName(), messages, worlds, delay, permNode);
+            this.addAnnouncement(file.getName(), messages, worlds, delay, permNode, motd);
         }
         catch (IllegalArgumentException e)
         {

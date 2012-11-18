@@ -26,8 +26,11 @@ public abstract class AbstractReceiver implements AnnouncementReceiver
         for (int x = 0; x < announcements.size(); x++)
         {
             Announcement announcement = announcements.poll();
-            announcements.add(announcement);
-            if (this.canReceiver(announcement))
+            if (!announcement.isMOTD())
+            { //MOTD should only be displayed one time
+                announcements.add(announcement);
+            }
+            if (this.canReceiver(announcement) || announcement.isMOTD())
             {
                 return new Pair<Announcement, Integer>(announcement, (int)(announcement.getDelay() / announcementManager.getGreatestCommonDivisor(this)));
             }

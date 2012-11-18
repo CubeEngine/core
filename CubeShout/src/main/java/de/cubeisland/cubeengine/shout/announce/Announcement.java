@@ -3,6 +3,8 @@ package de.cubeisland.cubeengine.shout.announce;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import com.sun.java.swing.plaf.motif.MotifDesktopIconUI;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -16,6 +18,7 @@ public class Announcement
     private final List<String> worlds;
     private final Map<String, String> messages;
     private final long delay;
+    private final boolean motd;
 
     /**
      * Constructor of announcement
@@ -27,7 +30,7 @@ public class Announcement
      * @param messages      This announcements messages
      * @param delay         This announcements delay
      */
-    public Announcement(String name, String defaultLocale, String permNode, List<String> worlds, Map<String, String> messages, long delay)
+    public Announcement(String name, String defaultLocale, String permNode, List<String> worlds, Map<String, String> messages, long delay, boolean motd)
     {
         this.name = name;
         this.defaultLocale = defaultLocale;
@@ -35,6 +38,7 @@ public class Announcement
         this.worlds = worlds;
         this.messages = messages;
         this.delay = delay;
+        this.motd = motd;
     }
 
     /**
@@ -47,9 +51,9 @@ public class Announcement
      * @param messages      This announcements messages
      * @param delay         This announcements delay
      */
-    public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay)
+    public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay, boolean motd)
     {
-        this(name, defaultLocale, permNode, Arrays.asList(world), messages, delay);
+        this(name, defaultLocale, permNode, Arrays.asList(world), messages, delay, motd);
     }
 
     /**
@@ -141,5 +145,10 @@ public class Announcement
     public static void validate(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay) throws IllegalArgumentException
     {
         Announcement.validate(name, defaultLocale, permNode, Arrays.asList(world), messages, delay);
+    }
+
+    public boolean isMOTD()
+    {
+        return motd;
     }
 }

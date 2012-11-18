@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -20,6 +21,9 @@ public class ShoutCommand
         this.module = module;
     }
 
+    @Alias(names = {
+        "announcements"
+    })
     @Command(names = {
         "shout", "announce"
     }, min = 1, desc = "Announce a message to players on the server", usage = "<announcment name>")
