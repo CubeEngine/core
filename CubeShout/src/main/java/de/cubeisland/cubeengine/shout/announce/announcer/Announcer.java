@@ -1,4 +1,6 @@
-package de.cubeisland.cubeengine.shout.announce;
+package de.cubeisland.cubeengine.shout.announce.announcer;
+
+import de.cubeisland.cubeengine.core.user.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,27 +24,30 @@ public class Announcer
     }
 
     /**
-     * Schedule a task based on system time.
+     * Schedule a task based on the system time.
      *
-     * @param	task	 The task to scheduler
-     * @param	delay	Delay between each time this task in run.
+     * @param	task	 The task to schedule
+     * @param	delay	 Delay between each time this task in run.
      */
-    public void scheduleTask(String user, TimerTask task, long delay)
+    public void scheduleTask(String receiver, TimerTask task, long delay)
     {
-        tasks.put(user, task);
+        tasks.put(receiver, task);
         timer.schedule(task, this.initDelay, delay);
     }
 
     /**
-     * Stops a user from receiving announcements
+     * Stops a receiver from receiving any more announcements
      *
-     * @param user
+     * @param receiver
      */
-    public void stopUser(String user)
+    public void stopTask(String receiver)
     {
-        tasks.get(user).cancel();
+        tasks.get(receiver).cancel();
     }
 
+    /**
+     * Stop all announcements to all receivers
+     */
     public void stopAll()
     {
         for (TimerTask task : tasks.values())

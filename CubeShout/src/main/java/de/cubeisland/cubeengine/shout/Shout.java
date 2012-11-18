@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.shout;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
-import de.cubeisland.cubeengine.shout.announce.Announcer;
+import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
 import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
@@ -16,7 +16,7 @@ public class Shout extends Module
     private ShoutListener listener;
     private ShoutCommand command;
     private ShoutSubCommands subCommands;
-    private Announcer taskManager;
+    private Announcer announcer;
     private ShoutConfiguration config;
     private File announcementFolder;
 
@@ -45,7 +45,7 @@ public class Shout extends Module
         this.announcementFolder = this.getFolder();
         this.getFileManager().dropResources(ShoutResource.values());
 
-        this.taskManager = new Announcer(config.initDelay);
+        this.announcer = new Announcer(config.initDelay);
         this.announcementManager = new AnnouncementManager(this, announcementFolder);
         this.listener = new ShoutListener(this);
         this.command = new ShoutCommand(this);
@@ -79,7 +79,7 @@ public class Shout extends Module
     @Override
     public void onDisable()
     {
-        this.taskManager.stopAll();
+        this.announcer.stopAll();
     }
 
     public AnnouncementManager getAnnouncementManager()
@@ -87,8 +87,8 @@ public class Shout extends Module
         return this.announcementManager;
     }
 
-    public Announcer getTaskManager()
+    public Announcer getAnnouncer()
     {
-        return taskManager;
+        return announcer;
     }
 }
