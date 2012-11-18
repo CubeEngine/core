@@ -149,13 +149,14 @@ public class AnnouncementManager
         // Load what announcements should be displayed to the user
         for (Announcement a : announcements.values())
         {
-            if(receiver.hasPermission(a.getPermNode()))
+            if (receiver.hasPermission(a.getPermNode()))
             {
                 messages.add(a); // TODO CubeRoles
             }
         }
 
-        if (messages.isEmpty()) return;
+        if (messages.isEmpty())
+            return;
 
         receiver.setAllAnnouncements(messages);
 

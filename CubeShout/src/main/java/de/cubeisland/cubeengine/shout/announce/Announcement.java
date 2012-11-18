@@ -104,6 +104,16 @@ public class Announcement
         return this.worlds;
     }
 
+    /**
+     * Get this announcements first world
+     *
+     * @return the first world
+     */
+    public String getWorld()
+    {
+        return worlds.get(0);
+    }
+
     public boolean hasWorld(String world)
     {
         return (this.worlds.get(0).equals("*") || this.worlds.contains(world));
@@ -128,7 +138,7 @@ public class Announcement
         }
     }
 
-    public static void validate(String name, String defaultLocale, String permNode, String world,  Map<String, String> messages, long delay) throws IllegalArgumentException
+    public static void validate(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay) throws IllegalArgumentException
     {
         Announcement.validate(name, defaultLocale, permNode, Arrays.asList(world), messages, delay);
     }
