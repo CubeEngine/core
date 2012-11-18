@@ -41,8 +41,8 @@ public class LocationUtil
                     {
                         continue;
                     }
-                    return loc;
                 }
+                return loc;
             }
             else if (loc.getBlock().getTypeId() != 0)
             {
