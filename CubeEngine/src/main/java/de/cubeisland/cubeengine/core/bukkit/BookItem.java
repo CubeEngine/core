@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.rulebook;
+package de.cubeisland.cubeengine.core.bukkit;
 
 import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NBTTagList;
@@ -138,7 +138,6 @@ public class BookItem
         {
             tags = item.tag = new NBTTagCompound();
         }
-
         if (author != null && !author.equals(""))
         {
             tags.setString("author", author);
