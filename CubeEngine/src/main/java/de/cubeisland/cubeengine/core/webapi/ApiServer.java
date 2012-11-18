@@ -131,7 +131,7 @@ public class ApiServer
             {
                 serverBootstrap.group(new NioEventLoopGroup(this.maxThreads.get()))
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ApiServerIntializer(this))
+                    .childHandler(new ApiServerIntializer(this.core, this))
                     .localAddress(this.bindAddress.get(), this.port.get());
 
                 this.bootstrap.set(serverBootstrap);
@@ -624,6 +624,32 @@ public class ApiServer
         event = event.toLowerCase(Locale.ENGLISH);
 
         this.subscriptions.remove(event);
+    }
+
+    public void unsubscribe(ApiRequestHandler handler)
+    {
+        Validate.notNull(handler, "The event name must not be null!");
+
+        Iterator<Map.Entry<String, List<ApiRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
+
+        List<ApiRequestHandler> handlers;
+        Iterator<ApiRequestHandler> handlerIter;
+        while (iter.hasNext())
+        {
+            handlers = iter.next().getValue();
+            handlerIter = handlers.iterator();
+            while (handlerIter.hasNext())
+            {
+                if (handlerIter.next() == handler)
+                {
+                    handlerIter.remove();
+                }
+            }
+            if (handlers.isEmpty())
+            {
+                iter.remove();
+            }
+        }
     }
 
     public void fireEvent(String event, Map<String, Object> data)
