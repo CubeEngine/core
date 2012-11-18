@@ -3,6 +3,8 @@ package de.cubeisland.cubeengine.basics.teleport;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.LocationUtil;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -42,7 +44,8 @@ public class TeleportListener implements Listener
         }
     }
     
-    public void onLeftClick(PlayerInteractEvent event)
+    @EventHandler
+    public void onClick(PlayerInteractEvent event)
     {
         if (event.getPlayer().getItemInHand().getType().equals(Material.COMPASS))
         {
@@ -52,11 +55,11 @@ public class TeleportListener implements Listener
                 case LEFT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
-                        Block block = event.getPlayer().getTargetBlock(null, 200);
+                        Block block = event.getPlayer().getTargetBlock(null, 300);
                         if (block.getTypeId() != 0)
                         {
                             User user = this.basics.getUserManager().getExactUser(event.getPlayer());
-                            user.safeTeleport(block.getLocation().add(0, 1, 0));
+                            user.safeTeleport(block.getLocation().add(0.5, 1, 0.5));
                             user.sendMessage("basics", "&ePoof!");
                         }
                     }
@@ -67,8 +70,14 @@ public class TeleportListener implements Listener
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
                         User user = this.basics.getUserManager().getExactUser(event.getPlayer());
-                        //TODO tp through block
-                        user.sendMessage("basics", "&eThis is not implemented yet!");
+                        Location loc = LocationUtil.getBlockBehindWall(user);
+                        if (loc == null)
+                        {
+                            //TODO msg
+                            return;
+                        }
+                        user.safeTeleport(loc);
+                        user.sendMessage("basics", "&ePassed the wall");
                     }
             }
         }
