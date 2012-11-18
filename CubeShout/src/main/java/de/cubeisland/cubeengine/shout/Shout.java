@@ -16,7 +16,7 @@ public class Shout extends Module
     private ShoutListener listener;
     private ShoutCommand command;
     private ShoutSubCommands subCommands;
-    private Announcer taskManager;
+    private Announcer announcer;
     private ShoutConfiguration config;
     private File announcementFolder;
 
@@ -45,7 +45,7 @@ public class Shout extends Module
         this.announcementFolder = this.getFolder();
         this.getFileManager().dropResources(ShoutResource.values());
 
-        this.taskManager = new Announcer(config.initDelay);
+        this.announcer = new Announcer(config.initDelay);
         this.announcementManager = new AnnouncementManager(this, announcementFolder);
         this.listener = new ShoutListener(this);
         this.command = new ShoutCommand(this);
@@ -79,7 +79,7 @@ public class Shout extends Module
     @Override
     public void onDisable()
     {
-        this.taskManager.stopAll();
+        this.announcer.stopAll();
     }
 
     public AnnouncementManager getAnnouncementManager()
@@ -87,8 +87,8 @@ public class Shout extends Module
         return this.announcementManager;
     }
 
-    public Announcer getTaskManager()
+    public Announcer getAnnouncer()
     {
-        return taskManager;
+        return announcer;
     }
 }

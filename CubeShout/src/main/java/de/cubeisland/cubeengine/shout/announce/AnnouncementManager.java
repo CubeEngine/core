@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.ShoutException;
 import de.cubeisland.cubeengine.shout.announce.receiver.AnnouncementReceiver;
@@ -18,6 +19,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class to manage all the announcements and their receivers
@@ -33,7 +35,7 @@ public class AnnouncementManager
     public AnnouncementManager(Shout module, File announcementFolder)
     {
         this.module = module;
-        this.taskManager = module.getTaskManager();
+        this.taskManager = module.getAnnouncer();
         this.receivers = new ConcurrentHashMap<String, AnnouncementReceiver>();
         this.announcements = new HashMap<String, Announcement>();
         this.announcementFolder = announcementFolder;
@@ -166,7 +168,7 @@ public class AnnouncementManager
     public void clean(String receiver)
     {
         this.receivers.remove(receiver);
-        this.taskManager.stopUser(receiver);
+        this.taskManager.stopTask(receiver);
     }
 
     /**
@@ -356,7 +358,7 @@ public class AnnouncementManager
      */
     public long parseDelay(String delayText) throws IllegalArgumentException
     {
-        String[] parts = delayText.split(" ", 2);
+        /*String[] parts = delayText.split(" ", 2);
         if (parts.length < 2) // at least 2 parts, more will be ignored for now
         {
             throw new IllegalArgumentException("Not valid delay string");
@@ -379,7 +381,8 @@ public class AnnouncementManager
         {
             return tmpdelay * 24 * 60 * 60 * 1000;
         }
-        return 0;
+        return 0;*/
+        return new Duration(delayText).toTimeUnit(TimeUnit.MILLISECONDS);
     }
 
     /**

@@ -40,7 +40,7 @@ public class Announcer
      *
      * @param receiver
      */
-    public void stopUser(String receiver)
+    public void stopTask(String receiver)
     {
         tasks.get(receiver).cancel();
     }
