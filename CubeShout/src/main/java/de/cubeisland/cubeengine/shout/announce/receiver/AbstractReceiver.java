@@ -27,7 +27,7 @@ public abstract class AbstractReceiver implements AnnouncementReceiver
         {
             Announcement announcement = announcements.poll();
             announcements.add(announcement);
-            if (announcement.hasWorld(this.getWorld()))
+            if (this.canReceiver(announcement))
             {
                 return new Pair<Announcement, Integer>(announcement, (int)(announcement.getDelay() / announcementManager.getGreatestCommonDivisor(this)));
             }

@@ -30,24 +30,20 @@ public class UserReceiver extends AbstractReceiver
     }
 
     @Override
-    public String getWorld()
-    {
-        return user.getWorld().getName();
-    }
-
-    @Override
     public String getLanguage()
     {
         return user.getLanguage();
     }
 
     @Override
-    public void setWorld(String world)
-    {} // As this is a user, this is not needed
+    public boolean canReceiver(Announcement announcement)
+    {
+        return announcement.hasWorld(user.getWorld().getName());
+    }
 
     @Override
-    public boolean hasPermission(String permission)
+    public boolean couldReceive(Announcement announcement)
     {
-        return user.hasPermission(permission);
+        return announcement.getPermNode().equals("*") || user.hasPermission(announcement.getPermNode());
     }
 }

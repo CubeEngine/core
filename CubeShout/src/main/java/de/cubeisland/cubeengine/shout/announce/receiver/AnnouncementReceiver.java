@@ -22,14 +22,6 @@ public interface AnnouncementReceiver
     public void sendMessage(String message);
 
     /**
-     * Get the world this receiver is in.
-     * If this receiver is some kind of bot(IRC) this should be the channel or server.
-     *
-     * @return The world the receiver is in or channel/server if it is a bot
-     */
-    public String getWorld();
-
-    /**
      * Get the next announcement and delay for this receiver
      * NOTE: the delay is not in ms, but in this receivers execution format
      *
@@ -61,17 +53,20 @@ public interface AnnouncementReceiver
     public void setAllAnnouncements(Queue<Announcement> announcements);
 
     /**
-     * Set this receivers current world
-     * UserReceivers are not affected by this.
-     * @param world
+     * If the receiver could receive this announcement now
+     * For users this would check if they are in the correct world
+     *
+     * @param   announcement the announcement to check with
+     * @return  if receiver can receive this announcement now
      */
-    public void setWorld(String world);
+    public boolean canReceiver(Announcement announcement);
 
     /**
-     * Check if this receiver has this announcement
+     * If the receiver under a specific circumstance could receive an announcement
+     * For users this is almost equivalent to hasPermission
      *
-     * @param   permission to check for
-     * @return  if receiver has this announcement
+     * @param   announcement The announcement to check with
+     * @return  if the receiver could receive this announcement
      */
-    public boolean hasPermission(String permission);
+    public boolean couldReceive(Announcement announcement);
 }
