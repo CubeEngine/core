@@ -4,13 +4,13 @@ import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
 
 /**
  * This Matcher provides methods to match Entities.
@@ -30,7 +30,7 @@ public class EntityMatcher
             }
             catch (NullPointerException e)
             {
-                CubeEngine.getLogger().log(Level.WARNING, "Unknown Entity ID: " + id + " " + entityList.get(id).get(0));
+                CubeEngine.getLogger().log(LogLevel.WARNING, "Unknown Entity ID: " + id + " " + entityList.get(id).get(0));
             }
         }
     }
@@ -70,8 +70,7 @@ public class EntityMatcher
             return EntityType.fromId(entityId);
         }
         catch (NumberFormatException e)
-        {
-        }
+        {}
         if (entity == null)
         {
             if (s.length() < 4)
@@ -181,7 +180,7 @@ public class EntityMatcher
             AliasMapFormat.parseStringList(file, entityList, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {
-                CubeEngine.getLogger().log(Level.FINER, "Updated entities.txt");
+                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated entities.txt");
                 AliasMapFormat.parseAndSaveStringListMap(entityList, file);
             }
             return entityList;

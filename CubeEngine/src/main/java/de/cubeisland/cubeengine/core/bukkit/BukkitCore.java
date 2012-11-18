@@ -7,6 +7,8 @@ import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
+import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -18,14 +20,21 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.webapi.ApiConfig;
+import de.cubeisland.cubeengine.core.webapi.ApiServer;
+import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
+import org.bukkit.Server;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import org.bukkit.Server;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -42,25 +51,30 @@ public class BukkitCore extends JavaPlugin implements Core
     private CoreConfiguration config;
     private CubeLogger logger;
     private EventManager eventRegistration;
-    private Server server;
     private CommandManager commandManager;
     private TaskManager taskManager;
     private TableManager tableManager;
     private ObjectMapper jsonObjectMapper;
+    private ApiServer apiServer;
 
     @Override
     public void onEnable()
     {
+        if (!BukkitUtils.isCompatible())
+        {
+            this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine.");
+            return;
+        }
         CubeEngine.initialize(this);
 
         this.jsonObjectMapper = new ObjectMapper();
         this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
-        this.server = this.getServer();
-        PluginManager pm = this.server.getPluginManager();
+        final Server server = this.getServer();
+        final PluginManager pm = server.getPluginManager();
 
         this.logger = new CubeLogger("Core", this.getLogger());
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(Level.SEVERE, this));
+        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevelERROR, this));
 
         try
         {
@@ -68,7 +82,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         catch (IOException e)
         {
-            this.logger.log(Level.SEVERE, "Failed to initialize the FileManager", e);
+            this.logger.log(ERROR, "Failed to initialize the FileManager", e);
             pm.disablePlugin(this);
             return;
         }
@@ -78,18 +92,29 @@ public class BukkitCore extends JavaPlugin implements Core
         try
         {
             // depends on: file manager
-            this.logger.addHandler(new CubeFileHandler(Level.ALL, new File(this.fileManager.getLogDir(), "core").toString()));
+            this.logger.addHandler(new CubeFileHandler(ALL, new File(this.fileManager.getLogDir(), "core").toString()));
         }
         catch (IOException e)
         {
-            this.logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+            this.logger.log(ERROR, e.getLocalizedMessage(), e);
         }
 
         // depends on: file manager
-        this.config = Configuration.load(CoreConfiguration.class, new File(fileManager.getDataFolder(), "core.yml"));
+        this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
-        this.debug = this.config.debugMode;
+
+        // depends on: object mapper
+        this.apiServer = new ApiServer(this);
+        this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
+        try
+        {
+            this.apiServer.start();
+        }
+        catch (ApiStartupException e)
+        {
+            this.logger.log(ERROR, "The web API will not be available as the server failed to start properly...", e);
+        }
 
         // depends on: core config, server
         this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
@@ -98,7 +123,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
-            this.logger.log(Level.SEVERE, "Could not connect to the database type ''{0}''", this.config.database);
+            this.logger.log(ERROR, "Could not connect to the database type ''{0}''", this.config.database);
             pm.disablePlugin(this);
             return;
         }
@@ -117,19 +142,23 @@ public class BukkitCore extends JavaPlugin implements Core
         // register Listerer for UserManger
         pm.registerEvents(this.userManager, this);
 
+        pm.registerEvents(new CoreListener(this), this);
+
         // depends on: file manager, core config
         this.i18n = new I18n(this);
 
-        // depends on: Server
+        // depends on: server
         this.commandManager = new CommandManager(this);
 
         // depends on: database
         this.moduleManager = new ModuleManager(this);
 
-        // depends on: server
-       //TODO broken with 1.4 
-        BukkitUtils.registerPacketHookInjector(this);
+        // depends on: server, module manager
+        this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
+        this.commandManager.registerCommand(new CoreCommands(this));
 
+        // depends on: server
+        BukkitUtils.registerPacketHookInjector(this);
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
@@ -139,7 +168,7 @@ public class BukkitCore extends JavaPlugin implements Core
                 // depends on: file manager
                 BukkitCore.this.moduleManager.loadModules(BukkitCore.this.fileManager.getModulesDir());
 
-                // depends on: finshed loading modules
+                // depends on: finished loading modules
                 BukkitCore.this.userManager.cleanup();
             }
         });
@@ -148,12 +177,25 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
-        CubeEngine.clean();
+        BukkitUtils.cleanup();
 
         if (this.moduleManager != null)
         {
             this.moduleManager.clean();
             this.moduleManager = null;
+        }
+
+        if (this.commandManager != null)
+        {
+            this.commandManager.unregister();
+            this.commandManager = null;
+        }
+
+        if (this.apiServer != null)
+        {
+            this.apiServer.stop();
+            this.apiServer.unregisterApiHandlers();
+            this.apiServer = null;
         }
 
         this.fileManager = null;
@@ -176,17 +218,19 @@ public class BukkitCore extends JavaPlugin implements Core
             try
             {
                 this.taskManager.getExecutorService().shutdown();
-                this.taskManager.getExecutorService().awaitTermination(config.executorTermination, TimeUnit.SECONDS);
+                this.taskManager.getExecutorService().awaitTermination(this.config.executorTermination, TimeUnit.SECONDS);
             }
             catch (InterruptedException ex)
             {
-                this.logger.log(Level.SEVERE, "Could not execute all pending tasks", ex);
+                this.logger.log(ERROR, "Could not execute all pending tasks", ex);
             }
             finally
             {
                 this.taskManager = null;
             }
         }
+
+        CubeEngine.clean();
     }
 
     @Override
@@ -264,12 +308,18 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public boolean isDebug()
     {
-        return this.debug;
+        return this.logger.getLevel().intValue() <= LogLevel.DEBUG.intValue();
     }
 
     @Override
     public ObjectMapper getJsonObjectMapper()
     {
         return this.jsonObjectMapper;
+    }
+
+    @Override
+    public ApiServer getApiServer()
+    {
+        return this.apiServer;
     }
 }

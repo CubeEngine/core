@@ -22,10 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class CubeWarListener implements Listener
 {
     private AreaControl areas = AreaControl.get();

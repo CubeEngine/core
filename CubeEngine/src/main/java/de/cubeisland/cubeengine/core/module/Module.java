@@ -8,16 +8,15 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
-import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
 
@@ -36,7 +35,7 @@ public abstract class Module
     private File folder;
     private boolean enabled;
 
-    protected final void initialize(Core core, ModuleInfo info, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
+    final void initialize(Core core, ModuleInfo info, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {
         if (!this.initialized)
         {
@@ -48,8 +47,6 @@ public abstract class Module
             this.enabled = false;
 
             this.logger = logger;
-
-            core.getEventManager().fireEvent(new ModuleLoadedEvent(core, this));
         }
     }
 
@@ -195,15 +192,13 @@ public abstract class Module
      * registration
      */
     public void install()
-    {
-    }
+    {}
 
     /**
      * This method will be called if a module gets uninstalled
      */
     public void uninstall()
-    {
-    }
+    {}
 
     /**
      * This method will be called if the currently loaded module revision is
@@ -212,36 +207,31 @@ public abstract class Module
      * @param oldRevision the old revision form the database
      */
     public void update(int oldRevision)
-    {
-    }
+    {}
 
     /**
      * This method gets called right after the module initialization
      */
     public void onLoad()
-    {
-    }
+    {}
 
     /**
      * This method gets called when the module got enabled
      */
     public void onEnable()
-    {
-    }
+    {}
 
     /**
      * This method gets called when the module got disabled
      */
     public void onDisable()
-    {
-    }
+    {}
 
     /**
      * This method should be overridden to do reloading
      */
     public void reload()
-    {
-    }
+    {}
 
     @Override
     public int hashCode()
@@ -306,13 +296,13 @@ public abstract class Module
      *
      * @return the enabled state of the module
      */
-    protected final boolean enable()
+    final boolean enable()
     {
         if (!this.enabled)
         {
             try
             {
-                this.logger.log(Level.FINER, "Enabling {0}-r{1}", new Object[]
+                this.logger.log(LogLevel.INFO, "Enabling {0}-r{1}", new Object[]
                     {
                         this.getInfo().getName(), this.getInfo().getRevision()
                     });
@@ -322,8 +312,8 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
-                this.logger.log(Level.INFO, "{0} disabled", this.getInfo().getName());
+                this.logger.log(LogLevel.ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
+                this.logger.log(LogLevel.NOTICE, "{0} disabled", this.getInfo().getName());
             }
         }
         return this.enabled;
@@ -332,7 +322,7 @@ public abstract class Module
     /**
      * This method disables the module
      */
-    protected final void disable()
+    final void disable()
     {
         if (this.enabled)
         {
@@ -342,7 +332,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.logger.log(Level.SEVERE, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+                this.logger.log(LogLevel.ERROR, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
             }
             this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;
@@ -373,7 +363,12 @@ public abstract class Module
     {
         this.core.getEventManager().registerListener(this, listener);
     }
-    
+
+    public void unregisterListener(Listener listener)
+    {
+        this.core.getEventManager().unregisterListener(this, listener);
+    }
+
     public TaskManager getTaskManger()
     {
         return this.core.getTaskManager();

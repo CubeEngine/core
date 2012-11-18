@@ -14,10 +14,6 @@ import java.util.Collection;
 import java.util.List;
 import org.bukkit.Material;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class GroupStorage implements Storage<Integer, GroupModel>
 {
     private final Database database;

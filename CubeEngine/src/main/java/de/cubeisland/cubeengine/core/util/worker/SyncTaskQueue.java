@@ -17,6 +17,7 @@ public class SyncTaskQueue implements TaskQueue
     private final BukkitScheduler scheduler;
     private final Queue<Runnable> taskQueue;
     private int taskID;
+    private boolean isShutdown;
 
     public SyncTaskQueue(Core core)
     {
@@ -26,9 +27,10 @@ public class SyncTaskQueue implements TaskQueue
     public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
     {
         this.corePlugin = (BukkitCore)core;
-        this.scheduler = core.getServer().getScheduler();
+        this.scheduler = this.corePlugin.getServer().getScheduler();
         this.taskQueue = taskQueue;
         this.taskID = -1;
+        this.isShutdown = false;
     }
 
     public synchronized void run()
@@ -44,6 +46,10 @@ public class SyncTaskQueue implements TaskQueue
     @Override
     public synchronized void addTask(Runnable runnable)
     {
+        if (!this.isShutdown)
+        {
+            return;
+        }
         Validate.notNull(runnable, "The runnable must not be null!");
 
         this.taskQueue.offer(runnable);
@@ -57,6 +63,20 @@ public class SyncTaskQueue implements TaskQueue
         {
             this.taskID = this.scheduler.scheduleSyncRepeatingTask(this.corePlugin, this.workerTask, 0, 1);
         }
+    }
+
+    @Override
+    public void shutdown()
+    {
+        this.isShutdown = true;
+        this.taskQueue.clear();
+        this.stop();
+    }
+
+    @Override
+    public boolean isShutdown()
+    {
+        return this.isShutdown;
     }
 
     @Override

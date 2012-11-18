@@ -1,29 +1,34 @@
 package de.cubeisland.cubeengine.basics.general;
 
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class ListCommand
 {
-    @Command(
-        desc = "Displays all the online players.")
+    @Command(desc = "Displays all the online players.")
     public void list(CommandContext context)
     {
-        //TODO do not show hidden players
-        //TODO possibility to show prefix or main role etc.
-        //TODO softdependency with Roles/etc for grouped output
-        //Players online: x/x
         List<Player> players = context.getCore().getUserManager().getOnlinePlayers();
         if (players.isEmpty())
         {
             context.sendMessage("basics", "&cThere are no players online now!");
             return;
         }
-        context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", players.size(), context.getCore().getServer().getMaxPlayers());
-        context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(players));
+        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(Basics.getInstance(), context.getSender(), players);
+        if (event.isCancelled())
+        {
+            return;
+        }
+        if (!(Basics.getInstance().getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
+        {
+            context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getPlayers().size(), Bukkit.getMaxPlayers());
+            context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getPlayers()));
+        }
     }
 
     public String displayPlayerList(List<Player> players)
@@ -70,7 +75,7 @@ public class ListCommand
                     pos += 16;
                 }
             }
-            if (pos >= 30)
+            if (pos >= 70)
             {
                 pos = partBuilder.toString().length();
                 sb.append("\n");

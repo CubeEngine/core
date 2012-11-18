@@ -11,13 +11,17 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -37,31 +41,50 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)
-    public final OfflinePlayer player;
+    public final String player;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
     public Timestamp lastseen;
+    @Attribute(type = AttrType.VARBINARY, length = 128, notnull = false)
+    public byte[] passwd;
+    @Attribute(type = AttrType.DATETIME)
+    public final Timestamp firstseen;
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
+    private static MessageDigest hasher;
+
+    static
+    {
+        try
+        {
+            hasher = MessageDigest.getInstance("SHA-512");
+        }
+        catch (NoSuchAlgorithmException ignored)
+        {}
+    }
 
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
-        super(CubeEngine.getOfflinePlayer((String)args.get(1)));
-        this.key = Convert.fromObject(Integer.class, args.get(0));
-        this.player = this.offlinePlayer;
+        super(Bukkit.getOfflinePlayer((String)args.get(1)));
+        this.key = Integer.valueOf(args.get(0).toString());
+        this.player = this.offlinePlayer.getName();
         this.nogc = (Boolean)args.get(2);
         this.lastseen = (Timestamp)args.get(3);
+        this.firstseen = (Timestamp)args.get(3);
+        this.passwd = (byte[])args.get(4);
     }
 
     public User(int key, OfflinePlayer player)
     {
         super(player);
         this.key = key;
-        this.player = player;
+        this.player = player.getName();
         this.lastseen = new Timestamp(System.currentTimeMillis());
+        this.firstseen = lastseen;
+        this.passwd = new byte[0];
     }
 
     public User(OfflinePlayer player)
@@ -71,7 +94,7 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     public User(String playername)
     {
-        this(NO_ID, CubeEngine.getOfflinePlayer(playername));
+        this(NO_ID, Bukkit.getOfflinePlayer(playername));
     }
 
     /**
@@ -79,7 +102,7 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public OfflinePlayer getOfflinePlayer()
     {
-        return this.player;
+        return this.offlinePlayer;
     }
 
     @Override
@@ -101,7 +124,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         {
             if (CubeEngine.getCore().isDebug())
             {
-                CubeEngine.getLogger().warning("A module sent an untranslated message!");
+                CubeEngine.getLogger().log(LogLevel.DEBUG, "A module sent an untranslated message!");
             }
         }
         super.sendMessage(ChatFormat.parseFormats(string));
@@ -171,7 +194,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     /**
      * Adds an attribute to this user
      *
-     * @param name  the name/key
+     * @param name the name/key
      * @param value the value
      */
     public void setAttribute(Module module, String name, Object value)
@@ -191,21 +214,21 @@ public class User extends UserBase implements LinkingModel<Integer>
     /**
      * Returns an attribute value
      *
-     * @param <T>  the type of the value
+     * @param <T> the type of the value
      * @param name the name/key
      * @return the value or null
      */
     public <T extends Object> T getAttribute(Module module, String name)
     {
-        return this.<T>getAttribute(module, name, null);
+        return this.<T> getAttribute(module, name, null);
     }
 
     /**
      * Gets an attribute value or the given default value
      *
-     * @param <T>  the value type
+     * @param <T> the value type
      * @param name the name/key
-     * @param def  the default value
+     * @param def the default value
      * @return the attribute value or the default value
      */
     public <T extends Object> T getAttribute(Module module, String name, T def)
@@ -224,8 +247,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             }
         }
         catch (ClassCastException ignored)
-        {
-        }
+        {}
         return def;
     }
 
@@ -247,8 +269,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     public void safeTeleport(Location location)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
-        while (!((location.getBlock().getType().equals(Material.AIR))
-            && (checkLocation.getBlock().getType().equals(Material.AIR))))
+        while (!((location.getBlock().getType().equals(Material.AIR)) && (checkLocation.getBlock().getType().equals(Material.AIR))))
         {
             location.add(0, 1, 0);
             checkLocation.add(0, 1, 0);
@@ -273,5 +294,28 @@ public class User extends UserBase implements LinkingModel<Integer>
     public void clearAttributes(Module module)
     {
         this.attributes.remove(module);
+    }
+
+    public void setPassword(String password)
+    {
+        synchronized (hasher)
+        {
+            hasher.reset();
+            password += UserManager.salt;
+            password += this.firstseen.toString();
+            this.passwd = hasher.digest(password.getBytes());
+            CubeEngine.getUserManager().update(this);
+        }
+    }
+
+    public boolean checkPassword(String password)
+    {
+        synchronized (hasher)
+        {
+            hasher.reset();
+            password += UserManager.salt;
+            password += this.firstseen.toString();
+            return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
+        }
     }
 }

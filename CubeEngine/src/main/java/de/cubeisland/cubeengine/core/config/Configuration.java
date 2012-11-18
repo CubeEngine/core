@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
@@ -23,9 +23,11 @@ import org.yaml.snakeyaml.reader.ReaderException;
 public abstract class Configuration
 {
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
+    protected Class<? extends Configuration> configurationClass;
     protected static final Logger logger = CubeEngine.getLogger();
     protected ConfigurationCodec codec = null;
     protected File file;
+    protected Configuration parent = null;
 
     static
     {
@@ -63,6 +65,47 @@ public abstract class Configuration
         }
         this.codec.save(this, targetFile);
         this.onSaved(targetFile);
+    }
+
+    public final void saveChild()
+    {
+        if (this.codec == null)
+        {
+            throw new IllegalStateException("A configuration cannot be saved without a valid codec!");
+        }
+        if (this.file == null)
+        {
+            throw new IllegalStateException("A configuration cannot be saved without a valid file!");
+        }
+        this.codec.saveChildConfig(this.parent, this, this.file);
+        this.onSaved(this.file);
+    }
+
+    public <T extends Configuration> T loadChild(File sourceFile) //and save
+    {
+        Configuration childConfig;
+        try
+        {
+            childConfig = this.configurationClass.newInstance();
+            childConfig.codec = this.codec;
+            childConfig.file = sourceFile;
+            childConfig.parent = this;
+            try
+            {
+                FileInputStream is = new FileInputStream(sourceFile);
+                childConfig.codec.load(childConfig, is);
+            }
+            catch (FileNotFoundException ignored) // not found load from parent / save child
+            {
+                childConfig.codec.load(childConfig, null);
+            }
+            childConfig.saveChild();
+            return (T)childConfig;
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Could not load ChildConfig!", ex);
+        }
     }
 
     /**
@@ -123,7 +166,7 @@ public abstract class Configuration
         }
         catch (FileNotFoundException e)
         {
-            logger.log(Level.INFO, "{0} not found! Creating new config...", file.getName());
+            logger.log(LogLevel.NOTICE, "{0} not found! Creating new config...", file.getName());
         }
         T config = load(clazz, inputStream); //loading config from InputSream or Default
 
@@ -134,8 +177,7 @@ public abstract class Configuration
                 inputStream.close();
             }
             catch (IOException ignored)
-            {
-            }
+            {}
         }
 
         config.file = file;
@@ -169,6 +211,7 @@ public abstract class Configuration
                 config.codec.load(config, is); //load config in maps -> updates -> sets fields
             }
             config.onLoaded();
+            config.configurationClass = clazz;
             return config;
         }
         catch (Exception e)
@@ -264,15 +307,13 @@ public abstract class Configuration
      * This method is called right after the configuration got loaded.
      */
     public void onLoaded()
-    {
-    }
+    {}
 
     /**
      * This method gets called right after the configration get saved.
      */
     public void onSaved(File file)
-    {
-    }
+    {}
 
     /**
      * Returns the lines to be added in front of the Configuration.

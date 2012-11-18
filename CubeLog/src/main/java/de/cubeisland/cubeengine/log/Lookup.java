@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import de.cubeisland.cubeengine.log.storage.AbstractLog;
+import de.cubeisland.cubeengine.log.storage.AbstractPositionLog;
 import de.cubeisland.cubeengine.log.storage.BlockLog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,21 +19,21 @@ public class Lookup
 {
     boolean showCoords;
     private List<BlockLog> blocklogs;
+
     //private List<ChatLog> chatlogs;
     //private List<ChestLog> chestlogs;
-
     //TODO possibility to "give" the lookup to an other User
     public void printLookup(User user)
     {
         //TODO sort by timestamp (or other)
         //TODO print
-        for (AbstractLog log : blocklogs)
+        for (AbstractPositionLog log : blocklogs)
         {
             StringBuilder sb = new StringBuilder();
             if (log instanceof BlockLog)
             {
                 BlockLog blog = (BlockLog)log;
-                
+
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                 sb.append(sdf.format(new Date(log.getTimeStamp()))).append(" - ");
                 if (blog.isBlockBreak())
@@ -43,7 +43,8 @@ public class Lookup
                     {
                         sb.append(blog.getUser().getName());
                     }
-                    sb.append(" break ").append(MaterialMatcher.get().getNameFor(new ItemStack(blog.oldBlock.mat)));
+
+                    sb.append(" break ").append(MaterialMatcher.get().getNameFor(new ItemStack(blog.getOldBlockData().mat)));
                 }
                 else if (blog.isBlockPlace())
                 {
@@ -101,8 +102,8 @@ public class Lookup
         {
             for (ItemStack item : blocks)
             {
-                if (blocklog.oldBlock.mat.equals(item.getType())
-                    || blocklog.newBlock.mat.equals(item.getType()))
+                if (blocklog.getOldBlockData().mat.equals(item.getType())
+                    || blocklog.getNewBlockData().mat.equals(item.getType()))
                 {
                     newBlockLogs.add(blocklog);
                 }
@@ -120,7 +121,7 @@ public class Lookup
         {
             for (User user : names)
             {
-                if (blocklog.userID == user.key)
+                if (blocklog.causeID == user.key)
                 {
                     newBlockLogs.add(blocklog);
                 }

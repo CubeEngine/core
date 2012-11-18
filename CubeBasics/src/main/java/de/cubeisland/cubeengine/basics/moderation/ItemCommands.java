@@ -9,26 +9,22 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  * item-related commands
  * /itemdb
- * /kit  //TODO
  * /rename
  * /headchange
  * /unlimited
@@ -37,7 +33,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  * /item
  * /more
  * /repair
- * /powertool
+ * /stack
  */
 public class ItemCommands
 {
@@ -48,10 +44,7 @@ public class ItemCommands
         this.basics = basics;
     }
 
-    @Command(
-        desc = "Looks up an item for you!",
-        max = 1,
-        usage = "[item]")
+    @Command(desc = "Looks up an item for you!", max = 1, usage = "[item]")
     public void itemDB(CommandContext context)
     {
         if (context.hasIndexed(0))
@@ -76,61 +69,23 @@ public class ItemCommands
             }
             else
             {
+                String found = MaterialMatcher.get().getNameFor(sender.getItemInHand());
+                if (found == null)
+                {
+                    context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
+                        sender.getItemInHand().getType().getId(),
+                        sender.getItemInHand().getDurability());
+                    return;
+                }
                 context.sendMessage("basics", "&aThe Item in your hand is: &e%s &f(&e%d&f:&e%d&f)",
-                    MaterialMatcher.get().getNameFor(sender.getItemInHand()),
+                    found,
                     sender.getItemInHand().getType().getId(),
                     sender.getItemInHand().getDurability());
             }
         }
     }
 
-    @Command(
-        desc = "Gives a kit of items.",
-        usage = "<kitname> [player]",
-        min = 1, max = 2,
-        flags = { @Flag(longName = "all", name = "a") })
-    public void kit(CommandContext context)
-    {
-        //TODO this needs the converters
-        String kitname = context.getString(0);
-        User user;
-        Kit kit = null; //TODO getKitFromConfig
-        if (kit == null)
-        {
-            paramNotFound(context, "basics", "&cKit &6%s &cnot found!", kitname);
-        }
-        if (context.hasIndexed(1))
-        {
-            user = context.getUser(1);
-        }
-        else
-        {
-            user = context.getSenderAsUser();
-        }
-        if (user == null)
-        {
-            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
-        }
-        boolean result = kit.give(context.getSender(), user);
-        if (result)
-        {
-            context.sendMessage("basics", "&2%s &cdoes not have enough space for the &6%s &ckit!", user.getName(), kitname);
-        }
-        else if (user.getName().equals(context.getSender().getName()))
-        {
-            context.sendMessage("basics", "&aReceived the &6%s &akit!", kitname);
-        }
-        else
-        {
-            context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", user.getName(), kitname);
-            user.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
-        }
-    }
-
-    @Command(
-        desc = "Changes the display name of the item in your hand.",
-        usage = "<name>",
-        min = 1)
+    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name>", min = 1)
     public void rename(CommandContext context)
     {
         String name = context.getStrings(0);
@@ -144,14 +99,13 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        names = { "headchange", "skullchange" },
-        desc = "Changes a skull to a players skin.",
-        usage = "<name>",
-        min = 1)
+    @Command(names = {
+        "headchange", "skullchange"
+    }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1)
+    @SuppressWarnings("deprecation")
     public void headchange(CommandContext context)
     {
-        //TODO later listener to drop the custom heads
+        //TODO later listener to drop the custom heads (perhaps bukkit wil fix it)
         String name = context.getString(0);
         User sender = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?");
         CraftItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
@@ -167,10 +121,8 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        desc = "The user can use unlimited items",
-        max = 1,
-        usage = "[on|off]")
+    @Command(desc = "The user can use unlimited items", max = 1, usage = "[on|off]")
+    @SuppressWarnings("deprecation")
     public void unlimited(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -214,11 +166,9 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        desc = "Adds an Enchantment to the item in your hand",
-        max = 2,
-        flags = { @Flag(longName = "unsafe", name = "u") },
-        usage = "<enchantment> [level] [-unsafe]")
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = {
+        @Flag(longName = "unsafe", name = "u")
+    }, usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
     {
         if (!context.hasIndexed(0))
@@ -249,7 +199,7 @@ public class ItemCommands
         int level = ench.getMaxLevel();
         if (context.hasIndexed(1))
         {
-            level = context.getIndexed(1, int.class, 0);
+            level = context.getIndexed(1, Integer.class, 0);
             if (level <= 0)
             {
                 illegalParameter(context, "basics", "&cThe enchantment-level has to be a number greater than 0!");
@@ -317,14 +267,10 @@ public class ItemCommands
         return sb.toString();
     }
 
-    @Command(
-        desc = "Gives the specified Item to a player",
-    flags =
-    {
+    @Command(desc = "Gives the specified Item to a player", flags = {
         @Flag(name = "b", longName = "blacklist")
-    },
-    min = 2, max = 3,
-    usage = "<player> <material[:data]> [amount] [-blacklist]")
+    }, min = 2, max = 3, usage = "<player> <material[:data]> [amount] [-blacklist]")
+    @SuppressWarnings("deprecation")
     public void give(CommandContext context)
     {
         User user = context.getUser(0);
@@ -347,7 +293,7 @@ public class ItemCommands
         int amount = item.getMaxStackSize();
         if (context.hasIndexed(2))
         {
-            amount = context.getIndexed(2, int.class, 0);
+            amount = context.getIndexed(2, Integer.class, 0);
             if (amount == 0)
             {
                 illegalParameter(context, "basics", "&cThe amount has to be a number greater than 0!");
@@ -361,13 +307,12 @@ public class ItemCommands
         user.sendMessage("basics", "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
     }
 
-    @Command(
-        names = { "item", "i" },
-        desc = "Gives the specified Item to you",
-        max = 2,
-        min = 1,
-        flags = { @Flag(longName = "blacklist", name = "b") },
-        usage = "<material[:data]> [amount] [-blacklist]")
+    @Command(names = {
+        "item", "i"
+    }, desc = "Gives the specified Item to you", max = 2, min = 1, flags = {
+        @Flag(longName = "blacklist", name = "b")
+    }, usage = "<material[:data]> [amount] [-blacklist]")
+    @SuppressWarnings("deprecation")
     public void item(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eDid you try to use &6/give &eon your new I-Tem?");
@@ -386,7 +331,7 @@ public class ItemCommands
         int amount = item.getMaxStackSize();
         if (context.hasIndexed(1))
         {
-            amount = context.getIndexed(1, int.class, 0);
+            amount = context.getIndexed(1, Integer.class, 0);
             if (amount == 0)
             {
                 illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");
@@ -398,11 +343,9 @@ public class ItemCommands
         sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
     }
 
-    @Command(
-        desc = "Refills the stack in hand",
-        usage = "[-a]",
-        flags = { @Flag( longName = "all", name = "a") },
-        max = 0)
+    @Command(desc = "Refills the stack in hand", usage = "[-a]", flags = {
+        @Flag(longName = "all", name = "a")
+    }, max = 0)
     public void more(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cYou can't get enough of it. Don't you?");
@@ -428,13 +371,14 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        desc = "Repairs your items",
-        flags = { @Flag(longName = "all", name = "a") },
-        usage = "[-all]") // without item in hand
+    @Command(desc = "Repairs your items", flags = {
+        @Flag(longName = "all", name = "a")
+    }, usage = "[-all]")
+    // without item in hand
     public void repair(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&eIf you do this you'll loose your warranty!");
+        User sender = context.getSenderAsUser("core", "&eIf you do this you'll &cloose &eyour warranty!");
+        sender.getItemInHand().setAmount(127);
         if (context.hasFlag("a"))
         {
             List<ItemStack> list = new ArrayList<ItemStack>();
@@ -478,62 +422,66 @@ public class ItemCommands
         }
     }
 
-    @Command(
-        names = { "pt", "powertool" },
-        desc = "Binds a command to the item in hand.",
-        usage = "<command> [arguments]",
-        flags = { @Flag(longName = "append", name = "add") })
-    public void powertool(CommandContext context)
+    @Command(desc = "Stacks your items up to 64")
+    public void stack(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
-        if (sender.getItemInHand().getType().equals(Material.AIR))
+        User user = context.getSenderAsUser("basics", "&eNo stacking for you.");
+        boolean allow64 = BasicsPerm.COMMAND_STACK_FULLSTACK.isAuthorized(user);
+        ItemStack[] items = user.getInventory().getContents();
+        int size = items.length;
+        boolean changed = false;
+        for (int i = 0; i < size; i++)
         {
-            blockCommand(context, "basics", "&eYou do not have an item in your hand to bound the command to!");
+            ItemStack item = items[i];
+            // no null / infinite or unstackable items (if not allowed)
+            if (item == null || item.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
+            {
+                continue;
+            }
+            int max = allow64 ? 64 : item.getMaxStackSize();
+            if (item.getAmount() < max)
+            {
+                int needed = max - item.getAmount();
+                for (int j = i + 1; j < size; j++) // search for same item
+                {
+                    ItemStack item2 = items[j];
+                    // no null / infinite or unstackable items (if not allowed)
+                    if (item2 == null || item2.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
+                    {
+                        continue;
+                    }
+                    // compare
+                    if (item2.getTypeId() == item.getTypeId()
+                        && item.getDurability() == item2.getDurability()
+                        && item.getEnchantments().equals(item2.getEnchantments())
+                        && (BukkitUtils.getItemStackName(item) == null ? BukkitUtils.getItemStackName(item2) == null : BukkitUtils.getItemStackName(item).equals(BukkitUtils.getItemStackName(item2))))
+                    {
+                        if (item2.getAmount() > needed) // not enough place -> fill up stack
+                        {
+                            item.setAmount(max);
+                            item2.setAmount(item2.getAmount() - needed);
+                            break;
+                        }
+                        else
+                        // enough place -> add to stack
+                        {
+                            items[j] = null;
+                            item.setAmount(item.getAmount() + item2.getAmount());
+                            needed = max - item.getAmount();
+                        }
+                        changed = true;
+                    }
+                }
+            }
         }
-        if (context.hasIndexed(0))
+        if (changed)
         {
-            this.addPowerTool(sender, context.getStrings(0), context.hasFlag("add"));
+            user.getInventory().setContents(items);
+            user.sendMessage("&aItems stacked together!");
         }
         else
         {
-            CraftItemStack item = (CraftItemStack)sender.getItemInHand();
-            NBTTagCompound tag = item.getHandle().getTag();
-            if (tag != null)
-            {
-                tag.set("UniquePowerToolID", new NBTTagList());
-            }
-            context.sendMessage("basics", "&aRemoved all commands bound to this item!");
+            user.sendMessage("&eNothing to stack!");
         }
-    }
-
-    private void addPowerTool(User user, String command, boolean add)
-    {
-        CraftItemStack item = (CraftItemStack)user.getItemInHand();
-        NBTTagCompound tag = item.getHandle().getTag();
-        if (tag == null)
-        {
-            item.getHandle().setTag(tag = new NBTTagCompound());
-        }
-        NBTTagList ptVals;
-        if (add)
-        {
-            ptVals = (NBTTagList)tag.get("UniquePowerToolID");
-            if (ptVals == null)
-            {
-                tag.set("UniquePowerToolID", ptVals = new NBTTagList());
-            }
-        }
-        else
-        {
-            tag.set("UniquePowerToolID", ptVals = new NBTTagList());
-        }
-        StringBuilder sb = new StringBuilder(_(user, "basics", "command(s) bound to this item:"));
-        int i = 0;
-        for (; i < ptVals.size(); i++)
-        {
-            sb.append("\n&f").append(((NBTTagString)ptVals.get(i)).data);
-        }
-        ptVals.add(new NBTTagString(command, command));//what key should i take?
-        user.sendMessage("basics", "&6%d &e%s\n&aNew: &e%s", i + 1, sb.toString(), command);
     }
 }

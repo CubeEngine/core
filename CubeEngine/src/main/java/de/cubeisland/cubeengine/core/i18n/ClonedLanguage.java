@@ -89,7 +89,7 @@ public class ClonedLanguage implements Language
     {
         this.original.clean();
     }
-    
+
     /**
      * This method returns the language cloned by this language
      *

@@ -1,11 +1,16 @@
 package de.cubeisland.cubeengine.basics;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import java.util.Collection;
 import java.util.LinkedList;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 @Codec("yml")
@@ -16,23 +21,25 @@ public class BasicsConfiguration extends Configuration
     @Option("commands.remove-defaultradius")
     public int removeCmdDefaultRadius = 20;
     @Comment("The world to teleport to when using /spawn"
-    + "\nUse {} if you want to use the spawn of the world the player is in.")
-    @Option("commands.spawn-mainworld")
-    public String spawnMainWorld = "world";
-    @Comment(
-    "The seconds until a teleportrequest is automaticly denied."
-    + "\nUse -1 to never automaticly deny. (Will loose information after some time when disconecting)")
+        + "\nUse {} if you want to use the spawn of the world the player is in.")
+    @Option("mainworld")
+    public World mainWorld = Bukkit.getServer().getWorld("world");
+    @Comment("The seconds until a teleportrequest is automaticly denied."
+        + "\nUse -1 to never automaticly deny. (Will loose information after some time when disconecting)")
     @Option("commands.teleport-request-wait")
     public int tpRequestWait = -1;
-    @Comment(
-    "This message will be displayed to everyone with the permission on joining!")
-    @Option("commands.motd")
-    public String motd = "Welcome on our server. Have fun!";
     @Option("commands.near-defaultradius")
     public int nearDefaultRadius = 20;
-    @Option(value = "commands.item-blacklist", genericType = ItemStack.class)
-    public LinkedList<ItemStack> blacklist = new LinkedList<ItemStack>()
+    @Option("afk.automatic-afk")
+    public String autoAfk = "5m";
+    @Option("afk.afk-check-delay")
+    public String afkCheck = "1s";
+    @Option("command.mute.default-mute-time")
+    public Duration defaultMuteTime = new Duration(-1);
+    @Option("commands.item-blacklist")
+    public Collection<ItemStack> blacklist = new LinkedList<ItemStack>()
     {
+
         {
             this.add(new ItemStack(Material.BEDROCK));
             this.add(new ItemStack(Material.WATER));

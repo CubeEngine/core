@@ -1,23 +1,14 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author Wolfi
- */
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
 public class RuleBookConfiguration
 {
     private final static int NumberOfCharsPerPage = 260;
@@ -63,7 +54,7 @@ public class RuleBookConfiguration
         }
 
         String text = "";
-        String line = null;
+        String line;
         BufferedReader reader = new BufferedReader(new FileReader(file));
         while ((line = reader.readLine()) != null)
         {

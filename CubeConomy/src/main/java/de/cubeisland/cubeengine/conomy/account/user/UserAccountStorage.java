@@ -4,10 +4,6 @@ import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class UserAccountStorage extends BasicStorage<UserAccount>
 {
     private final UserManager cuManager;

@@ -13,6 +13,5 @@ public class Writer extends Module
 
     @Override
     public void onDisable()
-    {
-    }
+    {}
 }

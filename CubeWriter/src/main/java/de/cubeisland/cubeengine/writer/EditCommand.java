@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.writer;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -8,23 +10,33 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 
 public class EditCommand
 {
-    @Command(
-    names = {"edit", "rewrite"},
-    desc = "Edit a sign or unsign a book",
-    usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ",
-    params =
-    {
-        @Param(names = {"1", "Line1"},types = {String.class}),
-        @Param(names = {"2", "Line2"},types = {String.class}),
-        @Param(names = {"3", "Line3"},types = {String.class}),
-        @Param(names = {"4", "Line4"},types = {String.class})
-    })
+    @Command(names = {
+        "edit", "rewrite"
+    }, desc = "Edit a sign or unsign a book", usage = "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] ", params = {
+        @Param(names =
+        {
+            "1", "Line1"
+        }),
+        @Param(names =
+        {
+            "2", "Line2"
+        }),
+        @Param(names =
+        {
+            "3", "Line3"
+        }),
+        @Param(names =
+        {
+            "4", "Line4"
+        })
+    }, max = 0)
     public void edit(CommandContext context)
     {
         User user = context.getSenderAsUser("writer", "This command can only be used by players");
@@ -53,13 +65,25 @@ public class EditCommand
                     invalidUsage(context, "writer", "&cYou need to specify at least one parameter");
                 }
                 Sign sign = (Sign)target.getState();
-
-                Map<String, Object[]> params = context.getNamed();
-                for (String key : params.keySet())
+                String[] lines = sign.getLines();
+                Map<String, Object> params = context.getNamed();
+                for (String key : params.keySet()) // TODO refactor
                 {
-                    sign.setLine(Integer.parseInt(key) - 1, context.getNamed(key, String.class));
+                    lines[Integer.parseInt(key) - 1] = context.getNamed(key, String.class);
+                }
+                SignChangeEvent event = new SignChangeEvent(sign.getBlock(), user, sign.getLines());
+                CubeEngine.getEventManager().fireEvent(event);
+                if (event.isCancelled())
+                {
+                    context.sendMessage("basics", "&cCould not change the sign!");
+                    return;
+                }
+                for (int i = 0; i < 4; ++i)
+                {
+                    sign.setLine(i, lines[i]);
                 }
                 sign.update();
+
                 user.sendMessage("writer", "The sign has been changed");
             }
             else

@@ -5,12 +5,12 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -103,7 +103,7 @@ public class MaterialMatcher
                 if (mat != null)
                 {
                     return new ItemStack(mat, 1);
-                }                
+                }
             }
             catch (NumberFormatException e)
             {
@@ -117,8 +117,7 @@ public class MaterialMatcher
                     }
                 }
                 catch (Exception ex)
-                {
-                }
+                {}
             }
             if (s.contains(":"))
             { // name match with data
@@ -160,8 +159,12 @@ public class MaterialMatcher
      */
     public DyeColor matchColorData(String data)
     {
-        short dataVal = this.datavalues.get(351).get(StringUtils.matchString(data, this.datavalues.get(351).keySet()));
-        return DyeColor.getByData((byte)dataVal);
+        Short dataVal = this.datavalues.get(35).get(StringUtils.matchString(data, this.datavalues.get(35).keySet()));
+        if (dataVal == null)
+        {
+            return null;
+        }
+        return DyeColor.getByData(dataVal.byteValue());
     }
 
     /**
@@ -185,8 +188,7 @@ public class MaterialMatcher
         }
         catch (NumberFormatException e)
         { // check for special cases
-            switch (item.getType())
-            {
+            switch (item.getType()) {
                 case WOOD:
                 case LOG:
                 case LEAVES:
@@ -248,8 +250,7 @@ public class MaterialMatcher
             return Material.getMaterial(matId);
         }
         catch (NumberFormatException e)
-        {
-        }
+        {}
         ItemStack item = this.matchItemStack(s);
         if (item != null)
         {
@@ -296,6 +297,7 @@ public class MaterialMatcher
                     {
                         readData = new TreeMap<Short, List<String>>(); // New ID Create new ID & DATA
                         names = new ArrayList<String>(); // New DATA Create new nameList
+                        readData.put(data, names);
                         map.put(id, readData);
                         currentData = data;
                         currentId = id;
@@ -356,7 +358,7 @@ public class MaterialMatcher
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
             if (jarinput != null && this.readItems(readItems, jarinput, true))
             {
-                CubeEngine.getLogger().log(Level.FINER, "Updated items.txt");
+                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated items.txt");
                 StringBuilder sb = new StringBuilder();
                 for (Integer item : readItems.keySet())
                 {
@@ -406,6 +408,7 @@ public class MaterialMatcher
                 {
                     for (String key : StringUtils.explode(",", line.substring(0, line.length() - 1)))
                     {
+                        data = new THashMap<String, Short>();
                         this.datavalues.put(Integer.parseInt(key), data);
                     }
                 }
@@ -432,18 +435,55 @@ public class MaterialMatcher
      */
     public enum RepairableMaterials
     {
-        IRON_SPADE, IRON_PICKAXE, IRON_AXE, IRON_SWORD,
-        WOOD_SPADE, WOOD_PICKAXE, WOOD_AXE, WOOD_SWORD,
-        STONE_SPADE, STONE_PICKAXE, STONE_AXE, STONE_SWORD,
-        DIAMOND_SPADE, DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SWORD,
-        GOLD_SPADE, GOLD_PICKAXE, GOLD_AXE, GOLD_SWORD,
-        WOOD_HOE, STONE_HOE, IRON_HOE, DIAMOND_HOE, GOLD_HOE,
-        LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS,
-        CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS,
-        IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS,
-        DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS,
-        GOLD_HELMET, GOLD_CHESTPLATE, GOLD_LEGGINGS, GOLD_BOOTS,
-        FLINT_AND_STEEL, BOW, FISHING_ROD, SHEARS;
+        IRON_SPADE,
+        IRON_PICKAXE,
+        IRON_AXE,
+        IRON_SWORD,
+        WOOD_SPADE,
+        WOOD_PICKAXE,
+        WOOD_AXE,
+        WOOD_SWORD,
+        STONE_SPADE,
+        STONE_PICKAXE,
+        STONE_AXE,
+        STONE_SWORD,
+        DIAMOND_SPADE,
+        DIAMOND_PICKAXE,
+        DIAMOND_AXE,
+        DIAMOND_SWORD,
+        GOLD_SPADE,
+        GOLD_PICKAXE,
+        GOLD_AXE,
+        GOLD_SWORD,
+        WOOD_HOE,
+        STONE_HOE,
+        IRON_HOE,
+        DIAMOND_HOE,
+        GOLD_HOE,
+        LEATHER_HELMET,
+        LEATHER_CHESTPLATE,
+        LEATHER_LEGGINGS,
+        LEATHER_BOOTS,
+        CHAINMAIL_HELMET,
+        CHAINMAIL_CHESTPLATE,
+        CHAINMAIL_LEGGINGS,
+        CHAINMAIL_BOOTS,
+        IRON_HELMET,
+        IRON_CHESTPLATE,
+        IRON_LEGGINGS,
+        IRON_BOOTS,
+        DIAMOND_HELMET,
+        DIAMOND_CHESTPLATE,
+        DIAMOND_LEGGINGS,
+        DIAMOND_BOOTS,
+        GOLD_HELMET,
+        GOLD_CHESTPLATE,
+        GOLD_LEGGINGS,
+        GOLD_BOOTS,
+        FLINT_AND_STEEL,
+        BOW,
+        FISHING_ROD,
+        SHEARS;
         private static final Set<Material> mats = Collections.synchronizedSet(EnumSet.noneOf(Material.class));
 
         static

@@ -5,8 +5,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
 import java.util.*;
 import org.bukkit.command.CommandSender;
@@ -29,7 +29,7 @@ public class CommandContext
     private final Stack<String> labels;
     private final Map<String, Boolean> flags;
     private final LinkedList<String> indexedParams;
-    private final Map<String, Object[]> namedParams;
+    private final Map<String, Object> namedParams;
     private int flagCount;
     private boolean empty;
     private boolean helpCall;
@@ -56,7 +56,7 @@ public class CommandContext
         this.flags = new THashMap<String, Boolean>(0);
         this.flagCount = 0;
         this.indexedParams = new LinkedList<String>();
-        this.namedParams = new THashMap<String, Object[]>(0);
+        this.namedParams = new THashMap<String, Object>();
         this.helpCall = false;
     }
 
@@ -78,7 +78,9 @@ public class CommandContext
             this.flags.put(flag.name().toLowerCase(Locale.ENGLISH), false);
             if (!"".equals(flag.longName()))
             {
-                flagLongnameMap.put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().toLowerCase(Locale.ENGLISH));
+                flagLongnameMap.
+                    put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().
+                        toLowerCase(Locale.ENGLISH));
             }
         }
 
@@ -112,8 +114,7 @@ public class CommandContext
             }
         }
 
-        Integer offset = new Integer(0);
-        for (; offset < commandLine.length; ++offset)
+        for (int offset = 0; offset < commandLine.length; ++offset)
         {
             if (commandLine[offset].isEmpty())
             {
@@ -148,8 +149,10 @@ public class CommandContext
                     this.indexedParams.add(commandLine[offset]); // flag not found, adding it as an indexed param
                 }
             }
-            else //else named param or indexed param
+            else
+            //else named param or indexed param
             {
+
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
                 // has alias named Param ?
                 if (paramAliasMap.containsKey(paramName))
@@ -160,93 +163,35 @@ public class CommandContext
                 // is named Param?
                 if (param != null && offset + 1 < commandLine.length)
                 {
-                    Class<?>[] types = param.types();
-                    Object[] values = new Object[types.length];
-                    for (int typeOffset = 0; typeOffset < types.length && offset + 1 < commandLine.length; typeOffset++)
+                    try
                     {
-                        if (typeOffset < types.length)
-                        {
-                            // moving offset +1
-                            offset++;
-                        }
-                        try
-                        {
-                            // try to apply needed type
-                            if (String.class.isAssignableFrom(types[typeOffset]))
-                            {
-                                values[typeOffset] = readString(offset, commandLine);
-                            }
-                            else
-                            {
-                                values[typeOffset] = Convert.fromString(types[typeOffset], commandLine[offset]);
-                            }
-                        }
-                        catch (ConversionException e)
-                        {
-                            illegalParameter(this, "core", "Invalid Parameter for %s at index %d. %s is not a valid Type of %s", paramName, typeOffset, commandLine[offset], types[typeOffset].toString());
-                        }
+                        offset++;
+                        String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
+                        Pair<Integer, ?> pair = ArgumentReader.read(param.type(), commandLineRange);
+                        offset += pair.getLeft();
+                        //added named param
+                        this.namedParams.put(paramName, pair.getRight());
                     }
-                    //added named param
-                    this.namedParams.put(paramName, values);
+                    catch (InvalidArgumentException ex)
+                    {
+                        illegalParameter(this, "core", "", paramName);
+                    }
                 }
-                else // else is indexed param
+                else
+                // else is indexed param
                 {
-                    // added indexed param
-                    this.indexedParams.add(readString(offset, commandLine));
+                    try
+                    {
+                        String[] commandLineRange = Arrays.copyOfRange(commandLine, offset, commandLine.length); // End-Index is exclusive
+                        Pair<Integer, String> pair = ArgumentReader.read(String.class, commandLineRange);
+                        offset += pair.getLeft();
+                        this.indexedParams.add(pair.getRight());// added indexed param
+                    }
+                    catch (InvalidArgumentException ignored)
+                    {}
                 }
             }
         }
-    }
-
-    /**
-     * Reads a string from the splitted command line
-     * This version will determine if a quote was used.
-     *
-     * @param offset      the current offset in the command line
-     * @param commandLine the command line
-     * @return the read string
-     */
-    private static String readString(Integer offset, String[] commandLine)
-    {
-        char quote = commandLine[offset].charAt(0);
-        if (quote == '"' || quote == '\'')
-        {
-            return readString(quote, offset, commandLine);
-        }
-        return commandLine[offset];
-    }
-
-    /**
-     * Reads a string from the splitted command line
-     *
-     * @param quoteChar   the char used to quote this string
-     * @param offset      the current offset in the command line
-     * @param commandLine the command line
-     * @return the read string
-     */
-    private static String readString(char quoteChar, Integer offset, String[] commandLine)
-    {
-        String message = commandLine[offset++].substring(1);
-        if (message.charAt(message.length() - 1) == quoteChar)
-        {
-            return message.substring(0, message.length() - 1);
-        }
-
-        StringBuilder builder = new StringBuilder(message);
-
-        while (offset < commandLine.length)
-        {
-            builder.append(' ');
-            message = commandLine[offset];
-            if (message.charAt(message.length() - 1) == quoteChar)
-            {
-                return builder.append(message.substring(0, message.length() - 1)).toString();
-            }
-            builder.append(message);
-            ++offset;
-        }
-
-        return builder.toString();
     }
 
     /**
@@ -367,9 +312,10 @@ public class CommandContext
     }
 
     /**
-     * Returns the first value of a named parameters as a String
+     * Returns a value of a named parameter as a String
      *
      * @param name the parameter name
+     * @param i    the value index
      * @return the String or null if not found
      */
     public String getString(String name)
@@ -378,15 +324,16 @@ public class CommandContext
     }
 
     /**
-     * Gets a value of a named parameter as a String
+     * Returns the first value of a named parameters as a String or the given
+     * default value
      *
      * @param name the parameter name
-     * @param i    the value index
-     * @return the String or null if not found
+     * @param def  the default value
+     * @return the String or the default value if not found
      */
-    public String getString(String name, int i)
+    public String getString(String name, String def)
     {
-        return this.getNamed(name, String.class, i);
+        return this.getNamed(name, String.class, def);
     }
 
     /**
@@ -423,18 +370,7 @@ public class CommandContext
      */
     public User getUser(int i)
     {
-        return this.getIndexed(i, User.class, null);
-    }
-
-    /**
-     * Gets the user from the first value of a named parameter
-     *
-     * @param name the parameter name
-     * @return the user or null of not found
-     */
-    public User getUser(String name)
-    {
-        return this.getUser(name, 0);
+        return this.getIndexed(i, User.class);
     }
 
     /**
@@ -444,9 +380,9 @@ public class CommandContext
      * @param i    the value index
      * @return the User or null if not found
      */
-    public User getUser(String name, int i)
+    public User getUser(String name)
     {
-        return this.getNamed(name, User.class, i);
+        return this.getNamed(name, User.class);
     }
 
     /**
@@ -492,7 +428,8 @@ public class CommandContext
     }
 
     /**
-     * Returns the command sender as a User or throws an IllegalUsageException with the specified message
+     * Returns the command sender as a User or throws an IllegalUsageException
+     * with the specified message
      *
      * @param category the category of the message
      * @param message  the message
@@ -548,20 +485,15 @@ public class CommandContext
      * @param index the index
      * @param type  the Class of the value
      * @param def   the default value
-     * @return returns the requested value or the specified default value if the conversion failt or the parameters was not available
+     * @return returns the requested value or the specified default value if the
+     *         conversion failt or the parameters was not available
      */
     public <T> T getIndexed(int index, Class<T> type, T def)
     {
-        try
+        T value = this.getIndexed(index, type);
+        if (value != null)
         {
-            T value = this.getIndexed(index, type);
-            if (value != null)
-            {
-                return value;
-            }
-        }
-        catch (ConversionException ignored)
-        {
+            return value;
         }
         return def;
     }
@@ -573,13 +505,21 @@ public class CommandContext
      * @param index the index of the value
      * @param type  the Class of the value
      * @return the value
-     * @throws ConversionException if the value could not be converter to the requested type
+     * @throws ConversionException if the value could not be converter to the
+     *                             requested type
      */
-    public <T> T getIndexed(int index, Class<T> type) throws ConversionException
+    public <T> T getIndexed(int index, Class<T> type)
     {
         try
         {
-            return Convert.fromString(type, this.indexedParams.get(index));
+            try
+            {
+                return ArgumentReader.read(type, this.indexedParams.get(index)).getRight();
+            }
+            catch (InvalidArgumentException e)
+            {
+                return null;
+            }
         }
         catch (IndexOutOfBoundsException e)
         {
@@ -607,7 +547,7 @@ public class CommandContext
      *
      * @return all named parameters
      */
-    public Map<String, Object[]> getNamed()
+    public Map<String, Object> getNamed()
     {
         return Collections.unmodifiableMap(this.namedParams);
     }
@@ -618,7 +558,7 @@ public class CommandContext
      * @param name the name of the parameter
      * @return an array of values or null if the parameter was not found
      */
-    public Object[] getNamed(String name)
+    public Object getNamed(String name)
     {
         if (name == null)
         {
@@ -631,50 +571,21 @@ public class CommandContext
      * Returns a value of a named parameter
      *
      * @param <T>  the type of the value
-     * @param name the name of the parameter
-     * @param type the Class of the value
-     * @return the value or null if not found
-     */
-    public <T> T getNamed(String name, Class<T> type)
-    {
-        return this.getNamed(name, type, 0);
-    }
-
-    /**
-     * Returns a value of a named parameter
-     *
-     * @param <T>  the type of the value
      * @param name the name of the parameters
      * @param type the Class of the value
      * @param i    the index of the value
      * @return the value or null if not available
      */
-    public <T> T getNamed(String name, Class<T> type, int i)
+    public <T> T getNamed(String name, Class<T> type)
     {
-        Object[] values = this.namedParams.get(name.toLowerCase(Locale.ENGLISH));
-        if (values == null)
+        Object obj = this.namedParams.get(name.toLowerCase(Locale.ENGLISH));
+        if (obj == null)
         {
             return null;
         }
-
-        if (i >= values.length)
+        if (type.isAssignableFrom(obj.getClass()))
         {
-            throw new IndexOutOfBoundsException("The named parameter you requested has only " + values.length + " " + (values.length == 1 ? "value" : "values") + " but you requested the " + (i + 1) + ".");
-        }
-        if (values[i] == null)
-        {
-            return null;
-        }
-        if (type.isAssignableFrom(values[i].getClass()))
-        {
-            return type.cast(values[i]);
-        }
-        try
-        {
-            return Convert.fromObject(type, values[i]); // if it is an Array it the check above does not work
-        }
-        catch (Exception e)
-        {
+            return (T)obj;
         }
         return null;
     }
@@ -691,26 +602,6 @@ public class CommandContext
     public <T> T getNamed(String name, Class<T> type, T def)
     {
         T value = this.getNamed(name, type);
-        if (value != null)
-        {
-            return value;
-        }
-        return def;
-    }
-
-    /**
-     * Returns a value of a named parameter or a default value if not found
-     *
-     * @param <T>  the type of the value
-     * @param name the name of the parameters
-     * @param type the Class of the value
-     * @param i    the index of the value
-     * @param def  the default value
-     * @return the value or null if not available
-     */
-    public <T> T getNamed(String name, Class<T> type, int i, T def)
-    {
-        T value = this.getNamed(name, type, i);
         if (value != null)
         {
             return value;

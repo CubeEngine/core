@@ -20,7 +20,6 @@ public class PermissionManager
 {
     private static final String CUBEENGINE_BASE = "cubeengine";
     private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(CUBEENGINE_BASE + ".*", PermissionDefault.OP);
-    
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
@@ -47,8 +46,7 @@ public class PermissionManager
             }
         }
         catch (IllegalArgumentException ignored)
-        {
-        }
+        {}
     }
 
     /**
@@ -81,10 +79,10 @@ public class PermissionManager
 
         Set<String> modulePermissions = this.getPermission(module);
         modulePermissions.add(perm);
-        
+
         org.bukkit.permissions.Permission permission = new org.bukkit.permissions.Permission(perm, permDefault);
         this.registerBukkitPermission(permission);
-        
+
         org.bukkit.permissions.Permission parent = CUBEENGINE_WILDCARD;
         org.bukkit.permissions.Permission current;
         String currentString = CUBEENGINE_BASE;
@@ -95,24 +93,24 @@ public class PermissionManager
             current.addParent(parent, true);
             parent = current;
         }
-        
+
         permission.addParent(parent, true);
     }
-    
+
     private org.bukkit.permissions.Permission getWildcard(Module module, String perm)
     {
         perm += ".*";
-        
+
         org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
         if (wildcard == null)
         {
             this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, PermissionDefault.OP));
             this.getPermission(module).add(perm);
         }
-        
+
         return wildcard;
     }
-    
+
     private Set<String> getPermission(Module module)
     {
         Set<String> perms = this.modulePermissionMap.get(module);
@@ -171,7 +169,7 @@ public class PermissionManager
     public void unregisterPermissions(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
-        
+
         Set<String> removedPerms = this.modulePermissionMap.remove(module);
         if (removedPerms != null)
         {

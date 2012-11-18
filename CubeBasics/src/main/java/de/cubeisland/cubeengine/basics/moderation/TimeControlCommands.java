@@ -1,18 +1,17 @@
-
 package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.HashMap;
 import java.util.List;
 import org.bukkit.World;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 /**
  * Commands changing time.
  * /time
@@ -22,14 +21,36 @@ public class TimeControlCommands
 {
     private enum Time
     {
-        DAY(6000, "day", "noon"),
-        NIGHT(18000, "night", "midnight"),
-        DAWN(22500, "dawn"),
-        SUNRISE(0, "sunrise", "morning"),
-        DUSK(13000, "dusk", "moonrise"),
-        EVEN(15000, "even", "evening", "sunset"),
-        FORENOON(3000, "forenoon"),
-        AFTERNOON(9000, "afternoon");
+        DAY(
+            6000,
+            "day",
+            "noon"),
+        NIGHT(
+            18000,
+            "night",
+            "midnight"),
+        DAWN(
+            22500,
+            "dawn"),
+        SUNRISE(
+            0,
+            "sunrise",
+            "morning"),
+        DUSK(
+            13000,
+            "dusk",
+            "moonrise"),
+        EVEN(
+            15000,
+            "even",
+            "evening",
+            "sunset"),
+        FORENOON(
+            3000,
+            "forenoon"),
+        AFTERNOON(
+            9000,
+            "afternoon");
         private static final HashMap<String, Time> times = new HashMap<String, Time>();
         private static final HashMap<Long, String> timeNames = new HashMap<Long, String>();
         protected String[] names;
@@ -69,7 +90,8 @@ public class TimeControlCommands
             {
                 return time.longTime;
             }
-            try //TODO time as 12:00 4pm/am etc.
+            try
+            //TODO time as 12:00 4pm/am etc.
             {
                 return Long.parseLong(s); // this is time in ticks
             }
@@ -80,15 +102,17 @@ public class TimeControlCommands
         }
     }
 
-    @Command(
-        desc = "Changes the time of a world",
-        min = 1, max = 2,
-        flags = { @Flag(name = "a", longName = "all") },
-        usage = "<day|night|dawn|even|<time>> [world] [-all]")
+    @Command(desc = "Changes the time of a world", max = 2, flags = {
+        @Flag(name = "a", longName = "all")
+    }, usage = "<day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
-        //TODO change output time set to %d to day|night etc..
-        String timeString = context.getIndexed(0, String.class, null);
+        if (!context.hasIndexed(0))
+        {
+            //TODO display time
+            return;
+        }
+        String timeString = context.getString(0);
         Long time = Time.matchTime(timeString);
         if (time == null)
         {
@@ -116,7 +140,7 @@ public class TimeControlCommands
             World world = null;
             if (context.hasIndexed(1))
             {
-                String worldname = context.getIndexed(1, String.class, "");
+                String worldname = context.getString(1, "");
                 world = context.getSender().getServer().getWorld(worldname);
                 if (world == null)
                 {
@@ -144,7 +168,7 @@ public class TimeControlCommands
             {
                 context.
                     sendMessage("basics", "&aTime set to &e%d &ain world &6%s&a!", time, world.
-                    getName());
+                        getName());
             }
             else
             {
@@ -152,19 +176,16 @@ public class TimeControlCommands
             }
         }
     }
-    
-    @Command(
-        desc = "Changes the time for a player",
-        min = 1,
-        max = 2,
-        flags = { @Flag(longName = "relative", name = "rel") },
-        usage = "<day|night|dawn|even|reset> [player]")
+
+    @Command(desc = "Changes the time for a player", min = 1, max = 2, flags = {
+        @Flag(longName = "relative", name = "rel")
+    }, usage = "<day|night|dawn|even|reset> [player]")
     public void ptime(CommandContext context)
     {
         Long time = 0L;
         boolean other = false;
         boolean reset = false;
-        String timeString = context.getIndexed(0, String.class, null);
+        String timeString = context.getString(0);
         if (timeString.equalsIgnoreCase("reset"))
         {
             reset = true;

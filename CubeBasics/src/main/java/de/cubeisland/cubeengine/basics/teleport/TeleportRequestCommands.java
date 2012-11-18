@@ -23,11 +23,7 @@ public class TeleportRequestCommands
         this.basics = basics;
     }
 
-    @Command(
-        desc = "Requests to teleport to a player.",
-        usage = "<player>",
-        min = 1,
-        max = 1)
+    @Command(desc = "Requests to teleport to a player.", usage = "<player>", min = 1, max = 1)
     public void tpa(CommandContext context)
     {
         final User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
@@ -63,11 +59,7 @@ public class TeleportRequestCommands
         }
     }
 
-    @Command(
-        desc = "Requests to teleport a player to you.",
-        usage = "<player>",
-        min = 1,
-        max = 1)
+    @Command(desc = "Requests to teleport a player to you.", usage = "<player>", min = 1, max = 1)
     public void tpahere(CommandContext context)
     {
         final User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
@@ -103,10 +95,9 @@ public class TeleportRequestCommands
         }
     }
 
-    @Command(
-        names = { "tpac", "tpaccept" },
-        desc = "Accepts any pending teleport-request.",
-        max = 0)
+    @Command(names = {
+        "tpac", "tpaccept"
+    }, desc = "Accepts any pending teleport-request.", max = 0)
     public void tpaccept(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&cNo one wants to teleport to you!");
@@ -149,9 +140,7 @@ public class TeleportRequestCommands
         }
     }
 
-    @Command(
-        desc = "Denies any pending teleport-request.",
-        max = 0)
+    @Command(desc = "Denies any pending teleport-request.", max = 0)
     public void tpdeny(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&cNo one wants to teleport to you!");

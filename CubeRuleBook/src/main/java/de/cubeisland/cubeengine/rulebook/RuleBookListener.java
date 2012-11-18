@@ -1,7 +1,8 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.user.User;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,10 +11,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-/**
- *
- * @author Wolfi
- */
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+
 class RuleBookListener implements Listener, Runnable
 {
     private static String playerName = null;
@@ -31,16 +30,16 @@ class RuleBookListener implements Listener, Runnable
         if (!player.hasPlayedBefore())
         {
             playerName = player.getName();
-            player.getServer().getScheduler().
-                scheduleSyncDelayedTask((Plugin)this.module.getCore(), this, 15);
+            player.getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.module.getCore(), this, 15);
         }
     }
 
+    @Override
     public void run()
     {
         if (playerName != null)
         {
-            User user = this.module.getCore().getUserManager().getUser(playerName , true);
+            User user = this.module.getCore().getUserManager().getUser(playerName, true);
             String language = user.getLanguage();
 
             if (!this.module.getConfig().getLanguages().contains(language))
@@ -50,8 +49,7 @@ class RuleBookListener implements Listener, Runnable
 
             BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
 
-            ruleBook.
-                setAuthor(this.module.getCore().getServer().getServerName());
+            ruleBook.setAuthor(Bukkit.getServerName());
             ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
             ruleBook.setPages(this.module.getConfig().getPages(language));
 

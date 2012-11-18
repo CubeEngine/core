@@ -6,7 +6,8 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for deleting tables.
  */
-public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder> implements DeleteBuilder
+public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder>
+    implements DeleteBuilder
 {
     protected MySQLDeleteBuilder(MySQLQueryBuilder parent)
     {
@@ -18,7 +19,7 @@ public class MySQLDeleteBuilder extends MySQLConditionalBuilder<DeleteBuilder> i
     {
         Validate.notEmpty(tables, "No tables specified");
 
-        this.query = new StringBuilder("DELETE FROM ").append(this.database.prepareName(tables[0]));
+        this.query = new StringBuilder("DELETE FROM ").append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
             this.query.append(',').append(this.database.prepareFieldName(tables[i]));

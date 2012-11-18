@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Undoing Bids
- *
- * @author Anselm Brehme
  */
 public class UndoBidCommand
 {

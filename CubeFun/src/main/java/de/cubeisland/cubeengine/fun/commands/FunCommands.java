@@ -31,7 +31,7 @@ public class FunCommands
     private final Fun module;
     private final UserManager userManager;
     private final TaskManager taskManager;
-    
+
     public FunCommands(Fun module)
     {
         this.module = module;
@@ -50,12 +50,12 @@ public class FunCommands
     {
         RocketListener rocketListener = this.module.getRocketListener();
         int ticks = 20;
-        
+
         int height = context.getIndexed(0, Integer.class, 10);
-        User user = (context.hasNamed("player")) ? 
-            context.getNamed("player", User.class, null) : 
-            context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
-        
+        User user = (context.hasNamed("player"))
+            ? context.getNamed("player", User.class, null)
+            : context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+
         if (user == null)
         {
             invalidUsage(context, "core", "User not found!");
@@ -72,11 +72,11 @@ public class FunCommands
                 invalidUsage(context, "fun", "The height has to be greater than 0");
             }
         }
-        
-        user.setVelocity(new Vector(0.0, (double)height/10, 0.0));
+
+        user.setVelocity(new Vector(0.0, (double)height / 10, 0.0));
         rocketListener.addInstance(user, ticks);
-        
-        for(int i = 1; i <= ticks; i++)
+
+        for (int i = 1; i <= ticks; i++)
         {
             this.taskManager.scheduleSyncDelayedTask(module, rocketListener, 5 * i);
         }

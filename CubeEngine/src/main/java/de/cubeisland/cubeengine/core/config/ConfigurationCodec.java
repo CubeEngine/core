@@ -7,11 +7,9 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
-import de.cubeisland.cubeengine.core.util.converter.Converter;
-import de.cubeisland.cubeengine.core.util.converter.generic.GenericConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileWriter;
@@ -19,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -61,14 +61,7 @@ public abstract class ConfigurationCodec
                 }
             }
         }
-        try
-        {
-            container.dumpIntoFields(config, container.values);
-        }
-        catch (Exception e)
-        {
-            throw new InvalidConfigurationException("Error while dumping loaded Config into fields!", e);
-        }
+        container.dumpIntoFields(config, container.values, config.parent);
         container = null;
         revision = null;
     }
@@ -114,13 +107,38 @@ public abstract class ConfigurationCodec
                 throw new IllegalStateException("Tried to save config without File.");
             }
             container = new CodecContainer();
-            container.values = container.fillFromFields(config, "", container.values);
-
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
                 this.revision = a_revision.value();
+                container.values.put("revision", this.revision);
             }
+            container.values = container.fillFromFields(null, null, config, "", container.values);
+            container.saveIntoFile(file);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidConfigurationException("Error while saving Configuration!", ex);
+        }
+        container = null;
+    }
+
+    public void saveChildConfig(Configuration parentConfig, Configuration config, File file)
+    {
+        try
+        {
+            if (file == null)
+            {
+                throw new IllegalStateException("Tried to save config without File.");
+            }
+            container = new CodecContainer();
+            Revision a_revision = config.getClass().getAnnotation(Revision.class);
+            if (a_revision != null)
+            {
+                this.revision = a_revision.value();
+                container.values.put("revision", this.revision);
+            }
+            container.values = container.fillFromFields(null, parentConfig, config, "", container.values);
             container.saveIntoFile(file);
         }
         catch (Exception ex)
@@ -165,8 +183,6 @@ public abstract class ConfigurationCodec
      * @return the fileExtension
      */
     public abstract String getExtension();
-
-    public abstract String revision();
 
     /**
      * Converts the inputStream into a String->Object map
@@ -217,14 +233,16 @@ public abstract class ConfigurationCodec
     {
         protected Map<String, Object> values;
         protected Map<String, String> comments;
-        protected Map<String, String> loadedKeys;
+        protected Map<String, Object> loadedKeys;
         protected Configuration config;
         protected String currentPath;
+        protected CodecContainer parentContainer = null;
+        private Configuration parentConfig;
 
         public CodecContainer()
         {
             this.comments = new THashMap<String, String>();
-            this.loadedKeys = new THashMap<String, String>();
+            this.loadedKeys = new THashMap<String, Object>();
             this.values = new LinkedHashMap<String, Object>();
         }
 
@@ -263,44 +281,31 @@ public abstract class ConfigurationCodec
          */
         public Object convertFromObjectToFieldValue(Object object, Field field, String path) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
-            Class fieldClass = field.getType();
-            if (!String.class.isAssignableFrom(fieldClass))
+            Type fieldType = field.getGenericType();
+            if (fieldType instanceof Class)
             {
-                Converter converter = Convert.matchConverter(fieldClass);
-                if (converter == null)
+                return Convert.fromObject(fieldType, object);
+            }
+            if (fieldType instanceof ParameterizedType // can be a map?
+                && ((ParameterizedType)fieldType).getRawType() instanceof Class // rawIsClass
+                && Map.class.isAssignableFrom((Class)((ParameterizedType)fieldType).getRawType()) // isMap
+                && ((ParameterizedType)fieldType).getActualTypeArguments()[1] instanceof Class // mapValue is class
+                && Configuration.class.isAssignableFrom(((Class)((ParameterizedType)fieldType).getActualTypeArguments()[1]))) // mapValue is Config
+            {
+                Type valType = ((ParameterizedType)fieldType).getActualTypeArguments()[1];
+                if (valType instanceof Class)
                 {
-                    Class genericType = field.getAnnotation(Option.class).genericType();
-                    GenericConverter gConverter = Convert.matchGenericConverter(fieldClass);
-                    if (Configuration.class.isAssignableFrom(genericType))
+                    Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
+                    Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
+                    for (Object key : fieldMap.keySet())
                     {
-                        if (gConverter instanceof MapConverter) // config in maps IMPORTANT: key.toString() is the key in the config
-                        {
-                            Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
-                            Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
-                            for (Object key : fieldMap.keySet())
-                            {
-                                new CodecContainer().dumpIntoFields(fieldMap.get(key),
-                                    this.getOrCreateSubSection(key.toString(), subvalues));
-                            }
-                            return fieldMap;
-                        }
-                        else
-                        {
-                            throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
-                        }
+                        new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subvalues),
+                            parentConfig == null ? null : ((Map<Object, Configuration>)(field.get(this.parentConfig))).get(key));
                     }
-                    if (gConverter != null)
-                    {
-                        return gConverter.fromObject(object, field.get(this.config), genericType);
-                    }
-                }
-                else
-                {
-                    return converter.fromObject(object);
+                    return fieldMap;
                 }
             }
-            return object;
-
+            return Convert.fromObject(fieldType, object); // this covers the genericConversion
         }
 
         /**
@@ -312,31 +317,51 @@ public abstract class ConfigurationCodec
          * @throws IllegalArgumentException
          * @throws IllegalAccessException
          */
-        private void dumpIntoFields(Configuration config, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
+        private void dumpIntoFields(Configuration config, Map<String, Object> section, Configuration parent)
         {
             this.config = config;
+            this.parentConfig = parent;
+            this.values = section;
             for (Field field : config.getClass().getFields()) // ONLY public fields are allowed
             {
-                if (field.isAnnotationPresent(Option.class))
+                try
                 {
-                    String path = field.getAnnotation(Option.class).value();
-                    if (Configuration.class.isAssignableFrom(field.getType()))
+                    if (field.isAnnotationPresent(Option.class))
                     {
-                        Configuration subConfig = (Configuration)field.get(this.config);
-                        CodecContainer subContainer = new CodecContainer();
-                        subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section));
-                        continue;
+                        String path = field.getAnnotation(Option.class).value();
+                        if (Configuration.class.isAssignableFrom(field.getType()))
+                        {
+                            Configuration subConfig = (Configuration)field.get(this.config);
+                            CodecContainer subContainer = new CodecContainer();
+                            if (parent == null)
+                            {
+                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), null);
+                            }
+                            else
+                            {
+                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), (Configuration)field.get(parent));
+                            }
+                            continue;
+                        }
+                        int mask = field.getModifiers();
+                        if ((((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static fields
+                        {
+                            continue;
+                        }
+                        Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), section);//Get savedValue or default
+                        if (object != null)
+                        {
+                            field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
+                        }
+                        else if (this.parentConfig != null)
+                        {
+                            field.set(config, field.get(this.parentConfig)); // If not found get from parentConfig (if childconfig)
+                        }
                     }
-                    int mask = field.getModifiers();
-                    if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static and final fields
-                    {
-                        continue;
-                    }
-                    Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), section);//Get savedValue or default
-                    if (object != null)
-                    {
-                        field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
-                    }
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidConfigurationException("Error while dumping loaded Config into fields! Field: " + field.getName(), e);
                 }
             }
         }
@@ -372,9 +397,8 @@ public abstract class ConfigurationCodec
             {
                 sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
             }
-            sb.append(revision());
             first = true;
-            sb.append(convertMap("", values, 0));
+            sb.append(convertMap("", values, 0).trim()).append("\n");
             if (config.tail() != null)
             {
                 sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
@@ -455,9 +479,9 @@ public abstract class ConfigurationCodec
          * @param key
          * @return the coressponding key
          */
-        private String findKey(String key)
+        private Object findKey(String key)
         {
-            String foundKey = this.loadedKeys.get(key);
+            Object foundKey = this.loadedKeys.get(key);
             if (foundKey == null)
             {
                 return key;
@@ -472,9 +496,9 @@ public abstract class ConfigurationCodec
          */
         private void loadKeys(Map<String, Object> section)
         {
-            for (String key : section.keySet())
+            for (Object key : section.keySet()) //need object ere because key could be an integer when in a subMap
             {
-                this.loadedKeys.put(key.toLowerCase(Locale.ENGLISH), key);
+                this.loadedKeys.put(key.toString().toLowerCase(Locale.ENGLISH), key);
                 if (section.get(key) instanceof Map)
                 {
                     this.loadKeys((Map<String, Object>)section.get(key));
@@ -490,7 +514,14 @@ public abstract class ConfigurationCodec
          */
         private void addComment(String path, String comment)
         {
-            this.comments.put(path.toLowerCase(Locale.ENGLISH), comment);
+            if (parentContainer == null)
+            {
+                this.comments.put(path, comment);
+            }
+            else
+            {
+                parentContainer.addComment(path, comment);
+            }
         }
 
         /**
@@ -515,9 +546,18 @@ public abstract class ConfigurationCodec
          * @throws ConversionException
          * @throws IllegalAccessException
          */
-        public Map<String, Object> fillFromFields(Configuration config, String basePath, Map<String, Object> section) throws IllegalArgumentException, ConversionException, IllegalAccessException
+        public Map<String, Object> fillFromFields(CodecContainer parentContainer, Configuration parentConfig, Configuration config, String basePath, Map<String, Object> section) throws IllegalArgumentException, ConversionException, IllegalAccessException
         {
+            this.parentContainer = parentContainer;
+            this.parentConfig = parentConfig;
             this.config = config;
+            if (parentConfig != null)
+            {
+                if (!parentConfig.getClass().equals(config.getClass()))
+                {
+                    throw new IllegalStateException("parent and child-config have to be the same type of config!");
+                }
+            }
             Class<? extends Configuration> clazz = config.getClass();
             if (clazz.isAnnotationPresent(MapComments.class))
             {
@@ -534,10 +574,22 @@ public abstract class ConfigurationCodec
                     }
                 }
             }
+            boolean advanced = true;
+            try
+            {
+                Field field = clazz.getField("advanced");
+                advanced = field.getBoolean(config);
+            }
+            catch (Exception ignored)
+            {}
             for (Field field : clazz.getFields())
             {
                 if (field.isAnnotationPresent(Option.class))
                 {
+                    if (!advanced && field.getAnnotation(Option.class).advanced())
+                    {
+                        continue;
+                    }
                     int mask = field.getModifiers();
                     if (((mask & Modifier.FINAL) == Modifier.FINAL) || (((mask & Modifier.STATIC) == Modifier.STATIC)))
                     {
@@ -557,10 +609,37 @@ public abstract class ConfigurationCodec
                         }
                     }
                     path = path.toLowerCase(Locale.ENGLISH);
-                    this.set(path, this.convertFromFieldValueToObject(field, field.get(config), path, this.getOrCreateSubSection(path, section)), section);
+                    Object value = this.convertFromFieldValueToObject(field, field.get(config), basePath, this.getOrCreateSubSection(path, section));
+                    if (parentConfig != null)
+                    {
+                        Object parentValue = this.convertFromFieldValueToObject(field, field.get(parentConfig), basePath, this.getOrCreateSubSection(path, section));
+                        if (parentValue.equals(value))
+                        {
+                            this.remove(path, section);
+                            continue;
+                        }
+                    }
+                    this.set(path, value, section);
                 }
             }
             return section;
+        }
+
+        private void remove(String path, Map<String, Object> section)
+        {
+            if (path.contains("."))
+            {
+                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
+                this.remove(getSubPath(path), subsection);
+                if (subsection.isEmpty())
+                {
+                    section.remove(getBasePath(path));
+                }
+            }
+            else
+            {
+                section.remove(path);
+            }
         }
 
         /**
@@ -568,59 +647,63 @@ public abstract class ConfigurationCodec
          *
          * @param field
          * @param fieldValue
-         * @param path
+         * @param basepath
          * @param section
          * @return the converted fieldvalue
          * @throws ConversionException
          * @throws IllegalArgumentException
          * @throws IllegalAccessException
          */
-        public Object convertFromFieldValueToObject(Field field, Object fieldValue, String path, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
+        public Object convertFromFieldValueToObject(Field field, Object fieldValue, String basepath, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
             if (fieldValue == null)
             {
                 return null;
             }
             Class fieldClass = fieldValue.getClass();
-            if (!String.class.isAssignableFrom(fieldClass))
+            if (fieldValue instanceof Configuration)
             {
-                if (fieldValue instanceof Configuration)
+                String newPath = field.getAnnotation(Option.class).value();
+                if (!basepath.isEmpty())
                 {
-                    return this.fillFromFields((Configuration)fieldValue, path, this.getOrCreateSubSection(path, section));
+                    newPath = basepath + "." + newPath;
                 }
-                Converter converter = Convert.matchConverter(fieldClass);
-                if (converter == null)
+                if (this.parentConfig == null)
                 {
-                    Class genericType = field.getAnnotation(Option.class).genericType();
-                    GenericConverter gConverter = Convert.matchGenericConverter(fieldClass);
-                    if (Configuration.class.isAssignableFrom(genericType))
-                    {
-                        if (gConverter instanceof MapConverter)
-                        {
-                            Map<Object, ? extends Configuration> fieldMap = (Map)fieldValue;
-                            Map<String, Object> map = new LinkedHashMap<String, Object>();
-                            for (Object key : fieldMap.keySet())
-                            {
-                                map.put(key.toString(), new CodecContainer().fillFromFields(fieldMap.get(key), key.toString(), this.getOrCreateSubSection(key.toString(), map)));
-                            }
-                            return map;
-                        }
-                        else
-                        {
-                            throw new InvalidConfigurationException("Configurations can not load inside an array or collection!");
-                        }
-                    }
-                    if (gConverter != null)
-                    {
-                        return gConverter.toObject(fieldValue, genericType, null);
-                    }
+                    return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
                 }
-                else
-                {
-                    return converter.toObject(fieldValue);
-                }
+                return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
             }
-            return fieldValue;
+            Converter converter = Convert.matchConverter(fieldClass);
+            if (converter == null)
+            {
+                if (Map.class.isAssignableFrom(fieldClass))
+                {
+                    if (!((Map)fieldValue).isEmpty() && ((Map)fieldValue).values().iterator().next() instanceof Configuration)
+                    {
+                        Map<Object, ? extends Configuration> fieldMap = (Map)fieldValue;
+                        Map<String, Object> map = new LinkedHashMap<String, Object>();
+                        Converter keyConverter = Convert.matchConverter(fieldMap.keySet().iterator().next().getClass());
+                        for (Object key : fieldMap.keySet())
+                        {
+                            String newPath = field.getAnnotation(Option.class).value() + "." + this.findKey(key.toString());
+                            if (!basepath.isEmpty())
+                            {
+                                newPath = basepath + "." + newPath;
+                            }
+                            map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
+                            new CodecContainer().fillFromFields(this, this.parentConfig, fieldMap.get(key),
+                                newPath, this.getOrCreateSubSection(key.toString(), map)));
+                        }
+                        return map;
+                    }
+                }
+                return Convert.toObject(fieldValue); // array / collection / map-converter
+            }
+            else
+            {
+                return converter.toObject(fieldValue);
+            }
         }
     }
 }

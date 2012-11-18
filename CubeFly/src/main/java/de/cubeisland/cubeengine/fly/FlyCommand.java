@@ -6,16 +6,11 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class FlyCommand
 {
     UserManager um;
@@ -27,17 +22,12 @@ public class FlyCommand
         this.config = module.getConfiguration();
     }
 
-    @Command(
-    desc = "Lets you fly away",
-    max = 1,
-    params =
-    {
-        @Param(names = "player", types = User.class)
-    },
-    usage = "[flyspeed] [player <player>]")
+    @Command(desc = "Lets you fly away", max = 1, params = {
+        @Param(names = "player", type = User.class)
+    }, usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {
-        if (!config.flycommand)
+        if (!this.config.flycommand)
         {
             denyAccess(context, "fly", "The fly-command is disabled in the configuration!");
             return;
@@ -100,11 +90,11 @@ public class FlyCommand
             return;
         }
         //I Believe I Can Fly ...     
-        if (context.getIndexed().size() > 0)
+        if (context.hasIndexed(0))
         {
-            try
+            Float speed = context.getIndexed(0, Float.class);
+            if (speed != null && speed >= 0 && speed <= 10)
             {
-                float speed = context.getIndexed(0, Float.class);
                 if (speed > 0 && speed <= 10)
                 {
                     user.setFlySpeed(speed / 10f);
@@ -122,7 +112,7 @@ public class FlyCommand
                     }
                 }
             }
-            catch (ConversionException ex)
+            else
             {
                 user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
             }

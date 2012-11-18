@@ -2,10 +2,6 @@ package de.cubeisland.cubeengine.conomy.util;
 
 import de.cubeisland.cubeengine.conomy.account.AccountModel;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class CurrencyFormater
 {
     public String convertBalance(double amount, String format)

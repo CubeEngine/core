@@ -4,13 +4,13 @@ import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import org.bukkit.enchantments.Enchantment;
 
 /**
@@ -21,7 +21,6 @@ public class EnchantMatcher
     private THashMap<String, Enchantment> enchantments;
     private THashMap<String, Enchantment> bukkitnames;
     private THashMap<Enchantment, String> enchantmentName;
-
     private static EnchantMatcher instance = null;
 
     private EnchantMatcher()
@@ -39,7 +38,7 @@ public class EnchantMatcher
         for (Enchantment enchantment : Enchantment.values())
         {
             this.bukkitnames.put(enchantment.getName(), enchantment);
-        }            
+        }
     }
 
     /**
@@ -96,8 +95,7 @@ public class EnchantMatcher
             return Enchantment.getById(enchId);
         }
         catch (NumberFormatException e)
-        {
-        }
+        {}
         if (ench == null)
         {
             if (s.length() < 4)
@@ -135,7 +133,7 @@ public class EnchantMatcher
             AliasMapFormat.parseStringList(file, enchs, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchs, true))
             {
-                CubeEngine.getLogger().log(Level.FINER, "Updated enchantments.txt");
+                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated enchantments.txt");
                 AliasMapFormat.parseAndSaveStringListMap(enchs, file);
             }
             return enchs;

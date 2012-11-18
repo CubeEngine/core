@@ -14,5 +14,5 @@ public @interface Param
 {
     public String[] names();
 
-    public Class[] types();
+    public Class<?> type() default String.class;
 }

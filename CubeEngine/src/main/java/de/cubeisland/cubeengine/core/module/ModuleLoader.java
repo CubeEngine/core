@@ -3,8 +3,9 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.config.annotations.From;
+import de.cubeisland.cubeengine.core.config.annotations.LoadFrom;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
@@ -44,14 +45,14 @@ public class ModuleLoader
 
     /**
      * Loads a module from a file
-     * 
+     *
      * @param file the file to load from
      * @return the loaded module
-     * 
-     * @throws InvalidModuleException if the file is not a valid module
-     * @throws MissingDependencyException if the module has missing hard dependencies
+     *
+     * @throws InvalidModuleException          if the file is not a valid module
+     * @throws MissingDependencyException      if the module has missing hard dependencies
      * @throws IncompatibleDependencyException if the module depends on a newer version of a module
-     * @throws IncompatibleCoreException if the module depends on a newer core version
+     * @throws IncompatibleCoreException       if the module depends on a newer core version
      */
     public synchronized Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
@@ -60,14 +61,14 @@ public class ModuleLoader
 
     /**
      * Loads a module from a ModuleInfo instance
-     * 
+     *
      * @param info the module info
      * @return the loaded module
-     * 
-     * @throws InvalidModuleException if the file is not a valid module
-     * @throws MissingDependencyException if the module has missing hard dependencies
+     *
+     * @throws InvalidModuleException          if the file is not a valid module
+     * @throws MissingDependencyException      if the module has missing hard dependencies
      * @throws IncompatibleDependencyException if the module depends on a newer version of a module
-     * @throws IncompatibleCoreException if the module depends on a newer core version
+     * @throws IncompatibleCoreException       if the module depends on a newer core version
      */
     public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
@@ -92,16 +93,21 @@ public class ModuleLoader
                 this,
                 classLoader);
 
+            this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
+
             for (Field field : moduleClass.getDeclaredFields())
             {
-                if (field.isAnnotationPresent(From.class))
+                if (Configuration.class.isAssignableFrom(field.getType()) && field.getType().isAnnotationPresent(Codec.class))
                 {
-                    if (Configuration.class.isAssignableFrom(field.getType()))
+                    Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
+                    String filename = "config";
+
+                    if (field.isAnnotationPresent(LoadFrom.class))
                     {
-                        field.setAccessible(true);
-                        field.set(module, Configuration.load(field.getType().asSubclass(Configuration.class),
-                            new File(module.getFolder(), field.getAnnotation(From.class).value() + "." + field.getType().getAnnotation(Codec.class).value())));
+                        filename = field.getAnnotation(LoadFrom.class).value();
                     }
+                    field.setAccessible(true);
+                    field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename + "." + configClass.getAnnotation(Codec.class).value())));
                 }
             }
 
@@ -130,10 +136,10 @@ public class ModuleLoader
 
     /**
      * Loads a module info from a file
-     * 
+     *
      * @param file the file to load from
      * @return the loaded module info
-     * 
+     *
      * @throws InvalidModuleException if the file is not a valid module
      */
     public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
@@ -171,8 +177,7 @@ public class ModuleLoader
                     configStream.close();
                 }
                 catch (IOException ignored)
-                {
-                }
+                {}
             }
         }
         catch (IOException e)
@@ -188,8 +193,7 @@ public class ModuleLoader
                     jarFile.close();
                 }
                 catch (IOException ignored)
-                {
-                }
+                {}
             }
         }
         return info;
@@ -214,8 +218,7 @@ public class ModuleLoader
             clazz = this.libClassLoader.findClass(name);
         }
         catch (ClassNotFoundException e)
-        {
-        }
+        {}
 
         if (clazz != null)
         {
@@ -237,8 +240,7 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException e)
-            {
-            }
+            {}
         }
 
         for (String dep : info.getDependencies().keySet())
@@ -257,8 +259,7 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException e)
-            {
-            }
+            {}
         }
 
         for (String module : this.classLoaders.keySet())
@@ -274,8 +275,7 @@ public class ModuleLoader
                     }
                 }
                 catch (ClassNotFoundException ignored)
-                {
-                }
+                {}
             }
         }
 
@@ -284,7 +284,7 @@ public class ModuleLoader
 
     /**
      * Adds a new file to the library classloader
-     * 
+     *
      * @param file the file to add
      * @throws MalformedURLException if the file is invalid
      */

@@ -1,15 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.AlterTableBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.DeleteBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.InsertBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.LockBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.MergeBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.*;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -85,7 +77,12 @@ public class MySQLQueryBuilder implements QueryBuilder
             this.selectBuilder = new MySQLSelectBuilder(this);
         }
         this.init();
-        return selectBuilder.cols(cols);
+        selectBuilder.select();
+        if (cols.length > 0)
+        {
+            return selectBuilder.cols(cols);
+        }
+        return selectBuilder;
     }
 
     @Override
@@ -133,12 +130,12 @@ public class MySQLQueryBuilder implements QueryBuilder
     }
 
     @Override
-    public MySQLQueryBuilder clearTable(String table)
+    public MySQLQueryBuilder truncateTable(String table)
     {
         Validate.notNull(table, "No table specified!");
 
         this.init();
-        this.query.append("TRUNCATE TABLE ").append(this.database.prepareName(table));
+        this.query.append("TRUNCATE TABLE ").append(this.database.prepareTableName(table));
         return this;
     }
 
@@ -148,10 +145,10 @@ public class MySQLQueryBuilder implements QueryBuilder
         Validate.notEmpty(tables, "No tables specified!");
 
         this.init();
-        this.query.append("DROP TABLE ").append(this.database.prepareName(tables[0]));
+        this.query.append("DROP TABLE ").append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareName(tables[i]));
+            this.query.append(',').append(this.database.prepareTableName(tables[i]));
         }
         return this;
     }

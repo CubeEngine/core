@@ -1,55 +1,50 @@
 package de.cubeisland.cubeengine.core.util.converter.generic;
 
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
-import de.cubeisland.cubeengine.core.util.converter.Converter;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class ArrayConverter implements GenericConverter<Object[]>
+public class ArrayConverter
 {
-    @Override
-    public Object toObject(Object[] object, Class<?> genericType, String basepath) throws ConversionException
+    public Object toObject(Object[] array) throws ConversionException
     {
-        Converter converter = Convert.matchConverter(genericType);
-        Object[] array = (Object[])object;
-        if (converter != null)
+        Collection<Object> result = new LinkedList<Object>();
+        if (array.length == 0)
         {
-            Collection<Object> result = new LinkedList<Object>();
-            for (Object o : array)
-            {
-                result.add(converter.toObject(o));
-            }
             return result;
         }
-        Collection<Object> result = new LinkedList<Object>();
-        result.addAll(Arrays.asList(array));
+        for (Object value : array)
+        {
+            result.add(Convert.toObject(value));
+        }
         return result;
-
     }
 
-    @Override
-    public <G> Object[] fromObject(Object object, Object fieldObject, Class<G> genericType) throws ConversionException
+    public <V> V[] fromObject(Class<V[]> arrayType, Object object) throws ConversionException
     {
-        Converter converter = Convert.matchConverter(genericType);
-        Collection<Object> coll = (Collection)object;
-        Object tmparray = coll.toArray();
-        if (converter != null)
+        Class<V> valueType = (Class<V>)arrayType.getComponentType();
+        try
         {
-            Object o = Array.newInstance(genericType, coll.size());
-            for (int i = 0; i < coll.size(); ++i)
+            Collection<V> result = new LinkedList<V>();
+            if (object instanceof Collection)
             {
-                Array.set(o, i, converter.fromObject(Array.get(tmparray, i)));
+                for (Object o : (Collection)object)
+                {
+                    V value = Convert.fromObject(valueType, o);
+                    result.add(value);
+                }
+                return result.toArray((V[])Array.newInstance((Class)valueType, result.size()));
             }
-            return (G[])o;
+            else
+            {
+                throw new IllegalStateException("Array-conversion failed: Cannot convert not a collection to an array.");
+            }
         }
-        Object o = Array.newInstance(genericType, coll.size());
-        for (int i = 0; i < coll.size(); ++i)
+        catch (ConversionException ex)
         {
-            Array.set(o, i, Array.get(tmparray, i));
+            throw new IllegalStateException("Array-conversion failed: Error while converting the values in the array.");
         }
-        return (G[])o;
     }
 }

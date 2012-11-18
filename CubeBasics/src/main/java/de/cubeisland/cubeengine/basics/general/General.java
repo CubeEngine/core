@@ -4,13 +4,13 @@ import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class General  //TODO remove this class
+public class General //TODO remove this class after deathmsgs are done
 {
     public String randomDeathMessage(User user, EntityDamageByEntityEvent lastDmg)
     {
         return null;
         /*
-         * int random;//TODO more messages
+         * int random;
          * String s = _(user, "basics", "&c%s died!", user.getName());
          * DamageCause cause = lastDmg.getCause();
          *
@@ -55,7 +55,7 @@ public class General  //TODO remove this class
     {
         return null;
         /*
-         * int random;//TODO more messages
+         * int random;
          * String s = _(user, "basics", "&c%s died", user.getName());
          * DamageCause cause = lastDmg.getCause();
          * if (cause == DamageCause.DROWNING)

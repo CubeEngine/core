@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileFilter;
@@ -20,7 +21,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
@@ -43,11 +43,11 @@ public class I18n implements Cleanable
         this.loadLanguages(fm.getLanguageDir());
         try
         {
-            LOGGER.addHandler(new CubeFileHandler(Level.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
+            LOGGER.addHandler(new CubeFileHandler(LogLevel.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
         }
         catch (IOException e)
         {
-            Logger.getLogger(I18n.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(I18n.class.getName()).log(LogLevel.ERROR, null, e);
         }
     }
 
@@ -96,7 +96,7 @@ public class I18n implements Cleanable
             }
             else
             {
-                LOGGER.log(Level.SEVERE, "The language ''{0}'' has an invalid configation!", file.getName());
+                LOGGER.log(LogLevel.ERROR, "The language ''{0}'' has an invalid configation!", file.getName());
             }
         }
 
@@ -115,7 +115,7 @@ public class I18n implements Cleanable
         }
         if (loadStack.contains(config.code))
         {
-            LOGGER.log(Level.SEVERE, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
+            LOGGER.log(LogLevel.ERROR, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
             return null;
         }
         Language language = null;
@@ -155,7 +155,7 @@ public class I18n implements Cleanable
         }
         catch (IllegalArgumentException e)
         {
-            LOGGER.log(Level.SEVERE, "Failed to load the language ''{0}'': {1}", new Object[]
+            LOGGER.log(LogLevel.ERROR, "Failed to load the language ''{0}'': {1}", new Object[]
                 {
                     config.code, e.getLocalizedMessage()
                 });
@@ -191,15 +191,15 @@ public class I18n implements Cleanable
      *
      * @param language the language to translate to
      * @param category the category to load the messages from
-     * @param message the message to translate
-     * @param params the parameters to insert into the language after translation
+     * @param message  the message to translate
+     * @param params   the parameters to insert into the language after translation
      * @return the translated language
      */
     public String translate(String language, String category, String message, Object... params)
     {
         Validate.notNull(language, "The language must not be null!");
         Validate.notNull(category, "The category must not be null!");
-        
+
         if (category.isEmpty())
         {
             return message;
@@ -235,7 +235,7 @@ public class I18n implements Cleanable
                 }
                 else
                 {
-                    LOGGER.warning("The configured default language was not found!");
+                    LOGGER.log(LogLevel.WARNING, "The configured default language was not found!");
                 }
                 if (translation == null)
                 {
@@ -243,7 +243,7 @@ public class I18n implements Cleanable
                 }
             }
         }
-        
+
         // Gets Formatted with this: http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html
         return String.format(locale, translation, params);
     }
@@ -292,7 +292,7 @@ public class I18n implements Cleanable
 
     private void logMissingTranslation(String language, String category, String message)
     {
-        LOGGER.log(Level.INFO, String.format("\"%s\" - \"%s\" - \"%s\"", language, category, message));
+        LOGGER.log(LogLevel.INFO, String.format("\"%s\" - \"%s\" - \"%s\"", language, category, message));
     }
 
     public static String _(CommandSender sender, Module module, String message, Object... params)

@@ -23,8 +23,8 @@ public class TableManager extends BasicStorage<Table>
 
     /**
      * Registers a table
-     * 
-     * @param table the table
+     *
+     * @param table    the table
      * @param revision its revision
      */
     public void registerTable(String table, Integer revision)

@@ -12,8 +12,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Lists all auctions
- *
- * @author Anselm Brehme
  */
 public class ListCommand
 {

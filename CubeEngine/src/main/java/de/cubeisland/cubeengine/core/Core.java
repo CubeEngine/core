@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import java.util.logging.Logger;
 import org.bukkit.Server;
 
@@ -21,14 +22,7 @@ import org.bukkit.Server;
  */
 public interface Core
 {
-    public static final int REVISION = 3;
-
-    /**
-     * The method returns the Server
-     *
-     * @return the server instance
-     */
-    public Server getServer();
+    public static final int REVISION = 1;
 
     /**
      * The method returns the database
@@ -122,9 +116,16 @@ public interface Core
     public TableManager getTableManger();
 
     /**
-     * The method returns
+     * This method returns the global json object mapper
      *
      * @return the global ObjectMapper of Jackson
      */
     public ObjectMapper getJsonObjectMapper();
+
+    /**
+     * This method returns the web API server
+     *
+     * @return
+     */
+    public ApiServer getApiServer();
 }

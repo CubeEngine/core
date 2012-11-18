@@ -1,16 +1,18 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Converter;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import org.bukkit.Material;
 
 public class BlockDataConverter implements Converter<BlockData>
 {
+    @Override
     public Object toObject(BlockData object) throws ConversionException
     {
         return this.toString(object);
     }
 
+    @Override
     public BlockData fromObject(Object object) throws ConversionException
     {
         if (object instanceof String)
@@ -37,9 +39,9 @@ public class BlockDataConverter implements Converter<BlockData>
         }
         Material mat;
         Byte data;
-        if (string.contains(":"))
+        if (!string.contains(":"))
         {
-            mat = Material.matchMaterial(string.substring(0, string.indexOf(":")));
+            mat = Material.matchMaterial(string);
             data = 0;
         }
         else

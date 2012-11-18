@@ -1,15 +1,9 @@
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.*;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,7 +19,7 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {
-    protected static TableManager tableManager = null;//Init in TableManager.class
+    protected static TableManager tableManager = null; //Init in TableManager.class
     protected final Database database;
     protected final Class<V> modelClass;
     protected Constructor<V> modelConstructor = null;
@@ -101,6 +95,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 {
                     attributes.add(name);
                 }
+                if (field.isAnnotationPresent(ForeignKey.class))
+                {
+                    ForeignKey fKey = field.getAnnotation(ForeignKey.class);
+                    tbuilder.foreignKey(name).references(fKey.table(), fKey.field()).onDelete(fKey.onDelete());
+                }
                 if (attribute.unique())
                 {
                     tbuilder.unique(name);
@@ -114,19 +113,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         }
         tbuilder.primaryKey(key).endFields();
 
-        //TODO foreign keys
-        //        if (!foreignKey.isEmpty())
-//        {
-//            for (Field field : foreignKey)
-//            {
-//                Relation relat = field.getAnnotation(Relation.class);
-//                query.append(", FOREIGN KEY (").append(this.database.quote(field.getName()));
-//                //query.append(") REFERENCES ").append(this.database.prefix(relat.model().getAnnotation(Entity.class).name()));
-//                query.append("(").append(relat.field()).append(")");
-//            }
-//        }
-        tbuilder
-            .engine(entity.engine()).defaultcharset(entity.charset());
+        tbuilder.engine(entity.engine()).defaultcharset(entity.charset());
         if (keyIsAI)
         {
             tbuilder.autoIncrement(1);
@@ -198,7 +185,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
 
             this.database.prepareAndStoreStatement(modelClass, "update", builder
                 .update(this.table)
-                .cols(fields)
+                .set(fields)
                 .where()
                 .field(key).is(EQUAL).value()
                 .end()
@@ -214,7 +201,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 .end());
 
             this.database.prepareAndStoreStatement(modelClass, "clear", builder
-                .clearTable(this.table)
+                .truncateTable(this.table)
                 .end());
         }
         catch (SQLException ex)
@@ -226,8 +213,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void subscribe(SubcribeType type, Callback callback)
     {
-        switch (type)
-        {
+        switch (type) {
             case CREATE:
                 this.createCallbacks.add(callback);
                 break;
@@ -314,11 +300,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
             ArrayList<Object> values = new ArrayList<Object>();
             if (!keyIsAI)
             {
-                values.add(Convert.toObject(modelClass.getField(key).get(model)));
+                values.add(modelClass.getField(key).get(model));
             }
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(modelClass.getField(name).get(model)));
+                values.add(modelClass.getField(name).get(model));
             }
             if (keyIsAI)
             {
@@ -365,9 +351,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
             ArrayList<Object> values = new ArrayList<Object>();
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(this.modelClass.getField(name).get(model)));
+                values.add(this.modelClass.getField(name).get(model));
             }
-            values.add(Convert.toObject(this.modelClass.getField(this.key).get(model)));
+            values.add(this.modelClass.getField(this.key).get(model));
             if (async)
             {
                 this.database.asyncPreparedExecute(this.modelClass, "update", values.toArray());
@@ -404,10 +390,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
-            values.add(Convert.toObject(this.modelClass.getField(this.key).get(model)));
+            values.add(this.modelClass.getField(this.key).get(model));
             for (String name : this.attributes)
             {
-                values.add(Convert.toObject(this.modelClass.getField(name).get(model)));
+                values.add(this.modelClass.getField(name).get(model));
             }
 
             if (async)
@@ -466,7 +452,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 this.database.preparedExecute(this.modelClass, "delete", key);
             }
 
-            for (Callback cb : this.createCallbacks)
+            for (Callback cb : this.deleteCallbacks)
             {
                 cb.call(key);
             }
@@ -519,6 +505,27 @@ public class BasicStorage<V extends Model> implements Storage<V>
         for (int i : fromRevision)
         {
             this.updaters.put(i, updater);
+        }
+    }
+
+    public void notAssignKey()
+    {
+        this.keyIsAI = false;
+        String[] allFields = new String[this.attributes.size() + 1];
+        allFields[0] = this.key;
+        System.arraycopy(this.attributes.toArray(), 0, allFields, 1, this.attributes.size());
+        QueryBuilder builder = this.database.getQueryBuilder();
+        builder.insert()
+            .into(this.table)
+            .cols(allFields)
+            .end();
+        try
+        {
+            this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error overriding store not to return key.", ex);
         }
     }
 }

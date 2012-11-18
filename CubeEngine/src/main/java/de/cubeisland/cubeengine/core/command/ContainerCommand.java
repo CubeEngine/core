@@ -14,7 +14,7 @@ public class ContainerCommand extends CubeCommand
 {
     public ContainerCommand(Module module, String name, String description)
     {
-        super(module, name, description, "[command]", Collections.<String>emptyList());
+        super(module, name, description, "[command]", Collections.<String> emptyList());
     }
 
     public ContainerCommand(Module module, String name, String description, String... aliases)
@@ -34,7 +34,6 @@ public class ContainerCommand extends CubeCommand
         CommandSender sender = context.getSender();
         context.sendMessage("core", "The Following commands are available:");
         context.sendMessage(" ");
-
 
         for (CubeCommand command : context.getCommand().getChildren())
         {

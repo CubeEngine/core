@@ -25,10 +25,9 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class KickBanCommands
 {
-    @Command(
-        desc = "Kicks a player from the server",
-        usage = "<<player>|-all> [message]",
-        flags = { @Flag(longName = "all", name = "a") })
+    @Command(desc = "Kicks a player from the server", usage = "<<player>|-all> [message]", flags = {
+        @Flag(longName = "all", name = "a")
+    })
     public void kick(CommandContext context)
     {
         String message = context.getStrings(1);
@@ -38,6 +37,10 @@ public class KickBanCommands
         }
         if (!context.hasFlag("a"))
         {
+            if (!context.hasIndexed(0))
+            {
+                blockCommand(context, "basics", "&cYou need to specify a player!");
+            }
             User user = context.getUser(0);
             if (user == null && !context.hasFlag("a"))
             {
@@ -63,12 +66,11 @@ public class KickBanCommands
         }
     }
 
-    @Command(
-        names = { "ban", "kickban" },
-        desc = "Bans a player permanently on your server.",
-        min = 1,
-        usage = "<player> [message] [-ipban]",
-        flags = { @Flag(longName = "ipban", name = "ip") })
+    @Command(names = {
+        "ban", "kickban"
+    }, desc = "Bans a player permanently on your server.", min = 1, usage = "<player> [message] [-ipban]", flags = {
+        @Flag(longName = "ipban", name = "ip")
+    })
     public void ban(CommandContext context)
     {
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
@@ -120,12 +122,9 @@ public class KickBanCommands
         context.sendMessage("basics", "&cYou banned &2%s&c!", player.getName());
     }
 
-    @Command(
-        names = { "unban", "pardon" },
-        desc = "Unbans a previously banned player.",
-        min = 1,
-        max = 1,
-        usage = "<player>")
+    @Command(names = {
+        "unban", "pardon"
+    }, desc = "Unbans a previously banned player.", min = 1, max = 1, usage = "<player>")
     public void unban(CommandContext context)
     {
         OfflinePlayer user = context.getSender().getServer().getOfflinePlayer(context.getString(0));
@@ -137,12 +136,9 @@ public class KickBanCommands
         context.sendMessage("basics", "&aYou unbanned &2%s&a!", user.getName());
     }
 
-    @Command(
-        names = { "ipban", "banip" },
-        desc = "Bans the IP from this server.",
-        min = 1,
-        max = 1,
-        usage = "<IP address>")
+    @Command(names = {
+        "ipban", "banip"
+    }, desc = "Bans the IP from this server.", min = 1, max = 1, usage = "<IP address>")
     public void ipban(CommandContext context)
     {
         String ipadress = context.getString(0);
@@ -165,11 +161,9 @@ public class KickBanCommands
         }
     }
 
-    @Command(
-        names = { "ipunban", "unbanip", "pardonip" },
-        desc = "Bans the IP from this server.",
-        min = 1,
-        usage = "<IP address>")
+    @Command(names = {
+        "ipunban", "unbanip", "pardonip"
+    }, desc = "Bans the IP from this server.", min = 1, usage = "<IP address>")
     public void ipunban(CommandContext context)
     {
         String ipadress = context.getString(0);

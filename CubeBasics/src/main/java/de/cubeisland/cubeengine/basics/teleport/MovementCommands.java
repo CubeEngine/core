@@ -20,6 +20,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
  * /descend
  * /jumpto
  * /back
+ * //TODO place/put tp player wher you are looking at
  */
 public class MovementCommands
 {
@@ -30,11 +31,7 @@ public class MovementCommands
         this.basics = basics;
     }
 
-    @Command(
-        desc = "Teleports you x-amount of blocks into the air and puts a glasblock beneath you.",
-        usage = "<height>",
-        min = 1,
-        max = 1)
+    @Command(desc = "Teleports you x-amount of blocks into the air and puts a glasblock beneath you.", usage = "<height>", min = 1, max = 1)
     public void up(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
@@ -50,8 +47,7 @@ public class MovementCommands
             loc.setY(loc.getWorld().getMaxHeight());
         }
         Block block = loc.getWorld().getBlockAt(loc);
-        if (!(block.getRelative(BlockFace.UP, 1).getType().equals(Material.AIR)
-            && block.getRelative(BlockFace.UP, 2).getType().equals(Material.AIR)))
+        if (!(block.getRelative(BlockFace.UP, 1).getType().equals(Material.AIR) && block.getRelative(BlockFace.UP, 2).getType().equals(Material.AIR)))
         {
             blockCommand(context, "basics", "&cYour destination seems to be obstructed!");
         }
@@ -67,9 +63,7 @@ public class MovementCommands
         context.sendMessage("basics", "&aYou just lifted!");
     }
 
-    @Command(
-        desc = "Teleports you to the next safe spot upwards.",
-        max = 0)
+    @Command(desc = "Teleports you to the next safe spot upwards.", max = 0)
     public void ascend(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
@@ -99,9 +93,7 @@ public class MovementCommands
         TeleportCommands.teleport(sender, loc, true, false);
     }
 
-    @Command(
-        desc = "Teleports you to the next safe spot downwards.",
-        max = 0)
+    @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
     public void descend(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
@@ -127,12 +119,10 @@ public class MovementCommands
         context.sendMessage("basics", "&aDescended a level!");
         TeleportCommands.teleport(sender, loc, true, false);
     }
-
-    @Command(
-    desc = "Jumps to the position you are looking at.",
-    max = 0)
+//TODO through cmd
+    @Command(desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
-    {//TODO compass teleport ftw!
+    {
         User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
         Location loc = sender.getTargetBlock(null, 350).getLocation();
         if (loc.getBlock().getType().equals(Material.AIR))
@@ -146,10 +136,9 @@ public class MovementCommands
         context.sendMessage("basics", "&aYou just jumped!");
     }
 
-    @Command(
-        desc = "Teleports you to your last location",
-        max = 0,
-        flags = { @Flag(longName = "unsafe", name = "u") })
+    @Command(desc = "Teleports you to your last location", max = 0, flags = {
+        @Flag(longName = "unsafe", name = "u")
+    })
     public void back(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&cYou never teleported!");

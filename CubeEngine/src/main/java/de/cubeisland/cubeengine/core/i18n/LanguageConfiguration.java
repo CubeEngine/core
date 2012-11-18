@@ -12,16 +12,12 @@ public class LanguageConfiguration extends Configuration
 {
     @Option("code")
     public String code;
-    
     @Option("name")
     public String name;
-    
     @Option("localname")
     public String localName;
-    
     @Option("parent")
     public String parent = null;
-    
-    @Option(value = "clones", genericType = String.class)
+    @Option("clones")
     public String[] clones = null;
 }

@@ -36,17 +36,18 @@ public class SpawnMobCommand
         config = basics.getConfiguration();
     }
 
-    @Command(
-        desc = "Spawns the specified Mob",
-        min = 1,
-        max = 3,
-        usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
+    @Command(desc = "Spawns the specified Mob", max = 3, usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {
+        // TODO adjust MaxHealth of a mob
         User sender = context.getSenderAsUser();
         if (!context.hasIndexed(2) && sender == null)
         {
             invalidUsage(context, "basics", "&eSuccesfully spawned some &cbugs &einside your server!");
+        }
+        if (!context.hasIndexed(0))
+        {
+            invalidUsage(context, "basics", "&cYou need to define what mob to spawn!");
         }
         Location loc;
         if (context.hasIndexed(2))
@@ -54,7 +55,7 @@ public class SpawnMobCommand
             User user = context.getUser(2);
             if (user == null)
             {
-                illegalParameter(context, "core", "&cUser %s not found!",context.getString(2));
+                illegalParameter(context, "core", "&cUser %s not found!", context.getString(2));
             }
             loc = user.getLocation();
         }
@@ -65,7 +66,7 @@ public class SpawnMobCommand
         Integer amount = 1;
         if (context.hasIndexed(1))
         {
-            amount = context.getIndexed(1, int.class, null);
+            amount = context.getIndexed(1, Integer.class, null);
             if (amount == null)
             {
                 illegalParameter(context, "basics", "&e%s is not a number! Really!", context.getString(1));
@@ -139,7 +140,7 @@ public class SpawnMobCommand
         }
         if (entityType == null)
         {
-            paramNotFound(context, "basics", "&cEntity-type &6%s &cnot found!", entityName);
+            paramNotFound(context, "basics", "&cUnknown mob-type: &6%s &cnot found!", entityName);
         }
         Entity[] spawnedMobs = new Entity[amount];
         for (int i = 0; i < amount; ++i)
@@ -156,11 +157,12 @@ public class SpawnMobCommand
 
     private void applyDataToMob(CommandSender sender, EntityType entityType, Entity entity, String data)
     {
+        //TODO other additional data?
         if (data != null)
         {
-            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "baby", "angry", "tamed", "power", "charged"); //TODO this list configurable something like datavalues.txt
-
-            if (match.equals("baby"))
+            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "saddled", "baby", "angry", "tamed", "power", "charged", "sitting");
+            //TODO this list configurable something like datavalues.txt
+            if ("baby".equals(match))
             {
                 if (entityType.isAnimal())
                 {
@@ -168,10 +170,21 @@ public class SpawnMobCommand
                 }
                 else
                 {
-                    illegalParameter(sender, "basics", "&eThis entity can not be a baby! Can you?");
+                    blockCommand(sender, "basics", "&eThis entity can not be a baby! Can you?");
                 }
             }
-            else if (match.equals("angry"))
+            else if ("saddled".equals(match))
+            {
+                if (entity instanceof Pig)
+                {
+                    ((Pig)entity).setSaddle(true);
+                }
+                else
+                {
+                    blockCommand(sender, "basics", "&eOnly Pigs can be saddled!");
+                }
+            }
+            else if ("angry".equals(match))
             {
                 if (entityType.equals(EntityType.WOLF))
                 {
@@ -182,10 +195,11 @@ public class SpawnMobCommand
                     ((PigZombie)entity).setAngry(true);
                 }
             }
-            else if (match.equals("tamed"))
+            else if ("tamed".equals(match))
             {
                 if (entity instanceof Tameable) // Wolf or Ocelot
                 {
+
                     ((Tameable)entity).setTamed(true);
                     if (sender instanceof AnimalTamer)
                     {
@@ -193,24 +207,52 @@ public class SpawnMobCommand
                     }
                     else
                     {
-                        invalidUsage(sender, "basics", "&eYou can not own any Animals!");
+                        blockCommand(sender, "basics", "&eYou can not own any Animals!");
                     }
                 }
             }
-            else if (match.equals("charged") || data.equalsIgnoreCase("power"))
+            else if ("sitting".equals(match))
+            {
+                if (entity instanceof Wolf)
+                {
+                    ((Wolf)entity).setSitting(true);
+                }
+                else if (entity instanceof Ocelot)
+                {
+                    ((Ocelot)entity).setSitting(true);
+                }
+                else
+                {
+                    blockCommand(sender, "basics", "&eOnly a wolfs and ocelots can sit!");
+                }
+            }
+            else if ("charged".equals(match) || data.equalsIgnoreCase("power"))
             {
                 if (entityType.equals(EntityType.CREEPER))
                 {
                     ((Creeper)entity).setPowered(true);
                 }
+                else
+                {
+                    blockCommand(sender, "basics", "&eYou can only charge creepers!");
+                }
             }
             else if (entityType.equals(EntityType.SHEEP))
             {
-                DyeColor color = MaterialMatcher.get().
-                    matchColorData(data);
+                DyeColor color = MaterialMatcher.get().matchColorData(data);
                 if (color == null)
                 {
-                    illegalParameter(sender, "basics", "Color not found!");
+                    try
+                    {
+                        byte byteData = Byte.parseByte(data);
+                        color = DyeColor.getByData(byteData);
+                    }
+                    catch (Exception ignored)
+                    {}
+                    if (color == null)
+                    {
+                        blockCommand(sender, "basics", "&cInvalid SheepColor: " + data);
+                    }
                 }
                 ((Sheep)entity).setColor(color);
             }
@@ -218,15 +260,15 @@ public class SpawnMobCommand
             {
                 int size = 4;
                 match = StringUtils.matchString(data, "tiny", "small", "big");
-                if (match.equals("tiny"))
+                if ("tiny".equals(match))
                 {
                     size = 0;
                 }
-                else if (match.equals("small"))
+                else if ("small".equals(match))
                 {
                     size = 2;
                 }
-                else if (match.equals("big"))
+                else if ("big".equals(match))
                 {
                     size = 4;
                 }
@@ -238,7 +280,7 @@ public class SpawnMobCommand
                     }
                     catch (NumberFormatException e)
                     {
-                        illegalParameter(sender, "basics", "The slime-size has to be a number or tiny, small or big!");
+                        illegalParameter(sender, "basics", "&eThe slime-size has to be a number or tiny, small or big!");
                     }
                 }
                 if (size >= 0 && size <= 250)
@@ -247,7 +289,7 @@ public class SpawnMobCommand
                 }
                 else
                 {
-                    illegalParameter(sender, "basics", "The slime-size can not be smaller than 0 or bigger than 250!");
+                    illegalParameter(sender, "basics", "&eThe slime-size can not be smaller than 0 or bigger than 250!");
                 }
             }
             else if (entityType.equals(EntityType.VILLAGER))

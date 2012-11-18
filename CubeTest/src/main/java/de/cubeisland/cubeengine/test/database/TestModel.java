@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
 import java.sql.Date;
 import java.util.List;
 
@@ -17,7 +15,7 @@ public class TestModel implements Model<Integer>
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int id;
-    @Attribute(type = AttrType.VARCHAR, length = 16)
+    @Attribute(type = AttrType.DATE)
     public Date orderDate;
     @Attribute(type = AttrType.DOUBLE)
     public double orderPrice;
@@ -27,18 +25,10 @@ public class TestModel implements Model<Integer>
     @DatabaseConstructor
     public TestModel(List<Object> args)
     {
-        try
-        {
-            this.id = Convert.fromObject(Integer.class, args.get(0));
-            this.orderDate = Convert.fromObject(Date.class, args.get(1));
-            this.orderPrice = Convert.fromObject(Double.class, args.get(2));
-            this.customer = (String)args.get(3);
-        }
-        catch (ConversionException ex)
-        {
-            throw new IllegalStateException("Error while converting Objects for Modelcreation");
-        }
-
+        this.id = Integer.valueOf(args.get(0).toString());
+        this.orderDate = (Date)args.get(1);
+        this.orderPrice = Double.valueOf(args.get(2).toString());
+        this.customer = (String)args.get(3);
     }
 
     public TestModel(Date orderDate, double orderPrice, String customer)
@@ -49,11 +39,13 @@ public class TestModel implements Model<Integer>
         this.customer = customer;
     }
 
+    @Override
     public Integer getKey()
     {
         return this.id;
     }
 
+    @Override
     public void setKey(Integer key)
     {
         this.id = key;

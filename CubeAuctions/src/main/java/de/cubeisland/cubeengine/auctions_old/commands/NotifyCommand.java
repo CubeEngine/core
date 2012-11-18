@@ -13,8 +13,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Changes notification
- *
- * @author Anselm Brehme
  */
 public class NotifyCommand
 {

@@ -4,10 +4,6 @@ import de.cubeisland.cubeengine.core.persistence.Model;
 import java.util.Stack;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Auction implements Model<Integer>
 {
     private Integer id;

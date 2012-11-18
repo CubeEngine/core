@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.fun;
 
-import de.cubeisland.cubeengine.core.config.annotations.From;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.fun.commands.NukeCommand;
 import de.cubeisland.cubeengine.fun.commands.PlayerCommands;
@@ -10,9 +9,7 @@ import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 
 public class Fun extends Module
 {
-    @From
     private FunConfiguration config;
-    
     private RocketListener rocketListener;
     private NukeListener nukeListener;
 
@@ -35,12 +32,12 @@ public class Fun extends Module
     {
         return this.rocketListener;
     }
-    
+
     public NukeListener getNukeListener()
     {
         return this.nukeListener;
     }
-    
+
     public FunConfiguration getConfig()
     {
         return this.config;

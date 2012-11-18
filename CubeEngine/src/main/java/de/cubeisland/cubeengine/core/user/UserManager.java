@@ -11,16 +11,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -33,23 +24,43 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
  * database.
  */
-public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
+public class UserManager extends BasicStorage<User> implements Cleanable,
+        Runnable, Listener
 {
     private final Core core;
     private final List<Player> onlinePlayers;
     private final ConcurrentHashMap<String, User> users;
     private final Server server;
     private final ScheduledExecutorService executor;
+    private static final int REVISION = 3;
+    public static String salt;
 
     public UserManager(final Core core)
     {
-        super(core.getDB(), User.class, Core.REVISION);
+        super(core.getDB(), User.class, REVISION);
         this.core = core;
         this.registerUpdaters();
         this.executor = core.getTaskManager().getExecutorService();
@@ -61,6 +72,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
         this.initialize();
+        this.getSalt();
     }
 
     @Override
@@ -70,18 +82,18 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         try
         {
             this.database.prepareAndStoreStatement(User.class, "get_by_name", this.database.getQueryBuilder()
-                .select().wildcard()
-                .from(this.table)
-                .where()
-                .field("player").is(ComponentBuilder.EQUAL).value()
-                .end()
-                .end());
+                    .select().wildcard()
+                    .from(this.table)
+                    .where()
+                    .field("player").is(ComponentBuilder.EQUAL).value()
+                    .end()
+                    .end());
 
             this.database.prepareAndStoreStatement(User.class, "cleanup", database.getQueryBuilder()
-                .select(key).from(table)
-                .where().field("lastseen").is(LESS).value()
-                .and().field("nogc").is(EQUAL).value(false)
-                .end().end());
+                    .select(key).from(table)
+                    .where().field("lastseen").is(LESS).value()
+                    .and().field("nogc").is(EQUAL).value(false)
+                    .end().end());
         }
         catch (SQLException e)
         {
@@ -97,19 +109,19 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             public void update(Database database) throws SQLException
             {
                 database.execute(
-                    database.getQueryBuilder().
-                    alterTable(table).
-                    add("nogc", AttrType.BOOLEAN).
-                    defaultValue("false").
-                    end().
-                    end());
+                        database.getQueryBuilder().
+                            alterTable(table).
+                            add("nogc", AttrType.BOOLEAN).
+                            defaultValue("false").
+                            end().
+                            end());
                 database.execute(
-                    database.getQueryBuilder().
-                    alterTable(table).
-                    add("lastseen", AttrType.TIMESTAMP).
-                    defaultValue().value().
-                    end().
-                    end(), new Timestamp(System.currentTimeMillis()));
+                        database.getQueryBuilder().
+                            alterTable(table).
+                            add("lastseen", AttrType.TIMESTAMP).
+                            defaultValue().value().
+                            end().
+                            end(), new Timestamp(System.currentTimeMillis()));
             }
         }, 1);
         this.registerUpdater(new DatabaseUpdater()
@@ -118,11 +130,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             public void update(Database database) throws SQLException
             {
                 database.execute(
-                    database.getQueryBuilder().
-                    alterTable(table).
-                    addUnique("player").
-                    end().
-                    end());
+                        database.getQueryBuilder().
+                            alterTable(table).
+                            addUniques("player").
+                            end().
+                            end());
             }
         }, 2);
     }
@@ -177,8 +189,6 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         }
         this.users.put(user.getName(), user);
         this.store(user);
-        UserCreatedEvent event = new UserCreatedEvent(this.core, user);
-        server.getPluginManager().callEvent(event);
         return this;
     }
 
@@ -190,14 +200,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
      */
     public UserManager removeUser(final User user)
     {
-        this.database.queueOperation(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                delete(user);
-            }
-        });
+        this.delete(user); //this is async
         this.users.remove(user.getName());
         return this;
     }
@@ -305,6 +308,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     public User getUser(int key)
     {
         User user = this.get(key);
+        if (user == null)
+        {
+            return null;
+        }
         User savedUser = this.users.get(user.getName());
         if (savedUser == null)
         {
@@ -325,9 +332,9 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     }
 
     /**
-     * This method returns all users that are online at that moment.
-     * The method IS thread-safe as it does not rely on Bukkit's code
-     * but instead of our on internal player list.
+     * This method returns all users that are online at that moment. The method
+     * IS thread-safe as it does not rely on Bukkit's code but instead of our on
+     * internal player list.
      *
      * @return an array of users
      */
@@ -341,6 +348,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
         }
 
         return onlineUsers;
+    }
+
+    public Collection<User> getLoadedUsers()
+    {
+        return this.users.values();
     }
 
     @Override
@@ -366,7 +378,8 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     }
 
     /**
-     * Finds an User (can create a new User if a found player is online but not yet added)
+     * Finds an User (can create a new User if a found player is online but not
+     * yet added)
      *
      * @param name the name
      * @return a User
@@ -410,7 +423,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
     {
         for (User user : this.users.values())
         {
-            if (!user.isOnline())
+            if (!user.isOnline() && user.removalTaskId != null) // Do not delete users that will be deleted anyway
             {
                 this.users.remove(user.getName());
             }
@@ -434,14 +447,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             public void run()
             {
                 user.lastseen = new Timestamp(System.currentTimeMillis());
-                database.queueOperation(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        update(user);
-                    }
-                });
+                update(user); // is async
                 if (user.isOnline())
                 {
                     return;
@@ -449,7 +455,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 users.remove(event.getPlayer().getName());
             }
         }, this.core.getConfiguration().userManagerKeepUserLoaded);
-        user.removalTaskId = null;
+        user.removalTaskId = id;
         this.onlinePlayers.remove(player);
     }
 
@@ -488,7 +494,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
                 try
                 {
                     ResultSet result = database.preparedQuery(User.class, "cleanup",
-                        new Timestamp(System.currentTimeMillis() - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
+                            new Timestamp(System.currentTimeMillis() - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
 
                     while (result.next())
                     {
@@ -510,12 +516,38 @@ public class UserManager extends BasicStorage<User> implements Cleanable, Runnab
             this.getExactUser(player).sendMessage(category, message, args);
         }
     }
-    
+
     public void clearAttributes(Module module)
     {
         for (User user : this.users.values())
         {
             user.clearAttributes(module);
+        }
+    }
+
+    private void getSalt()
+    {
+        File file = new File(this.core.getFileManager().getDataFolder(), ".salt");
+        try
+        {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            salt = reader.readLine();
+            reader.close();
+        }
+        catch (Exception e)
+        {
+            if (salt == null)
+            {
+                try
+                {
+                    salt = RandomStringUtils.randomAscii(32);
+                    FileWriter fileWriter = new FileWriter(file);
+                    fileWriter.write(salt);
+                    fileWriter.close();
+                }
+                catch (Exception ignored)
+                {}
+            }
         }
     }
 }

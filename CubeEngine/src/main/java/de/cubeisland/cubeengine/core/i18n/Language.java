@@ -40,7 +40,7 @@ public interface Language extends Cleanable
     /**
      * Gets a translation from this language
      *
-     * @param cat the category to load the message from
+     * @param cat     the category to load the message from
      * @param message the message
      * @return the translation
      */

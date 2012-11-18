@@ -20,8 +20,8 @@
     ThrownEnderpearl
 15:
     EyeOfEnderSignal
-16:
-    ThrownPotion
+#16: No more ID for those
+#    ThrownPotion
 17:
     ThrownExpBottle
 18:

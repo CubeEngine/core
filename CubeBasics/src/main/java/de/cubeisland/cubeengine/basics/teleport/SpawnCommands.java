@@ -28,11 +28,8 @@ public class SpawnCommands
     {
         this.basics = basics;
     }
-    
-    @Command(
-        desc = "Changes the global respawnpoint",
-        usage = "[world] [<x> <y> <z>]",
-        max = 4)
+
+    @Command(desc = "Changes the global respawnpoint", usage = "[world] [<x> <y> <z>]", max = 4)
     public void setSpawn(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -81,29 +78,19 @@ public class SpawnCommands
         context.sendMessage("bascics", "&aSpawn was in world %s set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
     }
 
-    @Command(
-        desc = "Teleport directly to the worlds spawn.",
-        usage = "[player] [world <world>]",
-        max = 2,
-        params = { @Param(names = { "world", "w" }, types = { World.class }) },
-        flags =
-        {
+    @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2, params = @Param(names = {
+        "world", "w"
+    }, type = World.class), flags = {
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "all", name = "a")
-        })
+    })
     public void spawn(CommandContext context)
     {
-        // TODO later make diff. spawns for playergroups/roles possible
         User user = context.getSenderAsUser();
-        World world;
-        String s_world = basics.getConfiguration().spawnMainWorld;
-        if (s_world == null)
+        World world = basics.getConfiguration().mainWorld;
+        if (world == null)
         {
             world = user.getWorld();
-        }
-        else
-        {
-            world = context.getSender().getServer().getWorld(s_world);
         }
         boolean force = false;
         if (context.hasFlag("f"))
@@ -119,7 +106,7 @@ public class SpawnCommands
             if (world == null)
             {
                 paramNotFound(context, "basics", "&cWorld not found!");
-            } 
+            }
         }
         if (context.hasFlag("a"))
         {
@@ -167,14 +154,12 @@ public class SpawnCommands
         Location loc = world.getSpawnLocation().add(0.5, 0, 0.5);
         loc.setPitch(user.getLocation().getPitch());
         loc.setYaw(user.getLocation().getYaw());
-        TeleportCommands.teleport(user, world.getSpawnLocation().add(0.5, 0, 0.5), true, force);
+        SpawnCommandEvent event = new SpawnCommandEvent(this.basics, user, loc);
+        this.basics.getEventManager().fireEvent(event); // catch this event to change spawn location
+        TeleportCommands.teleport(user, event.getLoc(), true, force);
     }
 
-    @Command(
-        desc = "Teleports you to the spawn of given world",
-        usage = "<world>",
-        min = 1,
-        max = 1)
+    @Command(desc = "Teleports you to the spawn of given world", usage = "<world>", min = 1, max = 1)
     public void tpworld(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");

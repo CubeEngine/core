@@ -6,7 +6,8 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.AlterTableBui
 /**
  * MYSQLQueryBuilder for altering tables.
  */
-public class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuilder> implements AlterTableBuilder
+public class MySQLAlterTableBuilder extends
+    MySQLComponentBuilder<AlterTableBuilder> implements AlterTableBuilder
 {
     public MySQLAlterTableBuilder(MySQLQueryBuilder parent)
     {
@@ -16,7 +17,7 @@ public class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuil
     @Override
     public AlterTableBuilder alterTable(String table)
     {
-        this.query = new StringBuilder("ALTER TABLE ").append(this.database.prepareName(table)).append(' ');
+        this.query = new StringBuilder("ALTER TABLE ").append(this.database.prepareTableName(table)).append(' ');
         return this;
     }
 
@@ -42,9 +43,14 @@ public class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuil
     }
 
     @Override
-    public AlterTableBuilder addUnique(String field)
+    public AlterTableBuilder addUniques(String... fields)
     {
-        this.query.append("ADD UNIQUE (").append(this.database.prepareFieldName(field)).append(")");
+        this.query.append("ADD UNIQUE (").append(this.database.prepareFieldName(fields[0]));
+        for (int i = 1; i < fields.length; ++i)
+        {
+            this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
+        }
+        this.query.append(")");
         return this;
     }
 
@@ -60,6 +66,77 @@ public class MySQLAlterTableBuilder extends MySQLComponentBuilder<AlterTableBuil
     public AlterTableBuilder defaultValue()
     {
         this.query.append(" DEFAULT ");
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder addCheck()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //TODO
+    }
+
+    @Override
+    public AlterTableBuilder setDefault(String field)
+    {
+        this.query.append(" MODIFY ").append(this.database.prepareFieldName(field)).append(" DEFAULT ? ");
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder addForeignKey(String field, String foreignTable, String foreignField)
+    {
+        this.query.append(" ADD FOREIGN KEY (").append(this.database.prepareFieldName(field))
+            .append(") REFERENCES ").append(this.database.prepareTableName(foreignTable)).append(".")
+            .append(this.database.prepareFieldName(foreignField));
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder setPrimary(String field)
+    {
+        this.query.append(" ADD PRIMARY (").append(this.database.prepareFieldName(field)).append(")");
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder dropUnique(String field)
+    {
+        this.query.append("DROP INDEX ").append(this.database.prepareFieldName(field));
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder dropPrimary()
+    {
+        this.query.append("DROP PRIMARY KEY");
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder dropCheck(String field)
+    {
+        this.query.append("DROP CHECK ").append(this.database.prepareFieldName(field));
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder dropDefault(String field)
+    {
+        this.query.append("MODIFY ").append(this.database.prepareFieldName(field)).append(" DROP DEFAULT");
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder dropIndex(String field)
+    {
+        this.query.append("DROP INDEX ").append(this.database.prepareFieldName(field));
+        return this;
+    }
+
+    @Override
+    public AlterTableBuilder dropForeignKey(String field)
+    {
+        this.query.append("DROP FOREIGN KEY ").append(this.database.prepareFieldName(field));
         return this;
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 
@@ -76,7 +76,7 @@ public class NormalLanguage implements Cleanable, Language
     /**
      * This method adds a map of translations to a category
      *
-     * @param cat the category
+     * @param cat      the category
      * @param messages the translations
      */
     public void addMessages(String cat, Map<String, String> messages)
@@ -148,11 +148,11 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (FileNotFoundException ignored)
         {
-            LOGGER.warning("The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
+            LOGGER.log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
         }
         catch (IOException e)
         {
-            LOGGER.log(Level.SEVERE, String.valueOf(e), e);
+            LOGGER.log(LogLevel.ERROR, String.valueOf(e), e);
         }
         return null;
     }
@@ -175,7 +175,7 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (IOException e)
         {
-            LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+            LOGGER.log(LogLevel.WARNING, e.getLocalizedMessage(), e);
         }
         finally
         {
@@ -184,8 +184,7 @@ public class NormalLanguage implements Cleanable, Language
                 resource.close();
             }
             catch (IOException ignored)
-            {
-            }
+            {}
         }
         return catMessages;
     }

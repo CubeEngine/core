@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -114,7 +115,7 @@ public class EventManager
      * @param event the event instance
      * @return the event instance
      */
-    public <T extends CubeEvent> T fireEvent(T event)
+    public <T extends Event> T fireEvent(T event)
     {
         this.pm.callEvent(event);
         return event;

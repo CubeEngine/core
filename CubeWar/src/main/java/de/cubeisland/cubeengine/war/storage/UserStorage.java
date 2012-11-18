@@ -15,10 +15,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class UserStorage implements Storage<User, UserModel>
 {
     private final Database database;

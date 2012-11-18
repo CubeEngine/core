@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
-public interface ConditionalBuilder<This extends ConditionalBuilder> extends ComponentBuilder<This>
+public interface ConditionalBuilder<This extends ConditionalBuilder> extends
+    ComponentBuilder<This>
 {
     /**
      * Adds ordering by column
-     * 
+     *
      * @param cols
      * @return fluent interface
      */
@@ -12,7 +13,7 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends Com
 
     /**
      * Limits the output to n
-     * 
+     *
      * @param n
      * @return fluent interface
      */
@@ -20,16 +21,37 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends Com
 
     /**
      * Sets the offset.
-     * 
+     *
      * @param n
      * @return fluent interface
      */
     public This offset(int n);
 
     /**
-     * Adds WHERE condition.
-     * 
+     * Starts a WHERE condition.
+     *
      * @return fluent interface
      */
     public This where();
+
+    /**
+     * Adds a "BETWEEN ? AND ?" statement.
+     *
+     * @return fluent interface
+     */
+    public This between();
+
+    /**
+     * Adds ASCending keyword
+     *
+     * @return fluent interface
+     */
+    public This asc();
+
+    /**
+     * Adds DESCending keyword
+     *
+     * @return fluent interface
+     */
+    public This desc();
 }

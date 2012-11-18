@@ -6,10 +6,6 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 
-/**
- *
- * @author Anselm Brehme
- */
 @Entity(name = "bankaccount")
 public class BankAccount extends AccountModel
 {

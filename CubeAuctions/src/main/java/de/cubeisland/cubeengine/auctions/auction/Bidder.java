@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedTransferQueue;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class Bidder implements Model<Integer>
 {
     public static final byte NOTIFY_ITEMS = 4;

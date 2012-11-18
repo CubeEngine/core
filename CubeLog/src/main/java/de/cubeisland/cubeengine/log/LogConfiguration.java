@@ -3,36 +3,38 @@ package de.cubeisland.cubeengine.log;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.listeners.LogListener;
 import gnu.trove.map.hash.THashMap;
-import java.util.EnumMap;
 import java.util.Map;
 
 @Codec("yml")
 public class LogConfiguration extends Configuration
 {
-    public Map<LogAction, String> configNames = new EnumMap<LogAction, String>(LogAction.class);
-    
-    @Option(value = "configs", genericType = Configuration.class)
-    public Map<String, LogSubConfiguration> configs = new THashMap<String, LogSubConfiguration>();
+    @Option("log-actions")
+    public Map<String, LogActionConfig> configs = new THashMap<String, LogActionConfig>();
 
     public LogConfiguration()
     {
         for (LogAction action : LogAction.values())
         {
-            LogListener listener = LogListener.getInstance(action.getListenerClass(), Log.getInstance());
-            this.configs.put(listener.getConfiguration().getName(), listener.getConfiguration());
-            this.configNames.put(action, listener.getConfiguration().getName());
+            this.configs.put(action.name(), action.getConfiguration());
         }
     }
 
-    public boolean isLogging(LogAction name)
+    @Override
+    public void onLoaded()
     {
-        return false; //TODO
+        for (LogAction action : LogAction.values())
+        {
+            if (this.getActionConfig(action) == null)
+            {
+                this.configs.put(action.name(), action.getConfiguration()); // reload config if not in file
+            }
+            action.applyLoadedConfig(this.getActionConfig(action));
+        }
     }
 
-    public <T extends LogSubConfiguration> T getConfiguration(LogAction action)
+    public LogActionConfig getActionConfig(LogAction action)
     {
-        return (T)this.configs.get(this.configNames.get(action));
+        return this.configs.get(action.name());
     }
 }

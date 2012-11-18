@@ -6,7 +6,8 @@ import org.apache.commons.lang.Validate;
 /**
  * Abstract MYSQLlQueryBuilder used by other builders.
  */
-public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
+public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
+    extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
 {
     protected MySQLConditionalBuilder(MySQLQueryBuilder parent)
     {
@@ -44,6 +45,27 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder> e
     public This where()
     {
         this.query.append(" WHERE ");
+        return (This)this;
+    }
+
+    @Override
+    public This between()
+    {
+        this.query.append(" BETWEEN ? AND ?");
+        return (This)this;
+    }
+
+    @Override
+    public This asc()
+    {
+        this.query.append(" ASC ");
+        return (This)this;
+    }
+
+    @Override
+    public This desc()
+    {
+        this.query.append(" DESC ");
         return (This)this;
     }
 }

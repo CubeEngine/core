@@ -9,28 +9,50 @@ import java.util.regex.Pattern;
  */
 public enum ChatFormat
 {
-    BLACK('0'),
-    DARK_BLUE('1'),
-    DARK_GREEN('2'),
-    DARK_AQUA('3'),
-    DARK_RED('4'),
-    PURPLE('5'),
-    GOLD('6'),
-    GREY('7'),
-    DARK_GREY('8'),
-    INDIGO('9'),
-    BRIGHT_GREEN('a'),
-    AQUA('b'),
-    RED('c'),
-    PINK('d'),
-    YELLOW('e'),
-    WHITE('f'),
-    MAGIC('k'),
-    BOLD('l'),
-    STRIKE('m'),
-    UNDERLINE('n'),
-    ITALIC('o'),
-    RESET('r');
+    BLACK(
+        '0'),
+    DARK_BLUE(
+        '1'),
+    DARK_GREEN(
+        '2'),
+    DARK_AQUA(
+        '3'),
+    DARK_RED(
+        '4'),
+    PURPLE(
+        '5'),
+    GOLD(
+        '6'),
+    GREY(
+        '7'),
+    DARK_GREY(
+        '8'),
+    INDIGO(
+        '9'),
+    BRIGHT_GREEN(
+        'a'),
+    AQUA(
+        'b'),
+    RED(
+        'c'),
+    PINK(
+        'd'),
+    YELLOW(
+        'e'),
+    WHITE(
+        'f'),
+    MAGIC(
+        'k'),
+    BOLD(
+        'l'),
+    STRIKE(
+        'm'),
+    UNDERLINE(
+        'n'),
+    ITALIC(
+        'o'),
+    RESET(
+        'r');
     private static final char BASE_CHAR = '\u00A7';
     private static final TCharObjectMap<ChatFormat> FORMAT_CHARS_MAP;
     private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
@@ -51,7 +73,7 @@ public enum ChatFormat
      * Gets a chat format by it's char
      *
      * @param theChar the char to look for
-     * @return 
+     * @return
      */
     public static ChatFormat getByChar(char theChar)
     {
@@ -75,7 +97,7 @@ public enum ChatFormat
 
     /**
      * Parses the chat format strings
-     * 
+     *
      * @param string the string to parse
      * @return the parsed string
      */
@@ -90,9 +112,9 @@ public enum ChatFormat
 
     /**
      * Parses the chat format strings
-     * 
+     *
      * @param baseChar the char used to indicate a format code
-     * @param string the string to parse
+     * @param string   the string to parse
      * @return the parsed string
      */
     public static String parseFormats(char baseChar, String string)

@@ -60,8 +60,7 @@ public class FlyListener implements Listener
     public void playerInteract(final PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
-        if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR)
-            || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
+        if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
         {
             return;
         }

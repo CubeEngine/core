@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import java.util.logging.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -26,8 +27,7 @@ public final class CubeEngine
      * Standard Constructor
      */
     private CubeEngine()
-    {
-    }
+    {}
 
     /**
      * Checks whether the CubeEngine class has been initialized.
@@ -165,16 +165,6 @@ public final class CubeEngine
     }
 
     /**
-     * Returns the BukkitServer
-     *
-     * @return the BukkitServer
-     */
-    public static Server getServer()
-    {
-        return core.getServer();
-    }
-
-    /**
      * Returns the I18n API
      *
      * @return the I18 API
@@ -192,17 +182,6 @@ public final class CubeEngine
     public static TaskManager getTaskManager()
     {
         return core.getTaskManager();
-    }
-
-    /**
-     * Returns the OfflinePlayer
-     *
-     * @param name the name of the player
-     * @return the OfflinePlayer
-     */
-    public static OfflinePlayer getOfflinePlayer(String name)
-    {
-        return getServer().getOfflinePlayer(name);
     }
 
     /**
@@ -233,5 +212,10 @@ public final class CubeEngine
     public static ObjectMapper getJsonObjectMapper()
     {
         return core.getJsonObjectMapper();
+    }
+
+    public static ApiServer getApiServer()
+    {
+        return core.getApiServer();
     }
 }

@@ -1,11 +1,15 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
-import de.cubeisland.cubeengine.core.util.converter.Convert;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -28,11 +32,14 @@ public class YamlCodec extends ConfigurationCodec
     }
 
     //TODO \n in Strings do get lost when restarting
-    
     @Override
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
-        Map<String, Object> map = (Map<String, Object>)yaml.load(is);
+        Map<Object, Object> map = (Map<Object, Object>)yaml.load(is);
+        if (map == null)
+        {
+            return null;
+        }
         try
         {
             Object rev = map.get("revision");
@@ -43,8 +50,14 @@ public class YamlCodec extends ConfigurationCodec
         }
         catch (ConversionException ex)
         {
-        } // invalid revision //TODO handle this?
-        return map;
+            CubeEngine.getLogger().log(Level.WARNING, "Invalid revision in a configuration!", ex);
+        }
+        Map<String, Object> resultmap = new LinkedHashMap<String, Object>();
+        for (Object key : map.keySet())
+        {
+            resultmap.put(key.toString(), map.get(key));
+        }
+        return resultmap;
     }
 
     @Override
@@ -63,8 +76,7 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof Map)
             {
                 sb.append(LINEBREAK);
-                sb.append(this.
-                    convertMap(path, (Map<String, Object>)value, off + 1));
+                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
                 return sb.toString();
             }
             else
@@ -118,19 +130,15 @@ public class YamlCodec extends ConfigurationCodec
                 toString();
         }
         useLineBreak = false;
-        for (Map.Entry<String, Object> entry : values.entrySet())
+        for (Entry<String, Object> entry : values.entrySet())
         {
             if (off == 0)
             {
-                sb.append(this.buildComment(entry.getKey(), off))
-                    .append(this.
-                    convertValue(entry.getKey(), entry.getValue(), off));//path value off
+                sb.append(this.buildComment(entry.getKey().toString(), off)).append(this.convertValue(entry.getKey().toString(), entry.getValue(), off));//path value off
             }
             else
             {
-                sb.append(this.buildComment(path + "." + entry.getKey(), off))
-                    .append(this.
-                    convertValue(path + "." + entry.getKey(), entry.getValue(), off));
+                sb.append(this.buildComment(path + "." + entry.getKey().toString(), off)).append(this.convertValue(path + "." + entry.getKey().toString(), entry.getValue(), off));
             }
             if (!first)
             {
@@ -173,18 +181,5 @@ public class YamlCodec extends ConfigurationCodec
     public String getExtension()
     {
         return "yml";
-    }
-
-    @Override
-    public String revision()
-    {
-        {
-            if (revision != null)
-            {
-                return new StringBuilder("revision: ").append(this.revision).
-                    append(LINEBREAK).toString();
-            }
-            return "";
-        }
     }
 }

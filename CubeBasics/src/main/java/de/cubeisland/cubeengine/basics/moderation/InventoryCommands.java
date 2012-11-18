@@ -1,4 +1,5 @@
 package de.cubeisland.cubeengine.basics.moderation;
+
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -26,19 +27,15 @@ public class InventoryCommands
         this.basics = basics;
         this.basics.registerListener(listener = new InvseeListener(basics));
     }
-    
-    @Command(
-        desc = "Allows you to see into the inventory of someone else.",
-        usage= "<player>",
-        min = 1,
-        max = 1)
+
+    @Command(desc = "Allows you to see into the inventory of someone else.", usage = "<player>", min = 1, max = 1)
     public void invsee(CommandContext context)
     {
         User sender = context.getSenderAsUser("bascics", "&cThis command can only be used by a player!");
         User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context, "basics", "&cUser &2%s &cnot found!",context.getString(0));
+            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
         }
         boolean allowModify = false;
         if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
@@ -56,10 +53,8 @@ public class InventoryCommands
         sender.openInventory(user.getInventory());
         listener.addInventory(sender, allowModify);
     }
-    
-    @Command(
-        desc = "Stashes or unstashes your inventory to reuse later",
-        max = 0)
+
+    @Command(desc = "Stashes or unstashes your inventory to reuse later", max = 0)
     public void stash(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!"); //TODO funny message for console :)
@@ -93,13 +88,13 @@ public class InventoryCommands
         sender.setAttribute(basics, "stash_Armor", ArmorToStash);
         sender.sendMessage("basics", "&aSwapped stashed Inventory!");
     }
-    
-    @Command(
-        names = { "clearinventory", "ci" },
-        desc = "Clears the inventory",
-        usage = "[player]",
-        flags = { @Flag(longName = "removeArmor", name = "ra") },
-        max = 1)
+
+    @Command(names = {
+        "clearinventory", "ci", "clear"
+    }, desc = "Clears the inventory", usage = "[player]", flags = {
+        @Flag(longName = "removeArmor", name = "ra")
+    }, max = 1)
+    @SuppressWarnings("deprecation")
     public void clearinventory(CommandContext context)
     {
         User sender = context.getSenderAsUser();

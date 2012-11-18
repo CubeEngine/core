@@ -8,10 +8,6 @@ import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- *
- * @author Anselm
- */
 public class InfluenceControl
 {
     private static TimerTask timerTask;

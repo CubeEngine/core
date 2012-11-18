@@ -48,8 +48,7 @@ public class ModuleClassLoader extends URLClassLoader
                 clazz = super.findClass(name);
             }
             catch (ClassNotFoundException ignored)
-            {
-            }
+            {}
 
             if (clazz == null && global)
             {

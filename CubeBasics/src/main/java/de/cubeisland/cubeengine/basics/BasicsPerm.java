@@ -33,7 +33,22 @@ public enum BasicsPerm implements Permission
     COMMAND_TPHEREALL_PREVENT(PermissionDefault.FALSE), // can not tpedhere(all) except forced
     COMMAND_BACK_ONDEATH,
     POWERTOOL_USE, //allows to use powertools
+    COMMAND_KIT_GIVE_FORCE,
+    COMMAND_GOD_OTHER,
+    COMMAND_GOD_KEEP,
+    COMMAND_STACK_FULLSTACK,
+    COMMAND_BUTCHER_FLAG_PET,
+    COMMAND_BUTCHER_FLAG_ANIMAL,
+    COMMAND_BUTCHER_FLAG_LIGHTNING,
+    COMMAND_BUTCHER_FLAG_GOLEM, 
+    COMMAND_BUTCHER_FLAG_ALLTYPE,
+    COMMAND_BUTCHER_FLAG_ALL, 
+    COMMAND_KILL_FORCE,
+    COMMAND_KILL_LIGHTNING,
+    COMPASS_JUMPTO_LEFT,
+    COMPASS_JUMPTO_RIGHT,
     ;
+    
     private String permission;
     private PermissionDefault def;
 
@@ -45,7 +60,7 @@ public enum BasicsPerm implements Permission
     private BasicsPerm(PermissionDefault def)
     {
         this.permission = "cubeengine.basics." + this.name().
-            toLowerCase(Locale.ENGLISH).replace('_', '.');
+                toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
     }
 

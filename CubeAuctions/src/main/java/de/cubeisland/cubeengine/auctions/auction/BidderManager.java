@@ -6,10 +6,6 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Anselm Brehme
- */
 public class BidderManager
 {
     Map<User, Bidder> bidders;

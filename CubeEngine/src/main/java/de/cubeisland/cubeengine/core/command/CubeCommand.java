@@ -1,16 +1,31 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.cubeengine.core.module.CoreModule;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import java.util.*;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
@@ -75,7 +90,7 @@ public abstract class CubeCommand extends Command
 
     /**
      * Returns the minimum number of indexed parameters this command requires
-     * 
+     *
      * @return minimum params
      */
     public int getMinimumParams()
@@ -86,14 +101,14 @@ public abstract class CubeCommand extends Command
     /**
      * Returns the maximum number of indexed parameters this command allowes.
      * A value lower than 0 indicates that there is no limit
-     * 
+     *
      * @return maximum params
      */
     public int getMaximumParams()
     {
         return -1;
     }
-    
+
     @Override
     public String getUsage()
     {
@@ -102,7 +117,7 @@ public abstract class CubeCommand extends Command
 
     /**
      * This overload returns the usage translated for the given CommandSender
-     * 
+     *
      * @param sender the command sender
      * @return the usage string
      */
@@ -114,7 +129,7 @@ public abstract class CubeCommand extends Command
     /**
      * This overload returns the usage translated for the given CommandContext
      * using the correct labels
-     * 
+     *
      * @param context the command context
      * @return the usage string
      */
@@ -126,8 +141,8 @@ public abstract class CubeCommand extends Command
     /**
      * This overload returns the usage translated for the given CommandSender
      * using the correct labels
-     * 
-     * @param sender the command sender
+     *
+     * @param sender       the command sender
      * @param parentLabels a list of labels
      * @return the usage string
      */
@@ -150,7 +165,7 @@ public abstract class CubeCommand extends Command
     /**
      * Returns a child command and tries to correct the name of specified.
      *
-     * @param name the name
+     * @param name    the name
      * @param correct whether to correct the name
      * @return the child or null if not found
      */
@@ -172,7 +187,7 @@ public abstract class CubeCommand extends Command
                 child = this.getChild(matches.get(0), false);
             }
         }
-        
+
         return child;
     }
 
@@ -247,7 +262,7 @@ public abstract class CubeCommand extends Command
     {
         CubeCommand cmd = this.getChild(name);
         Iterator<CubeCommand> iter = this.children.values().iterator();
-        
+
         while (iter.hasNext())
         {
             if (iter.next() == cmd)
@@ -305,7 +320,14 @@ public abstract class CubeCommand extends Command
         {
             context.sendMessage("core", "&4An unknown error occurred while executing this command!");
             context.sendMessage("core", "&4Please report this error to an administrator.");
-            this.module.getLogger().exception(e.getMessage(), e);
+            if (this.module instanceof CoreModule)
+            {
+                CubeEngine.getLogger().log(ERROR, e.getLocalizedMessage(), e);
+            }
+            else
+            {
+                this.module.getLogger().log(ERROR, e.getLocalizedMessage(), e);
+            }
         }
 
         return true;

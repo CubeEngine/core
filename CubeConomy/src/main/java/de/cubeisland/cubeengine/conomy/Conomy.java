@@ -11,11 +11,9 @@ public class Conomy extends Module
 
     @Override
     public void onEnable()
-    {
-    }
+    {}
 
     @Override
     public void onDisable()
-    {
-    }
+    {}
 }

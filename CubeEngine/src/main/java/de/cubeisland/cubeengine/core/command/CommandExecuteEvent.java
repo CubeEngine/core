@@ -23,7 +23,7 @@ public class CommandExecuteEvent extends CubeEvent implements Cancellable
     {
         return handlers;
     }
-    
+
     private final Command command;
     private final String commandLine;
 
@@ -33,7 +33,7 @@ public class CommandExecuteEvent extends CubeEvent implements Cancellable
         this.command = command;
         this.commandLine = commandLine;
     }
-    
+
     /**
      * Returns the command of this event
      *
@@ -43,7 +43,7 @@ public class CommandExecuteEvent extends CubeEvent implements Cancellable
     {
         return this.command;
     }
-    
+
     /**
      * Returns the command line
      *

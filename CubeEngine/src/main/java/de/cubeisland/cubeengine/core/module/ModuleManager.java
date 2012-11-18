@@ -5,19 +5,32 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
-import de.cubeisland.cubeengine.core.module.exception.*;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
-import java.io.File;
-import java.io.FileFilter;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * This class manages the modules.
@@ -39,7 +52,7 @@ public class ModuleManager implements Cleanable
         this.modules = new ConcurrentHashMap<String, Module>();
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
-        
+
         this.pluginManager = ((BukkitCore)core).getServer().getPluginManager();
     }
 
@@ -68,12 +81,12 @@ public class ModuleManager implements Cleanable
      *
      * @param moduleFile the file to load the module from
      * @return the loaded module
-     * 
-     * @throws InvalidModuleException if the file is not a valid module
-     * @throws CircularDependencyException if the module defines a circular dependencies
-     * @throws MissingDependencyException if the module has a missing dependency
-     * @throws IncompatibleDependencyException if the module needs a newer dependency
-     * @throws IncompatibleCoreException if the module depends on a newer core
+     *
+     * @throws InvalidModuleException           if the file is not a valid module
+     * @throws CircularDependencyException      if the module defines a circular dependencies
+     * @throws MissingDependencyException       if the module has a missing dependency
+     * @throws IncompatibleDependencyException  if the module needs a newer dependency
+     * @throws IncompatibleCoreException        if the module depends on a newer core
      * @throws MissingPluginDependencyException if the module depends on a missing plugin
      */
     public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
@@ -95,7 +108,7 @@ public class ModuleManager implements Cleanable
                 this.unloadModule(oldModule);
             }
         }
-        
+
         Module module = this.loadModule(info.getName(), this.moduleInfos);
         BukkitUtils.reloadHelpMap();
 
@@ -117,7 +130,7 @@ public class ModuleManager implements Cleanable
 
         Module module;
         ModuleInfo info;
-        LOGGER.info("Loading modules...");
+        LOGGER.log(LogLevel.NOTICE, "Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
             try
@@ -128,20 +141,20 @@ public class ModuleManager implements Cleanable
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        LOGGER.warning(new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        LOGGER.log(LogLevel.WARNING, new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
                         continue;
                     }
                     else
                     {
                         this.unloadModule(module);
-                        LOGGER.fine(new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
+                        LOGGER.log(LogLevel.NOTICE, new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
                     }
                 }
                 this.moduleInfos.put(info.getId(), info);
             }
             catch (InvalidModuleException e)
             {
-                LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
+                LOGGER.log(LogLevel.ERROR, e.getLocalizedMessage(), e);
             }
         }
 
@@ -154,11 +167,11 @@ public class ModuleManager implements Cleanable
             catch (ModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                LOGGER.log(Level.SEVERE, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
+                LOGGER.log(LogLevel.ERROR, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
             }
         }
-        LOGGER.info("Finished loading modules!");
-        
+        LOGGER.log(LogLevel.NOTICE, "Finished loading modules!");
+
         BukkitUtils.reloadHelpMap();
     }
 
@@ -203,7 +216,7 @@ public class ModuleManager implements Cleanable
             depModule = this.loadModule(depName, moduleInfos, loadStack);
             if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
             {
-                LOGGER.log(Level.WARNING, "The module {0} requested a newer revision of {1}!", new Object[]
+                LOGGER.log(LogLevel.WARNING, "The module {0} requested a newer revision of {1}!", new Object[]
                     {
                         name, depName
                     });
@@ -264,7 +277,7 @@ public class ModuleManager implements Cleanable
                 }
                 catch (Exception e)
                 {
-                    LOGGER.log(Level.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]
+                    LOGGER.log(LogLevel.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]
                         {
                             name, injectedModule.getName()
                         });
@@ -286,7 +299,7 @@ public class ModuleManager implements Cleanable
                     }
                     catch (Exception e)
                     {
-                        LOGGER.log(Level.WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]
+                        LOGGER.log(LogLevel.WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]
                             {
                                 name, plugin.getName()
                             });
@@ -295,7 +308,6 @@ public class ModuleManager implements Cleanable
             }
         }
 
-
         if (!module.enable())
         {
             return null;
@@ -303,7 +315,7 @@ public class ModuleManager implements Cleanable
 
         this.classMap.put(module.getClass(), module);
 
-        LOGGER.log(Level.FINE, "Module {0}-r{1} successfully loaded!", new Object[]
+        LOGGER.log(LogLevel.INFO, "Module {0}-r{1} successfully loaded!", new Object[]
             {
                 info.getName(), info.getRevision()
             });
@@ -311,7 +323,7 @@ public class ModuleManager implements Cleanable
 
         return module;
     }
-    
+
     /**
      * Enables a module
      *
@@ -326,7 +338,7 @@ public class ModuleManager implements Cleanable
     /**
      * Enables a module and reloads the Bukkit help map if wanted
      *
-     * @param module the module
+     * @param module     the module
      * @param reloadHelp whether to reload the help map
      * @return true if it succeeded
      */
@@ -368,7 +380,7 @@ public class ModuleManager implements Cleanable
                 module.enable();
             }
         }
-        
+
         BukkitUtils.reloadHelpMap();
     }
 
@@ -385,19 +397,20 @@ public class ModuleManager implements Cleanable
     /**
      * This method disables a module and reloads the Bukkit's help map
      *
-     * @param module the module
+     * @param module     the module
      * @param reloadHelp whether to reload help map
      */
     private void disableModule(Module module, boolean reloadHelp)
     {
         Validate.notNull(module, "The module must not be null!");
-        
+
         module.disable();
         this.core.getEventManager().unregisterListener(module);
         this.core.getPermissionManager().unregisterPermissions(module);
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().unregister(module);
-        
+        this.core.getApiServer().unregisterApiHandlers(module);
+
         if (reloadHelp)
         {
             BukkitUtils.reloadHelpMap();
@@ -411,7 +424,7 @@ public class ModuleManager implements Cleanable
      * - disable all modules that depend in the given module
      * - disable the module
      * - remove its classloader and all the reference to it
-     * - remove the module from the module map 
+     * - remove the module from the module map
      *
      * @param module the module to unload
      */
@@ -421,7 +434,7 @@ public class ModuleManager implements Cleanable
         {
             return;
         }
-        
+
         Set<Module> disable = new HashSet<Module>();
         for (Module m : this.modules.values())
         {
@@ -430,12 +443,12 @@ public class ModuleManager implements Cleanable
                 disable.add(m);
             }
         }
-        
+
         for (Module m : disable)
         {
             this.unloadModule(m);
         }
-        
+
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.modules.remove(module.getName());

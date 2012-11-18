@@ -7,10 +7,6 @@ import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.user.User;
 
-/**
- *
- * @author Anselm Brehme
- */
 @Entity(name = "useraccount")
 public class UserAccount extends AccountModel
 {

@@ -8,8 +8,7 @@ public class MathHelper
     private static final double RADIANS_DEGREE_CONVERTER = 180.0 / Math.PI;
 
     private MathHelper()
-    {
-    }
+    {}
 
     /**
      * This method converts radians to degrees

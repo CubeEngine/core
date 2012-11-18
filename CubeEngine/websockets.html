@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebSockets TEST</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <script>
+            if ("WebSocket" in window)
+            {
+                var socket;
+                
+                window.onload = function()
+                {
+                    socket = new WebSocket("ws://localhost:6561/websocket");
+                    socket.onopen = function()
+                    {
+                        console.log("connection open!");
+                    };
+                    socket.onmessage = function(event)
+                    {
+                        console.log("message received: " + event.data);
+                    };
+                    socket.onerror = function()
+                    {
+                        console.log("error received!");
+                    };
+                    socket.onclose = function()
+                    {
+                        console.log("connection closed!");
+                    };
+                };
+                window.onunload = function()
+                {
+                    socket.close();
+                };
+                window.onkeyup = function(event)
+                {
+                    if (event.keyCode == 32)
+                    {
+                        console.log("sending a message...");
+                        socket.send("test\n" + prompt("INput:"));
+                    }
+                };
+            }
+            else
+            {
+                alert("maaan, do you live in the stone ages? get a modern browser!");
+            }
+        </script>
+    </head>
+    <body>
+        <p>
+            look into the javascript console to see output!<br>
+            press space to send a message!
+        </p>
+    </body>
+</html>

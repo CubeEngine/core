@@ -20,9 +20,14 @@ public @interface Option
     public String value();
 
     /**
-     * Needed to deserialize Objects in Collections or Maps correctly
+     * If true this option will not be shown in the config with disabled advanced mode.
+     * Keep in mind you will need a field:
      *
-     * @return the genericType
+     * @Option("advanced")
+     * public boolean advanced
+     * in your config for this to work.
+     *
+     * @return if this option is an advanced option
      */
-    public Class<?> genericType() default Object.class;
+    public boolean advanced() default false;
 }

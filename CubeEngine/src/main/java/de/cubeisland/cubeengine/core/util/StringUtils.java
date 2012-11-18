@@ -1,7 +1,8 @@
 package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.converter.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
@@ -25,8 +26,7 @@ public final class StringUtils
     }
 
     private StringUtils()
-    {
-    }
+    {}
 
     /**
      * This method splits a string without RegExes
@@ -163,6 +163,7 @@ public final class StringUtils
             return string;
         }
     }
+
     private static final long DAY = (long)24 * 60 * 60 * 1000;
 
     /**
@@ -192,8 +193,7 @@ public final class StringUtils
         {
             unitSuffix = "m";
         }
-        switch (unitSuffix.charAt(0))
-        {
+        switch (unitSuffix.charAt(0)) {
             case 'y':
             case 'Y':
                 time *= 365;
@@ -299,6 +299,7 @@ public final class StringUtils
         // actually has the most recent cost counts
         return p[n];
     }
+
     static final int wd = 1, wi = 1, wc = 1, ws = 1;
 
     /**
@@ -356,7 +357,7 @@ public final class StringUtils
                     H[i + 1][j] + wi,
                     H[i][j + 1] + wd,
                     H[i1][j1] + ((i - i1 - 1) * wd)
-                    + ws + ((j - j1 - 1) * wi));
+                        + ws + ((j - j1 - 1) * wi));
             }
             DA.put(a.charAt(i - 1), i);
         }
@@ -497,7 +498,7 @@ public final class StringUtils
                 {
                     if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1 && searchStringLength > 1))
                     {
-                        CubeEngine.getLogger().fine("LD1: Found " + inList + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength);
+                        CubeEngine.getLogger().log(LogLevel.DEBUG, "LD1: Found " + inList + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength);
                         if (ld < distance)
                         {
                             distance = ld;
@@ -528,14 +529,14 @@ public final class StringUtils
                     {
                         if (index < indexfound) // Compare to last match
                         {
-                            CubeEngine.getLogger().fine("Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
+                            CubeEngine.getLogger().log(LogLevel.DEBUG, "Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
                             indexfound = index;
                             behindindex = inList.length() - (index + searchStringLength);
                             foundString = inList;
                         }
                         if (index == indexfound && inList.length() - (index + searchStringLength) <= behindindex)
                         {
-                            CubeEngine.getLogger().fine("Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
+                            CubeEngine.getLogger().log(LogLevel.DEBUG, "Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
                             behindindex = inList.length() - (index + searchStringLength);
                             foundString = inList;
                         }
@@ -563,7 +564,7 @@ public final class StringUtils
                         {
                             if ((ld * 100 / searchStringLength) <= percentLdOfLength || (ld == 1 && ignoreLdPerLengthOnLD1 && searchStringLength > 1))
                             {
-                                CubeEngine.getLogger().fine("LD2: Found " + inList + "|" + subString + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength + " and behindindex " + (inList.length() - searchStringLength));
+                                CubeEngine.getLogger().log(LogLevel.DEBUG, "LD2: Found " + inList + "|" + subString + " for " + searchString + " with LD: " + ld + " and LD/Length: " + (int)ld * 100 / searchStringLength + " and behindindex " + (inList.length() - searchStringLength));
                                 if (ld < distance) // Compare to last match
                                 {
                                     distance = ld;
@@ -584,7 +585,7 @@ public final class StringUtils
                 }
             }
         }
-        CubeEngine.getLogger().fine("Found " + foundString + " for " + searchString);
+        CubeEngine.getLogger().log(LogLevel.DEBUG, "Found " + foundString + " for " + searchString);
         return foundString;
     }
 }

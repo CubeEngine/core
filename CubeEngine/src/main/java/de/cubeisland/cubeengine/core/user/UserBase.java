@@ -1,17 +1,28 @@
 package de.cubeisland.cubeengine.core.user;
 
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import org.bukkit.*;
+import org.bukkit.Achievement;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
+import org.bukkit.GameMode;
+import org.bukkit.Instrument;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.Sound;
+import org.bukkit.Statistic;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.Inventory;
@@ -29,6 +40,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
  */
@@ -44,7 +63,7 @@ public class UserBase implements Player
     @Override
     public String getDisplayName()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getDisplayName();
@@ -55,7 +74,7 @@ public class UserBase implements Player
     @Override
     public void setDisplayName(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setDisplayName(string);
@@ -65,7 +84,7 @@ public class UserBase implements Player
     @Override
     public String getPlayerListName()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getPlayerListName();
@@ -76,7 +95,7 @@ public class UserBase implements Player
     @Override
     public void setPlayerListName(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setPlayerListName(string);
@@ -86,7 +105,7 @@ public class UserBase implements Player
     @Override
     public void setCompassTarget(Location lctn)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setCompassTarget(lctn);
@@ -96,7 +115,7 @@ public class UserBase implements Player
     @Override
     public Location getCompassTarget()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getCompassTarget();
@@ -107,7 +126,7 @@ public class UserBase implements Player
     @Override
     public InetSocketAddress getAddress()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getAddress();
@@ -118,7 +137,7 @@ public class UserBase implements Player
     @Override
     public void sendRawMessage(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.sendRawMessage(string);
@@ -128,7 +147,7 @@ public class UserBase implements Player
     @Override
     public void kickPlayer(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.kickPlayer(string);
@@ -138,7 +157,7 @@ public class UserBase implements Player
     @Override
     public void chat(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.chat(string);
@@ -148,29 +167,21 @@ public class UserBase implements Player
     @Override
     public boolean performCommand(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.performCommand(string);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.performCommand(string);
     }
 
     @Override
     public boolean isSneaking()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isSneaking();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isSneaking();
     }
 
     @Override
     public void setSneaking(boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setSneaking(bln);
@@ -180,18 +191,14 @@ public class UserBase implements Player
     @Override
     public boolean isSprinting()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isSprinting();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isSprinting();
     }
 
     @Override
     public void setSprinting(boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setSprinting(bln);
@@ -201,7 +208,7 @@ public class UserBase implements Player
     @Override
     public void saveData()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.saveData();
@@ -211,7 +218,7 @@ public class UserBase implements Player
     @Override
     public void loadData()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.loadData();
@@ -221,7 +228,7 @@ public class UserBase implements Player
     @Override
     public void setSleepingIgnored(boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setSleepingIgnored(bln);
@@ -231,18 +238,14 @@ public class UserBase implements Player
     @Override
     public boolean isSleepingIgnored()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isSleepingIgnored();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isSleepingIgnored();
     }
 
     @Override
     public void playNote(Location lctn, byte b, byte b1)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.playNote(lctn, b, b1);
@@ -252,7 +255,7 @@ public class UserBase implements Player
     @Override
     public void playNote(Location lctn, Instrument i, Note note)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.playNote(lctn, i, note);
@@ -262,7 +265,7 @@ public class UserBase implements Player
     @Override
     public void playEffect(Location lctn, Effect effect, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.playEffect(lctn, effect, i);
@@ -272,7 +275,7 @@ public class UserBase implements Player
     @Override
     public <T> void playEffect(Location lctn, Effect effect, T t)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.playEffect(lctn, effect, t);
@@ -282,7 +285,7 @@ public class UserBase implements Player
     @Override
     public void sendBlockChange(Location lctn, Material mtrl, byte b)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.sendBlockChange(lctn, mtrl, b);
@@ -292,18 +295,14 @@ public class UserBase implements Player
     @Override
     public boolean sendChunkChange(Location lctn, int i, int i1, int i2, byte[] bytes)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.sendChunkChange(lctn, i, i1, i2, bytes);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.sendChunkChange(lctn, i, i1, i2, bytes);
     }
 
     @Override
     public void sendBlockChange(Location lctn, int i, byte b)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.sendBlockChange(lctn, i, b);
@@ -313,7 +312,7 @@ public class UserBase implements Player
     @Override
     public void sendMap(MapView mv)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.sendMap(mv);
@@ -321,10 +320,10 @@ public class UserBase implements Player
     }
 
     @Override
-    @SuppressWarnings("deprecation")
+    @Deprecated
     public void updateInventory()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.updateInventory();
@@ -334,7 +333,7 @@ public class UserBase implements Player
     @Override
     public void awardAchievement(Achievement a)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.awardAchievement(a);
@@ -344,7 +343,7 @@ public class UserBase implements Player
     @Override
     public void incrementStatistic(Statistic ststc)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.incrementStatistic(ststc);
@@ -354,7 +353,7 @@ public class UserBase implements Player
     @Override
     public void incrementStatistic(Statistic ststc, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.incrementStatistic(ststc, i);
@@ -364,7 +363,7 @@ public class UserBase implements Player
     @Override
     public void incrementStatistic(Statistic ststc, Material mtrl)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.incrementStatistic(ststc, mtrl);
@@ -374,7 +373,7 @@ public class UserBase implements Player
     @Override
     public void incrementStatistic(Statistic ststc, Material mtrl, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.incrementStatistic(ststc, mtrl, i);
@@ -384,7 +383,7 @@ public class UserBase implements Player
     @Override
     public void setPlayerTime(long l, boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setPlayerTime(l, bln);
@@ -394,7 +393,7 @@ public class UserBase implements Player
     @Override
     public long getPlayerTime()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getPlayerTime();
@@ -405,7 +404,7 @@ public class UserBase implements Player
     @Override
     public long getPlayerTimeOffset()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getPlayerTimeOffset();
@@ -416,18 +415,14 @@ public class UserBase implements Player
     @Override
     public boolean isPlayerTimeRelative()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isPlayerTimeRelative();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isPlayerTimeRelative();
     }
 
     @Override
     public void resetPlayerTime()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.resetPlayerTime();
@@ -437,7 +432,7 @@ public class UserBase implements Player
     @Override
     public void giveExp(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.giveExp(i);
@@ -447,7 +442,7 @@ public class UserBase implements Player
     @Override
     public float getExp()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getExp();
@@ -458,7 +453,7 @@ public class UserBase implements Player
     @Override
     public void setExp(float f)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setExp(f);
@@ -468,7 +463,7 @@ public class UserBase implements Player
     @Override
     public int getLevel()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getLevel();
@@ -479,7 +474,7 @@ public class UserBase implements Player
     @Override
     public void setLevel(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setLevel(i);
@@ -489,7 +484,7 @@ public class UserBase implements Player
     @Override
     public int getTotalExperience()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getTotalExperience();
@@ -500,7 +495,7 @@ public class UserBase implements Player
     @Override
     public void setTotalExperience(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setTotalExperience(i);
@@ -510,7 +505,7 @@ public class UserBase implements Player
     @Override
     public float getExhaustion()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getExhaustion();
@@ -521,7 +516,7 @@ public class UserBase implements Player
     @Override
     public void setExhaustion(float f)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setExhaustion(f);
@@ -531,7 +526,7 @@ public class UserBase implements Player
     @Override
     public float getSaturation()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getSaturation();
@@ -542,7 +537,7 @@ public class UserBase implements Player
     @Override
     public void setSaturation(float f)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setSaturation(f);
@@ -552,7 +547,7 @@ public class UserBase implements Player
     @Override
     public int getFoodLevel()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getFoodLevel();
@@ -563,7 +558,7 @@ public class UserBase implements Player
     @Override
     public void setFoodLevel(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setFoodLevel(i);
@@ -579,7 +574,7 @@ public class UserBase implements Player
     @Override
     public void setBedSpawnLocation(Location lctn)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setBedSpawnLocation(lctn);
@@ -589,18 +584,14 @@ public class UserBase implements Player
     @Override
     public boolean getAllowFlight()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.getAllowFlight();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.getAllowFlight();
     }
 
     @Override
     public void setAllowFlight(boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setAllowFlight(bln);
@@ -610,7 +601,7 @@ public class UserBase implements Player
     @Override
     public void hidePlayer(Player playerToHide)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.hidePlayer(playerToHide);
@@ -620,7 +611,7 @@ public class UserBase implements Player
     @Override
     public void showPlayer(Player playerToShow)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.showPlayer(playerToShow);
@@ -630,29 +621,21 @@ public class UserBase implements Player
     @Override
     public boolean canSee(Player playerToCheck)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.canSee(playerToCheck);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.canSee(playerToCheck);
     }
 
     @Override
     public boolean isFlying()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isFlying();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isFlying();
     }
 
     @Override
     public void setFlying(boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setFlying(bln);
@@ -668,7 +651,7 @@ public class UserBase implements Player
     @Override
     public PlayerInventory getInventory()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getInventory();
@@ -679,18 +662,14 @@ public class UserBase implements Player
     @Override
     public boolean setWindowProperty(Property prprt, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.setWindowProperty(prprt, i);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.setWindowProperty(prprt, i);
     }
 
     @Override
     public InventoryView getOpenInventory()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getOpenInventory();
@@ -701,7 +680,7 @@ public class UserBase implements Player
     @Override
     public InventoryView openInventory(Inventory invntr)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.openInventory(invntr);
@@ -712,7 +691,7 @@ public class UserBase implements Player
     @Override
     public InventoryView openWorkbench(Location lctn, boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.openWorkbench(lctn, bln);
@@ -723,7 +702,7 @@ public class UserBase implements Player
     @Override
     public InventoryView openEnchanting(Location lctn, boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.openEnchanting(lctn, bln);
@@ -734,7 +713,7 @@ public class UserBase implements Player
     @Override
     public void openInventory(InventoryView iv)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.openInventory(iv);
@@ -744,7 +723,7 @@ public class UserBase implements Player
     @Override
     public void closeInventory()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.closeInventory();
@@ -754,7 +733,7 @@ public class UserBase implements Player
     @Override
     public ItemStack getItemInHand()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getItemInHand();
@@ -765,7 +744,7 @@ public class UserBase implements Player
     @Override
     public void setItemInHand(ItemStack is)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setItemInHand(is);
@@ -775,7 +754,7 @@ public class UserBase implements Player
     @Override
     public ItemStack getItemOnCursor()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getItemOnCursor();
@@ -786,7 +765,7 @@ public class UserBase implements Player
     @Override
     public void setItemOnCursor(ItemStack is)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setItemOnCursor(is);
@@ -796,18 +775,14 @@ public class UserBase implements Player
     @Override
     public boolean isSleeping()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isSleeping();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isSleeping();
     }
 
     @Override
     public int getSleepTicks()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getSleepTicks();
@@ -818,7 +793,7 @@ public class UserBase implements Player
     @Override
     public GameMode getGameMode()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getGameMode();
@@ -829,7 +804,7 @@ public class UserBase implements Player
     @Override
     public void setGameMode(GameMode gm)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setGameMode(gm);
@@ -839,18 +814,14 @@ public class UserBase implements Player
     @Override
     public boolean isBlocking()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isBlocking();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isBlocking();
     }
 
     @Override
     public int getHealth()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getHealth();
@@ -861,7 +832,7 @@ public class UserBase implements Player
     @Override
     public void setHealth(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setHealth(i);
@@ -871,7 +842,7 @@ public class UserBase implements Player
     @Override
     public int getMaxHealth()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getMaxHealth();
@@ -882,7 +853,7 @@ public class UserBase implements Player
     @Override
     public double getEyeHeight()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getMaxHealth();
@@ -893,7 +864,7 @@ public class UserBase implements Player
     @Override
     public double getEyeHeight(boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getEyeHeight();
@@ -904,7 +875,7 @@ public class UserBase implements Player
     @Override
     public Location getEyeLocation()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getEyeLocation();
@@ -915,7 +886,7 @@ public class UserBase implements Player
     @Override
     public List<Block> getLineOfSight(HashSet<Byte> hs, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getLineOfSight(hs, i);
@@ -926,7 +897,7 @@ public class UserBase implements Player
     @Override
     public Block getTargetBlock(HashSet<Byte> hs, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getTargetBlock(hs, i);
@@ -937,7 +908,7 @@ public class UserBase implements Player
     @Override
     public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hs, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getLastTwoTargetBlocks(hs, i);
@@ -949,7 +920,7 @@ public class UserBase implements Player
     @Override
     public Egg throwEgg()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.throwEgg();
@@ -961,7 +932,7 @@ public class UserBase implements Player
     @Override
     public Snowball throwSnowball()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.throwSnowball();
@@ -973,7 +944,7 @@ public class UserBase implements Player
     @Override
     public Arrow shootArrow()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.shootArrow();
@@ -984,7 +955,7 @@ public class UserBase implements Player
     @Override
     public <T extends Projectile> T launchProjectile(Class<? extends T> type)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.launchProjectile(type);
@@ -995,7 +966,7 @@ public class UserBase implements Player
     @Override
     public int getRemainingAir()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getRemainingAir();
@@ -1006,7 +977,7 @@ public class UserBase implements Player
     @Override
     public void setRemainingAir(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setRemainingAir(i);
@@ -1016,7 +987,7 @@ public class UserBase implements Player
     @Override
     public int getMaximumAir()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getMaximumAir();
@@ -1027,7 +998,7 @@ public class UserBase implements Player
     @Override
     public void setMaximumAir(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setMaximumAir(i);
@@ -1037,7 +1008,7 @@ public class UserBase implements Player
     @Override
     public void damage(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.damage(i);
@@ -1047,7 +1018,7 @@ public class UserBase implements Player
     @Override
     public void damage(int i, Entity entity)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.damage(i, entity);
@@ -1057,7 +1028,7 @@ public class UserBase implements Player
     @Override
     public int getMaximumNoDamageTicks()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getMaximumNoDamageTicks();
@@ -1068,7 +1039,7 @@ public class UserBase implements Player
     @Override
     public void setMaximumNoDamageTicks(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setMaximumNoDamageTicks(i);
@@ -1078,7 +1049,7 @@ public class UserBase implements Player
     @Override
     public int getLastDamage()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getLastDamage();
@@ -1089,7 +1060,7 @@ public class UserBase implements Player
     @Override
     public void setLastDamage(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setLastDamage(i);
@@ -1099,7 +1070,7 @@ public class UserBase implements Player
     @Override
     public int getNoDamageTicks()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getNoDamageTicks();
@@ -1110,7 +1081,7 @@ public class UserBase implements Player
     @Override
     public void setNoDamageTicks(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setNoDamageTicks(i);
@@ -1120,7 +1091,7 @@ public class UserBase implements Player
     @Override
     public Player getKiller()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getKiller();
@@ -1131,51 +1102,35 @@ public class UserBase implements Player
     @Override
     public boolean addPotionEffect(PotionEffect pe)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.addPotionEffect(pe);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.addPotionEffect(pe);
     }
 
     @Override
     public boolean addPotionEffect(PotionEffect pe, boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.addPotionEffect(pe);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.addPotionEffect(pe);
     }
 
     @Override
     public boolean addPotionEffects(Collection<PotionEffect> clctn)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.addPotionEffects(clctn);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.addPotionEffects(clctn);
     }
 
     @Override
     public boolean hasPotionEffect(PotionEffectType pet)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.hasPotionEffect(pet);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.hasPotionEffect(pet);
     }
 
     @Override
     public void removePotionEffect(PotionEffectType pet)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.removePotionEffect(pet);
@@ -1185,7 +1140,7 @@ public class UserBase implements Player
     @Override
     public Collection<PotionEffect> getActivePotionEffects()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getActivePotionEffects();
@@ -1196,7 +1151,7 @@ public class UserBase implements Player
     @Override
     public Location getLocation()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getLocation();
@@ -1207,7 +1162,7 @@ public class UserBase implements Player
     @Override
     public void setVelocity(Vector vector)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setVelocity(vector);
@@ -1217,7 +1172,7 @@ public class UserBase implements Player
     @Override
     public Vector getVelocity()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getVelocity();
@@ -1228,7 +1183,7 @@ public class UserBase implements Player
     @Override
     public World getWorld()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getWorld();
@@ -1239,51 +1194,35 @@ public class UserBase implements Player
     @Override
     public boolean teleport(Location lctn)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.teleport(lctn);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.teleport(lctn);
     }
 
     @Override
     public boolean teleport(Location lctn, TeleportCause tc)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.teleport(lctn, tc);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.teleport(lctn, tc);
     }
 
     @Override
     public boolean teleport(Entity entity)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.teleport(entity);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.teleport(entity);
     }
 
     @Override
     public boolean teleport(Entity entity, TeleportCause tc)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.teleport(entity, tc);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.teleport(entity, tc);
     }
 
     @Override
     public List<Entity> getNearbyEntities(double d, double d1, double d2)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getNearbyEntities(d, d1, d2);
@@ -1294,7 +1233,7 @@ public class UserBase implements Player
     @Override
     public int getEntityId()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getEntityId();
@@ -1305,7 +1244,7 @@ public class UserBase implements Player
     @Override
     public int getFireTicks()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getFireTicks();
@@ -1316,7 +1255,7 @@ public class UserBase implements Player
     @Override
     public int getMaxFireTicks()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getMaxFireTicks();
@@ -1327,7 +1266,7 @@ public class UserBase implements Player
     @Override
     public void setFireTicks(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setFireTicks(i);
@@ -1337,7 +1276,7 @@ public class UserBase implements Player
     @Override
     public void remove()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.remove();
@@ -1347,18 +1286,14 @@ public class UserBase implements Player
     @Override
     public boolean isDead()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isDead();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isDead();
     }
 
     @Override
     public Server getServer()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getServer();
@@ -1369,7 +1304,7 @@ public class UserBase implements Player
     @Override
     public Entity getPassenger()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getPassenger();
@@ -1380,40 +1315,28 @@ public class UserBase implements Player
     @Override
     public boolean setPassenger(Entity entity)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.setPassenger(entity);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.setPassenger(entity);
     }
 
     @Override
     public boolean isEmpty()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isEmpty();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isEmpty();
     }
 
     @Override
     public boolean eject()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.eject();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.eject();
     }
 
     @Override
     public float getFallDistance()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getFallDistance();
@@ -1424,7 +1347,7 @@ public class UserBase implements Player
     @Override
     public void setFallDistance(float f)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setFallDistance(f);
@@ -1434,7 +1357,7 @@ public class UserBase implements Player
     @Override
     public void setLastDamageCause(EntityDamageEvent ede)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setLastDamageCause(ede);
@@ -1444,7 +1367,7 @@ public class UserBase implements Player
     @Override
     public EntityDamageEvent getLastDamageCause()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getLastDamageCause();
@@ -1455,7 +1378,7 @@ public class UserBase implements Player
     @Override
     public UUID getUniqueId()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getUniqueId();
@@ -1466,7 +1389,7 @@ public class UserBase implements Player
     @Override
     public int getTicksLived()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getTicksLived();
@@ -1477,7 +1400,7 @@ public class UserBase implements Player
     @Override
     public void setTicksLived(int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setTicksLived(i);
@@ -1487,7 +1410,7 @@ public class UserBase implements Player
     @Override
     public void playEffect(EntityEffect ee)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.playEffect(ee);
@@ -1497,7 +1420,7 @@ public class UserBase implements Player
     @Override
     public EntityType getType()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getType();
@@ -1508,29 +1431,21 @@ public class UserBase implements Player
     @Override
     public boolean isInsideVehicle()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isInsideVehicle();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isInsideVehicle();
     }
 
     @Override
     public boolean leaveVehicle()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.leaveVehicle();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.leaveVehicle();
     }
 
     @Override
     public Entity getVehicle()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getVehicle();
@@ -1541,7 +1456,7 @@ public class UserBase implements Player
     @Override
     public void setMetadata(String string, MetadataValue mv)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setMetadata(string, mv);
@@ -1551,7 +1466,7 @@ public class UserBase implements Player
     @Override
     public List<MetadataValue> getMetadata(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getMetadata(string);
@@ -1562,18 +1477,14 @@ public class UserBase implements Player
     @Override
     public boolean hasMetadata(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.hasMetadata(string);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.hasMetadata(string);
     }
 
     @Override
     public void removeMetadata(String string, Plugin plugin)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.removeMetadata(string, plugin);
@@ -1583,51 +1494,35 @@ public class UserBase implements Player
     @Override
     public boolean isPermissionSet(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isPermissionSet(string);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isPermissionSet(string);
     }
 
     @Override
     public boolean isPermissionSet(Permission prmsn)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isPermissionSet(prmsn);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isPermissionSet(prmsn);
     }
 
     @Override
     public boolean hasPermission(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.hasPermission(string);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.hasPermission(string);
     }
 
     @Override
     public boolean hasPermission(Permission prmsn)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.hasPermission(prmsn);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.hasPermission(prmsn);
     }
 
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.addAttachment(plugin, string, bln);
@@ -1638,7 +1533,7 @@ public class UserBase implements Player
     @Override
     public PermissionAttachment addAttachment(Plugin plugin)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.addAttachment(plugin);
@@ -1649,7 +1544,7 @@ public class UserBase implements Player
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.addAttachment(plugin, string, bln, i);
@@ -1660,7 +1555,7 @@ public class UserBase implements Player
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, int i)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.addAttachment(plugin, i);
@@ -1671,7 +1566,7 @@ public class UserBase implements Player
     @Override
     public void removeAttachment(PermissionAttachment pa)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.removeAttachment(pa);
@@ -1681,7 +1576,7 @@ public class UserBase implements Player
     @Override
     public void recalculatePermissions()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.recalculatePermissions();
@@ -1691,7 +1586,7 @@ public class UserBase implements Player
     @Override
     public Set<PermissionAttachmentInfo> getEffectivePermissions()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getEffectivePermissions();
@@ -1702,18 +1597,14 @@ public class UserBase implements Player
     @Override
     public boolean isOp()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isOp();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isOp();
     }
 
     @Override
     public void setOp(boolean bln)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setOp(bln);
@@ -1723,18 +1614,14 @@ public class UserBase implements Player
     @Override
     public boolean isConversing()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isConversing();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isConversing();
     }
 
     @Override
     public void acceptConversationInput(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.acceptConversationInput(string);
@@ -1744,18 +1631,14 @@ public class UserBase implements Player
     @Override
     public boolean beginConversation(Conversation c)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.beginConversation(c);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.beginConversation(c);
     }
 
     @Override
     public void abandonConversation(Conversation c)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.abandonConversation(c);
@@ -1765,7 +1648,7 @@ public class UserBase implements Player
     @Override
     public void abandonConversation(Conversation c, ConversationAbandonedEvent cae)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.abandonConversation(c, cae);
@@ -1775,7 +1658,7 @@ public class UserBase implements Player
     @Override
     public void sendMessage(String string)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.sendMessage(string);
@@ -1785,7 +1668,7 @@ public class UserBase implements Player
     @Override
     public void sendMessage(String[] strings)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.sendMessage(strings);
@@ -1855,7 +1738,7 @@ public class UserBase implements Player
     @Override
     public void sendPluginMessage(Plugin plugin, String string, byte[] bytes)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.sendPluginMessage(plugin, string, bytes);
@@ -1865,7 +1748,7 @@ public class UserBase implements Player
     @Override
     public Set<String> getListeningPluginChannels()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getListeningPluginChannels();
@@ -1876,7 +1759,7 @@ public class UserBase implements Player
     @Override
     public int getExpToLevel()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getExpToLevel();
@@ -1887,29 +1770,21 @@ public class UserBase implements Player
     @Override
     public boolean hasLineOfSight(Entity other)
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.hasLineOfSight(other);
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.hasLineOfSight(other);
     }
 
     @Override
     public boolean isValid()
     {
-        Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.isValid();
-        }
-        return false;
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isValid();
     }
 
     @Override
     public void setFlySpeed(float value) throws IllegalArgumentException
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setFlySpeed(value);
@@ -1919,7 +1794,7 @@ public class UserBase implements Player
     @Override
     public void setWalkSpeed(float value) throws IllegalArgumentException
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setWalkSpeed(value);
@@ -1929,7 +1804,7 @@ public class UserBase implements Player
     @Override
     public float getFlySpeed()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getFlySpeed();
@@ -1940,7 +1815,7 @@ public class UserBase implements Player
     @Override
     public float getWalkSpeed()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getWalkSpeed();
@@ -1951,7 +1826,7 @@ public class UserBase implements Player
     @Override
     public void playSound(Location location, Sound sound, float volume, float pitch)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.playSound(location, sound, volume, pitch);
@@ -1961,17 +1836,18 @@ public class UserBase implements Player
     @Override
     public Inventory getEnderChest()
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             return player.getEnderChest();
         }
         return null;
     }
+
     /*
      * public String getLanguage()
      * {
-     * Player player = this.offlinePlayer.getPlayer();
+     * final Player player = this.offlinePlayer.getPlayer();
      * if (player != null)
      * {
      * // TODO implement if Bukkit pulled https://github.com/Bukkit/Bukkit/pull/683
@@ -1979,11 +1855,10 @@ public class UserBase implements Player
      * }
      * return I18n.SOURCE_LANGUAGE;
      * } */
-
     @Override
     public void giveExpLevels(int amount)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.giveExpLevels(amount);
@@ -1993,7 +1868,7 @@ public class UserBase implements Player
     @Override
     public void setBedSpawnLocation(Location location, boolean force)
     {
-        Player player = this.offlinePlayer.getPlayer();
+        final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
             player.setBedSpawnLocation(location, force);

@@ -5,10 +5,6 @@ import de.cubeisland.cubeengine.auctions.auction.AuctionManager;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- *
- * @author Anselm
- */
 public class AuctionTimer
 {
     private static TimerTask timerTask;

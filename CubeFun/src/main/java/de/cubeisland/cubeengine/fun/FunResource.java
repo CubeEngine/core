@@ -2,14 +2,11 @@ package de.cubeisland.cubeengine.fun;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 
-/**
- *
- * @author Wolfi
- */
 public enum FunResource implements Resource
 {
-    
-    GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/fun.json");
+    GERMAN_MESSAGES(
+        "resources/language/messages/de_DE.json",
+        "language/de_DE/fun.json");
     private final String target;
     private final String source;
 
@@ -19,11 +16,13 @@ public enum FunResource implements Resource
         this.target = target;
     }
 
+    @Override
     public String getSource()
     {
         return this.source;
     }
 
+    @Override
     public String getTarget()
     {
         return this.target;

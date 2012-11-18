@@ -1,11 +1,14 @@
 package de.cubeisland.cubeengine.core.module;
 
+import de.cubeisland.cubeengine.core.Core;
+import org.apache.commons.lang.Validate;
+
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class provides information about a module.
@@ -24,6 +27,21 @@ public final class ModuleInfo
     private final Map<String, Integer> dependencies;
     private final Map<String, Integer> softDependencies;
     private final Set<String> pluginDependencies;
+
+    ModuleInfo()
+    {
+        this.file = null;
+        this.main = null;
+        this.id = CoreModule.ID;
+        this.name = CoreModule.NAME;
+        this.revision = Core.REVISION;
+        this.description = "This is the core meta module.";
+        this.minCoreVersion = Core.REVISION;
+        this.providesWorldGenerator = false;
+        this.dependencies = Collections.emptyMap();
+        this.softDependencies = Collections.emptyMap();
+        this.pluginDependencies = Collections.emptySet();
+    }
 
     public ModuleInfo(File file, ModuleConfiguration config)
     {
@@ -48,7 +66,6 @@ public final class ModuleInfo
         this.minCoreVersion = config.minCoreRevision;
         this.providesWorldGenerator = config.provideWorldGenerator;
 
-
         int delimOffset;
         int version;
 
@@ -67,8 +84,7 @@ public final class ModuleInfo
                     version = Integer.parseInt(dep.substring(delimOffset + 1));
                 }
                 catch (NumberFormatException ignored)
-                {
-                }
+                {}
                 dep = dep.substring(0, delimOffset);
             }
             this.dependencies.put(dep, version);
@@ -89,8 +105,7 @@ public final class ModuleInfo
                     version = Integer.parseInt(dep.substring(delimOffset + 1));
                 }
                 catch (NumberFormatException ignored)
-                {
-                }
+                {}
                 dep = dep.substring(0, delimOffset);
             }
             this.softDependencies.put(dep, version);
@@ -121,7 +136,7 @@ public final class ModuleInfo
 
     /**
      * The module id (basicly the lowercased name)
-     * 
+     *
      * @return the module name
      */
     public String getId()

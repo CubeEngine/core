@@ -18,7 +18,7 @@ public class BlockUtil
 
     /**
      * Searches for blocks that are attached onto given block.
-     * 
+     *
      * @param block
      * @return the attached blocks
      */

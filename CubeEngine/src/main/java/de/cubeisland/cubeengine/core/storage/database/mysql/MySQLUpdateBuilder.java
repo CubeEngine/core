@@ -7,7 +7,8 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for updating tables.
  */
-public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> implements UpdateBuilder
+public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder>
+    implements UpdateBuilder
 {
     private boolean hasCols;
 
@@ -23,27 +24,36 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
 
         this.hasCols = false;
         this.query = new StringBuilder("UPDATE ");
-        this.query.append(this.database.prepareName(tables[0]));
+        this.query.append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareName(tables[i]));
+            this.query.append(',').append(this.database.prepareTableName(tables[i]));
         }
         return this;
     }
 
     @Override
-    public MySQLUpdateBuilder cols(String... cols)
+    public MySQLUpdateBuilder set(String... cols)
     {
         Validate.notEmpty(cols, "No cols specified!");
 
-        this.query.append(" SET ").append(this.database.prepareFieldName(cols[0])).append("=? ");
-        for (int i = 1; i < cols.length; ++i)
+        this.query.append(" SET ");
+
+        return this.cols(cols);
+    }
+
+    @Override
+    public MySQLUpdateBuilder cols(String... cols)
+    {
+        if (cols.length > 0)
         {
-            this.query.append(',').append(this.database.prepareFieldName(cols[i])).append("=? ");
+            this.query.append(this.database.prepareFieldName(cols[0])).append("=? ");
+            for (int i = 1; i < cols.length; ++i)
+            {
+                this.query.append(',').append(this.database.prepareFieldName(cols[i])).append("=? ");
+            }
+            this.hasCols = true;
         }
-
-        this.hasCols = true;
-
         return this;
     }
 
@@ -54,6 +64,7 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder> i
         {
             throw new IllegalStateException("No cols where specified!");
         }
+        this.hasCols = false;
         return super.end();
     }
 }

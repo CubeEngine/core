@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -77,7 +77,7 @@ public class FileUtil
         }
         catch (IOException e)
         {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.log(LogLevel.ERROR, e.getMessage(), e);
         }
         finally
         {
@@ -86,18 +86,17 @@ public class FileUtil
                 bufferedReader.close();
             }
             catch (IOException ex1)
-            {
-            }
+            {}
         }
         return list;
     }
 
     /**
      * Saves given String into the file
-     * 
+     *
      * @param string the string
-     * @param file the file to save to
-     * @throws IOException 
+     * @param file   the file to save to
+     * @throws IOException
      */
     public static void saveFile(String string, File file) throws IOException
     {

@@ -7,7 +7,8 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 /**
  * MYSQLQueryBuilder for creating new tables.
  */
-public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> implements TableBuilder
+public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
+    implements TableBuilder
 {
     private int fieldCounter;
 
@@ -19,9 +20,8 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     protected MySQLTableBuilder create(String name, int actionIfExists)
     {
         this.fieldCounter = 0;
-        name = this.database.prepareName(name);
-        switch (actionIfExists)
-        {
+        name = this.database.prepareTableName(name);
+        switch (actionIfExists) {
             case 1: // DO NOTHING
                 this.query = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(name).append(" ");
                 break;
@@ -116,9 +116,16 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     }
 
     @Override
-    public MySQLTableBuilder references(String otherTable, String key)
+    public MySQLTableBuilder references(String otherTable, String field)
     {
-        this.query.append("REFERENCES ").append(this.database.prepareName(otherTable)).append(" (").append(this.database.prepareFieldName(key)).append(')');
+        this.query.append(" REFERENCES ").append(this.database.prepareTableName(otherTable)).append(" (").append(this.database.prepareFieldName(field)).append(')');
+        return this;
+    }
+
+    @Override
+    public TableBuilder onDelete(String doThis)
+    {
+        this.query.append(" ON DELETE ").append(doThis);
         return this;
     }
 
@@ -166,6 +173,13 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder> imple
     public TableBuilder unique(String field)
     {
         this.query.append(",UNIQUE(").append(this.database.prepareFieldName(field)).append(")");
+        return this;
+    }
+
+    @Override
+    public TableBuilder check()
+    {
+        this.query.append(" CHECK ");
         return this;
     }
 }
