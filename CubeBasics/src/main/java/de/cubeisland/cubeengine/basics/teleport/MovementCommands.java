@@ -119,10 +119,10 @@ public class MovementCommands
         context.sendMessage("basics", "&aDescended a level!");
         TeleportCommands.teleport(sender, loc, true, false);
     }
-
+//TODO through cmd
     @Command(desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
-    {//TODO compass teleport ftw!
+    {
         User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
         Location loc = sender.getTargetBlock(null, 350).getLocation();
         if (loc.getBlock().getType().equals(Material.AIR))
