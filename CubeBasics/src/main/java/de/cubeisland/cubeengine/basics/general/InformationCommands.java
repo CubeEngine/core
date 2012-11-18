@@ -26,6 +26,7 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 
+// TODO display biome
 public class InformationCommands
 {
     private Basics basics;
@@ -37,7 +38,7 @@ public class InformationCommands
 
     @Command(desc = "Displays the direction in which you are looking.")
     public void compass(CommandContext context)
-    {
+    {//TODO enum of dir
         User sender = context.getSenderAsUser("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
         int direction = (int)(sender.getLocation().getYaw() + 180 + 360) % 360;
         String dir;
@@ -140,9 +141,6 @@ public class InformationCommands
         List<Entity> list = user.getWorld().getEntities();
         LinkedList<String> outputlist = new LinkedList<String>();
         TreeMap<Double, List<Entity>> sortedMap = new TreeMap<Double, List<Entity>>();
-        //TODO if list contains too many objects show nearest normally then
-        //e.g.:  100x Zombie (250m+)
-        //TODO only show the flag is there for
         for (Entity entity : list)
         {
             double distance = entity.getLocation().distanceSquared(user.getLocation());

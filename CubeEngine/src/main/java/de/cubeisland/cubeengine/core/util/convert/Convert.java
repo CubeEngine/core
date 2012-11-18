@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -59,6 +60,7 @@ public class Convert
         registerConverter(boolean.class, converter = new BooleanConverter());
         registerConverter(Boolean.class, converter);
         registerConverter(String.class, new StringConverter());
+        registerConverter(Duration.class, new DurationConverter());
     }
 
     /**

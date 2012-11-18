@@ -20,6 +20,10 @@ public class ListCommand
             return;
         }
         DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(Basics.getInstance(), context.getSender(), players);
+        if (event.isCancelled())
+        {
+            return;
+        }
         if (!(Basics.getInstance().getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
             context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getPlayers().size(), Bukkit.getMaxPlayers());

@@ -35,6 +35,8 @@ public class WorldControlCommands
         config = basics.getConfiguration();
     }
 
+    //TODO butcher
+
     @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
     {
@@ -114,7 +116,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                invalidUsage(context, "basics", "&cIf not used ingame you have to specify a world!");//TODO funny msg
+                invalidUsage(context, "basics", "&cI will try my best to remove YOU!");
             }
             world = sender.getWorld();
         }
@@ -125,7 +127,7 @@ public class WorldControlCommands
         }
         else if (sender == null)
         {
-            invalidUsage(context, "basics", "&cIf not used ingame you can only remove all!");//TODO funny msg
+            invalidUsage(context, "basics", "&cIf not used ingame you can only remove all!");
         }
         if (context.hasIndexed(1))
         {

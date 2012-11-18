@@ -4,14 +4,13 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.HashMap;
 import java.util.List;
 import org.bukkit.World;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  * Commands changing time.
@@ -103,12 +102,16 @@ public class TimeControlCommands
         }
     }
 
-    @Command(desc = "Changes the time of a world", min = 1, max = 2, flags = {
+    @Command(desc = "Changes the time of a world", max = 2, flags = {
         @Flag(name = "a", longName = "all")
     }, usage = "<day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
     {
-        //TODO change output time set to %d to day|night etc..
+        if (!context.hasIndexed(0))
+        {
+            //TODO display time
+            return;
+        }
         String timeString = context.getString(0);
         Long time = Time.matchTime(timeString);
         if (time == null)

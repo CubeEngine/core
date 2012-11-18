@@ -159,8 +159,12 @@ public class MaterialMatcher
      */
     public DyeColor matchColorData(String data)
     {
-        short dataVal = this.datavalues.get(351).get(StringUtils.matchString(data, this.datavalues.get(351).keySet()));
-        return DyeColor.getByData((byte)dataVal);
+        Short dataVal = this.datavalues.get(35).get(StringUtils.matchString(data, this.datavalues.get(35).keySet()));
+        if (dataVal == null)
+        {
+            return null;
+        }
+        return DyeColor.getByData(dataVal.byteValue());
     }
 
     /**
@@ -404,6 +408,7 @@ public class MaterialMatcher
                 {
                     for (String key : StringUtils.explode(",", line.substring(0, line.length() - 1)))
                     {
+                        data = new THashMap<String, Short>();
                         this.datavalues.put(Integer.parseInt(key), data);
                     }
                 }

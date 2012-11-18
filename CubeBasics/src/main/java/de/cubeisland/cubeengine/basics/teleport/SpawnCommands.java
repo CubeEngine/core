@@ -86,7 +86,6 @@ public class SpawnCommands
     })
     public void spawn(CommandContext context)
     {
-        // TODO later make diff. spawns for playergroups/roles possible
         User user = context.getSenderAsUser();
         World world;
         String s_world = basics.getConfiguration().spawnMainWorld;
@@ -160,7 +159,9 @@ public class SpawnCommands
         Location loc = world.getSpawnLocation().add(0.5, 0, 0.5);
         loc.setPitch(user.getLocation().getPitch());
         loc.setYaw(user.getLocation().getYaw());
-        TeleportCommands.teleport(user, world.getSpawnLocation().add(0.5, 0, 0.5), true, force);
+        SpawnCommandEvent event = new SpawnCommandEvent(this.basics, user, loc);
+        this.basics.getEventManager().fireEvent(event); // catch this event to change spawn location
+        TeleportCommands.teleport(user, event.getLoc(), true, force);
     }
 
     @Command(desc = "Teleports you to the spawn of given world", usage = "<world>", min = 1, max = 1)
