@@ -21,6 +21,7 @@ import de.cubeisland.cubeengine.basics.moderation.WorldControlCommands;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
+import de.cubeisland.cubeengine.basics.teleport.TeleportListener;
 import de.cubeisland.cubeengine.basics.teleport.TeleportRequestCommands;
 import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -73,6 +74,7 @@ public class Basics extends Module
         this.registerCommands(new SpawnCommands(this));
         this.registerCommands(new TeleportCommands(this));
         this.registerCommands(new TeleportRequestCommands(this));
+        this.registerListener(new TeleportListener(this));
 
         this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
         final long autoAfk;
