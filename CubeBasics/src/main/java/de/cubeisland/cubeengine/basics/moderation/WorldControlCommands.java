@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
@@ -204,7 +205,7 @@ public class WorldControlCommands
             }
         }
         boolean lightning = false;
-        if (context.hasFlag("l")) //TODO perm
+        if (context.hasFlag("l") && BasicsPerm.COMMAND_BUTCHER_FLAG_LIGHTNING.isAuthorized(context.getSender()))
         {
             lightning = true;
         }
@@ -225,7 +226,7 @@ public class WorldControlCommands
             }
             removed = this.removeEntityType(list, loc, radius, type, null, lightning);
         }
-        else if (context.hasFlag("f")) //remove all living
+        else if (context.hasFlag("f") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender())) //remove all living
         {
             removed = this.removeEntityType(list, loc, radius, EntityType.BOAT, Material.AIR, lightning);
         }
@@ -235,9 +236,9 @@ public class WorldControlCommands
             for (Entity entity : list)
             {
                 if (entity instanceof Monster
-                        || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed())//TODO perm
-                    || (context.hasFlag("g") && entity instanceof Golem)//TODO perm
-                    || (context.hasFlag("a") && entity instanceof Animals))//TODO perm
+                || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))//TODO perm
+                || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))//TODO perm
+                || (context.hasFlag("a") && entity instanceof Animals && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender())))//TODO perm
                 {
                     filteredList.add(entity);
                 }
