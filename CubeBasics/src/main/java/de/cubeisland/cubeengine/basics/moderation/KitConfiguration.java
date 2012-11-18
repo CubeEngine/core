@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ public class KitConfiguration extends Configuration
     public boolean usePerm = false;
     @Comment("The delay between each usage of this kit.")
     @Option("limit-usage-delay")
-    public long limitUsageDelay = 0L; //TODO better!
+    public Duration limitUsageDelay = new Duration("-1");
     @Comment("Limits the usage to x amount. Use 0 for infinite.")
     @Option("limit-usage")
     public int limitUsage = 0;
@@ -41,7 +42,7 @@ public class KitConfiguration extends Configuration
 
     public Kit getKit()
     {
-        Kit kit = new Kit(this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay, this.usePerm, this.customReceiveMsg, this.kitItems);
+        Kit kit = new Kit(this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitItems);
         return kit;
     }
 

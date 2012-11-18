@@ -103,7 +103,6 @@ public class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
-        this.debug = this.config.debugMode;
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
@@ -309,7 +308,7 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public boolean isDebug()
     {
-        return this.debug;
+        return this.logger.getLevel().intValue() <= LogLevel.DEBUG.intValue();
     }
 
     @Override

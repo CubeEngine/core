@@ -16,7 +16,10 @@ public class FloatReader extends ArgumentReader<Float>
     {
         String num = args[0].replace(',', '.');
         int lastDot = num.lastIndexOf('.');
-        num = num.substring(0, lastDot).replace(".", "") + num.substring(lastDot);
+        if (lastDot == -1)
+        {
+            num = num.substring(0, lastDot).replace(".", "") + num.substring(lastDot);
+        }
         try
         {
             Float value = Float.parseFloat(num);

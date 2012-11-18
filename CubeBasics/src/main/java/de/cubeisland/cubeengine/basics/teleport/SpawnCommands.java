@@ -87,15 +87,10 @@ public class SpawnCommands
     public void spawn(CommandContext context)
     {
         User user = context.getSenderAsUser();
-        World world;
-        String s_world = basics.getConfiguration().spawnMainWorld;
-        if (s_world == null)
+        World world = basics.getConfiguration().mainWorld;
+        if (world == null)
         {
             world = user.getWorld();
-        }
-        else
-        {
-            world = context.getSender().getServer().getWorld(s_world);
         }
         boolean force = false;
         if (context.hasFlag("f"))

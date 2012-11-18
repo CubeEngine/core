@@ -90,7 +90,7 @@ public class FlyCommand
             return;
         }
         //I Believe I Can Fly ...     
-        if (context.getIndexed().size() > 0)
+        if (context.hasIndexed(0))
         {
             Float speed = context.getIndexed(0, Float.class);
             if (speed != null && speed >= 0 && speed <= 10)

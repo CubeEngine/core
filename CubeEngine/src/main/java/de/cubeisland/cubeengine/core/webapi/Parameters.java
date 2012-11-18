@@ -1,28 +1,73 @@
 package de.cubeisland.cubeengine.core.webapi;
 
-import java.util.HashMap;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
+import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.Validate;
 
-public class Parameters extends HashMap<String, String>
+public class Parameters
 {
-    public Parameters()
+    private final Map<String, List<String>> data;
+
+    public Parameters(Map<String, List<String>> data)
     {
-        super();
+        this.data = data;
     }
 
-    public Parameters(Map<? extends String, ? extends String> m)
+    public <T> T get(String name, int index, Class<T> type) throws InvalidArgumentException
     {
-        super(m);
+        List<String> values = this.data.get(name);
+        if (values == null)
+        {
+            return null;
+        }
+        String value = values.get(index);
+        if (type != String.class)
+        {
+            return ArgumentReader.read(type, value).getRight();
+        }
+        return (T)value;
     }
 
-    public String getString(String key)
+    public <T> T get(String name, int index, T def)
     {
-        return this.getString(key, null);
+        Validate.notNull(def, "The default value must not be null!");
+
+        T value = def;
+        try
+        {
+            value = (T)this.get(name, index, def.getClass());
+        }
+        catch (InvalidArgumentException e)
+        {}
+        return value;
     }
 
-    public String getString(String key, String def)
+    public <T> T get(String name, Class<T> type) throws InvalidArgumentException
     {
-        String value = this.get(key);
+        return this.get(name, 0, type);
+    }
+
+    public <T> T get(String name, T def) throws InvalidArgumentException
+    {
+        return this.get(name, 0, def);
+    }
+
+    public String getString(String name, int index)
+    {
+        try
+        {
+            return this.get(name, index, String.class);
+        }
+        catch (InvalidArgumentException ex)
+        {}
+        return null;
+    }
+
+    public String getString(String name, int index, String def)
+    {
+        String value = this.getString(name, index);
         if (value == null)
         {
             return def;
@@ -30,83 +75,13 @@ public class Parameters extends HashMap<String, String>
         return value;
     }
 
-    public Integer getInt(String key)
+    public String getString(String name)
     {
-        return this.getInt(key, null);
+        return this.getString(name, 0);
     }
 
-    public Integer getInt(String key, Integer def)
+    public String getString(String name, String def)
     {
-        String value = this.get(key);
-        if (value != null)
-        {
-            try
-            {
-                return Integer.parseInt(value);
-            }
-            catch (NumberFormatException e)
-            {}
-        }
-        return def;
-    }
-
-    public Long getLong(String key)
-    {
-        return this.getLong(key, null);
-    }
-
-    public Long getLong(String key, Long def)
-    {
-        String value = this.get(key);
-        if (value != null)
-        {
-            try
-            {
-                return Long.parseLong(value);
-            }
-            catch (NumberFormatException e)
-            {}
-        }
-        return def;
-    }
-
-    public Double getDouble(String key)
-    {
-        return this.getDouble(key, null);
-    }
-
-    public Double getDouble(String key, Double def)
-    {
-        String value = this.get(key);
-        if (value != null)
-        {
-            try
-            {
-                return Double.parseDouble(value);
-            }
-            catch (NumberFormatException e)
-            {}
-        }
-        return def;
-    }
-
-    public Boolean getBoolean(String key)
-    {
-        return this.getBoolean(key, null);
-    }
-
-    public Boolean getBoolean(String key, Boolean def)
-    {
-        String value = this.get(key);
-        if (value != null)
-        {
-            try
-            {
-                return Boolean.parseBoolean(value);
-            }
-            catch (NumberFormatException e)
-            {}
-        }
-        return def;
+        return this.getString(name, 0, def);
     }
 }

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.rulebook;
 
+import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

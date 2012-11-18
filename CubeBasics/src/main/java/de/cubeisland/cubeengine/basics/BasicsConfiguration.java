@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
@@ -7,7 +8,9 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 @Codec("yml")
@@ -19,8 +22,8 @@ public class BasicsConfiguration extends Configuration
     public int removeCmdDefaultRadius = 20;
     @Comment("The world to teleport to when using /spawn"
         + "\nUse {} if you want to use the spawn of the world the player is in.")
-    @Option("commands.spawn-mainworld")
-    public String spawnMainWorld = "world";
+    @Option("mainworld")
+    public World mainWorld = Bukkit.getServer().getWorld("world");
     @Comment("The seconds until a teleportrequest is automaticly denied."
         + "\nUse -1 to never automaticly deny. (Will loose information after some time when disconecting)")
     @Option("commands.teleport-request-wait")

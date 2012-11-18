@@ -36,7 +36,14 @@ public enum BasicsPerm implements Permission
     COMMAND_KIT_GIVE_FORCE,
     COMMAND_GOD_OTHER,
     COMMAND_GOD_KEEP,
-    COMMAND_STACK_FULLSTACK;
+    COMMAND_STACK_FULLSTACK,
+    COMMAND_BUTCHER_FLAG_PET,
+    COMMAND_BUTCHER_FLAG_ANIMAL,
+    COMMAND_BUTCHER_FLAG_LIGHTNING,
+    COMMAND_BUTCHER_FLAG_GOLEM, 
+    COMMAND_BUTCHER_FLAG_ALLTYPE,
+    ;
+    
     private String permission;
     private PermissionDefault def;
 

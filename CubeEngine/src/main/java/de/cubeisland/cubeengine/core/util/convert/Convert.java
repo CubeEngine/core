@@ -9,7 +9,7 @@ import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import java.lang.reflect.GenericArrayType;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.Date;
@@ -48,7 +48,7 @@ public class Convert
         registerConverter(Double.class, converter = new DoubleConverter());
         registerConverter(double.class, converter);
         registerConverter(Date.class, new DateConverter());
-        registerConverter(LogLevel.class, new LogLevelConverter());
+        registerConverter(LogLevel.class, new CubeLevelConverter());
         registerConverter(Float.class, converter = new FloatConverter());
         registerConverter(float.class, converter);
         registerConverter(Long.class, converter = new LongConverter());

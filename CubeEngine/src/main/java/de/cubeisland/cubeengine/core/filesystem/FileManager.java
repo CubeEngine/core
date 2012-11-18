@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.core.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import org.apache.commons.lang.Validate;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,8 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -29,21 +31,29 @@ public class FileManager
         Validate.notNull(dataFolder, "The data folder must not be null!");
         if (!dataFolder.exists())
         {
-            dataFolder.mkdirs();
-        }
-        else
-        {
-            if (!dataFolder.isDirectory())
+            if (dataFolder.mkdirs())
             {
-                throw new IllegalArgumentException("The data folder was found, but it doesn't seem to be directoy!");
+                LOGGER.log(Level.INFO, "Folder {0} successfully created!");
             }
         }
+        else if (!dataFolder.isDirectory())
+        {
+            throw new IOException("The data folder was found, but it doesn't seem to be directory!");
+        }
         this.dataFolder = dataFolder;
+        if (!this.dataFolder.canWrite())
+        {
+            throw new IOException("The CubeEngine plugin folder is not writable!");
+        }
 
         this.languageDir = new File(this.dataFolder, "language");
         if (!this.languageDir.isDirectory() && !this.languageDir.mkdirs())
         {
             throw new IOException("Failed to create the language folder");
+        }
+        if (!this.languageDir.canWrite())
+        {
+            throw new IOException("The language folder is not writable!");
         }
 
         this.logDir = new File(this.dataFolder, "log");
@@ -51,11 +61,19 @@ public class FileManager
         {
             throw new IOException("Failed to create the log folder");
         }
+        if (!this.logDir.canWrite())
+        {
+            throw new IOException("The log folder is not writable!");
+        }
 
         this.modulesDir = new File(this.dataFolder, "modules");
         if (!this.modulesDir.isDirectory() && !this.modulesDir.mkdirs())
         {
             throw new IOException("Failed to create the modules folder");
+        }
+        if (!this.modulesDir.canWrite())
+        {
+            throw new IOException("The modules folder is not writable!");
         }
 
         this.fileSources = new ConcurrentHashMap<File, Resource>();

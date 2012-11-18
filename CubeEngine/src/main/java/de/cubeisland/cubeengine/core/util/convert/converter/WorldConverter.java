@@ -24,7 +24,7 @@ public class WorldConverter implements Converter<World>
             World world = null;
             if (string.contains("(") && string.contains(")"))
             {
-                UUID uid = UUID.fromString(string.substring(string.indexOf('('), string.indexOf(')') - 1));
+                UUID uid = UUID.fromString(string.substring(string.indexOf('(') + 1, string.indexOf(')')));
                 world = Bukkit.getWorld(uid);
                 string = string.substring(0, string.indexOf('('));
             }
