@@ -107,11 +107,11 @@ public class MailManager extends BasicStorage<Mail>
     }
 
     public void removeMail(User user, User sendBy)
-    {//TODO if null then key = 0 (send by CONSOLE)
+    {
         BasicUser bUser = this.getBasicUserWithMails(user);
         for (Mail mail : bUser.mailbox)
         {
-            if (mail.senderId == sendBy.key)
+            if (mail.senderId == (sendBy == null ? 0 : sendBy.key))
             {
                 this.delete(mail);
             }

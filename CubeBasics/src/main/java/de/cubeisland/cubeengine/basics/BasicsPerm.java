@@ -42,6 +42,8 @@ public enum BasicsPerm implements Permission
     COMMAND_BUTCHER_FLAG_LIGHTNING,
     COMMAND_BUTCHER_FLAG_GOLEM, 
     COMMAND_BUTCHER_FLAG_ALLTYPE,
+    COMMAND_BUTCHER_FLAG_ALL, 
+    COMMAND_KILL_FORCE,
     ;
     
     private String permission;

@@ -257,13 +257,13 @@ public class PlayerCommands
     @Command(names = {
         "kill", "slay"
     }, desc = "Kills a player", usage = "<player>|-a", flags = {
-        @Flag(longName = "all", name = "a")
+        @Flag(longName = "all", name = "a"),
+            @Flag(longName = "force", name = "f")
     })
     public void kill(CommandContext context)
     {//TODO kill a player looking at if possible
         //TODO kill a player with cool effects :) e.g. lightning
-        //TODO prevent if in godmode 
-        //TODO force flag
+        boolean force = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
         User user = context.getUser(0);
         if (user == null)
         {
@@ -278,9 +278,14 @@ public class PlayerCommands
             {
                 illegalParameter(context, "core", "&2%s &eis currently not online!", user.getName());
             }
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user))
+            if (!force && BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user))
             {
                 context.sendMessage("basics", "&cYou cannot kill that player!");
+                return;
+            }
+            if (!force && this.basics.getBasicUserManager().getBasicUser(user).godMode)
+            {
+                context.sendMessage("basics", "&eThis player is in godmode you cannot kill him!");
                 return;
             }
         }
