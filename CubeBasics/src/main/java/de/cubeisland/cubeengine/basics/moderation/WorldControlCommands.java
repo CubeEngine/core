@@ -180,7 +180,7 @@ public class WorldControlCommands
         @Flag(longName = "lightning", name = "l")
     }, params = @Param(names = {
         "choose", "c"
-    }, type = EntityType.class), usage = "[radius] [world] [choose|c <entityType>]")
+    }, type = String.class), usage = "[radius] [world] [choose|c <entityType>]")
     public void butcher(CommandContext context)
     {
         User sender = context.getSenderAsUser();
