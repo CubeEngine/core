@@ -9,13 +9,14 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
@@ -101,6 +102,7 @@ public class ItemCommands
     @Command(names = {
         "headchange", "skullchange"
     }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1)
+    @SuppressWarnings("deprecation")
     public void headchange(CommandContext context)
     {
         //TODO later listener to drop the custom heads (perhaps bukkit wil fix it)
@@ -120,6 +122,7 @@ public class ItemCommands
     }
 
     @Command(desc = "The user can use unlimited items", max = 1, usage = "[on|off]")
+    @SuppressWarnings("deprecation")
     public void unlimited(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
@@ -267,6 +270,7 @@ public class ItemCommands
     @Command(desc = "Gives the specified Item to a player", flags = {
         @Flag(name = "b", longName = "blacklist")
     }, min = 2, max = 3, usage = "<player> <material[:data]> [amount] [-blacklist]")
+    @SuppressWarnings("deprecation")
     public void give(CommandContext context)
     {
         User user = context.getUser(0);
@@ -308,6 +312,7 @@ public class ItemCommands
     }, desc = "Gives the specified Item to you", max = 2, min = 1, flags = {
         @Flag(longName = "blacklist", name = "b")
     }, usage = "<material[:data]> [amount] [-blacklist]")
+    @SuppressWarnings("deprecation")
     public void item(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eDid you try to use &6/give &eon your new I-Tem?");

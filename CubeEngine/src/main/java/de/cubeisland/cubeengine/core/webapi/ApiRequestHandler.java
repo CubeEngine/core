@@ -1,42 +1,29 @@
 package de.cubeisland.cubeengine.core.webapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiRequestException;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.QueryStringDecoder;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
-
+import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.websocketx.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 /**
  * This class handles all requests
@@ -47,6 +34,7 @@ public class ApiRequestHandler extends
     ChannelInboundMessageHandlerAdapter<Object>
 {
     private static final Logger LOGGER = new CubeLogger("webapi");
+    private static final List<Map.Entry<String, String>> NO_HEADERS = new ArrayList<Map.Entry<String, String>>();
 
     static
     {
@@ -65,10 +53,10 @@ public class ApiRequestHandler extends
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
 
-    ApiRequestHandler(ApiServer server)
+    ApiRequestHandler(ApiServer server, ObjectMapper mapper)
     {
         this.server = server;
-        this.objectMapper = CubeEngine.getJsonObjectMapper();
+        this.objectMapper = mapper;
     }
 
     @Override
@@ -117,7 +105,6 @@ public class ApiRequestHandler extends
         QueryStringDecoder qsDecoder = new QueryStringDecoder(request.getUri(), UTF8, true, 100);
 
         String path = qsDecoder.getPath().trim();
-        final Map<String, List<String>> getParams = qsDecoder.getParameters();
 
         if (path.length() == 0 || "/".equals(path))
         {
@@ -174,7 +161,25 @@ public class ApiRequestHandler extends
             return;
         }
 
-        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), RequestMethod.getByName(request.getMethod().getName()), null, request.getHeaders());
+        JsonNode data = null;
+        ByteBuf requestContent = request.getContent();
+        if (requestContent != Unpooled.EMPTY_BUFFER)
+        {
+            try
+            {
+                data = this.objectMapper.readTree(requestContent.array());
+            }
+            catch (Exception e)
+            {
+                LOGGER.log(DEBUG, "Failed to parse the request body!", e);
+                this.error(context, MALFORMED_DATA);
+                return;
+            }
+        }
+        final RequestMethod method = RequestMethod.getByName(request.getMethod().getName());
+        final Parameters params = new Parameters(qsDecoder.getParameters());
+
+        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, request.getHeaders(), data);
         ApiResponse apiResponse = new ApiResponse();
 
         try
@@ -197,7 +202,7 @@ public class ApiRequestHandler extends
         if (frame instanceof CloseWebSocketFrame)
         {
             LOGGER.log(INFO, "recevied close frame");
-            // TODO remove subscriptions
+            this.server.unsubscribe(this);
             this.handshaker.close(context.channel(), (CloseWebSocketFrame)frame);
         }
         else if (frame instanceof PingWebSocketFrame)
@@ -219,34 +224,61 @@ public class ApiRequestHandler extends
 
     private void handleTextWebSocketFrame(ChannelHandlerContext context, TextWebSocketFrame frame)
     {
-        String text = frame.getText();
+        String content = frame.getText();
 
-        int newLinePos = text.indexOf('\n');
+        int newLinePos = content.indexOf('\n');
         if (newLinePos == -1)
         {
             LOGGER.log(INFO, "the frame data didn't contain a newline !");
             // TODO error response
             return;
         }
-        String command = text.substring(0, newLinePos).trim();
-        text = text.substring(newLinePos).trim();
+        String command = content.substring(0, newLinePos).trim();
+        content = content.substring(newLinePos).trim();
 
         if ("request".equals(command))
         {
             String route;
-            newLinePos = text.indexOf('\n');
+            newLinePos = content.indexOf('\n');
+            RequestMethod method = null;
             if (newLinePos == -1)
             {
-                route = text;
+                route = content;
             }
             else
             {
-                route = normalizeRoute(text.substring(0, newLinePos));
-                text = text.substring(newLinePos).trim();
+                route = normalizeRoute(content.substring(0, newLinePos));
+                content = content.substring(newLinePos).trim();
+
+                final int spacePos = route.indexOf(' ');
+                if (spacePos != -1)
+                {
+                    method = RequestMethod.getByName(route.substring(0, spacePos));
+                    route = route.substring(spacePos + 1);
+                }
+            }
+
+            if (method == null)
+            {
+                method = RequestMethod.GET;
+            }
+
+            JsonNode data = null;
+            if (!content.isEmpty())
+            {
+                try
+                {
+                    data = this.objectMapper.readTree(content);
+                }
+                catch (Exception e)
+                {
+                    // TODO ERROR
+                }
             }
 
             ApiHandler handler = this.server.getApiHandler(route);
-            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), null, null, null);
+            Parameters params = null;
+            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, NO_HEADERS, data);
             ApiResponse response = new ApiResponse();
             try
             {
@@ -259,14 +291,14 @@ public class ApiRequestHandler extends
         }
         else if ("subscribe".equals(command))
         {
-            this.server.subscribe(text.trim(), this);
+            this.server.subscribe(content.trim(), this);
         }
         else if ("unsubscribe".equals(command))
         {
-            this.server.unsubscribe(text.trim(), this);
+            this.server.unsubscribe(content.trim(), this);
         }
 
-        context.write(new TextWebSocketFrame(command + " -- " + text));
+        context.write(new TextWebSocketFrame(command + " -- " + content));
     }
 
     private void success(ChannelHandlerContext context, ApiResponse apiResponse)

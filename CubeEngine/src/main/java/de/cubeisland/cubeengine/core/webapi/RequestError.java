@@ -36,6 +36,10 @@ public enum RequestError
         204,
         HttpResponseStatus.BAD_REQUEST,
         "Not all needed parameters where given"),
+    MALFORMED_DATA(
+        205,
+        HttpResponseStatus.BAD_REQUEST,
+        "The request body could not be interpreted as valid JSON code"),
     HANDLER_NOT_IMPLEMENTED(
         301,
         HttpResponseStatus.NOT_IMPLEMENTED,

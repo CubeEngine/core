@@ -1,6 +1,10 @@
 package de.cubeisland.cubeengine.core.webapi;
 
+import org.apache.commons.lang.Validate;
+
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,17 +14,15 @@ import java.util.Map;
  */
 public final class ApiResponse
 {
-    private final Map<String, String> headers;
+    private final Map<String, List<String>> headers;
     private Object content;
 
     /**
-     * Initlaizes the the response with a default serializer
-     *
-     * @param serializer the serializer instance
+     * Initializes the the response
      */
     public ApiResponse()
     {
-        this.headers = new HashMap<String, String>();
+        this.headers = new HashMap<String, List<String>>();
         this.content = null;
     }
 
@@ -30,7 +32,7 @@ public final class ApiResponse
      * @param name the name of the header
      * @return the value of the header
      */
-    public String getHeader(String name)
+    public List<String> getHeader(String name)
     {
         if (name != null)
         {
@@ -48,18 +50,33 @@ public final class ApiResponse
      */
     public ApiResponse setHeader(String name, String value)
     {
-        if (name == null)
-        {
-            throw new IllegalArgumentException("name must not be null!");
-        }
+        Validate.notNull(name, "name must not be null!");
+
         if (value == null)
         {
             this.headers.remove(name);
         }
         else
         {
-            this.headers.put(name, value);
+            List<String> values = new LinkedList<String>();
+            values.add(value);
+            this.headers.put(name, values);
         }
+        return this;
+    }
+
+    public ApiResponse addHeader(String name, String value)
+    {
+        Validate.notNull(name, "The name must not be null!");
+        Validate.notNull(value, "The value must not be null!");
+
+        List<String> values = this.headers.get(name);
+        if (values == null)
+        {
+            this.headers.put(name, values = new LinkedList<String>());
+        }
+        values.add(value);
+
         return this;
     }
 
@@ -68,9 +85,9 @@ public final class ApiResponse
      *
      * @return the header map
      */
-    public Map<String, String> getHeaders()
+    public Map<String, List<String>> getHeaders()
     {
-        return new HashMap<String, String>(this.headers);
+        return this.headers;
     }
 
     /**
@@ -90,11 +107,11 @@ public final class ApiResponse
      * @param headers the header map
      * @return fluent interface
      */
-    public ApiResponse setHeaders(Map<String, String> headers)
+    public ApiResponse setHeaders(Map<String, List<String>> headers)
     {
         if (headers != null)
         {
-            for (Map.Entry<String, String> header : headers.entrySet())
+            for (Map.Entry<String, List<String>> header : headers.entrySet())
             {
                 this.headers.put(header.getKey().toLowerCase(), header.getValue());
             }
