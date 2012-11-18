@@ -90,9 +90,10 @@ public class RocketListener implements Listener, Runnable
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event)
     {
+        /*
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL)
         {
-            User user = this.userManager.getExactUser((Player)event.getEntity());
+            User user = this.userManager.getUser((Player)event.getEntity());
             if(user == null)
             {
                 return;
@@ -104,6 +105,7 @@ public class RocketListener implements Listener, Runnable
                 this.removeInstance(user);
             }
         }
+        */
     }
 
     public void run()
