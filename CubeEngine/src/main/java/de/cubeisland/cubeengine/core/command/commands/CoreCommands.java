@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.module.CoreModule;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.*;
 import de.cubeisland.cubeengine.core.user.User;
+import java.security.BasicPermission;
 
 public class CoreCommands extends ContainerCommand
 {
@@ -35,9 +36,24 @@ public class CoreCommands extends ContainerCommand
     public void setPassword(CommandContext context)
     {
         User sender = context.getSenderAsUser();
-        //TODO nullcheck
-        //TODO set pw for other + perm
-        sender.setPassword(context.getString(0));
+        if (sender == null && !context.hasIndexed(1))
+        {
+            illegalParameter(context, "core", "&cPlayer missing! Can not set password.");
+        }
+        User user = sender;
+        if (context.hasIndexed(2))
+        {
+            if (!CommandPermissions.COMMAND_SETPASSWORD_OTHER.isAuthorized(context.getSender()))
+            {
+                denyAccess(context, "basics", "&cYou are not allowed to change the password of an other user!");
+            }
+            user = context.getUser(1);
+            if (user == null)
+            {
+                blockCommand(context, "core", "&cUser %s not found!", context.getString(1));
+            }
+        }
+        user.setPassword(context.getString(0));
     }
 
     @Command(desc = "Clears your password.",
@@ -49,7 +65,7 @@ public class CoreCommands extends ContainerCommand
     {
         if (context.hasFlag("a"))
         {
-            if (CommandPermissions.COMMAND_CLEARPASS_ALL.isAuthorized(context.getSender()))
+            if (CommandPermissions.COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
             {
                 this.getModule().getUserManager(); //TODO custom query to remove all pw 
                 for (User user : this.getModule().getUserManager().getLoadedUsers())
@@ -64,7 +80,7 @@ public class CoreCommands extends ContainerCommand
         }
         else if (context.hasIndexed(0))
         {
-            if (!CommandPermissions.COMMAND_CLEARPASS_OTHER.isAuthorized(context.getSender()))
+            if (!CommandPermissions.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
                 denyAccess(context, "core", "&cYou are not allowed to clear the password of other users!");
             }
