@@ -313,6 +313,12 @@ public class User extends UserBase implements LinkingModel<Integer>
             CubeEngine.getUserManager().update(this);
         }
     }
+    
+    public void resetPassword()
+    {
+        this.passwd = null;
+        CubeEngine.getUserManager().update(this);
+    }
 
     public boolean checkPassword(String password)
     {
