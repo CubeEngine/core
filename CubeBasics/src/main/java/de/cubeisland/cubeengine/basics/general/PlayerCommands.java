@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.sql.Timestamp;
 import net.minecraft.server.EntityPlayer;
 import org.bukkit.GameMode;
@@ -20,7 +21,6 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class PlayerCommands
 {
@@ -264,10 +264,14 @@ public class PlayerCommands
         @Flag(longName = "lightning", name = "l")
     })
     public void kill(CommandContext context)
-    {//TODO kill a player looking at if possible
-        //TODO kill a player with cool effects :) e.g. lightning
+    {
+        //TODO kill a player looking at if possible
         boolean lightning = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
         boolean force = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+        if (context.hasIndexed(0) || context.hasFlag("a"))
+        {
+            blockCommand(context, "basics", "&eYou need to specify who you want to kill!");
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -384,7 +388,7 @@ public class PlayerCommands
         User sender = um.getExactUser(context.getSender());
         if (sender == null)
         {
-            invalidUsage(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
+            blockCommand(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
         }
         sender.setHealth(0);
         sender.setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, 20));
