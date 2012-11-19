@@ -11,15 +11,26 @@ public class FunConfiguration extends Configuration
     @Comment("Sets the maximum distance of the lightning")
     @Option("lightning.distance")
     public int lightningDistance = 200;
+    
     @Comment("Sets the maximum number of thrown Objects")
     @Option("throw.number")
     public int maxThrowNumber = 20;
     @Comment("Sets the maximum number of fireballs")
     @Option("fireball.number")
     public int maxFireballNumber = 10;
+    
+    @Comment("Sets the maximum amount of changes of day to night and vice versa.")
+    @Option("disco.changes")
+    public int maxDiscoChanges = 10;
+    
+    @Comment("Sets the maximum distance between the mob and the player")
+    @Option("invasion.distance")
+    public int maxInvasionSpawnDistance = 10;
+    
     @Comment("Sets the maximum height a player can jump. Maximum is 100")
     @Option("rocket.height")
     public int maxRocketHeight = 100;
+    
     @Comment("Set the maximum distance of the tnt carpet")
     @Option("nuke.distance")
     public int maxNukeDistance = 50;
