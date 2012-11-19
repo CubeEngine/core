@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.module.CoreModule;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.*;
 import de.cubeisland.cubeengine.core.user.User;
-import java.security.BasicPermission;
 
 public class CoreCommands extends ContainerCommand
 {
@@ -41,7 +40,7 @@ public class CoreCommands extends ContainerCommand
             illegalParameter(context, "core", "&cPlayer missing! Can not set password.");
         }
         User user = sender;
-        if (context.hasIndexed(2))
+        if (context.hasIndexed(1))
         {
             if (!CommandPermissions.COMMAND_SETPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
