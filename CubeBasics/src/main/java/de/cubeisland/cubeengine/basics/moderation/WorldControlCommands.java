@@ -177,10 +177,11 @@ public class WorldControlCommands
         @Flag(longName = "golems", name = "g"),
         @Flag(longName = "animals", name = "a"),
         @Flag(longName = "force", name = "f"), // all previous flags
-        @Flag(longName = "lightning", name = "l")
+        @Flag(longName = "lightning", name = "l"),
+        @Flag(longName = "all", name = "all")
     }, params = @Param(names = {
         "choose", "c"
-    }, type = EntityType.class), usage = "[radius] [world] [choose|c <entityType>]")
+    }, type = String.class), usage = "[radius] [world] [choose|c <entityType>]")
     public void butcher(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -199,22 +200,29 @@ public class WorldControlCommands
         if (context.hasIndexed(0))
         {
             radius = context.getIndexed(0, Integer.class, 0);
-            if (radius <= 0)
+            if (radius < 0)
             {
-                illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
+                if (!(radius == -1 && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender())))
+                {
+                    illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
+                }
             }
+        }
+        if (context.hasFlag("all") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender()))
+        {
+            radius = -1;
         }
         boolean lightning = false;
         if (context.hasFlag("l") && BasicsPerm.COMMAND_BUTCHER_FLAG_LIGHTNING.isAuthorized(context.getSender()))
         {
             lightning = true;
         }
-        List<Entity> list = new ArrayList<Entity>(); // only living entities
+        List<Entity> list = new ArrayList<Entity>();
         for (Entity entity : loc.getWorld().getEntities())
         {
             if (entity instanceof LivingEntity)
             {
-                list.add(entity);
+                list.add(entity); // only living entities
             }
         }
         if (context.hasNamed("c"))
@@ -232,20 +240,21 @@ public class WorldControlCommands
         }
         else
         {
-            List<Entity> filteredList = new ArrayList<Entity>(); // only living entities
+            List<Entity> filteredList = new ArrayList<Entity>();
             for (Entity entity : list)
             {
                 if (entity instanceof Monster
-                || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))//TODO perm
-                || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))//TODO perm
-                || (context.hasFlag("a") && entity instanceof Animals && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender())))//TODO perm
+                || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
+                || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
+                || (context.hasFlag("a") && entity instanceof Animals && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender())))
                 {
                     filteredList.add(entity);
                 }
             }
             removed = this.removeEntityType(filteredList, loc, radius, null, null, lightning);
         }
-        context.sendMessage("basics", "&aButchered &e%d &aliving entities!", removed);
+        
+        context.sendMessage("basics", removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
     }
 
     private int removeEntityType(List<Entity> list, Location loc, int radius, EntityType type, Material itemtype, boolean lightning)

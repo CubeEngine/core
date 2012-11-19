@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.util.Pair;
 
 public class IntReader extends ArgumentReader<Integer>
 {
+
     public IntReader()
     {
         super(Integer.class);
@@ -18,11 +19,11 @@ public class IntReader extends ArgumentReader<Integer>
         try
         {
             Integer value = Integer.parseInt(num);
-            return new Pair<Integer, Integer>(0, value);
+            return new Pair<Integer, Integer>(1, value);
         }
         catch (NumberFormatException e)
         {
-            return new Pair<Integer, Integer>(0, null);
+            throw new InvalidArgumentException("Could not parse " + args[0] + "to Integer!");
         }
     }
 }

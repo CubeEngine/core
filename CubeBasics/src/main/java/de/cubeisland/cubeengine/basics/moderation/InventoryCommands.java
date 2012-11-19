@@ -94,6 +94,7 @@ public class InventoryCommands
     }, desc = "Clears the inventory", usage = "[player]", flags = {
         @Flag(longName = "removeArmor", name = "ra")
     }, max = 1)
+    @SuppressWarnings("deprecation")
     public void clearinventory(CommandContext context)
     {
         User sender = context.getSenderAsUser();

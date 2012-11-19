@@ -3,6 +3,9 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidSender;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Pair;
@@ -12,10 +15,6 @@ import java.util.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidSender;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
-
 /**
  * This class holds all the information about a single command call.
  *
@@ -23,6 +22,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class CommandContext
 {
+
     private final Core core;
     private final CommandSender sender;
     private final CubeCommand command;
@@ -38,7 +38,7 @@ public class CommandContext
      * Initializes the CommandContext object with an array of arguments
      *
      * @param baseCommand the base command
-     * @param baseLabel   the base label
+     * @param baseLabel the base label
      * @param commandLine the arguments
      * @throws IllegalArgumentException if the args array is empty
      */
@@ -79,7 +79,7 @@ public class CommandContext
             if (!"".equals(flag.longName()))
             {
                 flagLongnameMap.
-                    put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().
+                        put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().
                         toLowerCase(Locale.ENGLISH));
             }
         }
@@ -114,10 +114,11 @@ public class CommandContext
             }
         }
 
-        for (int offset = 0; offset < commandLine.length; ++offset)
+        for (int offset = 0; offset < commandLine.length;)
         {
             if (commandLine[offset].isEmpty())
             {
+                offset++;
                 continue; // part is empty, ignoring...
             }
             if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
@@ -129,6 +130,7 @@ public class CommandContext
                 }
                 if (flag.isEmpty()) // is there still a name?
                 {
+                    offset++;
                     this.indexedParams.add(commandLine[offset]);
                     continue;
                 }
@@ -148,11 +150,11 @@ public class CommandContext
                 {
                     this.indexedParams.add(commandLine[offset]); // flag not found, adding it as an indexed param
                 }
+                offset++;
             }
             else
             //else named param or indexed param
             {
-
                 String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
                 // has alias named Param ?
                 if (paramAliasMap.containsKey(paramName))
@@ -188,7 +190,8 @@ public class CommandContext
                         this.indexedParams.add(pair.getRight());// added indexed param
                     }
                     catch (InvalidArgumentException ignored)
-                    {}
+                    {
+                    }
                 }
             }
         }
@@ -315,7 +318,7 @@ public class CommandContext
      * Returns a value of a named parameter as a String
      *
      * @param name the parameter name
-     * @param i    the value index
+     * @param i the value index
      * @return the String or null if not found
      */
     public String getString(String name)
@@ -328,7 +331,7 @@ public class CommandContext
      * default value
      *
      * @param name the parameter name
-     * @param def  the default value
+     * @param def the default value
      * @return the String or the default value if not found
      */
     public String getString(String name, String def)
@@ -339,7 +342,7 @@ public class CommandContext
     /**
      * Returns the requested value as a String
      *
-     * @param i   the index of the flag
+     * @param i the index of the flag
      * @param def the default value
      * @return the value as String or the given default value
      */
@@ -377,7 +380,7 @@ public class CommandContext
      * Gets a named parameter as a User
      *
      * @param name the parameter name
-     * @param i    the value index
+     * @param i the value index
      * @return the User or null if not found
      */
     public User getUser(String name)
@@ -399,8 +402,8 @@ public class CommandContext
      * Sends a localized message to the command sender
      *
      * @param category the message category
-     * @param message  the message
-     * @param params   the message parameters
+     * @param message the message
+     * @param params the message parameters
      */
     public void sendMessage(String category, String message, Object... params)
     {
@@ -432,8 +435,8 @@ public class CommandContext
      * with the specified message
      *
      * @param category the category of the message
-     * @param message  the message
-     * @param params   the message parameters
+     * @param message the message
+     * @param params the message parameters
      * @return the User
      * @throws IllegalUsageException if the CommandSender is not a User
      */
@@ -481,12 +484,12 @@ public class CommandContext
     /**
      * Returns a indexed parameters or a default value if not found
      *
-     * @param <T>   the type of the value
+     * @param <T> the type of the value
      * @param index the index
-     * @param type  the Class of the value
-     * @param def   the default value
+     * @param type the Class of the value
+     * @param def the default value
      * @return returns the requested value or the specified default value if the
-     *         conversion failt or the parameters was not available
+     * conversion failt or the parameters was not available
      */
     public <T> T getIndexed(int index, Class<T> type, T def)
     {
@@ -501,12 +504,12 @@ public class CommandContext
     /**
      * Returns a value of a indexed parameter
      *
-     * @param <T>   the type of the value
+     * @param <T> the type of the value
      * @param index the index of the value
-     * @param type  the Class of the value
+     * @param type the Class of the value
      * @return the value
      * @throws ConversionException if the value could not be converter to the
-     *                             requested type
+     * requested type
      */
     public <T> T getIndexed(int index, Class<T> type)
     {
@@ -570,10 +573,10 @@ public class CommandContext
     /**
      * Returns a value of a named parameter
      *
-     * @param <T>  the type of the value
+     * @param <T> the type of the value
      * @param name the name of the parameters
      * @param type the Class of the value
-     * @param i    the index of the value
+     * @param i the index of the value
      * @return the value or null if not available
      */
     public <T> T getNamed(String name, Class<T> type)
@@ -585,7 +588,7 @@ public class CommandContext
         }
         if (type.isAssignableFrom(obj.getClass()))
         {
-            return (T)obj;
+            return (T) obj;
         }
         return null;
     }
@@ -593,10 +596,10 @@ public class CommandContext
     /**
      * Returns a value of a named parameter or a default value if not found
      *
-     * @param <T>  the type of the value
+     * @param <T> the type of the value
      * @param name the name of the parameters
      * @param type the Class of the value
-     * @param def  the default value
+     * @param def the default value
      * @return the value or null if not available
      */
     public <T> T getNamed(String name, Class<T> type, T def)

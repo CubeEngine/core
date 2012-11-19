@@ -103,16 +103,6 @@ public class InformationCommands
         sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
     }
 
-    @Command(desc = "Displays the message of the day!")
-    public void motd(CommandContext context)
-    {
-        context.sendMessage(basics.getConfiguration().motd);//TODO translatable other lang in config else default
-        /*
-         * default: 'Welcome on our Server! Have fun!'
-         * de_DE: 'Willkommen auf unserem Server! Viel Spaß'
-         */
-    }
-
     @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags = {
         @Flag(longName = "entity", name = "e"),
         @Flag(longName = "mob", name = "m")

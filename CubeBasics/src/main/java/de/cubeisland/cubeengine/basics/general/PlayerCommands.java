@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.sql.Timestamp;
 import net.minecraft.server.EntityPlayer;
 import org.bukkit.GameMode;
@@ -20,7 +21,6 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class PlayerCommands
 {
@@ -254,16 +254,24 @@ public class PlayerCommands
         }
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "kill", "slay"
-    }, desc = "Kills a player", usage = "<player>|-a", flags = {
-        @Flag(longName = "all", name = "a")
+    }, desc = "Kills a player", usage = "<player>|-a", flags =
+    {
+        @Flag(longName = "all", name = "a"),
+        @Flag(longName = "force", name = "f"),
+        @Flag(longName = "lightning", name = "l")
     })
     public void kill(CommandContext context)
-    {//TODO kill a player looking at if possible
-        //TODO kill a player with cool effects :) e.g. lightning
-        //TODO prevent if in godmode 
-        //TODO force flag
+    {
+        //TODO kill a player looking at if possible
+        boolean lightning = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+        if (context.hasIndexed(0) || context.hasFlag("a"))
+        {
+            blockCommand(context, "basics", "&eYou need to specify who you want to kill!");
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -278,9 +286,14 @@ public class PlayerCommands
             {
                 illegalParameter(context, "core", "&2%s &eis currently not online!", user.getName());
             }
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user))
+            if (!force && BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user))
             {
                 context.sendMessage("basics", "&cYou cannot kill that player!");
+                return;
+            }
+            if (!force && this.basics.getBasicUserManager().getBasicUser(user).godMode)
+            {
+                context.sendMessage("basics", "&eThis player is in godmode you cannot kill him!");
                 return;
             }
         }
@@ -298,12 +311,20 @@ public class PlayerCommands
                 }
                 if (!player.getName().equals(context.getSender().getName()))
                 {
+                    if (lightning)
+                    {
+                        user.getWorld().strikeLightningEffect(user.getLocation());
+                    }
                     user.setHealth(0);
                 }
             }
         }
         else
         {
+            if (lightning)
+            {
+                user.getWorld().strikeLightningEffect(user.getLocation());
+            }
             user.setHealth(0);
             //TODO broadcast alternative Deathmsgs
             context.sendMessage("basics", "&aYou killed &2%s&a!", user.getName());
@@ -367,7 +388,7 @@ public class PlayerCommands
         User sender = um.getExactUser(context.getSender());
         if (sender == null)
         {
-            invalidUsage(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
+            blockCommand(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
         }
         sender.setHealth(0);
         sender.setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, 20));

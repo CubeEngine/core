@@ -18,11 +18,11 @@ public class LongReader extends ArgumentReader<Long>
         try
         {
             Long value = Long.parseLong(num);
-            return new Pair<Integer, Long>(0, value);
+            return new Pair<Integer, Long>(1, value);
         }
         catch (NumberFormatException e)
         {
-            return new Pair<Integer, Long>(0, null);
+            throw new InvalidArgumentException("Could not parse " + args[0] + " to Long!");
         }
     }
 }

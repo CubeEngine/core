@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import org.bukkit.block.BlockFace;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -288,6 +289,11 @@ public class User extends UserBase implements LinkingModel<Integer>
             location = location.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0); // If would fall in lava tp on highest position.
             // If there is still lava then you shall burn!
         }
+        if (location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FENCE)
+        || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
+        {
+            location.add(0, 2, 0);
+        }
         this.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
@@ -306,6 +312,12 @@ public class User extends UserBase implements LinkingModel<Integer>
             this.passwd = hasher.digest(password.getBytes());
             CubeEngine.getUserManager().update(this);
         }
+    }
+    
+    public void resetPassword()
+    {
+        this.passwd = null;
+        CubeEngine.getUserManager().update(this);
     }
 
     public boolean checkPassword(String password)

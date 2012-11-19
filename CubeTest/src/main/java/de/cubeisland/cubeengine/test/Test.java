@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.test;
 
-import com.avaje.ebean.validation.AssertTrue;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
@@ -20,6 +19,14 @@ import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.Packet0KeepAlive;
+import net.minecraft.server.ServerConfigurationManager;
+import org.apache.commons.lang.Validate;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
 import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -29,13 +36,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.Packet0KeepAlive;
-import net.minecraft.server.ServerConfigurationManager;
-import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.GREATER;
 
@@ -258,24 +258,24 @@ public class Test extends Module
 
     private void testMatchers()
     {
-        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infinity"));
-        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("infini"));
-        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("hablablubb") + " is null");
-        this.getLogger().debug(EnchantMatcher.get().matchEnchantment("protect"));
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stone").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("stoned").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("hablablubb") + " is null");
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wool:red").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:15").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("35:red").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("wood:birch").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("leves:pine").serialize());
-        this.getLogger().debug(MaterialMatcher.get().matchItemStack("spawnegg:pig").serialize());
-        this.getLogger().debug(EntityMatcher.get().matchEntity("pig"));
-        this.getLogger().debug(EntityMatcher.get().matchMonster("zombi"));
-        this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("shep"));
-        this.getLogger().debug(EntityMatcher.get().matchFriendlyMob("ghast") + " is null");
+        this.getLogger().debug(String.valueOf(EnchantMatcher.get().matchEnchantment("infinity")));
+        this.getLogger().debug(String.valueOf(EnchantMatcher.get().matchEnchantment("infini")));
+        this.getLogger().debug(String.valueOf(EnchantMatcher.get().matchEnchantment("hablablubb")) + " is null");
+        this.getLogger().debug(String.valueOf(EnchantMatcher.get().matchEnchantment("protect")));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("stone").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("stoned").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("hablablubb")) + " is null");
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("wool:red").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("35").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("35:15").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("35:red").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("wood:birch").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("leves:pine").serialize()));
+        this.getLogger().debug(String.valueOf(MaterialMatcher.get().matchItemStack("spawnegg:pig").serialize()));
+        this.getLogger().debug(String.valueOf(EntityMatcher.get().matchEntity("pig")));
+        this.getLogger().debug(String.valueOf(EntityMatcher.get().matchMonster("zombi")));
+        this.getLogger().debug(String.valueOf(EntityMatcher.get().matchFriendlyMob("shep")));
+        this.getLogger().debug(String.valueOf(EntityMatcher.get().matchFriendlyMob("ghast")) + " is null");
     }
 
     private void testsomeUtils()

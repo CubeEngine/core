@@ -23,11 +23,11 @@ public class FloatReader extends ArgumentReader<Float>
         try
         {
             Float value = Float.parseFloat(num);
-            return new Pair<Integer, Float>(0, value);
+            return new Pair<Integer, Float>(1, value);
         }
         catch (NumberFormatException e)
         {
-            return new Pair<Integer, Float>(0, null);
+            throw new InvalidArgumentException("Could not parse " + args[0] + " to Float!");
         }
     }
 }
