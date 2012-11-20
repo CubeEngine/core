@@ -8,18 +8,15 @@ import de.cubeisland.cubeengine.fun.commands.PlayerCommands;
 import de.cubeisland.cubeengine.fun.commands.RocketCommand;
 import de.cubeisland.cubeengine.fun.commands.ThrowCommands;
 import de.cubeisland.cubeengine.fun.listeners.NukeListener;
-import de.cubeisland.cubeengine.fun.listeners.RocketListener;
 
 public class Fun extends Module
 {
     private FunConfiguration config;
-    private RocketListener rocketListener;
     private NukeListener nukeListener;
 
     @Override
     public void onEnable()
     {
-        this.rocketListener = new RocketListener(this);
         this.nukeListener = new NukeListener();
 
         this.getCore().getFileManager().dropResources(FunResource.values());
@@ -30,13 +27,7 @@ public class Fun extends Module
         this.registerCommands(new DiscoCommand(this));
         this.registerCommands(new InvasionCommand(this));
         this.registerCommands(new RocketCommand(this));
-        this.registerListener(this.rocketListener);
         this.registerListener(this.nukeListener);
-    }
-
-    public RocketListener getRocketListener()
-    {
-        return this.rocketListener;
     }
 
     public NukeListener getNukeListener()
