@@ -72,7 +72,6 @@ public class RocketCommand
         private final UserManager userManager;
 
         private final Set<RocketCMDInstance> instances;
-        private final Set<RocketCMDInstance> garbageCollection;
 
         private int taskid = -1;
 
@@ -80,7 +79,6 @@ public class RocketCommand
         {
             this.userManager = module.getUserManager();
             this.instances = new HashSet<RocketCMDInstance>();
-            this.garbageCollection = new HashSet<RocketCMDInstance>();
         }
 
         public void addInstance(User user, int height)
@@ -125,21 +123,13 @@ public class RocketCommand
             {
                 if (instance.getName().equals(user.getName()))
                 {
-                    if (this.garbageCollection.contains(instance))
+                    this.instances.remove(instance);
+
+                    if(instances.isEmpty())
                     {
-                        this.instances.remove(instance);
-                        this.garbageCollection.remove(instance);
-                        
-                        if(instances.isEmpty())
-                        {
-                            module.getTaskManger().cancelTask(module, taskid);
-                            taskid = -1;
-                            user.sendMessage("task deleted");
-                        }
-                    }
-                    else
-                    {
-                        this.garbageCollection.add(instance);
+                        module.getTaskManger().cancelTask(module, taskid);
+                        taskid = -1;
+                        user.sendMessage("task deleted");
                     }
                 }
             }
@@ -191,9 +181,10 @@ public class RocketCommand
                     this.removeInstance(user);
                 }
                 
-                if( instance.getNumberOfAirBlocksUnderFeets() < instance.getHeight() - 1 && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getBack())
+                if( instance.getNumberOfAirBlocksUnderFeets() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getBack())
                 {
-                    user.setVelocity(new Vector(0, (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeets()) / 10, 0));
+                    double y = (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeets()) / 10;
+                    user.setVelocity(new Vector(0, (y < 9) ? (y + 1) : y, 0));
                 }
                 else
                 {
