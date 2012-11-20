@@ -55,7 +55,7 @@ public class RocketCommand
             illegalParameter(context, "core", "User not found!");
         }
 
-        if (height > 100)
+        if (height > this.module.getConfig().maxRocketHeight)
         {
             illegalParameter(context, "fun", "Do you never wanna see %s again?", user.getName());
         }
@@ -90,7 +90,6 @@ public class RocketCommand
                 if(taskid == -1)
                 {
                     this.taskid = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 2);
-                    user.sendMessage("task created");
                 }
             }
         }
@@ -129,7 +128,6 @@ public class RocketCommand
                     {
                         module.getTaskManger().cancelTask(module, taskid);
                         taskid = -1;
-                        user.sendMessage("task deleted");
                     }
                 }
             }
@@ -176,17 +174,18 @@ public class RocketCommand
 //                    user.setFireTicks(20 * 3);
 //                }
 
-                if ( instance.getNumberOfAirBlocksUnderFeets() == 0 && instance.getBack())
+                if ( instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getBack())
                 {
                     this.removeInstance(user);
                 }
                 
-                if( instance.getNumberOfAirBlocksUnderFeets() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getBack())
+                if( instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getBack())
                 {
-                    double y = (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeets()) / 10;
+                    double y = (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeet()) / 10;
+                    y = (y < 10) ? y : 10;
                     user.setVelocity(new Vector(0, (y < 9) ? (y + 1) : y, 0));
                 }
-                else
+                else if(!instance.getBack())
                 {
                     instance.setBack();
                 }
@@ -236,7 +235,7 @@ public class RocketCommand
                 Location location = this.getUser().getLocation().add(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while (location.getBlock().getType() == Material.AIR || location.getY() < location.getWorld().getMaxHeight())
+                while (location.getBlock().getType() == Material.AIR && location.getY() < location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.add(0, 1, 0);
@@ -245,12 +244,12 @@ public class RocketCommand
                 return numberOfAirBlocks;
             }
             
-            public int getNumberOfAirBlocksUnderFeets()
+            public int getNumberOfAirBlocksUnderFeet()
             {
                 Location location = this.getUser().getLocation().subtract(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while (location.getBlock().getType() == Material.AIR)
+                while (location.getBlock().getType() == Material.AIR || location.getY() > location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.subtract(0, 1, 0);
