@@ -1,12 +1,14 @@
 package de.cubeisland.cubeengine.fun.listeners;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
-import de.cubeisland.cubeengine.fun.commands.help.RocketCMDInstance;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 public class RocketListener implements Listener, Runnable
 {
     private final UserManager userManager;
+    
     private final Set<RocketCMDInstance> instances;
     private final Set<RocketCMDInstance> garbageCollection;
 
@@ -26,11 +29,11 @@ public class RocketListener implements Listener, Runnable
         this.garbageCollection = new HashSet<RocketCMDInstance>();
     }
 
-    public void addInstance(User user, int ticks)
+    public void addInstance(User user, int height)
     {
         if (!this.contains(user))
         {
-            instances.add(new RocketCMDInstance(user.getName(), ticks));
+            instances.add(new RocketCMDInstance(user.getName(), height));
         }
     }
 
@@ -83,7 +86,6 @@ public class RocketListener implements Listener, Runnable
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event)
     {
-        /*
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL)
         {
             User user = this.userManager.getExactUser((Player)event.getEntity());
@@ -98,7 +100,6 @@ public class RocketListener implements Listener, Runnable
                 this.removeInstance(user);
             }
         }
-        */
     }
 
     @Override
@@ -118,11 +119,63 @@ public class RocketListener implements Listener, Runnable
                 user.setFireTicks(20 * 3);
             }
 
-            instance.addTick();
-            if (instance.getTicks() >= instance.getMaxTicks() || instance.getNumberOfAirBlocksUnderFeets() == 0)
+            if ( instance.getNumberOfAirBlocksUnderFeets() == 0)
             {
                 this.removeInstance(user);
             }
+        }
+    }
+    
+    private class RocketCMDInstance
+    {
+        private final String name;
+        private final int height;
+        private boolean back;
+        
+        private RocketCMDInstance(String name, int height) 
+        {
+            this.name = name;
+            this.height = height;
+            this.back = false;
+        }
+        
+        public void setBack()
+        {
+            this.back = true;
+        }
+        
+        public boolean getBack()
+        {
+            return this.back;
+        }
+        
+        public int getHeight()
+        {
+            return this.height;
+        }
+        
+        public User getUser()
+        {
+            return CubeEngine.getUserManager().getUser(name, true);
+        }
+        
+        public String getName()
+        {
+            return this.name;
+        }
+        
+        public int getNumberOfAirBlocksUnderFeets()
+        {
+            Location location = this.getUser().getLocation().subtract(0, 1, 0);
+            int numberOfAirBlocks = 0;
+
+            while (location.getBlock().getType() == Material.AIR)
+            {
+                numberOfAirBlocks++;
+                location.subtract(0, 1, 0);
+            }
+
+            return numberOfAirBlocks;
         }
     }
 }
