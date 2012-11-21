@@ -194,7 +194,7 @@ public class WorldControlCommands
     {
         User sender = context.getSenderAsUser();
         Location loc;
-        int radius = config.removeCmdDefaultRadius;//TODO config for butcher
+        int radius = config.butcherCmdDefaultRadius;
         int removed;
         if (sender == null)
         {

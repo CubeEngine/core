@@ -324,7 +324,6 @@ public class PlayerCommands
                 user.getWorld().strikeLightningEffect(user.getLocation());
             }
             user.setHealth(0);
-            //TODO broadcast alternative Deathmsgs
             context.sendMessage("basics", "&aYou killed &2%s&a!", user.getName());
         }
     }

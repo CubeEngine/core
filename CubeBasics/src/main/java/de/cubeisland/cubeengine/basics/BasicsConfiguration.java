@@ -20,6 +20,8 @@ public class BasicsConfiguration extends Configuration
     public int spawnmobLimit = 20;
     @Option("commands.remove-defaultradius")
     public int removeCmdDefaultRadius = 20;
+    @Option("commands.butcher-defaultradius")
+    public int butcherCmdDefaultRadius = 20;
     @Comment("The world to teleport to when using /spawn"
         + "\nUse {} if you want to use the spawn of the world the player is in.")
     @Option("mainworld")

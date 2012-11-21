@@ -24,7 +24,7 @@ public class Kit
     private String name;
     private ItemStack[] items;
     private boolean giveKitOnFirstJoin;
-    private int limitUsagePerPlayer; // TODO good way to do this?
+    private int limitUsagePerPlayer; // TODO will need its own db-table for this
     private long limitUsageDelay;
     private Permission permission;
     private String customMessage;

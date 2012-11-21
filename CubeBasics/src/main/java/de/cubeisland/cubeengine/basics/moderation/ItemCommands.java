@@ -105,7 +105,6 @@ public class ItemCommands
     @SuppressWarnings("deprecation")
     public void headchange(CommandContext context)
     {
-        //TODO later listener to drop the custom heads (perhaps bukkit wil fix it)
         String name = context.getString(0);
         User sender = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?");
         CraftItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
