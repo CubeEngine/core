@@ -1,21 +1,17 @@
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.bukkit.BookItem;
+import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
-
-class RuleBookListener implements Listener, Runnable
+class RuleBookListener implements Listener
 {
-    private static String playerName = null;
     Rulebook module;
 
     public RuleBookListener(Rulebook module)
@@ -24,37 +20,25 @@ class RuleBookListener implements Listener, Runnable
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event)
+    public void onPlayerLanguageReceived(PlayerLanguageReceivedEvent event)
     {
-        Player player = event.getPlayer();
-        if (!player.hasPlayedBefore())
+        User user = this.module.getUserManager().getExactUser(event.getPlayer());
+        if (!user.hasPlayedBefore())
         {
-            playerName = player.getName();
-            player.getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.module.getCore(), this, 15);
-        }
-    }
-
-    @Override
-    public void run()
-    {
-        if (playerName != null)
-        {
-            User user = this.module.getCore().getUserManager().getUser(playerName, true);
             String language = user.getLanguage();
-
-            if (!this.module.getConfig().getLanguages().contains(language))
-            {
-                language = this.module.getCore().getI18n().getDefaultLanguage();
-            }
-
-            BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
-
-            ruleBook.setAuthor(Bukkit.getServerName());
-            ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
-            ruleBook.setPages(this.module.getConfig().getPages(language));
-
-            user.setItemInHand(ruleBook.getItemStack());
-            playerName = null;
+            
+//            if (!this.module.getConfig().getLanguages().contains(language))
+//            {
+//                language = this.module.getCore().getI18n().getDefaultLanguage();
+//            }
+//            
+//            BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
+//
+//            ruleBook.setAuthor(Bukkit.getServerName());
+//            ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
+//            ruleBook.setPages(this.module.getConfig().getPages(language));
+//            
+//            user.setItemInHand(ruleBook.getItemStack());
         }
     }
 }
