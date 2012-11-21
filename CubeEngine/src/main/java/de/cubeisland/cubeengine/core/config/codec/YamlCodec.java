@@ -4,12 +4,12 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -50,7 +50,7 @@ public class YamlCodec extends ConfigurationCodec
         }
         catch (ConversionException ex)
         {
-            CubeEngine.getLogger().log(Level.WARNING, "Invalid revision in a configuration!", ex);
+            CubeEngine.getLogger().log(LogLevel.WARNING, "Invalid revision in a configuration!", ex);
         }
         Map<String, Object> resultmap = new LinkedHashMap<String, Object>();
         for (Object key : map.keySet())
