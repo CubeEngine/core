@@ -25,12 +25,10 @@ import org.bukkit.entity.Player;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import java.util.Collection;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 
-// TODO display biome
 public class InformationCommands
 {
     private Basics basics;
@@ -40,48 +38,51 @@ public class InformationCommands
         this.basics = basics;
     }
 
+    @Command(desc = "Displays the Biome-Type you are standing in.")
+    public void biome(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&eBiome: RL");
+        Biome biome = sender.getWorld().getBiome(sender.getLocation().getBlockX(), sender.getLocation().getBlockZ());
+        sender.sendMessage("basics", "&eCurrent Biome: &6%s", biome.name());
+    }
+
+    public enum Direction
+    {
+        N(23),
+        NE(68),
+        E(113),
+        SE(158),
+        S(203),
+        SW(248),
+        W(293),
+        NW(338),;
+        private final int dir;
+
+        private Direction(int dir)
+        {
+            this.dir = dir;
+        }
+
+        public static Direction matchDirection(int dir)
+        {
+            for (Direction direction : values())
+            {
+                if (dir < direction.dir)
+                {
+                    return direction;
+                }
+            }
+            return Direction.N;
+        }
+    }
+
     @Command(desc = "Displays the direction in which you are looking.")
     public void compass(CommandContext context)
-    {//TODO enum of dir
+    {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
-        int direction = (int)(sender.getLocation().getYaw() + 180 + 360) % 360;
+        int direction = (int) (sender.getLocation().getYaw() + 180 + 360) % 360;
         String dir;
-        if (direction < 23)
-        {
-            dir = "N";
-        }
-        else if (direction < 68)
-        {
-            dir = "NE";
-        }
-        else if (direction < 113)
-        {
-            dir = "E";
-        }
-        else if (direction < 158)
-        {
-            dir = "SE";
-        }
-        else if (direction < 203)
-        {
-            dir = "S";
-        }
-        else if (direction < 248)
-        {
-            dir = "SW";
-        }
-        else if (direction < 293)
-        {
-            dir = "W";
-        }
-        else if (direction < 338)
-        {
-            dir = "NW";
-        }
-        else
-        {
-            dir = "N";
-        }
+        dir = Direction.matchDirection(direction).name();
         sender.sendMessage("basics", "&eYou are looking to &6%s&e!", _(sender, "basics", dir));
     }
 
@@ -107,7 +108,8 @@ public class InformationCommands
         sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
     }
 
-    @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags = {
+    @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags =
+    {
         @Flag(longName = "entity", name = "e"),
         @Flag(longName = "mob", name = "m")
     })
@@ -179,7 +181,7 @@ public class InformationCommands
                     }
                     else if (entity instanceof Item)
                     {
-                        key = "&7" + MaterialMatcher.get().getNameFor(((Item)entity).getItemStack());
+                        key = "&7" + MaterialMatcher.get().getNameFor(((Item) entity).getItemStack());
                     }
                     else
                     {
@@ -227,26 +229,27 @@ public class InformationCommands
     {
         if (entity instanceof Player)
         {
-            list.add(String.format("&2%s&f (&e%dm&f)", ((Player)entity).getName(), (int)distance));
+            list.add(String.format("&2%s&f (&e%dm&f)", ((Player) entity).getName(), (int) distance));
         }
         else if (entity instanceof LivingEntity)
         {
-            list.add(String.format("&3%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+            list.add(String.format("&3%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int) distance));
         }
         else
         {
             if (entity instanceof Item)
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", MaterialMatcher.get().getNameFor(((Item)entity).getItemStack()), (int)distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", MaterialMatcher.get().getNameFor(((Item) entity).getItemStack()), (int) distance));
             }
             else
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int) distance));
             }
         }
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "ping", "pong"
     }, desc = "Pong!", max = 0)
     public void ping(CommandContext context)
@@ -269,7 +272,7 @@ public class InformationCommands
     {
         //Uptime:
         Duration dura = new Duration(new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).getTime(), System.currentTimeMillis());
-        context.sendMessage("basics", "&6Uptime: &a%s",dura.format("%www %ddd %hhh %mmm %sss"));
+        context.sendMessage("basics", "&6Uptime: &a%s", dura.format("%www %ddd %hhh %mmm %sss"));
         //TPS:
         float tps = LagTimer.getTimer().getAverageTPS();
         String color = tps == 20 ? "&a" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
@@ -309,15 +312,15 @@ public class InformationCommands
             String type = world.getEnvironment().name();
             int loadedChunks = world.getLoadedChunks().length;
             int entities = world.getEntities().size();
-            context.sendMessage("basics", "&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type,loadedChunks, entities);
-            
+            context.sendMessage("basics", "&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type, loadedChunks, entities);
+
         }
     }
 
     @Command(desc = "Displays your current language settings.", max = 0)
-    public void language(CommandContext context)
+    public void language(CommandContext context) //TODO move to Core
     {
         context.sendMessage("basics", "&eYour language is &6%s&e.",
-            context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
+                context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
     }
 }
