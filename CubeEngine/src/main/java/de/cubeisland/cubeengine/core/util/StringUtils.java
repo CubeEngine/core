@@ -193,7 +193,8 @@ public final class StringUtils
         {
             unitSuffix = "m";
         }
-        switch (unitSuffix.charAt(0)) {
+        switch (unitSuffix.charAt(0))
+        {
             case 'y':
             case 'Y':
                 time *= 365;

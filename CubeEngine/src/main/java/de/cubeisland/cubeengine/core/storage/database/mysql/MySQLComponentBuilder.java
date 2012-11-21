@@ -109,7 +109,8 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     @Override
     public This is(Integer operation)
     {
-        switch (operation) {
+        switch (operation)
+        {
             case 1:
                 this.query.append('=');
                 break;

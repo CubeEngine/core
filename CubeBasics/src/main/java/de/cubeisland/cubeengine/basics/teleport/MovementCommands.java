@@ -119,7 +119,8 @@ public class MovementCommands
         context.sendMessage("basics", "&aDescended a level!");
         TeleportCommands.teleport(sender, loc, true, false);
     }
-//TODO through cmd
+
+    //TODO through cmd
     @Command(desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
     {

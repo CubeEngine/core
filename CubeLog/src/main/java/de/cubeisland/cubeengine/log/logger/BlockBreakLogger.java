@@ -32,7 +32,8 @@ public class BlockBreakLogger extends
         {
             this.log(PLAYER, event.getPlayer(), block.getState());
         }
-        switch (event.getBlock().getRelative(BlockFace.UP).getType()) {
+        switch (event.getBlock().getRelative(BlockFace.UP).getType())
+        {
             case WOODEN_DOOR:
             case IRON_DOOR:
             case SNOW:

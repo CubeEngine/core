@@ -337,8 +337,6 @@
                                 <phase>initialize</phase>
                                 <goals>
                                     <goal>display-plugin-updates</goal>
-                                    <goal>plugin-updates-report</goal>
-                                    <goal>update-parent</goal>
                                 </goals>
                             </execution>
                         </executions>

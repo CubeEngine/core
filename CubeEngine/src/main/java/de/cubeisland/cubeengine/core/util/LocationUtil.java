@@ -24,8 +24,8 @@ public class LocationUtil
         {
             loc.add(v);
             if (loc.distanceSquared(originalLoc) > 200 * 200//more than 200 blocks away
-                    || loc.getY() < 0 //below world
-                    || loc.getY() > loc.getWorld().getMaxHeight()) //above world 
+                || loc.getY() < 0 //below world
+                || loc.getY() > loc.getWorld().getMaxHeight()) //above world 
             {
                 return null;
             }
@@ -56,7 +56,8 @@ public class LocationUtil
                     return null;
                 }
             }
-            else // if Type is AIR
+            else
+            // if Type is AIR
             {
                 if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall)
                 {

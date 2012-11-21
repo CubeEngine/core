@@ -188,7 +188,8 @@ public class MaterialMatcher
         }
         catch (NumberFormatException e)
         { // check for special cases
-            switch (item.getType()) {
+            switch (item.getType())
+            {
                 case WOOD:
                 case LOG:
                 case LEAVES:

@@ -21,7 +21,7 @@ public class CoreCommands extends ContainerCommand
     public CoreCommands(Core core)
     {
         super(CoreModule.get(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
-        this.core = (BukkitCore) core;
+        this.core = (BukkitCore)core;
     }
 
     @Command(desc = "Disables the CubeEngine")
@@ -30,12 +30,9 @@ public class CoreCommands extends ContainerCommand
         this.core.getServer().getPluginManager().disablePlugin(this.core);
     }
 
-    @Command(
-    names= {"setpassword","setpw"},
-    desc = "Sets your password.",
-    min = 1,
-    max = 2,
-    usage = "<password> [player]")
+    @Command(names = {
+        "setpassword", "setpw"
+    }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
     public void setPassword(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -60,13 +57,9 @@ public class CoreCommands extends ContainerCommand
         context.sendMessage("core", "&aPassword set!");
     }
 
-    @Command(
-    names={"clearpassword","clearpw"},
-    desc = "Clears your password.",
-    max = 1,
-    usage = "[<player>|-a]",
-    flags =
-    @Flag(longName = "all", name = "a"))
+    @Command(names = {
+        "clearpassword", "clearpw"
+    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags = @Flag(longName = "all", name = "a"))
     public void clearPassword(CommandContext context)
     {
         User user;
@@ -125,7 +118,7 @@ public class CoreCommands extends ContainerCommand
             context.sendMessage("core", "&cWrong password!");
         }
     }
-    
+
     @Command(desc = "Logs you out!", max = 0)
     public void logout(CommandContext context)
     {

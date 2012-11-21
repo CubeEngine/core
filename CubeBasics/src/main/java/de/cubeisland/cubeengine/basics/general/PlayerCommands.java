@@ -231,7 +231,8 @@ public class PlayerCommands
         else
         {
             GameMode gamemode = user.getGameMode();
-            switch (gamemode) {
+            switch (gamemode)
+            {
                 case ADVENTURE:
                 case CREATIVE:
                     user.setGameMode(GameMode.SURVIVAL);
@@ -254,11 +255,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "kill", "slay"
-    }, desc = "Kills a player", usage = "<player>|-a", flags =
-    {
+    }, desc = "Kills a player", usage = "<player>|-a", flags = {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f"),
         @Flag(longName = "lightning", name = "l")
@@ -266,8 +265,8 @@ public class PlayerCommands
     public void kill(CommandContext context)
     {
         //TODO kill a player looking at if possible
-        boolean lightning = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
-        boolean force = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+        boolean lightning = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
         if (context.hasIndexed(0) || context.hasFlag("a"))
         {
             blockCommand(context, "basics", "&eYou need to specify who you want to kill!");

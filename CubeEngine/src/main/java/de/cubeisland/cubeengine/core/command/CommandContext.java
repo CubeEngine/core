@@ -80,7 +80,7 @@ public class CommandContext
             {
                 flagLongnameMap.
                         put(flag.longName().toLowerCase(Locale.ENGLISH), flag.name().
-                        toLowerCase(Locale.ENGLISH));
+                            toLowerCase(Locale.ENGLISH));
             }
         }
 
@@ -190,8 +190,7 @@ public class CommandContext
                         this.indexedParams.add(pair.getRight());// added indexed param
                     }
                     catch (InvalidArgumentException ignored)
-                    {
-                    }
+                    {}
                 }
             }
         }
@@ -588,7 +587,7 @@ public class CommandContext
         }
         if (type.isAssignableFrom(obj.getClass()))
         {
-            return (T) obj;
+            return (T)obj;
         }
         return null;
     }

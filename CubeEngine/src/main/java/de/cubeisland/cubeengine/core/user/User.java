@@ -50,9 +50,9 @@ public class User extends UserBase implements LinkingModel<Integer>
     public byte[] passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
-    
+
     private boolean isLoggedIn = false;
-    
+
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
@@ -292,7 +292,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             // If there is still lava then you shall burn!
         }
         if (location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FENCE)
-        || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
+            || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
         {
             location.add(0, 2, 0);
         }
@@ -315,7 +315,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             CubeEngine.getUserManager().update(this);
         }
     }
-    
+
     public void resetPassword()
     {
         this.passwd = null;
@@ -332,7 +332,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
         }
     }
-    
+
     public boolean login(String password)
     {
         if (!this.isLoggedIn)
@@ -341,15 +341,15 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
         return isLoggedIn;
     }
-    
+
     public void logout()
     {
         this.isLoggedIn = false;
     }
-    
+
     public boolean isLoggedIn()
     {
         return this.isLoggedIn;
     }
-    
+
 }

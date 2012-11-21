@@ -171,7 +171,8 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 
     private boolean checkLog(ContainerType type)
     {
-        switch (type) {
+        switch (type)
+        {
             case BREWINGSTAND:
                 return this.config.logBrewingstand;
             case CHEST:

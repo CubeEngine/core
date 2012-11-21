@@ -8,10 +8,9 @@ import org.bukkit.permissions.PermissionDefault;
 public enum CommandPermissions implements Permission
 {
     COMMAND_CLEARPASSWORD_ALL,
-    COMMAND_CLEARPASSWORD_OTHER, 
-    COMMAND_SETPASSWORD_OTHER,
-    ;
-    
+    COMMAND_CLEARPASSWORD_OTHER,
+    COMMAND_SETPASSWORD_OTHER, ;
+
     private String permission;
     private PermissionDefault def;
 

@@ -63,7 +63,7 @@ public class TeleportListener implements Listener
                             Location loc = block.getLocation().add(0.5, 1, 0.5);
                             loc.setYaw(user.getLocation().getYaw());
                             loc.setPitch(user.getLocation().getPitch());
-                            user.safeTeleport(loc,PlayerTeleportEvent.TeleportCause.PLUGIN);
+                            user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
                             user.sendMessage("basics", "&ePoof!");
                             event.setCancelled(true);
                         }
@@ -80,12 +80,12 @@ public class TeleportListener implements Listener
                             user.sendMessage("basics", "&cNothing to pass through!");
                             return;
                         }
-                        loc.setX(loc.getBlockX()+0.5);
+                        loc.setX(loc.getBlockX() + 0.5);
                         loc.setY(loc.getBlockY());
-                        loc.setZ(loc.getBlockZ()+0.5);
+                        loc.setZ(loc.getBlockZ() + 0.5);
                         loc.setYaw(user.getLocation().getYaw());
                         loc.setPitch(user.getLocation().getPitch());
-                        user.safeTeleport(loc,PlayerTeleportEvent.TeleportCause.PLUGIN);
+                        user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
                         user.sendMessage("basics", "&eYou passed the wall");
                         event.setCancelled(true);
                     }

@@ -93,7 +93,8 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
 
     private boolean checkLog(KillCause killer, Entity killed)
     {
-        switch (killer) {
+        switch (killer)
+        {
             case PLAYER:
                 if (killed instanceof Player)
                 {
@@ -282,9 +283,11 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
 
         public static KillCause getKillCause(DamageCause cause, Entity damager)
         {
-            switch (cause) {
+            switch (cause)
+            {
                 case ENTITY_ATTACK:
-                    switch (damager.getType()) {
+                    switch (damager.getType())
+                    {
                         case PLAYER:
                             return PLAYER;
                         case BLAZE:
