@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunConfiguration;
-import de.cubeisland.cubeengine.fun.listeners.NukeListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.Location;
@@ -17,6 +16,12 @@ import org.bukkit.util.Vector;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import java.util.HashSet;
+import java.util.Set;
+import org.bukkit.entity.EntityType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class NukeCommand
 {
@@ -25,8 +30,9 @@ public class NukeCommand
     
     public NukeCommand(Fun module)
     {
-        nukeListener = module.getNukeListener();
         config = module.getConfig();
+        nukeListener = new NukeListener();
+        module.registerListener(nukeListener);
     }
     
     @Command(
@@ -155,4 +161,45 @@ public class NukeCommand
         
         context.sendMessage("fun", "You spawnt %d blocks of TNT", numberOfBlocks);
     }
+
+    private class NukeListener implements Listener
+    {
+        private final Set<TNTPrimed> noBlockDamageSet;
+
+        public NukeListener()
+        {
+            this.noBlockDamageSet = new HashSet<TNTPrimed>();
+        }
+
+        public void add(TNTPrimed tnt)
+        {
+            noBlockDamageSet.add(tnt);
+        }
+
+        public void remove(TNTPrimed tnt)
+        {
+            noBlockDamageSet.remove(tnt);
+        }
+
+        public boolean contains(TNTPrimed tnt)
+        {
+            return noBlockDamageSet.contains(tnt);
+        }
+
+        @EventHandler
+        public void onBlockDamage(EntityExplodeEvent event)
+        {
+            try
+            {
+                if (event.getEntityType() == EntityType.PRIMED_TNT && this.contains((TNTPrimed)event.getEntity()))
+                {
+                    event.blockList().clear();
+                    remove((TNTPrimed)event.getEntity());
+                }
+            }
+            catch (NullPointerException ignored)
+            {}
+        }
+    }
+
 }
