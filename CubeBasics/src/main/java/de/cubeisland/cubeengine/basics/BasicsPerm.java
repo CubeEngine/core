@@ -46,8 +46,11 @@ public enum BasicsPerm implements Permission
     COMMAND_KILL_FORCE,
     COMMAND_KILL_LIGHTNING,
     COMPASS_JUMPTO_LEFT,
-    COMPASS_JUMPTO_RIGHT, ;
-
+    COMPASS_JUMPTO_RIGHT, 
+    COMMAND_BUTCHER_FLAG_OTHER, 
+    COMMAND_BUTCHER_FLAG_NPC,
+    ;
+    
     private String permission;
     private PermissionDefault def;
 
@@ -63,16 +66,19 @@ public enum BasicsPerm implements Permission
         this.def = def;
     }
 
+    @Override
     public boolean isAuthorized(Permissible player)
     {
         return player.hasPermission(permission);
     }
 
+    @Override
     public String getPermission()
     {
         return this.permission;
     }
 
+    @Override
     public PermissionDefault getPermissionDefault()
     {
         return this.def;

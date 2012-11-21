@@ -7,26 +7,32 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import java.util.ArrayList;
+import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Golem;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
 import org.bukkit.entity.Tameable;
+import org.bukkit.entity.WaterMob;
 
 /**
  * Commands controling / affecting worlds. /weather /remove /butcher
@@ -176,15 +182,16 @@ public class WorldControlCommands
         @Flag(longName = "pets", name = "p"),
         @Flag(longName = "golems", name = "g"),
         @Flag(longName = "animals", name = "a"),
-        @Flag(longName = "force", name = "f"), // all previous flags
+        @Flag(longName = "npc", name = "n"),
+        @Flag(longName = "other", name = "o"), //squids & bats
+        @Flag(longName = "force", name = "f"), // all living entities (but not players)
         @Flag(longName = "lightning", name = "l"),
         @Flag(longName = "all", name = "all")
     }, params = @Param(names = {
         "choose", "c"
-    }, type = String.class), usage = "[radius] [world] [choose|c <entityType>]")
+    }, type = String.class), usage = "[radius] [world] [choose|c <entityType>] [flags]")
     public void butcher(CommandContext context)
     {
-        //TODO bats
         User sender = context.getSenderAsUser();
         Location loc;
         int radius = config.removeCmdDefaultRadius;//TODO config for butcher
@@ -221,9 +228,9 @@ public class WorldControlCommands
         List<Entity> list = new ArrayList<Entity>();
         for (Entity entity : loc.getWorld().getEntities())
         {
-            if (entity instanceof LivingEntity)
+            if (entity instanceof LivingEntity && !(entity instanceof Player))
             {
-                list.add(entity); // only living entities
+                list.add(entity); // only living entities that are not players
             }
         }
         if (context.hasNamed("c"))
@@ -237,17 +244,20 @@ public class WorldControlCommands
         }
         else if (context.hasFlag("f") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender())) //remove all living
         {
-            removed = this.removeEntityType(list, loc, radius, EntityType.BOAT, Material.AIR, lightning);
+            removed = this.removeEntityType(list, loc, radius, null, null, lightning);
         }
         else
         {
             List<Entity> filteredList = new ArrayList<Entity>();
             for (Entity entity : list)
             {
-                if (entity instanceof Monster
-                    || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
-                    || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
-                    || (context.hasFlag("a") && entity instanceof Animals && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender())))
+                if (entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast || entity instanceof EnderDragon
+                || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
+                || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
+                || (context.hasFlag("n") && entity instanceof NPC && BasicsPerm.COMMAND_BUTCHER_FLAG_NPC.isAuthorized(context.getSender()))
+                || (context.hasFlag("a") && entity instanceof Animals && !(entity instanceof Tameable) && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender()))
+                || (context.hasFlag("o") && BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER.isAuthorized(context.getSender()) && (entity instanceof Ambient || entity instanceof WaterMob)))
+                    
                 {
                     filteredList.add(entity);
                 }
