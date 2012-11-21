@@ -45,7 +45,7 @@ public class TeleportListener implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onClick(PlayerInteractEvent event)
     {
         if (event.getPlayer().getItemInHand().getType().equals(Material.COMPASS))
@@ -63,13 +63,12 @@ public class TeleportListener implements Listener
                             Location loc = block.getLocation().add(0.5, 1, 0.5);
                             loc.setYaw(user.getLocation().getYaw());
                             loc.setPitch(user.getLocation().getPitch());
-                            user.safeTeleport(loc);
+                            user.safeTeleport(loc,PlayerTeleportEvent.TeleportCause.PLUGIN);
                             user.sendMessage("basics", "&ePoof!");
                             event.setCancelled(true);
                         }
                     }
                     return;
-                //TODO tp onto block
                 case RIGHT_CLICK_AIR:
                 case RIGHT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
@@ -86,7 +85,7 @@ public class TeleportListener implements Listener
                         loc.setZ(loc.getBlockZ()+0.5);
                         loc.setYaw(user.getLocation().getYaw());
                         loc.setPitch(user.getLocation().getPitch());
-                        user.safeTeleport(loc);
+                        user.safeTeleport(loc,PlayerTeleportEvent.TeleportCause.PLUGIN);
                         user.sendMessage("basics", "&eYou passed the wall");
                         event.setCancelled(true);
                     }

@@ -45,7 +45,7 @@ public class TeleportCommands
         }
         if (safe)
         {
-            user.safeTeleport(loc);
+            user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
         }
         else
         {

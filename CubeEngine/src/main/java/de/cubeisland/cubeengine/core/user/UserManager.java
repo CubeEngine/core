@@ -94,10 +94,27 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
                     .where().field("lastseen").is(LESS).value()
                     .and().field("nogc").is(EQUAL).value(false)
                     .end().end());
+            
+           this.database.prepareAndStoreStatement(User.class, "clearpw", database.getQueryBuilder()
+                   .update(table)
+                   .set("passwd")
+                   .end().end());
         }
         catch (SQLException e)
         {
             throw new StorageException("Failed to initialize the user manager!", e);
+        }
+    }
+    
+    public void resetAllPasswords()
+    {
+        try
+        {
+            this.database.preparedUpdate(modelClass, "clearpw", (Object) null);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not reset passwords", ex);
         }
     }
 

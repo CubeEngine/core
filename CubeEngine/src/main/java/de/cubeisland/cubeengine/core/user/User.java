@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
@@ -25,11 +26,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
-
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -51,6 +50,9 @@ public class User extends UserBase implements LinkingModel<Integer>
     public byte[] passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
+    
+    private boolean isLoggedIn = false;
+    
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
@@ -267,7 +269,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         attributMap.remove(name);
     }
 
-    public void safeTeleport(Location location)
+    public void safeTeleport(Location location, TeleportCause cause)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
         while (!((location.getBlock().getType().equals(Material.AIR)) && (checkLocation.getBlock().getType().equals(Material.AIR))))
@@ -294,7 +296,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         {
             location.add(0, 2, 0);
         }
-        this.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        this.teleport(location, cause);
     }
 
     public void clearAttributes(Module module)
@@ -330,4 +332,24 @@ public class User extends UserBase implements LinkingModel<Integer>
             return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
         }
     }
+    
+    public boolean login(String password)
+    {
+        if (!this.isLoggedIn)
+        {
+            this.isLoggedIn = this.checkPassword(password);
+        }
+        return isLoggedIn;
+    }
+    
+    public void logout()
+    {
+        this.isLoggedIn = false;
+    }
+    
+    public boolean isLoggedIn()
+    {
+        return this.isLoggedIn;
+    }
+    
 }
