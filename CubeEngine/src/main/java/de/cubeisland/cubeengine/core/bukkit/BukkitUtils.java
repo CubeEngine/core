@@ -5,11 +5,6 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
 import net.minecraft.server.NBTTagCompound;
@@ -39,7 +34,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
+
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -196,8 +198,14 @@ public class BukkitUtils
 
         public void shutdown()
         {
+            HandlerList.unregisterAll(this);
             this.taskQueue.shutdown();
             this.executorService.shutdown();
+
+            for (Player player : Bukkit.getOnlinePlayers())
+            {
+                resetPlayerNetServerHandler(player);
+            }
         }
 
         /**
@@ -205,7 +213,7 @@ public class BukkitUtils
          * instance with a custom one including all the magic to make the new
          * NetServerHandler work.
          *
-         * @param event
+         * @param event the join event object
          */
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerJoin(PlayerJoinEvent event)
@@ -278,7 +286,7 @@ public class BukkitUtils
         {
             cis.getHandle().setTag(tag = new NBTTagCompound());
         }
-        if (tag.hasKey("display") == false)
+        if (!tag.hasKey("display"))
         {
             tag.setCompound("display", new NBTTagCompound());
         }
@@ -308,7 +316,7 @@ public class BukkitUtils
         {
             cis.getHandle().setTag(tag = new NBTTagCompound());
         }
-        if (tag.hasKey("display") == false)
+        if (!tag.hasKey("display"))
         {
             return null;
         }
@@ -340,13 +348,6 @@ public class BukkitUtils
     public static void cleanup()
     {
         PacketHookInjector.INSTANCE.shutdown();
-        HandlerList.unregisterAll(PacketHookInjector.INSTANCE);
-        PacketHookInjector.injected = false;
-
-        for (Player player : Bukkit.getOnlinePlayers())
-        {
-            resetPlayerNetServerHandler(player);
-        }
 
         resetCommandMap();
     }
