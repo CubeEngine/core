@@ -265,10 +265,9 @@ public class PlayerCommands
     public void kill(CommandContext context)
     {
         //TODO kill a player looking at if possible
-        //TODO fix -a
-        boolean lightning = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
-        boolean force = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
-        if (context.hasIndexed(0) || context.hasFlag("a"))
+        boolean lightning = context.hasFlag("l") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+        if (!((context.hasIndexed(0) || context.hasFlag("a"))))
         {
             blockCommand(context, "basics", "&eYou need to specify who you want to kill!");
         }
