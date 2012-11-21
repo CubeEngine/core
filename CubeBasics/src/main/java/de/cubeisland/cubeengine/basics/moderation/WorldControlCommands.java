@@ -184,6 +184,7 @@ public class WorldControlCommands
     }, type = String.class), usage = "[radius] [world] [choose|c <entityType>]")
     public void butcher(CommandContext context)
     {
+        //TODO bats
         User sender = context.getSenderAsUser();
         Location loc;
         int radius = config.removeCmdDefaultRadius;//TODO config for butcher

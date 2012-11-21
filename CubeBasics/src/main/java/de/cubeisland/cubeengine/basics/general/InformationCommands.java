@@ -25,6 +25,10 @@ import org.bukkit.entity.Player;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.util.time.Duration;
+import java.util.Collection;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.World;
 
 // TODO display biome
 public class InformationCommands
@@ -263,12 +267,14 @@ public class InformationCommands
     @Command(desc = "Displays chunk, memory, and world information.", max = 0)
     public void lag(CommandContext context)
     {
-        //uptime
-        //tps
-        //nutz/reserviert/max Memory
-
-        //alle worlds mit gel. chunks und entity
+        //Uptime:
         Duration dura = new Duration(new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).getTime(), System.currentTimeMillis());
+        context.sendMessage("basics", "&6Uptime: &a%s",dura.format("%www %ddd %hhh %mmm %sss"));
+        //TPS:
+        float tps = LagTimer.getTimer().getAverageTPS();
+        String color = tps == 20 ? "&a" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
+        context.sendMessage("basics", "&6Current TPS: %s%.1f", color, tps);
+        //Memory
         long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;
         long memCom = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() / 1048576;
         long memMax = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax() / 1048576;
@@ -296,7 +302,16 @@ public class InformationCommands
             memused = "&a";
         }
         memused += memUse;
-        context.sendMessage("basics", "&6Uptime: &a%s\n&6Memory Usage: %s&f/%s&f/%s MB", dura.format("%www %ddd %hhh %mmm %sss"), memused, memcommited, memmax);
+        context.sendMessage("basics", "&6Memory Usage: %s&f/%s&f/%s MB", memused, memcommited, memmax);
+        //Worlds with loaded Chunks / Entities
+        for (World world : Bukkit.getServer().getWorlds())
+        {
+            String type = world.getEnvironment().name();
+            int loadedChunks = world.getLoadedChunks().length;
+            int entities = world.getEntities().size();
+            context.sendMessage("basics", "&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type,loadedChunks, entities);
+            
+        }
     }
 
     @Command(desc = "Displays your current language settings.", max = 0)
