@@ -183,6 +183,10 @@ public class I18n implements Cleanable
      */
     public Language getLanguage(String name)
     {
+        if (SOURCE_LANGUAGE.getCode().equals(name))
+        {
+            return SOURCE_LANGUAGE;
+        }
         return this.languageMap.get(name);
     }
 

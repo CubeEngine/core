@@ -10,8 +10,11 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.CoreModule;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import java.util.List;
 
 public class CoreCommands extends ContainerCommand
 {
@@ -21,7 +24,7 @@ public class CoreCommands extends ContainerCommand
     public CoreCommands(Core core)
     {
         super(CoreModule.get(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
-        this.core = (BukkitCore)core;
+        this.core = (BukkitCore) core;
     }
 
     @Command(desc = "Disables the CubeEngine")
@@ -30,7 +33,8 @@ public class CoreCommands extends ContainerCommand
         this.core.getServer().getPluginManager().disablePlugin(this.core);
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "setpassword", "setpw"
     }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
     public void setPassword(CommandContext context)
@@ -57,9 +61,11 @@ public class CoreCommands extends ContainerCommand
         context.sendMessage("core", "&aPassword set!");
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "clearpassword", "clearpw"
-    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags = @Flag(longName = "all", name = "a"))
+    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags =
+    @Flag(longName = "all", name = "a"))
     public void clearPassword(CommandContext context)
     {
         User user;
@@ -129,5 +135,53 @@ public class CoreCommands extends ContainerCommand
         }
         sender.logout();
         context.sendMessage("core", "&aYou are now logged out!");
+    }
+
+    @Command(desc = "Displays or changes your language!",
+    usage = "[<language>|reset]", max = 1)
+    public void language(CommandContext context)
+    {
+        if (context.hasIndexed(0))
+        {
+            User sender = context.getSenderAsUser();
+            if (context.getString(0).equalsIgnoreCase("reset"))
+            {
+                if (sender != null)
+                {
+                    sender.setLanguage(null);
+                    this.core.getUserManager().update(sender);
+                    context.sendMessage("core", "&aYou language is now reset to the one selected in your client!");
+                }
+                else
+                {
+                    //TODO
+                }
+            }
+            //change
+            List<String> matches = StringUtils.getBestMatches(context.getString(0), context.getCore().getI18n().getLanguages(), 2);
+            if (matches.isEmpty())
+            {
+                blockCommand(context, "core", "&cUnkown language!");
+            }
+            
+            if (sender == null)
+            {
+                this.core.getConfiguration().defaultLanguage = matches.get(0);
+                this.core.getI18n().setDefaultLanguage(matches.get(0));
+                context.sendMessage("core", "&aDefault language set to &e%s&a!", matches.get(0));
+            }
+            else
+            {
+                sender.setLanguage(this.core.getI18n().getLanguage(matches.get(0)));
+                this.core.getUserManager().update(sender);
+                context.sendMessage("core", "&aYou language is now set to &e%s&a!", matches.get(0));
+            }
+        }
+        else
+        {
+            //display
+            context.sendMessage("basics", "&eYour language is &6%s&e.",
+                    context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
+        }
     }
 }

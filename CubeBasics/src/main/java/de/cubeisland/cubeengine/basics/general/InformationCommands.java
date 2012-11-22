@@ -316,11 +316,4 @@ public class InformationCommands
 
         }
     }
-
-    @Command(desc = "Displays your current language settings.", max = 0)
-    public void language(CommandContext context) //TODO move to Core
-    {
-        context.sendMessage("basics", "&eYour language is &6%s&e.",
-                context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
-    }
 }

@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
@@ -50,6 +51,8 @@ public class User extends UserBase implements LinkingModel<Integer>
     public byte[] passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
+    @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
+    public String language = null;
 
     private boolean isLoggedIn = false;
 
@@ -171,17 +174,26 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public String getLanguage()
     {
-        String language = null;
+        if (this.language != null)
+        {
+            return this.language; 
+        }
+        String lang = null;
         Player onlinePlayer = this.offlinePlayer.getPlayer();
         if (onlinePlayer != null)
         {
-            language = BukkitUtils.getLanguage(onlinePlayer);
+            lang = BukkitUtils.getLanguage(onlinePlayer);
         }
-        if (language == null)
+        if (lang == null)
         {
-            language = CubeEngine.getCore().getConfiguration().defaultLanguage;
+            lang = CubeEngine.getCore().getConfiguration().defaultLanguage;
         }
-        return language;
+        return lang;
+    }
+    
+    public void setLanguage(Language lang)
+    {
+        this.language = lang.getCode();
     }
 
     @Override
