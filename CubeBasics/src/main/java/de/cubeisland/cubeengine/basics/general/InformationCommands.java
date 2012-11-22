@@ -41,9 +41,16 @@ public class InformationCommands
     @Command(desc = "Displays the Biome-Type you are standing in.")
     public void biome(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eBiome: RL");
+        User sender = context.getSenderAsUser("basics", "&eBiome: reallife");
         Biome biome = sender.getWorld().getBiome(sender.getLocation().getBlockX(), sender.getLocation().getBlockZ());
         sender.sendMessage("basics", "&eCurrent Biome: &6%s", biome.name());
+    }
+    
+    @Command(desc = "Displays the seed of the current world.")
+    public void seed(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&eSeed: reallife");
+        sender.sendMessage("basics", "&eSeed of &6%s&e: &6%d", sender.getWorld().getName(), sender.getWorld().getSeed());
     }
 
     public enum Direction
