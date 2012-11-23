@@ -82,6 +82,10 @@ public class NukeCommand
                     invalidUsage(context, "fun", "The named Paramter concentration has a wrong usage. 1.1 is the right. You used %s", concNamed);
                 }
             }
+            if(concentration > this.config.nukeConcentrationLimit || concentrationOfBlocksPerCircle > this.config.nukeConcentrationLimit)
+            {
+                illegalParameter(context, "fun", "The concentration should not be greater than %d", this.config.nukeConcentrationLimit);
+            }
         }
         if(radius > this.config.nukeRadiusLimit)
         {
@@ -142,7 +146,7 @@ public class NukeCommand
                 ), TNTPrimed.class);
                 tnt.setVelocity(new Vector(0,0,0));
                 numberOfBlocks++;
-                
+
                 if(!context.hasFlag("u"))
                 {
                     nukeListener.add(tnt);
