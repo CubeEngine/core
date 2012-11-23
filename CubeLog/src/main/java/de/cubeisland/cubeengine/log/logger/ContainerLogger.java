@@ -28,8 +28,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.BeaconInventory;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantInventory;
+import org.bukkit.inventory.PlayerInventory;
 
 public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 {
@@ -62,13 +68,20 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         if (this.checkLog(type))
         {
             Location loc;
-            if (event.getView().getTopInventory().getHolder() instanceof DoubleChest)
+            Inventory topInv = event.getView().getTopInventory();
+            if (topInv.getHolder() instanceof DoubleChest)
             {
-                loc = ((BlockState)((DoubleChest)event.getView().getTopInventory().getHolder()).getLeftSide()).getLocation();
+                loc = ((BlockState) ((DoubleChest) topInv.getHolder()).getLeftSide()).getLocation();
+            }
+            else if (!(topInv instanceof AnvilInventory || topInv instanceof BeaconInventory
+                    || topInv instanceof CraftingInventory || topInv instanceof EnchantingInventory
+                    || topInv instanceof MerchantInventory || topInv instanceof PlayerInventory))
+            {
+                loc = ((BlockState) event.getView().getTopInventory().getHolder()).getLocation();
             }
             else
             {
-                loc = ((BlockState)event.getView().getTopInventory().getHolder()).getLocation();
+                return;
             }
             this.logContainerChanges(user, type, loggedItems, loc);
         }

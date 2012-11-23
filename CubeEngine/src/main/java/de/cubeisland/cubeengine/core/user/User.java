@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.i18n.Language;
@@ -284,7 +285,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
-        while (!((location.getBlock().getType().equals(Material.AIR)) && (checkLocation.getBlock().getType().equals(Material.AIR))))
+        while (!(BlockUtil.isNonSolidBlock(location.getBlock().getType()) && BlockUtil.isNonSolidBlock(checkLocation.getBlock().getType())))
         {
             location.add(0, 1, 0);
             checkLocation.add(0, 1, 0);
