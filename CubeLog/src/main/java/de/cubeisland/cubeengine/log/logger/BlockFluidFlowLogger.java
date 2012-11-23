@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.FLUID_BLOCKS;
-import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.NON_FLUID_PROOF_BLOCKS;
+import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isFluidBlock;
+import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
@@ -38,7 +38,7 @@ public class BlockFluidFlowLogger extends
         BlockState fromBlock = event.getBlock().getState();
         BlockState toBlock = event.getToBlock().getState();
         BlockState newToBlock = event.getToBlock().getState();
-        final boolean canFlow = toBlock.getType().equals(Material.AIR) || NON_FLUID_PROOF_BLOCKS.contains(toBlock.getTypeId());
+        final boolean canFlow = toBlock.getType().equals(Material.AIR) || isNonFluidProofBlock(toBlock.getType());
         if (!canFlow)
         {
             return;
@@ -143,7 +143,7 @@ public class BlockFluidFlowLogger extends
         {
             return;
         }
-        else if (!FLUID_BLOCKS.contains(oldState.getType()) && FLUID_BLOCKS.contains(newState.getType()))
+        else if (!isFluidBlock(oldState.getType()) && isFluidBlock(newState.getType()))
         {
 
             if ((lava.contains(newState.getType()) && !this.config.logLavaDestruct)
@@ -152,9 +152,9 @@ public class BlockFluidFlowLogger extends
                 return;
             }
         }
-        else if (!FLUID_BLOCKS.contains(newState.getType()) && newState.getTypeId() != 0) //newBlock is not fluid or air
+        else if (!isFluidBlock(newState.getType()) && newState.getTypeId() != 0) //newBlock is not fluid or air
         {
-            if (FLUID_BLOCKS.contains(oldState.getType()))
+            if (isFluidBlock(oldState.getType()))
             {
                 if (!this.config.logLavaWaterCreation)
                 {
