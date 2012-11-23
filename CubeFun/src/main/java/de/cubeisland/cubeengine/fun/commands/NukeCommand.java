@@ -43,7 +43,8 @@ public class NukeCommand
         params = {
             @Param(names = {"player", "p"}, type = User.class),
             @Param(names = {"height", "h"}, type = Integer.class),
-            @Param(names = {"concentration", "c"}, type = String.class)
+            @Param(names = {"concentration", "c"}, type = String.class),
+            @Param(names = {"yield", "y"}, type = Integer.class)
         }
     )
     public void nuke(CommandContext context)
@@ -56,6 +57,7 @@ public class NukeCommand
         int height = context.getNamed("height", Integer.class, Integer.valueOf(5));
         int concentration = 1;
         int concentrationOfBlocksPerCircle = 1;
+        int yield = context.getNamed("yield", Integer.class, 4);
         
         Location centerOfTheCircle;
         User user;
@@ -103,6 +105,10 @@ public class NukeCommand
         {
             illegalParameter(context, "fun", "&cThe height can't be less than 1");
         }
+        if(yield < 0 || yield > this.config.nukeMaxExplosionRange)
+        {
+            illegalParameter(context, "fun", "&cThe explosion range can't be less than 0 or over %d", this.config.nukeMaxExplosionRange);
+        }
         
         if(context.hasNamed("player"))
         {
@@ -140,13 +146,15 @@ public class NukeCommand
             {
                 TNTPrimed tnt = user.getWorld().spawn(
                     new Location(centerOfTheCircle.getWorld(), 
-                    Math.cos(j * angle) * i + centerOfTheCircle.getX() + 0.5, 
+                    Math.cos(j * angle) * i + centerOfTheCircle.getX() + 0.6, 
                     centerOfTheCircle.getY(), 
-                    Math.sin(j * angle) * i + centerOfTheCircle.getZ() + 0.5
+                    Math.sin(j * angle) * i + centerOfTheCircle.getZ() + 0.6
                 ), TNTPrimed.class);
                 tnt.setVelocity(new Vector(0,0,0));
+                tnt.setYield(yield);
+                
                 numberOfBlocks++;
-
+                
                 if(!context.hasFlag("u"))
                 {
                     nukeListener.add(tnt);
@@ -156,6 +164,8 @@ public class NukeCommand
         if(radius == 0)
         {
             TNTPrimed tnt = user.getWorld().spawn(centerOfTheCircle, TNTPrimed.class);
+            tnt.setYield(yield);
+            
             if(!context.hasFlag("u"))
             {
                 nukeListener.add(tnt);
