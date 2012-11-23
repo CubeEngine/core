@@ -4,11 +4,11 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import org.bukkit.Location;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import org.bukkit.util.Vector;
 
 public class PlayerCommands
 {
@@ -19,15 +19,64 @@ public class PlayerCommands
         this.module = module;
     }
     
-    @Command(
+    @Command
+    (
+        desc = "Creates an explosion",
+        params = 
+        {
+            @Param(names = {"player", "p"}, type = User.class),
+            @Param(names = {"damage", "d"}, type = Integer.class)
+        },
+        flags = 
+        { 
+            @Flag(longName = "unsafe", name = "u"),
+            @Flag(longName = "fire", name = "f")
+        },
+        max = 0,
+        usage = ""
+    )
+    public void explosion(CommandContext context)
+    {
+        User user;
+        Location location;
+        int power = context.getNamed("damage", Integer.class, 1);
+        boolean fire = context.hasFlag("f") ? true : false;
+        
+        if(context.hasNamed("player"))
+        {
+            user = context.getNamed("player", User.class);
+            if (user == null)
+            {
+                illegalParameter(context, "core", "User not found!");
+            }
+            location = user.getLocation();
+        }
+        else
+        {
+            user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+            location = user.getTargetBlock(null, this.module.getConfig().explosionDistance).getLocation();
+        }
+        
+        if(power > this.module.getConfig().explosionPower)
+        {
+            illegalParameter(context, "fun", "The power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
+        }
+        
+        user.getWorld().createExplosion(location, power, fire);
+    }
+    
+    @Command
+    (
         names = {"lightning", "strike"},
         desc = "strucks a player or the location you are looking at by lightning.",
         max = 0,
-        params = {
+        params = 
+        {
             @Param(names = {"player", "p"}, type = User.class),
             @Param(names = {"damage", "d"}, type = Integer.class),
             @Param(names = {"fireticks", "f"}, type = Integer.class)
         },
+        flags = {@Flag(longName = "unsafe", name = "u")},
         usage = "[player <name>] [damage <value>] [fireticks <seconds>]"
     )
     public void lightning(CommandContext context)
@@ -56,7 +105,14 @@ public class PlayerCommands
             location = user.getTargetBlock(null, this.module.getConfig().lightningDistance).getLocation();
         }
 
-        user.getWorld().strikeLightningEffect(location);
+        if(context.hasFlag("u"))
+        {
+            user.getWorld().strikeLightning(location);
+        }
+        else 
+        {
+            user.getWorld().strikeLightningEffect(location);
+        }
         if(damage != -1)
         {
             user.damage(damage);
@@ -86,6 +142,7 @@ public class PlayerCommands
         }
         
         user.damage(damage);
+        user.setVelocity(new Vector(user.getLocation().getDirection().getX() * damage / 2, 0.05 * damage, user.getLocation().getDirection().getZ() * damage / 2));
     }
     
     @Command(
