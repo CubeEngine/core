@@ -34,7 +34,7 @@ public class TeleportCommands
         this.basics = basics;
     }
 
-    public static void teleport(User user, Location loc, boolean safe, boolean force)
+    public static void teleport(User user, Location loc, boolean safe, boolean force, boolean keepDirection)
     {
         if (!force && !user.getWorld().equals(loc.getWorld()))
         {
@@ -45,10 +45,15 @@ public class TeleportCommands
         }
         if (safe)
         {
-            user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
+            user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND, keepDirection);
         }
         else
         {
+            if (keepDirection)
+            {
+                loc.setYaw(user.getLocation().getYaw());
+                loc.setPitch(user.getLocation().getPitch());
+            }
             user.teleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
         }
     }
@@ -128,7 +133,7 @@ public class TeleportCommands
             }
             return;
         }
-        TeleportCommands.teleport(user, target.getLocation(), safe, force);
+        TeleportCommands.teleport(user, target.getLocation(), safe, force, true);
         context.sendMessage("basics", "&aYou teleported to &2%s&a!", target.getName());
     }
 
@@ -168,7 +173,7 @@ public class TeleportCommands
                 }
             }
             boolean safe = !context.hasFlag("u");
-            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), user.getLocation(), safe, force);
+            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
         }
         context.getCore().getUserManager().broadcastMessage("basucs", "&aTeleporting everyone to %s", user.getName());
     }
@@ -207,7 +212,7 @@ public class TeleportCommands
             context.sendMessage("basics", "&6You found yourself!");
             return;
         }
-        TeleportCommands.teleport(target, sender.getLocation(), safe, force);
+        TeleportCommands.teleport(target, sender.getLocation(), safe, force, true);
         context.sendMessage("basics", "&aYou teleported %s to you!", target.getName());
         target.sendMessage("basics", "&aYou were teleported to %s", sender.getName());
     }
@@ -237,7 +242,7 @@ public class TeleportCommands
                 }
             }
             boolean safe = !context.hasFlag("u");
-            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), sender.getLocation(), safe, force);
+            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
         }
         context.sendMessage("basics", "&aYou teleported everyone to you!");
         context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", sender.getName());
@@ -277,9 +282,7 @@ public class TeleportCommands
         }
         boolean safe = !context.hasFlag("u");
         Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
-        loc.setYaw(sender.getLocation().getYaw());
-        loc.setPitch(sender.getLocation().getPitch());
-        TeleportCommands.teleport(sender, loc, safe, false);
+        TeleportCommands.teleport(sender, loc, safe, false, true);
         context.sendMessage("basics", "&aTeleported to &eX:&6%d &eY:&6%d &eZ:&6%d &ain %s!", x, y, z, world.getName());
     }
 }

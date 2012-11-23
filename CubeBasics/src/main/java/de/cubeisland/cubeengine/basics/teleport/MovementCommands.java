@@ -54,14 +54,12 @@ public class MovementCommands
             blockCommand(context, "basics", "&cYour destination seems to be obstructed!");
         }
         loc = loc.getBlock().getLocation();
-        loc.setPitch(sender.getLocation().getPitch());
-        loc.setYaw(sender.getLocation().getYaw());
         loc.add(0.5, 1, 0.5);
         if (block.getType().equals(Material.AIR))
         {
             block.setType(Material.GLASS);
         }
-        TeleportCommands.teleport(sender, loc, true, false); // is save anyway so we do not need to check again
+        TeleportCommands.teleport(sender, loc, true, false, true); // is save anyway so we do not need to check again
         context.sendMessage("basics", "&aYou just lifted!");
     }
 
@@ -92,7 +90,7 @@ public class MovementCommands
         }
         //reached new location
         context.sendMessage("basics", "&aAscended a level!");
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
     }
 
     @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
@@ -119,7 +117,7 @@ public class MovementCommands
         }
         //reached new location
         context.sendMessage("basics", "&aDescended a level!");
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
     }
 
     @Command(desc = "Jumps to the position you are looking at.", max = 0)
@@ -132,9 +130,7 @@ public class MovementCommands
             blockCommand(context, "basics", "&cNo block in sight!");
         }
         loc.add(0.5, 1, 0.5);
-        loc.setYaw(sender.getLocation().getYaw());
-        loc.setPitch(sender.getLocation().getPitch());
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
         context.sendMessage("basics", "&aYou just jumped!");
     }
 
@@ -150,7 +146,7 @@ public class MovementCommands
             sender.sendMessage("basics", "&cNothing to pass through!");
             return;
         }
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
         context.sendMessage("basics", "&aYou just passed the wall!");
     }
 
@@ -167,7 +163,7 @@ public class MovementCommands
             blockCommand(context, "basics", "&cYou never teleported!");
         }
         boolean safe = !context.hasFlag("u");
-        TeleportCommands.teleport(sender, loc, safe, true);
+        TeleportCommands.teleport(sender, loc, safe, true, true);
         sender.sendMessage("basics", "&aTeleported to your last location!");
     }
 
@@ -190,9 +186,7 @@ public class MovementCommands
             blockCommand(context, "basics", "&cNo block in sight!");
         }
         loc.add(0.5, 1, 0.5);
-        loc.setYaw(user.getLocation().getYaw());
-        loc.setPitch(user.getLocation().getPitch());
-        TeleportCommands.teleport(user, loc, true, false);
+        TeleportCommands.teleport(user, loc, true, false, true);
         context.sendMessage("basics", "&aYou just placed &2%s &awhere you were looking!", user.getName());
         user.sendMessage("basics", "&aYou were placed somewhere!");
     }

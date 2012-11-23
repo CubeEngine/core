@@ -115,7 +115,7 @@ public class TeleportRequestCommands
             {
                 blockCommand(context, "basics", "&2%s &cseems to have disappeared.", user.getName());
             }
-            TeleportCommands.teleport(sender, user.getLocation(), true, false);
+            TeleportCommands.teleport(sender, user.getLocation(), true, false, true);
             user.sendMessage("bascis", "&2%s &aaccepted your teleport-request!", sender.getName());
             context.sendMessage("basics", "&aYou accepted to get teleported to &2%s&a!", user.getName());
         }
@@ -127,7 +127,7 @@ public class TeleportRequestCommands
             {
                 blockCommand(context, "basics", "&2%s &cseems to have disappeared.", user.getName());
             }
-            TeleportCommands.teleport(user, sender.getLocation(), true, false);
+            TeleportCommands.teleport(user, sender.getLocation(), true, false, true);
 
             user.sendMessage("bascis", "&2%s &aaccepted your teleport-request!", sender.getName());
             context.sendMessage("basics", "&aYou accepted to teleport to &2%s&a!", user.getName());

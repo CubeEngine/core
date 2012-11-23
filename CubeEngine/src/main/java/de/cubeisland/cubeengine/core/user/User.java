@@ -281,7 +281,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         attributMap.remove(name);
     }
 
-    public void safeTeleport(Location location, TeleportCause cause)
+    public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
         while (!((location.getBlock().getType().equals(Material.AIR)) && (checkLocation.getBlock().getType().equals(Material.AIR))))
@@ -307,6 +307,11 @@ public class User extends UserBase implements LinkingModel<Integer>
             || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
         {
             location.add(0, 2, 0);
+        }
+        if (keepDirection)
+        {
+            location.setPitch(this.getLocation().getPitch());
+            location.setYaw(this.getLocation().getYaw());
         }
         this.teleport(location, cause);
     }

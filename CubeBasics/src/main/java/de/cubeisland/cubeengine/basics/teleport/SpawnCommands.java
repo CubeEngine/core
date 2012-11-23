@@ -124,9 +124,7 @@ public class SpawnCommands
                         continue;
                     }
                 }
-                loc.setPitch(player.getLocation().getPitch());
-                loc.setYaw(player.getLocation().getYaw());
-                TeleportCommands.teleport(player, loc, true, force);
+                TeleportCommands.teleport(player, loc, true, force, true);
             }
             this.basics.getUserManager().broadcastMessage("basics", "&aTeleported everyone to the spawn of %s!", world.getName());
             return;
@@ -156,7 +154,7 @@ public class SpawnCommands
         loc.setYaw(user.getLocation().getYaw());
         SpawnCommandEvent event = new SpawnCommandEvent(this.basics, user, loc);
         this.basics.getEventManager().fireEvent(event); // catch this event to change spawn location
-        TeleportCommands.teleport(user, event.getLoc(), true, force);
+        TeleportCommands.teleport(user, event.getLoc(), true, force, true);
     }
 
     @Command(desc = "Teleports you to the spawn of given world", usage = "<world>", min = 1, max = 1)
@@ -171,7 +169,7 @@ public class SpawnCommands
         Location loc = world.getSpawnLocation().add(0.5, 0, 0.5);
         loc.setPitch(sender.getLocation().getPitch());
         loc.setYaw(sender.getLocation().getYaw());
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
         context.sendMessage("basics", "&aTeleported to the spawn of world &6%s&a!", world.getName());
     }
 }
