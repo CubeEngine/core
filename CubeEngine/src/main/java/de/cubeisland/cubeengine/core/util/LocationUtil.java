@@ -42,6 +42,11 @@ public class LocationUtil
                         continue;
                     }
                 }
+                loc.setX(loc.getBlockX() + 0.5);
+                loc.setY(loc.getBlockY());
+                loc.setZ(loc.getBlockZ() + 0.5);
+                loc.setYaw(user.getLocation().getYaw());
+                loc.setPitch(user.getLocation().getPitch());
                 return loc;
             }
             else if (loc.getBlock().getTypeId() != 0)

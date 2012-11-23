@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import de.cubeisland.cubeengine.core.util.LocationUtil;
 
 /**
  * Contains commands for fast movement.
@@ -120,7 +121,6 @@ public class MovementCommands
         TeleportCommands.teleport(sender, loc, true, false);
     }
 
-    //TODO through cmd
     @Command(desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
     {
@@ -135,6 +135,22 @@ public class MovementCommands
         loc.setPitch(sender.getLocation().getPitch());
         TeleportCommands.teleport(sender, loc, true, false);
         context.sendMessage("basics", "&aYou just jumped!");
+    }
+    
+    @Command(
+            names= {"through","thru"},
+            desc = "Jumps to the position you are looking at.", max = 0)
+    public void through(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
+        Location loc = LocationUtil.getBlockBehindWall(sender, 20, 30); //TODO these values in config
+        if (loc == null)
+        {
+            sender.sendMessage("basics", "&cNothing to pass through!");
+            return;
+        }
+        TeleportCommands.teleport(sender, loc, true, false);
+        context.sendMessage("basics", "&aYou just passed the wall!");
     }
 
     @Command(desc = "Teleports you to your last location", max = 0, flags = {
