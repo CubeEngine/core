@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
@@ -15,14 +14,6 @@ import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,6 +22,17 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -127,12 +129,13 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Override
     public void sendMessage(String string)
     {
+        if (string == null)
+        {
+            return;
+        }
         if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
         {
-            if (CubeEngine.getCore().isDebug())
-            {
-                CubeEngine.getLogger().log(LogLevel.DEBUG, "A module sent an untranslated message!");
-            }
+            CubeEngine.getLogger().log(DEBUG, "A module sent an untranslated message!");
         }
         super.sendMessage(ChatFormat.parseFormats(string));
     }
@@ -274,12 +277,12 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public void removeAttribute(Module module, String name)
     {
-        Map<String, Object> attributMap = this.attributes.get(module);
-        if (attributMap == null)
+        Map<String, Object> attributeMap = this.attributes.get(module);
+        if (attributeMap == null)
         {
             return;
         }
-        attributMap.remove(name);
+        attributeMap.remove(name);
     }
 
     public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)

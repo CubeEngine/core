@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -19,6 +20,9 @@ public class ShoutSubCommands
         this.module = module;
     }
 
+    @Alias(names = {
+            "announcements"
+    })
     @Command(names = {
         "list", "announcements"
     }, desc = "List all announcements")

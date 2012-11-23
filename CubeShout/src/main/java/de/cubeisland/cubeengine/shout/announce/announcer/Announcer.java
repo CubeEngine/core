@@ -55,5 +55,6 @@ public class Announcer
             task.cancel();
         }
         tasks.clear();
+        timer.purge();
     }
 }

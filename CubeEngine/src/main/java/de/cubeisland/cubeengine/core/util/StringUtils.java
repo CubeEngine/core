@@ -447,7 +447,6 @@ public final class StringUtils
      * @param maxIndex            and
      * @param maxbehindIndex      - LD at start with distance
      * @param secondLdCheck       when longer than
-     * @param maxLengthforLdCheck
      *
      * @param string
      * @param stringlist
@@ -588,5 +587,48 @@ public final class StringUtils
         }
         CubeEngine.getLogger().log(LogLevel.DEBUG, "Found " + foundString + " for " + searchString);
         return foundString;
+    }
+
+    public static String rtrim(String string)
+    {
+        if (string == null)
+        {
+            return null;
+        }
+        if (string.isEmpty())
+        {
+            return string;
+        }
+
+        int lastPos = string.length();
+        for (int i = string.length() - 1; i >= 0 && Character.isWhitespace(string.charAt(i)); --i)
+        {
+            --lastPos;
+        }
+        return string.substring(0, lastPos);
+    }
+
+    public static String ltrim(String string)
+    {
+        if (string == null)
+        {
+            return null;
+        }
+        if (string.isEmpty())
+        {
+            return string;
+        }
+
+        int i = 0;
+        while (i < string.length() && Character.isWhitespace(string.charAt(i)))
+        {
+            ++i;
+        }
+        return string.substring(i);
+    }
+
+    public static String trim(String string)
+    {
+        return rtrim(ltrim(string));
     }
 }
