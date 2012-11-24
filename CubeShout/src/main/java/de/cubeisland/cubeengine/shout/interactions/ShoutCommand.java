@@ -26,37 +26,35 @@ public class ShoutCommand
     }, min = 1, desc = "Announce a message to players on the server", usage = "<announcement name>")
     public void shout(CommandContext context)
     {
-        if (this.module.getAnnouncementManager().hasAnnouncement(context.getString(0)))
+        Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
+        if (announcement == null)
         {
-            Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
-            List<Player> players;
+            context.sendMessage("shout", "&c%s was not found!", context.getString(0));
+            return;
+        }
+        List<Player> players;
 
-            if (announcement.getFirstWorld().equals("*"))
-            {
-                players = Arrays.asList(Bukkit.getOnlinePlayers());
-            }
-            else
-            {
-                players = Bukkit.getWorld(announcement.getFirstWorld()).getPlayers();
-            }
-
-            for (Player player : players)
-            {
-                User u = this.module.getUserManager().getExactUser(player);
-                String[] message = announcement.getMessage(u.getLanguage());
-                if (message != null)
-                {
-                    for (String line : message)
-                    {
-                        u.sendMessage(ChatFormat.parseFormats(line));
-                    }
-                }
-            }
-            context.sendMessage("shout", "The announcement is announced");
+        if (announcement.getFirstWorld().equals("*"))
+        {
+            players = Arrays.asList(Bukkit.getOnlinePlayers());
         }
         else
         {
-            context.sendMessage("shout", "%s is not an announcement...", context.getString(0));
+            players = Bukkit.getWorld(announcement.getFirstWorld()).getPlayers();
         }
+
+        for (Player player : players)
+        {
+            User u = this.module.getUserManager().getExactUser(player);
+            String[] message = announcement.getMessage(u.getLanguage());
+            if (message != null)
+            {
+                for (String line : message)
+                {
+                    u.sendMessage(ChatFormat.parseFormats(line));
+                }
+            }
+        }
+        context.sendMessage("shout", "&aThe announcement &e%s&a has been announced!", announcement.getName());
     }
 }

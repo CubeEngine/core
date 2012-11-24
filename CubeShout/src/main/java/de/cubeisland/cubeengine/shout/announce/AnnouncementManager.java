@@ -98,20 +98,17 @@ public class AnnouncementManager
     public Announcement getAnnouncement(String name)
     {
         name = name.toLowerCase(Locale.ENGLISH);
-        if (this.announcements.containsKey(name))
-        {
-            return this.announcements.get(name);
-        }
-        else
+        Announcement announcement = this.announcements.get(name);
+        if (announcement == null)
         {
             List<String> matches = StringUtils.getBestMatches(name, this.announcements.keySet(), 3);
 
             if (matches.size() == 1)
             {
-                return this.announcements.get(matches.get(0));
+                announcement = this.announcements.get(matches.get(0));
             }
         }
-        return null;
+        return announcement;
     }
 
     /**
@@ -122,7 +119,6 @@ public class AnnouncementManager
      */
     public boolean hasAnnouncement(String name)
     {
-        // TODO correct typos?
         return this.announcements.containsKey(name.toLowerCase());
     }
 
