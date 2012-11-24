@@ -24,10 +24,13 @@ public class UserReceiver extends AbstractReceiver
     }
 
     @Override
-    public void sendMessage(String message)
+    public void sendMessage(String[] message)
     {
         user.sendMessage(" ");
-        user.sendMessage(message);
+        for (String line : message)
+        {
+            user.sendMessage(line);
+        }
         user.sendMessage(" ");
     }
 

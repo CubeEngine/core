@@ -21,10 +21,7 @@ public class SenderTask implements Callable<Void>
     @Override
     public Void call() throws Exception
     {
-        for (String line : this.message)
-        {
-            this.receiver.sendMessage(line);
-        }
+        this.receiver.sendMessage(this.message);
         return null;
     }
 }

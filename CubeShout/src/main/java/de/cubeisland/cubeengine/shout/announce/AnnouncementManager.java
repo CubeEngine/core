@@ -174,8 +174,7 @@ public class AnnouncementManager
      */
     public void initializeUser(User user)
     {
-        Receiver receiver = new UserReceiver(user, this);
-        this.initializeReceiver(receiver);
+        this.initializeReceiver(new UserReceiver(user, this));
     }
 
     /**

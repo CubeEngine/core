@@ -19,7 +19,7 @@ public interface Receiver
      *
      * @param message the message to send
      */
-    public void sendMessage(String message);
+    public void sendMessage(String[] message);
 
     /**
      * Get the next announcement and delay for this receiver
