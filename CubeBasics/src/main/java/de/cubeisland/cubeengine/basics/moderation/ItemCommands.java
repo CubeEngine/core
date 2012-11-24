@@ -6,34 +6,23 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-
 /**
- * item-related commands
- * /itemdb
- * /rename
- * /headchange
- * /unlimited
- * /enchant
- * /give
- * /item
- * /more
- * /repair
- * /stack
+ * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
+ * /item /more /repair /stack
  */
 public class ItemCommands
 {
@@ -53,7 +42,7 @@ public class ItemCommands
             if (item != null)
             {
                 context.sendMessage("basics", "&aMatched &e%s &f(&e%d&f:&e%d&f) &afor &f%s",
-                    MaterialMatcher.get().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                        MaterialMatcher.get().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
             }
             else
             {
@@ -73,14 +62,14 @@ public class ItemCommands
                 if (found == null)
                 {
                     context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
-                        sender.getItemInHand().getType().getId(),
-                        sender.getItemInHand().getDurability());
+                            sender.getItemInHand().getType().getId(),
+                            sender.getItemInHand().getDurability());
                     return;
                 }
                 context.sendMessage("basics", "&aThe Item in your hand is: &e%s &f(&e%d&f:&e%d&f)",
-                    found,
-                    sender.getItemInHand().getType().getId(),
-                    sender.getItemInHand().getDurability());
+                        found,
+                        sender.getItemInHand().getType().getId(),
+                        sender.getItemInHand().getDurability());
             }
         }
     }
@@ -89,7 +78,7 @@ public class ItemCommands
     public void rename(CommandContext context)
     {
         String name = context.getStrings(0);
-        if (BukkitUtils.renameItemStack(context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand(), name))
+        if (BukkitUtils.renameItemStack(context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand(), false, name))
         {
             context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
         }
@@ -99,7 +88,8 @@ public class ItemCommands
         }
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "headchange", "skullchange"
     }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1)
     @SuppressWarnings("deprecation")
@@ -165,7 +155,8 @@ public class ItemCommands
         }
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = {
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags =
+    {
         @Flag(longName = "unsafe", name = "u")
     }, usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
@@ -188,7 +179,7 @@ public class ItemCommands
             if (possibleEnchs != null)
             {
                 blockCommand(context, "basics", "&cEnchantment &6%s &cnot found! Try one of those instead:\n%s", context.
-                    getString(0), possibleEnchs);
+                        getString(0), possibleEnchs);
             }
             else
             {
@@ -210,7 +201,7 @@ public class ItemCommands
             {
                 item.addUnsafeEnchantment(ench, level);
                 context.sendMessage("basics", "&aAdded unsafe enchantment: &6%s %d &ato your item!",
-                    EnchantMatcher.get().getNameFor(ench), level);
+                        EnchantMatcher.get().getNameFor(ench), level);
                 return;
             }
             denyAccess(sender, "basics", "&cYou are not allowed to add unsafe enchantments!");
@@ -220,7 +211,7 @@ public class ItemCommands
             if (ench.canEnchantItem(item))
             {
                 if ((level >= ench.getStartLevel()) && (level <= ench.
-                    getMaxLevel()))
+                        getMaxLevel()))
                 {
                     item.addUnsafeEnchantment(ench, level);
                     context.sendMessage("bascics", "&aAdded enchantment: &6%s %d &ato your item!", EnchantMatcher.get().getNameFor(ench), level);
@@ -266,7 +257,8 @@ public class ItemCommands
         return sb.toString();
     }
 
-    @Command(desc = "Gives the specified Item to a player", flags = {
+    @Command(desc = "Gives the specified Item to a player", flags =
+    {
         @Flag(name = "b", longName = "blacklist")
     }, min = 2, max = 3, usage = "<player> <material[:data]> [amount] [-blacklist]")
     @SuppressWarnings("deprecation")
@@ -306,9 +298,11 @@ public class ItemCommands
         user.sendMessage("basics", "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "item", "i"
-    }, desc = "Gives the specified Item to you", max = 2, min = 1, flags = {
+    }, desc = "Gives the specified Item to you", max = 2, min = 1, flags =
+    {
         @Flag(longName = "blacklist", name = "b")
     }, usage = "<material[:data]> [amount] [-blacklist]")
     @SuppressWarnings("deprecation")
@@ -342,7 +336,8 @@ public class ItemCommands
         sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
     }
 
-    @Command(desc = "Refills the stack in hand", usage = "[-a]", flags = {
+    @Command(desc = "Refills the stack in hand", usage = "[-a]", flags =
+    {
         @Flag(longName = "all", name = "a")
     }, max = 0)
     public void more(CommandContext context)
@@ -370,7 +365,8 @@ public class ItemCommands
         }
     }
 
-    @Command(desc = "Repairs your items", flags = {
+    @Command(desc = "Repairs your items", flags =
+    {
         @Flag(longName = "all", name = "a")
     }, usage = "[-all]")
     // without item in hand
@@ -388,7 +384,7 @@ public class ItemCommands
             {
                 if (MaterialMatcher.get().isRepairable(item))
                 {
-                    item.setDurability((short)0);
+                    item.setDurability((short) 0);
                     repaired++;
                 }
             }
@@ -411,7 +407,7 @@ public class ItemCommands
                     sender.sendMessage("basics", "&eNo need to repair this!");
                     return;
                 }
-                item.setDurability((short)0);
+                item.setDurability((short) 0);
                 sender.sendMessage("basics", "&aItem repaired!");
             }
             else
@@ -451,9 +447,9 @@ public class ItemCommands
                     }
                     // compare
                     if (item2.getTypeId() == item.getTypeId()
-                        && item.getDurability() == item2.getDurability()
-                        && item.getEnchantments().equals(item2.getEnchantments())
-                        && (BukkitUtils.getItemStackName(item) == null ? BukkitUtils.getItemStackName(item2) == null : BukkitUtils.getItemStackName(item).equals(BukkitUtils.getItemStackName(item2))))
+                            && item.getDurability() == item2.getDurability()
+                            && item.getEnchantments().equals(item2.getEnchantments())
+                            && (BukkitUtils.getItemStackName(item) == null ? BukkitUtils.getItemStackName(item2) == null : BukkitUtils.getItemStackName(item).equals(BukkitUtils.getItemStackName(item2))))
                     {
                         if (item2.getAmount() > needed) // not enough place -> fill up stack
                         {

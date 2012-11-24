@@ -157,6 +157,7 @@ public class PlayerCommands
             boolean other = false;
             if (context.hasIndexed(0))
             {
+                user = context.getUser(0);
                 if (user == null)
                 {
                     paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
@@ -177,7 +178,7 @@ public class PlayerCommands
             if (other)
             {
                 context.sendMessage("basics", "&aHealed &2%s&a!", user.getName());
-                user.sendMessage("basics", "&aYou got healed by &2%s&a!", sender.getName());
+                user.sendMessage("basics", "&aYou got healed by &2%s&a!", context.getSender().getName());
             }
             else
             {
@@ -397,7 +398,7 @@ public class PlayerCommands
     {
         User sender = context.getSenderAsUser("basics", "&cJust go!");
         sender.setAttribute(basics, "afk", true);
-        this.basics.getUserManager().broadcastMessage("basics", "&2%s &fis now afk.", sender.getName());
+        this.basics.getUserManager().broadcastMessage("basics", "* &2%s &fis now afk.", sender.getName());
     }
 
     @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1)
@@ -468,7 +469,7 @@ public class PlayerCommands
         {
             if (other)
             {
-                context.sendMessage("basics", "&aYou are now invincible!");
+                user.sendMessage("basics", "&aYou are now invincible!");
                 context.sendMessage("basics", "&2%s &ais now invincible!", user.getName());
             }
             else
@@ -480,7 +481,7 @@ public class PlayerCommands
         {
             if (other)
             {
-                context.sendMessage("basics", "&eYou are no longer invincible!");
+                user.sendMessage("basics", "&eYou are no longer invincible!");
                 context.sendMessage("basics", "&2%s &eis no longer invincible!", user.getName());
             }
             else

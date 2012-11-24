@@ -13,12 +13,14 @@ import de.cubeisland.cubeengine.basics.mail.MailManager;
 import de.cubeisland.cubeengine.basics.moderation.InventoryCommands;
 import de.cubeisland.cubeengine.basics.moderation.ItemCommands;
 import de.cubeisland.cubeengine.basics.moderation.KickBanCommands;
-import de.cubeisland.cubeengine.basics.moderation.KitCommand;
+import de.cubeisland.cubeengine.basics.moderation.kit.KitCommand;
 import de.cubeisland.cubeengine.basics.moderation.PowerToolCommand;
 import de.cubeisland.cubeengine.basics.moderation.PowerToolListener;
 import de.cubeisland.cubeengine.basics.moderation.SpawnMobCommand;
 import de.cubeisland.cubeengine.basics.moderation.TimeControlCommands;
 import de.cubeisland.cubeengine.basics.moderation.WorldControlCommands;
+import de.cubeisland.cubeengine.basics.moderation.kit.KitItem;
+import de.cubeisland.cubeengine.basics.moderation.kit.KitItemConverter;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
@@ -28,6 +30,7 @@ import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 public class Basics extends Module
 {
@@ -69,6 +72,7 @@ public class Basics extends Module
         this.registerCommand(new PowerToolCommand(this));
         this.registerCommand(new KitCommand(this));
         this.registerListener(new PowerToolListener());
+        Convert.registerConverter(KitItem.class, new KitItemConverter());
 
         //Teleport:
         this.registerCommands(new MovementCommands(this));

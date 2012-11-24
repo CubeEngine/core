@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.user.User;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
@@ -11,13 +13,37 @@ public class InventoryUtil
 {
     public static boolean giveItemsToUser(User user, ItemStack... items)
     {
+        List<ItemStack> list = new ArrayList<ItemStack>();
+        for (ItemStack item : items)
+        {
+            if (item.getAmount() > 64)
+            {
+                int amount = item.getAmount();
+                item.setAmount(64);
+                while (amount > 64)
+                {
+                    ItemStack itemToAdd = item.clone();
+                    list.add(itemToAdd);
+                    amount -= 64;
+                }
+                if (amount > 0)
+                {
+                    item.setAmount(amount);
+                    list.add(item);
+                }
+            }
+            else
+            {
+                list.add(item);
+            }
+        }
+        items = list.toArray(new ItemStack[list.size()]);
         PlayerInventory inventory = user.getInventory();
         ItemStack[] oldInventory = inventory.getContents();
         Map map = inventory.addItem(items);
         if (!map.isEmpty())
         {
-            user.getInventory().clear();
-            user.getInventory().addItem(oldInventory);
+            user.getInventory().setContents(oldInventory);
             return false;
         }
         return true;

@@ -42,6 +42,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import java.util.ArrayList;
+import net.minecraft.server.NBTTagList;
+import net.minecraft.server.NBTTagString;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -61,7 +64,8 @@ public class BukkitUtils
     }
 
     private BukkitUtils()
-    {}
+    {
+    }
 
     public static boolean isCompatible()
     {
@@ -80,10 +84,11 @@ public class BukkitUtils
         {
             try
             {
-                return (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
+                return (String) LOCALE_STRING_FIELD.get(((CraftPlayer) player).getHandle().getLocale());
             }
             catch (Exception e)
-            {}
+            {
+            }
         }
         return null;
     }
@@ -116,7 +121,7 @@ public class BukkitUtils
         Field serverField = findFirstField(CommandMap.class, server);
         Field pmField = findFirstField(CommandMap.class, pm);
 
-        SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
+        SimpleCommandMap oldMap = ((CraftServer) server).getCommandMap();
         if (serverField != null && pmField != null)
         {
             try
@@ -134,10 +139,10 @@ public class BukkitUtils
 
     public static void resetCommandMap()
     {
-        SimpleCommandMap current = ((CraftServer)Bukkit.getServer()).getCommandMap();
+        SimpleCommandMap current = ((CraftServer) Bukkit.getServer()).getCommandMap();
         if (current instanceof CubeCommandMap)
         {
-            CubeCommandMap cubeMap = (CubeCommandMap)current;
+            CubeCommandMap cubeMap = (CubeCommandMap) current;
             swapCommandMap(current = new SimpleCommandMap(Bukkit.getServer()));
 
             Collection<Command> commands = cubeMap.getKnownCommands().values();
@@ -152,7 +157,7 @@ public class BukkitUtils
                 String prefix = "";
                 if (command instanceof PluginCommand)
                 {
-                    prefix = ((PluginCommand)command).getPlugin().getName();
+                    prefix = ((PluginCommand) command).getPlugin().getName();
                 }
                 else if (command instanceof BukkitCommand)
                 {
@@ -223,7 +228,7 @@ public class BukkitUtils
 
         public void swap(final Player player)
         {
-            final EntityPlayer entity = ((CraftPlayer)player).getHandle();
+            final EntityPlayer entity = ((CraftPlayer) player).getHandle();
 
             swapPlayerNetServerHandler(entity, new CubeEngineNetServerHandler(entity, this.taskQueue));
         }
@@ -244,7 +249,7 @@ public class BukkitUtils
                 newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
                 ServerConnection sc = player.server.ae();
-                ((List<NetServerHandler>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
+                ((List<NetServerHandler>) NSH_LIST_FIELD.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
                 CubeEngine.getLogger().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
                 oldHandler.disconnected = true;
@@ -259,28 +264,34 @@ public class BukkitUtils
 
     public static void resetPlayerNetServerHandler(Player player)
     {
-        final EntityPlayer entity = ((CraftPlayer)player).getHandle();
+        final EntityPlayer entity = ((CraftPlayer) player).getHandle();
 
         swapPlayerNetServerHandler(entity, new NetServerHandler(entity.server, entity.netServerHandler.networkManager, entity));
     }
 
     public static void reloadHelpMap()
     {
-        SimpleHelpMap helpMap = (SimpleHelpMap)Bukkit.getHelpMap();
+        SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getHelpMap();
 
         helpMap.clear();
         helpMap.initializeGeneralTopics();
         helpMap.initializeCommands();
     }
 
-    public static boolean renameItemStack(ItemStack itemStack, String name)
+    public static boolean renameItemStack(ItemStack itemStack, boolean asLore, String... string)
     {
-        name = ChatFormat.parseFormats(name);
+        if (string != null)
+        {
+            for (int i = 0; i < string.length; ++i)
+            {
+                string[i] = ChatFormat.parseFormats(string[i]);
+            }
+        }
         if (itemStack == null || itemStack.getType().equals(Material.AIR))
         {
             return false;
         }
-        CraftItemStack cis = ((CraftItemStack)itemStack);
+        CraftItemStack cis = ((CraftItemStack) itemStack);
         NBTTagCompound tag = cis.getHandle().getTag();
         if (tag == null)
         {
@@ -291,13 +302,65 @@ public class BukkitUtils
             tag.setCompound("display", new NBTTagCompound());
         }
         NBTTagCompound display = tag.getCompound("display");
-        if (name == null || name.equals(""))
+        if (string == null || string[0] == null || string[0].equals(""))
         {
-            display.remove("Name");
+            if (asLore)
+            {
+                display.remove("Lore");
+            }
+            else
+            {
+                display.remove("Name");
+            }
             return true;
         }
-        display.setString("Name", name);
+        if (asLore)
+        {
+            NBTTagList list = new NBTTagList();
+            for (int i = 0; i < string.length; ++i)
+            {
+                list.add(new NBTTagString("", string[i]));
+            }
+            display.set("Lore", list);
+        }
+        else
+        {
+            display.setString("Name", string[0]);
+        }
         return true;
+    }
+
+    public static List<String> getItemStackLore(ItemStack itemStack)
+    {
+        if (itemStack == null)
+        {
+            return null;
+        }
+        CraftItemStack cis = ((CraftItemStack) itemStack);
+        if (cis.getHandle() == null)
+        {
+            return null;
+        }
+        NBTTagCompound tag = cis.getHandle().getTag();
+        if (tag == null)
+        {
+            cis.getHandle().setTag(tag = new NBTTagCompound());
+        }
+        if (!tag.hasKey("display"))
+        {
+            return null;
+        }
+        NBTTagList loreList = tag.getCompound("display").getList("Lore");
+        if (loreList == null || loreList.size() == 0)
+        {
+            return null;
+        }
+        List<String> lore = new ArrayList<String>();
+        for (int i = 0; i < loreList.size(); ++i)
+        {
+            lore.add(((NBTTagString) loreList.get(0)).data);
+        }
+        return lore;
     }
 
     public static String getItemStackName(ItemStack itemStack)
@@ -306,7 +369,7 @@ public class BukkitUtils
         {
             return null;
         }
-        CraftItemStack cis = ((CraftItemStack)itemStack);
+        CraftItemStack cis = ((CraftItemStack) itemStack);
         if (cis.getHandle() == null)
         {
             return null;
@@ -332,7 +395,7 @@ public class BukkitUtils
     {
         if (head.getType().equals(Material.SKULL_ITEM))
         {
-            head.setDurability((short)3);
+            head.setDurability((short) 3);
             CraftItemStack newHead = new CraftItemStack(head);
             NBTTagCompound newHeadData = new NBTTagCompound();
             newHeadData.setString("SkullOwner", name);

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.basics.moderation;
+package de.cubeisland.cubeengine.basics.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.config.Configuration;
@@ -11,7 +11,6 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import org.bukkit.inventory.ItemStack;
 
 @Codec("yml")
 public class KitConfiguration extends Configuration
@@ -26,8 +25,12 @@ public class KitConfiguration extends Configuration
     @Comment("If not empty this message will be displayed when receiving this kit.")
     @Option("custom-receive-message")
     public String customReceiveMsg = "";
+    @Comment("amount*itemName/Id:Data customName\n"
+    + "example: 64*1:0 MyFirstStoneBlocks")
     @Option("items")
-    public List<ItemStack> kitItems = new LinkedList<ItemStack>();
+    public List<KitItem> kitItems = new LinkedList<KitItem>();
+    @Option("commands")
+    public List<String> kitCommands = new LinkedList<String>();
     @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
     @Option("generate-permission")
     public boolean usePerm = false;
@@ -42,11 +45,11 @@ public class KitConfiguration extends Configuration
 
     public Kit getKit()
     {
-        Kit kit = new Kit(this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitItems);
+        Kit kit = new Kit(this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
         return kit;
     }
 
-    public static Kit getKit(String name)
+    public static Kit getKit(String name) throws InvalidKitException
     {
         String lname = name.toLowerCase(Locale.ENGLISH);
         Kit kit = kitMap.get(lname);
@@ -64,8 +67,10 @@ public class KitConfiguration extends Configuration
                     kitConfigMap.put(kit, config);
                     kitMap.put(lname, kit);
                 }
-                catch (Exception ignored)
-                {}
+                catch (Exception ex)
+                {
+                    throw new InvalidKitException("Could not load the kit " + name, ex);
+                }
             }
         }
         return kit;

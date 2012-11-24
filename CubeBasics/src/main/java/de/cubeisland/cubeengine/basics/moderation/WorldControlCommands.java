@@ -175,7 +175,14 @@ public class WorldControlCommands
             loc = sender.getLocation();
         }
         int entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, type, itemtype, false);
-        context.sendMessage("basics", "&aRemoved &e%d &aentities!", entitiesRemoved);
+        if (entitiesRemoved == 0)
+        {
+            context.sendMessage("basics", "&eNo entities to remove!");
+        }
+        else
+        {
+            context.sendMessage("basics", "&aRemoved &e%d &aentities!", entitiesRemoved);
+        }
     }
 
     @Command(desc = "Gets rid of living animals nearby you", flags = {

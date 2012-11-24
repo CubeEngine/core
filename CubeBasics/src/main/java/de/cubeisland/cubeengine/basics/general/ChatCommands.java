@@ -13,7 +13,7 @@ import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.sql.Timestamp;
 
 public class ChatCommands
-{
+{//TODO random
     private UserManager um;
     private String lastWhisperOfConsole = null;
     private Basics basics;
