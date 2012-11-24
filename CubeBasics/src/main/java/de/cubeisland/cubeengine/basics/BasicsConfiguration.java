@@ -1,19 +1,21 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 @Codec("yml")
+@DefaultConfig
 public class BasicsConfiguration extends Configuration
 {
     @Option("commands.spawnmob-limit")

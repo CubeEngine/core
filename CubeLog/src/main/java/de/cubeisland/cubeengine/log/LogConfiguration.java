@@ -2,11 +2,13 @@ package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import gnu.trove.map.hash.THashMap;
 import java.util.Map;
 
 @Codec("yml")
+@DefaultConfig
 public class LogConfiguration extends Configuration
 {
     @Option("log-actions")

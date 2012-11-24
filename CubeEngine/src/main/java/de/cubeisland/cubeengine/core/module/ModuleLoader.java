@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.LoadFrom;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
@@ -100,8 +101,12 @@ public class ModuleLoader
                 if (Configuration.class.isAssignableFrom(field.getType()) && field.getType().isAnnotationPresent(Codec.class))
                 {
                     Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
-                    String filename = "config";
 
+                    String filename = null;
+                    if (configClass.isAnnotationPresent(DefaultConfig.class))
+                    {
+                        filename = "config";
+                    }
                     if (field.isAnnotationPresent(LoadFrom.class))
                     {
                         filename = field.getAnnotation(LoadFrom.class).value();

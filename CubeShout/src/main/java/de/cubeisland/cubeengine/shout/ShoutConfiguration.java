@@ -3,11 +3,13 @@ package de.cubeisland.cubeengine.shout;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 
 @Codec("yml")
 @Revision(1)
+@DefaultConfig
 public class ShoutConfiguration extends Configuration
 {
     @Option("initial-delay")
