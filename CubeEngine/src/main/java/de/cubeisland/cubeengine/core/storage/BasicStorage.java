@@ -213,7 +213,8 @@ public class BasicStorage<V extends Model> implements Storage<V>
     @Override
     public void subscribe(SubcribeType type, Callback callback)
     {
-        switch (type) {
+        switch (type)
+        {
             case CREATE:
                 this.createCallbacks.add(callback);
                 break;

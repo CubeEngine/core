@@ -25,7 +25,8 @@ public class BlockBurnLogger extends
         {
             this.logBlockChange(FIRE, null, block.getState(), null);
         }
-        switch (event.getBlock().getRelative(BlockFace.UP).getType()) {
+        switch (event.getBlock().getRelative(BlockFace.UP).getType())
+        {
             case WOODEN_DOOR:
             case IRON_DOOR:
             case SNOW:

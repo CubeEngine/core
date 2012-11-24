@@ -26,7 +26,9 @@ public class UserReceiver extends AbstractReceiver
     @Override
     public void sendMessage(String message)
     {
-        user.sendMessage("shout", message);
+        user.sendMessage(" ");
+        user.sendMessage(message);
+        user.sendMessage(" ");
     }
 
     @Override

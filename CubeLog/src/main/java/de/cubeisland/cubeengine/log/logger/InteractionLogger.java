@@ -22,7 +22,8 @@ public class InteractionLogger extends
     {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
         {
-            switch (event.getClickedBlock().getType()) {
+            switch (event.getClickedBlock().getType())
+            {
                 //TODO
                 case WOODEN_DOOR:
                 case TRAP_DOOR:

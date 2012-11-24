@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.util.Pair;
 
 public final class StringReader extends ArgumentReader<String>
 {
+
     public StringReader()
     {
         super(String.class);
@@ -25,20 +26,26 @@ public final class StringReader extends ArgumentReader<String>
 
             if (quoteChar == '"' || quoteChar == '\'')
             {
-                if (args[0].charAt(args[0].length() - 1) == quoteChar)
+                if (args[0].length() > 1 && args[0].charAt(args[0].length() - 1) == quoteChar)//ends with quotechar AND is not 1 long?
                 {
-                    return new Pair<Integer, String>(0, args[0].substring(1, args[0].length() - 1));
+                    return new Pair<Integer, String>(1, args[0].substring(1, args[0].length() - 1));
                 }
                 int i = 1;
                 StringBuilder builder = new StringBuilder(args[0].substring(1));
 
-                for (; i < args.length; ++i)
+                for (; i < args.length;)
                 {
+                    if (args[i].charAt(args[i].length() - 1) == quoteChar)
+                    {
+                        builder.append(' ').append(args[i].substring(0, args[i].length() - 1));
+                        break;
+                    }
                     builder.append(' ').append(args[i]);
+                    ++i;
                 }
-                return new Pair<Integer, String>(i - 1, builder.toString());
+                return new Pair<Integer, String>(i + 1, builder.toString());
             }
         }
-        return new Pair<Integer, String>(0, args[0]);
+        return new Pair<Integer, String>(1, args[0]);
     }
 }

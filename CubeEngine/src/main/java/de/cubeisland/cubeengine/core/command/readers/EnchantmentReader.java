@@ -17,6 +17,6 @@ public class EnchantmentReader extends ArgumentReader<Enchantment>
     public Pair<Integer, Enchantment> read(String... args) throws InvalidArgumentException
     {
         Enchantment value = EnchantMatcher.get().matchEnchantment(args[0]);
-        return new Pair<Integer, Enchantment>(0, value);
+        return new Pair<Integer, Enchantment>(1, value);
     }
 }

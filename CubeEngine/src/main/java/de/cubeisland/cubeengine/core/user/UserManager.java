@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
@@ -9,21 +10,10 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import org.apache.commons.lang.RandomStringUtils;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -39,9 +29,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
+import org.apache.commons.lang.RandomStringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -94,10 +94,27 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
                     .where().field("lastseen").is(LESS).value()
                     .and().field("nogc").is(EQUAL).value(false)
                     .end().end());
+
+            this.database.prepareAndStoreStatement(User.class, "clearpw", database.getQueryBuilder()
+                   .update(table)
+                   .set("passwd")
+                   .end().end());
         }
         catch (SQLException e)
         {
             throw new StorageException("Failed to initialize the user manager!", e);
+        }
+    }
+
+    public void resetAllPasswords()
+    {
+        try
+        {
+            this.database.preparedUpdate(modelClass, "clearpw", (Object)null);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not reset passwords", ex);
         }
     }
 
@@ -515,6 +532,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         {
             this.getExactUser(player).sendMessage(category, message, args);
         }
+        Bukkit.getServer().getConsoleSender().sendMessage(_(category, message, args));
     }
 
     public void clearAttributes(Module module)

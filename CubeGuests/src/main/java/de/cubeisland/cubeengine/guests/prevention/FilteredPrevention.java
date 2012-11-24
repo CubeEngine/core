@@ -144,7 +144,8 @@ public abstract class FilteredPrevention<T extends Object> extends Prevention
     {
         if (!can(player))
         {
-            switch (this.filterMode) {
+            switch (this.filterMode)
+            {
                 case NONE:
                     return false;
                 case WHITELIST:

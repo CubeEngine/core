@@ -61,7 +61,7 @@ public class SpawnMobCommand
         }
         else
         {
-            loc = sender.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0)); // TODO do Util method for this in core 
+            loc = sender.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0));
         }
         Integer amount = 1;
         if (context.hasIndexed(1))

@@ -1,9 +1,15 @@
 package de.cubeisland.cubeengine.shout.announce;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.i18n.ClonedLanguage;
+import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.i18n.NormalLanguage;
+import org.apache.commons.lang.Validate;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.Validate;
 
 /**
  * Class to represent an announcement.
@@ -11,56 +17,43 @@ import org.apache.commons.lang.Validate;
 public class Announcement
 {
     private final String name;
-    private final String defaultLocale;
     private final String permNode;
     private final List<String> worlds;
     private final Map<String, String> messages;
     private final long delay;
+    private final boolean motd;
 
     /**
      * Constructor of announcement
      *
      * @param name          This announcements unique name
-     * @param defaultLocale This announcements default locale
      * @param permNode      This announcements permNode
      * @param worlds        This announcements worlds
      * @param messages      This announcements messages
      * @param delay         This announcements delay
      */
-    public Announcement(String name, String defaultLocale, String permNode, List<String> worlds, Map<String, String> messages, long delay)
+    public Announcement(String name, String permNode, List<String> worlds, Map<String, String> messages, long delay, boolean motd)
     {
         this.name = name;
-        this.defaultLocale = defaultLocale;
         this.permNode = permNode;
         this.worlds = worlds;
         this.messages = messages;
         this.delay = delay;
+        this.motd = motd;
     }
 
     /**
      * Constructor of announcement
      *
      * @param name          This announcements unique name
-     * @param defaultLocale This announcements default locale
      * @param permNode      This announcements permNode
      * @param world        This announcements world
      * @param messages      This announcements messages
      * @param delay         This announcements delay
      */
-    public Announcement(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay)
+    public Announcement(String name, String permNode, String world, Map<String, String> messages, long delay, boolean motd)
     {
-        this(name, defaultLocale, permNode, Arrays.asList(world), messages, delay);
-    }
-
-    /**
-     * Get the message from this announcement in the default language, as
-     * specified by CubeEngine
-     *
-     * @return The message for this announcement in default language
-     */
-    public String getMessage()
-    {
-        return this.getMessage(this.defaultLocale);
+        this(name, permNode, Arrays.asList(world), messages, delay, motd);
     }
 
     /**
@@ -71,7 +64,32 @@ public class Announcement
      */
     public String getMessage(String locale)
     {
-        return this.messages.containsKey(locale) ? this.messages.get(locale) : this.getMessage();
+        locale = I18n.normalizeLanguage(locale);
+        if (this.messages.containsKey(locale))
+        {
+            return messages.get(locale);
+        }
+
+        final I18n i18n = CubeEngine.getI18n();
+        Language lang = i18n.getLanguage(locale);
+        if (lang != null)
+        {
+            if (lang instanceof NormalLanguage)
+            {
+                lang = ((NormalLanguage)lang).getParent();
+                if (lang != null)
+                {
+                    return this.messages.get(lang.getCode());
+                }
+            }
+
+            if (lang instanceof ClonedLanguage)
+            {
+                return this.messages.get(((ClonedLanguage)lang).getOriginal().getCode());
+            }
+        }
+
+        return this.messages.get(i18n.getDefaultLanguage());
     }
 
     /**
@@ -124,22 +142,26 @@ public class Announcement
         return this.name;
     }
 
-    public static void validate(String name, String defaultLocale, String permNode, List<String> worlds, Map<String, String> messages, long delay) throws IllegalArgumentException
+    public static void validate(String name, String permNode, List<String> worlds, Map<String, String> messages, long delay) throws IllegalArgumentException
     {
-        Validate.notEmpty(name, "The announcement most have a name");
-        Validate.notEmpty(defaultLocale, "The announcement most have a default locale");
-        Validate.notEmpty(permNode, "The announcement most have a permission");
-        Validate.notEmpty(worlds, "The announcement most have a world");
-        Validate.notEmpty(messages, "The announcement most have one or more messages");
-        Validate.notNull(delay, "The announcement most have a delay");
+        Validate.notEmpty(name, "The announcement must have a name");
+        Validate.notEmpty(permNode, "The announcement must have a permission");
+        Validate.notEmpty(worlds, "The announcement must have a world");
+        Validate.notEmpty(messages, "The announcement must have one or more messages");
+        Validate.notNull(delay, "The announcement must have a delay");
         if (delay == 0)
         {
-            throw new IllegalArgumentException("The announcement modt have a delay");
+            throw new IllegalArgumentException("The announcement must have a delay");
         }
     }
 
-    public static void validate(String name, String defaultLocale, String permNode, String world, Map<String, String> messages, long delay) throws IllegalArgumentException
+    public static void validate(String name, String permNode, String world, Map<String, String> messages, long delay) throws IllegalArgumentException
     {
-        Announcement.validate(name, defaultLocale, permNode, Arrays.asList(world), messages, delay);
+        Announcement.validate(name, permNode, Arrays.asList(world), messages, delay);
+    }
+
+    public boolean isMOTD()
+    {
+        return motd;
     }
 }

@@ -1,7 +1,9 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
@@ -12,7 +14,15 @@ import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -20,15 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -50,6 +54,11 @@ public class User extends UserBase implements LinkingModel<Integer>
     public byte[] passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
+    @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
+    public String language = null;
+
+    private boolean isLoggedIn = false;
+
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
@@ -120,12 +129,13 @@ public class User extends UserBase implements LinkingModel<Integer>
     @Override
     public void sendMessage(String string)
     {
+        if (string == null)
+        {
+            return;
+        }
         if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
         {
-            if (CubeEngine.getCore().isDebug())
-            {
-                CubeEngine.getLogger().log(LogLevel.DEBUG, "A module sent an untranslated message!");
-            }
+            CubeEngine.getLogger().log(DEBUG, "A module sent an untranslated message!");
         }
         super.sendMessage(ChatFormat.parseFormats(string));
     }
@@ -168,17 +178,26 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public String getLanguage()
     {
-        String language = null;
+        if (this.language != null)
+        {
+            return this.language; 
+        }
+        String lang = null;
         Player onlinePlayer = this.offlinePlayer.getPlayer();
         if (onlinePlayer != null)
         {
-            language = BukkitUtils.getLanguage(onlinePlayer);
+            lang = BukkitUtils.getLanguage(onlinePlayer);
         }
-        if (language == null)
+        if (lang == null)
         {
-            language = CubeEngine.getCore().getConfiguration().defaultLanguage;
+            lang = CubeEngine.getCore().getConfiguration().defaultLanguage;
         }
-        return language;
+        return lang;
+    }
+    
+    public void setLanguage(Language lang)
+    {
+        this.language = lang.getCode();
     }
 
     @Override
@@ -258,18 +277,18 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public void removeAttribute(Module module, String name)
     {
-        Map<String, Object> attributMap = this.attributes.get(module);
-        if (attributMap == null)
+        Map<String, Object> attributeMap = this.attributes.get(module);
+        if (attributeMap == null)
         {
             return;
         }
-        attributMap.remove(name);
+        attributeMap.remove(name);
     }
 
-    public void safeTeleport(Location location)
+    public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
-        while (!((location.getBlock().getType().equals(Material.AIR)) && (checkLocation.getBlock().getType().equals(Material.AIR))))
+        while (!(BlockUtil.isNonSolidBlock(location.getBlock().getType()) && BlockUtil.isNonSolidBlock(checkLocation.getBlock().getType())))
         {
             location.add(0, 1, 0);
             checkLocation.add(0, 1, 0);
@@ -288,7 +307,17 @@ public class User extends UserBase implements LinkingModel<Integer>
             location = location.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0); // If would fall in lava tp on highest position.
             // If there is still lava then you shall burn!
         }
-        this.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        if (location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FENCE)
+            || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
+        {
+            location.add(0, 2, 0);
+        }
+        if (keepDirection)
+        {
+            location.setPitch(this.getLocation().getPitch());
+            location.setYaw(this.getLocation().getYaw());
+        }
+        this.teleport(location, cause);
     }
 
     public void clearAttributes(Module module)
@@ -308,6 +337,12 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
     }
 
+    public void resetPassword()
+    {
+        this.passwd = null;
+        CubeEngine.getUserManager().update(this);
+    }
+
     public boolean checkPassword(String password)
     {
         synchronized (hasher)
@@ -318,4 +353,24 @@ public class User extends UserBase implements LinkingModel<Integer>
             return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
         }
     }
+
+    public boolean login(String password)
+    {
+        if (!this.isLoggedIn)
+        {
+            this.isLoggedIn = this.checkPassword(password);
+        }
+        return isLoggedIn;
+    }
+
+    public void logout()
+    {
+        this.isLoggedIn = false;
+    }
+
+    public boolean isLoggedIn()
+    {
+        return this.isLoggedIn;
+    }
+
 }

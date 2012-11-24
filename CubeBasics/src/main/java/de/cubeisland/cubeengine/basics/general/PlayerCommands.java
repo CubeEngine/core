@@ -6,8 +6,13 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.sql.Timestamp;
 import net.minecraft.server.EntityPlayer;
 import org.bukkit.GameMode;
@@ -15,12 +20,6 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class PlayerCommands
 {
@@ -231,7 +230,8 @@ public class PlayerCommands
         else
         {
             GameMode gamemode = user.getGameMode();
-            switch (gamemode) {
+            switch (gamemode)
+            {
                 case ADVENTURE:
                 case CREATIVE:
                     user.setGameMode(GameMode.SURVIVAL);
@@ -254,20 +254,22 @@ public class PlayerCommands
         }
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "kill", "slay"
-    }, desc = "Kills a player", usage = "<player>|-a", flags =
-    {
+    }, desc = "Kills a player", usage = "<player>|-a", flags = {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f"),
         @Flag(longName = "lightning", name = "l")
     })
     public void kill(CommandContext context)
-    {//TODO kill a player looking at if possible
-        //TODO kill a player with cool effects :) e.g. lightning
-        boolean lightning = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
-        boolean force = context.hasFlag("f")&& BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+    {
+        //TODO kill a player looking at if possible
+        boolean lightning = context.hasFlag("l") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+        if (!((context.hasIndexed(0) || context.hasFlag("a"))))
+        {
+            blockCommand(context, "basics", "&eYou need to specify who you want to kill!");
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -322,7 +324,6 @@ public class PlayerCommands
                 user.getWorld().strikeLightningEffect(user.getLocation());
             }
             user.setHealth(0);
-            //TODO broadcast alternative Deathmsgs
             context.sendMessage("basics", "&aYou killed &2%s&a!", user.getName());
         }
     }
@@ -384,7 +385,7 @@ public class PlayerCommands
         User sender = um.getExactUser(context.getSender());
         if (sender == null)
         {
-            invalidUsage(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
+            blockCommand(context, "basics", "&cYou want to kill yourself? &aThe command for that is stop!");
         }
         sender.setHealth(0);
         sender.setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, 20));

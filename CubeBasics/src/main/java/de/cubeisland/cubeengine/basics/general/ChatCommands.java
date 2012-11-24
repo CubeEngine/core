@@ -63,6 +63,11 @@ public class ChatCommands
                 paramNotFound(context, "basics", "&eTalking to yourself?");
             }
             user.sendMessage("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
+            Boolean afk = user.getAttribute(basics, "afk");
+            if (afk != null && afk)
+            {
+                context.sendMessage("basics", "&2%s &7is afk!", user.getName());
+            }
             context.sendMessage(_("basics", "&eYou &6-> &2%s&e: &f%s", user.getName(), message));
         }
 
@@ -127,6 +132,11 @@ public class ChatCommands
         else
         {
             user.sendMessage("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
+            Boolean afk = user.getAttribute(basics, "afk");
+            if (afk != null && afk)
+            {
+                context.sendMessage("basics", "&2%s &7is afk!", user.getName());
+            }
             context.sendMessage(_("basics", "&eYou &6-> %&2s&e: &f%s", user.getName(), message));
         }
     }

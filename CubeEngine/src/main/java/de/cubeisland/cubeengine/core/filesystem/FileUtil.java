@@ -1,11 +1,21 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
-import java.io.*;
-import java.util.ArrayList;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 
 /**
  * This class provides some methods to read Files lineByLine
@@ -19,7 +29,7 @@ public class FileUtil
      * Reads the file line by line and returns a list of Strings containing all lines
      *
      * @param file the file
-     * @return
+     * @return a list of lines
      */
     public static List<String> readStringList(File file)
     {
@@ -38,10 +48,10 @@ public class FileUtil
     }
 
     /**
-     * Reads the inputstream line by line and returns a list of Strings containing all lines
+     * Reads the InputStream line by line and returns a list of Strings containing all lines
      *
-     * @param stream the inputstream
-     * @return
+     * @param stream the InputStream
+     * @return a list of lines
      */
     public static List<String> readStringList(InputStream stream)
     {
@@ -56,16 +66,16 @@ public class FileUtil
      * Reads the reader line by line and returns a list of Strings containing all lines
      *
      * @param reader the reader
-     * @return
+     * @return a list of lines
      */
     public static List<String> readStringList(Reader reader)
     {
-        // TODO I don't think a slient fail is a good idea here...
+        // TODO I don't think a silent fail is a good idea here...
         if (reader == null)
         {
             return null;
         }
-        ArrayList<String> list = new ArrayList<String>();
+        List<String> list = new LinkedList<String>();
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
         try
@@ -77,7 +87,7 @@ public class FileUtil
         }
         catch (IOException e)
         {
-            LOGGER.log(LogLevel.ERROR, e.getMessage(), e);
+            LOGGER.log(ERROR, e.getMessage(), e);
         }
         finally
         {

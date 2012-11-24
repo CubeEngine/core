@@ -12,15 +12,17 @@ import org.bukkit.block.BlockFace;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import de.cubeisland.cubeengine.core.util.LocationUtil;
 
 /**
- * Contains commands for fast movement.
- * /up
- * /ascend
- * /descend
- * /jumpto
- * /back
- * //TODO place/put tp player wher you are looking at
+ * Contains commands for fast movement. 
+ * /up 
+ * /ascend 
+ * /descend 
+ * /jumpto 
+ * /through /thru 
+ * /back 
+ * /place /put
  */
 public class MovementCommands
 {
@@ -52,14 +54,12 @@ public class MovementCommands
             blockCommand(context, "basics", "&cYour destination seems to be obstructed!");
         }
         loc = loc.getBlock().getLocation();
-        loc.setPitch(sender.getLocation().getPitch());
-        loc.setYaw(sender.getLocation().getYaw());
         loc.add(0.5, 1, 0.5);
         if (block.getType().equals(Material.AIR))
         {
             block.setType(Material.GLASS);
         }
-        TeleportCommands.teleport(sender, loc, true, false); // is save anyway so we do not need to check again
+        TeleportCommands.teleport(sender, loc, true, false, true); // is save anyway so we do not need to check again
         context.sendMessage("basics", "&aYou just lifted!");
     }
 
@@ -75,8 +75,8 @@ public class MovementCommands
         }
         // go upwards until hitting 2 airblocks again
         while (!((loc.getBlock().getType().equals(Material.AIR))
-            && (loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)))
-            && loc.getBlockY() + 1 < loc.getWorld().getMaxHeight())
+                && (loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)))
+                && loc.getBlockY() + 1 < loc.getWorld().getMaxHeight())
         {
             loc.add(0, 1, 0);
         }
@@ -90,7 +90,7 @@ public class MovementCommands
         }
         //reached new location
         context.sendMessage("basics", "&aAscended a level!");
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
     }
 
     @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
@@ -105,9 +105,9 @@ public class MovementCommands
         }
         // go downwards until hitting 2 airblocks & a solid block again 
         while (!((loc.getBlock().getType().equals(Material.AIR))
-            && (loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR))
-            && (!loc.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.AIR)))
-            && loc.getBlockY() + 1 < loc.getWorld().getMaxHeight())
+                && (loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR))
+                && (!loc.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.AIR)))
+                && loc.getBlockY() + 1 < loc.getWorld().getMaxHeight())
         {
             loc.add(0, -1, 0);
         }
@@ -117,9 +117,9 @@ public class MovementCommands
         }
         //reached new location
         context.sendMessage("basics", "&aDescended a level!");
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
     }
-//TODO through cmd
+
     @Command(desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
     {
@@ -130,13 +130,28 @@ public class MovementCommands
             blockCommand(context, "basics", "&cNo block in sight!");
         }
         loc.add(0.5, 1, 0.5);
-        loc.setYaw(sender.getLocation().getYaw());
-        loc.setPitch(sender.getLocation().getPitch());
-        TeleportCommands.teleport(sender, loc, true, false);
+        TeleportCommands.teleport(sender, loc, true, false, true);
         context.sendMessage("basics", "&aYou just jumped!");
     }
 
-    @Command(desc = "Teleports you to your last location", max = 0, flags = {
+    @Command(
+    names = { "through", "thru" },
+    desc = "Jumps to the position you are looking at.", max = 0)
+    public void through(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
+        Location loc = LocationUtil.getBlockBehindWall(sender, 20, 30); //TODO these values in config
+        if (loc == null)
+        {
+            sender.sendMessage("basics", "&cNothing to pass through!");
+            return;
+        }
+        TeleportCommands.teleport(sender, loc, true, false, true);
+        context.sendMessage("basics", "&aYou just passed the wall!");
+    }
+
+    @Command(desc = "Teleports you to your last location", max = 0, flags =
+    {
         @Flag(longName = "unsafe", name = "u")
     })
     public void back(CommandContext context)
@@ -148,7 +163,31 @@ public class MovementCommands
             blockCommand(context, "basics", "&cYou never teleported!");
         }
         boolean safe = !context.hasFlag("u");
-        TeleportCommands.teleport(sender, loc, safe, true);
+        TeleportCommands.teleport(sender, loc, safe, true, true);
         sender.sendMessage("basics", "&aTeleported to your last location!");
+    }
+
+    @Command(
+    names =  {  "place", "put"  },
+    desc = "Jumps to the position you are looking at.", 
+    max = 1, min= 1,
+    usage= "<player>")
+    public void place(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            blockCommand(context, "basics", "&cUser %s not found!", context.getString(0));
+        }
+        Location loc = sender.getTargetBlock(null, 350).getLocation();
+        if (loc.getBlock().getType().equals(Material.AIR))
+        {
+            blockCommand(context, "basics", "&cNo block in sight!");
+        }
+        loc.add(0.5, 1, 0.5);
+        TeleportCommands.teleport(user, loc, true, false, true);
+        context.sendMessage("basics", "&aYou just placed &2%s &awhere you were looking!", user.getName());
+        user.sendMessage("basics", "&aYou were placed somewhere!");
     }
 }

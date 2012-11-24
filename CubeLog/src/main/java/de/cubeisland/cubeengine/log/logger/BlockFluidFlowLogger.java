@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.log.logger;
 
+import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isFluidBlock;
+import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import java.util.Arrays;
+import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.*;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,8 +15,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
-
-import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.*;
 
 public class BlockFluidFlowLogger extends
     BlockLogger<BlockFluidFlowLogger.BlockFluidFlowConfig>
@@ -26,7 +25,7 @@ public class BlockFluidFlowLogger extends
     }
 
     //TODO do this better
-    private static final Set<Integer> nonFluidProofBlocks = new HashSet<Integer>(Arrays.asList(7, 8, 9, 10, 27, 28, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 69, 70, 75, 76, 78, 93, 94, 104, 105, 106));
+    
     private static final BlockFace[] DIRECTIONS = new BlockFace[]
     {
         BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
@@ -39,7 +38,7 @@ public class BlockFluidFlowLogger extends
         BlockState fromBlock = event.getBlock().getState();
         BlockState toBlock = event.getToBlock().getState();
         BlockState newToBlock = event.getToBlock().getState();
-        final boolean canFlow = toBlock.getType().equals(Material.AIR) || nonFluidProofBlocks.contains(toBlock.getTypeId());
+        final boolean canFlow = toBlock.getType().equals(Material.AIR) || isNonFluidProofBlock(toBlock.getType());
         if (!canFlow)
         {
             return;
@@ -134,7 +133,6 @@ public class BlockFluidFlowLogger extends
         }
     }
 
-    private static Set<Material> fluids = EnumSet.of(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA);
     private static Set<Material> lava = EnumSet.of(Material.LAVA, Material.STATIONARY_LAVA);
     private static Set<Material> water = EnumSet.of(Material.WATER, Material.STATIONARY_WATER);
 
@@ -145,7 +143,7 @@ public class BlockFluidFlowLogger extends
         {
             return;
         }
-        else if (!fluids.contains(oldState.getType()) && fluids.contains(newState.getType()))
+        else if (!isFluidBlock(oldState.getType()) && isFluidBlock(newState.getType()))
         {
 
             if ((lava.contains(newState.getType()) && !this.config.logLavaDestruct)
@@ -154,9 +152,9 @@ public class BlockFluidFlowLogger extends
                 return;
             }
         }
-        else if (!fluids.contains(newState.getType()) && newState.getTypeId() != 0) //newBlock is not fluid or air
+        else if (!isFluidBlock(newState.getType()) && newState.getTypeId() != 0) //newBlock is not fluid or air
         {
-            if (fluids.contains(oldState.getType()))
+            if (isFluidBlock(oldState.getType()))
             {
                 if (!this.config.logLavaWaterCreation)
                 {

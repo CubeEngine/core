@@ -4,11 +4,12 @@ import de.cubeisland.cubeengine.basics.general.AfkListener;
 import de.cubeisland.cubeengine.basics.general.ChatCommands;
 import de.cubeisland.cubeengine.basics.general.GeneralsListener;
 import de.cubeisland.cubeengine.basics.general.InformationCommands;
+import de.cubeisland.cubeengine.basics.general.LagTimer;
 import de.cubeisland.cubeengine.basics.general.ListCommand;
-import de.cubeisland.cubeengine.basics.mail.MailCommand;
-import de.cubeisland.cubeengine.basics.mail.MailManager;
 import de.cubeisland.cubeengine.basics.general.MuteListener;
 import de.cubeisland.cubeengine.basics.general.PlayerCommands;
+import de.cubeisland.cubeengine.basics.mail.MailCommand;
+import de.cubeisland.cubeengine.basics.mail.MailManager;
 import de.cubeisland.cubeengine.basics.moderation.InventoryCommands;
 import de.cubeisland.cubeengine.basics.moderation.ItemCommands;
 import de.cubeisland.cubeengine.basics.moderation.KickBanCommands;
@@ -65,7 +66,7 @@ public class Basics extends Module
         this.registerCommands(new SpawnMobCommand(this));
         this.registerCommands(new TimeControlCommands());
         this.registerCommands(new WorldControlCommands(this));
-        this.registerCommands(new PowerToolCommand());
+        this.registerCommand(new PowerToolCommand(this));
         this.registerCommand(new KitCommand(this));
         this.registerListener(new PowerToolListener());
 
@@ -98,6 +99,7 @@ public class Basics extends Module
         {
             this.getTaskManger().scheduleSyncRepeatingTask(this, afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
+        LagTimer.getTimer(); // init timer
 
         //TODO register permissions of kits in config
 

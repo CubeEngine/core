@@ -21,6 +21,6 @@ public class WorldReader extends ArgumentReader<World>
     public Pair<Integer, World> read(String... args) throws InvalidArgumentException
     {
         World value = this.server.getWorld(args[0]);
-        return new Pair<Integer, World>(0, value);
+        return new Pair<Integer, World>(1, value);
     }
 }

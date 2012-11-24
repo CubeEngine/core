@@ -38,7 +38,8 @@ public class BlockPlaceLogger extends
     {
         BlockState newState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
         Material mat = event.getBucket();
-        switch (mat) {
+        switch (mat)
+        {
             case LAVA_BUCKET:
                 mat = Material.STATIONARY_LAVA;
                 break;

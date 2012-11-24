@@ -40,13 +40,15 @@ public enum BasicsPerm implements Permission
     COMMAND_BUTCHER_FLAG_PET,
     COMMAND_BUTCHER_FLAG_ANIMAL,
     COMMAND_BUTCHER_FLAG_LIGHTNING,
-    COMMAND_BUTCHER_FLAG_GOLEM, 
+    COMMAND_BUTCHER_FLAG_GOLEM,
     COMMAND_BUTCHER_FLAG_ALLTYPE,
-    COMMAND_BUTCHER_FLAG_ALL, 
+    COMMAND_BUTCHER_FLAG_ALL,
     COMMAND_KILL_FORCE,
     COMMAND_KILL_LIGHTNING,
     COMPASS_JUMPTO_LEFT,
-    COMPASS_JUMPTO_RIGHT,
+    COMPASS_JUMPTO_RIGHT, 
+    COMMAND_BUTCHER_FLAG_OTHER, 
+    COMMAND_BUTCHER_FLAG_NPC,
     ;
     
     private String permission;
@@ -64,16 +66,19 @@ public enum BasicsPerm implements Permission
         this.def = def;
     }
 
+    @Override
     public boolean isAuthorized(Permissible player)
     {
         return player.hasPermission(permission);
     }
 
+    @Override
     public String getPermission()
     {
         return this.permission;
     }
 
+    @Override
     public PermissionDefault getPermissionDefault()
     {
         return this.def;

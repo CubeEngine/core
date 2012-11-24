@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.ShoutException;
 import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
@@ -18,23 +18,38 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
 
 /**
  * Class to manage all the announcements and their receivers
  */
 public class AnnouncementManager
 {
-    private Shout module;
-    private Announcer announcer;
+    private final Logger logger;
+    private final Shout module;
+    private final Announcer announcer;
+    private final File announcementFolder;
     private Map<String, AnnouncementReceiver> receivers;
     private Map<String, Announcement> announcements;
-    private File announcementFolder;
 
     public AnnouncementManager(Shout module, File announcementFolder)
     {
         this.module = module;
+        this.logger = module.getLogger();
         this.announcer = module.getAnnouncer();
         this.receivers = new ConcurrentHashMap<String, AnnouncementReceiver>();
         this.announcements = new LinkedHashMap<String, Announcement>();
@@ -71,7 +86,21 @@ public class AnnouncementManager
      */
     public Announcement getAnnouncement(String name)
     {
-        return this.announcements.get(name);
+        name = name.toLowerCase(Locale.ENGLISH);
+        if (this.announcements.containsKey(name))
+        {
+            return this.announcements.get(name);
+        }
+        else
+        {
+            List<String> matches = StringUtils.getBestMatches(name, this.announcements.keySet(), 3);
+
+            if (matches.size() == 1)
+            {
+                return this.announcements.get(matches.get(0));
+            }
+        }
+        return null;
     }
 
     /**
@@ -82,7 +111,8 @@ public class AnnouncementManager
      */
     public boolean hasAnnouncement(String name)
     {
-        return this.announcements.containsKey(name);
+        // TODO correct typos?
+        return this.announcements.containsKey(name.toLowerCase());
     }
 
     /**
@@ -147,9 +177,13 @@ public class AnnouncementManager
         Queue<Announcement> messages = new LinkedList<Announcement>();
 
         // Load what announcements should be displayed to the user
+        if (this.announcements.containsKey("motd"))
+        {
+            messages.add(this.announcements.get("motd"));
+        }
         for (Announcement a : announcements.values())
         {
-            if (receiver.couldReceive(a))
+            if (receiver.couldReceive(a) && !a.getName().equalsIgnoreCase("motd"))
             {
                 messages.add(a);
             }
@@ -161,7 +195,7 @@ public class AnnouncementManager
         receiver.setAllAnnouncements(messages);
 
         this.receivers.put(receiver.getName(), receiver);
-        announcer.scheduleTask(receiver.getName(), new MessageTask(this, module.getTaskManger(), receiver),
+        announcer.scheduleTask(receiver.getName(), new MessageTask(module.getTaskManger(), receiver),
                 this.getGreatestCommonDivisor(receiver));
     }
 
@@ -197,26 +231,23 @@ public class AnnouncementManager
     {
         for (User user : module.getUserManager().getOnlineUsers())
         {
-            this.initializeReceiver(new UserReceiver(user, this));
+            this.initializeUser(user);
 
         }
     }
 
     /**
      * Adds an announcement.
-     * Most be done before ay player joins!
+     * Most be done before any player joins!
      *
      * @throws ShoutException if there is something wrong with the values
      */
-    public void addAnnouncement(String name, Map<String, String> messages, List<String> worlds, long delay,
-                                String permNode) throws ShoutException
+    public void addAnnouncement(String name, Map<String, String> messages, List<String> worlds, long delay, String permNode, boolean motd) throws ShoutException
     {
         try
         {
-            Announcement.validate(name, permNode, module.getCore().getConfiguration().defaultLanguage,
-                    worlds, messages, delay);
-            Announcement announcement = new Announcement(name, module.getCore().getConfiguration().defaultLanguage,
-                    permNode, worlds, messages, delay);
+            Announcement.validate(name, permNode, worlds, messages, delay);
+            Announcement announcement = new Announcement(name.toLowerCase(), permNode, worlds, messages, delay, motd);
             this.addAnnouncement(announcement);
         }
         catch (IllegalArgumentException ex)
@@ -227,7 +258,7 @@ public class AnnouncementManager
 
     public void addAnnouncement(Announcement announcement)
     {
-        this.announcements.put(announcement.getName(), announcement);
+        this.announcements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
     }
 
     /**
@@ -238,26 +269,41 @@ public class AnnouncementManager
     public void loadAnnouncements(File announcementFolder)
     {
         List<File> announcementFiles = Arrays.asList(announcementFolder.listFiles());
+        File motd = new File(announcementFolder, "motd");
+        if (!motd.exists())
+        {
+            motd = new File(announcementFolder, "MOTD");
+        }
+        if (motd.exists())
+        {
+            try
+            {
+                this.loadAnnouncement(motd, true);
+            }
+            catch (ShoutException ex)
+            {
+                this.logger.log(WARNING, "Could not load the MOTD");
+                this.logger.log(DEBUG, "The error message was: ", ex);
+            }
+        }
 
         for (File f : announcementFiles)
         {
+            if (f.getName().equalsIgnoreCase("motd"))
+            {
+                continue;
+            }
             if (f.isDirectory())
             {
-                if (module.getCore().isDebug())
-                {
-                    module.getLogger().log(LogLevel.DEBUG, "Loading announcement {0}", f.getName());
-                }
+                this.logger.log(DEBUG, "Loading announcement {0}", f.getName());
                 try
                 {
-                    this.loadAnnouncement(f);
+                    this.loadAnnouncement(f, false);
                 }
-                catch (ShoutException e)
+                catch (ShoutException ex)
                 {
-                    module.getLogger().log(LogLevel.WARNING, "There was an error loading the announcement: {0}", f.getName());
-                    if (module.getCore().isDebug())
-                    {
-                        module.getLogger().log(LogLevel.ERROR, "The error message was: ", e);
-                    }
+                    this.logger.log(WARNING, "There was an error loading the announcement: {0}", f.getName());
+                    this.logger.log(DEBUG, "The error message was: ", ex);
                 }
             }
         }
@@ -267,31 +313,31 @@ public class AnnouncementManager
     /**
      * Load an specific announcement
      *
-     * @param file the folder to load the announcement from
+     * @param announcementDir the folder to load the announcement from
      * @throws ShoutException if folder is not an folder or don't contain
      *                        required information
      */
-    private void loadAnnouncement(File file) throws ShoutException
+    private void loadAnnouncement(File announcementDir, boolean motd) throws ShoutException
     {
-        if (file.isFile())
+        if (announcementDir.isFile())
         {
             throw new ShoutException("Tried to load an announcement that was a file!");
         }
 
-        File confFile = new File(file, "meta.yml");
-        if (!confFile.exists())
+        File metaFile = new File(announcementDir, "meta.yml");
+        if (!metaFile.exists())
         {
-            File[] yamlFiles = file.listFiles((FilenameFilter)FileExtentionFilter.YAML);
-            if (yamlFiles.length > 0)
+            File[] potentialMetaFiles = announcementDir.listFiles((FilenameFilter)FileExtentionFilter.YAML);
+            if (potentialMetaFiles.length > 0)
             {
-                if (!yamlFiles[0].renameTo(confFile))
+                if (!potentialMetaFiles[0].renameTo(metaFile))
                 {
-                    throw new ShoutException("No config file to announcement: " + file.getName());
+                    throw new ShoutException("No meta file to announcement: " + announcementDir.getName());
                 }
             }
             else
             {
-                throw new ShoutException("No config file to announcement: " + file.getName());
+                throw new ShoutException("No meta file to announcement: " + announcementDir.getName());
             }
         }
 
@@ -301,7 +347,7 @@ public class AnnouncementManager
         String permNode = "*";
         String group = "*";
 
-        AnnouncementConfig config = Configuration.load(AnnouncementConfig.class, confFile);
+        AnnouncementConfig config = Configuration.load(AnnouncementConfig.class, metaFile);
         worlds = config.worlds == null ? worlds : config.worlds;
         permNode = config.permNode == null ? permNode : config.permNode;
         group = config.group == null ? group : config.group;
@@ -314,29 +360,28 @@ public class AnnouncementManager
             throw new ShoutException("The delay was not valid", e);
         }
 
-        File[] languageFiles = file.listFiles((FilenameFilter)new FileExtentionFilter("txt"));
+        File[] languageFiles = announcementDir.listFiles((FilenameFilter)new FileExtentionFilter("txt"));
 
-        for (File lang : languageFiles)
+        for (File langFile : languageFiles)
         {
             StringBuilder message = new StringBuilder();
-            for (String line : FileUtil.readStringList(lang))
+            for (String line : FileUtil.readStringList(langFile))
             {
-                message.append(line).append("\n");
+                message.append(StringUtils.rtrim(line)).append('\n');
             }
-            messages.put(I18n.normalizeLanguage(lang.getName().replace(".txt", "")), message.toString());
+            // TODO convert language names to codes. british -> en_GB
+            messages.put(I18n.normalizeLanguage(langFile.getName().replace(".txt", "")), message.toString());
         }
 
-        if (this.module.getCore().isDebug())
-        {
-            this.module.getLogger().log(LogLevel.DEBUG, "Languages: {0}", messages.keySet().toString());
-            this.module.getLogger().log(LogLevel.DEBUG, "Worlds: {0}", worlds);
-            this.module.getLogger().log(LogLevel.DEBUG, "Delay(in millisecounds): {0}", delay);
-            this.module.getLogger().log(LogLevel.DEBUG, "Permission: {0}", permNode);
-            this.module.getLogger().log(LogLevel.DEBUG, "Group: {0}", group);
-        }
+        this.logger.log(DEBUG, "Languages: {0}", messages.keySet().toString());
+        this.logger.log(DEBUG, "Worlds: {0}", worlds);
+        this.logger.log(DEBUG, "Delay(in millisecounds): {0}", delay);
+        this.logger.log(DEBUG, "Permission: {0}", permNode);
+        this.logger.log(DEBUG, "Group: {0}", group);
+
         try
         {
-            this.addAnnouncement(file.getName(), messages, worlds, delay, permNode);
+            this.addAnnouncement(announcementDir.getName(), messages, worlds, delay, permNode, motd);
         }
         catch (IllegalArgumentException e)
         {
@@ -387,12 +432,12 @@ public class AnnouncementManager
      * This will not load the announcement into the plugin
      *
      */
-    public void createAnnouncement(String name, String message, String delay, String world, String group, String permNode, String locale) throws IOException, IllegalArgumentException
+    public void createAnnouncement(String name, String locale, String message, String delay, String world, String group, String permNode) throws IOException, IllegalArgumentException
     {
         locale = I18n.normalizeLanguage(locale);
         Map<String, String> messages = new HashMap<String, String>();
         messages.put(locale, message);
-        Announcement.validate(name, locale, permNode, world, messages, parseDelay(delay));
+        Announcement.validate(name, permNode, world, messages, parseDelay(delay));
 
         File folder = new File(this.announcementFolder, name);
         folder.mkdirs();

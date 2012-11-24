@@ -6,10 +6,11 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
-import java.util.Arrays;
-import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ShoutCommand
 {
@@ -22,7 +23,7 @@ public class ShoutCommand
 
     @Command(names = {
         "shout", "announce"
-    }, min = 1, desc = "Announce a message to players on the server", usage = "<announcment name>")
+    }, min = 1, desc = "Announce a message to players on the server", usage = "<announcement name>")
     public void shout(CommandContext context)
     {
         if (this.module.getAnnouncementManager().hasAnnouncement(context.getString(0)))
