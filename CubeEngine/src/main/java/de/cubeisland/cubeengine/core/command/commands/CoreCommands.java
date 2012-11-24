@@ -20,7 +20,6 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 
 public class CoreCommands extends ContainerCommand
 {
-
     private final BukkitCore core;
 
     public CoreCommands(Core core)
@@ -35,10 +34,10 @@ public class CoreCommands extends ContainerCommand
         this.core.getServer().getPluginManager().disablePlugin(this.core);
     }
 
-    @Command(names =
-    {
-        "setpassword", "setpw"
-    }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
+    @Command(
+        names = {"setpassword", "setpw"},
+        desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]"
+    )
     public void setPassword(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -63,14 +62,15 @@ public class CoreCommands extends ContainerCommand
         context.sendMessage("core", "&aPassword set!");
     }
 
-    @Command(names =
-    {
-        "clearpassword", "clearpw"
-    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags =
-    @Flag(longName = "all", name = "a"))
+    @Command(
+        names = {"clearpassword", "clearpw"},
+        desc = "Clears your password.",
+        max = 1,
+        usage = "[<player>|-a]",
+        flags = @Flag(longName = "all", name = "a")
+    )
     public void clearPassword(CommandContext context)
     {
-        User user;
         if (context.hasFlag("a"))
         {
             if (CommandPermissions.COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
@@ -88,30 +88,38 @@ public class CoreCommands extends ContainerCommand
             }
             return;
         }
-        else if (context.hasIndexed(0))
+        else
         {
-            if (!CommandPermissions.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
+            User user;
+            if (context.hasIndexed(0))
             {
-                denyAccess(context, "core", "&cYou are not allowed to clear the password of other users!");
+                if (!CommandPermissions.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
+                {
+                    denyAccess(context, "core", "&cYou are not allowed to clear the password of other users!");
+                }
+                user = context.getUser(0);
             }
-            user = context.getUser(0);
+            else
+            {
+                user = context.getSenderAsUser("core", "&cYou do not need an ingame password as console!");
+            }
             if (user == null)
             {
                 paramNotFound(context, "core", "&cUser &c not found!");
+                return;
             }
+            user.resetPassword();
         }
-        else
-        {
-            user = context.getSenderAsUser("core", "&cYou do not need an ingame password as console!");
-        }
-        user.resetPassword();
         context.sendMessage("core", "&aPassword reset!");
     }
 
-    @Command(desc = "Loggs you in with your password!", usage = "<password>", min = 1, max = 1)
+    @Command(
+        desc = "Logs you in with your password!",
+        usage = "<password>", min = 1, max = 1
+    )
     public void login(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&eYou dont need a password for ingame!");
+        User sender = context.getSenderAsUser("core", "&eYou don't need a password for in-game!");
         if (sender.isLoggedIn())
         {
             blockCommand(context, "core", "&aYou are already logged in!");
@@ -119,7 +127,7 @@ public class CoreCommands extends ContainerCommand
         boolean isLoggedIn = sender.login(context.getString(0));
         if (isLoggedIn)
         {
-            context.sendMessage("core", "&aYou logged in succesfully!");
+            context.sendMessage("core", "&aYou logged in successfully!");
         }
         else
         {
@@ -139,8 +147,10 @@ public class CoreCommands extends ContainerCommand
         context.sendMessage("core", "&aYou are now logged out!");
     }
 
-    @Command(desc = "Displays or changes your language!",
-    usage = "[<language>|reset]", max = 1)
+    @Command(
+        desc = "Displays or changes your language!",
+        usage = "[<language>|reset]", max = 1
+    )
     public void language(CommandContext context)
     {
         User sender = context.getSenderAsUser();
