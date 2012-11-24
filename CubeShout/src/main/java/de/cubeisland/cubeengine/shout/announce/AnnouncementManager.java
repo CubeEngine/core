@@ -45,16 +45,16 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 public class AnnouncementManager
 {
     private static final String MOTD_FOLDER_NAME = "MOTD";
-    private static final String META_FILE_NAME   = "meta.yml";
+    private static final String META_FILE_NAME = "meta.yml";
 
-    private final Logger                    logger;
-    private final Shout                     module;
-    private final Announcer                 announcer;
-    private final File                      announcementFolder;
-    private       Map<String, Receiver>     receivers;
-    private       Map<String, Announcement> announcements;
-    private final I18n                      i18n;
-    private       MessageOfTheDay           motd;
+    private final Logger logger;
+    private final Shout module;
+    private final Announcer announcer;
+    private final File announcementFolder;
+    private Map<String, Receiver> receivers;
+    private Map<String, Announcement> announcements;
+    private final I18n i18n;
+    private MessageOfTheDay motd;
 
     public AnnouncementManager(Shout module, File announcementFolder)
     {
@@ -271,7 +271,7 @@ public class AnnouncementManager
         File[] files = announcementFolder.listFiles();
         if (files == null)
         {
-            this.logger.log(ERROR,  "Reading the announcement folder failed!");
+            this.logger.log(ERROR, "Reading the announcement folder failed!");
             return;
         }
 
@@ -415,8 +415,7 @@ public class AnnouncementManager
                 config.permNode,
                 config.worlds,
                 messages,
-                delay
-            );
+                delay);
         }
         catch (IllegalArgumentException e)
         {
@@ -475,7 +474,6 @@ public class AnnouncementManager
         {
             throw new IOException("Failed to create the announcement folder for '" + name + "'");
         }
-
 
         AnnouncementConfig config = new AnnouncementConfig();
         config.setFile(new File(folder, META_FILE_NAME));

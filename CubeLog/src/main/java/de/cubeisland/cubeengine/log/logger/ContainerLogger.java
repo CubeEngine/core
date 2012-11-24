@@ -71,13 +71,13 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             Inventory topInv = event.getView().getTopInventory();
             if (topInv.getHolder() instanceof DoubleChest)
             {
-                loc = ((BlockState) ((DoubleChest) topInv.getHolder()).getLeftSide()).getLocation();
+                loc = ((BlockState)((DoubleChest)topInv.getHolder()).getLeftSide()).getLocation();
             }
             else if (!(topInv instanceof AnvilInventory || topInv instanceof BeaconInventory
                     || topInv instanceof CraftingInventory || topInv instanceof EnchantingInventory
                     || topInv instanceof MerchantInventory || topInv instanceof PlayerInventory))
             {
-                loc = ((BlockState) event.getView().getTopInventory().getHolder()).getLocation();
+                loc = ((BlockState)event.getView().getTopInventory().getHolder()).getLocation();
             }
             else
             {

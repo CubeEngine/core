@@ -21,7 +21,7 @@ public class ShoutSubCommands
     }
 
     @Alias(names = {
-            "announcements"
+        "announcements"
     })
     @Command(names = {
         "list", "announcements"

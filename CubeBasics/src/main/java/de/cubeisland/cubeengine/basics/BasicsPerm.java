@@ -46,11 +46,10 @@ public enum BasicsPerm implements Permission
     COMMAND_KILL_FORCE,
     COMMAND_KILL_LIGHTNING,
     COMPASS_JUMPTO_LEFT,
-    COMPASS_JUMPTO_RIGHT, 
-    COMMAND_BUTCHER_FLAG_OTHER, 
-    COMMAND_BUTCHER_FLAG_NPC,
-    ;
-    
+    COMPASS_JUMPTO_RIGHT,
+    COMMAND_BUTCHER_FLAG_OTHER,
+    COMMAND_BUTCHER_FLAG_NPC, ;
+
     private String permission;
     private PermissionDefault def;
 

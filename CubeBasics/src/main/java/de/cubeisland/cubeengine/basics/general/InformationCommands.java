@@ -45,7 +45,7 @@ public class InformationCommands
         Biome biome = sender.getWorld().getBiome(sender.getLocation().getBlockX(), sender.getLocation().getBlockZ());
         sender.sendMessage("basics", "&eCurrent Biome: &6%s", biome.name());
     }
-    
+
     @Command(desc = "Displays the seed of the current world.")
     public void seed(CommandContext context)
     {
@@ -62,7 +62,7 @@ public class InformationCommands
         S(203),
         SW(248),
         W(293),
-        NW(338),;
+        NW(338), ;
         private final int dir;
 
         private Direction(int dir)
@@ -87,7 +87,7 @@ public class InformationCommands
     public void compass(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
-        int direction = (int) (sender.getLocation().getYaw() + 180 + 360) % 360;
+        int direction = (int)(sender.getLocation().getYaw() + 180 + 360) % 360;
         String dir;
         dir = Direction.matchDirection(direction).name();
         sender.sendMessage("basics", "&eYou are looking to &6%s&e!", _(sender, "basics", dir));
@@ -115,8 +115,7 @@ public class InformationCommands
         sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
     }
 
-    @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags =
-    {
+    @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags = {
         @Flag(longName = "entity", name = "e"),
         @Flag(longName = "mob", name = "m")
     })
@@ -188,7 +187,7 @@ public class InformationCommands
                     }
                     else if (entity instanceof Item)
                     {
-                        key = "&7" + MaterialMatcher.get().getNameFor(((Item) entity).getItemStack());
+                        key = "&7" + MaterialMatcher.get().getNameFor(((Item)entity).getItemStack());
                     }
                     else
                     {
@@ -236,27 +235,26 @@ public class InformationCommands
     {
         if (entity instanceof Player)
         {
-            list.add(String.format("&2%s&f (&e%dm&f)", ((Player) entity).getName(), (int) distance));
+            list.add(String.format("&2%s&f (&e%dm&f)", ((Player)entity).getName(), (int)distance));
         }
         else if (entity instanceof LivingEntity)
         {
-            list.add(String.format("&3%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int) distance));
+            list.add(String.format("&3%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
         }
         else
         {
             if (entity instanceof Item)
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", MaterialMatcher.get().getNameFor(((Item) entity).getItemStack()), (int) distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", MaterialMatcher.get().getNameFor(((Item)entity).getItemStack()), (int)distance));
             }
             else
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int) distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
             }
         }
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "ping", "pong"
     }, desc = "Pong!", max = 0)
     public void ping(CommandContext context)

@@ -180,7 +180,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     {
         if (this.language != null)
         {
-            return this.language; 
+            return this.language;
         }
         String lang = null;
         Player onlinePlayer = this.offlinePlayer.getPlayer();
@@ -194,7 +194,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
         return lang;
     }
-    
+
     public void setLanguage(Language lang)
     {
         this.language = lang.getCode();

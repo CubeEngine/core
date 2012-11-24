@@ -30,10 +30,10 @@ public class HackTest extends TestCase
         assertEquals("Not all packet methods are implemented.", nhMethods.length, ceMethods.length);
     }
 
-//    public void testBukkitUtils()
-//    {
-//        assertTrue("The BukkitUtils couldn't find a field!", BukkitUtils.isCompatible());
-//    }
+    //    public void testBukkitUtils()
+    //    {
+    //        assertTrue("The BukkitUtils couldn't find a field!", BukkitUtils.isCompatible());
+    //    }
 
     private static Method[] readMethods(final Class clazz)
     {

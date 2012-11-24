@@ -61,7 +61,7 @@ public class TeleportListener implements Listener
                         {
                             User user = this.basics.getUserManager().getExactUser(event.getPlayer());
                             Location loc = block.getLocation().add(0.5, 1, 0.5);
-                           
+
                             user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
                             user.sendMessage("basics", "&ePoof!");
                             event.setCancelled(true);

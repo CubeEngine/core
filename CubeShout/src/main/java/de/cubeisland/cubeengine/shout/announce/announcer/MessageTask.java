@@ -10,9 +10,9 @@ import java.util.TimerTask;
 public class MessageTask extends TimerTask
 {
     private final TaskManager tm;
-    private final Receiver    receiver;
-    private       int         runs;
-    private       int         nextExecution;
+    private final Receiver receiver;
+    private int runs;
+    private int nextExecution;
 
     public MessageTask(TaskManager taskManager, Receiver receiver)
     {

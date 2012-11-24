@@ -7,14 +7,13 @@ import java.util.LinkedList;
 public class LagTimer implements Runnable
 {
     private static LagTimer instance = null;
-    
+
     private long lastTick = System.currentTimeMillis();
     private final LinkedList<Float> tpsHistory = new LinkedList<Float>();
 
     private LagTimer()
-    {
-    }
-    
+    {}
+
     public static LagTimer getTimer()
     {
         if (instance == null)
@@ -49,7 +48,7 @@ public class LagTimer implements Runnable
     public float getAverageTPS()
     {
         float ticks = 0;
-        for (Float tps:  tpsHistory)
+        for (Float tps : tpsHistory)
         {
             if (tps != null)
             {

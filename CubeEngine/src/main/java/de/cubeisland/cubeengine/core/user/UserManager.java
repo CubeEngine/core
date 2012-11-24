@@ -49,7 +49,8 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
  * This Manager provides methods to access the Users and saving/loading from
  * database.
  */
-public class UserManager extends BasicStorage<User> implements Cleanable, Runnable, Listener
+public class UserManager extends BasicStorage<User> implements Cleanable,
+    Runnable, Listener
 {
     private final Core core;
     private final List<Player> onlinePlayers;

@@ -134,9 +134,9 @@ public class MovementCommands
         context.sendMessage("basics", "&aYou just jumped!");
     }
 
-    @Command(
-    names = { "through", "thru" },
-    desc = "Jumps to the position you are looking at.", max = 0)
+    @Command(names = {
+    "through", "thru"
+    }, desc = "Jumps to the position you are looking at.", max = 0)
     public void through(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
@@ -150,8 +150,7 @@ public class MovementCommands
         context.sendMessage("basics", "&aYou just passed the wall!");
     }
 
-    @Command(desc = "Teleports you to your last location", max = 0, flags =
-    {
+    @Command(desc = "Teleports you to your last location", max = 0, flags = {
         @Flag(longName = "unsafe", name = "u")
     })
     public void back(CommandContext context)
@@ -167,11 +166,9 @@ public class MovementCommands
         sender.sendMessage("basics", "&aTeleported to your last location!");
     }
 
-    @Command(
-    names =  {  "place", "put"  },
-    desc = "Jumps to the position you are looking at.", 
-    max = 1, min= 1,
-    usage= "<player>")
+    @Command(names = {
+    "place", "put"
+    }, desc = "Jumps to the position you are looking at.", max = 1, min = 1, usage = "<player>")
     public void place(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
