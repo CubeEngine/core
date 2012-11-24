@@ -234,6 +234,7 @@ public final class ModuleInfo
         return loadAfter;
     }
 
+
     @Override
     public boolean equals(Object o)
     {
@@ -268,7 +269,7 @@ public final class ModuleInfo
         {
             return false;
         }
-        if (!file.equals(that.file))
+        if (file != null ? !file.equals(that.file) : that.file != null)
         {
             return false;
         }
@@ -280,7 +281,7 @@ public final class ModuleInfo
         {
             return false;
         }
-        if (!main.equals(that.main))
+        if (main != null ? !main.equals(that.main) : that.main != null)
         {
             return false;
         }
@@ -303,8 +304,8 @@ public final class ModuleInfo
     @Override
     public int hashCode()
     {
-        int result = file.hashCode();
-        result = 31 * result + main.hashCode();
+        int result = file != null ? file.hashCode() : 0;
+        result = 31 * result + (main != null ? main.hashCode() : 0);
         result = 31 * result + id.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + revision;
