@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.annotation.Param;
+
 import java.util.List;
 
 /**
@@ -43,6 +46,18 @@ public class AliasCommand extends CubeCommand
     public boolean hasChildren()
     {
         return this.command.hasChildren();
+    }
+
+    @Override
+    public Param[] getParams()
+    {
+        return this.command.getParams();
+    }
+
+    @Override
+    public Flag[] getFlags()
+    {
+        return this.command.getFlags();
     }
 
     @Override
