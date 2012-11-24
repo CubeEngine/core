@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 
+import java.util.concurrent.Callable;
+
 public class MessageTask implements Runnable
 {
     private final TaskManager tm;
@@ -28,7 +30,7 @@ public class MessageTask implements Runnable
             Pair<Announcement, Integer> pair = receiver.getNextDelayAndAnnouncement();
             if (pair != null && pair.getLeft() != null && pair.getRight() != null)
             {
-                this.tm.callSyncMethod(new SenderTask(this.receiver, pair.getLeft().getMessage(receiver.getLanguage())));
+                this.tm.callSyncMethod(new SenderTask(pair.getLeft().getMessage(receiver.getLanguage())));
                 this.nextExecution = this.runs + pair.getRight();
             }
             else
@@ -37,5 +39,22 @@ public class MessageTask implements Runnable
             }
         }
         ++this.runs;
+    }
+
+    private final class SenderTask implements Callable<Void>
+    {
+        private final String[] message;
+
+        public SenderTask(String[] message)
+        {
+            this.message = message;
+        }
+
+        @Override
+        public Void call() throws Exception
+        {
+            receiver.sendMessage(this.message);
+            return null;
+        }
     }
 }
