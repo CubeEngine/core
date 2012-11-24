@@ -38,6 +38,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.GREATER;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 
 public class Test extends Module
 {
@@ -63,7 +64,7 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLogger().log(LogLevel.ERROR, "Error while Enabling the TestModule", ex);
+            this.getLogger().log(ERROR, "Error while Enabling the TestModule", ex);
         }
         try
         {
@@ -71,7 +72,7 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLogger().log(LogLevel.ERROR, "Error while adding the FileHandler", ex);
+            this.getLogger().log(ERROR, "Error while adding the FileHandler", ex);
         }
         this.registerListener(new TestListener(this));
 
@@ -282,12 +283,11 @@ public class Test extends Module
     {
         try
         {
-            aListOfPlayers = FileUtil.
-                readStringList(new File(this.getFolder(), "testdata/player.txt"));
+            aListOfPlayers = FileUtil.readStringList(new File(this.getFolder(), "testdata" + File.separatorChar + "player.txt"));
         }
         catch (Exception ex)
         {
-            this.getLogger().log(LogLevel.ERROR, "Error in testsomeutils", ex);
+            this.getLogger().log(ERROR, "Error in testsomeutils", ex);
         }
     }
 
