@@ -7,16 +7,24 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
+import java.util.HashSet;
+import java.util.Set;
 import org.bukkit.Location;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
 public class PlayerCommands
 {
     private final Fun module;
+    private final ExplosionListener explosionListener;
     
     public PlayerCommands(Fun module)
     {
         this.module = module;
+        this.explosionListener = new ExplosionListener();
+        this.module.registerListener(explosionListener);
     }
     
     @Command
@@ -60,6 +68,11 @@ public class PlayerCommands
         if(power > this.module.getConfig().explosionPower)
         {
             illegalParameter(context, "fun", "The power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
+        }
+        
+        if( !context.hasFlag("u") )
+        {
+            explosionListener.add(location);
         }
         
         user.getWorld().createExplosion(location, power, fire);
@@ -172,5 +185,43 @@ public class PlayerCommands
         }
 
         user.setFireTicks(seconds * 20);
+    }
+    
+    private class ExplosionListener implements Listener
+    {
+        private Set<Location> locations;
+        
+        public ExplosionListener()
+        {
+            this.locations = new HashSet<Location>();
+        }
+        
+        public void add(Location location)
+        {
+            if(!this.contains(location))
+            {
+                locations.add(location);
+            }
+        }
+        
+        public boolean contains(Location location)
+        {
+            return locations.contains(location);
+        }
+        
+        public void remove(Location location)
+        {
+            locations.remove(location);
+        }
+        
+        @EventHandler
+        public void onEntityExplode(EntityExplodeEvent event)
+        {
+            if( event.getEntity() == null && this.contains( event.getLocation() ) )
+            {
+                this.remove(event.getLocation());
+                event.blockList().clear();
+            }
+        }
     }
 }
