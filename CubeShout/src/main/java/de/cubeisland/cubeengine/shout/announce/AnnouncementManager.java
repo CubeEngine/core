@@ -469,27 +469,24 @@ public class AnnouncementManager
      */
     public void createAnnouncement(String name, String locale, String message, String delay, String world, String group, String permNode) throws IOException, IllegalArgumentException
     {
-        locale = I18n.normalizeLanguage(locale);
-        Map<String, String> messages = new HashMap<String, String>();
-        messages.put(locale, message);
 
         File folder = new File(this.announcementFolder, name);
-        folder.mkdirs();
-        File configFile = new File(folder, "meta.yml");
-        configFile.createNewFile();
-        File language = new File(folder, locale + ".txt");
-        language.createNewFile();
+        if (!folder.mkdirs())
+        {
+            throw new IOException("Failed to create the announcement folder for '" + name + "'");
+        }
+
 
         AnnouncementConfig config = new AnnouncementConfig();
-        config.setCodec("yml");
-        config.setFile(configFile);
+        config.setFile(new File(folder, META_FILE_NAME));
         config.delay = delay;
         config.worlds = Arrays.asList(world);
         config.permNode = permNode;
         config.group = group;
         config.save();
 
-        BufferedWriter bw = new BufferedWriter(new FileWriter(language));
+        locale = I18n.normalizeLanguage(locale);
+        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(folder, locale + ".txt")));
         try
         {
             bw.write(message);
