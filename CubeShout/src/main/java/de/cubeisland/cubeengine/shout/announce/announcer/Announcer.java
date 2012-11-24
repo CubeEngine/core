@@ -8,18 +8,18 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Class to manage tasks based on the system time, not bukkits.
+ * Class to manage futures based on the system time.
  */
 public class Announcer
 {
     private ScheduledExecutorService     executor;
-    private Map<String, ScheduledFuture> tasks;
+    private Map<String, ScheduledFuture> futures;
     private int                          initDelay;
 
     public Announcer(int initDelay)
     {
         this.executor = Executors.newSingleThreadScheduledExecutor();
-        this.tasks = new HashMap<String, ScheduledFuture>();
+        this.futures = new HashMap<String, ScheduledFuture>();
         this.initDelay = initDelay;
     }
 
@@ -31,31 +31,38 @@ public class Announcer
      */
     public void scheduleTask(String receiver, Runnable task, long delay)
     {
-        this.tasks.put(receiver, this.executor.scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
+        this.futures.put(receiver, this.executor.scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
     }
 
     /**
      * Stops a receiver from receiving any more announcements
      *
-     * @param receiver
+     * @param receiver the receiver the task should be stopped for
      */
-    public void stopTask(String receiver)
+    public void cancel(String receiver)
     {
-        this.tasks.get(receiver).cancel(false);
+        ScheduledFuture future = this.futures.remove(receiver);
+        if (future != null)
+        {
+            future.cancel(false);
+        }
     }
 
     /**
      * Stop all announcements to all receivers
      */
-    public void stopAll()
+    public void shutdown()
     {
-        this.tasks.clear();
+        this.futures.clear();
         this.executor.shutdown();
         try
         {
             this.executor.awaitTermination(1, TimeUnit.SECONDS);
+            this.executor.shutdownNow();
         }
         catch (InterruptedException ignore)
         {}
+        this.executor = null;
+        this.futures = null;
     }
 }

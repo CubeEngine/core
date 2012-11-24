@@ -22,7 +22,7 @@ public class ShoutListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void PlayerJoinEvent(PlayerLanguageReceivedEvent event)
+    public void onLanguageReceived(PlayerLanguageReceivedEvent event)
     {
         User user = this.module.getUserManager().getExactUser(event.getPlayer());
 
@@ -34,7 +34,7 @@ public class ShoutListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void PlayerLeaveEvent(PlayerQuitEvent event)
+    public void onQuit(PlayerQuitEvent event)
     {
         this.am.clean(event.getPlayer().getName());
     }

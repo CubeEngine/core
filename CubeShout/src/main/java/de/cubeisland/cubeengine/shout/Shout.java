@@ -76,7 +76,7 @@ public class Shout extends Module
     @Override
     public void onDisable()
     {
-        this.announcer.stopAll();
+        this.announcer.shutdown();
     }
 
     public AnnouncementManager getAnnouncementManager()

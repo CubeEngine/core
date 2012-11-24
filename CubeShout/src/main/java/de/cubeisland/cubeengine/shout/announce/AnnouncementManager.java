@@ -212,7 +212,7 @@ public class AnnouncementManager
     public void clean(String receiver)
     {
         this.receivers.remove(receiver);
-        this.announcer.stopTask(receiver);
+        this.announcer.cancel(receiver);
     }
 
     /**

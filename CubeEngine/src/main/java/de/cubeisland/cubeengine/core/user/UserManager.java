@@ -382,6 +382,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         try
         {
             this.executor.awaitTermination(2, TimeUnit.SECONDS);
+            this.executor.shutdownNow();
         }
         catch (InterruptedException ignore)
         {}
