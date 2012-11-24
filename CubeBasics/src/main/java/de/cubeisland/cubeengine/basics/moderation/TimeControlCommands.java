@@ -109,6 +109,7 @@ public class TimeControlCommands
     {
         if (!context.hasIndexed(0))
         {
+            context.sendMessage("&4NOT IMPLEMENTED! BLAME FAITHCAIO!");
             //TODO display time
             return;
         }

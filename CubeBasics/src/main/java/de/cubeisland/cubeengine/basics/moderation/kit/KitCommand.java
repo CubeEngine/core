@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
@@ -9,6 +10,9 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.inventory.ItemStack;
 
 public class KitCommand extends ContainerCommand
 {
@@ -17,8 +21,62 @@ public class KitCommand extends ContainerCommand
         super(module, "kit", "Manages item-kits");
     }
 
+    @Override
+    public void run(CommandContext context)
+    {
+        if (context.hasIndexed(0))
+        {
+            this.give(context);
+        }
+        else
+        {
+            super.run(context);
+        }
+    }
+
+    @Command(
+            desc = "Creates a new kit with the items in your inventory.",
+             flags =
+    @Flag(longName = "toolbar", name = "t"),
+             usage="<kitName> [-toolbar]")
+    public void create(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&cJust log in or use the config!");
+        List<KitItem> itemList = new ArrayList<KitItem>();
+        if (context.hasFlag("t"))
+        {
+            ItemStack[] items = sender.getInventory().getContents();
+            for (int i = 0; i <= 8; ++i)
+            {
+                if (items[i] == null || items[i].getTypeId() == 0)
+                {
+                    break;
+                }
+                itemList.add(new KitItem(items[i].getType(), items[i].getDurability(), items[i].getAmount(), BukkitUtils.getItemStackName(items[i])));
+            }
+        }
+        else
+        {
+            for (ItemStack item : sender.getInventory().getContents())
+            {
+                if (item == null || item.getTypeId() == 0)
+                {
+                    break;
+                }
+                itemList.add(new KitItem(item.getType(), item.getDurability(), item.getAmount(), BukkitUtils.getItemStackName(item)));
+            }
+        }
+        Kit kit = new Kit(context.getString(0), false, 0, -1, true, "", null, itemList);
+        KitConfiguration.saveKit(kit);
+        context.sendMessage("basics", "&aCreated the &6%s &akit!", kit.getKitName());
+    }
+
     @Alias(names = "kit")
-    @Command(desc = "Gives a kit of items.", usage = "<kitname> [player]", min = 1, max = 2, flags =
+    @Command(
+    desc = "Gives a kit of items.",
+             usage = "<kitname> [player]",
+             min = 1, max = 2,
+             flags =
     {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f")
@@ -27,15 +85,7 @@ public class KitCommand extends ContainerCommand
     {
         String kitname = context.getString(0);
         User user;
-        Kit kit = null;
-        try
-        {
-            kit = KitConfiguration.getKit(kitname);
-        }
-        catch (InvalidKitException e)
-        {
-            blockCommand(context, "basics", "&4The kit is invalid! Please check the configuration!");
-        }
+        Kit kit = KitConfiguration.getKit(kitname);
         boolean force = false;
         if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
         {
@@ -57,12 +107,12 @@ public class KitCommand extends ContainerCommand
                     {
                         if (receiver.getName().equals(context.getSender().getName()))
                         {
-                            context.sendMessage("basics", "&aReceived the &6%s &akit!", kitname);
+                            context.sendMessage("basics", "&aReceived the &6%s &akit!", kit.getKitName());
                         }
                         else
                         {
-                            context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", receiver.getName(), kitname);
-                            receiver.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
+                            context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", receiver.getName(), kit.getKitName());
+                            receiver.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
                         }
                         gaveKit = true;
                     }
@@ -83,9 +133,11 @@ public class KitCommand extends ContainerCommand
         }
         else
         {
+            boolean other = false;
             if (context.hasIndexed(1))
             {
                 user = context.getUser(1);
+                other = true;
             }
             else
             {
@@ -97,11 +149,11 @@ public class KitCommand extends ContainerCommand
             }
             if (kit.give(context.getSender(), user, force))
             {
-                if (user.getName().equals(context.getSender().getName()))
+                if (!other)
                 {
                     if (kit.getCustomMessage().equals(""))
                     {
-                        context.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
+                        context.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {
@@ -110,20 +162,27 @@ public class KitCommand extends ContainerCommand
                 }
                 else
                 {
-                    context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", user.getName(), kitname);
+                    context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", user.getName(), kit.getKitName());
                     if (kit.getCustomMessage().equals(""))
                     {
-                        context.sendMessage(kit.getCustomMessage());
+                        user.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {
-                        context.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kitname);
+                        user.sendMessage(kit.getCustomMessage());
                     }
                 }
             }
             else
             {
-                context.sendMessage("basics", "&2%s &ehas not enough space for this kit in his inventory!");
+                if (other)
+                {
+                    context.sendMessage("basics", "&2%s &ehas not enough inventory-space for this kit!", user.getName());
+                }
+                else
+                {
+                    context.sendMessage("basics", "&eYou don't have enough inventory-space for this kit!");
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -113,10 +114,6 @@ public class Kit
             }
             return true;
         }
-        else
-        {
-            blockCommand(sender, "basics", "&eNot enough space for this kit!");
-        }
         return false;
     }
 
@@ -156,6 +153,23 @@ public class Kit
             list.add(item);
         }
         return list;
+    }
+
+    public void applyToConfig(KitConfiguration config)
+    {
+        config.customReceiveMsg = this.customMessage;
+        config.giveOnFirstJoin = this.giveKitOnFirstJoin;
+        config.kitCommands = this.commands;
+        config.kitItems = this.items;
+        config.kitName = this.name;
+        config.limitUsage = this.limitUsagePerPlayer;
+        config.limitUsageDelay = new Duration(this.limitUsageDelay);
+        config.usePerm = this.permission == null ? false : true;
+    }
+
+    public String getKitName()
+    {
+        return this.name;
     }
 
     private static class KitCommandSender implements CommandSender

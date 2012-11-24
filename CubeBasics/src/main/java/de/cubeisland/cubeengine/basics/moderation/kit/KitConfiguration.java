@@ -5,9 +5,12 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
+import java.io.FileFilter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -16,8 +19,7 @@ import java.util.Locale;
 public class KitConfiguration extends Configuration
 {
     private static Basics basics = Basics.getInstance();
-    @Comment("The name to access this kit.")
-    @Option("kit-name")
+
     public String kitName;
     @Comment("Players that join your server the first time will receive this kit if set on true.")
     @Option("give-on-first-join")
@@ -49,31 +51,17 @@ public class KitConfiguration extends Configuration
         return kit;
     }
 
-    public static Kit getKit(String name) throws InvalidKitException
+    public static Kit getKit(String name)
     {
-        String lname = name.toLowerCase(Locale.ENGLISH);
-        Kit kit = kitMap.get(lname);
-        if (kit == null)
+        List<String> match = StringUtils.getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
+        if (match.isEmpty())
         {
-            File file = new File(basics.getFolder(), "kits");
-            file.mkdir();
-            file = new File(file, lname + ".yml");
-            if (file.exists())
-            {
-                try
-                {
-                    KitConfiguration config = Configuration.load(KitConfiguration.class, file);
-                    kit = config.getKit();
-                    kitConfigMap.put(kit, config);
-                    kitMap.put(lname, kit);
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidKitException("Could not load the kit " + name, ex);
-                }
-            }
+            return null;
         }
-        return kit;
+        else 
+        {
+            return kitMap.get(match.get(0));
+        }
     }
 
     public static void saveKit(Kit kit)
@@ -82,8 +70,49 @@ public class KitConfiguration extends Configuration
         if (config == null)
         {
             config = new KitConfiguration();
-            //TODO assign values
+            kitConfigMap.put(kit, config);
+            kitMap.put(kit.getKitName(), kit);
         }
-        config.save(new File(basics.getFolder(), config.kitName + ".yml"));
+        config.setCodec("yml");
+        kit.applyToConfig(config);
+        config.save(new File(basics.getFolder(), File.separator + "kits" + File.separator + config.kitName + ".yml"));
+    }
+
+    public static void loadKit(File file)
+    {
+        try
+        {
+            KitConfiguration config = Configuration.load(KitConfiguration.class, file);
+            config.kitName = StringUtils.stripFileExtention(file.getName());
+            Kit kit = config.getKit();
+            
+            kitConfigMap.put(kit, config);
+            kitMap.put(config.kitName.toLowerCase(Locale.ENGLISH), kit);
+        }
+        catch (Exception ex)
+        {
+            Basics.getInstance().getLogger().log(LogLevel.WARNING, "Could not load the kit configuration!", ex);
+        }
+    }
+
+    public static void loadKits()
+    {
+        File folder = new File(basics.getFolder(), "kits");
+        folder.mkdir();
+        for (File file : folder.listFiles(new FileFilter()
+        {
+            @Override
+            public boolean accept(File pathname)
+            {
+                if (pathname.getName().endsWith(".yml"))
+                {
+                    return true;
+                }
+                return false;
+            }
+        }))
+        {
+            loadKit(file);
+        }
     }
 }

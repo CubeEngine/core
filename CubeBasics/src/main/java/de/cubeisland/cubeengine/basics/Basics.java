@@ -19,6 +19,7 @@ import de.cubeisland.cubeengine.basics.moderation.PowerToolListener;
 import de.cubeisland.cubeengine.basics.moderation.SpawnMobCommand;
 import de.cubeisland.cubeengine.basics.moderation.TimeControlCommands;
 import de.cubeisland.cubeengine.basics.moderation.WorldControlCommands;
+import de.cubeisland.cubeengine.basics.moderation.kit.KitConfiguration;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitItem;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitItemConverter;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
@@ -75,6 +76,7 @@ public class Basics extends Module
         this.registerCommand(new KitCommand(this));
         this.registerListener(new PowerToolListener());
         Convert.registerConverter(KitItem.class, new KitItemConverter());
+        KitConfiguration.loadKits();
 
         //Teleport:
         this.registerCommands(new MovementCommands(this));
