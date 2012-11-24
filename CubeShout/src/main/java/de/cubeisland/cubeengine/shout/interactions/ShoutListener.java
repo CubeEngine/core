@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
-import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
+import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.shout.Shout;
@@ -22,7 +22,7 @@ public class ShoutListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void PlayerJoinEvent(AfterJoinEvent event)
+    public void PlayerJoinEvent(PlayerLanguageReceivedEvent event)
     {
         User user = this.module.getUserManager().getExactUser(event.getPlayer());
 

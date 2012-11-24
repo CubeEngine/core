@@ -205,7 +205,7 @@ public class AnnouncementManager
         receiver.setAllAnnouncements(messages);
 
         this.receivers.put(receiver.getName(), receiver);
-        announcer.scheduleTask(receiver.getName(), new MessageTask(module.getTaskManger(), receiver), this.getGreatestCommonDivisor(receiver));
+        this.announcer.scheduleTask(receiver.getName(), new MessageTask(module.getTaskManger(), receiver), this.getGreatestCommonDivisor(receiver));
     }
 
     /**
