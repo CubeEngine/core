@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.rulebook.bookManagement;
+package de.cubeisland.cubeengine.rules.bookManagement;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import java.io.BufferedReader;

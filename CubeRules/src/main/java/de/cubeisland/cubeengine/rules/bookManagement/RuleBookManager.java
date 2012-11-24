@@ -1,9 +1,9 @@
-package de.cubeisland.cubeengine.rulebook.bookManagement;
+package de.cubeisland.cubeengine.rules.bookManagement;
 
 import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
-import de.cubeisland.cubeengine.rulebook.Rulebook;
+import de.cubeisland.cubeengine.rules.Rules;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -15,11 +15,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class RuleBookManager 
 {
-    private final Rulebook module;
+    private final Rules module;
     
     private Map<String, String[]> rulebooks;
     
-    public RuleBookManager(Rulebook module)
+    public RuleBookManager(Rules module)
     {
         this.module = module;
         

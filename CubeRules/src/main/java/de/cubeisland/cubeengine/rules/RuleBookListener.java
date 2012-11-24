@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.rulebook;
+package de.cubeisland.cubeengine.rules;
 
 import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
@@ -12,9 +12,9 @@ import org.bukkit.inventory.ItemStack;
 
 class RuleBookListener implements Listener
 {
-    Rulebook module;
+    Rules module;
 
-    public RuleBookListener(Rulebook module)
+    public RuleBookListener(Rules module)
     {
         this.module = module;
     }

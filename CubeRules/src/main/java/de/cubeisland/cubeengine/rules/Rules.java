@@ -1,10 +1,10 @@
-package de.cubeisland.cubeengine.rulebook;
+package de.cubeisland.cubeengine.rules;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.rulebook.bookManagement.RuleBookCommands;
-import de.cubeisland.cubeengine.rulebook.bookManagement.RuleBookManager;
+import de.cubeisland.cubeengine.rules.bookManagement.RuleBookCommands;
+import de.cubeisland.cubeengine.rules.bookManagement.RuleBookManager;
 
-public class Rulebook extends Module
+public class Rules extends Module
 {
     private RuleBookConfiguration config;
     private RuleBookManager ruleBookManager;

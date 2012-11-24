@@ -6,8 +6,8 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rulebook</artifactId>
-    <name>RuleBook</name>
+    <artifactId>rules</artifactId>
+    <name>Rules</name>
 
     <dependencies>
         <dependency>

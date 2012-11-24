@@ -27,7 +27,7 @@
         <module>CubeWar</module>
         <module>CubeAuctions</module>
         -->
-        <module>CubeRuleBook</module>
+        <module>CubeRules</module>
 
         <!-- The test module should always be the last! -->
         <module>CubeTest</module>

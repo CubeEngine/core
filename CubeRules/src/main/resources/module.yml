@@ -1,0 +1,3 @@
+name: Rules
+revision: 1
+description: puts a book in the inventory of a player which is playing of the server for the first time.
