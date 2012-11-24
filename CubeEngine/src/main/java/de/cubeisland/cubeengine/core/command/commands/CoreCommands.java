@@ -111,7 +111,7 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Logs you in with your password!", usage = "<password>", min = 1, max = 1)
     public void login(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&eYou don't need a password for in-game!");
+        User sender = context.getSenderAsUser("core", "&eYou don't have to login to yourself!");
         if (sender.isLoggedIn())
         {
             blockCommand(context, "core", "&aYou are already logged in!");
@@ -151,14 +151,15 @@ public class CoreCommands extends ContainerCommand
                 {
                     sender.setLanguage(null);
                     this.core.getUserManager().update(sender);
-                    context.sendMessage("core", "&aYou language is now reset to the one selected in your client!");
+                    context.sendMessage("core", "&aYour language is now reset to the one selected in your client!");
                 }
                 else
                 {
-                    //TODO
+                    context.sendMessage("core", "&c");
+                    return;
                 }
             }
-            //change
+
             Language language = null;
             Set<Language> results = context.getCore().getI18n().searchLanguages(context.getString(0), 2);
             if (results.size() == 1)
