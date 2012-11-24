@@ -31,19 +31,26 @@ public class ShoutCommand
             Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
             List<Player> players;
 
-            if (announcement.getWorld().equals("*"))
+            if (announcement.getFirstWorld().equals("*"))
             {
                 players = Arrays.asList(Bukkit.getOnlinePlayers());
             }
             else
             {
-                players = Bukkit.getWorld(announcement.getWorld()).getPlayers();
+                players = Bukkit.getWorld(announcement.getFirstWorld()).getPlayers();
             }
 
             for (Player player : players)
             {
                 User u = this.module.getUserManager().getExactUser(player);
-                u.sendMessage(ChatFormat.parseFormats('&', announcement.getMessage(u.getLanguage())));
+                String[] message = announcement.getMessage(u.getLanguage());
+                if (message != null)
+                {
+                    for (String line : message)
+                    {
+                        u.sendMessage(ChatFormat.parseFormats(line));
+                    }
+                }
             }
             context.sendMessage("shout", "The announcement is announced");
         }

@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.shout.announce.announcer;
 
-import de.cubeisland.cubeengine.shout.announce.receiver.AnnouncementReceiver;
+import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 
 import java.util.concurrent.Callable;
 
@@ -9,10 +9,10 @@ import java.util.concurrent.Callable;
  */
 public class SenderTask implements Callable<Void>
 {
-    private final AnnouncementReceiver receiver;
-    private final String message;
+    private final Receiver receiver;
+    private final String[] message;
 
-    public SenderTask(AnnouncementReceiver receiver, String message)
+    public SenderTask(Receiver receiver, String[] message)
     {
         this.receiver = receiver;
         this.message = message;
@@ -21,7 +21,10 @@ public class SenderTask implements Callable<Void>
     @Override
     public Void call() throws Exception
     {
-        this.receiver.sendMessage(this.message);
+        for (String line : this.message)
+        {
+            this.receiver.sendMessage(line);
+        }
         return null;
     }
 }

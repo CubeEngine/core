@@ -1,20 +1,22 @@
 package de.cubeisland.cubeengine.core.command.commands;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.*;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.module.CoreModule;
+import de.cubeisland.cubeengine.core.user.User;
+
+import java.util.Set;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.module.CoreModule;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import java.util.List;
 
 public class CoreCommands extends ContainerCommand
 {
@@ -141,9 +143,9 @@ public class CoreCommands extends ContainerCommand
     usage = "[<language>|reset]", max = 1)
     public void language(CommandContext context)
     {
+        User sender = context.getSenderAsUser();
         if (context.hasIndexed(0))
         {
-            User sender = context.getSenderAsUser();
             if (context.getString(0).equalsIgnoreCase("reset"))
             {
                 if (sender != null)
@@ -158,30 +160,57 @@ public class CoreCommands extends ContainerCommand
                 }
             }
             //change
-            List<String> matches = StringUtils.getBestMatches(context.getString(0), context.getCore().getI18n().getLanguages(), 2);
-            if (matches.isEmpty())
+            Language language = null;
+            Set<Language> results = context.getCore().getI18n().searchLanguages(context.getString(0), 2);
+            if (results.size() == 1)
             {
-                blockCommand(context, "core", "&cUnkown language!");
+                language = results.iterator().next();
+            }
+            else if (results.size() > 1)
+            {
+                context.sendMessage("core", "&eThe given language name matched more than one language!");
+                context.sendMessage("core", "The following languages matched:");
+                for (Language result : results)
+                {
+                    context.sendMessage(" - " + result.getName() + " (" + result.getLocalName() + ")");
+                }
+                return;
+            }
+
+            if (language == null)
+            {
+                context.sendMessage("core", "&cUnknown language!");
+                return;
             }
             
             if (sender == null)
             {
-                this.core.getConfiguration().defaultLanguage = matches.get(0);
-                this.core.getI18n().setDefaultLanguage(matches.get(0));
-                context.sendMessage("core", "&aDefault language set to &e%s&a!", matches.get(0));
+                CoreConfiguration config = this.core.getConfiguration();
+                config.defaultLanguage = language.getCode();
+                config.save();
+
+                this.core.getI18n().setDefaultLanguage(language.getCode());
+                context.sendMessage("core", "&aDefault language is now set to &e%s&a (&e%s&a)!", language.getName(), language.getLocalName());
             }
             else
             {
-                sender.setLanguage(this.core.getI18n().getLanguage(matches.get(0)));
+                sender.setLanguage(language);
                 this.core.getUserManager().update(sender);
-                context.sendMessage("core", "&aYou language is now set to &e%s&a!", matches.get(0));
+                context.sendMessage("core", "&aYou language is now set to &e%s&a (&e%s&a)!", language.getName(), language.getLocalName());
             }
         }
         else
         {
-            //display
-            context.sendMessage("basics", "&eYour language is &6%s&e.",
-                    context.getSenderAsUser("basics", "&eYour language is &6%s&e.", context.getCore().getI18n().getDefaultLanguage()).getLanguage());
+            if (sender == null)
+            {
+                Language lang = core.getI18n().getLanguage(core.getI18n().getDefaultLanguage());
+                context.sendMessage("basics", "&eThe default language is &e%s&a (&e%s&a).", lang.getName(), lang.getLocalName());
+            }
+            else
+            {
+                Language lang = core.getI18n().getLanguage(sender.getLanguage());
+                context.getSenderAsUser("basics", "&eYour language is &e%s&a (&e%s&a).", lang.getName(), lang.getLocalName());
+            }
         }
     }
 }

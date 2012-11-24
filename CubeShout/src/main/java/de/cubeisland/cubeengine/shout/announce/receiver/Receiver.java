@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.shout.announce.Announcement;
 
 import java.util.Queue;
 
-public interface AnnouncementReceiver
+public interface Receiver
 {
     /**
      * Get the unique name of this receiver

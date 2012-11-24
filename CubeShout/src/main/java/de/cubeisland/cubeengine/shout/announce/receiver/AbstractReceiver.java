@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 
 import java.util.Queue;
 
-public abstract class AbstractReceiver implements AnnouncementReceiver
+public abstract class AbstractReceiver implements Receiver
 {
     private final AnnouncementManager announcementManager;
     private Queue<Announcement> announcements;
@@ -23,14 +23,12 @@ public abstract class AbstractReceiver implements AnnouncementReceiver
 
     public Pair<Announcement, Integer> getNextDelayAndAnnouncement()
     {
-        for (int x = 0; x < announcements.size(); x++)
+        for (int x = 0; x < this.announcements.size(); x++)
         {
-            Announcement announcement = announcements.poll();
-            if (!announcement.isMOTD())
-            { //MOTD should only be displayed one time
-                announcements.add(announcement);
-            }
-            if (this.canReceiver(announcement) || announcement.isMOTD())
+            Announcement announcement = this.announcements.poll();
+            this.announcements.add(announcement);
+
+            if (this.canReceiver(announcement))
             {
                 return new Pair<Announcement, Integer>(announcement, (int)(announcement.getDelay() / announcementManager.getGreatestCommonDivisor(this)));
             }

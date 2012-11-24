@@ -9,9 +9,10 @@ import java.io.FilenameFilter;
  */
 public class FileExtentionFilter implements FileFilter, FilenameFilter
 {
+    public static final FileExtentionFilter TXT  = new FileExtentionFilter("txt");
     public static final FileExtentionFilter YAML = new FileExtentionFilter("yml");
     public static final FileExtentionFilter JSON = new FileExtentionFilter("json");
-    public static final FileExtentionFilter INI = new FileExtentionFilter("ini");
+    public static final FileExtentionFilter INI  = new FileExtentionFilter("ini");
     public static final FileExtentionFilter JAR = new FileExtentionFilter("jar");
     private final String extention;
 

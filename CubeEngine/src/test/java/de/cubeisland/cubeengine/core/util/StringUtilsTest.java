@@ -14,4 +14,12 @@ public class StringUtilsTest extends TestCase
         assertEquals("ltrim failed!", testString, StringUtils.ltrim(whilespace + testString));
         assertEquals("trim failed!", testString, StringUtils.trim(whilespace + testString + whilespace));
     }
+
+    public void testStripFileExtention()
+    {
+        final String testString = "blabla";
+
+        assertEquals("Something got stripped out even though there was not extention", testString, testString);
+        assertEquals("Extention not properly stripped", testString, StringUtils.stripFileExtention(testString + ".test"));
+    }
 }

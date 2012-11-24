@@ -631,4 +631,18 @@ public final class StringUtils
     {
         return rtrim(ltrim(string));
     }
+
+    public static String stripFileExtention(String filename)
+    {
+        if (filename == null)
+        {
+            return null;
+        }
+        int lastDot = filename.lastIndexOf('.');
+        if (lastDot > -1)
+        {
+            return filename.substring(0, lastDot);
+        }
+        return filename;
+    }
 }
