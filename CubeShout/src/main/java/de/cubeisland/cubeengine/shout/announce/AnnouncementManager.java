@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,9 +86,10 @@ public class AnnouncementManager
      */
     public Announcement getAnnouncement(String name)
     {
-        if (this.announcements.containsKey(name.toLowerCase()))
+        name = name.toLowerCase(Locale.ENGLISH);
+        if (this.announcements.containsKey(name))
         {
-            return this.announcements.get(name.toLowerCase());
+            return this.announcements.get(name);
         }
         else
         {
@@ -256,7 +258,7 @@ public class AnnouncementManager
 
     public void addAnnouncement(Announcement announcement)
     {
-        this.announcements.put(announcement.getName().toLowerCase(), announcement);
+        this.announcements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
     }
 
     /**
