@@ -1,25 +1,25 @@
 package de.cubeisland.cubeengine.shout.announce.announcer;
 
-import de.cubeisland.cubeengine.core.user.User;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class to manage tasks based on the system time, not bukkits.
  */
 public class Announcer
 {
-    private Timer timer;
-    private Map<String, TimerTask> tasks;
-    private int initDelay;
+    private ScheduledExecutorService     executor;
+    private Map<String, ScheduledFuture> tasks;
+    private int                          initDelay;
 
     public Announcer(int initDelay)
     {
-        this.timer = new Timer();
-        this.tasks = new HashMap<String, TimerTask>();
+        this.executor = Executors.newSingleThreadScheduledExecutor();
+        this.tasks = new HashMap<String, ScheduledFuture>();
         this.initDelay = initDelay;
     }
 
@@ -29,10 +29,9 @@ public class Announcer
      * @param	task	 The task to schedule
      * @param	delay	 Delay between each time this task in run.
      */
-    public void scheduleTask(String receiver, TimerTask task, long delay)
+    public void scheduleTask(String receiver, Runnable task, long delay)
     {
-        tasks.put(receiver, task);
-        timer.schedule(task, this.initDelay, delay);
+        this.tasks.put(receiver, this.executor.scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -42,7 +41,7 @@ public class Announcer
      */
     public void stopTask(String receiver)
     {
-        tasks.get(receiver).cancel();
+        this.tasks.get(receiver).cancel(false);
     }
 
     /**
@@ -50,11 +49,13 @@ public class Announcer
      */
     public void stopAll()
     {
-        for (TimerTask task : tasks.values())
+        this.tasks.clear();
+        this.executor.shutdown();
+        try
         {
-            task.cancel();
+            this.executor.awaitTermination(1, TimeUnit.SECONDS);
         }
-        tasks.clear();
-        timer.purge();
+        catch (InterruptedException ignore)
+        {}
     }
 }

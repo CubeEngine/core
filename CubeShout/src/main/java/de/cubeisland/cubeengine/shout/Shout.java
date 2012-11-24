@@ -25,14 +25,14 @@ public class Shout extends Module
     public void onEnable()
     {
         boolean firstRun = true;
-        File f = new File(this.getFolder(), ".shout");
-        if (f.exists())
+        File file = new File(this.getFolder(), ".shout");
+        if (file.exists())
         {
             firstRun = false;
         }
         try
         {
-            f.createNewFile();
+            file.createNewFile();
         }
         catch (IOException ex)
         {

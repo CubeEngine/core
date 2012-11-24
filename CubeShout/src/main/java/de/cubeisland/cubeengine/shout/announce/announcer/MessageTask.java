@@ -5,9 +5,7 @@ import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 
-import java.util.TimerTask;
-
-public class MessageTask extends TimerTask
+public class MessageTask implements Runnable
 {
     private final TaskManager tm;
     private final Receiver receiver;

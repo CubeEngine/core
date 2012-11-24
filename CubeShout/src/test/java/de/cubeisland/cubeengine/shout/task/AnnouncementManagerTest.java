@@ -1,14 +1,11 @@
 package de.cubeisland.cubeengine.shout.task;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
 import static de.cubeisland.cubeengine.shout.announce.AnnouncementManager.parseDelay;
-import static org.junit.Assert.assertEquals;
 
-public class AnnouncementManagerTest
+public class AnnouncementManagerTest extends TestCase
 {
-    // TODO test the actual class, not single methods
-    @Test
     public void testParseDelay()
     {
         assertEquals(1000l, parseDelay("1 second"));
