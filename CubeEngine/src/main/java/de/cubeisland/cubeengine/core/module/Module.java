@@ -13,12 +13,11 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
-import java.io.File;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
+
+import java.io.File;
+import java.io.InputStream;
 
 /**
  * Module for CubeEngine.
@@ -29,7 +28,6 @@ public abstract class Module
     private Core core;
     private ModuleInfo info;
     private ModuleLogger logger;
-    private Set<Module> dependingModules = new HashSet<Module>();
     private ModuleLoader loader;
     private ModuleClassLoader classLoader;
     private File folder;
@@ -39,6 +37,7 @@ public abstract class Module
     {
         if (!this.initialized)
         {
+            this.initialized = true;
             this.core = core;
             this.info = info;
             this.loader = loader;
@@ -88,26 +87,6 @@ public abstract class Module
     public ModuleLogger getLogger()
     {
         return this.logger;
-    }
-
-    /**
-     * Returns a list of the modules that depend on this module
-     *
-     * @return the modules
-     */
-    public Set<Module> getDependingModules()
-    {
-        return this.dependingModules;
-    }
-
-    /**
-     * Adds a module that depends on this module
-     *
-     * @param module the module's name
-     */
-    public void addDependingModule(Module module)
-    {
-        this.dependingModules.add(module);
     }
 
     /**

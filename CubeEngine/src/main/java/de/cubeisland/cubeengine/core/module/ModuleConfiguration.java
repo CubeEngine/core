@@ -10,7 +10,7 @@ import java.util.Set;
  * This configuration is used to parse the module.yml file.
  */
 @Codec("yml")
-public class ModuleConfiguration extends Configuration
+class ModuleConfiguration extends Configuration
 {
     @Option("main")
     public String main;
@@ -25,9 +25,11 @@ public class ModuleConfiguration extends Configuration
     @Option("world-generator")
     public boolean provideWorldGenerator = false;
     @Option("dependencies")
-    public Set<String> dependencies = new HashSet<String>();
+    public Set<String> dependencies = new HashSet<String>(0);
     @Option("soft-dependencies")
-    public Set<String> softDependencies = new HashSet<String>();
+    public Set<String> softDependencies = new HashSet<String>(0);
     @Option("plugin-dependencies")
-    public Set<String> pluginDependencies = new HashSet<String>();
+    public Set<String> pluginDependencies = new HashSet<String>(0);
+    @Option("load-after")
+    public Set<String> loadAfter = new HashSet<String>(0);
 }

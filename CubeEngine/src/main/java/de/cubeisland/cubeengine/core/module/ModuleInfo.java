@@ -16,17 +16,18 @@ import java.util.Set;
 public final class ModuleInfo
 {
     private static final char DEP_VERSION_DELIM = '/';
-    private final File file;
-    private final String main;
-    private final String id;
-    private final String name;
-    private final int revision;
-    private final String description;
-    private final int minCoreVersion;
-    private final boolean providesWorldGenerator;
+    private final File                 file;
+    private final String               main;
+    private final String               id;
+    private final String               name;
+    private final int                  revision;
+    private final String               description;
+    private final int                  minCoreVersion;
+    private final boolean              providesWorldGenerator;
     private final Map<String, Integer> dependencies;
     private final Map<String, Integer> softDependencies;
     private final Set<String> pluginDependencies;
+    private final Set<String> loadAfter;
 
     ModuleInfo()
     {
@@ -39,8 +40,9 @@ public final class ModuleInfo
         this.minCoreVersion = Core.REVISION;
         this.providesWorldGenerator = false;
         this.dependencies = Collections.emptyMap();
-        this.softDependencies = Collections.emptyMap();
+        this.softDependencies = this.dependencies;
         this.pluginDependencies = Collections.emptySet();
+        this.loadAfter = this.pluginDependencies;
     }
 
     public ModuleInfo(File file, ModuleConfiguration config)
@@ -74,6 +76,7 @@ public final class ModuleInfo
         for (String dep : config.dependencies)
         {
             dep = dep.toLowerCase();
+
             version = -1;
 
             delimOffset = dep.indexOf(DEP_VERSION_DELIM);
@@ -112,6 +115,7 @@ public final class ModuleInfo
         }
 
         this.pluginDependencies = config.pluginDependencies;
+        this.loadAfter = config.loadAfter;
     }
 
     /**
@@ -225,65 +229,92 @@ public final class ModuleInfo
         return this.pluginDependencies;
     }
 
+    public Set<String> getLoadAfter()
+    {
+        return loadAfter;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (!(o instanceof ModuleInfo))
+        {
+            return false;
+        }
+
+        ModuleInfo that = (ModuleInfo)o;
+
+        if (minCoreVersion != that.minCoreVersion)
+        {
+            return false;
+        }
+        if (providesWorldGenerator != that.providesWorldGenerator)
+        {
+            return false;
+        }
+        if (revision != that.revision)
+        {
+            return false;
+        }
+        if (!dependencies.equals(that.dependencies))
+        {
+            return false;
+        }
+        if (!description.equals(that.description))
+        {
+            return false;
+        }
+        if (!file.equals(that.file))
+        {
+            return false;
+        }
+        if (!id.equals(that.id))
+        {
+            return false;
+        }
+        if (!loadAfter.equals(that.loadAfter))
+        {
+            return false;
+        }
+        if (!main.equals(that.main))
+        {
+            return false;
+        }
+        if (!name.equals(that.name))
+        {
+            return false;
+        }
+        if (!pluginDependencies.equals(that.pluginDependencies))
+        {
+            return false;
+        }
+        if (!softDependencies.equals(that.softDependencies))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public int hashCode()
     {
-        return this.id.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj != null && obj instanceof ModuleInfo)
-        {
-            return this.equals((ModuleInfo)obj);
-        }
-
-        return false;
-    }
-
-    public boolean equals(ModuleInfo other)
-    {
-        if (other == null)
-        {
-            return false;
-        }
-
-        if (!this.id.equals(other.id))
-        {
-            return false;
-        }
-
-        if (!this.main.equals(other.main))
-        {
-            return false;
-        }
-
-        if (this.minCoreVersion != other.minCoreVersion)
-        {
-            return false;
-        }
-
-        if (!this.dependencies.equals(other.dependencies))
-        {
-            return false;
-        }
-
-        if (!this.softDependencies.equals(other.softDependencies))
-        {
-            return false;
-        }
-
-        if (this.pluginDependencies.equals(other.pluginDependencies))
-        {
-            return false;
-        }
-
-        if (!this.file.equals(other.file))
-        {
-            return false;
-        }
-
-        return false;
+        int result = file.hashCode();
+        result = 31 * result + main.hashCode();
+        result = 31 * result + id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + revision;
+        result = 31 * result + description.hashCode();
+        result = 31 * result + minCoreVersion;
+        result = 31 * result + (providesWorldGenerator ? 1 : 0);
+        result = 31 * result + dependencies.hashCode();
+        result = 31 * result + softDependencies.hashCode();
+        result = 31 * result + pluginDependencies.hashCode();
+        result = 31 * result + loadAfter.hashCode();
+        return result;
     }
 }
