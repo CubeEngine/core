@@ -199,7 +199,7 @@ public class ChatCommands
         context.sendMessage("basics", "&2%s &ais not muted now!", user.getName());
     }
     
-    @Command(desc = "Show a random number from 0 to 100", max = 1)
+    @Command(desc = "Shows a random number from 0 to 100", max = 1)
     public void rand(CommandContext context)
     {
         this.basics.getUserManager().broadcastMessage("basics", "* &2%s &frolled a &6%d&f!", context.getSender().getName(), (int) (Math.random() * 100));

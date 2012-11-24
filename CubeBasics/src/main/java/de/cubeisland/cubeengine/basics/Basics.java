@@ -39,6 +39,8 @@ public class Basics extends Module
     private MailManager mailManager;
 
     private static Basics instance;
+    
+    public int afkListenerTask;
 
     public static Basics getInstance()
     {
@@ -101,7 +103,7 @@ public class Basics extends Module
         this.registerListener(afkListener);
         if (autoAfk > 0)
         {
-            this.getTaskManger().scheduleSyncRepeatingTask(this, afkListener, 20, afkCheck / 50); // this is in ticks so /50
+            this.afkListenerTask = this.getTaskManger().scheduleSyncRepeatingTask(this, afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
         LagTimer.getTimer(); // init timer
 
@@ -120,6 +122,12 @@ public class Basics extends Module
          *
          * help -> Display ALL availiable cmd
          */
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.getTaskManger().cancelTask(this, this.afkListenerTask);
     }
 
     public BasicsConfiguration getConfiguration()
