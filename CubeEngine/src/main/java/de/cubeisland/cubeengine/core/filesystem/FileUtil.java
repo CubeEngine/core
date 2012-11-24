@@ -95,7 +95,7 @@ public class FileUtil
             {
                 bufferedReader.close();
             }
-            catch (IOException ex1)
+            catch (IOException ignore)
             {}
         }
         return list;
@@ -132,7 +132,10 @@ public class FileUtil
             try
             {
                 bytesRead = stream.read(buffer);
-                builder.append(new String(buffer, charset));
+                if (bytesRead > 0)
+                {
+                    builder.append(new String(buffer, 0, bytesRead, charset));
+                }
             }
             catch (IOException e)
             {
