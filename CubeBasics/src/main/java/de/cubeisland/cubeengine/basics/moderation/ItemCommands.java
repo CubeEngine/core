@@ -74,11 +74,15 @@ public class ItemCommands
         }
     }
 
-    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name>", min = 1)
+    @Command(
+    desc = "Changes the display name of the item in your hand.",
+    usage = "<name> [-lore]",
+    min = 1,
+    flags = @Flag(longName = "lore", name = "l"))
     public void rename(CommandContext context)
     {
         String name = context.getStrings(0);
-        if (BukkitUtils.renameItemStack(context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand(), false, name))
+        if (BukkitUtils.renameItemStack(context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand(), context.hasFlag("l"), name))
         {
             context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
         }

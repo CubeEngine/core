@@ -122,7 +122,7 @@ public class PowerToolCommand extends ContainerCommand
     @Command(desc = "Adds a command to your powertool", flags = {
         @Flag(longName = "chat", name = "c"),
         @Flag(longName = "replace", name = "r")
-    }, usage = "<command> [arguments]", min = 1)
+    }, usage = "<commandstring>", min = 1)
     public void add(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
