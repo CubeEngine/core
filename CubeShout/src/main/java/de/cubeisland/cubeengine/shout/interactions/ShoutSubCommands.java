@@ -6,8 +6,11 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
+import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
+
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -119,5 +122,28 @@ public class ShoutSubCommands
     {
         module.getAnnouncementManager().reload();
         context.sendMessage("shout", "All players and announcements have now been reloaded");
+    }
+
+    @Alias(names = "motd")
+    @Command(desc = "Prints out the message of the day.")
+    public void motd(CommandContext context)
+    {
+        MessageOfTheDay motd = this.module.getAnnouncementManager().getMotd();
+        if (motd == null)
+        {
+            context.sendMessage("shout", "&eThere is no message of the day yet.");
+            return;
+        }
+
+        String locale = this.module.getCore().getI18n().getDefaultLanguage();
+        if (context.getSender() instanceof User)
+        {
+            locale = context.getSenderAsUser().getLanguage();
+        }
+        context.sendMessage(" ");
+        for (String line : motd.getMessage(locale))
+        {
+            context.sendMessage(line);
+        }
     }
 }
