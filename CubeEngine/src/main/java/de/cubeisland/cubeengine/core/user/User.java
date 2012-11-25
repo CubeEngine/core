@@ -61,7 +61,7 @@ public class User extends UserBase implements LinkingModel<Integer>
 
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
-    Integer removalTaskId; // only used in UserManager no AccesModifier is inteded
+    Integer removalTaskId; // only used in UserManager no AccessModifier is intended
     private static MessageDigest hasher;
 
     static
@@ -92,7 +92,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         this.key = key;
         this.player = player.getName();
         this.lastseen = new Timestamp(System.currentTimeMillis());
-        this.firstseen = lastseen;
+        this.firstseen = this.lastseen;
         this.passwd = new byte[0];
     }
 
@@ -360,7 +360,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         {
             this.isLoggedIn = this.checkPassword(password);
         }
-        return isLoggedIn;
+        return this.isLoggedIn;
     }
 
     public void logout()
