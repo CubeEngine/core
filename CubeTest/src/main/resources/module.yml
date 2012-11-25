@@ -1,7 +1,0 @@
-name: Test
-revision: 1
-description: Test for testing
-soft-dependencies:
-- basics
-plugin-dependencies:
-  - CubeEngine
