@@ -22,7 +22,7 @@
         <module>CubeLog</module>
         <module>CubeWriter</module>
         <module>Shout</module>
-        <module>CubeGuests</module>
+        <module>Guests</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>
