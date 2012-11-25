@@ -3,52 +3,47 @@ package de.cubeisland.cubeengine.log.storage;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
 public class LogManager extends BasicStorage<LogModel>
 {
-    private static LogManager instance;
     private static final int REVISION = 1;
 
-    private LogManager(Database database)
+    public LogManager(Database database)
     {
         super(database, LogModel.class, REVISION);
         this.initialize();
         this.notAssignKey();
     }
 
-    public static void init(Database database)
+    public void logKillLog(int killer, Location loc, int killed)
     {
-        instance = new LogManager(database);
+        this.store(new LogModel(killer, loc, killed));
     }
 
-    public static void logKillLog(int killer, Location loc, int killed)
+    public void logBlockLog(int causeId, BlockState newState, BlockState oldState)
     {
-        instance.store(new LogModel(killer, loc, killed));
+        this.store(new LogModel(causeId, newState, oldState));
     }
 
-    public static void logBlockLog(int causeId, BlockState newState, BlockState oldState)
+    public void logChestLog(int userId, Location loc, ItemData itemData, int amount, int containerType)
     {
-        instance.store(new LogModel(causeId, newState, oldState));
+        this.store(new LogModel(userId, loc, itemData, amount, containerType));
     }
 
-    public static void logChestLog(int userId, Location loc, ItemData itemData, int amount, int containerType)
+    public void logSignLog(int userId, Location loc, String[] oldLines, String[] newLines)
     {
-        instance.store(new LogModel(userId, loc, itemData, amount, containerType));
+        this.store(new LogModel(userId, loc, oldLines, newLines));
     }
 
-    public static void logSignLog(int userId, Location loc, String[] oldLines, String[] newLines)
+    public void logChatLog(int userId, Location loc, String chat, boolean isChat)
     {
-        instance.store(new LogModel(userId, loc, oldLines, newLines));
+        this.store(new LogModel(userId, loc, chat, isChat));
     }
 
-    public static void logChatLog(int userId, String chat, boolean isChat)
+    public void logInteractLog(int userId, Location loc, Material mat, Integer data)
     {
-        //TODO instance.store(new LogModel());
-    }
-
-    public static void logInteractLog()
-    {
-        //TODO instance.store(new LogModel());
+        this.store(new LogModel(userId, loc, mat, data));
     }
 }

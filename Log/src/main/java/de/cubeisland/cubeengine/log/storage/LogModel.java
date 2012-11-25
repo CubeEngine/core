@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.Key;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -13,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
+@Entity(name = "logs")
 public class LogModel implements Model<Integer>
 {
     @Key
@@ -47,18 +49,16 @@ public class LogModel implements Model<Integer>
     public String newBlockOrLines;
     @Attribute(type = AttrType.VARCHAR, length = 67)
     public String oldBlockOrLines;
-    // ChestLog OR KillLog OR Chat:
+    // ChestLog OR KillLog OR Chat OR Interact:
     @Attribute(type = AttrType.VARCHAR, length = 10)
-    public String item; //ID:DATA
+    public String chestItemOrInteractItem; //ChestLog ID:DATA  |  Interact MaterialID
     @Attribute(type = AttrType.INT)
-    public int amount; //+ added to chest - took from chest
+    public int amountOrInteractData; // ChestLog +-  |  Interact: Additional Data
     @Attribute(type = AttrType.INT)
-    public int containerTypeOrKilledId; // positive values for Players / negative EntityId for mobs
+    public int containerTypeOrKilledId; // ChestLog ContainerType | KillLog killed
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String itemNameOrChat = null;
     // TODO InteractLog fields
-    
-    
     // BlockLog Methods & Fields:
     private BlockData newBlockData = null;
     private BlockData oldBlockData = null;
@@ -126,7 +126,7 @@ public class LogModel implements Model<Integer>
         {
             try
             {
-                this.itemData = Convert.fromObject(ItemData.class, item);
+                this.itemData = Convert.fromObject(ItemData.class, chestItemOrInteractItem);
                 this.itemData.name = this.itemNameOrChat;
             }
             catch (ConversionException ingored)
@@ -135,7 +135,7 @@ public class LogModel implements Model<Integer>
         }
     }
     //-end of ChestLog Methods & Fields
-       
+
     private LogModel(int type, int causeID, Location loc)
     {
         this.timestamp = new Timestamp(System.currentTimeMillis());
@@ -164,7 +164,7 @@ public class LogModel implements Model<Integer>
         this.newBlockOrLines = args.get(9).toString();
         this.oldBlockOrLines = args.get(10).toString();
 
-        this.amount = Integer.valueOf(args.get(11).toString());
+        this.amountOrInteractData = Integer.valueOf(args.get(11).toString());
         this.containerTypeOrKilledId = Integer.valueOf(args.get(12).toString());
         this.itemNameOrChat = args.get(13).toString();
     }
@@ -208,8 +208,8 @@ public class LogModel implements Model<Integer>
         this(CHESTLOG, userId, loc);
         try
         {
-            this.item = (String) Convert.toObject(item);
-            this.amount = amount;
+            this.chestItemOrInteractItem = (String) Convert.toObject(item);
+            this.amountOrInteractData = amount;
             this.itemNameOrChat = item.name;
             this.containerTypeOrKilledId = containerType;
         }
@@ -246,7 +246,35 @@ public class LogModel implements Model<Integer>
         this.containerTypeOrKilledId = killedId;
     }
 
-    //TODO ChatLog constructor & InteractLog
+    /**
+     * ChatLog-Constructor
+     *
+     * @param senderId
+     * @param loc
+     * @param chat
+     * @param isChat
+     */
+    public LogModel(int senderId, Location loc, String chat, boolean isChat)
+    {
+        this(isChat ? CHATLOG : COMMANDLOG, senderId, loc);
+        this.itemNameOrChat = chat;
+    }
+    
+   /**
+    * InteractLog-Constructor
+    * 
+    * @param userId
+    * @param loc
+    * @param mat
+    * @param data 
+    */
+    public LogModel(int userId, Location loc, Material mat, int data)
+    {
+        this(INTERACTLOG, userId, loc);
+        this.chestItemOrInteractItem = String.valueOf(mat.getId());
+        this.amountOrInteractData = data;
+    }
+
     @Override
     public Integer getKey()
     {

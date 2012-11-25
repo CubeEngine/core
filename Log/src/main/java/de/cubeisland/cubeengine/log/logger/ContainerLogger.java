@@ -47,7 +47,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 
     public void logContainerChange(User user, ItemData data, int amount, Location loc, int type)
     {
-        LogManager.logChestLog(user.key, loc, data, amount, type);
+        this.lm.logChestLog(user.key, loc, data, amount, type);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

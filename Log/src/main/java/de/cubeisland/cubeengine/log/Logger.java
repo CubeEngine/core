@@ -1,15 +1,19 @@
 package de.cubeisland.cubeengine.log;
 
+import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.event.Listener;
 
 public abstract class Logger<T extends SubLogConfig> implements Listener
 {
-    public static final Log module = Log.getInstance();
+    protected Log module;
+    protected LogManager lm;
     protected T config;
     public final LogAction action;
 
     public Logger(LogAction action)
     {
+        this.module = Log.getInstance();
+        this.lm = module.getLogManager();
         this.action = action;
     }
 
@@ -28,11 +32,11 @@ public abstract class Logger<T extends SubLogConfig> implements Listener
     {
         if (this.config.enabled)
         {
-            module.registerListener(this);
+            this.module.registerListener(this);
         }
         else
         {
-            module.unregisterListener(this);
+            this.module.unregisterListener(this);
         }
     }
 }

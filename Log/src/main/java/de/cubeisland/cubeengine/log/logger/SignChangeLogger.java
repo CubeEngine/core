@@ -42,11 +42,11 @@ public class SignChangeLogger extends Logger<SignChangeLogger.SignChangeConfig>
         User user = module.getUserManager().getExactUser(player);
         if (user == null)
         {
-            LogManager.logSignLog(0, state.getLocation(), oldlines, newLines);
+            this.lm.logSignLog(0, state.getLocation(), oldlines, newLines);
         }
         else
         {
-            LogManager.logSignLog(user.key, state.getLocation(), oldlines, newLines);
+            this.lm.logSignLog(user.key, state.getLocation(), oldlines, newLines);
         }
     }
 

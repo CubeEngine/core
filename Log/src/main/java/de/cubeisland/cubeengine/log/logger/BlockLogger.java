@@ -28,12 +28,12 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         }
         if (cause == BlockChangeCause.PLAYER)
         {
-            User user = module.getUserManager().getExactUser(player);
-            LogManager.logBlockLog(user.getKey(), newState, oldState);
+            User user = this.module.getUserManager().getExactUser(player);
+            this.lm.logBlockLog(user.getKey(), newState, oldState);
         }
         else
         {
-            LogManager.logBlockLog(cause.getId(), newState, oldState);
+            this.lm.logBlockLog(cause.getId(), newState, oldState);
         }
     }
 

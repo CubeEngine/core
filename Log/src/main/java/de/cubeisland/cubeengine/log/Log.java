@@ -13,6 +13,7 @@ public class Log extends Module
 {
     private static Log instance;
     private LogConfiguration mainconfig;
+    private LogManager lm;
 
     static
     {
@@ -38,7 +39,7 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         //this.lm = new LogManager(this);
-        LogManager.init(this.getDatabase());
+        this.lm = new LogManager(this.getDatabase());
         this.registerCommand(new LogCommands(this));
 
     }
@@ -46,6 +47,11 @@ public class Log extends Module
     public LogConfiguration getConfiguration()
     {
         return null;
+    }
+
+    public LogManager getLogManager()
+    {
+        return lm;
     }
 
     public static Log getInstance()
