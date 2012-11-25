@@ -58,7 +58,7 @@ public class LogModel implements Model<Integer>
     public Integer containerTypeOrKilledId = null; // ChestLog ContainerType | KillLog killed
     @Attribute(type = AttrType.VARCHAR, length = 100, notnull = false)
     public String itemNameOrChat = null;
-    // TODO InteractLog fields
+
     // BlockLog Methods & Fields:
     private BlockData newBlockData = null;
     private BlockData oldBlockData = null;

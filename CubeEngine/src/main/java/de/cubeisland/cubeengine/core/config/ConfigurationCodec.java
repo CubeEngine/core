@@ -688,9 +688,19 @@ public abstract class ConfigurationCodec
                             {
                                 newPath = basepath + "." + newPath;
                             }
-                            map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                    new CodecContainer().fillFromFields(this, this.parentConfig, fieldMap.get(key),
+                            if (this.parentConfig == null)
+                            {
+                                map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
+                                    new CodecContainer().fillFromFields(this, null, fieldMap.get(key),
                                     newPath, this.getOrCreateSubSection(key.toString(), map)));
+                            }
+                            else
+                            {
+                                map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
+                                    new CodecContainer().fillFromFields(this, ((Map<Object, ? extends Configuration>) field.get(this.parentConfig)).get(key), fieldMap.get(key),
+                                    newPath, this.getOrCreateSubSection(key.toString(), map)));
+                            }
+                            
                         }
                         return map;
                     }
