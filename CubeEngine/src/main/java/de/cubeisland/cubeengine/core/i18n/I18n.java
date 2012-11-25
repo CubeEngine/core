@@ -8,22 +8,28 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
+import org.apache.commons.lang.Validate;
+import org.bukkit.command.CommandSender;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
-import org.bukkit.command.CommandSender;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
 
 /**
  * This class provides functionality to translate messages.
@@ -38,6 +44,8 @@ public class I18n implements Cleanable
     public I18n(Core core)
     {
         this.languageMap = new THashMap<String, Language>();
+        this.registerLanguage(SOURCE_LANGUAGE);
+
         this.defaultLanguage = core.getConfiguration().defaultLanguage;
         FileManager fm = core.getFileManager();
         this.loadLanguages(fm.getLanguageDir());
@@ -47,8 +55,13 @@ public class I18n implements Cleanable
         }
         catch (IOException e)
         {
-            Logger.getLogger(I18n.class.getName()).log(LogLevel.ERROR, null, e);
+            Logger.getLogger(I18n.class.getName()).log(ERROR, null, e);
         }
+    }
+
+    public Set<Language> getLanguages()
+    {
+        return new THashSet<Language>(this.languageMap.values());
     }
 
     /**
@@ -96,7 +109,7 @@ public class I18n implements Cleanable
             }
             else
             {
-                LOGGER.log(LogLevel.ERROR, "The language ''{0}'' has an invalid configation!", file.getName());
+                LOGGER.log(ERROR, "The language ''{0}'' has an invalid configation!", file.getName());
             }
         }
 
@@ -115,7 +128,7 @@ public class I18n implements Cleanable
         }
         if (loadStack.contains(config.code))
         {
-            LOGGER.log(LogLevel.ERROR, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
+            LOGGER.log(ERROR, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
             return null;
         }
         Language language = null;
@@ -137,7 +150,7 @@ public class I18n implements Cleanable
         try
         {
             language = new NormalLanguage(config, languageDir, language);
-            this.languageMap.put(config.code, language);
+            this.registerLanguage(language);
             if (config.clones != null)
             {
                 Language clonedLanguage;
@@ -146,7 +159,7 @@ public class I18n implements Cleanable
                     clonedLanguage = ClonedLanguage.clone(language, clone);
                     if (clonedLanguage != null && !SOURCE_LANGUAGE.equals(clonedLanguage.getCode()))
                     {
-                        this.languageMap.put(clonedLanguage.getCode(), clonedLanguage);
+                        this.registerLanguage(clonedLanguage);
                     }
                 }
             }
@@ -155,24 +168,18 @@ public class I18n implements Cleanable
         }
         catch (IllegalArgumentException e)
         {
-            LOGGER.log(LogLevel.ERROR, "Failed to load the language ''{0}'': {1}", new Object[]
-                {
-                    config.code, e.getLocalizedMessage()
-                });
+            LOGGER.log(ERROR, "Failed to load the language ''{0}'': {1}", new Object[] {
+                config.code, e.getLocalizedMessage()
+            });
         }
         return null;
     }
 
-    /**
-     * This method returns all languages
-     *
-     * @return a set of languages
-     */
-    public Set<String> getLanguages()
+    private void registerLanguage(Language language)
     {
-        Set<String> languages = new HashSet<String>(this.languageMap.keySet());
-        languages.add(SOURCE_LANGUAGE.getCode());
-        return languages;
+        this.languageMap.put(language.getCode().toLowerCase(SOURCE_LANGUAGE.getLocale()), language);
+        this.languageMap.put(language.getName().toLowerCase(SOURCE_LANGUAGE.getLocale()), language);
+        this.languageMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
     }
 
     /**
@@ -183,7 +190,29 @@ public class I18n implements Cleanable
      */
     public Language getLanguage(String name)
     {
+        if (name == null)
+        {
+            return null;
+        }
         return this.languageMap.get(name);
+    }
+
+    public Set<Language> searchLanguages(String name)
+    {
+        return this.searchLanguages(name, 3);
+    }
+
+    public Set<Language> searchLanguages(String name, int maximumEditDistance)
+    {
+        List<String> matches = StringUtils.getBestMatches(name, this.languageMap.keySet(), maximumEditDistance);
+        Set<Language> languages = new THashSet<Language>(matches.size());
+
+        for (String match : matches)
+        {
+            languages.add(this.languageMap.get(match));
+        }
+
+        return languages;
     }
 
     /**
@@ -212,35 +241,28 @@ public class I18n implements Cleanable
         }
 
         String translation = null;
-        if (SOURCE_LANGUAGE.equals(language))
+        Language lang = this.languageMap.get(language);
+        if (lang != null)
         {
-            translation = SOURCE_LANGUAGE.getTranslation(category, message);
+            locale = lang.getLocale();
+            translation = lang.getTranslation(category, message);
         }
-        else
-        {
-            Language lang = this.languageMap.get(language);
-            if (lang != null)
-            {
-                locale = lang.getLocale();
-                translation = lang.getTranslation(category, message);
-            }
 
+        if (translation == null)
+        {
+            this.logMissingTranslation(language, category, message);
+            Language defLang = this.languageMap.get(this.defaultLanguage);
+            if (defLang != null)
+            {
+                translation = defLang.getTranslation(category, message);
+            }
+            else
+            {
+                LOGGER.log(WARNING, "The configured default language was not found!");
+            }
             if (translation == null)
             {
-                this.logMissingTranslation(language, category, message);
-                Language defLang = this.languageMap.get(this.defaultLanguage);
-                if (defLang != null)
-                {
-                    translation = defLang.getTranslation(category, message);
-                }
-                else
-                {
-                    LOGGER.log(LogLevel.WARNING, "The configured default language was not found!");
-                }
-                if (translation == null)
-                {
-                    translation = SOURCE_LANGUAGE.getTranslation(category, message);
-                }
+                translation = SOURCE_LANGUAGE.getTranslation(category, message);
             }
         }
 

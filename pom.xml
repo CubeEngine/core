@@ -15,14 +15,16 @@
 
     <modules>
         <module>CubeEngine</module>
-        <module>CubeFly</module>
-        <module>CubeConomy</module>
-        <module>CubeBasics</module>
+        <module>Fly</module>
+        <module>Conomy</module>
+        <module>Basics</module>
         <module>CubeFun</module>
-        <module>CubeLog</module>
-        <module>CubeWriter</module>
-        <module>CubeShout</module>
-        <module>CubeGuests</module>
+        <module>Log</module>
+        <module>Writer</module>
+        <module>Shout</module>
+        <module>Guests</module>
+        <module>Roles</module>
+        <module>Irc</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>
@@ -30,7 +32,7 @@
         <module>CubeRules</module>
 
         <!-- The test module should always be the last! -->
-        <module>CubeTest</module>
+        <module>Test</module>
     </modules>
 
     <properties>
@@ -337,8 +339,6 @@
                                 <phase>initialize</phase>
                                 <goals>
                                     <goal>display-plugin-updates</goal>
-                                    <goal>plugin-updates-report</goal>
-                                    <goal>update-parent</goal>
                                 </goals>
                             </execution>
                         </executions>

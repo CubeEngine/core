@@ -24,8 +24,8 @@ public class LocationUtil
         {
             loc.add(v);
             if (loc.distanceSquared(originalLoc) > 200 * 200//more than 200 blocks away
-                    || loc.getY() < 0 //below world
-                    || loc.getY() > loc.getWorld().getMaxHeight()) //above world 
+                || loc.getY() < 0 //below world
+                || loc.getY() > loc.getWorld().getMaxHeight()) //above world 
             {
                 return null;
             }
@@ -42,6 +42,11 @@ public class LocationUtil
                         continue;
                     }
                 }
+                loc.setX(loc.getBlockX() + 0.5);
+                loc.setY(loc.getBlockY());
+                loc.setZ(loc.getBlockZ() + 0.5);
+                loc.setYaw(user.getLocation().getYaw());
+                loc.setPitch(user.getLocation().getPitch());
                 return loc;
             }
             else if (loc.getBlock().getTypeId() != 0)
@@ -56,7 +61,8 @@ public class LocationUtil
                     return null;
                 }
             }
-            else // if Type is AIR
+            else
+            // if Type is AIR
             {
                 if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall)
                 {

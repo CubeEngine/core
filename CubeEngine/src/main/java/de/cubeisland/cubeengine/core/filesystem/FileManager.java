@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -33,7 +32,7 @@ public class FileManager
         {
             if (dataFolder.mkdirs())
             {
-                LOGGER.log(Level.INFO, "Folder {0} successfully created!");
+                LOGGER.log(LogLevel.INFO, "Folder {0} successfully created!");
             }
         }
         else if (!dataFolder.isDirectory())

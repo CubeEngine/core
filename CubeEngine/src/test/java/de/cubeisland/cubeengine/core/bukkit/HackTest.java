@@ -2,26 +2,23 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.TestCore;
+import junit.framework.TestCase;
+import net.minecraft.server.NetHandler;
+import net.minecraft.server.Packet;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.server.NetHandler;
-import net.minecraft.server.Packet;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-
-public class HackTest
+public class HackTest extends TestCase
 {
-    @BeforeClass
-    public static void init()
+    @Override
+    public void setUp() throws Exception
     {
         CubeEngine.initialize(new TestCore());
     }
 
-    @Test
     public void testImplementedPacketMethods()
     {
         Method[] nhMethods = readMethods(NetHandler.class);
@@ -30,14 +27,13 @@ public class HackTest
         System.out.println("nh methods: " + nhMethods.length);
         System.out.println("ce methods: " + ceMethods.length);
 
-        assertTrue("Not all packet methods are implemented.", nhMethods.length == ceMethods.length);
+        assertEquals("Not all packet methods are implemented.", nhMethods.length, ceMethods.length);
     }
 
-    //@Test
-    public void testBukkitUtils()
-    {
-        assertTrue("The BukkitUtils couldn't find a field!", BukkitUtils.isCompatible());
-    }
+    //    public void testBukkitUtils()
+    //    {
+    //        assertTrue("The BukkitUtils couldn't find a field!", BukkitUtils.isCompatible());
+    //    }
 
     private static Method[] readMethods(final Class clazz)
     {

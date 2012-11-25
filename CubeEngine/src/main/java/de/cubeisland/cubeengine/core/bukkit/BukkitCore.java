@@ -219,6 +219,7 @@ public class BukkitCore extends JavaPlugin implements Core
             {
                 this.taskManager.getExecutorService().shutdown();
                 this.taskManager.getExecutorService().awaitTermination(this.config.executorTermination, TimeUnit.SECONDS);
+                this.taskManager.getExecutorService().shutdownNow();
             }
             catch (InterruptedException ex)
             {

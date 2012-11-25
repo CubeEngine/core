@@ -3,164 +3,207 @@ package de.cubeisland.cubeengine.core.bukkit;
 import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NBTTagList;
 import net.minecraft.server.NBTTagString;
+import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class BookItem
 {
-    private net.minecraft.server.ItemStack item = null;
-    private CraftItemStack stack = null;
+    private static final String PAGES_FIELD = "pages";
+    private static final String AUTHOR_FIELD = "author";
+    private static final String TITLE_FIELD = "title";
 
-    public BookItem(org.bukkit.inventory.ItemStack item)
+    private final net.minecraft.server.ItemStack item;
+    private final CraftItemStack stack;
+
+    /**
+     * Initializes this book with the given ItemStack
+     *
+     * @param item the ItemStack to use.
+     */
+    public BookItem(ItemStack item)
     {
+        Validate.notNull(item, "The item must not be null!");
+
         if (item instanceof CraftItemStack)
         {
-            stack = (CraftItemStack)item;
-            this.item = stack.getHandle();
+            this.stack = (CraftItemStack)item;
         }
         else
         {
-            if (item instanceof org.bukkit.inventory.ItemStack)
-            {
-                stack = new CraftItemStack(item);
-                this.item = stack.getHandle();
-            }
+            this.stack = new CraftItemStack(item);
         }
+        this.item = this.stack.getHandle();
     }
 
+    /**
+     * Returns all pages of this book
+     *
+     * @return an array of pages
+     */
     public String[] getPages()
     {
-        NBTTagCompound tags = item.getTag();
-        if (tags == null)
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound == null)
         {
             return null;
         }
 
-        NBTTagList pages = tags.getList("pages");
-        String[] pagestrings = new String[pages.size()];
+        NBTTagList pages = tagCompound.getList(PAGES_FIELD);
+        String[] pageStrings = new String[pages.size()];
 
-        for (int i = 0; i < pages.size(); i++)
+        for (int i = 0; i < pages.size(); ++i)
         {
-            pagestrings[i] = pages.get(i).toString();
+            pageStrings[i] = pages.get(i).toString();
         }
-        return pagestrings;
+        return pageStrings;
     }
 
+    /**
+     * Returns the author of this book
+     *
+     * @return the name of the author or null if none was set
+     */
     public String getAuthor()
     {
-        NBTTagCompound tags = item.getTag();
-
-        if (tags == null)
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound == null)
         {
             return null;
         }
 
-        String author = tags.getString("author");
-        return author;
+        return tagCompound.getString(PAGES_FIELD);
     }
 
+    /**
+     * Returns the title of this book
+     *
+     * @return the title or null if none was set
+     */
     public String getTitle()
     {
-        NBTTagCompound tags = item.getTag();
-
-        if (tags == null)
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound == null)
         {
             return null;
         }
 
-        String title = tags.getString("title");
-        return title;
+        return tagCompound.getString(TITLE_FIELD);
     }
 
-    public void setPages(String[] newpages)
+    /**
+     * Replaces all pages with the given ones
+     *
+     * @param newPages the enw pages
+     */
+    public void setPages(String[] newPages)
     {
-        NBTTagCompound tags = item.tag;
-
-        if (tags == null)
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound != null)
         {
-            tags = item.tag = new NBTTagCompound();
+            tagCompound.remove(PAGES_FIELD);
+        }
+        this.addPages(newPages);
+    }
+
+    /**
+     * Adds the given array of pages to the book
+     *
+     * @param newPages the pages
+     */
+    public void addPages(String[] newPages)
+    {
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound == null)
+        {
+            tagCompound = new NBTTagCompound();
+            this.item.setTag(tagCompound);
         }
 
-        NBTTagList pages = new NBTTagList("pages");
-        //we don't want to throw any errors if the book is blank!
-        if (newpages.length == 0)
+        NBTTagList pages = tagCompound.getList(PAGES_FIELD);
+        if (pages == null)
+        {
+            pages = new NBTTagList(PAGES_FIELD);
+        }
+
+        if (newPages.length == 0 && pages.size() == 0)
         {
             pages.add(new NBTTagString("1", ""));
         }
         else
         {
-            for (int i = 0; i < newpages.length; i++)
+            for (String page : newPages)
             {
-                pages.add(new NBTTagString("" + i + "", newpages[i]));
+                pages.add(new NBTTagString(String.valueOf(pages.size()), page));
             }
         }
 
-        tags.set("pages", pages);
+        tagCompound.set(PAGES_FIELD, pages);
     }
 
-    public void addPages(String[] newpages)
+    /**
+     * Sets the author of this book
+     *
+     * @param author the author to set
+     */
+    public void setAuthor(Player author)
     {
-        NBTTagCompound tags = item.tag;
+        Validate.notNull(author, "The author must not be null!");
 
-        if (tags == null)
-        {
-            tags = item.tag = new NBTTagCompound();
-        }
-        NBTTagList pages;
-        if (getPages() == null)
-        {
-            pages = new NBTTagList("pages");
-        }
-        else
-        {
-            pages = tags.getList("pages");
-        }
-        //we don't want to throw any errors if the book is blank!
-        if (newpages.length == 0 && pages.size() == 0)
-        {
-            pages.add(new NBTTagString("1", ""));
-        }
-        else
-        {
-            for (int i = 0; i < newpages.length; i++)
-            {
-                pages.add(new NBTTagString("" + pages.size() + "", newpages[i]));
-            }
-        }
-
-        tags.set("pages", pages);
+        this.setAuthor(author.getName());
     }
 
+    /**
+     * Sets the author of this book
+     *
+     * @param author the name of the author to set
+     */
     public void setAuthor(String author)
     {
-        NBTTagCompound tags = item.tag;
+        Validate.notNull(author, "The author must not be null!");
 
-        if (tags == null)
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound == null)
         {
-            tags = item.tag = new NBTTagCompound();
+            tagCompound = new NBTTagCompound();
+            this.item.setTag(tagCompound);
         }
-        if (author != null && !author.equals(""))
+
+        if (author != null && !author.isEmpty())
         {
-            tags.setString("author", author);
+            tagCompound.setString(AUTHOR_FIELD, author);
         }
     }
 
+    /**
+     * Sets the title of this book
+     *
+     * @param title the title to set
+     */
     public void setTitle(String title)
     {
-        NBTTagCompound tags = item.tag;
+        NBTTagCompound tagCompound = this.item.getTag();
 
-        if (tags == null)
+        if (tagCompound == null)
         {
-            tags = item.tag = new NBTTagCompound();
+            tagCompound = new NBTTagCompound();
+            this.item.setTag(tagCompound);
         }
 
-        if (title != null && !title.equals(""))
+        if (title != null && !title.isEmpty())
         {
-            tags.setString("title", title);
+            tagCompound.setString(TITLE_FIELD, title);
         }
     }
 
-    public org.bukkit.inventory.ItemStack getItemStack()
+    /**
+     * Returns the ItemStack of this Book
+     *
+     * @return an ItemStack
+     */
+    public ItemStack getItemStack()
     {
-        return stack;
+        return this.stack;
     }
 }

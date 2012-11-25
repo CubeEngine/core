@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.LoadFrom;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
@@ -12,6 +13,8 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
+import org.apache.commons.lang.Validate;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class is used to load modules and provide a centralized place for class lookups.
@@ -33,7 +35,6 @@ public class ModuleLoader
     private final Core core;
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
-    protected String classPrefix = "Cube";
     protected final String infoFileName = "module.yml";
 
     protected ModuleLoader(Core core)
@@ -100,8 +101,12 @@ public class ModuleLoader
                 if (Configuration.class.isAssignableFrom(field.getType()) && field.getType().isAnnotationPresent(Codec.class))
                 {
                     Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
-                    String filename = "config";
 
+                    String filename = null;
+                    if (configClass.isAnnotationPresent(DefaultConfig.class))
+                    {
+                        filename = "config";
+                    }
                     if (field.isAnnotationPresent(LoadFrom.class))
                     {
                         filename = field.getAnnotation(LoadFrom.class).value();
@@ -200,7 +205,7 @@ public class ModuleLoader
     }
 
     /**
-     * Searches all known classloaders for the given class
+     * Searches all known class loaders for the given class
      *
      * @param info the module info of the module that requested the class
      * @param name the fully qualified class name
@@ -217,7 +222,7 @@ public class ModuleLoader
         {
             clazz = this.libClassLoader.findClass(name);
         }
-        catch (ClassNotFoundException e)
+        catch (ClassNotFoundException ignored)
         {}
 
         if (clazz != null)
@@ -239,7 +244,7 @@ public class ModuleLoader
                     return clazz;
                 }
             }
-            catch (ClassNotFoundException e)
+            catch (ClassNotFoundException ignore)
             {}
         }
 
@@ -258,7 +263,7 @@ public class ModuleLoader
                     return clazz;
                 }
             }
-            catch (ClassNotFoundException e)
+            catch (ClassNotFoundException ignored)
             {}
         }
 
@@ -283,7 +288,7 @@ public class ModuleLoader
     }
 
     /**
-     * Adds a new file to the library classloader
+     * Adds a new file to the library class loader
      *
      * @param file the file to add
      * @throws MalformedURLException if the file is invalid
@@ -296,7 +301,7 @@ public class ModuleLoader
     }
 
     /**
-     * Adds an URL to the library classloader
+     * Adds an URL to the library class loader
      *
      * @param url the URL to add
      */
@@ -308,7 +313,7 @@ public class ModuleLoader
     }
 
     /**
-     * Searches a class in the library classloader
+     * Searches a class in the library class loader
      *
      * @param name the fully qualified class name
      * @return the class or null if not found

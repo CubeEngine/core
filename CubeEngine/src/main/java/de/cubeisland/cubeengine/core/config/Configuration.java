@@ -59,7 +59,7 @@ public abstract class Configuration
         {
             throw new IllegalStateException("A configuration cannot be saved without a valid codec!");
         }
-        if (this.file == null)
+        if (targetFile == null)
         {
             throw new IllegalStateException("A configuration cannot be saved without a valid file!");
         }

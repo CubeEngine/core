@@ -3,9 +3,11 @@ package de.cubeisland.cubeengine.fun;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 @Codec("yml")
+@DefaultConfig
 public class FunConfiguration extends Configuration
 {
     @Comment("Sets the maximum distance of the lightning")

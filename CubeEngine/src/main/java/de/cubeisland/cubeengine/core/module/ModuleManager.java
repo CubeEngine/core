@@ -32,6 +32,8 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
+
 /**
  * This class manages the modules.
  */
@@ -141,7 +143,7 @@ public class ModuleManager implements Cleanable
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        LOGGER.log(LogLevel.WARNING, new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        LOGGER.log(WARNING, new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
                         continue;
                     }
                     else
@@ -208,6 +210,14 @@ public class ModuleManager implements Cleanable
             }
         }
 
+        for (String loadAfterModule : info.getLoadAfter())
+        {
+            if (!loadStack.contains(loadAfterModule))
+            {
+                this.loadModule(loadAfterModule, moduleInfos, loadStack);
+            }
+        }
+
         Module depModule;
         String depName;
         for (Map.Entry<String, Integer> dep : info.getSoftDependencies().entrySet())
@@ -216,10 +226,9 @@ public class ModuleManager implements Cleanable
             depModule = this.loadModule(depName, moduleInfos, loadStack);
             if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
             {
-                LOGGER.log(LogLevel.WARNING, "The module {0} requested a newer revision of {1}!", new Object[]
-                    {
-                        name, depName
-                    });
+                LOGGER.log(WARNING, "The module {0} requested a newer revision of {1}!", new Object[] {
+                    name, depName
+                });
             }
         }
         for (Map.Entry<String, Integer> dep : info.getDependencies().entrySet())
@@ -277,10 +286,9 @@ public class ModuleManager implements Cleanable
                 }
                 catch (Exception e)
                 {
-                    LOGGER.log(LogLevel.WARNING, "Failed to inject a dependency into {0}: {1}", new Object[]
-                        {
-                            name, injectedModule.getName()
-                        });
+                    LOGGER.log(WARNING, "Failed to inject a dependency into {0}: {1}", new Object[] {
+                        name, injectedModule.getName()
+                    });
                 }
             }
             else
@@ -299,7 +307,7 @@ public class ModuleManager implements Cleanable
                     }
                     catch (Exception e)
                     {
-                        LOGGER.log(LogLevel.WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]
+                        LOGGER.log(WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]
                             {
                                 name, plugin.getName()
                             });

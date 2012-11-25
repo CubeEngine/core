@@ -4,12 +4,11 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.util.log.CubeLevel;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
-import java.util.logging.Level;
 
-public class CubeLevelConverter implements Converter<Level>
+public class CubeLevelConverter implements Converter<CubeLevel>
 {
     @Override
-    public Object toObject(Level object) throws ConversionException
+    public Object toObject(CubeLevel object) throws ConversionException
     {
         return object.toString();
     }
