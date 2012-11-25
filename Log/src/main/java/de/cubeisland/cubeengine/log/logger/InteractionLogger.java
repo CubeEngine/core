@@ -45,7 +45,7 @@ public class InteractionLogger extends
         @Override
         public String getName()
         {
-            return "chat";
+            return "interact";
         }
     }
 }

@@ -33,7 +33,7 @@ public class ChestLog extends AbstractPositionLog
         this.itemName = Convert.fromObject(String.class, args.get(11));
     }
 
-    public ChestLog(Integer userId, ItemData item, int amount, Location loc, int type)
+    public ChestLog(Integer userId, Location loc, ItemData item, int amount, int type)
     {
         super(userId, loc);
         try
@@ -49,11 +49,11 @@ public class ChestLog extends AbstractPositionLog
 
     public ItemData getFullItemData()
     {
-        this.getItemData().name = this.itemName;
+        this.initItemData().name = this.itemName;
         return this.itemData;
     }
 
-    public ItemData getItemData()
+    private ItemData initItemData()
     {
         try
         {
