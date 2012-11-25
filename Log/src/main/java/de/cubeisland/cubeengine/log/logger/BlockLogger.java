@@ -4,19 +4,15 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.BlockLog;
-import de.cubeisland.cubeengine.log.storage.BlockLogManager;
+import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
 public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
 {
-    private BlockLogManager blockLogManager;
-
     public BlockLogger()
     {
         super(LogAction.BLOCKCHANGE);
-        this.blockLogManager = new BlockLogManager(module.getDatabase());
     }
 
     public void logBlockChange(BlockChangeCause cause, Player player, BlockState oldState, BlockState newState)
@@ -24,8 +20,8 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         if (oldState == newState)
         {
             if (oldState != null && newState != null
-                && (oldState.getType().equals(newState.getType())
-                && oldState.getRawData() == newState.getRawData()))
+                    && (oldState.getType().equals(newState.getType())
+                    && oldState.getRawData() == newState.getRawData()))
             {
                 return;
             }
@@ -33,44 +29,43 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         if (cause == BlockChangeCause.PLAYER)
         {
             User user = module.getUserManager().getExactUser(player);
-            this.blockLogManager.store(new BlockLog(user.getKey(), newState, oldState));
+            LogManager.logBlockLog(user.getKey(), newState, oldState);
         }
         else
         {
-            this.blockLogManager.store(new BlockLog(cause.getId(), newState, oldState));
+            LogManager.logBlockLog(cause.getId(), newState, oldState);
         }
     }
 
     public static enum BlockChangeCause
     {
         PLAYER(
-            -1),
+        -1),
         LAVA(
-            -2),
+        -2),
         WATER(
-            -3),
+        -3),
         EXPLOSION(
-            -4),
+        -4),
         FIRE(
-            -5),
+        -5),
         ENDERMAN(
-            -6),
+        -6),
         FADE(
-            -7),
+        -7),
         FORM(
-            -7),
+        -7),
         DECAY(
-            -8),
+        -8),
         GROW(
-            -8),
+        -8),
         WITHER(
-            -9);
+        -9);
 
         private BlockChangeCause(int causeID)
         {
             this.causeID = causeID;
         }
-
         final private int causeID;
 
         public int getId()

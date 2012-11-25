@@ -7,9 +7,8 @@ import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.ChestLog;
-import de.cubeisland.cubeengine.log.storage.ChestLogManager;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogManager;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.bukkit.Location;
@@ -39,19 +38,16 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 {
-    private ChestLogManager chestLogManager;
-
     public ContainerLogger()
     {
         super(LogAction.CONTAINER);
         this.config = new ContainerConfig();
-        this.chestLogManager = new ChestLogManager(module.getDatabase());
     }
     private static TIntObjectHashMap<TObjectIntHashMap<ItemData>> openedInventories = new TIntObjectHashMap<TObjectIntHashMap<ItemData>>();
 
     public void logContainerChange(User user, ItemData data, int amount, Location loc, int type)
     {
-        this.chestLogManager.store(new ChestLog(user.getKey(), loc, data, amount, type));
+        LogManager.logChestLog(user.key, loc, data, amount, type);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

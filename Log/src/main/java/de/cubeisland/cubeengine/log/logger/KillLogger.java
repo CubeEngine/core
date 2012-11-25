@@ -6,8 +6,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.KillLog;
-import de.cubeisland.cubeengine.log.storage.KillLogManager;
+import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -18,13 +17,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class KillLogger extends Logger<KillLogger.KillConfig>
 {
-    private KillLogManager killLogManager;
-
     public KillLogger()
     {
         super(LogAction.KILL);
         this.config = new KillConfig();
-        this.killLogManager = new KillLogManager(module.getDatabase());
     }
 
     public void logKill(DamageCause cause, Entity damager, Entity damagee, Location loc)
@@ -55,7 +51,7 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
             {
                 killedId = -damagee.getType().getTypeId();
             }
-            this.killLogManager.store(new KillLog(causeID, killedId, loc));
+            LogManager.logKillLog(causeID, loc, killedId);
         }
     }
 

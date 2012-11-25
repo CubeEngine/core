@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
+import de.cubeisland.cubeengine.log.storage.LogManager;
 
 public class Log extends Module
 {
@@ -37,6 +38,7 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         //this.lm = new LogManager(this);
+        LogManager.init(this.getDatabase());
         this.registerCommand(new LogCommands(this));
 
     }
