@@ -10,6 +10,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.FileUtil;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
@@ -45,6 +47,7 @@ public class KitCommand extends ContainerCommand
         List<KitItem> itemList = new ArrayList<KitItem>();
         if (context.hasFlag("t"))
         {
+            
             ItemStack[] items = sender.getInventory().getContents();
             for (int i = 0; i <= 8; ++i)
             {
@@ -67,6 +70,10 @@ public class KitCommand extends ContainerCommand
             }
         }
         Kit kit = new Kit(context.getString(0), false, 0, -1, true, "", null, itemList);
+        if (!FileUtil.isValidFileName(kit.getKitName()))
+        {
+            blockCommand(context, "basics", "&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
+        }
         KitConfiguration.saveKit(kit);
         context.sendMessage("basics", "&aCreated the &6%s &akit!", kit.getKitName());
     }
