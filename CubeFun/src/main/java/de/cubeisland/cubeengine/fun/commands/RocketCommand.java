@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -86,10 +87,10 @@ public class RocketCommand
             if (!this.contains(user))
             {
                 instances.add(new RocketCMDInstance(user.getName(), height));
-
+                
                 if(taskid == -1)
                 {
-                    this.taskid = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 2);
+                    this.taskid = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 5);
                 }
             }
         }
@@ -123,7 +124,7 @@ public class RocketCommand
                 if (instance.getName().equals(user.getName()))
                 {
                     this.instances.remove(instance);
-
+                    
                     if(instances.isEmpty())
                     {
                         module.getTaskManger().cancelTask(module, taskid);
@@ -235,7 +236,7 @@ public class RocketCommand
                 Location location = this.getUser().getLocation().add(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while (location.getBlock().getType() == Material.AIR && location.getY() < location.getWorld().getMaxHeight())
+                while ( BlockUtil.isNonSolidBlock( location.getBlock().getType() ) && location.getY() < location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.add(0, 1, 0);
@@ -249,7 +250,7 @@ public class RocketCommand
                 Location location = this.getUser().getLocation().subtract(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while (location.getBlock().getType() == Material.AIR || location.getY() > location.getWorld().getMaxHeight())
+                while ( BlockUtil.isNonSolidBlock( location.getBlock().getType() ) || location.getY() > location.getWorld().getMaxHeight() )
                 {
                     numberOfAirBlocks++;
                     location.subtract(0, 1, 0);
