@@ -17,7 +17,7 @@
         <module>CubeEngine</module>
         <module>Fly</module>
         <module>Conomy</module>
-        <module>CubeBasics</module>
+        <module>Basics</module>
         <module>CubeFun</module>
         <module>Log</module>
         <module>CubeWriter</module>
