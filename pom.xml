@@ -19,7 +19,7 @@
         <module>Conomy</module>
         <module>CubeBasics</module>
         <module>CubeFun</module>
-        <module>CubeLog</module>
+        <module>Log</module>
         <module>CubeWriter</module>
         <module>Shout</module>
         <module>Guests</module>
