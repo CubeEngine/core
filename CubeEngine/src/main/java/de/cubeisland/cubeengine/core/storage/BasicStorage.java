@@ -7,19 +7,17 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
 import de.cubeisland.cubeengine.core.storage.database.Key;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
 import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 /**
  * Basic Storage-implementation (1 Key only)
@@ -35,8 +33,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
     protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
     protected Collection<Callback> updateCallbacks = new ArrayList<Callback>();
     protected String key = null;
+    protected String dbKey = null;
     protected boolean keyIsAI = false;
     protected ArrayList<String> attributes;
+    protected ArrayList<String> dbAttributes;
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
     private int revision;
     private boolean initialized = false;
@@ -52,6 +52,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.database = database;
         this.modelClass = model;
         this.attributes = new ArrayList<String>();
+        this.dbAttributes = new ArrayList<String>();
         this.revision = revision;
         this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
     }
@@ -91,20 +92,23 @@ public class BasicStorage<V extends Model> implements Storage<V>
             attribute = field.getAnnotation(Attribute.class);
             if (attribute != null)
             {
-                String name = attribute.name();
-                if (name.isEmpty())
+                String name = field.getName();
+                String dbName = attribute.name();
+                if (attribute.name().isEmpty())
                 {
-                    name = field.getName();
-                }                        
-                tbuilder.field(name, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
+                    dbName = name;
+                }
+                tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
                 if (field.isAnnotationPresent(Key.class))
                 {
                     this.key = name;
+                    this.dbKey = dbName;
                     this.keyIsAI = field.getAnnotation(Attribute.class).ai();
                 }
                 else
                 {
-                    this.attributes.add(name);
+                    attributes.add(name);
+                    dbAttributes.add(dbName);
                 }
                 if (field.isAnnotationPresent(ForeignKey.class))
                 {
@@ -117,12 +121,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 }
             }
         }
-
-        if (this.key == null)
+        if (dbKey == null)
         {
             throw new IllegalArgumentException("The given model does not declare a key!");
         }
-        tbuilder.primaryKey(this.key).endFields();
+        tbuilder.primaryKey(dbKey).endFields();
 
         tbuilder.engine(entity.engine()).defaultcharset(entity.charset());
         if (this.keyIsAI)
@@ -137,7 +140,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         {
             throw new IllegalStateException("Error while creating Table", ex);
         }
-        this.prepareStatements(this.key, this.attributes.toArray(new String[this.attributes.size()]));
+        this.prepareStatements(dbKey, dbAttributes.toArray(new String[dbAttributes.size()]));
         tableManager.registerTable(this.table, this.revision);
     }
 
@@ -248,8 +251,8 @@ public class BasicStorage<V extends Model> implements Storage<V>
             if (resulsSet.next())
             {
                 ArrayList<Object> values = new ArrayList<Object>();
-                values.add(resulsSet.getObject(this.key));
-                for (String name : this.attributes)
+                values.add(resulsSet.getObject(this.dbKey));
+                for (String name : this.dbAttributes)
                 {
                     values.add(resulsSet.getObject(name));
                 }
@@ -278,8 +281,8 @@ public class BasicStorage<V extends Model> implements Storage<V>
             while (resulsSet.next())
             {
                 ArrayList<Object> values = new ArrayList<Object>();
-                values.add(resulsSet.getObject(this.key));
-                for (String name : this.attributes)
+                values.add(resulsSet.getObject(this.dbKey));
+                for (String name : this.dbAttributes)
                 {
                     values.add(resulsSet.getObject(name));
                 }
@@ -523,9 +526,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
     public void notAssignKey()
     {
         this.keyIsAI = false;
-        String[] allFields = new String[this.attributes.size() + 1];
-        allFields[0] = this.key;
-        System.arraycopy(this.attributes.toArray(), 0, allFields, 1, this.attributes.size());
+        String[] allFields = new String[this.dbAttributes.size() + 1];
+        allFields[0] = this.dbKey;
+        System.arraycopy(this.dbAttributes.toArray(), 0, allFields, 1, this.dbAttributes.size());
         QueryBuilder builder = this.database.getQueryBuilder();
         builder.insert()
             .into(this.table)
