@@ -21,18 +21,18 @@ public class DiscoCommand
     }
     
     @Command(
-        desc = "changes from day to night and vice verca",
+        desc = "Changes from day to night and vice verca",
         min = 1,
         max = 1,
         params = 
         { @Param(names = {"delay", "d"}, type = Integer.class) },
-        usage = "<changes>"
+        usage = "<changes> [delay <value>]"
     )
     public void disco(CommandContext context)
     {
         if(this.running)
         {
-            context.sendMessage("The disco command is currently running");
+            context.sendMessage("&eThe disco command is currently running");
             return;
         }
         try
@@ -43,11 +43,11 @@ public class DiscoCommand
             
             if(delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
             {
-                illegalParameter(context, "fun", "the ticks has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
+                illegalParameter(context, "fun", "&cThe ticks has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
             }
             if(changes > this.module.getConfig().maxDiscoChanges || changes < 1)
             {
-                illegalParameter(context, "fun", "The number of changes of day and night shouldn't be over %d or less than 1.", this.module.getConfig().maxDiscoChanges);
+                illegalParameter(context, "fun", "&cThe number of changes of day and night shouldn't be over %d or less than 1.", this.module.getConfig().maxDiscoChanges);
             }
             
             if(world != null)
@@ -84,7 +84,7 @@ public class DiscoCommand
         }
         catch(NumberFormatException e)
         {
-            illegalParameter(context, "fun", "\"%s\" is not a number", context.getString(0));
+            illegalParameter(context, "fun", "&c\"%s\" is not a number", context.getString(0));
         }
     }
 }

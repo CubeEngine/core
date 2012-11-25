@@ -6,11 +6,11 @@ import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.fun.Fun;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import org.bukkit.Location;
-import org.bukkit.Material;
 
 public class InvasionCommand 
 {
@@ -32,7 +32,7 @@ public class InvasionCommand
         EntityType entityType = EntityMatcher.get().matchMob(context.getString(0, null));
         if(entityType == null)
         {
-            illegalParameter(context, "fun", "EntityType %s not found", context.getString(0));
+            illegalParameter(context, "fun", "&cEntityType %s not found", context.getString(0));
         }
         else
         {

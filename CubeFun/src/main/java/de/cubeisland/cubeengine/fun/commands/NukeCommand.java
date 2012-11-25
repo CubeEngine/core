@@ -7,21 +7,21 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunConfiguration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import java.util.HashSet;
-import java.util.Set;
-import org.bukkit.entity.EntityType;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class NukeCommand
 {
@@ -36,15 +36,15 @@ public class NukeCommand
     }
     
     @Command(
-        desc = "an tnt carpet is falling at a player or the place the player is looking at",
+        desc = "A tnt carpet is falling at a player or the place the player is looking at.",
         max = 1,
         flags = {@Flag(longName = "unsafe", name = "u")},
-        usage = "[radius] [height <value>] [player <name>] [-unsafe]",
+        usage = "[radius] [height <value>] [player <name>] [concentration <value>] [range <vaule>] [-unsafe]",
         params = {
             @Param(names = {"player", "p"}, type = User.class),
             @Param(names = {"height", "h"}, type = Integer.class),
             @Param(names = {"concentration", "c"}, type = String.class),
-            @Param(names = {"yield", "y"}, type = Integer.class)
+            @Param(names = {"range", "r"}, type = Integer.class)
         }
     )
     public void nuke(CommandContext context)
@@ -57,7 +57,7 @@ public class NukeCommand
         int height = context.getNamed("height", Integer.class, Integer.valueOf(5));
         int concentration = 1;
         int concentrationOfBlocksPerCircle = 1;
-        int yield = context.getNamed("yield", Integer.class, 4);
+        int range = context.getNamed("range", Integer.class, 4);
         
         Location centerOfTheCircle;
         User user;
@@ -81,12 +81,12 @@ public class NukeCommand
                 }
                 catch(NumberFormatException e)
                 {
-                    invalidUsage(context, "fun", "The named Paramter concentration has a wrong usage. 1.1 is the right. You used %s", concNamed);
+                    invalidUsage(context, "fun", "&cThe named Paramter concentration has a wrong usage. \"&a1.1&c\" is the right way. You used %s", concNamed);
                 }
             }
             if(concentration > this.config.nukeConcentrationLimit || concentrationOfBlocksPerCircle > this.config.nukeConcentrationLimit)
             {
-                illegalParameter(context, "fun", "The concentration should not be greater than %d", this.config.nukeConcentrationLimit);
+                illegalParameter(context, "fun", "&cThe concentration should not be greater than %d", this.config.nukeConcentrationLimit);
             }
         }
         if(radius > this.config.nukeRadiusLimit)
@@ -105,7 +105,7 @@ public class NukeCommand
         {
             illegalParameter(context, "fun", "&cThe height can't be less than 1");
         }
-        if(yield < 0 || yield > this.config.nukeMaxExplosionRange)
+        if(range < 0 || range > this.config.nukeMaxExplosionRange)
         {
             illegalParameter(context, "fun", "&cThe explosion range can't be less than 0 or over %d", this.config.nukeMaxExplosionRange);
         }
@@ -115,7 +115,7 @@ public class NukeCommand
             user = context.getNamed("player", User.class);
             if(user == null)
             {
-                invalidUsage(context, "fun", "User not found");
+                invalidUsage(context, "fun", "&cUser not found");
             }
             centerOfTheCircle = user.getLocation();
         }
@@ -151,7 +151,7 @@ public class NukeCommand
                     Math.sin(j * angle) * i + centerOfTheCircle.getZ() + 0.6
                 ), TNTPrimed.class);
                 tnt.setVelocity(new Vector(0,0,0));
-                tnt.setYield(yield);
+                tnt.setYield(range);
                 
                 numberOfBlocks++;
                 
@@ -164,7 +164,7 @@ public class NukeCommand
         if(radius == 0)
         {
             TNTPrimed tnt = user.getWorld().spawn(centerOfTheCircle, TNTPrimed.class);
-            tnt.setYield(yield);
+            tnt.setYield(range);
             
             if(!context.hasFlag("u"))
             {
@@ -173,7 +173,7 @@ public class NukeCommand
             }
         }
         
-        context.sendMessage("fun", "You spawnt %d blocks of TNT", numberOfBlocks);
+        context.sendMessage("fun", "&aYou spawnt %d blocks of TNT", numberOfBlocks);
     }
 
     private class NukeListener implements Listener

@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import java.util.HashSet;
@@ -14,6 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
 public class PlayerCommands
 {
@@ -41,7 +42,7 @@ public class PlayerCommands
             @Flag(longName = "fire", name = "f")
         },
         max = 0,
-        usage = ""
+        usage = "[player <name>] [damage <value>] [-unsafe] [-fire]"
     )
     public void explosion(CommandContext context)
     {
@@ -55,7 +56,7 @@ public class PlayerCommands
             user = context.getNamed("player", User.class);
             if (user == null)
             {
-                illegalParameter(context, "core", "User not found!");
+                illegalParameter(context, "core", "&cUser not found!");
             }
             location = user.getLocation();
         }
@@ -67,7 +68,7 @@ public class PlayerCommands
         
         if(power > this.module.getConfig().explosionPower)
         {
-            illegalParameter(context, "fun", "The power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
+            illegalParameter(context, "fun", "&cThe power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
         }
         
         if( !context.hasFlag("u") )
@@ -81,7 +82,7 @@ public class PlayerCommands
     @Command
     (
         names = {"lightning", "strike"},
-        desc = "strucks a player or the location you are looking at by lightning.",
+        desc = "Strucks a player or the location you are looking at by lightning.",
         max = 0,
         params = 
         {
@@ -90,7 +91,7 @@ public class PlayerCommands
             @Param(names = {"fireticks", "f"}, type = Integer.class)
         },
         flags = {@Flag(longName = "unsafe", name = "u")},
-        usage = "[player <name>] [damage <value>] [fireticks <seconds>]"
+        usage = "[player <name>] [damage <value>] [fireticks <seconds>] [-unsafe]"
     )
     public void lightning(CommandContext context)
     {
@@ -103,12 +104,12 @@ public class PlayerCommands
             user = context.getNamed("player", User.class);
             if (user == null)
             {
-                illegalParameter(context, "core", "User not found!");
+                illegalParameter(context, "core", "&cUser not found!");
             }
             location = user.getLocation();
             if( (damage != -1 && damage < 0) || damage > 20 )
             {
-                illegalParameter(context, "fun", "The damage value has to be a number from 1 to 20");
+                illegalParameter(context, "fun", "&cThe damage value has to be a number from 1 to 20");
             }
             user.setFireTicks(20 * context.getNamed("fireticks", Integer.class, Integer.valueOf(0)));
         }
@@ -133,7 +134,7 @@ public class PlayerCommands
     }
     
     @Command(
-        desc = "slaps a player",
+        desc = "Slaps a player",
         min = 1,
         max = 2,
         usage = "<player> [damage]"
@@ -143,14 +144,14 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-              illegalParameter(context, "core", "User not found!");
+              illegalParameter(context, "core", "&cUser not found!");
         }
         
         int damage = context.getIndexed(1, Integer.class, 3);
 
         if (damage < 1 || damage > 20)
         {
-            illegalParameter(context, "fun", "Only damage values from 1 to 20 are allowed!");
+            illegalParameter(context, "fun", "&cOnly damage values from 1 to 20 are allowed!");
             return;
         }
         
@@ -159,7 +160,7 @@ public class PlayerCommands
     }
     
     @Command(
-        desc = "burns a player",
+        desc = "Burns a player",
         min = 1,
         max = 2,
         flags = {@Flag(longName = "unset", name = "u")},
@@ -170,7 +171,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            illegalParameter(context, "core", "User not found!");
+            illegalParameter(context, "core", "&cUser not found!");
         }
         
         int seconds = context.getIndexed(1, Integer.class, 5);
@@ -181,7 +182,7 @@ public class PlayerCommands
         }
         else if (seconds < 1 || seconds > 26)
         {
-            illegalParameter(context, "fun", "Only 1 to 26 seconds are permitted!");
+            illegalParameter(context, "fun", "&cOnly 1 to 26 seconds are permitted!");
         }
 
         user.setFireTicks(seconds * 20);

@@ -53,16 +53,16 @@ public class RocketCommand
 
         if (user == null)
         {
-            illegalParameter(context, "core", "User not found!");
+            illegalParameter(context, "core", "&cUser not found!");
         }
 
         if (height > this.module.getConfig().maxRocketHeight)
         {
-            illegalParameter(context, "fun", "Do you never wanna see %s again?", user.getName());
+            illegalParameter(context, "fun", "&cDo you never wanna see %s again?", user.getName());
         }
         else if (height < 0)
         {
-            illegalParameter(context, "fun", "The height has to be greater than 0");
+            illegalParameter(context, "fun", "&cThe height has to be greater than 0");
         }
 
         rocketListener.addInstance(user, height);

@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
@@ -22,6 +21,8 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
 public class ThrowCommands
 {
@@ -54,11 +55,11 @@ public class ThrowCommands
     @Command
     (
         names = {"throw"},
-        desc = "The CommandSender throws a certain amount of snowballs or eggs. Default is one.",
+        desc = "The CommandSender throws a certain amount of snowballs or eggs.",
         min = 1,
         max = 2,
         params = { @Param(names = {"delay", "d"}, type = Integer.class) },
-        usage = "<egg|snowball|xpbottle> [amount]"
+        usage = "<egg|snowball|xpbottle> [amount] [delay <value>]"
     )
     public void throwItem(CommandContext context)
     {
@@ -71,11 +72,11 @@ public class ThrowCommands
 
         if(amount > this.module.getConfig().maxThrowNumber || amount < 1)
         {
-            illegalParameter(context, "fun", "The amount has to be a number from 1 to %d", this.module.getConfig().maxThrowNumber);
+            illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.module.getConfig().maxThrowNumber);
         }
         if(delay > this.module.getConfig().maxThrowDelay || delay < 0)
         {
-            illegalParameter(context, "fun", "The delay has to be a number from 0 to %d", this.module.getConfig().maxThrowDelay);
+            illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.module.getConfig().maxThrowDelay);
         }
         if (material.equalsIgnoreCase("snowball"))
         {
@@ -91,7 +92,7 @@ public class ThrowCommands
         }
         else
         {
-            illegalParameter(context, "fun", "The Item %s is not supported!", material);
+            illegalParameter(context, "fun", "&cThe Item %s is not supported!", material);
         }
 
         ThrowItem throwItem = new ThrowItem(this.module.getUserManager(), user.getName(), materialClass);
@@ -112,7 +113,7 @@ public class ThrowCommands
                 @Flag(longName = "witherskull", name = "w")
             },
         params = { @Param(names = {"delay", "d"}, type = Integer.class) },
-        usage = "[amount]"
+        usage = "[amount] [delay <value>] [-small] [-witherskull] [-unsafe]"
     )
     public void fireball(CommandContext context)
     {
@@ -123,11 +124,11 @@ public class ThrowCommands
         
         if(amount < 1 || amount > this.module.getConfig().maxFireballNumber)
         {
-            illegalParameter(context, "fun", "The amount has to be a number from 1 to %d", this.module.getConfig().maxFireballNumber);
+            illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.module.getConfig().maxFireballNumber);
         }
         if(delay > this.module.getConfig().maxFireballDelay || delay < 0)
         {
-            illegalParameter(context, "fun", "The delay has to be a number from 0 to %d", this.module.getConfig().maxFireballDelay);
+            illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.module.getConfig().maxFireballDelay);
         }
         
         ThrowItem throwItem;
