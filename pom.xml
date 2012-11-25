@@ -24,7 +24,7 @@
         <module>Shout</module>
         <module>Guests</module>
         <module>Roles</module>
-        <module>CubeIRC</module>
+        <module>Irc</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>
