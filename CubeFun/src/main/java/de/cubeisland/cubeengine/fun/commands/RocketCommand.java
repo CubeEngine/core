@@ -6,22 +6,20 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.fun.Fun;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.fun.Fun;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
 public class RocketCommand 
 {

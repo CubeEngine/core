@@ -12,33 +12,42 @@ public class DiscoCommand
 {
     private final Fun module;
     
+    private boolean running;
+    
     public DiscoCommand(Fun module)
     {
         this.module = module;
+        this.running = false;
     }
     
     @Command(
-        desc = "changes from day to night and vice verca (default every 10 ticks)",
+        desc = "changes from day to night and vice verca",
         min = 1,
         max = 1,
-        params = { @Param(names = {"ticks", "t"}, type = Integer.class) },
+        params = 
+        { @Param(names = {"delay", "d"}, type = Integer.class) },
         usage = "<changes>"
     )
     public void disco(CommandContext context)
     {
+        if(this.running)
+        {
+            context.sendMessage("The disco command is currently running");
+            return;
+        }
         try
         {
             final int changes = Integer.valueOf(context.getString(0));
             final World world = context.getSenderAsUser("core", "&cThis command can only be used by a player!").getWorld();
-            int ticks = context.getNamed("ticks", Integer.class, Integer.valueOf(10));
+            int delay = context.getNamed("delay", Integer.class, Integer.valueOf(10));
             
-            if(ticks < 1)
+            if(delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
             {
-                illegalParameter(context, "fun", "the ticks has to be a number greater than 0");
+                illegalParameter(context, "fun", "the ticks has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
             }
-            if(changes > this.module.getConfig().maxDiscoChanges)
+            if(changes > this.module.getConfig().maxDiscoChanges || changes < 1)
             {
-                illegalParameter(context, "fun", "The number of changes of day and night shouldn't be over %d", this.module.getConfig().maxDiscoChanges);
+                illegalParameter(context, "fun", "The number of changes of day and night shouldn't be over %d or less than 1.", this.module.getConfig().maxDiscoChanges);
             }
             
             if(world != null)
@@ -46,6 +55,7 @@ public class DiscoCommand
                 final long defaultTime = world.getTime();
                 for(int i = 0; i <= changes * 2; i++)
                 {
+                    this.running = true;
                     final int j = i;
                     this.module.getTaskManger().scheduleSyncDelayedTask(module, new Runnable() 
                     {
@@ -64,9 +74,10 @@ public class DiscoCommand
                             if(j == changes * 2)
                             {
                                 world.setTime(defaultTime);
+                                running = false;
                             }
                         }
-                    }, i * ticks);
+                    }, i * delay);
                 } 
             }
               
