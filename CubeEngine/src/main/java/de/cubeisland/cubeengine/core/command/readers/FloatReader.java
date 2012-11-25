@@ -14,16 +14,10 @@ public class FloatReader extends ArgumentReader<Float>
     @Override
     public Pair<Integer, Float> read(String... args) throws InvalidArgumentException
     {
-        String num = args[0].replace(',', '.');
-        int lastDot = num.lastIndexOf('.');
-        if (lastDot == -1)
-        {
-            num = num.substring(0, lastDot).replace(".", "") + num.substring(lastDot);
-        }
+        String num = args[0].replaceFirst("\\D", ".").replaceAll("[^\\d\\.]]", "");
         try
         {
-            Float value = Float.parseFloat(num);
-            return new Pair<Integer, Float>(1, value);
+            return new Pair<Integer, Float>(1, Float.parseFloat(num));
         }
         catch (NumberFormatException e)
         {
