@@ -30,7 +30,7 @@
         <module>CubeRuleBook</module>
 
         <!-- The test module should always be the last! -->
-        <module>CubeTest</module>
+        <module>Test</module>
     </modules>
 
     <properties>
