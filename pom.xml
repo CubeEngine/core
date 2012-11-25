@@ -23,6 +23,7 @@
         <module>Writer</module>
         <module>Shout</module>
         <module>Guests</module>
+        <module>Roles</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>
