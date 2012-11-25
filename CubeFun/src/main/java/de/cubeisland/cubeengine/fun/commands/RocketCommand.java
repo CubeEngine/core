@@ -13,6 +13,8 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -90,7 +92,7 @@ public class RocketCommand
                 
                 if(taskid == -1)
                 {
-                    this.taskid = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 5);
+                    this.taskid = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 2);
                 }
             }
         }
@@ -164,31 +166,26 @@ public class RocketCommand
             for (RocketCMDInstance instance : this.getInstances())
             {
                 User user = instance.getUser();
-//                double random = Math.random();
-//
-//                if (user.getVelocity().getY() > 1 && random < 0.4)
-//                {
-//                    user.getWorld().createExplosion(user.getLocation(), 0, false);
-//                }
-//                if (random < 0.01)
-//                {
-//                    user.setFireTicks(20 * 3);
-//                }
+                
+                if(!instance.getDown())
+                {
+                    user.getWorld().playEffect(user.getLocation(), Effect.SMOKE, 0);
+                }
 
-                if ( instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getBack())
+                if ( instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
                 {
                     this.removeInstance(user);
                 }
                 
-                if( instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getBack())
+                if( instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getDown())
                 {
                     double y = (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeet()) / 10;
                     y = (y < 10) ? y : 10;
                     user.setVelocity(new Vector(0, (y < 9) ? (y + 1) : y, 0));
                 }
-                else if(!instance.getBack())
+                else if(!instance.getDown())
                 {
-                    instance.setBack();
+                    instance.setDown();
                 }
             }
         }
@@ -197,23 +194,23 @@ public class RocketCommand
         {
             private final String name;
             private final int height;
-            private boolean back;
+            private boolean down;
 
             private RocketCMDInstance(String name, int height) 
             {
                 this.name = name;
                 this.height = height;
-                this.back = false;
+                this.down = false;
             }
 
-            public void setBack()
+            public void setDown()
             {
-                this.back = true;
+                this.down = true;
             }
 
-            public boolean getBack()
+            public boolean getDown()
             {
-                return this.back;
+                return this.down;
             }
 
             public int getHeight()
