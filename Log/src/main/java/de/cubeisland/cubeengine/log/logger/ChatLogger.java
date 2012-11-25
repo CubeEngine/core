@@ -22,20 +22,20 @@ public class ChatLogger extends Logger<ChatLogger.ChatConfig>
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
         User user = this.module.getUserManager().getExactUser(event.getPlayer());
-        this.lm.logChatLog(user.key, user.getLocation(), event.getMessage(), false);
+        this.module.getLogManager().logChatLog(user.key, user.getLocation(), event.getMessage(), false);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
         User user = this.module.getUserManager().getExactUser(event.getPlayer());
-        this.lm.logChatLog(user.key, user.getLocation(), event.getMessage(), true);
+        this.module.getLogManager().logChatLog(user.key, user.getLocation(), event.getMessage(), true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent event)
     {
-        this.lm.logChatLog(0, null, event.getCommand(), false); //TODO this will cause NPE
+        this.module.getLogManager().logChatLog(0, null, event.getCommand(), false); //TODO this will cause NPE
     }
 
     //TODO config for logging console / chat / commands

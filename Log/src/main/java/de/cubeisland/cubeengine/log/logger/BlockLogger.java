@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
@@ -29,11 +28,11 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         if (cause == BlockChangeCause.PLAYER)
         {
             User user = this.module.getUserManager().getExactUser(player);
-            this.lm.logBlockLog(user.getKey(), newState, oldState);
+            this.module.getLogManager().logBlockLog(user.getKey(), newState, oldState);
         }
         else
         {
-            this.lm.logBlockLog(cause.getId(), newState, oldState);
+            this.module.getLogManager().logBlockLog(cause.getId(), newState, oldState);
         }
     }
 

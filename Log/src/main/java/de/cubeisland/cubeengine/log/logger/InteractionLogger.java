@@ -36,7 +36,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                 case NOTE_BLOCK://changed newData
                 case DIODE_BLOCK_OFF://changed newData
                 case DIODE_BLOCK_ON://changed newData
-                    this.lm.logInteractLog(user.key, user.getLocation(), event.getClickedBlock().getType(), null);//TODO
+                    this.module.getLogManager().logInteractLog(user.key, user.getLocation(), event.getClickedBlock().getType(), null);//TODO
             }
         }
         //TODO open door via pressure plate ?

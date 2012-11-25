@@ -51,7 +51,7 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
             {
                 killedId = -damagee.getType().getTypeId();
             }
-            this.lm.logKillLog(causeID, loc, killedId);
+            this.module.getLogManager().logKillLog(causeID, loc, killedId);
         }
     }
 

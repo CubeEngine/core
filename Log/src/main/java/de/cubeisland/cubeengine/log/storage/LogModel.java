@@ -45,18 +45,18 @@ public class LogModel implements Model<Integer>
     @Attribute(type = AttrType.INT)
     public int z;
     // BlockLog OR SignChangeLog:
-    @Attribute(type = AttrType.VARCHAR, length = 67)
-    public String newBlockOrLines;
-    @Attribute(type = AttrType.VARCHAR, length = 67)
-    public String oldBlockOrLines;
+    @Attribute(type = AttrType.VARCHAR, length = 67, notnull = false)
+    public String newBlockOrLines = null;
+    @Attribute(type = AttrType.VARCHAR, length = 67, notnull = false)
+    public String oldBlockOrLines = null;
     // ChestLog OR KillLog OR Chat OR Interact:
-    @Attribute(type = AttrType.VARCHAR, length = 10)
-    public String chestItemOrInteractItem; //ChestLog ID:DATA  |  Interact MaterialID
-    @Attribute(type = AttrType.INT)
-    public int amountOrInteractData; // ChestLog +-  |  Interact: Additional Data
-    @Attribute(type = AttrType.INT)
-    public int containerTypeOrKilledId; // ChestLog ContainerType | KillLog killed
-    @Attribute(type = AttrType.VARCHAR, length = 100)
+    @Attribute(type = AttrType.VARCHAR, length = 10, notnull = false)
+    public String chestItemOrInteractItem = null; //ChestLog ID:DATA  |  Interact MaterialID
+    @Attribute(type = AttrType.INT, notnull = false)
+    public Integer amountOrInteractData = null; // ChestLog +-  |  Interact: Additional Data
+    @Attribute(type = AttrType.INT, notnull = false)
+    public Integer containerTypeOrKilledId = null; // ChestLog ContainerType | KillLog killed
+    @Attribute(type = AttrType.VARCHAR, length = 100, notnull = false)
     public String itemNameOrChat = null;
     // TODO InteractLog fields
     // BlockLog Methods & Fields:
@@ -259,16 +259,16 @@ public class LogModel implements Model<Integer>
         this(isChat ? CHATLOG : COMMANDLOG, senderId, loc);
         this.itemNameOrChat = chat;
     }
-    
-   /**
-    * InteractLog-Constructor
-    * 
-    * @param userId
-    * @param loc
-    * @param mat
-    * @param data 
-    */
-    public LogModel(int userId, Location loc, Material mat, int data)
+
+    /**
+     * InteractLog-Constructor
+     *
+     * @param userId
+     * @param loc
+     * @param mat
+     * @param data
+     */
+    public LogModel(int userId, Location loc, Material mat, Integer data)
     {
         this(INTERACTLOG, userId, loc);
         this.chestItemOrInteractItem = String.valueOf(mat.getId());
