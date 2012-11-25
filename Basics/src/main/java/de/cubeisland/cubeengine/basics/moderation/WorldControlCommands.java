@@ -7,15 +7,11 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -34,6 +30,12 @@ import org.bukkit.entity.Slime;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.WaterMob;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+
 /**
  * Commands controling / affecting worlds. /weather /remove /butcher
  */
@@ -43,7 +45,7 @@ public class WorldControlCommands
 
     public WorldControlCommands(Basics basics)
     {
-        config = basics.getConfiguration();
+        this.config = basics.getConfiguration();
     }
 
     @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
@@ -129,7 +131,7 @@ public class WorldControlCommands
             }
             world = sender.getWorld();
         }
-        int radius = config.removeCmdDefaultRadius;
+        int radius = this.config.removeCmdDefaultRadius;
         if (context.hasFlag("a")) // remove all selected entities in world
         {
             radius = -1;
@@ -201,12 +203,12 @@ public class WorldControlCommands
     {
         User sender = context.getSenderAsUser();
         Location loc;
-        int radius = config.butcherCmdDefaultRadius;
+        int radius = this.config.butcherCmdDefaultRadius;
         int removed;
         if (sender == null)
         {
             radius = -1;
-            loc = config.mainWorld.getSpawnLocation();
+            loc = this.config.mainWorld.getSpawnLocation();
         }
         else
         {
@@ -279,7 +281,7 @@ public class WorldControlCommands
     {
         if (loc == null && radius != -1)
         {
-            throw new IllegalStateException("Unkown Location with Radius");
+            throw new IllegalStateException("Unknown Location with radius");
         }
         int removed = 0;
 

@@ -129,8 +129,8 @@ public class MailManager extends BasicStorage<Mail>
             while (resulsSet.next())
             {
                 ArrayList<Object> values = new ArrayList<Object>();
-                values.add(resulsSet.getObject(this.key));
-                for (String name : this.attributes)
+                values.add(resulsSet.getObject(this.dbKey));
+                for (String name : this.dbAttributes)
                 {
                     values.add(resulsSet.getObject(name));
                 }
