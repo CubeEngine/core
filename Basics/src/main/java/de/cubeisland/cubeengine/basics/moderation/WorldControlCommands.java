@@ -50,7 +50,7 @@ public class WorldControlCommands
 
     @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
-    {
+    {//Display if wheather is already there
         User sender = context.getSenderAsUser();
         boolean sunny = true;
         boolean noThunder = true;
@@ -116,7 +116,7 @@ public class WorldControlCommands
         "in"
     }, type = World.class), min = 1)
     public void remove(CommandContext context)
-    {
+    {//TODO remove all types
         User sender = context.getSenderAsUser();
         World world;
         if (context.hasNamed("in"))

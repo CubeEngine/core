@@ -67,7 +67,9 @@ public class PowerToolCommand extends ContainerCommand
     }
 
     @Alias(names = "ptr")
-    @Command(desc = "Removes a command from your powertool", flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
+    @Command(names= {"remove","del","delete","rm"},
+            desc = "Removes a command from your powertool", 
+            flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
     public void remove(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo more power for you!");
@@ -80,7 +82,7 @@ public class PowerToolCommand extends ContainerCommand
             }
             NBTTagCompound tag = this.getTag(sender.getItemInHand(), true);
             NBTTagList ptVals = (NBTTagList)tag.get("powerToolCommands");
-            if (ptVals != null || ptVals.size() == 0)
+            if (ptVals != null && ptVals.size() != 0)
             {
                 NBTTagList newVals = new NBTTagList();
                 for (int i = 0; i < ptVals.size(); i++)
@@ -98,12 +100,16 @@ public class PowerToolCommand extends ContainerCommand
                 this.printList(sender, newVals, false);
                 this.rename(sender, newVals);
             }
+            else
+            {
+                context.sendMessage("basics", "&cNo commands saved on this item!");
+            }
         }
         else
         {
             NBTTagCompound tag = this.getTag(sender.getItemInHand(), true);
             NBTTagList ptVals = (NBTTagList)tag.get("powerToolCommands");
-            if (ptVals != null || ptVals.size() == 0)
+            if (ptVals != null && ptVals.size() != 0)
             {
                 NBTTagList newVals = new NBTTagList();
                 for (int i = 0; i < ptVals.size() - 1; i++)
@@ -114,6 +120,10 @@ public class PowerToolCommand extends ContainerCommand
                 context.sendMessage("basics", "&aRemoved the last command bound to this item!");
                 this.printList(sender, newVals, false);
                 this.rename(sender, newVals);
+            }
+            else
+            {
+                context.sendMessage("basics", "&cNo commands saved on this item!");
             }
         }
     }

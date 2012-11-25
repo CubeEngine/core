@@ -106,7 +106,7 @@ public class TimeControlCommands
         @Flag(name = "a", longName = "all")
     }, usage = "<day|night|dawn|even|<time>> [world] [-all]")
     public void time(CommandContext context)
-    {
+    {//TODO time lock
         if (!context.hasIndexed(0))
         {
             context.sendMessage("&4NOT IMPLEMENTED! BLAME FAITHCAIO!");
