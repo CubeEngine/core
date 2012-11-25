@@ -25,4 +25,6 @@ public @interface Attribute
     public boolean unsigned() default false;
 
     public boolean unique() default false;
+    
+    public String name() default "";
 }
