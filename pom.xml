@@ -20,7 +20,7 @@
         <module>Basics</module>
         <module>CubeFun</module>
         <module>Log</module>
-        <module>CubeWriter</module>
+        <module>Writer</module>
         <module>Shout</module>
         <module>Guests</module>
         <!--
