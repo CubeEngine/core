@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.*;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
@@ -11,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 /**
  * Basic Storage-implementation (1 Key only)
@@ -84,7 +83,11 @@ public class BasicStorage<V extends Model> implements Storage<V>
             attribute = field.getAnnotation(Attribute.class);
             if (attribute != null)
             {
-                String name = field.getName();
+                String name = attribute.name();
+                if (name.isEmpty())
+                {
+                    name = field.getName();
+                }                        
                 tbuilder.field(name, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
                 if (field.isAnnotationPresent(Key.class))
                 {

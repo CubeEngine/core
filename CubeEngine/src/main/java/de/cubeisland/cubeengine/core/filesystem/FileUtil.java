@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -70,7 +71,6 @@ public class FileUtil
      */
     public static List<String> readStringList(Reader reader)
     {
-        // TODO I don't think a silent fail is a good idea here...
         if (reader == null)
         {
             return null;
@@ -95,7 +95,7 @@ public class FileUtil
             {
                 bufferedReader.close();
             }
-            catch (IOException ex1)
+            catch (IOException ignore)
             {}
         }
         return list;
@@ -119,5 +119,31 @@ public class FileUtil
         {
             fw.close();
         }
+    }
+
+    public static String readToString(InputStream stream, Charset charset)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        byte[] buffer = new byte[512];
+        int bytesRead;
+        do
+        {
+            try
+            {
+                bytesRead = stream.read(buffer);
+                if (bytesRead > 0)
+                {
+                    builder.append(new String(buffer, 0, bytesRead, charset));
+                }
+            }
+            catch (IOException e)
+            {
+                break;
+            }
+        }
+        while (bytesRead > 0);
+
+        return builder.toString();
     }
 }

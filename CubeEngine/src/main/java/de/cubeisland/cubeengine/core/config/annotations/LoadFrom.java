@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface LoadFrom
 {
-    String value() default "config";
+    String value();
 }

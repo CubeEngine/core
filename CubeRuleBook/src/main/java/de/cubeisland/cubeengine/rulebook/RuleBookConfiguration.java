@@ -1,6 +1,14 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import java.io.*;
+import de.cubeisland.cubeengine.core.i18n.Language;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,12 +28,12 @@ public class RuleBookConfiguration
     public RuleBookConfiguration(Rulebook ruleBook)
     {
         this.ruleBook = ruleBook;
-        for (String language : this.ruleBook.getCore().getI18n().getLanguages())
+        for (Language language : this.ruleBook.getCore().getI18n().getLanguages())
         {
             try
             {
-                loadRules(language);
-                convertText(language);
+                loadRules(language.getCode());
+                convertText(language.getCode());
             }
             catch (Exception e)
             {
@@ -42,14 +50,13 @@ public class RuleBookConfiguration
             try
             {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                writer.
-                    write(_(language, "rulebook", "You have to write down your rules here."));
+                writer.write(_(language, "rulebook", "You have to write down your rules here."));
                 writer.close();
             }
             catch (IOException e)
             {
                 ruleBook.
-                    error("The languagefile \"" + language + "\" could not be created", e);
+                    error("The language file \"" + language + "\" could not be created", e);
             }
         }
 

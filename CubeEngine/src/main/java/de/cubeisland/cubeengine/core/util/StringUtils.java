@@ -25,6 +25,17 @@ public final class StringUtils
         return sb.toString();
     }
 
+    public static String repeat(char string, int i)
+    {
+        StringBuilder sb = new StringBuilder();
+        while (i > 0)
+        {
+            --i;
+            sb.append(string);
+        }
+        return sb.toString();
+    }
+
     private StringUtils()
     {}
 
@@ -630,5 +641,94 @@ public final class StringUtils
     public static String trim(String string)
     {
         return rtrim(ltrim(string));
+    }
+
+    public static String stripFileExtention(String filename)
+    {
+        if (filename == null)
+        {
+            return null;
+        }
+        int lastDot = filename.lastIndexOf('.');
+        if (lastDot > -1)
+        {
+            return filename.substring(0, lastDot);
+        }
+        return filename;
+    }
+
+    public static String padLeft(String string, int length)
+    {
+        return padLeft(string, ' ', length);
+    }
+
+    public static String padLeft(String string, char padChar, int length)
+    {
+        if (string == null)
+        {
+            return null;
+        }
+        final int num = length - string.length();
+        if (num <= 0)
+        {
+            return string;
+        }
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < num; ++i)
+        {
+            builder.append(padChar);
+        }
+
+        return builder.append(string).toString();
+    }
+
+    public static String padRight(String string, int length)
+    {
+        return padRight(string, ' ', length);
+    }
+
+    public static String padRight(String string, char padChar, int length)
+    {
+        if (string == null)
+        {
+            return null;
+        }
+        final int num = length - string.length();
+        if (num <= 0)
+        {
+            return string;
+        }
+        StringBuilder builder = new StringBuilder(string);
+
+        for (int i = 0; i < num; ++i)
+        {
+            builder.append(padChar);
+        }
+
+        return builder.toString();
+    }
+
+    public static String padCenter(String string, int length)
+    {
+        return padCenter(string, ' ', length);
+    }
+
+    public static String padCenter(String string, char padChar, int length)
+    {
+        if (string == null)
+        {
+            return null;
+        }
+        final int num = length - string.length();
+        if (num <= 0)
+        {
+            return string;
+        }
+
+        final int numLeft = (int)Math.floor((double)num / 2.0);
+        final int numRight = (int)Math.ceil((double)num / 2.0);
+
+        return padLeft(string, padChar, numLeft) + string + padRight(string, padChar, numRight);
     }
 }
