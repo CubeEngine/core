@@ -1,32 +1,27 @@
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.rulebook.bookManagement.RuleBookCommands;
-import de.cubeisland.cubeengine.rulebook.bookManagement.RuleBookManager;
+import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookCommands;
+import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
 
 public class Rulebook extends Module
 {
-    private RuleBookConfiguration config;
-    private RuleBookManager ruleBookManager;
+    private RulebookManager rulebookManager;
     
     @Override
     public void onEnable()
     {
-        this.getFileManager().dropResources(RuleBookResource.values());
-
-        this.ruleBookManager = new RuleBookManager(this);
+        this.getFileManager().dropResources(RulebookResource.values());
+        this.registerPermissions(RulebookPermissions.values());
         
-        this.registerCommands(new RuleBookCommands(this), "rulebook");
-        this.registerListener(new RuleBookListener(this));
-    }
-
-    public RuleBookConfiguration getConfig()
-    {
-        return this.config;
+        this.rulebookManager = new RulebookManager(this);
+        
+        this.registerCommand(new RulebookCommands(this));
+        this.registerListener(new RulebookListener(this));
     }
     
-    public RuleBookManager getRuleBookManager()
+    public RulebookManager getRuleBookManager()
     {
-        return this.ruleBookManager;
+        return this.rulebookManager;
     }
 }
