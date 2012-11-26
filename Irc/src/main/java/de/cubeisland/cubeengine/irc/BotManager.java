@@ -115,7 +115,10 @@ public class BotManager implements Cleanable
     public void clean()
     {
         this.shutdown();
-        this.players.clear();
+        if (this.players != null)
+        {
+            this.players.clear();
+        }
     }
 
     public void sendMessage(Player player, String message)
