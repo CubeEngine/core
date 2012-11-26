@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Cake;
 import org.bukkit.material.Diode;
 import org.bukkit.material.Lever;
+import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
 public class InteractionLogger extends Logger<InteractionLogger.InteractionConfig>
@@ -30,8 +31,11 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
     public void onPlayerInteract(PlayerInteractEvent event)
     {
         Block block = event.getClickedBlock();
+
+
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
         {
+            MaterialData blockData = block.getState().getData();
             User user = this.module.getUserManager().getExactUser(event.getPlayer());
             switch (event.getClickedBlock().getType())
             {
@@ -43,14 +47,14 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                             || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate))
                     {
                         this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
-                                block.getType(), ((Openable) block).isOpen() ? 1 : 0);
+                                block.getType(), ((Openable) blockData).isOpen() ? 1 : 0);
                     }
                     return;
                 case LEVER:
                     if (this.config.logLever)
                     {
                         this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
-                                block.getType(), ((Lever) block).isPowered() ? 1 : 0);
+                                block.getType(), ((Lever) blockData).isPowered() ? 1 : 0);
                     }
                     return;
                 case STONE_BUTTON:
@@ -65,14 +69,14 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     if (this.config.logCake)
                     {
                         this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
-                                block.getType(), ((Cake) block).getSlicesRemaining());
+                                block.getType(), ((Cake) blockData).getSlicesRemaining());
                     }
                     return;
                 case NOTE_BLOCK:
                     if (this.config.logNoteBlock)
                     {
                         this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
-                                block.getType(), (int) ((NoteBlock) block).getRawNote());
+                                block.getType(), (int) ((NoteBlock) blockData).getRawNote());
                     }
                     return;
                 case DIODE_BLOCK_OFF:
@@ -80,7 +84,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     if (this.config.logDiode)
                     {
                         this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
-                                block.getType(), ((Diode) block).getDelay());
+                                block.getType(), ((Diode) blockData).getDelay());
                     }
             }
         }
@@ -99,6 +103,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
 
     public static class InteractionConfig extends SubLogConfig
     {
+
         @Option("log-pressureplate")
         public boolean logPressurePlate = false;
         @Option("log-door")
