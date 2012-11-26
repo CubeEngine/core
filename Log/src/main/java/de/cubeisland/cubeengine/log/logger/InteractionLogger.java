@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.event.EventHandler;
@@ -13,11 +14,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Cake;
 import org.bukkit.material.Diode;
-import org.bukkit.material.Door;
-import org.bukkit.material.Gate;
 import org.bukkit.material.Lever;
 import org.bukkit.material.Openable;
-import org.bukkit.material.TrapDoor;
 
 public class InteractionLogger extends Logger<InteractionLogger.InteractionConfig>
 {
@@ -40,9 +38,9 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                 case WOODEN_DOOR:
                 case TRAP_DOOR:
                 case FENCE_GATE:
-                    if ((block instanceof Door && this.config.logDoor)
-                            || (block instanceof TrapDoor && this.config.logTrapDoor)
-                            || (block instanceof Gate && this.config.logfenceGate))
+                    if ((block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor)
+                            || (block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
+                            || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate))
                     {
                         this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
                                 block.getType(), ((Openable) block).isOpen() ? 1 : 0);
