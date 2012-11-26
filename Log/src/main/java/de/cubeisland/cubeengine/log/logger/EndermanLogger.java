@@ -2,13 +2,12 @@ package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.SubLogConfig;
+import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.ENDERMAN;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-
-import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.ENDERMAN;
 
 public class EndermanLogger extends BlockLogger<EndermanLogger.EndermanConfig>
 {

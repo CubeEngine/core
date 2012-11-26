@@ -17,6 +17,7 @@ import org.bukkit.block.BlockState;
 @Entity(name = "logs")
 public class LogModel implements Model<Integer>
 {
+
     @Key
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
@@ -34,15 +35,15 @@ public class LogModel implements Model<Integer>
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
     public int causeID;
-    @Attribute(type = AttrType.VARCHAR, length = 64)
+    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String worldName;
-    @Attribute(type = AttrType.VARCHAR, length = 64)
+    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String worldUUID;
-    @Attribute(type = AttrType.INT)
+    @Attribute(type = AttrType.INT, notnull = false)
     public int x;
-    @Attribute(type = AttrType.INT)
+    @Attribute(type = AttrType.INT, notnull = false)
     public int y;
-    @Attribute(type = AttrType.INT)
+    @Attribute(type = AttrType.INT, notnull = false)
     public int z;
     // BlockLog OR SignChangeLog:
     @Attribute(type = AttrType.VARCHAR, length = 67, notnull = false)
@@ -58,7 +59,6 @@ public class LogModel implements Model<Integer>
     public Integer containerTypeOrKilledId = null; // ChestLog ContainerType | KillLog killed
     @Attribute(type = AttrType.VARCHAR, length = 100, notnull = false)
     public String itemNameOrChat = null;
-
     // BlockLog Methods & Fields:
     private BlockData newBlockData = null;
     private BlockData oldBlockData = null;
@@ -141,11 +141,14 @@ public class LogModel implements Model<Integer>
         this.timestamp = new Timestamp(System.currentTimeMillis());
         this.type = type;
         this.causeID = causeID;
-        this.worldName = loc.getWorld().getName();
-        this.worldUUID = loc.getWorld().getUID().toString();
-        this.x = loc.getBlockX();
-        this.y = loc.getBlockY();
-        this.z = loc.getBlockZ();
+        if (loc != null)
+        {
+            this.worldName = loc.getWorld().getName();
+            this.worldUUID = loc.getWorld().getUID().toString();
+            this.x = loc.getBlockX();
+            this.y = loc.getBlockY();
+            this.z = loc.getBlockZ();
+        }
     }
 
     @DatabaseConstructor

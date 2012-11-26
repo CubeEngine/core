@@ -1,6 +1,12 @@
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.storage.database.*;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.cubeengine.core.storage.database.Entity;
+import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
+import de.cubeisland.cubeengine.core.storage.database.Key;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
@@ -27,8 +33,10 @@ public class BasicStorage<V extends Model> implements Storage<V>
     protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
     protected Collection<Callback> updateCallbacks = new ArrayList<Callback>();
     protected String key = null;
+    protected String dbKey = null;
     protected boolean keyIsAI = false;
     protected ArrayList<String> attributes;
+    protected ArrayList<String> dbAttributes;
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
     private int revision;
     private boolean initialized = false;
@@ -44,6 +52,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         this.database = database;
         this.modelClass = model;
         this.attributes = new ArrayList<String>();
+        this.dbAttributes = new ArrayList<String>();
         this.revision = revision;
         this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
     }
@@ -83,20 +92,23 @@ public class BasicStorage<V extends Model> implements Storage<V>
             attribute = field.getAnnotation(Attribute.class);
             if (attribute != null)
             {
-                String name = attribute.name();
-                if (name.isEmpty())
+                String name = field.getName();
+                String dbName = attribute.name();
+                if (attribute.name().isEmpty())
                 {
-                    name = field.getName();
-                }                        
-                tbuilder.field(name, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
+                    dbName = name;
+                }
+                tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
                 if (field.isAnnotationPresent(Key.class))
                 {
-                    key = name;
+                    this.key = name;
+                    this.dbKey = dbName;
                     this.keyIsAI = field.getAnnotation(Attribute.class).ai();
                 }
                 else
                 {
                     attributes.add(name);
+                    dbAttributes.add(dbName);
                 }
                 if (field.isAnnotationPresent(ForeignKey.class))
                 {
@@ -109,15 +121,14 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 }
             }
         }
-
-        if (key == null)
+        if (dbKey == null)
         {
-            throw new IllegalArgumentException("The given model does not declare a keys!");
+            throw new IllegalArgumentException("The given model does not declare a key!");
         }
-        tbuilder.primaryKey(key).endFields();
+        tbuilder.primaryKey(dbKey).endFields();
 
         tbuilder.engine(entity.engine()).defaultcharset(entity.charset());
-        if (keyIsAI)
+        if (this.keyIsAI)
         {
             tbuilder.autoIncrement(1);
         }
@@ -129,7 +140,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         {
             throw new IllegalStateException("Error while creating Table", ex);
         }
-        this.prepareStatements(key, attributes.toArray(new String[attributes.size()]));
+        this.prepareStatements(dbKey, dbAttributes.toArray(new String[dbAttributes.size()]));
         tableManager.registerTable(this.table, this.revision);
     }
 
@@ -162,9 +173,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
                     .cols(allFields)
                     .end();
             }
-            this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
+            this.database.prepareAndStoreStatement(this.modelClass, "store", builder.end());
 
-            this.database.prepareAndStoreStatement(modelClass, "merge", builder
+            this.database.prepareAndStoreStatement(this.modelClass, "merge", builder
                 .merge()
                 .into(this.table)
                 .cols(allFields)
@@ -172,7 +183,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 .end()
                 .end());
 
-            this.database.prepareAndStoreStatement(modelClass, "get", builder
+            this.database.prepareAndStoreStatement(this.modelClass, "get", builder
                 .select(allFields)
                 .from(this.table)
                 .where()
@@ -180,13 +191,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 .end()
                 .end());
 
-            this.database.prepareAndStoreStatement(modelClass, "getall", builder
+            this.database.prepareAndStoreStatement(this.modelClass, "getall", builder
                 .select(allFields)
                 .from(this.table)
                 .end()
                 .end());
 
-            this.database.prepareAndStoreStatement(modelClass, "update", builder
+            this.database.prepareAndStoreStatement(this.modelClass, "update", builder
                 .update(this.table)
                 .set(fields)
                 .where()
@@ -194,7 +205,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 .end()
                 .end());
 
-            this.database.prepareAndStoreStatement(modelClass, "delete", builder
+            this.database.prepareAndStoreStatement(this.modelClass, "delete", builder
                 .delete()
                 .from(this.table)
                 .where()
@@ -203,7 +214,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 .end()
                 .end());
 
-            this.database.prepareAndStoreStatement(modelClass, "clear", builder
+            this.database.prepareAndStoreStatement(this.modelClass, "clear", builder
                 .truncateTable(this.table)
                 .end());
         }
@@ -236,12 +247,12 @@ public class BasicStorage<V extends Model> implements Storage<V>
         V loadedModel = null;
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "get", key);
+            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "get", key);
             if (resulsSet.next())
             {
                 ArrayList<Object> values = new ArrayList<Object>();
-                values.add(resulsSet.getObject(this.key));
-                for (String name : this.attributes)
+                values.add(resulsSet.getObject(this.dbKey));
+                for (String name : this.dbAttributes)
                 {
                     values.add(resulsSet.getObject(name));
                 }
@@ -265,13 +276,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
         Collection<V> loadedModels = new ArrayList<V>();
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getall");
+            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
 
             while (resulsSet.next())
             {
                 ArrayList<Object> values = new ArrayList<Object>();
-                values.add(resulsSet.getObject(this.key));
-                for (String name : this.attributes)
+                values.add(resulsSet.getObject(this.dbKey));
+                for (String name : this.dbAttributes)
                 {
                     values.add(resulsSet.getObject(name));
                 }
@@ -302,31 +313,31 @@ public class BasicStorage<V extends Model> implements Storage<V>
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
-            if (!keyIsAI)
+            if (!this.keyIsAI)
             {
-                values.add(modelClass.getField(key).get(model));
+                values.add(this.modelClass.getField(this.key).get(model));
             }
             for (String name : this.attributes)
             {
-                values.add(modelClass.getField(name).get(model));
+                values.add(this.modelClass.getField(name).get(model));
             }
-            if (keyIsAI)
+            if (this.keyIsAI)
             {
                 // This is never async
-                model.setKey(this.database.getLastInsertedId(modelClass, "store", values.toArray()));
+                model.setKey(this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
             }
             else
             {
                 if (async)
                 {
-                    this.database.asyncPreparedExecute(modelClass, "store", values.toArray());
+                    this.database.asyncPreparedExecute(this.modelClass, "store", values.toArray());
                 }
                 else
                 {
-                    this.database.preparedExecute(modelClass, "store", values.toArray());
+                    this.database.preparedExecute(this.modelClass, "store", values.toArray());
                 }
             }
-            for (Callback cb : createCallbacks)
+            for (Callback cb : this.createCallbacks)
             {
                 cb.call(model.getKey());
             }
@@ -472,7 +483,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     {
         try
         {
-            this.database.preparedExecute(modelClass, "clear");
+            this.database.preparedExecute(this.modelClass, "clear");
         }
         catch (SQLException ex)
         {
@@ -493,7 +504,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             DatabaseUpdater updater = this.updaters.get(dbRevision);
             if (updater != null)//No Updater for this
             {
-                updater.update(database);
+                updater.update(this.database);
                 tableManager.registerTable(this.table, this.revision);
             }
         }
@@ -515,9 +526,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
     public void notAssignKey()
     {
         this.keyIsAI = false;
-        String[] allFields = new String[this.attributes.size() + 1];
-        allFields[0] = this.key;
-        System.arraycopy(this.attributes.toArray(), 0, allFields, 1, this.attributes.size());
+        String[] allFields = new String[this.dbAttributes.size() + 1];
+        allFields[0] = this.dbKey;
+        System.arraycopy(this.dbAttributes.toArray(), 0, allFields, 1, this.dbAttributes.size());
         QueryBuilder builder = this.database.getQueryBuilder();
         builder.insert()
             .into(this.table)
@@ -525,7 +536,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             .end();
         try
         {
-            this.database.prepareAndStoreStatement(modelClass, "store", builder.end());
+            this.database.prepareAndStoreStatement(this.modelClass, "store", builder.end());
         }
         catch (SQLException ex)
         {

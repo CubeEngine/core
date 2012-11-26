@@ -3,15 +3,8 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.LocaleLanguage;
 import net.minecraft.server.NBTTagCompound;
@@ -43,6 +36,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Filter;
+import java.util.logging.Logger;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -183,6 +187,36 @@ public class BukkitUtils
             {
                 PacketHookInjector.INSTANCE.swap(player);
             }
+        }
+    }
+
+    private static Logger logger = null;
+    private static Filter filter = null;
+    private static CommandLogFilter commandFilter = null;
+    public static void disableCommandLogging()
+    {
+        if (logger == null)
+        {
+            logger = Logger.getLogger("Minecraft");
+        }
+        if (commandFilter == null)
+        {
+            commandFilter = new CommandLogFilter();
+        }
+        filter = logger.getFilter();
+        logger.setFilter(commandFilter);
+    }
+
+    public static void resetCommandLogging()
+    {
+        if (logger != null)
+        {
+            if (logger.getFilter() == commandFilter)
+            {
+                logger.setFilter(filter);
+            }
+            filter = null;
+            logger = null;
         }
     }
 
@@ -411,5 +445,6 @@ public class BukkitUtils
         PacketHookInjector.INSTANCE.shutdown();
 
         resetCommandMap();
+        resetCommandLogging();
     }
 }

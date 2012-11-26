@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
@@ -66,6 +67,7 @@ public class BukkitCore extends JavaPlugin implements Core
             return;
         }
         CubeEngine.initialize(this);
+
 
         this.jsonObjectMapper = new ObjectMapper();
         this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
@@ -159,6 +161,10 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this);
+        if (!this.config.logCommands)
+        {
+            BukkitUtils.disableCommandLogging();
+        }
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
@@ -178,6 +184,7 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onDisable()
     {
         BukkitUtils.cleanup();
+        Logger.getLogger("Minecraft").setFilter(null);
 
         if (this.moduleManager != null)
         {

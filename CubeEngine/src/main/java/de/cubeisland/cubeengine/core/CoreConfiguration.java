@@ -49,6 +49,10 @@ public class CoreConfiguration extends Configuration
     @Comment("Logging into Console \nALL > DEBUG > INFO > NOTICE > WARNING > ERROR > OFF")
     public CubeLevel loggingLevel = LogLevel.NOTICE;
 
+    @Option("logging.log-commands")
+    @Comment("Whether to log commands executed by players.")
+    public boolean logCommands = false;
+
     @Option("after-join-event-delay")
     @Comment("How many ticks after PlayerJoinEvent the AfterJoingEvent is fired")
     public long afterJoinEventDelay = 1;

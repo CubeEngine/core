@@ -92,7 +92,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
                     .end());
 
             this.database.prepareAndStoreStatement(User.class, "cleanup", database.getQueryBuilder()
-                    .select(key).from(table)
+                    .select(dbKey).from(table)
                     .where().field("lastseen").is(LESS).value()
                     .and().field("nogc").is(EQUAL).value(false)
                     .end().end());
@@ -173,8 +173,8 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
             ArrayList<Object> values = new ArrayList<Object>();
             if (resulsSet.next())
             {
-                values.add(resulsSet.getObject(this.key));
-                for (String name : this.attributes)
+                values.add(resulsSet.getObject(this.dbKey));
+                for (String name : this.dbAttributes)
                 {
                     values.add(resulsSet.getObject(name));
                 }

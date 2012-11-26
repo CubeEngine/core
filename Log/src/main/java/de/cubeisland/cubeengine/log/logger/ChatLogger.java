@@ -57,7 +57,7 @@ public class ChatLogger extends Logger<ChatLogger.ChatConfig>
     {
         if (this.config.logConsoleCommand)
         {
-            this.module.getLogManager().logChatLog(0, null, event.getCommand(), false); //TODO this will cause NPE
+            this.module.getLogManager().logChatLog(0, null, event.getCommand(), false);
         }
     }
 
