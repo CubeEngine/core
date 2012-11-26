@@ -24,12 +24,12 @@
         <module>Shout</module>
         <module>Guests</module>
         <module>Roles</module>
+        <module>Rulebook</module>
         <module>Irc</module>
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>
         -->
-        <module>CubeRuleBook</module>
 
         <!-- The test module should always be the last! -->
         <module>Test</module>

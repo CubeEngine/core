@@ -199,7 +199,7 @@ public class I18n implements Cleanable
 
     public Set<Language> searchLanguages(String name)
     {
-        return this.searchLanguages(name, 3);
+        return this.searchLanguages(name, 2);
     }
 
     public Set<Language> searchLanguages(String name, int maximumEditDistance)

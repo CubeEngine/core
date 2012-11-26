@@ -7,7 +7,7 @@
     </parent>
 
     <artifactId>rulebook</artifactId>
-    <name>RuleBook</name>
+    <name>Rulebook</name>
 
     <dependencies>
         <dependency>
