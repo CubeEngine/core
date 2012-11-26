@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.rulebook.bookManagement;
 
 import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
 import java.io.File;
@@ -9,32 +11,42 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class RuleBookManager 
+public final class RulebookManager 
 {
     private final Rulebook module;
     
     private Map<String, String[]> rulebooks;
     
-    public RuleBookManager(Rulebook module)
+    public RulebookManager(Rulebook module)
     {
         this.module = module;
         
         this.rulebooks = new HashMap<String, String[]>();
         
-        for(String language : this.module.getConfig().languages)
+        for(File book : this.module.getFolder().listFiles())
         {
-            File file = RuleBookFile.loadFile(module.getFolder().getPath(), language + ".txt");
-            try 
+            Set<Language> languages = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtention( book.getName() ) );
+            
+            if(languages.size() != 1)
             {
-                rulebooks.put(language, RuleBookFile.convertToPages(file));
-            } 
-            catch (IOException ex) 
+                this.module.getLogger().log(LogLevel.ERROR, "&cDo not know which language is meant");
+            }
+            else
             {
-                this.module.getLogger().log(LogLevel.ERROR, "Can''t read the file {0}", file.getName());
+                Language language = languages.iterator().next();
+                try 
+                {
+                    rulebooks.put(language.getName(), RuleBookFile.convertToPages(book));
+                }
+                catch (IOException ex) 
+                {
+                    this.module.getLogger().log(LogLevel.ERROR, "Can't read the file {0}", book.getName());
+                }
             }
         }
     }
@@ -46,12 +58,32 @@ public class RuleBookManager
     
     public boolean contains(String language)
     {
-        return this.rulebooks.containsKey(language);
+        return this.contains(language, 2);
+    }
+    
+    public boolean contains(String language, int editDistance)
+    {
+        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(language, editDistance);
+        if(languages.size() == 1 && this.rulebooks.containsKey(languages.iterator().next().getName()))
+        {
+            return true;
+        }
+        return false;
     }
     
     public String[] getPages(String language)
     {
-        return this.rulebooks.get(language);
+        return this.getPages(language, 2);
+    }
+    
+    public String[] getPages(String language, int editDistance)
+    {
+        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(language, editDistance);
+        if(languages.size() == 1)
+        {
+            return this.rulebooks.get(languages.iterator().next().getName());
+        }
+        return null;
     }
     
     public ItemStack getBook(String language)
@@ -63,7 +95,7 @@ public class RuleBookManager
             ruleBook.setAuthor(Bukkit.getServerName());
             ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
             ruleBook.setPages(this.getPages(language));
-
+            
             return ruleBook.getItemStack();
         }
         return null;

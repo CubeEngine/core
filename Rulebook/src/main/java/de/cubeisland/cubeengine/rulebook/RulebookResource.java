@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 
-public enum RuleBookResource implements Resource
+public enum RulebookResource implements Resource
 {
     GERMAN_MESSAGES(
         "resources/language/messages/de_DE.json",
@@ -13,7 +13,7 @@ public enum RuleBookResource implements Resource
     private final String target;
     private final String source;
 
-    private RuleBookResource(String source, String target)
+    private RulebookResource(String source, String target)
     {
         this.source = source;
         this.target = target;
