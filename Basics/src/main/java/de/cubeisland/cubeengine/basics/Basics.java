@@ -70,7 +70,7 @@ public class Basics extends Module
         this.registerCommands(new ItemCommands(this));
         this.registerCommands(new KickBanCommands());
         this.registerCommands(new SpawnMobCommand(this));
-        this.registerCommands(new TimeControlCommands());
+        this.registerCommands(new TimeControlCommands(this));
         this.registerCommands(new WorldControlCommands(this));
         this.registerCommand(new PowerToolCommand(this));
         this.registerCommand(new KitCommand(this));

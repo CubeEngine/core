@@ -3,17 +3,25 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidSender;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
-import java.util.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidSender;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  * This class holds all the information about a single command call.
@@ -37,9 +45,10 @@ public class CommandContext
     /**
      * Initializes the CommandContext object with an array of arguments
      *
-     * @param baseCommand the base command
-     * @param baseLabel the base label
-     * @param commandLine the arguments
+     * @param core the Core
+     * @param sender the sender
+     * @param command the command
+     * @param labels the labels
      * @throws IllegalArgumentException if the args array is empty
      */
     public CommandContext(Core core, CommandSender sender, CubeCommand command, Stack<String> labels)
@@ -317,7 +326,6 @@ public class CommandContext
      * Returns a value of a named parameter as a String
      *
      * @param name the parameter name
-     * @param i the value index
      * @return the String or null if not found
      */
     public String getString(String name)
@@ -379,7 +387,6 @@ public class CommandContext
      * Gets a named parameter as a User
      *
      * @param name the parameter name
-     * @param i the value index
      * @return the User or null if not found
      */
     public User getUser(String name)
@@ -437,7 +444,6 @@ public class CommandContext
      * @param message the message
      * @param params the message parameters
      * @return the User
-     * @throws IllegalUsageException if the CommandSender is not a User
      */
     public User getSenderAsUser(String category, String message, Object... params)
     {
@@ -507,21 +513,17 @@ public class CommandContext
      * @param index the index of the value
      * @param type the Class of the value
      * @return the value
-     * @throws ConversionException if the value could not be converter to the
      * requested type
      */
     public <T> T getIndexed(int index, Class<T> type)
     {
         try
         {
-            try
-            {
-                return ArgumentReader.read(type, this.indexedParams.get(index)).getRight();
-            }
-            catch (InvalidArgumentException e)
-            {
-                return null;
-            }
+            return ArgumentReader.read(type, this.indexedParams.get(index)).getRight();
+        }
+        catch (InvalidArgumentException e)
+        {
+            return null;
         }
         catch (IndexOutOfBoundsException e)
         {
@@ -575,7 +577,6 @@ public class CommandContext
      * @param <T> the type of the value
      * @param name the name of the parameters
      * @param type the Class of the value
-     * @param i the index of the value
      * @return the value or null if not available
      */
     public <T> T getNamed(String name, Class<T> type)
