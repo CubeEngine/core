@@ -1,18 +1,18 @@
-package de.cubeisland.cubeengine.rules.bookManagement;
+package de.cubeisland.cubeengine.rulebook.bookManagement;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.rules.Rules;
+import de.cubeisland.cubeengine.rulebook.Rulebook;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
 public class RuleBookCommands 
 {
-    Rules module;
+    Rulebook module;
     
-    public RuleBookCommands(Rules module)
+    public RuleBookCommands(Rulebook module)
     {
         this.module = module;
     }

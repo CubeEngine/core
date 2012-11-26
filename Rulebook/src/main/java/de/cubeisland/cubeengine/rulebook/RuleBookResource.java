@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.rules;
+package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.filesystem.Resource;
 
