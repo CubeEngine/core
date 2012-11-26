@@ -109,13 +109,16 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
         this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
-        try
+        if (this.config.userWebapi)
         {
-            this.apiServer.start();
-        }
-        catch (ApiStartupException e)
-        {
-            this.logger.log(ERROR, "The web API will not be available as the server failed to start properly...", e);
+            try
+            {
+                this.apiServer.start();
+            }
+            catch (ApiStartupException e)
+            {
+                this.logger.log(ERROR, "The web API will not be available as the server failed to start properly...", e);
+            }
         }
 
         // depends on: core config, server

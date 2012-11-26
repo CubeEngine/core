@@ -57,6 +57,10 @@ public class CoreConfiguration extends Configuration
     @Comment("How many ticks after PlayerJoinEvent the AfterJoingEvent is fired")
     public long afterJoinEventDelay = 1;
 
+    @Option("use-webapi")
+    @Comment("Whether to enable the Web API server")
+    public boolean userWebapi = false;
+
     @Override
     public String[] head()
     {
