@@ -92,15 +92,22 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!context.hasFlag("s"))
         {
-            context.sendMessage("rulebook", "&6available Languages:");
-            for(String languageName : this.rulebookManager.getLanguages())
+            if(this.rulebookManager.getLanguages().isEmpty())
             {
-                context.sendMessage("&e* " + languageName);
-            }   
+                context.sendMessage("&eNo rulebook available at the moment");
+            }
+            else
+            {
+                context.sendMessage("rulebook", "&6available languages:");
+                for(String languageName : this.rulebookManager.getLanguages())
+                {
+                    context.sendMessage("&e* " + languageName);
+                } 
+            }
         }
         else
         {
-            context.sendMessage("rulebook", "&6supported Languages:");
+            context.sendMessage("rulebook", "&6supported languages:");
             for(Language language : this.getModule().getCore().getI18n().getLanguages())
             {
                 context.sendMessage("&e* " + language.getName());
