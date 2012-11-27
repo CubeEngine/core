@@ -21,6 +21,10 @@ public class CoreConfiguration extends Configuration
     @Comment("Sets the language to choose by default.\nCurrently supported en_US de_DE fr_FR")
     public String defaultLanguage = "en_US";
 
+    @Option("command-offers")
+    @Comment("The maximum number of similar commands to offer when more than one command matched a mistyped command.")
+    public int commandOffers = 5;
+
     @Option("executor.threads")
     @Comment("The maximum amount of threads used by the executor at one time")
     public Integer executorThreads = 2;

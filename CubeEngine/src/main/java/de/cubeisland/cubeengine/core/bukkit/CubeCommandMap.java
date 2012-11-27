@@ -6,10 +6,6 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
@@ -17,6 +13,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -98,19 +99,19 @@ public class CubeCommandMap extends SimpleCommandMap
             List<String> matches = StringUtils.getBestMatches(label, this.knownCommands.keySet(), 1);
             if (matches.size() == 1)
             {
-                sender.sendMessage(_(sender, "core", "Couldn't find /%s, but /%s seems to be the one you searched...", label, matches.get(0)));
+                sender.sendMessage(_(sender, "core", "&cCouldn't find &e/%s&c, but &a/%s&c seems to be the one you searched...", label, matches.get(0)));
                 label = matches.get(0);
                 command = this.getCommand(label);
 
             }
-            else if (matches.size() > 1 && matches.size() <= 5) // TODO maximum configurable
+            else if (matches.size() > 1 && matches.size() <= this.core.getConfiguration().commandOffers)
             {
-                sender.sendMessage(_(sender, "core", "I could not find the command /%s ...", label));
-                sender.sendMessage(_(sender, "core", "Did you mean one of these: %s ?", "/" + StringUtils.implode(", /", matches)));
+                sender.sendMessage(_(sender, "core", "&cI could not find the command &e/%s &c...", label));
+                sender.sendMessage(_(sender, "core", "&eDid you mean one of these: &a%s &e?", "/" + StringUtils.implode(", /", matches)));
             }
             else
             {
-                sender.sendMessage(_(sender, "core", "I could not find any matching command for /%s ...", label));
+                sender.sendMessage(_(sender, "core", "&cI could not find any matching command for &e/%s &c...", label));
             }
         }
 

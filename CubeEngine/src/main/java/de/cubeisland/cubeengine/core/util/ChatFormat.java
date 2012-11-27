@@ -58,10 +58,12 @@ public enum ChatFormat
     private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
     private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
     private final char formatChar;
+    private final String string;
 
     private ChatFormat(char formatChar)
     {
         this.formatChar = formatChar;
+        this.string = String.valueOf(new char[]{BASE_CHAR, formatChar});
     }
 
     public char getChar()
@@ -135,6 +137,11 @@ public enum ChatFormat
         }
 
         return new String(chars);
+    }
+
+    public String toString()
+    {
+        return this.string;
     }
 
     static
