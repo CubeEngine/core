@@ -488,7 +488,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onLogin(final PlayerLoginEvent event)
     {
-        this.onlinePlayers.add(event.getPlayer());
+        if (event.getResult() == PlayerLoginEvent.Result.ALLOWED)
+        {
+            this.onlinePlayers.add(event.getPlayer());
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
