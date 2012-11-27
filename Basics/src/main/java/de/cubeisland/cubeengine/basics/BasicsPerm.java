@@ -48,7 +48,9 @@ public enum BasicsPerm implements Permission
     COMPASS_JUMPTO_LEFT,
     COMPASS_JUMPTO_RIGHT,
     COMMAND_BUTCHER_FLAG_OTHER,
-    COMMAND_BUTCHER_FLAG_NPC, ;
+    COMMAND_BUTCHER_FLAG_NPC, 
+    COMMAND_WALKSPEED_OTHER, 
+    WALKSPEED_ISALLOWED, ;
 
     private String permission;
     private PermissionDefault def;
