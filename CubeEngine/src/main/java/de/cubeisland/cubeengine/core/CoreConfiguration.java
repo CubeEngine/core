@@ -33,12 +33,12 @@ public class CoreConfiguration extends Configuration
     @Comment("How often the UserManager should unload offline Players")
     public Integer userManagerCleanup = 10;
 
-    @Option("usermanager.garbagecollection")
+    @Option("usermanager.garbage-collection")
     @Comment("After which time should CubeEngine delete all of a users data from database")
     public String userManagerCleanupDatabase = "3M";
 
-    @Option("usermanager.keepInMemory")
-    @Comment("How many Ticks after disconecting a user should stay in the usermanager")
+    @Option("usermanager.keep-in-memory")
+    @Comment("How many Ticks after disconnecting a user should stay in the user manager")
     public Integer userManagerKeepUserLoaded = 300;
 
     @Option("database")
@@ -54,7 +54,7 @@ public class CoreConfiguration extends Configuration
     public boolean logCommands = false;
 
     @Option("after-join-event-delay")
-    @Comment("How many ticks after PlayerJoinEvent the AfterJoingEvent is fired")
+    @Comment("How many ticks after PlayerJoinEvent the AfterJoinEvent is fired")
     public long afterJoinEventDelay = 1;
 
     @Option("use-webapi")
