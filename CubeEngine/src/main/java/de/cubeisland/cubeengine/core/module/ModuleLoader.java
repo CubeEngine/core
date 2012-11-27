@@ -238,10 +238,14 @@ public class ModuleLoader
             alreadyChecked.add(dep);
             try
             {
-                clazz = this.classLoaders.get(dep).findClass(name, false);
-                if (clazz != null)
+                ModuleClassLoader ldr = this.classLoaders.get(dep);
+                if (ldr != null)
                 {
-                    return clazz;
+                    clazz = ldr.findClass(name, false);
+                    if (clazz != null)
+                    {
+                        return clazz;
+                    }
                 }
             }
             catch (ClassNotFoundException ignore)
