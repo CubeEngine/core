@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -96,9 +97,31 @@ public final class RulebookManager
             rulebook.setTitle(_(language, "rulebook", "Rulebook"));
             rulebook.setPages(this.getPages(language));
             rulebook.setTag("rulebook", true);
+            rulebook.setTag("language", language);
             
             return rulebook.getItemStack();
         }
         return null;
+    }
+    
+    public void addBook(ItemStack book, String language)
+    {
+        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(language);
+        if(!this.contains(language) && languages.size() != 1)
+        {
+            Language lang = languages.iterator().next();
+            BookItem item = new BookItem(book);
+            try 
+            {
+                File file = new File(this.module.getFolder().getAbsoluteFile(), lang + ".txt");
+                RuleBookFile.createFile(file, item.getPages());
+                
+                this.rulebooks.put(language, RuleBookFile.convertToPages(file));
+            } 
+            catch (IOException ex) 
+            {
+                this.module.getLogger().log(LogLevel.ERROR, "Error by creating the book");
+            }
+        }
     }
 }

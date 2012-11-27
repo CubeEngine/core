@@ -4,13 +4,19 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
+import java.util.List;
+import java.util.Set;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionDefault;
 
 public class RulebookCommands extends ContainerCommand
@@ -74,15 +80,65 @@ public class RulebookCommands extends ContainerCommand
     @Command
     (
         desc = "list all available languages of the rulebooks.",
+        flags = {@Flag(longName = "supported", name = "s")},
         permDefault = PermissionDefault.TRUE,
+        usage = "[-supported]",
         max = 0
     )
     public void list(CommandContext context)
     {
-        context.sendMessage("rulebook", "&6available Languages:");
-        for(String languageName : this.rulebookManager.getLanguages())
+        if(!context.hasFlag("s"))
         {
-            context.sendMessage("&e\t" + languageName);
+            context.sendMessage("rulebook", "&6available Languages:");
+            for(String languageName : this.rulebookManager.getLanguages())
+            {
+                context.sendMessage("&e* " + languageName);
+            }   
+        }
+        else
+        {
+            context.sendMessage("rulebook", "&6supported Languages:");
+            for(Language language : this.getModule().getCore().getI18n().getLanguages())
+            {
+                context.sendMessage("&e* " + language.getName());
+            }
+        }
+        
+    }
+    
+    @Command
+    (
+        desc = "sets the book in hand as rulebook of the declared language",
+        min = 1,
+        max = 1,
+        usage = "<language>"
+    )
+    public void set(CommandContext context)
+    {
+        User user = context.getSenderAsUser("rulebook", "&eI thought you are analphabetics?");
+        
+        ItemStack item = user.getItemInHand();
+        if( item.getType().equals( Material.WRITTEN_BOOK ) || item.getType().equals( Material.BOOK_AND_QUILL ) )
+        {
+            Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(context.getIndexed(0, String.class));
+            if(languages.size() != 1)
+            {
+                context.sendMessage("rulebook", "I do not know which language you mean with %s exaptly", context.getIndexed(0, String.class));
+            }
+            String language = languages.iterator().next().getName();
+            if(!this.rulebookManager.contains(language))
+            {
+                this.rulebookManager.addBook(item, language);
+                context.sendMessage("rulebook", "&aRulebook for the language %s was added succesfully", language);
+            }
+            else
+            {
+                context.sendMessage("&eThe ability to modify a book wasn't added yet");
+            }
+        }
+        else
+        {
+            context.sendMessage("rulebook", "&cI would try it with a book as item in hand");
         }
     }
     

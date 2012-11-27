@@ -44,10 +44,20 @@ public class RuleBookFile
         return text;
     }
     
+    public static void createFile(File file, String[] txt) throws IOException
+    {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        for(String page : txt)
+        {
+            writer.write(page);
+        }
+        writer.close();
+    }
+    
     public static void createFile(File file, String txt) throws IOException
     {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(_(file.getName().split(".")[0], "rulebook", txt));
+        writer.write(txt);
         writer.close();
     }
 
