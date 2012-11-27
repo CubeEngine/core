@@ -1,25 +1,29 @@
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
+import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.rulebook.Rulebook;
-
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.rulebook.Rulebook;
 import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
+import net.minecraft.server.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.permissions.PermissionDefault;
 
 public class RulebookCommands extends ContainerCommand
@@ -30,6 +34,10 @@ public class RulebookCommands extends ContainerCommand
     {
         super(module, "rulebook", "shows all commands of the rulebook module");
         this.rulebookManager = module.getRuleBookManager();
+        
+//        Commands TODO:
+//        - modify
+//        - get
     }
     
     @Alias(names = {"getrulebook" , "rules"})
@@ -43,41 +51,47 @@ public class RulebookCommands extends ContainerCommand
     )
     public void get(CommandContext context)
     {
-        User user = (context.hasNamed("player")) ? context.getNamed("player", User.class, null) : context.getSenderAsUser("rulebook", "&cI can't export a book.");
+        User user = (context.hasNamed("player")) ? context.getNamed("player", User.class, null) : context.getSenderAsUser("rulebook", "&eI thought you are an analphabet?");
         
+        if(context.hasNamed("player") && !RulebookPermissions.COMMAND_GET_OTHER.isAuthorized(context.getSender()))
+        {
+            denyAccess(context, "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player");
+        }
         if(user == null)
         {
             illegalParameter(context, "rulebook", "&cUser not found");
         }
         
-        if(!this.rulebookManager.getLanguages().isEmpty())
+        if(this.rulebookManager.getLanguages().isEmpty())
         {
-            String language = context.getIndexed(0, String.class, user.getLanguage());
-            
-            if( !RulebookPermissions.COMMAND_GET_OTHER.isAuthorized(context.getSenderAsUser()) && context.hasNamed("player") )
-            {
-                denyAccess(context, "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player");
-            }
-            
-            if(!this.rulebookManager.contains(language) && context.hasIndexed(0))
-            {
-                illegalParameter(context, "rulebook", "&eThe language %s is not supported yet.", language);
-            }
-            else if( !this.rulebookManager.contains(language) )
-            {
-                language = this.getModule().getCore().getI18n().getDefaultLanguage();
-                if(!this.rulebookManager.contains(language))
-                {
-                    language = this.rulebookManager.getLanguages().iterator().next();
-                }
-            }
-            
-            user.getInventory().addItem( this.rulebookManager.getBook(language) );
+            context.sendMessage("rulebook", "&eIt does not exist a rulebook yet");
+            return;
         }
-        else
+        
+        String language = context.getIndexed(0, String.class, user.getLanguage());
+
+        if(!this.rulebookManager.contains(language) && context.hasIndexed(0))
         {
-            context.sendMessage("rulebook", "&eIt doesn't exist a rulebook yet.");
+            illegalParameter(context, "rulebook", "&eThe language %s is not supported yet.", language);
         }
+        if( !this.rulebookManager.contains(language) )
+        {
+            language = this.getModule().getCore().getI18n().getDefaultLanguage();
+            if(!this.rulebookManager.contains(language))
+            {
+                language = this.rulebookManager.getLanguages().iterator().next();
+            }
+        }
+            
+        TIntSet books = this.inventoryRulebookSearching(user.getInventory(), language);
+        
+        TIntIterator iter = books.iterator();
+        while(iter.hasNext())
+        {
+            user.getInventory().remove(iter.next());            // Doesn't remove the item :/
+        }
+        
+        user.getInventory().addItem( this.rulebookManager.getBook(language) );
     }
     
     @Command
@@ -143,45 +157,68 @@ public class RulebookCommands extends ContainerCommand
         }
         else
         {
-            illegalParameter(context, "rulebook", "&cMore than one language is matched with %s", language);
+            illegalParameter(context, "rulebook", "&cMore than one or no language is matched with %s", language);
         }
     }
     
     
     @Command
     (
-        desc = "sets the book in hand as rulebook of the declared language",
+        desc = "adds the book in hand as rulebook of the declared language",
         min = 1,
         max = 1,
         usage = "<language>"
     )
-    public void set(CommandContext context)
+    public void add(CommandContext context)
     {
-        User user = context.getSenderAsUser("rulebook", "&eI thought you are analphabetics?");
+        User user = context.getSenderAsUser("rulebook", "&eI thought you are an analphabet?");
         
         ItemStack item = user.getItemInHand();
-        if( item.getType().equals( Material.WRITTEN_BOOK ) || item.getType().equals( Material.BOOK_AND_QUILL ) )
+        
+        if( !item.getType().equals( Material.WRITTEN_BOOK ) || !item.getType().equals( Material.BOOK_AND_QUILL ))
         {
-            Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(context.getIndexed(0, String.class));
-            if(languages.size() != 1)
-            {
-                context.sendMessage("rulebook", "I do not know which language you mean with %s exactly", context.getIndexed(0, String.class));
-            }
-            String language = languages.iterator().next().getName();
-            if(!this.rulebookManager.contains(language))
-            {
-                this.rulebookManager.addBook(item, language);
-                context.sendMessage("rulebook", "&aRulebook for the language %s was added succesfully", language);
-            }
-            else
-            {
-                context.sendMessage("&eThe ability to modify a book wasn't added yet");
-            }
+            invalidUsage(context, "rulebook", "&cI would try it with a book as item in hand");
+        }
+        
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(context.getIndexed(0, String.class));
+        if(languages.size() != 1)
+        {
+            illegalParameter(context, "rulebook", "&cMore than one or no language is matched with %s", context.getIndexed(0, String.class));
+        }
+        String language = languages.iterator().next().getName();
+        
+        if(!this.rulebookManager.contains(language))
+        {
+            this.rulebookManager.addBook(item, language);
+            context.sendMessage("rulebook", "&aRulebook for the language %s was added succesfully", language);
         }
         else
         {
-            context.sendMessage("rulebook", "&cI would try it with a book as item in hand");
+            context.sendMessage("&eThere is already a book with that language.");
         }
+    }
+
+    private TIntSet inventoryRulebookSearching(PlayerInventory inventory, String language) 
+    {
+        TIntSet books = new TIntHashSet();
+        
+        for(int i = 0; i < inventory.getSize(); i++)
+        {
+            ItemStack item = inventory.getItem(i);
+            
+            if(item != null && item.getType().equals(Material.WRITTEN_BOOK))
+            {
+                BookItem book = new BookItem(item);
+                NBTTagCompound tag = book.getTag();
+                
+                if(tag.getBoolean("rulebook") && language.equalsIgnoreCase( tag.getString("language") ) )
+                {
+                    books.add(i);
+                }
+            }
+        }
+        
+        return books;
     }
     
 }
