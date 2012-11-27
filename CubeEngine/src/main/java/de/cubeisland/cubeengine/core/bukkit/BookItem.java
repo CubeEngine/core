@@ -198,82 +198,20 @@ public class BookItem
     }
     
     /**
-     * returns a boolean of a given tag
-     * @param tag the tag
-     * @return the boolean of the given tag
+     * returns the NBTTag of the BookItem
+     * @return the NBTTag of the BookItem
      */
-    public boolean getBooleanTag(String tag)
+    public NBTTagCompound getTag()
     {
-        NBTTagCompound tagCompound = this.item.getTag();
-        if (tagCompound == null)
-        {
-            return false;
-        }
-        return tagCompound.getBoolean(tag);
-    }
-    
-    /**
-     * returns a string of a given tag
-     * @param tag the tag
-     * @return the string of the given tag
-     */
-    public String getStringTag(String tag)
-    {
-        NBTTagCompound tagCompound = this.item.getTag();
-        if (tagCompound == null)
-        {
-            return null;
-        }
-        return tagCompound.getString(tag);
-    }
-    
-    
-    /**
-     * sets a string to a given tag
-     * @param tag the tag
-     * @param value the string value of the tag
-     */
-    public void setTag(String tag, String value)
-    {
-        Validate.notNull(tag, "The tag must not be null");
-        Validate.notNull(value, "The value must not be null");
-        
         NBTTagCompound tagCompound = this.item.getTag();
         
-        if( tagCompound == null )
+        if (tagCompound == null)
         {
             tagCompound = new NBTTagCompound();
             this.item.setTag(tagCompound);
         }
         
-        if( !tag.isEmpty() && !value.isEmpty() )
-        {
-            tagCompound.setString(tag, value);
-        }
-    }
-    
-    /**
-     * sets a boolean value to a given tag
-     * @param tag the tag 
-     * @param value the boolean value of the tag
-     */
-    public void setTag(String tag, boolean value)
-    {
-        Validate.notNull(tag, "The tag must not be null");
-        Validate.notNull(value, "The value must not be null");
-        
-        NBTTagCompound tagCompound = this.item.getTag();
-        
-        if( tagCompound == null )
-        {
-            tagCompound = new NBTTagCompound();
-            this.item.setTag(tagCompound);
-        }
-        
-        if( !tag.isEmpty() )
-        {
-            tagCompound.setBoolean(tag, value);
-        }
+        return tagCompound;
     }
 
     /**

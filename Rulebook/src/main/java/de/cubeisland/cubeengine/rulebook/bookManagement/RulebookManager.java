@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import net.minecraft.server.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -96,8 +97,10 @@ public final class RulebookManager
             rulebook.setAuthor(Bukkit.getServerName());
             rulebook.setTitle(_(language, "rulebook", "Rulebook"));
             rulebook.setPages(this.getPages(language));
-            rulebook.setTag("rulebook", true);
-            rulebook.setTag("language", language);
+            
+            NBTTagCompound tag = rulebook.getTag();
+            tag.setBoolean("rulebook", true);
+            tag.setString("language", language);
             
             return rulebook.getItemStack();
         }
@@ -107,13 +110,13 @@ public final class RulebookManager
     public void addBook(ItemStack book, String language)
     {
         Set<Language> languages = this.module.getCore().getI18n().searchLanguages(language);
-        if(!this.contains(language) && languages.size() != 1)
+        if(!this.contains(language) && languages.size() == 1)
         {
             Language lang = languages.iterator().next();
             BookItem item = new BookItem(book);
             try 
             {
-                File file = new File(this.module.getFolder().getAbsoluteFile(), lang + ".txt");
+                File file = new File(this.module.getFolder().getAbsoluteFile(), lang.getName() + ".txt");
                 RuleBookFile.createFile(file, item.getPages());
                 
                 this.rulebooks.put(language, RuleBookFile.convertToPages(file));
