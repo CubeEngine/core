@@ -4,7 +4,8 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
-import java.sql.Connection;
+
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,10 +19,20 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractDatabase implements Database
 {
-    protected static final Logger LOGGER = CubeEngine.getLogger();
-    protected Connection connection;
+    private static final Logger LOGGER = CubeEngine.getLogger();
+    private final DataSource dataSource;
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
+
+    public AbstractDatabase(DataSource dataSource)
+    {
+        this.dataSource = dataSource;
+    }
+
+    public DataSource getDataSource()
+    {
+        return this.dataSource;
+    }
 
     @Override
     public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
@@ -191,7 +202,7 @@ public abstract class AbstractDatabase implements Database
     @Override
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        return this.connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
+        return this.dataSource.getConnection().prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
     @Override

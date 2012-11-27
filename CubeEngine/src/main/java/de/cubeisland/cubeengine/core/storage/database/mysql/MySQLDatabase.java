@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
+import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import org.apache.commons.lang.Validate;
+
+import java.sql.SQLException;
 
 /**
  * MYSQLDatabase the MYSQL implementation for the database.
@@ -14,33 +15,24 @@ public class MySQLDatabase extends AbstractDatabase
 {
     private static final char NAME_QUOTE = '`';
     private static final char STRING_QUOTE = '\'';
-    private final String host;
-    private final short port;
-    private final String user;
-    private final String pass;
-    private final String database;
+
     private final String tablePrefix;
     private final MySQLQueryBuilder queryBuilder;
     private final Thread creationThread = Thread.currentThread();
 
     public MySQLDatabase(DatabaseConfiguration config) throws SQLException
     {
-        try
-        {
-            Class.forName("com.mysql.jdbc.Driver");
-        }
-        catch (ClassNotFoundException e)
-        {
-            throw new IllegalStateException("Couldn't find the MySQL driver!");
-        }
+        super(new MysqlConnectionPoolDataSource());
         MySQLDatabaseConfiguration configuration = (MySQLDatabaseConfiguration)config;
-        this.host = configuration.host;
-        this.port = configuration.port;
-        this.user = configuration.user;
-        this.pass = configuration.pass;
-        this.database = configuration.database;
+        MysqlConnectionPoolDataSource ds = (MysqlConnectionPoolDataSource)this.getDataSource();
+        ds.setServerName(configuration.host);
+        ds.setPort(configuration.port);
+        ds.setUser(configuration.user);
+        ds.setPassword(configuration.pass);
+        ds.setDatabaseName(configuration.database);
+        ds.setMaxReconnects(configuration.connectionPoolSize);
         this.tablePrefix = configuration.tablePrefix;
-        this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + String.valueOf(this.port) + "/" + this.database, this.user, this.pass);
+
         this.queryBuilder = new MySQLQueryBuilder(this);
     }
 
