@@ -90,13 +90,14 @@ public final class RulebookManager
     {
         if(this.contains(language))
         {
-            BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
+            BookItem rulebook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
 
-            ruleBook.setAuthor(Bukkit.getServerName());
-            ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
-            ruleBook.setPages(this.getPages(language));
+            rulebook.setAuthor(Bukkit.getServerName());
+            rulebook.setTitle(_(language, "rulebook", "Rulebook"));
+            rulebook.setPages(this.getPages(language));
+            rulebook.setTag("rulebook", true);
             
-            return ruleBook.getItemStack();
+            return rulebook.getItemStack();
         }
         return null;
     }

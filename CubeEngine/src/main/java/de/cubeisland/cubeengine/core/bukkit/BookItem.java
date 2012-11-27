@@ -196,6 +196,85 @@ public class BookItem
             tagCompound.setString(TITLE_FIELD, title);
         }
     }
+    
+    /**
+     * returns a boolean of a given tag
+     * @param tag the tag
+     * @return the boolean of the given tag
+     */
+    public boolean getBooleanTag(String tag)
+    {
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound == null)
+        {
+            return false;
+        }
+        return tagCompound.getBoolean(tag);
+    }
+    
+    /**
+     * returns a string of a given tag
+     * @param tag the tag
+     * @return the string of the given tag
+     */
+    public String getStringTag(String tag)
+    {
+        NBTTagCompound tagCompound = this.item.getTag();
+        if (tagCompound == null)
+        {
+            return null;
+        }
+        return tagCompound.getString(tag);
+    }
+    
+    
+    /**
+     * sets a string to a given tag
+     * @param tag the tag
+     * @param value the string value of the tag
+     */
+    public void setTag(String tag, String value)
+    {
+        Validate.notNull(tag, "The tag must not be null");
+        Validate.notNull(value, "The value must not be null");
+        
+        NBTTagCompound tagCompound = this.item.getTag();
+        
+        if( tagCompound == null )
+        {
+            tagCompound = new NBTTagCompound();
+            this.item.setTag(tagCompound);
+        }
+        
+        if( !tag.isEmpty() && !value.isEmpty() )
+        {
+            tagCompound.setString(tag, value);
+        }
+    }
+    
+    /**
+     * sets a boolean value to a given tag
+     * @param tag the tag 
+     * @param value the boolean value of the tag
+     */
+    public void setTag(String tag, boolean value)
+    {
+        Validate.notNull(tag, "The tag must not be null");
+        Validate.notNull(value, "The value must not be null");
+        
+        NBTTagCompound tagCompound = this.item.getTag();
+        
+        if( tagCompound == null )
+        {
+            tagCompound = new NBTTagCompound();
+            this.item.setTag(tagCompound);
+        }
+        
+        if( !tag.isEmpty() )
+        {
+            tagCompound.setBoolean(tag, value);
+        }
+    }
 
     /**
      * Returns the ItemStack of this Book
