@@ -12,9 +12,12 @@ import de.cubeisland.cubeengine.rulebook.Rulebook;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionDefault;
@@ -108,6 +111,38 @@ public class RulebookCommands extends ContainerCommand
     
     @Command
     (
+        desc = "removes the declared language and languagefiles!",
+        min = 1,
+        max = 1,
+        usage = "<language>"
+    )
+    public void remove(CommandContext context)
+    {
+        String language = context.getIndexed(0, String.class);
+        
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(language);
+        
+        if(languages.size() == 1)
+        {
+            try 
+            {
+                this.rulebookManager.removeBook(languages.iterator().next().getName());
+                context.sendMessage("rulebook", "&aThe languagefiles of %s was deleted", language);
+            } 
+            catch (IOException ex) 
+            {
+                this.getModule().getLogger().log(LogLevel.ERROR, "Error by deleting the files.", ex);
+            }
+        }
+        else
+        {
+            illegalParameter(context, "rulebook", "&cMore than one language is matched with %s", language);
+        }
+    }
+    
+    
+    @Command
+    (
         desc = "sets the book in hand as rulebook of the declared language",
         min = 1,
         max = 1,
@@ -123,7 +158,7 @@ public class RulebookCommands extends ContainerCommand
             Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(context.getIndexed(0, String.class));
             if(languages.size() != 1)
             {
-                context.sendMessage("rulebook", "I do not know which language you mean with %s exaptly", context.getIndexed(0, String.class));
+                context.sendMessage("rulebook", "I do not know which language you mean with %s exactly", context.getIndexed(0, String.class));
             }
             String language = languages.iterator().next().getName();
             if(!this.rulebookManager.contains(language))

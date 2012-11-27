@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,7 +11,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RuleBookFile 
 {
@@ -18,6 +23,24 @@ public class RuleBookFile
     public static File loadFile(String parent, String child)
     {
         return new File(parent, child);
+    }
+    
+    public static Set<File> getLanguageFiles(File directory)
+    {
+        Set<File> files = new HashSet<File>();
+        if(directory.isDirectory())
+        {
+            for(File file : directory.listFiles())
+            {
+                Set<Language> languages = CubeEngine.getI18n().searchLanguages( StringUtils.stripFileExtention( file.getName() ) );
+                
+                if(languages.size() == 1)
+                {
+                    files.add(file);
+                }
+            }
+        }
+        return files;
     }
     
     public static String[] convertToPages(File file) throws IOException

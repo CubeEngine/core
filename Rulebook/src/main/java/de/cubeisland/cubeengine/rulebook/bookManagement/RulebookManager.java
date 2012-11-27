@@ -30,25 +30,16 @@ public final class RulebookManager
         
         this.rulebooks = new HashMap<String, String[]>();
         
-        for(File book : this.module.getFolder().listFiles())
+        for(File book : RuleBookFile.getLanguageFiles(this.module.getFolder()))
         {
-            Set<Language> languages = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtention( book.getName() ) );
-            
-            if(languages.size() != 1)
+            Language language = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtention( book.getName() ) ).iterator().next();
+            try 
             {
-                this.module.getLogger().log(LogLevel.ERROR, "&cDo not know which language is meant");
+                rulebooks.put(language.getName(), RuleBookFile.convertToPages(book));
             }
-            else
+            catch (IOException ex) 
             {
-                Language language = languages.iterator().next();
-                try 
-                {
-                    rulebooks.put(language.getName(), RuleBookFile.convertToPages(book));
-                }
-                catch (IOException ex) 
-                {
-                    this.module.getLogger().log(LogLevel.ERROR, "Can't read the file {0}", book.getName());
-                }
+                this.module.getLogger().log(LogLevel.ERROR, "Can't read the file {0}", book.getName());
             }
         }
     }
@@ -105,6 +96,36 @@ public final class RulebookManager
             return rulebook.getItemStack();
         }
         return null;
+    }
+    
+    public boolean removeBook(String language) throws IOException
+    {
+        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(language);
+        boolean value = false;
+        
+        if(languages.size() == 1)
+        {
+            language = languages.iterator().next().getName();
+            
+            for(File file : RuleBookFile.getLanguageFiles(this.module.getFolder()))
+            {
+                Language fileLanguage = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtention( file.getName() ) ).iterator().next();
+                
+                if(fileLanguage.getName().equalsIgnoreCase(language))
+                {
+                    value = file.delete();
+                    if(!value)
+                    {
+                        throw new IOException("Can't delete the file " + file.getName());
+                    }
+                }
+            }
+            if(value)
+            {
+                this.rulebooks.remove(language);
+            }
+        }
+        return value;
     }
     
     public void addBook(ItemStack book, String language)
