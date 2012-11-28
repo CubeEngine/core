@@ -34,10 +34,6 @@ public class RulebookCommands extends ContainerCommand
     {
         super(module, "rulebook", "shows all commands of the rulebook module");
         this.rulebookManager = module.getRuleBookManager();
-        
-//        Commands TODO:
-//        - modify
-//        - get
     }
     
     @Alias(names = {"getrules", "rules"})
