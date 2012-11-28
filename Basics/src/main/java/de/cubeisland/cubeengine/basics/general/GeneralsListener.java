@@ -5,11 +5,12 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.cubeengine.core.user.User;
-import net.minecraft.server.EntityPlayer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,6 +21,19 @@ public class GeneralsListener implements Listener
     public GeneralsListener(Basics basics)
     {
         this.basics = basics;
+    }
+
+    @EventHandler
+    public void onDamage(final EntityDamageEvent event)
+    {
+        if (event.getEntity() instanceof Player)
+        {
+            BasicUser bUser = this.basics.getBasicUserManager().getBasicUser((Player) event.getEntity());
+            if (bUser.godMode)
+            {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler
@@ -59,7 +73,7 @@ public class GeneralsListener implements Listener
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
         if (bUser.godMode == true)
         {
-            ((CraftPlayer)user.getPlayer()).getHandle().abilities.isInvulnerable = true;
+            ((CraftPlayer) user.getPlayer()).getHandle().abilities.isInvulnerable = true;
         }
     }
 }

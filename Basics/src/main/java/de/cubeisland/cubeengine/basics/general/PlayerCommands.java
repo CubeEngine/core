@@ -14,7 +14,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.sql.Timestamp;
-import net.minecraft.server.EntityPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -461,7 +460,7 @@ public class PlayerCommands
             other = true;
             if (!BasicsPerm.COMMAND_GOD_OTHER.isAuthorized(context.getSender()))
             {
-                denyAccess(context, "basics", "You are not allowed to god others!");
+                denyAccess(context, "basics", "&cYou are not allowed to god others!");
             }
         }
         else
@@ -470,8 +469,6 @@ public class PlayerCommands
         }
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
         bUser.godMode = !bUser.godMode;
-        EntityPlayer player = ((CraftPlayer) user.getPlayer()).getHandle();
-        player.abilities.isInvulnerable = bUser.godMode;
         if (bUser.godMode)
         {
             if (other)
