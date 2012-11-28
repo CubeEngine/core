@@ -16,6 +16,7 @@ public class Fun extends Module
     public void onEnable()
     {
         this.getCore().getFileManager().dropResources(FunResource.values());
+        this.registerPermissions(FunPerm.values());
         
         this.registerCommands(new ThrowCommands(this));
         this.registerCommands(new NukeCommand(this));

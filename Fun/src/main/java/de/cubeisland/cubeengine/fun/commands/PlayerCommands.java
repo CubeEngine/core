@@ -4,8 +4,11 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
+import de.cubeisland.cubeengine.fun.FunPerm;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.Location;
@@ -13,8 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
 public class PlayerCommands
 {
@@ -39,7 +40,9 @@ public class PlayerCommands
         flags = 
         { 
             @Flag(longName = "unsafe", name = "u"),
-            @Flag(longName = "fire", name = "f")
+            @Flag(longName = "fire", name = "f"),
+            @Flag(longName = "bockDamage", name = "b"),
+            @Flag(longName = "playerDamage", name = "p")
         },
         max = 0,
         usage = "[player <name>] [damage <value>] [-unsafe] [-fire]"
@@ -49,10 +52,13 @@ public class PlayerCommands
         User user;
         Location location;
         int power = context.getNamed("damage", Integer.class, 1);
-        boolean fire = context.hasFlag("f") ? true : false;
         
         if(context.hasNamed("player"))
         {
+            if(!FunPerm.EXPLOSION_OTHER.isAuthorized(context.getSender()))
+            {
+                denyAccess(context, "rulebook", "&cYou are not allowed to use the player parameter.");
+            }
             user = context.getNamed("player", User.class);
             if (user == null)
             {
@@ -71,12 +77,25 @@ public class PlayerCommands
             illegalParameter(context, "fun", "&cThe power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
         }
         
-        if( !context.hasFlag("u") )
+        if( !FunPerm.EXPLOSION_BLOCK_DAMAGE.isAuthorized(context.getSender()) && ( context.hasFlag("b") || context.hasFlag("u") ) )
+        {
+            denyAccess(context, "rulebook", "&cYou are not allowed to break blocks");
+        }
+        if( !FunPerm.EXPLOSION_FIRE.isAuthorized(context.getSender()) && ( context.hasFlag("f") || context.hasFlag("u") ) )
+        {
+            denyAccess(context, "rulebook", "&cYou are not allowed to set fireticks");
+        }
+        if( !FunPerm.EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && ( context.hasFlag("p") || context.hasFlag("u") ) )
+        {
+            denyAccess(context, "rulebook", "&cYou are not allowed to damage an other player");
+        }
+        
+        if( !context.hasFlag("u") || !context.hasFlag("p"))
         {
             explosionListener.add(location);
         }
         
-        user.getWorld().createExplosion(location, power, fire);
+//        user.getWorld().createExplosion(location.getX(), location.getY(), location.getZ(), power, context.hasFlag("f"), context.hasFlag("b"));
     }
     
     @Command
