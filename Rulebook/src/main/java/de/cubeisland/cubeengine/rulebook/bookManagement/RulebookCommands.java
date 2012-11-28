@@ -88,10 +88,15 @@ public class RulebookCommands extends ContainerCommand
         TIntIterator iter = books.iterator();
         while(iter.hasNext())
         {
-            user.getInventory().remove(iter.next());            // Doesn't remove the item :/     
+            user.getInventory().clear(iter.next()); 
         }
         
         user.getInventory().addItem( this.rulebookManager.getBook(language) );
+        user.sendMessage("rulebook", "&aLot's of fun with your rulebook.");
+        if(!books.isEmpty())
+        {
+            user.sendMessage("rulebook", "&aYour old was removed");
+        }
     }
     
     @Alias(names="listrules")
@@ -177,7 +182,7 @@ public class RulebookCommands extends ContainerCommand
         
         ItemStack item = user.getItemInHand();
         
-        if( !item.getType().equals( Material.WRITTEN_BOOK ) || !item.getType().equals( Material.BOOK_AND_QUILL ))
+        if( !item.getType().equals( Material.WRITTEN_BOOK ) && !item.getType().equals( Material.BOOK_AND_QUILL ))
         {
             invalidUsage(context, "rulebook", "&cI would try it with a book as item in hand");
         }
@@ -196,6 +201,7 @@ public class RulebookCommands extends ContainerCommand
                 if( this.rulebookManager.removeBook(language) )
                 {
                     this.rulebookManager.addBook(item, language);
+                    context.sendMessage("rulebook", "&aThe rulebook %s was succesful modified.", language);
                 }
                 else
                 {
@@ -227,7 +233,7 @@ public class RulebookCommands extends ContainerCommand
         
         ItemStack item = user.getItemInHand();
         
-        if( !item.getType().equals( Material.WRITTEN_BOOK ) || !item.getType().equals( Material.BOOK_AND_QUILL ))
+        if( !item.getType().equals( Material.WRITTEN_BOOK ) && !item.getType().equals( Material.BOOK_AND_QUILL ))
         {
             invalidUsage(context, "rulebook", "&cI would try it with a book as item in hand");
         }
@@ -253,6 +259,13 @@ public class RulebookCommands extends ContainerCommand
     private TIntSet inventoryRulebookSearching(PlayerInventory inventory, String language) 
     {
         TIntSet books = new TIntHashSet();
+        
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(language);
+        if(languages.size() != 1)
+        {
+            return books;
+        }
+        language = languages.iterator().next().getName();
         
         for(int i = 0; i < inventory.getSize(); i++)
         {

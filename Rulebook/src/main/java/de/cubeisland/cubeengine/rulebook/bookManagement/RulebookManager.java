@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.i18n.Language;
@@ -80,6 +81,13 @@ public final class RulebookManager
     
     public ItemStack getBook(String language)
     {
+        Set<Language> languages = CubeEngine.getI18n().searchLanguages(language);
+        if(languages.size() != 1)
+        {
+            return null;
+        }
+        language = languages.iterator().next().getName();
+        
         if(this.contains(language))
         {
             BookItem rulebook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
