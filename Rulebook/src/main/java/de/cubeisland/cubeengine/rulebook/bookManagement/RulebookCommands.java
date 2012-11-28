@@ -40,7 +40,7 @@ public class RulebookCommands extends ContainerCommand
 //        - get
     }
     
-    @Alias(names = {"getrulebook" , "rules"})
+    @Alias(names = {"getrules", "rules"})
     @Command
     (
         desc = "gets the player the rulebook in the inventory",
@@ -88,12 +88,13 @@ public class RulebookCommands extends ContainerCommand
         TIntIterator iter = books.iterator();
         while(iter.hasNext())
         {
-            user.getInventory().remove(iter.next());            // Doesn't remove the item :/
+            user.getInventory().remove(iter.next());            // Doesn't remove the item :/     
         }
         
         user.getInventory().addItem( this.rulebookManager.getBook(language) );
     }
     
+    @Alias(names="listrules")
     @Command
     (
         desc = "list all available languages of the rulebooks.",
@@ -130,6 +131,7 @@ public class RulebookCommands extends ContainerCommand
         
     }
     
+    @Alias(names = "removerules")
     @Command
     (
         desc = "removes the declared language and languagefiles!",
@@ -161,7 +163,57 @@ public class RulebookCommands extends ContainerCommand
         }
     }
     
+    @Alias(names = "modifyrules")
+    @Command
+    (
+        desc = "modified the rulebook of the declared language with the book in hand",
+        usage = "<language>",
+        min = 1,
+        max = 1
+    )
+    public void modify(CommandContext context)
+    {
+        User user = context.getSenderAsUser("rulebook", "&eYou are not able to write, aren't you?");
+        
+        ItemStack item = user.getItemInHand();
+        
+        if( !item.getType().equals( Material.WRITTEN_BOOK ) || !item.getType().equals( Material.BOOK_AND_QUILL ))
+        {
+            invalidUsage(context, "rulebook", "&cI would try it with a book as item in hand");
+        }
+        
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(context.getIndexed(0, String.class));
+        if(languages.size() != 1)
+        {
+            illegalParameter(context, "rulebook", "&cMore than one or no language is matched with %s", context.getIndexed(0, String.class));
+        }
+        String language = languages.iterator().next().getName();
+        
+        if(this.rulebookManager.contains(language))
+        {
+            try 
+            {
+                if( this.rulebookManager.removeBook(language) )
+                {
+                    this.rulebookManager.addBook(item, language);
+                }
+                else
+                {
+                    context.sendMessage("rulebook", "&eAn error ocurred by deleting the old rulebook");
+                }
+            } 
+            catch (IOException ex) 
+            {
+                this.getModule().getLogger().log(LogLevel.ERROR, "Error by deleting the files.", ex);
+            }
+        }
+        else
+        {
+            invalidUsage(context, "rulebook", "&cYou can't modify a book which does not exist.");
+        }
+    }
     
+    @Alias(names = "addrules")
     @Command
     (
         desc = "adds the book in hand as rulebook of the declared language",

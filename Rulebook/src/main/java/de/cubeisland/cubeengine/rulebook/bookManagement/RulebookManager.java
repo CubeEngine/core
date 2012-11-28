@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import net.minecraft.server.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
