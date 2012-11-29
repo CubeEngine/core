@@ -85,6 +85,14 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This isEqual();
+    
+    /**
+     * Adds an between-operation.
+     * value1 < x < value2 
+     *
+     * @return fluent interface
+     */
+    public This isBetween(String field);
 
     /**
      * Adds a wildcard.

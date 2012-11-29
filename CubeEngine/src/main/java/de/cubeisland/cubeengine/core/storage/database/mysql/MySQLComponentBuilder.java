@@ -143,6 +143,14 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    public This isBetween(String field)
+    {
+        this.beginSub().field(field).is(GREATER).value().
+                  and().field(field).is(LESS).value().endSub();
+        return (This)this;
+    }
+    
+    @Override
     public This not()
     {
         this.query.append(" NOT");

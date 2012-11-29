@@ -1,10 +1,14 @@
 package de.cubeisland.cubeengine.log;
 
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.storage.BlockData;
+import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.storage.LogModel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 public class Lookup
 {
     boolean showCoords;
+    
     private List<LogModel> blocklogs;
 
     //private List<ChatLog> chatlogs;
@@ -80,4 +85,53 @@ public class Lookup
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
+    
+    public static Lookup getBlocklogs()
+    {
+        int blocklog = LogModel.BLOCKLOG;
+        Location loc1;
+        Location loc2;
+        List<User> userList;
+        List<BlockData> blockList;
+        
+        //LazyLoading of prepared statements:
+        //Building statement name
+        //log_<type>_<worldUUID OR NULL>_<checkLocation?>_<Anz_Users>_<Anz_BlockType>
+        QueryBuilder builder = Log.getInstance().getDatabase().getQueryBuilder();
+        builder.select().wildcard().
+                from("logs").
+                where().
+                //SELECT BLOCKLOG TYPE
+                field("type").isEqual().value();
+        builder.select().wildcard().
+                from("logs").
+                where().
+                //SELECT WORLD
+                field("worldUUID").isEqual().value();
+        builder.select().wildcard().
+                from("logs").
+                where().
+                //SELECT BETWEEN LOCATIONS
+                //make sure both Loc are in the same world
+                field("x").isEqual().value().and().//TODO isBetween(Object, Object) in QueryBuilder
+                field("y").isEqual().value().and().
+                field("z").isEqual().value();
+        builder.select().wildcard().
+                from("logs").
+                where().
+                //SELECT a USER
+                //make sure both Loc are in the same world
+                field("causeID").isEqual().value(); //CONNECT LIST WITH OR & put () around
+                builder.select().wildcard().
+                from("logs").
+                where().
+                //SELECT BlockTypes
+                beginSub().
+                        field("newBlockOrLines").isEqual().value().or().
+                        field("oldBlockOrLines").isEqual().value().
+                endSub(); //CONNECT LIST WITH OR & put () around
+        return null;      
+        
+    }
+    
 }
