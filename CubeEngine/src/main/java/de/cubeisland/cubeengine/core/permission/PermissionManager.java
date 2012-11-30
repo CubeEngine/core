@@ -20,7 +20,7 @@ import java.util.Set;
 public class PermissionManager
 {
     private static final String CUBEENGINE_BASE = "cubeengine";
-    private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(CUBEENGINE_BASE + ".*", PermissionDefault.OP);
+    private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(CUBEENGINE_BASE + ".*", PermissionDefault.FALSE);
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
@@ -105,7 +105,7 @@ public class PermissionManager
         org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
         if (wildcard == null)
         {
-            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, PermissionDefault.OP));
+            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, PermissionDefault.FALSE));
             this.getPermission(module).add(perm);
         }
 
