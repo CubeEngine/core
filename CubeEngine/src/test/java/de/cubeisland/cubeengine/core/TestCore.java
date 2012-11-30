@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import java.io.File;
@@ -125,5 +126,11 @@ public class TestCore implements Core
     public boolean isDebug()
     {
         return false;
+    }
+
+    @Override
+    public WorldManager getWorldManager()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

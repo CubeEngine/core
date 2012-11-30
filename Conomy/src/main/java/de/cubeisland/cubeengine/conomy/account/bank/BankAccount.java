@@ -4,12 +4,12 @@ import de.cubeisland.cubeengine.conomy.account.AccountModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 
 @Entity(name = "bankaccount")
 public class BankAccount extends AccountModel
 {
-    @Key
+    @PrimaryKey
     @Attribute(type = AttrType.INT)
     protected int key;
     @Attribute(type = AttrType.VARCHAR, length = 16)

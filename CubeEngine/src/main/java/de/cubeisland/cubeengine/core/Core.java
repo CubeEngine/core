@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import java.util.logging.Logger;
@@ -128,4 +129,11 @@ public interface Core
      * @return
      */
     public ApiServer getApiServer();
+    
+    /**
+     * This method returns the WorldManager
+     *
+     * @return
+     */
+    public WorldManager getWorldManager();
 }

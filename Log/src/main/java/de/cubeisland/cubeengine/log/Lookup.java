@@ -96,7 +96,7 @@ public class Lookup
         
         //LazyLoading of prepared statements:
         //Building statement name
-        //log_<type>_<worldUUID OR NULL>_<checkLocation?>_<Anz_Users>_<Anz_BlockType>
+        //log_<type>_<world?>_<checkLocation?>_<Anz_Users>_<Anz_BlockType>
         QueryBuilder builder = Log.getInstance().getDatabase().getQueryBuilder();
         builder.select().wildcard().
                 from("logs").
@@ -113,16 +113,16 @@ public class Lookup
                 where().
                 //SELECT BETWEEN LOCATIONS
                 //make sure both Loc are in the same world
-                field("x").isEqual().value().and().//TODO isBetween(Object, Object) in QueryBuilder
-                field("y").isEqual().value().and().
-                field("z").isEqual().value();
+                field("x").between().and().
+                field("y").between().and().
+                field("z").between();
         builder.select().wildcard().
                 from("logs").
                 where().
                 //SELECT a USER
                 //make sure both Loc are in the same world
                 field("causeID").isEqual().value(); //CONNECT LIST WITH OR & put () around
-                builder.select().wildcard().
+       builder.select().wildcard().
                 from("logs").
                 where().
                 //SELECT BlockTypes

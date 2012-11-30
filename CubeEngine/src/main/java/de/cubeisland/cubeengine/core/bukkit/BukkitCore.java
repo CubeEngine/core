@@ -17,6 +17,7 @@ import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
+import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
@@ -57,6 +58,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private TableManager tableManager;
     private ObjectMapper jsonObjectMapper;
     private ApiServer apiServer;
+    private WorldManager worldManager;
 
     @Override
     public void onEnable()
@@ -168,6 +170,8 @@ public class BukkitCore extends JavaPlugin implements Core
         {
             BukkitUtils.disableCommandLogging();
         }
+
+        this.worldManager = new WorldManager(database);
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
@@ -332,5 +336,11 @@ public class BukkitCore extends JavaPlugin implements Core
     public ApiServer getApiServer()
     {
         return this.apiServer;
+    }
+
+    @Override
+    public WorldManager getWorldManager()
+    {
+        return this.worldManager;
     }
 }

@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 @Entity(name = "tables")
 public class Table implements Model<Integer>
 {
-    @Key
+    @PrimaryKey
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 32)

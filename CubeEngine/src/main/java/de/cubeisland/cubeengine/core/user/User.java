@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import org.apache.commons.lang.Validate;
@@ -41,7 +41,7 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 public class User extends UserBase implements LinkingModel<Integer>
 {
     public static int NO_ID = -1;
-    @Key
+    @PrimaryKey
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)

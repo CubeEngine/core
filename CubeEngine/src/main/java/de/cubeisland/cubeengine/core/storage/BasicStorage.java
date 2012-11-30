@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
@@ -99,7 +99,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                     dbName = name;
                 }
                 tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), attribute.ai());
-                if (field.isAnnotationPresent(Key.class))
+                if (field.isAnnotationPresent(PrimaryKey.class))
                 {
                     this.key = name;
                     this.dbKey = dbName;

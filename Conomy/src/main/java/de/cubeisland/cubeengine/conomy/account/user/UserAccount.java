@@ -4,13 +4,13 @@ import de.cubeisland.cubeengine.conomy.account.AccountModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 import de.cubeisland.cubeengine.core.user.User;
 
 @Entity(name = "useraccount")
 public class UserAccount extends AccountModel
 {
-    @Key
+    @PrimaryKey
     @Attribute(type = AttrType.INT)
     protected final User user;
 

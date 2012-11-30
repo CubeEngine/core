@@ -5,14 +5,14 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 import java.sql.Date;
 import java.util.List;
 
 @Entity(name = "Orders")
 public class TestModel implements Model<Integer>
 {
-    @Key
+    @PrimaryKey
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int id;
     @Attribute(type = AttrType.DATE)

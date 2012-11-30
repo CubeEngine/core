@@ -4,11 +4,11 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 
 public class KitsGiven implements Model<Integer>
 {
-    @Key
+    @PrimaryKey
     @Attribute(type = AttrType.INT, unsigned = true)
     public int key;
     @ForeignKey(table = "user", field = "key")

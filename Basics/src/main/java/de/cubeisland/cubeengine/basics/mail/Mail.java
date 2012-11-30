@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
-import de.cubeisland.cubeengine.core.storage.database.Key;
+import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 @Entity(name = "mail")
 public class Mail implements Model<Integer>
 {
-    @Key
+    @PrimaryKey
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 100)
