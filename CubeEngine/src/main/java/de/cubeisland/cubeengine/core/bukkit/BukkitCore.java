@@ -245,6 +245,11 @@ public class BukkitCore extends JavaPlugin implements Core
             }
         }
 
+        if (this.database != null)
+        {
+            this.database.shutdown();
+        }
+
         CubeEngine.clean();
     }
 

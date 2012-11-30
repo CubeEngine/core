@@ -2,6 +2,9 @@ package de.cubeisland.cubeengine.core.storage.database;
 
 import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +20,22 @@ public interface Database
      * @return the databases name
      */
     String getName();
+
+    /**
+     * Returns a/the connection this database is using.
+     *
+     * @return a JDBC connection
+     * @throws SQLException
+     */
+    Connection getConnection() throws SQLException;
+
+    /**
+     * Returns the database metadata.
+     *
+     * @return the metadata
+     * @throws SQLException
+     */
+    DatabaseMetaData getMetaData() throws SQLException;
 
     /**
      * Prepares a name. (Quoting)
@@ -50,26 +69,6 @@ public interface Database
     QueryBuilder getQueryBuilder();
 
     /**
-     * Binds the params to the given statement.
-     *
-     * @param statement the statement
-     * @param params    the values to bind
-     * @return the prepared statement with values
-     * @throws SQLException
-     */
-    PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException;
-
-    /**
-     * Creates a new Query and binds the params.
-     *
-     * @param query  the query
-     * @param params the values to bind
-     * @return the prepared Statement with values
-     * @throws SQLException
-     */
-    PreparedStatement createAndBindValues(String query, Object... params) throws SQLException;
-
-    /**
      * Gets a stored statement by name
      *
      * @param owner the owner of the statement
@@ -86,7 +85,7 @@ public interface Database
      * @param statement the statment to store
      * @throws SQLException
      */
-    void prepareAndStoreStatement(Class owner, String name, String statement) throws SQLException;
+    void storeStatement(Class owner, String name, String statement) throws SQLException;
 
     /**
      * Prepares the statement
@@ -96,15 +95,6 @@ public interface Database
      * @throws SQLException
      */
     PreparedStatement prepareStatement(String statement) throws SQLException;
-
-    /**
-     * Stores a prepared statement
-     *
-     * @param owner     the owner
-     * @param name      the name
-     * @param statement the prepared statement to store
-     */
-    void storePreparedStatement(Class owner, String name, PreparedStatement statement);
 
     /**
      * Executes a query.
@@ -215,7 +205,7 @@ public interface Database
      *
      * @throws SQLException
      */
-    void commmit() throws SQLException;
+    void commit() throws SQLException;
 
     /**
      * Rollbacks a transaction.
@@ -248,4 +238,8 @@ public interface Database
      * @param runnable the operation to execute.
      */
     void queueOperation(Runnable runnable);
+
+    void clearStatementCache();
+
+    void shutdown();
 }

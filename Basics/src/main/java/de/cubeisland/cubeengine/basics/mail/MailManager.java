@@ -33,12 +33,7 @@ public class MailManager extends BasicStorage<Mail>
         {
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.prepareAndStoreStatement(modelClass, "getallByUser", builder
-                .select().wildcard()
-                .from(this.table)
-                .where().field("userId").is(EQUAL).value()
-                .end()
-                .end());
+            this.database.storeStatement(modelClass, "getallByUser", builder.select().wildcard().from(this.table).where().field("userId").is(EQUAL).value().end().end());
         }
         catch (SQLException e)
         {

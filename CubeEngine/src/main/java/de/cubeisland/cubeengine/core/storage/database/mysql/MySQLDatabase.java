@@ -1,11 +1,14 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import org.apache.commons.lang.Validate;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 /**
@@ -13,27 +16,51 @@ import java.sql.SQLException;
  */
 public class MySQLDatabase extends AbstractDatabase
 {
-    private static final char NAME_QUOTE = '`';
+    private static final char NAME_QUOTE   = '`';
     private static final char STRING_QUOTE = '\'';
 
-    private final String tablePrefix;
+    private final MysqlDataSource ds;
+    private final String            tablePrefix;
     private final MySQLQueryBuilder queryBuilder;
     private final Thread creationThread = Thread.currentThread();
+    private Connection connection;
 
-    public MySQLDatabase(DatabaseConfiguration config) throws SQLException
+    public MySQLDatabase(DatabaseConfiguration configuration) throws SQLException
     {
-        super(new MysqlConnectionPoolDataSource());
-        MySQLDatabaseConfiguration configuration = (MySQLDatabaseConfiguration)config;
-        MysqlConnectionPoolDataSource ds = (MysqlConnectionPoolDataSource)this.getDataSource();
-        ds.setServerName(configuration.host);
-        ds.setPort(configuration.port);
-        ds.setUser(configuration.user);
-        ds.setPassword(configuration.pass);
-        ds.setDatabaseName(configuration.database);
-        ds.setMaxReconnects(configuration.connectionPoolSize);
-        this.tablePrefix = configuration.tablePrefix;
+        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)configuration;
 
+        this.ds = new MysqlDataSource();
+        this.ds.setServerName(config.host);
+        this.ds.setPort(config.port);
+        this.ds.setUser(config.user);
+        this.ds.setPassword(config.pass);
+        this.ds.setDatabaseName(config.database);
+        this.ds.setConnectionCollation("utf8_general_ci");
+        this.connection = null;
+
+        this.tablePrefix = config.tablePrefix;
         this.queryBuilder = new MySQLQueryBuilder(this);
+    }
+
+    public Connection getConnection() throws SQLException
+    {
+        if (this.connection == null || connection.isClosed())
+        {
+            this.clearStatementCache();
+            this.connection = this.ds.getConnection();
+        }
+        else if (!this.connection.isValid(500))
+        {
+            this.clearStatementCache();
+            this.connection.close();
+            this.connection = this.ds.getConnection();
+        }
+        return this.connection;
+    }
+
+    public DatabaseMetaData getMetaData() throws SQLException
+    {
+        return this.getConnection().getMetaData();
     }
 
     @Override
@@ -77,5 +104,18 @@ public class MySQLDatabase extends AbstractDatabase
     public String prepareString(String name)
     {
         return STRING_QUOTE + name + STRING_QUOTE;
+    }
+
+    public void shutdown()
+    {
+        super.shutdown();
+        try
+        {
+            this.ds.getConnection().close();
+        }
+        catch (SQLException e)
+        {
+            LOGGER.log(LogLevel.ERROR, e.getMessage(), e);
+        }
     }
 }

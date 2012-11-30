@@ -173,50 +173,19 @@ public class BasicStorage<V extends Model> implements Storage<V>
                     .cols(allFields)
                     .end();
             }
-            this.database.prepareAndStoreStatement(this.modelClass, "store", builder.end());
+            this.database.storeStatement(this.modelClass, "store", builder.end());
 
-            this.database.prepareAndStoreStatement(this.modelClass, "merge", builder
-                .merge()
-                .into(this.table)
-                .cols(allFields)
-                .updateCols(fields)
-                .end()
-                .end());
+            this.database.storeStatement(this.modelClass, "merge", builder.merge().into(this.table).cols(allFields).updateCols(fields).end().end());
 
-            this.database.prepareAndStoreStatement(this.modelClass, "get", builder
-                .select(allFields)
-                .from(this.table)
-                .where()
-                .field(key).is(EQUAL).value()
-                .end()
-                .end());
+            this.database.storeStatement(this.modelClass, "get", builder.select(allFields).from(this.table).where().field(key).is(EQUAL).value().end().end());
 
-            this.database.prepareAndStoreStatement(this.modelClass, "getall", builder
-                .select(allFields)
-                .from(this.table)
-                .end()
-                .end());
+            this.database.storeStatement(this.modelClass, "getall", builder.select(allFields).from(this.table).end().end());
 
-            this.database.prepareAndStoreStatement(this.modelClass, "update", builder
-                .update(this.table)
-                .set(fields)
-                .where()
-                .field(key).is(EQUAL).value()
-                .end()
-                .end());
+            this.database.storeStatement(this.modelClass, "update", builder.update(this.table).set(fields).where().field(key).is(EQUAL).value().end().end());
 
-            this.database.prepareAndStoreStatement(this.modelClass, "delete", builder
-                .delete()
-                .from(this.table)
-                .where()
-                .field(key).is(EQUAL).value()
-                .limit(1)
-                .end()
-                .end());
+            this.database.storeStatement(this.modelClass, "delete", builder.delete().from(this.table).where().field(key).is(EQUAL).value().limit(1).end().end());
 
-            this.database.prepareAndStoreStatement(this.modelClass, "clear", builder
-                .truncateTable(this.table)
-                .end());
+            this.database.storeStatement(this.modelClass, "clear", builder.truncateTable(this.table).end());
         }
         catch (SQLException ex)
         {
@@ -536,7 +505,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
             .end();
         try
         {
-            this.database.prepareAndStoreStatement(this.modelClass, "store", builder.end());
+            this.database.storeStatement(this.modelClass, "store", builder.end());
         }
         catch (SQLException ex)
         {

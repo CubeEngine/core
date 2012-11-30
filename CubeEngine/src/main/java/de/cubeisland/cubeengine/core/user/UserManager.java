@@ -83,24 +83,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         super.initialize();
         try
         {
-            this.database.prepareAndStoreStatement(User.class, "get_by_name", this.database.getQueryBuilder()
-                    .select().wildcard()
-                    .from(this.table)
-                    .where()
-                    .field("player").is(ComponentBuilder.EQUAL).value()
-                    .end()
-                    .end());
+            this.database.storeStatement(User.class, "get_by_name", this.database.getQueryBuilder().select().wildcard().from(this.table).where().field("player").is(ComponentBuilder.EQUAL).value().end().end());
 
-            this.database.prepareAndStoreStatement(User.class, "cleanup", database.getQueryBuilder()
-                    .select(dbKey).from(table)
-                    .where().field("lastseen").is(LESS).value()
-                    .and().field("nogc").is(EQUAL).value(false)
-                    .end().end());
+            this.database.storeStatement(User.class, "cleanup", database.getQueryBuilder().select(dbKey).from(table).where().field("lastseen").is(LESS).value().and().field("nogc").is(EQUAL).value(false).end().end());
 
-            this.database.prepareAndStoreStatement(User.class, "clearpw", database.getQueryBuilder()
-                   .update(table)
-                   .set("passwd")
-                   .end().end());
+            this.database.storeStatement(User.class, "clearpw", database.getQueryBuilder().update(table).set("passwd").end().end());
         }
         catch (SQLException e)
         {

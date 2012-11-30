@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 
 /**
- * MYSQLDatabaseConfig containing all needed information to connect to a MYSQLDatabse
+ * MySQLDatabaseConfig containing all needed information to connect to a MySQLDatabase
  */
 @Codec("yml")
 public class MySQLDatabaseConfiguration extends DatabaseConfiguration
@@ -35,10 +35,6 @@ public class MySQLDatabaseConfiguration extends DatabaseConfiguration
     @Option("table-prefix")
     @Comment("The table prefix to use for all CubeEngine tables")
     public String tablePrefix = "cube_";
-
-    @Option("pool-size")
-    @Comment("Who many connection should CubeEngine by able to create?")
-    public int connectionPoolSize = 5;
 
     @Override
     public Class<? extends Database> getDatabaseClass()
