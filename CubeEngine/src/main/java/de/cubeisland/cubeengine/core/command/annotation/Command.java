@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command.annotation;
 
-import org.bukkit.permissions.PermissionDefault;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -30,7 +30,7 @@ public @interface Command
 
     public String permNode() default "";
 
-    public PermissionDefault permDefault() default PermissionDefault.OP;
+    public PermDefault permDefault() default PermDefault.OP;
 
     public Flag[] flags() default {};
 

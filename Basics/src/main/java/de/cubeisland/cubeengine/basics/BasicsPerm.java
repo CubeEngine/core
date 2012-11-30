@@ -1,9 +1,13 @@
 package de.cubeisland.cubeengine.basics;
 
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import java.util.Locale;
 import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionDefault;
+
+import java.util.Locale;
+
+import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
+import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
 public enum BasicsPerm implements Permission
 {
@@ -13,10 +17,10 @@ public enum BasicsPerm implements Permission
     COMMAND_GAMEMODE_OTHER,
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,
-    COMMAND_KILL_PREVENT(PermissionDefault.FALSE),
+    COMMAND_KILL_PREVENT(FALSE),
     COMMAND_KILL_ALL,
     COMMAND_INVSEE_MODIFY, // allows to modify the inventory
-    COMMAND_INVSEE_PREVENTMODIFY(PermissionDefault.FALSE), // prevents from modifying the inventory
+    COMMAND_INVSEE_PREVENTMODIFY(FALSE), // prevents from modifying the inventory
     COMMAND_INVSEE_NOTIFY, // notify if someone looks into your inventory
     COMMAND_KICK_ALL,
     COMMAND_SPAWN_ALL, // spawn all players
@@ -27,10 +31,10 @@ public enum BasicsPerm implements Permission
     COMMAND_TPHERE_FORCE, // ignore tphere prevent perms
     COMMAND_TPHEREALL_FORCE, // ignore tphere prevent perms
     COMMAND_TP_OTHER, // can tp other person
-    COMMAND_TP_PREVENT_TP(PermissionDefault.FALSE), // can not be tped except forced
-    COMMAND_TP_PREVENT_TPTO(PermissionDefault.FALSE), // can not be tped to except forced
-    COMMAND_TPHERE_PREVENT(PermissionDefault.FALSE), // can not tpedhere except forced
-    COMMAND_TPHEREALL_PREVENT(PermissionDefault.FALSE), // can not tpedhere(all) except forced
+    COMMAND_TP_PREVENT_TP(FALSE), // can not be tped except forced
+    COMMAND_TP_PREVENT_TPTO(FALSE), // can not be tped to except forced
+    COMMAND_TPHERE_PREVENT(FALSE), // can not tpedhere except forced
+    COMMAND_TPHEREALL_PREVENT(FALSE), // can not tpedhere(all) except forced
     COMMAND_BACK_ONDEATH,
     POWERTOOL_USE, //allows to use powertools
     COMMAND_KIT_GIVE_FORCE,
@@ -48,22 +52,22 @@ public enum BasicsPerm implements Permission
     COMPASS_JUMPTO_LEFT,
     COMPASS_JUMPTO_RIGHT,
     COMMAND_BUTCHER_FLAG_OTHER,
-    COMMAND_BUTCHER_FLAG_NPC, 
-    COMMAND_WALKSPEED_OTHER, 
-    WALKSPEED_ISALLOWED, ;
+    COMMAND_BUTCHER_FLAG_NPC,
+    COMMAND_WALKSPEED_OTHER,
+    WALKSPEED_ISALLOWED,;
 
-    private String permission;
-    private PermissionDefault def;
+    private String      permission;
+    private PermDefault def;
 
     private BasicsPerm()
     {
-        this(PermissionDefault.OP);
+        this(OP);
     }
 
-    private BasicsPerm(PermissionDefault def)
+    private BasicsPerm(PermDefault def)
     {
         this.permission = "cubeengine.basics." + this.name().
-                toLowerCase(Locale.ENGLISH).replace('_', '.');
+            toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
     }
 
@@ -80,7 +84,7 @@ public enum BasicsPerm implements Permission
     }
 
     @Override
-    public PermissionDefault getPermissionDefault()
+    public PermDefault getPermissionDefault()
     {
         return this.def;
     }

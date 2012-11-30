@@ -6,12 +6,13 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
+
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Registrates Permissions to the server.
@@ -55,7 +56,7 @@ public class PermissionManager
      * @param perm        the permission node
      * @param permDefault the default valueW
      */
-    public void registerPermission(Module module, String perm, PermissionDefault permDefault)
+    public void registerPermission(Module module, String perm, PermDefault permDefault)
     {
         if (Thread.currentThread() != this.mainThread)
         {
@@ -80,7 +81,7 @@ public class PermissionManager
         Set<String> modulePermissions = this.getPermission(module);
         modulePermissions.add(perm);
 
-        org.bukkit.permissions.Permission permission = new org.bukkit.permissions.Permission(perm, permDefault);
+        org.bukkit.permissions.Permission permission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
         this.registerBukkitPermission(permission);
 
         org.bukkit.permissions.Permission parent = CUBEENGINE_WILDCARD;

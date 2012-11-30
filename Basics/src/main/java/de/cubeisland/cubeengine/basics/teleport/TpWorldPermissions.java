@@ -1,13 +1,14 @@
 package de.cubeisland.cubeengine.basics.teleport;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import gnu.trove.map.hash.THashMap;
-import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionDefault;
+
+import java.util.Map;
 
 /**
  * Dynamicly registerd Permissions for each world.
@@ -47,9 +48,9 @@ public class TpWorldPermissions
                 }
 
                 @Override
-                public PermissionDefault getPermissionDefault()
+                public PermDefault getPermissionDefault()
                 {
-                    return PermissionDefault.OP;
+                    return PermDefault.OP;
                 }
             });
         }

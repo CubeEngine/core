@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.permission;
 
 import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionDefault;
 
 /**
  * Represents a permission.
@@ -28,5 +27,5 @@ public interface Permission
      *
      * @return the permission default
      */
-    public PermissionDefault getPermissionDefault();
+    public PermDefault getPermissionDefault();
 }

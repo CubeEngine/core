@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import java.util.Locale;
 import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionDefault;
+
+import java.util.Locale;
 
 public enum FlyPerm implements Permission
 {
@@ -12,14 +13,14 @@ public enum FlyPerm implements Permission
     FLY_CANFLY,
     FLY_FEATHER, ;
     private final String permission;
-    private PermissionDefault def;
+    private PermDefault def;
 
     private FlyPerm()
     {
-        this(PermissionDefault.OP);
+        this(PermDefault.OP);
     }
 
-    private FlyPerm(PermissionDefault def)
+    private FlyPerm(PermDefault def)
     {
         this.permission = "cubeengine.fly." + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
@@ -35,7 +36,7 @@ public enum FlyPerm implements Permission
         return this.permission;
     }
 
-    public PermissionDefault getPermissionDefault()
+    public PermDefault getPermissionDefault()
     {
         return this.def;
     }

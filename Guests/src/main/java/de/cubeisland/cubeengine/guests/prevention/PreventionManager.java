@@ -1,13 +1,14 @@
 package de.cubeisland.cubeengine.guests.prevention;
 
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.guests.Guests;
 import gnu.trove.map.hash.THashMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import org.bukkit.permissions.PermissionDefault;
 
 /**
  * This class manages the Prevention's.
@@ -69,7 +70,7 @@ public class PreventionManager
         if (!this.preventions.containsValue(prevention))
         {
             this.preventions.put(prevention.getName(), prevention);
-            this.pm.registerPermission(this.guests, prevention.getPermission(), PermissionDefault.OP);
+            this.pm.registerPermission(this.guests, prevention.getPermission(), PermDefault.OP);
         }
 
         return this;
@@ -101,8 +102,6 @@ public class PreventionManager
      * Enables the named prevention if registered
      *
      * @param prevention the preventions name
-     * @param server     an Server instance
-     * @param config     the prevention's configuration
      * @return true if the intialization was successful
      */
     public boolean enablePrevention(final Prevention prevention)
@@ -131,7 +130,6 @@ public class PreventionManager
      * The given ConfigurationSection should have a key "preventions" on top
      * level, otherwise this will fail
      *
-     * @param config the configuration
      * @return fluent interface
      */
     public PreventionManager enablePreventions()
@@ -235,7 +233,7 @@ public class PreventionManager
     /**
      * Unregisteres a punishment by its name
      *
-     * @param punishment the name of the punishment to unregister
+     * @param name the name of the punishment to unregister
      * @return fluent interface
      */
     public PreventionManager unregisterPunishment(String name)

@@ -2,17 +2,11 @@ package de.cubeisland.cubeengine.basics.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -21,8 +15,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  * A Kit of Items a User can receive
@@ -54,7 +56,7 @@ public class Kit
             this.permission = new Permission()
             {
                 private String permission = "cubeengine.basics.kits." + name.toLowerCase(Locale.ENGLISH);
-                private PermissionDefault def = PermissionDefault.OP;
+                private PermDefault def = PermDefault.OP;
 
                 @Override
                 public boolean isAuthorized(Permissible player)
@@ -69,7 +71,7 @@ public class Kit
                 }
 
                 @Override
-                public PermissionDefault getPermissionDefault()
+                public PermDefault getPermissionDefault()
                 {
                     return this.def;
                 }

@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.fun;
 
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import java.util.Locale;
 import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionDefault;
+
+import java.util.Locale;
 
 public enum FunPerm implements Permission  
 {
@@ -14,14 +15,14 @@ public enum FunPerm implements Permission
     ;
         
     private String permission;
-    private PermissionDefault def;
+    private PermDefault def;
 
     private FunPerm()
     {
-        this(PermissionDefault.OP);
+        this(PermDefault.OP);
     }
 
-    private FunPerm(PermissionDefault def)
+    private FunPerm(PermDefault def)
     {
         this.permission = "cubeengine.fun." + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
@@ -40,7 +41,7 @@ public enum FunPerm implements Permission
     }
 
     @Override
-    public PermissionDefault getPermissionDefault()
+    public PermDefault getPermissionDefault()
     {
         return this.def;
     }

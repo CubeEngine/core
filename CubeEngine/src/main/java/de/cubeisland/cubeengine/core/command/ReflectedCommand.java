@@ -4,12 +4,13 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import org.bukkit.command.CommandSender;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.PermissionDefault;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
@@ -20,15 +21,15 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class ReflectedCommand extends CubeCommand
 {
-    private final Object commandContainer;
-    private final Method commandMethod;
-    private final int min;
-    private final int max;
-    private final boolean checkPermision;
-    private final String permissionNode;
-    private final PermissionDefault permissionDefault;
-    private final Flag[] flags;
-    private final Param[] params;
+    private final Object      commandContainer;
+    private final Method      commandMethod;
+    private final int         min;
+    private final int         max;
+    private final boolean     checkPermision;
+    private final String      permissionNode;
+    private final PermDefault permissionDefault;
+    private final Flag[]      flags;
+    private final Param[]     params;
 
     public ReflectedCommand(Module module, Object commandContainer, Method method, Command annotation, String name, String description, String usage, List<String> aliases)
     {

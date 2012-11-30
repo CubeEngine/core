@@ -7,9 +7,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
@@ -18,13 +15,18 @@ import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.io.IOException;
-import java.util.Set;
 import net.minecraft.server.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.permissions.PermissionDefault;
+
+import java.io.IOException;
+import java.util.Set;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.permission.PermDefault.TRUE;
 
 public class RulebookCommands extends ContainerCommand
 {
@@ -42,7 +44,7 @@ public class RulebookCommands extends ContainerCommand
         desc = "gets the player the rulebook in the inventory",
         usage = "[language] [Player <name>]",
         params = @Param(names = { "player" , "p"}, type = User.class),
-        permDefault = PermissionDefault.TRUE,
+        permDefault = TRUE,
         max = 1
     )
     public void get(CommandContext context)
@@ -100,7 +102,7 @@ public class RulebookCommands extends ContainerCommand
     (
         desc = "list all available languages of the rulebooks.",
         flags = {@Flag(longName = "supported", name = "s")},
-        permDefault = PermissionDefault.TRUE,
+        permDefault = TRUE,
         usage = "[-supported]",
         max = 0
     )
