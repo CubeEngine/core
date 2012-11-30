@@ -231,7 +231,7 @@ public class MaterialMatcher
         String t_key = StringUtils.matchString(s, map.keySet(), false);
         if (t_key != null)
         {
-            return this.items.get(t_key);
+            return map.get(t_key);
         }
         return null;
     }
