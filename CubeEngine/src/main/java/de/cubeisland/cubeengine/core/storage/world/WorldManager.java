@@ -47,7 +47,7 @@ public class WorldManager extends BasicStorage<WorldModel>
         }
     }
 
-    private Integer getWorldId(World world)
+    public Integer getWorldId(World world)
     {
         WorldModel model = this.worlds.get(world);
         return model == null ? null : model.key;

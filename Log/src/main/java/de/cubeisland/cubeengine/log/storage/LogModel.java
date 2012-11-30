@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.storage;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
@@ -35,16 +36,14 @@ public class LogModel implements Model<Integer>
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
     public int causeID;
-    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
-    public String worldName;
-    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
-    public String worldUUID;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public Integer worldID;
     @Attribute(type = AttrType.INT, notnull = false)
-    public int x;
+    public Integer x;
     @Attribute(type = AttrType.INT, notnull = false)
-    public int y;
+    public Integer y;
     @Attribute(type = AttrType.INT, notnull = false)
-    public int z;
+    public Integer z;
     // BlockLog OR SignChangeLog:
     @Attribute(type = AttrType.VARCHAR, length = 67, notnull = false)
     public String newBlockOrLines = null;
@@ -143,8 +142,7 @@ public class LogModel implements Model<Integer>
         this.causeID = causeID;
         if (loc != null)
         {
-            this.worldName = loc.getWorld().getName();
-            this.worldUUID = loc.getWorld().getUID().toString();
+            this.worldID = CubeEngine.getCore().getWorldManager().getWorldId(loc.getWorld());
             this.x = loc.getBlockX();
             this.y = loc.getBlockY();
             this.z = loc.getBlockZ();
@@ -158,18 +156,16 @@ public class LogModel implements Model<Integer>
         this.type = Integer.valueOf(args.get(1).toString());
         this.timestamp = (Timestamp) args.get(2);
         this.causeID = Integer.valueOf(args.get(3).toString());
-        this.worldName = args.get(4).toString();
-        this.worldUUID = args.get(5).toString();
-        this.x = Integer.valueOf(args.get(6).toString());
-        this.y = Integer.valueOf(args.get(7).toString());
-        this.z = Integer.valueOf(args.get(8).toString());
+        this.x = Integer.valueOf(args.get(4).toString());
+        this.y = Integer.valueOf(args.get(5).toString());
+        this.z = Integer.valueOf(args.get(6).toString());
 
-        this.newBlockOrLines = args.get(9).toString();
-        this.oldBlockOrLines = args.get(10).toString();
+        this.newBlockOrLines = args.get(7).toString();
+        this.oldBlockOrLines = args.get(8).toString();
 
-        this.amountOrInteractData = Integer.valueOf(args.get(11).toString());
-        this.containerTypeOrKilledId = Integer.valueOf(args.get(12).toString());
-        this.itemNameOrChat = args.get(13).toString();
+        this.amountOrInteractData = Integer.valueOf(args.get(9).toString());
+        this.containerTypeOrKilledId = Integer.valueOf(args.get(10).toString());
+        this.itemNameOrChat = args.get(11).toString();
     }
 
     /**

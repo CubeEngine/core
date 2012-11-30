@@ -120,7 +120,10 @@ public class MovementCommands
         TeleportCommands.teleport(sender, loc, true, false, true);
     }
 
-    @Command(desc = "Jumps to the position you are looking at.", max = 0)
+    @Command(names =
+    {
+        "jumpto", "jump", "j"
+    }, desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");

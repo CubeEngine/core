@@ -377,7 +377,6 @@ public class ItemCommands
     public void repair(CommandContext context)
     {
         User sender = context.getSenderAsUser("core", "&eIf you do this you'll &cloose &eyour warranty!");
-        sender.getItemInHand().setAmount(127);
         if (context.hasFlag("a"))
         {
             List<ItemStack> list = new ArrayList<ItemStack>();

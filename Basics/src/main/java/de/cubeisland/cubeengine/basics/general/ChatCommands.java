@@ -23,6 +23,11 @@ public class ChatCommands
         this.basics = basics;
         this.um = basics.getUserManager();
     }
+    
+    public void ignore(CommandContext context)
+    {
+        //TODO implement me
+    }    
 
     @Command(desc = "Allows you to emote", min = 1, usage = "<message>")
     public void me(CommandContext context)
@@ -32,7 +37,7 @@ public class ChatCommands
     }
 
     @Command(desc = "Sends a private message to someone", names = {
-        "message", "msg", "tell", "pn", "m", "t", "whisper"
+        "message", "msg", "tell", "pm", "m", "t", "whisper"
     }, min = 1, usage = "<player> <message>")
     public void msg(CommandContext context)
     {
