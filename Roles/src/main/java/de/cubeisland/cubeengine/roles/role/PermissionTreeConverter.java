@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
+import java.util.List;
 
 public class PermissionTreeConverter implements Converter<PermissionTree>
 {
@@ -14,6 +15,11 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     @Override
     public PermissionTree fromObject(Object object) throws ConversionException
     {
-        return PermissionTree.fromConfigObject(object);
+        PermissionTree permTree = new PermissionTree();
+        if (object instanceof List)
+        {
+            permTree.loadFromList((List) object, "");
+        }
+        return permTree;
     }
 }

@@ -1,24 +1,17 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class PermissionTree
 {
     private Map<String, Boolean> permissions = new TreeMap<String, Boolean>();
-
-    public static PermissionTree fromConfigObject(Object configObject)
-    {
-        PermissionTree permTree = new PermissionTree();
-        if (configObject instanceof List)
-        {
-            permTree.loadFromList((List) configObject, "");
-        }
-        return permTree;
-    }
 
     private void loadFromMap(Map<String, ?> map, String path)
     {
@@ -36,18 +29,24 @@ public class PermissionTree
         }
     }
 
-    private void loadFromList(List<?> list, String path)
+    protected void loadFromList(List<?> list, String path)
     {
         for (Object value : list)
         {
             if (value instanceof String)
             {
                 String permissionString = (String) value;
+                boolean isSet = true;
+                if (permissionString.startsWith("!") || permissionString.startsWith("^") || permissionString.startsWith("-"))
+                {
+                    permissionString = permissionString.substring(1);
+                    isSet = false;
+                }
                 if (!path.isEmpty())
                 {
                     permissionString = path + "." + permissionString;
                 }
-                this.addPermission(permissionString, !(permissionString.startsWith("!") || permissionString.startsWith("^") || permissionString.startsWith("-")));
+                this.addPermission(permissionString, isSet);
             }
             else if (value instanceof Map)
             {
@@ -60,8 +59,10 @@ public class PermissionTree
         }
     }
 
-    private void addPermission(String permission, boolean setTrue)
+    protected void addPermission(String permission, boolean setTrue)
     {
+        permission = permission.toLowerCase(Locale.ENGLISH);
+        CubeEngine.getLogger().log(LogLevel.DEBUG, permission + ": " + setTrue);
         this.permissions.put(permission, setTrue);
     }
 
@@ -84,7 +85,7 @@ public class PermissionTree
             Object baseValue = baseMap.get(baseKey);
             if (baseKey.startsWith(" "))
             {
-                result.add(((Boolean) baseValue ? "" : "!") + baseKey.trim());
+                result.add(((Boolean) baseValue ? "" : "-") + baseKey.trim());
             }
             else
             {
@@ -97,16 +98,25 @@ public class PermissionTree
                 {
                     if (values.size() == 1)
                     {
-                        Object subValue = values.get(0);
-                        if (subValue instanceof String)
+                        for (Object subValue : values)
                         {
-                            result.add(baseKey + "." + subValue);
-                        }
-                        else
-                        {
-                            Object subKey = ((Map) subValue).keySet().iterator().next();
-                            subMap.put(baseKey + "." + subKey, ((Map) subValue).get(subKey));
-                            result.add(subMap);
+                            if (subValue instanceof String)
+                            {
+                                if (((String) subValue).startsWith("-"))
+                                {
+                                    result.add("-" + baseKey + "." + ((String) subValue).substring(1));
+                                }
+                                else
+                                {
+                                    result.add(baseKey + "." + subValue);
+                                }
+                            }
+                            else
+                            {
+                                Object subKey = ((Map) subValue).keySet().iterator().next();
+                                subMap.put(baseKey + "." + subKey, ((Map) subValue).get(subKey));
+                                result.add(subMap);
+                            }
                         }
                     }
                     else // multiple values add as subMap
