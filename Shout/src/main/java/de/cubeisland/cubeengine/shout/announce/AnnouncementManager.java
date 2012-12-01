@@ -183,13 +183,13 @@ public class AnnouncementManager
         Queue<Announcement> messages = new LinkedList<Announcement>();
 
         // Load what announcements should be displayed to the user
-        if (this.announcements.containsKey("motd"))
+        if (this.motd != null)
         {
-            messages.add(this.announcements.get("motd"));
+            messages.add(this.motd);
         }
         for (Announcement announcement : announcements.values())
         {
-            if (receiver.couldReceive(announcement) && !announcement.getName().equalsIgnoreCase("motd"))
+            if (receiver.couldReceive(announcement))
             {
                 messages.add(announcement);
             }

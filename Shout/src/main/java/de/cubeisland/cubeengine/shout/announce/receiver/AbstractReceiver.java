@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.shout.announce.receiver;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
+import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
 
 import java.util.Queue;
 
@@ -26,7 +27,10 @@ public abstract class AbstractReceiver implements Receiver
         for (int x = 0; x < this.announcements.size(); x++)
         {
             Announcement announcement = this.announcements.poll();
-            this.announcements.add(announcement);
+            if (!(announcement instanceof MessageOfTheDay))
+            {
+                this.announcements.add(announcement);
+            }
 
             if (this.canReceiver(announcement))
             {
