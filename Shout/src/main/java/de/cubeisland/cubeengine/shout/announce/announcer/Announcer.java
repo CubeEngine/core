@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class Announcer
 {
-    private ScheduledExecutorService     executor;
+    private ScheduledExecutorService executor;
     private Map<String, ScheduledFuture> futures;
-    private int                          initDelay;
+    private int initDelay;
 
     public Announcer(int initDelay)
     {
