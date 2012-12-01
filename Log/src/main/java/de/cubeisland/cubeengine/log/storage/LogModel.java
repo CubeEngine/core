@@ -36,7 +36,7 @@ public class LogModel implements Model<Integer>
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
     public int causeID;
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
     public Integer worldID;
     @Attribute(type = AttrType.INT, notnull = false)
     public Integer x;
