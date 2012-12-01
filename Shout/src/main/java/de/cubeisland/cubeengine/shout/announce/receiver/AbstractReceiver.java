@@ -10,6 +10,8 @@ import java.util.Queue;
 public abstract class AbstractReceiver implements Receiver
 {
     private final AnnouncementManager announcementManager;
+    private boolean motdShown = false;
+    private MessageOfTheDay motd;
     private Queue<Announcement> announcements;
 
     protected AbstractReceiver(AnnouncementManager announcementManager)
@@ -24,13 +26,13 @@ public abstract class AbstractReceiver implements Receiver
 
     public Pair<Announcement, Integer> getNextDelayAndAnnouncement()
     {
+        if (!motdShown && motd != null)
+        {
+            return new Pair<Announcement, Integer>(motd, (int)(motd.getDelay() / announcementManager.getGreatestCommonDivisor(this)));
+        }
         for (int x = 0; x < this.announcements.size(); x++)
         {
             Announcement announcement = this.announcements.poll();
-            if (!(announcement instanceof MessageOfTheDay))
-            {
-                this.announcements.add(announcement);
-            }
 
             if (this.canReceiver(announcement))
             {
@@ -43,5 +45,10 @@ public abstract class AbstractReceiver implements Receiver
     public Queue<Announcement> getAllAnnouncements()
     {
         return announcements;
+    }
+
+    public void setMOTD(MessageOfTheDay motd)
+    {
+        this.motd = motd;
     }
 }

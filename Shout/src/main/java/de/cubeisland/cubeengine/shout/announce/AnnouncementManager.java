@@ -132,8 +132,17 @@ public class AnnouncementManager
     public long getGreatestCommonDivisor(Receiver receiver)
     {
         List<Announcement> tmpAnnouncements = this.getAnnouncements(receiver.getName());
-        long[] delays = new long[tmpAnnouncements.size()];
-        for (int x = 0; x < delays.length; x++)
+        long[] delays;
+        if (this.motd != null)
+        {
+            delays = new long[tmpAnnouncements.size() + 1];
+            delays[tmpAnnouncements.size()] = motd.getDelay();
+        }
+        else
+        {
+            delays = new long[tmpAnnouncements.size() + 1];
+        }
+        for (int x = 0; x < tmpAnnouncements.size(); x++)
         {
             delays[x] = tmpAnnouncements.get(x).getDelay();
         }
@@ -182,11 +191,12 @@ public class AnnouncementManager
     {
         Queue<Announcement> messages = new LinkedList<Announcement>();
 
-        // Load what announcements should be displayed to the user
         if (this.motd != null)
         {
-            messages.add(this.motd);
+            receiver.setMOTD(this.motd);
         }
+
+        // Load what announcements should be displayed to the user
         for (Announcement announcement : announcements.values())
         {
             if (receiver.couldReceive(announcement))
