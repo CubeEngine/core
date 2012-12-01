@@ -18,7 +18,7 @@ import org.bukkit.block.BlockState;
 @Entity(name = "logs")
 public class LogModel implements Model<Integer>
 {
-
+//TODO trim chatlog and dont log if empty then
     @PrimaryKey
     @Attribute(type = AttrType.INT, unsigned = true, ai = true)
     public int key;

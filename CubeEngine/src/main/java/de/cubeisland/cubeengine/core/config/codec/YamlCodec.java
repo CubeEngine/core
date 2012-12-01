@@ -18,7 +18,6 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlCodec extends ConfigurationCodec
 {
     private final Yaml yaml;
-    private boolean useLineBreak = false;
 
     public YamlCodec()
     {
@@ -35,7 +34,7 @@ public class YamlCodec extends ConfigurationCodec
     @Override
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
-        Map<Object, Object> map = (Map<Object, Object>)yaml.load(is);
+        Map<Object, Object> map = (Map<Object, Object>) yaml.load(is);
         if (map == null)
         {
             return null;
@@ -61,12 +60,16 @@ public class YamlCodec extends ConfigurationCodec
     }
 
     @Override
-    public String convertValue(String path, Object value, int off)
+    public String convertValue(String path, Object value, int off, boolean inCollection)
     {
         StringBuilder sb = new StringBuilder();
         String offset = this.offset(off);
         String key = this.getSubKey(path);
-        sb.append(offset).append(key).append(":");//{_OFFSET_Key:}
+        if (!inCollection) //do not append offset when converting a value in a list
+        {
+            sb.append(offset);
+        }
+        sb.append(key).append(":");
         if (value == null)
         {
             sb.append(" ");
@@ -76,31 +79,33 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof Map)
             {
                 sb.append(LINEBREAK);
-                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1));
+                sb.append(this.convertMap(path, (Map<String, Object>) value, off + 1, inCollection));
                 return sb.toString();
             }
             else
             {
                 if (value instanceof String)
                 {
-                    sb.append(" ").append(QUOTE).append(value.toString()).
-                        append(QUOTE); //Quoting Strings
+                    sb.append(" ").append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
                 }
                 else
                 {
                     if (value instanceof Collection<?>)
                     {
-                        if (((Collection<?>)value).isEmpty())
+                        if (((Collection<?>) value).isEmpty())
                         {
                             return sb.append(" []").append(LINEBREAK).toString();
                         }
-                        for (Object o : (Collection<?>)value) //Convert Collection
+                        for (Object o : (Collection<?>) value) //Convert Collection
                         {
                             sb.append(LINEBREAK).append(offset).append("- ");
                             if (o instanceof String)
                             {
-                                sb.append(QUOTE).append(o.toString()).
-                                    append(QUOTE);
+                                sb.append(QUOTE).append(o.toString()).append(QUOTE);
+                            }
+                            else if (o instanceof Map)
+                            {
+                                sb.append(this.convertMap(path, (Map<String, Object>) o, off + 1, true));
                             }
                             else
                             {
@@ -115,41 +120,40 @@ public class YamlCodec extends ConfigurationCodec
                 }
             }
         }
-        sb.append(LINEBREAK);
+        if (!inCollection && !sb.toString().endsWith(LINEBREAK + LINEBREAK)) // if in collection the collection will append its linebreak
+        {
+            sb.append(LINEBREAK);
+        }
         this.first = false;
         return sb.toString();
     }
 
     @Override
-    public String convertMap(String path, Map<String, Object> values, int off)
+    public String convertMap(String path, Map<String, Object> values, int off, boolean inCollection)
     {
         StringBuilder sb = new StringBuilder();
         if (values.isEmpty())
         {
-            return sb.append(this.offset(off)).append("{}").append(LINEBREAK).
-                toString();
+            return sb.append(this.offset(off)).append("{}").append(LINEBREAK).toString();
         }
-        useLineBreak = false;
         for (Entry<String, Object> entry : values.entrySet())
         {
-            if (off == 0)
+            String subpath = off == 0 ? entry.getKey().toString() : (path + PATHSEPARATOR + entry.getKey());
+            String comment = this.buildComment(subpath, off);
+            if (!comment.isEmpty())
             {
-                sb.append(this.buildComment(entry.getKey().toString(), off)).append(this.convertValue(entry.getKey().toString(), entry.getValue(), off));//path value off
+                if (!sb.toString().endsWith(LINEBREAK + LINEBREAK)) // if not already one line free
+                {
+                    sb.append(LINEBREAK); // add free line before comment
+                }
+                sb.append(comment);
             }
-            else
-            {
-                sb.append(this.buildComment(path + "." + entry.getKey().toString(), off)).append(this.convertValue(path + "." + entry.getKey().toString(), entry.getValue(), off));
-            }
-            if (!first)
-            {
-                useLineBreak = true;
-            }
+            sb.append(this.convertValue(subpath, entry.getValue(), off, inCollection));
         }
         if (!sb.toString().endsWith(LINEBREAK + LINEBREAK))
         {
             sb.append(LINEBREAK);
         }
-        useLineBreak = false;
         first = true;
         return sb.toString();
     }
@@ -163,16 +167,11 @@ public class YamlCodec extends ConfigurationCodec
             return ""; //No Comment
         }
         String offset = this.offset(off);
-        comment = comment.
-            replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
+        comment = comment.replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
         comment = offset + COMMENT_PREFIX + comment + LINEBREAK;
         if (this.first)
         {
             this.first = false;
-        }
-        if (useLineBreak)
-        {
-            comment = LINEBREAK + comment;
         }
         return comment;
     }

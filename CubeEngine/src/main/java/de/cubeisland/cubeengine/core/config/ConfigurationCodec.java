@@ -33,6 +33,7 @@ public abstract class ConfigurationCodec
     protected String SPACES;
     protected String LINEBREAK;
     protected String QUOTE;
+    protected final String PATHSEPARATOR = ":";
     protected Integer revision = null;
     private CodecContainer container = null;
     protected boolean first;
@@ -157,7 +158,7 @@ public abstract class ConfigurationCodec
      * @param off the current offset
      * @return the serialized map
      */
-    public abstract String convertMap(String path, Map<String, Object> values, int off);
+    public abstract String convertMap(String path, Map<String, Object> values, int off, boolean inCollection);
 
     /**
      * Serializes a single value
@@ -167,7 +168,7 @@ public abstract class ConfigurationCodec
      * @param off the current offest
      * @return the serialized value
      */
-    public abstract String convertValue(String path, Object value, int off);
+    public abstract String convertValue(String path, Object value, int off, boolean inCollection);
 
     /**
      * Builds a the comment for given path
@@ -201,7 +202,7 @@ public abstract class ConfigurationCodec
      */
     public String getSubKey(String path)
     {
-        return path.substring(path.lastIndexOf('.') + 1);
+        return path.substring(path.lastIndexOf(PATHSEPARATOR) + 1);
     }
 
     /**
@@ -212,7 +213,7 @@ public abstract class ConfigurationCodec
      */
     public String getSubPath(String path)
     {
-        return path.substring(path.indexOf('.') + 1);
+        return path.substring(path.indexOf(PATHSEPARATOR) + 1);
     }
 
     /**
@@ -223,7 +224,7 @@ public abstract class ConfigurationCodec
      */
     public String getBasePath(String path)
     {
-        return path.substring(0, path.indexOf('.'));
+        return path.substring(0, path.indexOf(PATHSEPARATOR));
     }
 
     /**
@@ -329,7 +330,7 @@ public abstract class ConfigurationCodec
                 {
                     if (field.isAnnotationPresent(Option.class))
                     {
-                        String path = field.getAnnotation(Option.class).value();
+                        String path = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR);
                         if (Configuration.class.isAssignableFrom(field.getType()))
                         {
                             Configuration subConfig = (Configuration) field.get(this.config);
@@ -349,7 +350,7 @@ public abstract class ConfigurationCodec
                         {
                             continue;
                         }
-                        Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH), section);//Get savedValue or default
+                        Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH).replace(".", PATHSEPARATOR), section);//Get savedValue or default
                         if (object != null)
                         {
                             field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
@@ -394,7 +395,7 @@ public abstract class ConfigurationCodec
                 sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
             }
             first = true;
-            sb.append(convertMap("", values, 0).trim()).append("\n");
+            sb.append(convertMap("", values, 0, false).trim()).append("\n");
             if (config.tail() != null)
             {
                 sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
@@ -415,7 +416,7 @@ public abstract class ConfigurationCodec
             {
                 return null;
             }
-            if (path.contains("."))
+            if (path.contains(PATHSEPARATOR))
             {
                 return this.get(getSubPath(path), (Map<String, Object>) section.get(this.findKey(getBasePath(path))));
             }
@@ -431,7 +432,7 @@ public abstract class ConfigurationCodec
          */
         private void set(String path, Object value, Map<String, Object> section)
         {
-            if (path.contains("."))
+            if (path.contains(PATHSEPARATOR))
             {
                 Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
                 this.set(getSubPath(path), value, subsection);
@@ -451,7 +452,7 @@ public abstract class ConfigurationCodec
          */
         private Map<String, Object> getOrCreateSubSection(String path, Map<String, Object> basesection)
         {
-            if (path.contains("."))
+            if (path.contains(PATHSEPARATOR))
             {
                 Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), basesection);
                 basesection.put(getBasePath(path), subsection);
@@ -566,7 +567,7 @@ public abstract class ConfigurationCodec
                     }
                     else
                     {
-                        this.addComment(basePath + "." + comment.path(), comment.text());
+                        this.addComment(basePath + PATHSEPARATOR + comment.path(), comment.text());
                     }
                 }
             }
@@ -592,7 +593,7 @@ public abstract class ConfigurationCodec
                     {
                         continue;
                     }
-                    String path = field.getAnnotation(Option.class).value();
+                    String path = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR);
                     if (field.isAnnotationPresent(Comment.class))
                     {
                         Comment comment = field.getAnnotation(Comment.class);
@@ -602,7 +603,7 @@ public abstract class ConfigurationCodec
                         }
                         else
                         {
-                            this.addComment(basePath + "." + path, comment.value());
+                            this.addComment(basePath + PATHSEPARATOR + path, comment.value());
                         }
                     }
                     path = path.toLowerCase(Locale.ENGLISH);
@@ -624,7 +625,7 @@ public abstract class ConfigurationCodec
 
         private void remove(String path, Map<String, Object> section)
         {
-            if (path.contains("."))
+            if (path.contains(PATHSEPARATOR))
             {
                 Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
                 this.remove(getSubPath(path), subsection);
@@ -660,10 +661,10 @@ public abstract class ConfigurationCodec
             Class fieldClass = fieldValue.getClass();
             if (fieldValue instanceof Configuration)
             {
-                String newPath = field.getAnnotation(Option.class).value();
+                String newPath = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR);
                 if (!basepath.isEmpty())
                 {
-                    newPath = basepath + "." + newPath;
+                    newPath = basepath + PATHSEPARATOR + newPath;
                 }
                 if (this.parentConfig == null)
                 {
@@ -683,24 +684,24 @@ public abstract class ConfigurationCodec
                         Converter keyConverter = Convert.matchConverter(fieldMap.keySet().iterator().next().getClass());
                         for (Object key : fieldMap.keySet())
                         {
-                            String newPath = field.getAnnotation(Option.class).value() + "." + this.findKey(key.toString());
+                            String newPath = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR) + PATHSEPARATOR + this.findKey(key.toString());
                             if (!basepath.isEmpty())
                             {
-                                newPath = basepath + "." + newPath;
+                                newPath = basepath + PATHSEPARATOR + newPath;
                             }
                             if (this.parentConfig == null)
                             {
                                 map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                    new CodecContainer().fillFromFields(this, null, fieldMap.get(key),
-                                    newPath, this.getOrCreateSubSection(key.toString(), map)));
+                                        new CodecContainer().fillFromFields(this, null, fieldMap.get(key),
+                                        newPath, this.getOrCreateSubSection(key.toString(), map)));
                             }
                             else
                             {
                                 map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                    new CodecContainer().fillFromFields(this, ((Map<Object, ? extends Configuration>) field.get(this.parentConfig)).get(key), fieldMap.get(key),
-                                    newPath, this.getOrCreateSubSection(key.toString(), map)));
+                                        new CodecContainer().fillFromFields(this, ((Map<Object, ? extends Configuration>) field.get(this.parentConfig)).get(key), fieldMap.get(key),
+                                        newPath, this.getOrCreateSubSection(key.toString(), map)));
                             }
-                            
+
                         }
                         return map;
                     }
