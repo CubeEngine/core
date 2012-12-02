@@ -169,4 +169,9 @@ public class PermissionTree
         }
         return null;
     }
+
+    public Map<String, Boolean> getPermissions()
+    {
+        return this.permissions;
+    }
 }

@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.roles.role.PermissionTree;
 import de.cubeisland.cubeengine.roles.role.PermissionTreeConverter;
 import de.cubeisland.cubeengine.roles.role.Priority;
 import de.cubeisland.cubeengine.roles.role.PriorityConverter;
-import de.cubeisland.cubeengine.roles.role.RoleConfigManager;
+import de.cubeisland.cubeengine.roles.role.RoleManager;
 
 public class Roles extends Module
 {
@@ -17,6 +17,6 @@ public class Roles extends Module
     {
         Convert.registerConverter(PermissionTree.class, new PermissionTreeConverter());
         Convert.registerConverter(Priority.class, new PriorityConverter());
-        RoleConfigManager manager = new RoleConfigManager(this);
+        RoleManager manager = new RoleManager(this);
     }
 }
