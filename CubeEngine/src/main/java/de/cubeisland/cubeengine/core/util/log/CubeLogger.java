@@ -66,12 +66,15 @@ public class CubeLogger extends Logger
                 {
                     case 1000:
                         record.setLevel(SEVERE);
+                        break;
                     case 900:
                         record.setLevel(WARNING);
+                        break;
                     case 800:
                     case 700:
                     case 600:
                         record.setLevel(INFO);
+                        break;
                 }
                 this.getParent().log(record);
             }
