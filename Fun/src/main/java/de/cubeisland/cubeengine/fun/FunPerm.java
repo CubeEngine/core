@@ -2,16 +2,17 @@ package de.cubeisland.cubeengine.fun;
 
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import org.bukkit.permissions.Permissible;
-
 import java.util.Locale;
+import org.bukkit.permissions.Permissible;
 
 public enum FunPerm implements Permission  
 {
     EXPLOSION_OTHER,
     EXPLOSION_PLAYER_DAMAGE,
     EXPLOSION_BLOCK_DAMAGE,
-    EXPLOSION_FIRE
+    EXPLOSION_FIRE,
+    LIGHTNING_PLAYER_DAMAGE,
+    LIGHTNING_UNSAFE
     ;
         
     private String permission;

@@ -115,8 +115,17 @@ public class PlayerCommands
     {
         User user;
         Location location;
-        int damage = context.getNamed("damage", Integer.class, Integer.valueOf(-1));
+        int damage = context.getNamed("damage", Integer.class, -1);
 
+        if(damage != -1 && !FunPerm.LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
+        {
+            denyAccess(context, "fun", "You are not allowed the use the damage parameter");
+        }
+        if(context.hasFlag("u") && !FunPerm.LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
+        {
+            denyAccess(context, "fun", "You are not allowed to use the unsafe flag");
+        }
+        
         if(context.hasNamed("player"))
         {
             user = context.getNamed("player", User.class);
