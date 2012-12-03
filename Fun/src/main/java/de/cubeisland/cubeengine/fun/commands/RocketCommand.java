@@ -8,9 +8,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,6 +15,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
@@ -74,7 +75,7 @@ public class RocketCommand
 
         private final Set<RocketCMDInstance> instances;
 
-        private int taskid = -1;
+        private int taskId = -1;
 
         public RocketListener()
         {
@@ -87,10 +88,10 @@ public class RocketCommand
             if (!this.contains(user))
             {
                 instances.add(new RocketCMDInstance(user.getName(), height));
-                
-                if(taskid == -1)
+
+                if (taskId == -1)
                 {
-                    this.taskid = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 2);
+                    this.taskId = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 2);
                 }
             }
         }
@@ -124,11 +125,11 @@ public class RocketCommand
                 if (instance.getName().equals(user.getName()))
                 {
                     this.instances.remove(instance);
-                    
-                    if(instances.isEmpty())
+
+                    if (instances.isEmpty())
                     {
-                        module.getTaskManger().cancelTask(module, taskid);
-                        taskid = -1;
+                        module.getTaskManger().cancelTask(module, taskId);
+                        taskId = -1;
                     }
                 }
             }
@@ -228,7 +229,17 @@ public class RocketCommand
 
             public int getNumberOfAirBlocksOverHead()
             {
-                Location location = this.getUser().getLocation().add(0, 1, 0);
+                final User user = this.getUser();
+                if (user == null)
+                {
+                    return 0;
+                }
+                final Location location = this.getUser().getLocation();
+                if (location == null)
+                {
+                    return 0;
+                }
+                location.add(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
                 while ( BlockUtil.isNonSolidBlock( location.getBlock().getType() ) && location.getY() < location.getWorld().getMaxHeight())
@@ -242,7 +253,17 @@ public class RocketCommand
             
             public int getNumberOfAirBlocksUnderFeet()
             {
-                Location location = this.getUser().getLocation().subtract(0, 1, 0);
+                final User user = this.getUser();
+                if (user == null)
+                {
+                    return 0;
+                }
+                final Location location = this.getUser().getLocation();
+                if (location == null)
+                {
+                    return 0;
+                }
+                location.subtract(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
                 while ( BlockUtil.isNonSolidBlock( location.getBlock().getType() ) || location.getY() > location.getWorld().getMaxHeight() )
