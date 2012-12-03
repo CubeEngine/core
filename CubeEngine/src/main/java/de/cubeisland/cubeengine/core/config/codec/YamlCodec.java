@@ -59,6 +59,13 @@ public class YamlCodec extends ConfigurationCodec
         return resultmap;
     }
 
+    private boolean needsQuote(Object o)
+    {
+        String s = o.toString();
+        return (s.contains("#") || s.contains("@") || s.contains("`") || s.contains("[") || s.contains("]") || s.contains("{") || s.contains("}")
+                || s.contains("|") || s.contains(">") || s.contains("!") || s.contains("%") || s.contains(":") || s.contains("-") || s.contains(","));
+    }
+
     @Override
     public String convertValue(String path, Object value, int off, boolean inCollection)
     {
@@ -86,7 +93,15 @@ public class YamlCodec extends ConfigurationCodec
             {
                 if (value instanceof String)
                 {
-                    sb.append(" ").append(QUOTE).append(value.toString()).append(QUOTE); //Quoting Strings
+                    sb.append(" ");
+                    if (this.needsQuote(value))
+                    {
+                        sb.append(QUOTE).append(value.toString()).append(QUOTE);
+                    }
+                    else
+                    {
+                        sb.append(value.toString());
+                    }
                 }
                 else
                 {
@@ -101,7 +116,14 @@ public class YamlCodec extends ConfigurationCodec
                             sb.append(LINEBREAK).append(offset).append("- ");
                             if (o instanceof String)
                             {
-                                sb.append(QUOTE).append(o.toString()).append(QUOTE);
+                                if (this.needsQuote(o))
+                                {
+                                    sb.append(QUOTE).append(o.toString()).append(QUOTE);
+                                }
+                                else
+                                {
+                                    sb.append(o.toString());
+                                }
                             }
                             else if (o instanceof Map)
                             {
