@@ -11,12 +11,24 @@ import de.cubeisland.cubeengine.roles.role.RoleManager;
 public class Roles extends Module
 {
     private RolesConfig config;
+    private RoleManager manager;
 
     @Override
     public void onEnable()
     {
         Convert.registerConverter(PermissionTree.class, new PermissionTreeConverter());
         Convert.registerConverter(Priority.class, new PriorityConverter());
-        RoleManager manager = new RoleManager(this);
+        this. manager = new RoleManager(this);
     }
+
+    public RolesConfig getConfiguration()
+    {
+        return this.config;
+    }
+
+    public RoleManager getManager()
+    {
+        return manager;
+    }
+    
 }
