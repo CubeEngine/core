@@ -100,11 +100,15 @@ public class ModuleManager implements Cleanable
         }
 
         ModuleInfo info = this.loader.loadModuleInfo(moduleFile);
-
-        info = this.moduleInfos.put(info.getId(), info);
-        if (info != null)
+        if (info == null)
         {
-            Module oldModule = this.modules.get(info.getId());
+            throw new InvalidModuleException("Failed to load the module info for file '" + moduleFile.getName() + "'!");
+        }
+
+        ModuleInfo oldInfo = this.moduleInfos.put(info.getId(), info);
+        if (oldInfo != null)
+        {
+            Module oldModule = this.modules.get(oldInfo.getId());
             if (oldModule != null)
             {
                 this.unloadModule(oldModule);
@@ -143,13 +147,13 @@ public class ModuleManager implements Cleanable
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        LOGGER.log(WARNING, new StringBuilder("A newer or equal revision of the module '").append(info.getName()).append("' is already loaded!").toString());
+                        LOGGER.log(WARNING, "A newer or equal revision of the module '" + info.getName() + "' is already loaded!");
                         continue;
                     }
                     else
                     {
                         this.unloadModule(module);
-                        LOGGER.log(LogLevel.NOTICE, new StringBuilder("A newer revision of '").append(info.getName()).append("' will replace the currently loaded version!").toString());
+                        LOGGER.log(LogLevel.NOTICE, "A newer revision of '" + info.getName() + "' will replace the currently loaded version!");
                     }
                 }
                 this.moduleInfos.put(info.getId(), info);
@@ -169,7 +173,7 @@ public class ModuleManager implements Cleanable
             catch (ModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                LOGGER.log(LogLevel.ERROR, new StringBuilder("Failed to load the module '").append(moduleName).append("'").toString(), e);
+                LOGGER.log(LogLevel.ERROR, "Failed to load the module '" + moduleName + "'", e);
             }
         }
         LOGGER.log(LogLevel.NOTICE, "Finished loading modules!");
