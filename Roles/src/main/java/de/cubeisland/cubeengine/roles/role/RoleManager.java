@@ -19,7 +19,6 @@ import java.util.Stack;
 
 public class RoleManager
 {
-
     private THashMap<String, RoleConfig> globalConfigs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
@@ -52,14 +51,15 @@ public class RoleManager
                 if (worldID == null)
                 {
                     this.module.getLogger().log(LogLevel.WARNING, "The world " + file.getName() + " does not exist. Ignoring folder...");
+                    continue;
                 }
                 this.module.getLogger().debug("Loading roles for the world " + file.getName() + ":");
                 i = 0;
                 for (File configFile : file.listFiles())
                 {
-                    ++i;
-                    if (file.getName().endsWith(".yml"))
+                    if (configFile.getName().endsWith(".yml"))
                     {
+                        ++i;
                         RoleConfig config = Configuration.load(RoleConfig.class, configFile);
                         this.getProvider(worldID).addConfig(config);
                     }
@@ -80,7 +80,7 @@ public class RoleManager
             Role role = this.calculateGlobalRole(this.globalConfigs.get(roleName));
             if (role == null)
             {
-                //TODO msg not loaded
+                this.module.getLogger().log(LogLevel.WARNING, roleName + " could not be calculated!");
             }
             this.globalRoles.put(roleName, role);
         }
@@ -92,7 +92,8 @@ public class RoleManager
                 Role role = this.calculateRole(config, provider);
                 if (role == null)
                 {
-                    //TODO msg not loaded
+                    this.module.getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
+                    continue;
                 }
                 provider.setRole(role);
             }
@@ -219,7 +220,11 @@ public class RoleManager
                     {
                         throw new RoleDependencyMissingException("Could not find the role " + parentName);
                     }
-                    this.calculateRole(parentConfig, provider); // calculate parent-role
+                    Role parentRole = this.calculateRole(parentConfig, provider); // calculate parent-role
+                    if (parentRole != null)
+                    {
+                        provider.setRole(parentRole);
+                    }
                 }
                 catch (RoleDependencyMissingException ex)
                 {
@@ -296,7 +301,7 @@ public class RoleManager
         }
     }
 
-    private RoleProvider getProvider(Integer worldID)
+    public RoleProvider getProvider(Integer worldID)
     {
         return this.providers.get(worldID);
     }
@@ -305,7 +310,7 @@ public class RoleManager
     {
         return this.providers.valueCollection();
     }
-    private TIntObjectHashMap<TIntObjectHashMap<List<String>>> loadedUserRoles;
+    private TIntObjectHashMap<TIntObjectHashMap<List<String>>> loadedUserRoles = new TIntObjectHashMap<TIntObjectHashMap<List<String>>>();
 
     public TIntObjectHashMap<List<String>> loadRoles(User user)
     {

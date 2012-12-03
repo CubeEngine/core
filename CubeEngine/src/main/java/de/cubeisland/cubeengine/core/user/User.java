@@ -2,7 +2,9 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
@@ -14,6 +16,15 @@ import de.cubeisland.cubeengine.core.storage.database.Entity;
 import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,17 +33,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -56,9 +62,7 @@ public class User extends UserBase implements LinkingModel<Integer>
     public final Timestamp firstseen;
     @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
     public String language = null;
-
     private boolean isLoggedIn = false;
-
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccessModifier is intended
@@ -71,19 +75,20 @@ public class User extends UserBase implements LinkingModel<Integer>
             hasher = MessageDigest.getInstance("SHA-512");
         }
         catch (NoSuchAlgorithmException ignored)
-        {}
+        {
+        }
     }
 
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
-        super(Bukkit.getOfflinePlayer((String)args.get(1)));
+        super(Bukkit.getOfflinePlayer((String) args.get(1)));
         this.key = Integer.valueOf(args.get(0).toString());
         this.player = this.offlinePlayer.getName();
-        this.nogc = (Boolean)args.get(2);
-        this.lastseen = (Timestamp)args.get(3);
-        this.firstseen = (Timestamp)args.get(3);
-        this.passwd = (byte[])args.get(4);
+        this.nogc = (Boolean) args.get(2);
+        this.lastseen = (Timestamp) args.get(3);
+        this.firstseen = (Timestamp) args.get(3);
+        this.passwd = (byte[]) args.get(4);
     }
 
     public User(int key, OfflinePlayer player)
@@ -168,7 +173,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         {
             return null;
         }
-        return (T)this.attachments.get(modelClass);
+        return (T) this.attachments.get(modelClass);
     }
 
     /**
@@ -239,7 +244,7 @@ public class User extends UserBase implements LinkingModel<Integer>
      */
     public <T extends Object> T getAttribute(Module module, String name)
     {
-        return this.<T> getAttribute(module, name, null);
+        return this.<T>getAttribute(module, name, null);
     }
 
     /**
@@ -259,14 +264,15 @@ public class User extends UserBase implements LinkingModel<Integer>
             {
                 return null;
             }
-            T value = (T)attributMap.get(name);
+            T value = (T) attributMap.get(name);
             if (value != null)
             {
                 return value;
             }
         }
         catch (ClassCastException ignored)
-        {}
+        {
+        }
         return def;
     }
 
@@ -308,7 +314,7 @@ public class User extends UserBase implements LinkingModel<Integer>
             // If there is still lava then you shall burn!
         }
         if (location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FENCE)
-            || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
+                || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
         {
             location.add(0, 2, 0);
         }
@@ -373,4 +379,88 @@ public class User extends UserBase implements LinkingModel<Integer>
         return this.isLoggedIn;
     }
 
+    public void setPermission(String permission, boolean b)
+    {
+        PluginManager pm = Bukkit.getServer().getPluginManager();
+        Permission perm;
+        if (b)
+        {
+            perm = pm.getPermission(this.getName());
+        }
+        else
+        {
+            perm = pm.getPermission("!" + this.getName());
+        }
+        perm.getChildren().put(permission, b);
+        this.recalculatePermissions();
+    }
+
+    public void setPermission(Map<String, Boolean> permissions)
+    {
+        this.setPermission(permissions, this.getPlayer());
+    }
+
+    /**
+     * Use this method to assign permissions to a user while loging in
+     *
+     * @param permissions
+     * @param player
+     */
+    public void setPermission(Map<String, Boolean> permissions, Player player)
+    {
+        String posName = this.getName();
+        String negName = "!" + this.getName();
+        PluginManager pm = Bukkit.getServer().getPluginManager();
+        Permission posPerm = pm.getPermission(posName);
+        Permission negPerm = pm.getPermission(negName);
+        Map<String, Boolean> positive;
+        Map<String, Boolean> negative;
+        if (posPerm == null)
+        {
+            positive = new HashMap<String, Boolean>();
+            pm.addPermission(new Permission(posName, PermissionDefault.FALSE, positive));
+        }
+        else
+        {
+            positive = posPerm.getChildren();
+        }
+        if (negPerm == null)
+        {
+            negative = new HashMap<String, Boolean>();
+            pm.addPermission(new Permission(negName, PermissionDefault.FALSE, negative));
+        }
+        else
+        {
+            negative = negPerm.getChildren();
+        }
+        positive.clear();
+        negative.clear();
+        for (String perm : permissions.keySet())
+        {
+            if (permissions.get(perm))
+            {
+                positive.put(perm, true);
+            }
+            else
+            {
+                negative.put(perm, false);
+            }
+        }
+        PermissionAttachment attachment = null;
+        for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions())
+        {
+            if (attachmentInfo.getAttachment() != null && attachmentInfo.getAttachment().getPlugin() != null && attachmentInfo.getAttachment().getPlugin() instanceof BukkitCore)
+            {
+                attachment = attachmentInfo.getAttachment();
+                break;
+            }
+        }
+        if (attachment == null)
+        {
+            attachment = player.addAttachment((Plugin) CubeEngine.getCore());
+            attachment.setPermission(posName, true);
+            attachment.setPermission(negName, true);
+        }
+        player.recalculatePermissions();
+    }
 }

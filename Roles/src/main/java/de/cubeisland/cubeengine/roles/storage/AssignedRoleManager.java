@@ -30,7 +30,7 @@ public class AssignedRoleManager extends BasicStorage<AssignedRole>
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getallByUser",
-                    builder.select().wildcard().from(this.table).where().field("userId").is(EQUAL).value().end().end());
+                    builder.select().cols("worldID","roleName").from(this.table).where().field("userId").is(EQUAL).value().end().end());
         }
         catch (SQLException e)
         {
@@ -40,42 +40,27 @@ public class AssignedRoleManager extends BasicStorage<AssignedRole>
 
     public TIntObjectHashMap<List<String>> getRolesByUser(User user)
     {
-        List<AssignedRole> loadedModels = new ArrayList<AssignedRole>();
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", user.key);
-            // TODO perhaps do this better without creating the models
+            TIntObjectHashMap<List<String>> result = new TIntObjectHashMap<List<String>>();
             while (resulsSet.next())
             {
-                ArrayList<Object> values = new ArrayList<Object>();
-                values.add(resulsSet.getObject(this.dbKey));
-                for (String name : this.dbAttributes)
+                int worldId = resulsSet.getInt("worldId");
+
+                List<String> list = result.get(worldId);
+                if (list == null)
                 {
-                    values.add(resulsSet.getObject(name));
+                    list = new ArrayList<String>();
+                    result.put(worldId, list);
                 }
-                AssignedRole loadedModel = this.modelConstructor.newInstance(values);
-                loadedModels.add(loadedModel);
+                list.add(resulsSet.getString("roleName"));
             }
+            return result;
         }
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while getting Model from Database", ex);
         }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
-        TIntObjectHashMap<List<String>> result = new TIntObjectHashMap<List<String>>();
-        for (AssignedRole role : loadedModels)
-        {
-            List<String> list = result.get(role.worldId);
-            if (list == null)
-            {
-                list = new ArrayList<String>();
-                result.put(role.worldId, list);
-            }
-            list.add(role.roleName);
-        }
-        return result;
     }
 }

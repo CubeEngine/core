@@ -4,15 +4,16 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.List;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 
 public class RolesEventHandler implements Listener
 {
-
     private final Roles module;
     private final RoleManager manager;
 
@@ -25,14 +26,32 @@ public class RolesEventHandler implements Listener
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event)
     {
-        //TODO check if need to change permissions
-        this.applyRole(event.getPlayer().getName());
+        this.preCalculateRoles(event.getPlayer().getName());
+        int worldFromId = this.module.getCore().getWorldManager().getWorldId(event.getFrom());
+        int worldToId = this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld());
+        RoleProvider fromProvider = this.manager.getProvider(worldFromId);
+        RoleProvider toProvider = this.manager.getProvider(worldToId);
+        if (fromProvider.equals(toProvider))
+        {
+            if (toProvider.getWorlds().get(worldToId).getRight())
+            {
+                return;
+            }
+        }
+        this.applyRole(event.getPlayer(), worldToId);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
     {
         this.preCalculateRoles(event.getName());
+    }
+
+    @EventHandler
+    public void onLogin(PlayerLoginEvent event)
+    {
+        this.preCalculateRoles(event.getPlayer().getName());
+        this.applyRole(event.getPlayer(), this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld()));
     }
 
     /**
@@ -43,7 +62,7 @@ public class RolesEventHandler implements Listener
     public void preCalculateRoles(String username)
     {
         User user = this.module.getUserManager().getUser(username, true);
-        if (user.getAttribute(this.module, "roleContainer") != null)
+        if (user.getAttribute(this.module, "roleContainer") != null) // TODO be sure that this gets removed when reloading
         {
             return;
         }
@@ -73,67 +92,12 @@ public class RolesEventHandler implements Listener
         user.setAttribute(this.module, "roleContainer", roleContainer);
     }
 
-    public void applyRole(String username)
+    public void applyRole(Player player, int worldId)
     {
-        //TODO do assign permissions in the user. give Map <String,Boolean> or a String and boolean
-        //
-        /*
-         Player player = (Player) p;
-
-         Permission positive = plugin.getServer().getPluginManager().getPermission(player.getName());
-         Permission negative = plugin.getServer().getPluginManager().getPermission("^" + player.getName());
-
-         if (positive != null)
-         {
-         plugin.getServer().getPluginManager().removePermission(positive);
-         }
-         if (negative != null)
-         {
-         plugin.getServer().getPluginManager().removePermission(negative);
-         }
-
-         Map<String, Boolean> po = new HashMap<String, Boolean>();
-         Map<String, Boolean> ne = new HashMap<String, Boolean>();
-
-         for (String key : permissions.keySet())
-         {
-         if (permissions.get(key))
-         {
-         po.put(key, true);
-         }
-         else
-         {
-         ne.put(key, false);
-         }
-         }
-
-         positive = new Permission(player.getName(), PermissionDefault.FALSE, po);
-         negative = new Permission("^" + player.getName(), PermissionDefault.FALSE, ne);
-
-         plugin.getServer().getPluginManager().addPermission(positive);
-         plugin.getServer().getPluginManager().addPermission(negative);
-         PermissionAttachment att = null;
-         for (PermissionAttachmentInfo pai : player.getEffectivePermissions())
-         {
-         if (pai.getAttachment() != null && pai.getAttachment().getPlugin() != null)
-         {
-         if (pai.getAttachment().getPlugin() instanceof Permissions)
-         {
-         att = pai.getAttachment();
-         break;
-         }
-         }
-         }
-         // only if null
-         if (att == null)
-         {
-         att = player.addAttachment(plugin);
-         att.setPermission(player.getName(), true);
-         att.setPermission("^" + player.getName(), true);
-         }
-         // recalculate permissions
-         player.recalculatePermissions();
-         return att; 
-         //*/
+        User user = this.module.getUserManager().getExactUser(player);
+        TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
+        MergedRole role = roleContainer.get(worldId);
+        user.setPermission(role.getPermissions(), player);
+        //TODO set metadata
     }
 }

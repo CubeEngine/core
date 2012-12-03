@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.roles;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.roles.role.PermissionTree;
@@ -10,8 +9,8 @@ import de.cubeisland.cubeengine.roles.role.PriorityConverter;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
 import de.cubeisland.cubeengine.roles.role.RoleProviderConverter;
+import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
-import java.io.File;
 
 public class Roles extends Module
 {
@@ -34,6 +33,8 @@ public class Roles extends Module
     {
         this.dbManager = new AssignedRoleManager(this.getDatabase());
         this.manager = new RoleManager(this);
+        
+        this.getEventManager().registerListener(this, new RolesEventHandler(this));
     }
 
     public RolesConfig getConfiguration()

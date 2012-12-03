@@ -171,13 +171,14 @@ public class BukkitCore extends JavaPlugin implements Core
             BukkitUtils.disableCommandLogging();
         }
 
-        this.worldManager = new WorldManager(database);
-
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
             @Override
             public void run()
             {
+                // depends on loaded worlds
+                worldManager = new WorldManager(database);
+                
                 // depends on: file manager
                 BukkitCore.this.moduleManager.loadModules(BukkitCore.this.fileManager.getModulesDir());
 

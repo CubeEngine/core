@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage.world;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import gnu.trove.map.hash.THashMap;
@@ -21,17 +22,16 @@ public class WorldManager extends BasicStorage<WorldModel>
     {
         super(database, WorldModel.class, REVISION);
         this.initialize();
-
         this.loadWorlds();
     }
 
     private void loadWorlds()
     {
         Collection<WorldModel> models = this.getAll();
-        List<World> loadedWorlds = Bukkit.getServer().getWorlds();
+        List<World> loadedWorlds = Bukkit.getWorlds();
         for (WorldModel model : models)
         {
-            World world = Bukkit.getServer().getWorld(UUID.fromString(model.worldUUID));
+            World world = Bukkit.getWorld(UUID.fromString(model.worldUUID));
             if (loadedWorlds.contains(world))
             {
                 loadedWorlds.remove(world);
@@ -59,7 +59,7 @@ public class WorldManager extends BasicStorage<WorldModel>
 
     public Integer getWorldId(String worldName)
     {
-        World world = Bukkit.getServer().getWorld(worldName);
+        World world = Bukkit.getWorld(worldName);
         if (world == null)
         {
             return null;
