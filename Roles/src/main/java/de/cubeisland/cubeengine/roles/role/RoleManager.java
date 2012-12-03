@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
@@ -11,7 +12,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,6 +19,7 @@ import java.util.Stack;
 
 public class RoleManager
 {
+
     private THashMap<String, RoleConfig> globalConfigs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
@@ -27,8 +28,8 @@ public class RoleManager
 
     public RoleManager(Roles rolesModule)
     {
-        this.loadProviders();
         this.module = rolesModule;
+        this.loadProviders();
         this.rolesFolder = new File(rolesModule.getFolder(), "roles");
         this.rolesFolder.mkdir();
         this.module.getLogger().debug("Loading global roles...");
@@ -147,7 +148,7 @@ public class RoleManager
                 }
             }
             role.setParentRoles(parenRoles); // Add all roles found
-            Role mergedParentRole = this.mergeRoles(parenRoles); //merge together parentRoles  
+            Role mergedParentRole = new MergedRole(parenRoles); //merge together parentRoles  
             this.applyInheritence(role, mergedParentRole);
             this.roleStack.pop();
             return role;
@@ -254,7 +255,7 @@ public class RoleManager
                 }
             }
             role.setParentRoles(parenRoles); // Add all roles found
-            Role mergedParentRole = this.mergeRoles(parenRoles); //merge together parentRoles  
+            Role mergedParentRole = new MergedRole(parenRoles); //merge together parentRoles  
             this.applyInheritence(role, mergedParentRole);
             this.roleStack.pop();
             return role;
@@ -264,51 +265,6 @@ public class RoleManager
             this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
             return null;
         }
-    }
-
-    private Role mergeRoles(Collection<Role> roles)
-    {
-        if (roles.size() == 1)
-        {
-            return roles.iterator().next();
-        }
-        Role result = new Role();
-        Map<String, Pair<Boolean, Priority>> permissions = new HashMap<String, Pair<Boolean, Priority>>();
-        Map<String, Pair<String, Priority>> metaData = new HashMap<String, Pair<String, Priority>>();
-        for (Role role : roles)
-        {
-            for (Entry<String, Boolean> permission : role.getPermissions().entrySet())
-            {
-                if (permissions.containsKey(permission.getKey()))
-                {
-                    if (role.getPriority().value < permissions.get(permission.getKey()).getRight().value)
-                    {
-                        continue;
-                    }
-                }
-                permissions.put(permission.getKey(), new Pair<Boolean, Priority>(permission.getValue(), role.getPriority()));
-            }
-            for (Entry<String, String> data : role.getMetaData().entrySet())
-            {
-                if (metaData.containsKey(data.getKey()))
-                {
-                    if (role.getPriority().value < metaData.get(data.getKey()).getRight().value)
-                    {
-                        continue;
-                    }
-                }
-                metaData.put(data.getKey(), new Pair<String, Priority>(data.getValue(), role.getPriority()));
-            }
-        }
-        for (String permission : permissions.keySet())
-        {
-            result.setPermission(permission, permissions.get(permission).getLeft());
-        }
-        for (String data : metaData.keySet())
-        {
-            result.setMetaData(data, metaData.get(data).getLeft());
-        }
-        return result;
     }
 
     private void loadProviders()
@@ -325,7 +281,10 @@ public class RoleManager
                             + "Check your configuration under mirrors." + provider.mainWorld);
                     continue;
                 }
-                this.providers.put(worldId, provider);
+                if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
+                {
+                    this.providers.put(worldId, provider);
+                }
             }
         }
         for (int worldId : this.module.getCore().getWorldManager().getAllWorldIds())
@@ -345,5 +304,23 @@ public class RoleManager
     public Collection<RoleProvider> getProviders()
     {
         return this.providers.valueCollection();
+    }
+    private TIntObjectHashMap<TIntObjectHashMap<List<String>>> loadedUserRoles;
+
+    public TIntObjectHashMap<List<String>> loadRoles(User user)
+    {
+        TIntObjectHashMap<List<String>> result = this.loadedUserRoles.get(user.key);
+        if (result == null)
+        {
+            return this.reloadRoles(user);
+        }
+        return result;
+    }
+
+    public TIntObjectHashMap<List<String>> reloadRoles(User user)
+    {
+        TIntObjectHashMap<List<String>> result = this.module.getDbManager().getRolesByUser(user);
+        this.loadedUserRoles.put(user.key, result);
+        return result;
     }
 }

@@ -16,6 +16,6 @@ public class RolesConfig extends Configuration
     @Option("default.roles")
     @Comment("The list of roles a user will get when first joining the server.")
     public List<String> defaultRoles;
-    //TODO @Option("mirrors")
+    @Option("mirrors")
     public List<RoleProvider> providers = new ArrayList<RoleProvider>();
 }
