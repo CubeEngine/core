@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.storage.world;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ public class WorldManager extends BasicStorage<WorldModel>
 {
     private static final int REVISION = 3;
     private Map<World, WorldModel> worlds = new THashMap<World, WorldModel>();
+    private TIntObjectHashMap<World> worldIds = new TIntObjectHashMap<World>();
 
     public WorldManager(Database database)
     {
@@ -34,6 +36,7 @@ public class WorldManager extends BasicStorage<WorldModel>
             {
                 loadedWorlds.remove(world);
                 this.worlds.put(world, model);
+                this.worldIds.put(model.key, world);
             }
         }
         if (!loadedWorlds.isEmpty()) // new worlds?
@@ -43,6 +46,7 @@ public class WorldManager extends BasicStorage<WorldModel>
                 WorldModel model = new WorldModel(world);
                 this.store(model);
                 this.worlds.put(world, model);
+                this.worldIds.put(model.key, world);
             }
         }
     }
@@ -51,5 +55,26 @@ public class WorldManager extends BasicStorage<WorldModel>
     {
         WorldModel model = this.worlds.get(world);
         return model == null ? null : model.key;
+    }
+
+    public Integer getWorldId(String worldName)
+    {
+        World world = Bukkit.getServer().getWorld(worldName);
+        if (world == null)
+        {
+            return null;
+        }
+        WorldModel model = this.worlds.get(world);
+        return model == null ? null : model.key;
+    }
+
+    public int[] getAllWorldIds()
+    {
+        return this.worldIds.keys();
+    }
+
+    public World getWorld(int worldId)
+    {
+        return this.worldIds.get(worldId);
     }
 }
