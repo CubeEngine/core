@@ -10,11 +10,11 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -36,7 +36,7 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
  */
 public class I18n implements Cleanable
 {
-    private static final Logger LOGGER = new CubeLogger("language", null);
+    private static final Logger LOGGER = Logger.getLogger("language");
     public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
@@ -55,7 +55,7 @@ public class I18n implements Cleanable
         }
         catch (IOException e)
         {
-            Logger.getLogger(I18n.class.getName()).log(ERROR, null, e);
+            Bukkit.getLogger().log(ERROR, e.getLocalizedMessage(), e);
         }
     }
 
@@ -109,7 +109,7 @@ public class I18n implements Cleanable
             }
             else
             {
-                LOGGER.log(ERROR, "The language ''{0}'' has an invalid configation!", file.getName());
+                LOGGER.log(ERROR, "The language ''{0}'' has an invalid configuration!", file.getName());
             }
         }
 
@@ -190,11 +190,20 @@ public class I18n implements Cleanable
      */
     public Language getLanguage(String name)
     {
+        return this.getLanguage(name, SOURCE_LANGUAGE.getLocale());
+    }
+
+    public Language getLanguage(String name, Locale locale)
+    {
         if (name == null)
         {
             return null;
         }
-        return this.languageMap.get(name);
+        if (name.indexOf('_') != -1)
+        {
+            name = normalizeLanguage(name);
+        }
+        return this.languageMap.get(name.toLowerCase(locale));
     }
 
     public Set<Language> searchLanguages(String name)
@@ -209,7 +218,7 @@ public class I18n implements Cleanable
 
         for (String match : matches)
         {
-            languages.add(this.languageMap.get(match));
+            languages.add(this.getLanguage(match));
         }
 
         return languages;
@@ -251,14 +260,15 @@ public class I18n implements Cleanable
         if (translation == null)
         {
             this.logMissingTranslation(language, category, message);
-            Language defLang = this.languageMap.get(this.defaultLanguage);
+            Language defLang = this.getLanguage(this.defaultLanguage);
             if (defLang != null)
             {
                 translation = defLang.getTranslation(category, message);
             }
             else
             {
-                LOGGER.log(WARNING, "The configured default language was not found!");
+                LOGGER.log(WARNING, "The configured default language {0} was not found! Switching back to the source language...", this.defaultLanguage);
+                this.defaultLanguage = SOURCE_LANGUAGE.getCode();
             }
             if (translation == null)
             {
