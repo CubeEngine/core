@@ -46,7 +46,7 @@ public class ThrowCommands
     {
         User user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
         
-        int value = context.getIndexed(0, Integer.class, Integer.valueOf(10));
+        int value = context.getIndexed(0, Integer.class, 10);
         ExperienceOrb orb = (ExperienceOrb) user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection().multiply(2)), EntityType.EXPERIENCE_ORB);
         orb.setVelocity(user.getLocation().getDirection());
         orb.setExperience(value);

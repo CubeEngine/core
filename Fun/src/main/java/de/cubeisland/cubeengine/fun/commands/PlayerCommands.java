@@ -9,12 +9,11 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
-import java.util.HashSet;
-import java.util.Set;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.util.Vector;
 
 public class PlayerCommands
@@ -41,11 +40,11 @@ public class PlayerCommands
         { 
             @Flag(longName = "unsafe", name = "u"),
             @Flag(longName = "fire", name = "f"),
-            @Flag(longName = "bockDamage", name = "b"),
+            @Flag(longName = "blockDamage", name = "b"),
             @Flag(longName = "playerDamage", name = "p")
         },
         max = 0,
-        usage = "[player <name>] [damage <value>] [-unsafe] [-fire]"
+        usage = "[player <name>] [damage <value>] [-blockDamage] [-playerDamage] [-fire] [-unsafe]"
     )
     public void explosion(CommandContext context)
     {
@@ -90,12 +89,12 @@ public class PlayerCommands
             denyAccess(context, "rulebook", "&cYou are not allowed to damage an other player");
         }
         
-        if( !context.hasFlag("u") || !context.hasFlag("p"))
+        if( !context.hasFlag("u") && !context.hasFlag("p"))
         {
             explosionListener.add(location);
         }
         
-//        user.getWorld().createExplosion(location.getX(), location.getY(), location.getZ(), power, context.hasFlag("f"), context.hasFlag("b"));
+        user.getWorld().createExplosion(location.getX(), location.getY(), location.getZ(), power, context.hasFlag("f") || context.hasFlag("u"), context.hasFlag("b") || context.hasFlag("u"));
     }
     
     @Command
@@ -209,38 +208,36 @@ public class PlayerCommands
     
     private class ExplosionListener implements Listener
     {
-        private Set<Location> locations;
-        
-        public ExplosionListener()
-        {
-            this.locations = new HashSet<Location>();
-        }
+        private Location location;
         
         public void add(Location location)
         {
-            if(!this.contains(location))
-            {
-                locations.add(location);
-            }
+            
+            this.location = location;
+
+            module.getTaskManger().scheduleSyncDelayedTask(module, 
+                    new Runnable()
+                    {
+                        @Override
+                        public void run() 
+                        {
+                            remove();
+                        }
+                    }, 1
+            );
         }
         
-        public boolean contains(Location location)
+        private void remove()
         {
-            return locations.contains(location);
-        }
-        
-        public void remove(Location location)
-        {
-            locations.remove(location);
+            this.location = null;
         }
         
         @EventHandler
-        public void onEntityExplode(EntityExplodeEvent event)
+        public void onEntityDamageByBlock(EntityDamageByBlockEvent event)
         {
-            if( event.getEntity() == null && this.contains( event.getLocation() ) )
+            if(this.location != null && event.getDamager() == null && event.getEntity() instanceof Player)
             {
-                this.remove(event.getLocation());
-                event.blockList().clear();
+                event.setCancelled(true);
             }
         }
     }
