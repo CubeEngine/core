@@ -4,12 +4,13 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import org.apache.commons.lang.Validate;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 
 /**
  * MYSQLDatabase the MYSQL implementation for the database.
@@ -109,13 +110,22 @@ public class MySQLDatabase extends AbstractDatabase
     public void shutdown()
     {
         super.shutdown();
-        try
+        if (this.connection != null)
         {
-            this.ds.getConnection().close();
-        }
-        catch (SQLException e)
-        {
-            LOGGER.log(LogLevel.ERROR, e.getMessage(), e);
+            try
+            {
+                if (this.connection.isValid(500) && !this.connection.getAutoCommit())
+                {
+                    // rollback stuff that's still in progress at this time.
+                    this.connection.rollback();
+                }
+                this.connection.close();
+                this.connection = null;
+            }
+            catch (SQLException e)
+            {
+                LOGGER.log(ERROR, e.getLocalizedMessage(), e);
+            }
         }
     }
 }
