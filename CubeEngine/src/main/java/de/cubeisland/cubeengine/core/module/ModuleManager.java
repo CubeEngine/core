@@ -32,6 +32,7 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
 
 /**
@@ -128,7 +129,7 @@ public class ModuleManager implements Cleanable
      */
     public synchronized void loadModules(File directory)
     {
-        Validate.notNull(directory, "The directoy must not be null!");
+        Validate.notNull(directory, "The directory must not be null!");
         if (!directory.isDirectory())
         {
             throw new IllegalArgumentException("The given File is no directory!");
@@ -230,9 +231,7 @@ public class ModuleManager implements Cleanable
             depModule = this.loadModule(depName, moduleInfos, loadStack);
             if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
             {
-                LOGGER.log(WARNING, "The module {0} requested a newer revision of {1}!", new Object[] {
-                    name, depName
-                });
+                LOGGER.log(WARNING, "The module " + name + " requested a newer revision of " + depName + "!");
             }
         }
         for (Map.Entry<String, Integer> dep : info.getDependencies().entrySet())
@@ -286,13 +285,14 @@ public class ModuleManager implements Cleanable
                 field.setAccessible(true);
                 try
                 {
-                    field.set(module, injectedModule);
+                    if (field.get(module) == null)
+                    {
+                        field.set(module, injectedModule);
+                    }
                 }
                 catch (Exception e)
                 {
-                    LOGGER.log(WARNING, "Failed to inject a dependency into {0}: {1}", new Object[] {
-                        name, injectedModule.getName()
-                    });
+                    module.getLogger().log(WARNING, "Failed to inject a dependency: {0}", injectedModule.getName());
                 }
             }
             else
@@ -311,10 +311,7 @@ public class ModuleManager implements Cleanable
                     }
                     catch (Exception e)
                     {
-                        LOGGER.log(WARNING, "Failed to inject a plugin dependency into {0}: {1}", new Object[]
-                            {
-                                name, plugin.getName()
-                            });
+                        module.getLogger().log(WARNING, "Failed to inject a plugin dependency: {0}", plugin.getName());
                     }
                 }
             }
@@ -327,10 +324,7 @@ public class ModuleManager implements Cleanable
 
         this.classMap.put(module.getClass(), module);
 
-        LOGGER.log(LogLevel.INFO, "Module {0}-r{1} successfully loaded!", new Object[]
-            {
-                info.getName(), info.getRevision()
-            });
+        module.getLogger().log(INFO, "successfully enabled!");
         this.modules.put(module.getId(), module);
 
         return module;
@@ -431,11 +425,11 @@ public class ModuleManager implements Cleanable
     }
 
     /**
-     * This method tries to unload a module be remoing as many references as possible.
+     * This method tries to unload a module be removing as many references as possible.
      * this means:
      * - disable all modules that depend in the given module
      * - disable the module
-     * - remove its classloader and all the reference to it
+     * - remove its ClassLoader and all the reference to it
      * - remove the module from the module map
      *
      * @param module the module to unload

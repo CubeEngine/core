@@ -11,13 +11,14 @@ import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
 
 import java.io.File;
 import java.io.InputStream;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 
 /**
  * Module for CubeEngine.
@@ -130,9 +131,9 @@ public abstract class Module
     }
 
     /**
-     * This method returns the classloader which loaded this module
+     * This method returns the ClassLoader which loaded this module
      *
-     * @return the classloader
+     * @return the ClassLoader
      */
     public ModuleClassLoader getClassLoader()
     {
@@ -281,18 +282,15 @@ public abstract class Module
         {
             try
             {
-                this.logger.log(LogLevel.INFO, "Enabling {0}-r{1}", new Object[]
-                    {
-                        this.getInfo().getName(), this.getInfo().getRevision()
-                    });
+                this.logger.log(INFO, "Enabling revision {0}...", this.getInfo().getRevision());
                 this.onEnable();
                 this.enabled = true;
                 this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, this));
             }
             catch (Throwable t)
             {
-                this.logger.log(LogLevel.ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
-                this.logger.log(LogLevel.NOTICE, "{0} disabled", this.getInfo().getName());
+                this.logger.log(ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
+                this.logger.log(NOTICE, " failed to load.");
             }
         }
         return this.enabled;
@@ -311,7 +309,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.logger.log(LogLevel.ERROR, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+                this.logger.log(ERROR, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
             }
             this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;
