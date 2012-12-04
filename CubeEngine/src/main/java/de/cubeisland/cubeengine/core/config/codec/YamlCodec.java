@@ -62,8 +62,12 @@ public class YamlCodec extends ConfigurationCodec
     private boolean needsQuote(Object o)
     {
         String s = o.toString();
-        return (s.contains("#") || s.contains("@") || s.contains("`") || s.contains("[") || s.contains("]") || s.contains("{") || s.contains("}")
-                || s.contains("|") || s.contains(">") || s.contains("!") || s.contains("%") || s.contains(":") || s.contains("-") || s.contains(","));
+        return (s.startsWith("#") || s.contains(" #") || s.startsWith("@")
+                || s.startsWith("`") || s.startsWith("[") || s.startsWith("]")
+                || s.startsWith("{") || s.startsWith("}") || s.startsWith("|")
+                || s.startsWith(">") || s.startsWith("!")|| s.startsWith("%")
+                || s.endsWith(":") || s.startsWith("- ") || s.startsWith(",")
+                || s.matches("[0-9]+:[0-9]+"));
     }
 
     @Override
