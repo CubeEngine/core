@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.roles;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.roles.role.PermissionTree;
 import de.cubeisland.cubeengine.roles.role.PermissionTreeConverter;
@@ -11,10 +12,10 @@ import de.cubeisland.cubeengine.roles.role.RoleProvider;
 import de.cubeisland.cubeengine.roles.role.RoleProviderConverter;
 import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
+import org.bukkit.entity.Player;
 
 public class Roles extends Module
 {
-
     private RolesConfig config;
     private RoleManager manager;
     private AssignedRoleManager dbManager;
@@ -33,9 +34,26 @@ public class Roles extends Module
     {
         this.dbManager = new AssignedRoleManager(this.getDatabase());
         this.manager = new RoleManager(this);
-        
-        this.getEventManager().registerListener(this, new RolesEventHandler(this));
+        RolesEventHandler rolesEventHandler = new RolesEventHandler(this);
+        this.getEventManager().registerListener(this, rolesEventHandler);
+        for (User user : this.getUserManager().getOnlineUsers()) // reapply roles on reload
+        {
+            user.removeAttribute(this, "roleContainer"); // remove potential old calculated roles
+            rolesEventHandler.preCalculateRoles(user.getName());
+            rolesEventHandler.applyRole(user.getPlayer(), this.getCore().getWorldManager().getWorldId(user.getWorld()));
+        }
     }
+
+    @Override
+    public void onDisable()
+    {
+        for (User user: this.getUserManager().getLoadedUsers())
+        {
+            user.clearAttributes(this);
+        }
+    }
+    
+    
 
     public RolesConfig getConfiguration()
     {

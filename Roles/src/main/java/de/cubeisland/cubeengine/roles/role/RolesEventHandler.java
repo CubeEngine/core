@@ -14,8 +14,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 
 public class RolesEventHandler implements Listener
 {
-    private final Roles module;
-    private final RoleManager manager;
+    private Roles module;
+    private RoleManager manager;
 
     public RolesEventHandler(Roles module)
     {
@@ -98,6 +98,14 @@ public class RolesEventHandler implements Listener
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
         user.setPermission(role.getPermissions(), player);
+        //DUBUGGING:
+        System.out.println(player.getName() + " logged in as:");
+        for (Role mergerole : role.mergedWith)
+        {
+            System.out.println(mergerole.getName());
+        }
+        //########################
+
         //TODO set metadata
     }
 }
