@@ -32,18 +32,15 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 public class Kit
 {
     private static Basics basics = Basics.getInstance();
-    //TODO command to create those
     private String name;
     private List<KitItem> items;
     private boolean giveKitOnFirstJoin;
-    private int limitUsagePerPlayer; // TODO will need its own db-table for this
+    private int limitUsagePerPlayer;
     private long limitUsageDelay;
     private Permission permission;
     private String customMessage;
     private List<String> commands;
 
-    // TODO ? add commands to execute to the kit (same with powertool)
-    //e.g. /feed {PLAYER} | {PLAYER} will be replaced with the username that reveives the kit
     public Kit(final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
     {
 
@@ -97,13 +94,17 @@ public class Kit
                 denyAccess(sender, "basics", "You are not allowed to give this kit.");
             }
         }
+        if (basics.getKitGivenManager().reachedUsageLimit(user,this.name,this.limitUsagePerPlayer))
+        {
+            denyAccess(sender, "basics", "&cKit-limit reached.");
+        }
         //TODO check how many times user got his kit
         if (limitUsageDelay != 0)
         {
             Long lastUsage = user.getAttribute(basics, "kitUsage_" + this.name);
             if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
             {
-                blockCommand(sender, "basisc", "This kit not availiable at the moment. Try again later!");
+                blockCommand(sender, "basisc", "&eThis kit not availiable at the moment. &aTry again later!");
             }
         }
         List<ItemStack> list = this.getItems();

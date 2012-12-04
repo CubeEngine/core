@@ -12,7 +12,6 @@ import de.cubeisland.cubeengine.roles.role.RoleProvider;
 import de.cubeisland.cubeengine.roles.role.RoleProviderConverter;
 import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
-import org.bukkit.entity.Player;
 
 public class Roles extends Module
 {
@@ -52,8 +51,6 @@ public class Roles extends Module
             user.clearAttributes(this);
         }
     }
-    
-    
 
     public RolesConfig getConfiguration()
     {

@@ -57,7 +57,7 @@ public class InventoryCommands
     @Command(desc = "Stashes or unstashes your inventory to reuse later", max = 0)
     public void stash(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!"); //TODO funny message for console :)
+        User sender = context.getSenderAsUser("core", "&cYeah you better put it away!");
         ItemStack[] stashedInv = sender.getAttribute(basics, "stash_Inventory");
         ItemStack[] stashedArmor = sender.getAttribute(basics, "stash_Armor");
         ItemStack[] InvToStash = sender.getInventory().getContents().clone();

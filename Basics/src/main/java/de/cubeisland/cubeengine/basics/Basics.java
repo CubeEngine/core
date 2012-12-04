@@ -13,15 +13,16 @@ import de.cubeisland.cubeengine.basics.mail.MailManager;
 import de.cubeisland.cubeengine.basics.moderation.InventoryCommands;
 import de.cubeisland.cubeengine.basics.moderation.ItemCommands;
 import de.cubeisland.cubeengine.basics.moderation.KickBanCommands;
-import de.cubeisland.cubeengine.basics.moderation.kit.KitCommand;
 import de.cubeisland.cubeengine.basics.moderation.PowerToolCommand;
 import de.cubeisland.cubeengine.basics.moderation.PowerToolListener;
 import de.cubeisland.cubeengine.basics.moderation.SpawnMobCommand;
 import de.cubeisland.cubeengine.basics.moderation.TimeControlCommands;
 import de.cubeisland.cubeengine.basics.moderation.WorldControlCommands;
+import de.cubeisland.cubeengine.basics.moderation.kit.KitCommand;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitConfiguration;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitItem;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitItemConverter;
+import de.cubeisland.cubeengine.basics.moderation.kit.KitsGivenManager;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
@@ -38,6 +39,7 @@ public class Basics extends Module
     private BasicsConfiguration config;
     private BasicUserManager basicUM;
     private MailManager mailManager;
+    private KitsGivenManager kitGivenManager;
 
     private static Basics instance;
     
@@ -77,6 +79,7 @@ public class Basics extends Module
         this.registerListener(new PowerToolListener());
         Convert.registerConverter(KitItem.class, new KitItemConverter());
         KitConfiguration.loadKits();
+        this.kitGivenManager = new KitsGivenManager(this.getDatabase());
 
         //Teleport:
         this.registerCommands(new MovementCommands(this));
@@ -145,5 +148,10 @@ public class Basics extends Module
     public MailManager getMailManager()
     {
         return this.mailManager;
+    }
+
+    public KitsGivenManager getKitGivenManager()
+    {
+        return kitGivenManager;
     }
 }

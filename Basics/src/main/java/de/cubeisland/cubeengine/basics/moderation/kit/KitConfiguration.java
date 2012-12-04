@@ -19,7 +19,6 @@ import java.util.Locale;
 public class KitConfiguration extends Configuration
 {
     private static Basics basics = Basics.getInstance();
-
     public String kitName;
     @Comment("Players that join your server the first time will receive this kit if set on true.")
     @Option("give-on-first-join")
@@ -45,6 +44,15 @@ public class KitConfiguration extends Configuration
     private static THashMap<String, Kit> kitMap = new THashMap<String, Kit>();
     private static THashMap<Kit, KitConfiguration> kitConfigMap = new THashMap<Kit, KitConfiguration>();
 
+    @Override
+    public void onLoaded()
+    {
+        if (this.kitName.length() > 50)
+        {
+            this.kitName = this.kitName.substring(0, 50); // limit for db
+        }
+    }
+
     public Kit getKit()
     {
         Kit kit = new Kit(this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
@@ -58,7 +66,7 @@ public class KitConfiguration extends Configuration
         {
             return null;
         }
-        else 
+        else
         {
             return kitMap.get(match.get(0));
         }
@@ -85,7 +93,7 @@ public class KitConfiguration extends Configuration
             KitConfiguration config = Configuration.load(KitConfiguration.class, file);
             config.kitName = StringUtils.stripFileExtention(file.getName());
             Kit kit = config.getKit();
-            
+
             kitConfigMap.put(kit, config);
             kitMap.put(config.kitName.toLowerCase(Locale.ENGLISH), kit);
         }

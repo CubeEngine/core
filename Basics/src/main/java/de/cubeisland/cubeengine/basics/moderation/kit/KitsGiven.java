@@ -13,8 +13,8 @@ public class KitsGiven implements Model<Integer>
     public int key;
     @ForeignKey(table = "user", field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public int user;
-    @Attribute(type = AttrType.VARCHAR, length = 50)//TODO limit name length in config
+    public int userId;
+    @Attribute(type = AttrType.VARCHAR, length = 50)
     public String kitName;
     @Attribute(type = AttrType.INT, unsigned = true)
     public int amount;

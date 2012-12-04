@@ -11,7 +11,6 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.FileUtil;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +27,7 @@ public class KitCommand extends ContainerCommand
     {
         if (context.hasIndexed(0))
         {
-            this.give(context);
+            this.give(context); //TODO as flags are not declared this cannot work
         }
         else
         {
