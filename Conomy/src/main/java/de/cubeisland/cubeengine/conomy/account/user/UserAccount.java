@@ -3,14 +3,12 @@ package de.cubeisland.cubeengine.conomy.account.user;
 import de.cubeisland.cubeengine.conomy.account.AccountModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
+import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@Entity(name = "useraccount")
+@SingleIntKeyEntity(tableName = "useraccount", primaryKey = "user", autoIncrement = false)
 public class UserAccount extends AccountModel
 {
-    @PrimaryKey
     @Attribute(type = AttrType.INT)
     protected final User user;
 

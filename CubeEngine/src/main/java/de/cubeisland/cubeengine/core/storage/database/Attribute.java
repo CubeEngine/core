@@ -14,17 +14,32 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Attribute
 {
+    /*
+     * data_type [NOT NULL | NULL] [DEFAULT default_value]
+      [AUTO_INCREMENT] [UNIQUE [KEY] | [PRIMARY] KEY]
+      [COMMENT 'string']
+      [COLUMN_FORMAT {FIXED|DYNAMIC|DEFAULT}]
+      [STORAGE {DISK|MEMORY|DEFAULT}]
+      [reference_definition]
+     */
+    
     public AttrType type();
 
     public int length() default -1;
 
     public boolean notnull() default true;
 
-    public boolean ai() default false;
+    public boolean unsigned() default false;//TODO maybe move to AttrType have a U_INT version etc
 
-    public boolean unsigned() default false;
-
-    public boolean unique() default false;
-    
+    /**
+     * If not given will be set to fieldName
+     */
     public String name() default "";
+    
+    /**
+     * If true the default value will be set to the fields value
+     */
+    public boolean defaultIsValue() default false;
+    
+    //TODO later check annotation?
 }

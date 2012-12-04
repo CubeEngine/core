@@ -1,3 +1,7 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package de.cubeisland.cubeengine.core.storage.database;
 
 import java.lang.annotation.Documented;
@@ -11,18 +15,33 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@Documented
-public @interface ForeignKey
+public @interface Index
 {
-    public String table();
-
-    public String field();
+    public IndexType value();
 
     /**
-     * default: CASCADE.
+     * Needed for FOREIGNKEY
+     */
+    public String f_table() default "";
+
+    /**
+     * Needed for FOREIGNKEY
+     */
+    public String f_field() default "";
+
+    /**
+     * Needed for FOREIGNKEY.
+     * default: CASCADE. 
      * other: SET NULL; RESTRICT; NO ACTION
      *
      * @return
      */
     public String onDelete() default "CASCADE";
+
+    public static enum IndexType
+    {
+        FOREIGNKEY,
+        UNIQUE,
+        INDEX;
+    }
 }

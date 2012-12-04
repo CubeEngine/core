@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
+import java.lang.reflect.Field;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -83,11 +84,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         super.initialize();
         try
         {
-            this.database.storeStatement(User.class, "get_by_name", this.database.getQueryBuilder().select().wildcard().from(this.table).where().field("player").is(ComponentBuilder.EQUAL).value().end().end());
+            this.database.storeStatement(User.class, "get_by_name", this.database.getQueryBuilder().select().wildcard().from(this.tableName).where().field("player").is(ComponentBuilder.EQUAL).value().end().end());
 
-            this.database.storeStatement(User.class, "cleanup", database.getQueryBuilder().select(dbKey).from(table).where().field("lastseen").is(LESS).value().and().field("nogc").is(EQUAL).value(false).end().end());
+            this.database.storeStatement(User.class, "cleanup", database.getQueryBuilder().select(dbKey).from(tableName).where().field("lastseen").is(LESS).value().and().field("nogc").is(EQUAL).value(false).end().end());
 
-            this.database.storeStatement(User.class, "clearpw", database.getQueryBuilder().update(table).set("passwd").end().end());
+            this.database.storeStatement(User.class, "clearpw", database.getQueryBuilder().update(tableName).set("passwd").end().end());
         }
         catch (SQLException e)
         {
@@ -116,14 +117,14 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
             {
                 database.execute(
                         database.getQueryBuilder().
-                            alterTable(table).
+                            alterTable(tableName).
                             add("nogc", AttrType.BOOLEAN).
                             defaultValue("false").
                             end().
                             end());
                 database.execute(
                         database.getQueryBuilder().
-                            alterTable(table).
+                            alterTable(tableName).
                             add("lastseen", AttrType.TIMESTAMP).
                             defaultValue().value().
                             end().
@@ -137,7 +138,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
             {
                 database.execute(
                         database.getQueryBuilder().
-                            alterTable(table).
+                            alterTable(tableName).
                             addUniques("player").
                             end().
                             end());
@@ -160,8 +161,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
             ArrayList<Object> values = new ArrayList<Object>();
             if (resulsSet.next())
             {
-                values.add(resulsSet.getObject(this.dbKey));
-                for (String name : this.dbAttributes)
+                for (String name : this.allFields)
                 {
                     values.add(resulsSet.getObject(name));
                 }

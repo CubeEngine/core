@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,13 +27,13 @@ public class MailManager extends BasicStorage<Mail>
     }
 
     @Override
-    protected void initialize()
+    public void initialize()
     {
         try
         {
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.storeStatement(modelClass, "getallByUser", builder.select().wildcard().from(this.table).where().field("userId").is(EQUAL).value().end().end());
+            this.database.storeStatement(modelClass, "getallByUser", builder.select().wildcard().from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
         }
         catch (SQLException e)
         {
@@ -122,13 +123,11 @@ public class MailManager extends BasicStorage<Mail>
 
             while (resulsSet.next())
             {
-                ArrayList<Object> values = new ArrayList<Object>();
-                values.add(resulsSet.getObject(this.dbKey));
-                for (String name : this.dbAttributes)
+                Mail loadedModel = this.modelClass.newInstance();
+                for (Field field : this.fieldNames.keySet())
                 {
-                    values.add(resulsSet.getObject(name));
+                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
                 }
-                Mail loadedModel = this.modelConstructor.newInstance(values);
                 loadedModels.add(loadedModel);
             }
         }

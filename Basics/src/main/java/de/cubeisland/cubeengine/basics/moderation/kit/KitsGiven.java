@@ -1,20 +1,20 @@
 package de.cubeisland.cubeengine.basics.moderation.kit;
 
-import de.cubeisland.cubeengine.core.storage.Model;
+import de.cubeisland.cubeengine.core.storage.TwoKeyModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.CompositeKey;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.ForeignKey;
-import java.util.List;
+import de.cubeisland.cubeengine.core.storage.database.Index;
+import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
+import de.cubeisland.cubeengine.core.util.Pair;
 
-@Entity(
-        name = "kitsgiven", 
-        compositeKeys = @CompositeKey({"userId", "kitName"}))
-public class KitsGiven implements Model<Integer>
+@TwoKeyEntity(
+tableName = "kitsgiven",
+              firstPrimaryKey = "userId",
+              secondPrimaryKey = "kitName")
+public class KitsGiven implements TwoKeyModel<Integer, String>
 {
-    @ForeignKey(table = "user", field = "key")
+    // @ForeignKey(table = "user", field = "key")
+    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public int userId;
     @Attribute(type = AttrType.VARCHAR, length = 50)
@@ -22,21 +22,16 @@ public class KitsGiven implements Model<Integer>
     @Attribute(type = AttrType.INT, unsigned = true)
     public int amount;
 
-    @DatabaseConstructor
-    public KitsGiven(List<Object> args)
+    @Override
+    public Pair<Integer, String> getKey()
     {
-        throw new UnsupportedOperationException("Not supported yet");
+        return new Pair<Integer, String>(userId, kitName);
     }
 
     @Override
-    public Integer getKey()
+    public void setKey(Pair<Integer, String> key)
     {
-        throw new UnsupportedOperationException("Not supported!");
-    }
-
-    @Override
-    public void setKey(Integer key)
-    {
-        throw new UnsupportedOperationException("Not supported!");
+        this.userId = key.getLeft();
+        this.kitName = key.getRight();
     }
 }

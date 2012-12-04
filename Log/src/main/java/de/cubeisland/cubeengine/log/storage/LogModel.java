@@ -4,23 +4,19 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
+import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.sql.Timestamp;
-import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
-@Entity(name = "logs")
+@SingleIntKeyEntity(tableName = "logs", primaryKey = "key")
 public class LogModel implements Model<Integer>
 {
 //TODO trim chatlog and dont log if empty then
-    @PrimaryKey
-    @Attribute(type = AttrType.INT, unsigned = true, ai = true)
+    @Attribute(type = AttrType.INT, unsigned = true)
     public int key;
     @Attribute(type = AttrType.TINYINT)
     public int type;
@@ -36,7 +32,7 @@ public class LogModel implements Model<Integer>
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
     public int causeID;
-    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
+    @Attribute(type = AttrType.INT, notnull = false)
     public Integer worldID;
     @Attribute(type = AttrType.INT, notnull = false)
     public Integer x;
@@ -147,25 +143,6 @@ public class LogModel implements Model<Integer>
             this.y = loc.getBlockY();
             this.z = loc.getBlockZ();
         }
-    }
-
-    @DatabaseConstructor
-    public LogModel(List<Object> args) throws ConversionException
-    {
-        this.key = Integer.valueOf(args.get(0).toString());
-        this.type = Integer.valueOf(args.get(1).toString());
-        this.timestamp = (Timestamp) args.get(2);
-        this.causeID = Integer.valueOf(args.get(3).toString());
-        this.x = Integer.valueOf(args.get(4).toString());
-        this.y = Integer.valueOf(args.get(5).toString());
-        this.z = Integer.valueOf(args.get(6).toString());
-
-        this.newBlockOrLines = args.get(7).toString();
-        this.oldBlockOrLines = args.get(8).toString();
-
-        this.amountOrInteractData = Integer.valueOf(args.get(9).toString());
-        this.containerTypeOrKilledId = Integer.valueOf(args.get(10).toString());
-        this.itemNameOrChat = args.get(11).toString();
     }
 
     /**

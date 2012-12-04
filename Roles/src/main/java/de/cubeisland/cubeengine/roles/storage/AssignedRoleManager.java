@@ -23,14 +23,14 @@ public class AssignedRoleManager extends BasicStorage<AssignedRole>
     }
 
     @Override
-    protected void initialize()
+    public void initialize()
     {
         try
         {
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getallByUser",
-                    builder.select().cols("worldID","roleName").from(this.table).where().field("userId").is(EQUAL).value().end().end());
+                    builder.select().cols("worldID", "roleName").from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
         }
         catch (SQLException e)
         {

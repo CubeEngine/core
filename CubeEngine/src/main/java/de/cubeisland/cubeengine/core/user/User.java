@@ -12,8 +12,9 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
+import de.cubeisland.cubeengine.core.storage.database.Index;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
+import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
@@ -40,17 +41,18 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+
 /**
  * A CubeEngine User (can exist offline too).
  */
-@Entity(name = "user")
+@SingleIntKeyEntity(tableName = "user",primaryKey="key")
 public class User extends UserBase implements LinkingModel<Integer>
 {
     public static int NO_ID = -1;
-    @PrimaryKey
-    @Attribute(type = AttrType.INT, unsigned = true, ai = true)
+    @Attribute(type = AttrType.INT, unsigned = true)
     public int key;
-    @Attribute(type = AttrType.VARCHAR, length = 16, unique = true)
+    @Index(UNIQUE)
+    @Attribute(type = AttrType.VARCHAR, length = 16)
     public final String player;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean nogc = false;

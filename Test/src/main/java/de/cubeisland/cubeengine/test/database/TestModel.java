@@ -3,17 +3,13 @@ package de.cubeisland.cubeengine.test.database;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
+import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 import java.sql.Date;
-import java.util.List;
 
-@Entity(name = "Orders")
+@SingleIntKeyEntity(tableName = "orders", primaryKey = "id")
 public class TestModel implements Model<Integer>
 {
-    @PrimaryKey
-    @Attribute(type = AttrType.INT, unsigned = true, ai = true)
+    @Attribute(type = AttrType.INT)
     public int id;
     @Attribute(type = AttrType.DATE)
     public Date orderDate;
@@ -22,15 +18,10 @@ public class TestModel implements Model<Integer>
     @Attribute(type = AttrType.VARCHAR, length = 16)
     public String customer;
 
-    @DatabaseConstructor
-    public TestModel(List<Object> args)
+    public TestModel()
     {
-        this.id = Integer.valueOf(args.get(0).toString());
-        this.orderDate = (Date)args.get(1);
-        this.orderPrice = Double.valueOf(args.get(2).toString());
-        this.customer = (String)args.get(3);
     }
-
+    
     public TestModel(Date orderDate, double orderPrice, String customer)
     {
         this.id = -1;

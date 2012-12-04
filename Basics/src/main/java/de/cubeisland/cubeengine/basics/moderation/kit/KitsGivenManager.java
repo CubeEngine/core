@@ -1,14 +1,14 @@
 package de.cubeisland.cubeengine.basics.moderation.kit;
 
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class KitsGivenManager extends BasicStorage<KitsGiven>
+public class KitsGivenManager extends TwoKeyStorage<Integer, String, KitsGiven>
 {
     private static final int REVISION = 1;
 
@@ -20,7 +20,7 @@ public class KitsGivenManager extends BasicStorage<KitsGiven>
     }
 
     @Override
-    protected void initialize()
+    public void initialize()
     {
         try
         {
@@ -28,13 +28,13 @@ public class KitsGivenManager extends BasicStorage<KitsGiven>
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getLimitForUser",
                     builder.select().cols("amount").
-                    from(this.table).
-                    where().field("userId").isEqual().value()
-                    .and().field("kitName").isEqual().value().end().end());
-            
-            this.database.storeStatement(modelClass, "mergeLimitForUser", //TODO this cannot work i have to allow multiple keys in models
-                    builder.merge().into(this.table).
-                    cols(this.dbAttributes.toArray(new String[this.dbAttributes.size()])).
+                    from(this.tableName).
+                    where().field(this.s_dbKey).isEqual().value()
+                    .and().field(this.s_dbKey).isEqual().value().end().end());
+
+            this.database.storeStatement(modelClass, "mergeLimitForUser",
+                    builder.merge().into(this.tableName).
+                    cols(this.allFields).
                     updateCols("amount").end().end());
         }
         catch (SQLException e)
@@ -47,7 +47,7 @@ public class KitsGivenManager extends BasicStorage<KitsGiven>
     {
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", user.key);
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getLimitForUser", user.key, name);
             if (resulsSet.next())
             {
                 Integer amount = resulsSet.getInt("amount");

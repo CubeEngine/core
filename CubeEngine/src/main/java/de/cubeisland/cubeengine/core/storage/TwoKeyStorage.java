@@ -3,30 +3,28 @@ package de.cubeisland.cubeengine.core.storage;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
+import de.cubeisland.cubeengine.core.util.Pair;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * Storage-Implementation for single Integer-Key-Models
- */
-public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Integer, M, SingleIntKeyEntity>
+public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> extends AbstractStorage<Pair<Key_f, Key_s>, M, TwoKeyEntity>
 {
-    protected String dbKey = null;
-    protected boolean keyIsAi = false;
-    private boolean storeAsync = false;
+    protected Field key = null;
+    protected String f_dbKey = null;
+    protected String s_dbKey = null;
 
-    public BasicStorage(Database database, Class<M> model, int revision)
+    public TwoKeyStorage(Database database, Class<M> model, int revision)
     {
-        super(database, model, SingleIntKeyEntity.class, revision);
+        super(database, model, TwoKeyEntity.class, revision);
         this.tableName = this.storageType.tableName();
-        this.dbKey = this.storageType.primaryKey();
-        this.keyIsAi = this.storageType.autoIncrement();
+        this.f_dbKey = this.storageType.firstPrimaryKey();
+        this.s_dbKey = this.storageType.secondPrimaryKey();
     }
 
     @Override
@@ -40,14 +38,7 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
         {
             Attribute attribute = this.attributeAnnotations.get(field);
             String dbName = this.fieldNames.get(field);
-            if (this.dbKey.equals(dbName))
-            {
-                tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), this.keyIsAi);
-            }
-            else
-            {
-                tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned());
-            }
+            tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned());
             //TODO default value
             //TODO enum
             //for enum i can get the possible enum from field.getType().getEnumConstants();
@@ -68,13 +59,9 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
                 }
             }
         }
-        tbuilder.primaryKey(this.dbKey).endFields();
+        tbuilder.primaryKey(this.f_dbKey, this.s_dbKey).endFields();
 
         tbuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
-        if (this.keyIsAi)
-        {
-            tbuilder.autoIncrement(1);
-        }
         try
         {
             this.database.execute(tbuilder.end().end());
@@ -94,39 +81,31 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
     {
         try
         {
-            String[] fields = new String[this.fieldNames.size() - 1];
+            String[] fields = new String[this.fieldNames.size() - 2];
             int i = 0;
             for (String fieldName : this.fieldNames.values())
             {
-                if (!fieldName.equals(this.dbKey))
+                if (!(fieldName.equals(this.f_dbKey) || fieldName.equals(this.s_dbKey)))
                 {
                     fields[i++] = fieldName;
                 }
             }
             QueryBuilder builder = this.database.getQueryBuilder();
-            if (this.keyIsAi)
-            {
-                builder.insert()
-                        .into(this.tableName)
-                        .cols(fields)
-                        .end();
-            }
-            else
-            {
-                builder.insert()
-                        .into(this.tableName)
-                        .cols(this.allFields)
-                        .end();
-            }
-            this.database.storeStatement(this.modelClass, "store", builder.end());
 
-            this.database.storeStatement(this.modelClass, "merge", builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
+            this.database.storeStatement(this.modelClass, "store",
+                    builder.insert().into(this.tableName).cols(this.allFields).end().end());
 
-            this.database.storeStatement(this.modelClass, "get", builder.select(this.allFields).from(this.tableName).where().field(this.dbKey).isEqual().value().end().end());
+            this.database.storeStatement(this.modelClass, "merge",
+                    builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
 
-            this.database.storeStatement(this.modelClass, "update", builder.update(this.tableName).set(fields).where().field(this.dbKey).isEqual().value().end().end());
+            this.database.storeStatement(this.modelClass, "get",
+                    builder.select(allFields).from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().end().end());
 
-            this.database.storeStatement(this.modelClass, "delete", builder.delete().from(this.tableName).where().field(this.dbKey).isEqual().value().limit(1).end().end());
+            this.database.storeStatement(this.modelClass, "update",
+                    builder.update(this.tableName).set(fields).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().end().end());
+
+            this.database.storeStatement(this.modelClass, "delete",
+                    builder.delete().from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().limit(1).end().end());
         }
         catch (SQLException ex)
         {
@@ -135,12 +114,12 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
     }
 
     @Override
-    public M get(Integer key)
+    public M get(Pair<Key_f, Key_s> key)
     {
         M loadedModel = null;
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "get", key);
+            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "get", key.getLeft(), key.getRight());
             if (resulsSet.next())
             {
                 if (this.modelConstructor == null)
@@ -181,27 +160,17 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
             ArrayList<Object> values = new ArrayList<Object>();
             for (String name : this.reverseFieldNames.keySet())
             {
-                if (!name.equals(this.dbKey) || !this.keyIsAi)
-                {
-                    values.add(this.reverseFieldNames.get(name).get(model));
-                }
+                values.add(this.reverseFieldNames.get(name).get(model));
             }
-            if (this.keyIsAi && !storeAsync)
+            if (async)
             {
-                // This is never async
-                model.setKey(this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
+                this.database.asyncPreparedExecute(this.modelClass, "store", values.toArray());
             }
             else
             {
-                if (async)
-                {
-                    this.database.asyncPreparedExecute(this.modelClass, "store", values.toArray());
-                }
-                else
-                {
-                    this.database.preparedExecute(this.modelClass, "store", values.toArray());
-                }
+                this.database.preparedExecute(this.modelClass, "store", values.toArray());
             }
+
             for (Callback cb : this.createCallbacks)
             {
                 cb.call(model.getKey());
@@ -225,12 +194,13 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
             ArrayList<Object> values = new ArrayList<Object>();
             for (String name : this.reverseFieldNames.keySet())
             {
-                if (!name.equals(this.dbKey))
+                if (!name.equals(this.f_dbKey) || !name.equals(this.s_dbKey))
                 {
                     values.add(this.reverseFieldNames.get(name).get(model));
                 }
             }
-            values.add(this.reverseFieldNames.get(this.dbKey).get(model));
+            values.add(this.reverseFieldNames.get(this.f_dbKey).get(model));
+            values.add(this.reverseFieldNames.get(this.s_dbKey).get(model));
             if (async)
             {
                 this.database.asyncPreparedExecute(this.modelClass, "update", values.toArray());
@@ -288,17 +258,17 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
     }
 
     @Override
-    public void deleteByKey(Integer key, boolean async)
+    public void deleteByKey(Pair<Key_f, Key_s> key, boolean async)
     {
         try
         {
             if (async)
             {
-                this.database.asyncPreparedExecute(this.modelClass, "delete", key);
+                this.database.asyncPreparedExecute(this.modelClass, "delete", key.getLeft(), key.getRight());
             }
             else
             {
-                this.database.preparedExecute(this.modelClass, "delete", key);
+                this.database.preparedExecute(this.modelClass, "delete", key.getLeft(), key.getRight());
             }
             for (Callback cb : this.deleteCallbacks)
             {
@@ -309,10 +279,5 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
         {
             throw new IllegalStateException("Error while deleting from Database", ex);
         }
-    }
-
-    public void doStoreAsync()
-    {
-        this.storeAsync = true;
     }
 }

@@ -3,32 +3,23 @@ package de.cubeisland.cubeengine.core.storage.world;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.Entity;
-import de.cubeisland.cubeengine.core.storage.database.PrimaryKey;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import java.util.List;
+import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 import org.bukkit.World;
 
-@Entity(name = "worlds")
+@SingleIntKeyEntity(tableName = "worlds", primaryKey = "key")
 public class WorldModel implements Model<Integer>
 {
-    @PrimaryKey
-    @Attribute(type = AttrType.INT, unsigned = true, ai = true)
+    @Attribute(type = AttrType.INT)
     public int key = -1;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String worldName;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String worldUUID;
 
-    @DatabaseConstructor
-    public WorldModel(List<Object> args) throws ConversionException
+    public WorldModel()
     {
-        this.key = Integer.valueOf(args.get(0).toString());
-        this.worldName = args.get(1).toString();
-        this.worldUUID = args.get(2).toString();
     }
-
+    
     public WorldModel(World world)
     {
         this.worldName = world.getName();

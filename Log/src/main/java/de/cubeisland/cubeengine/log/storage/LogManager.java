@@ -14,7 +14,7 @@ public class LogManager extends BasicStorage<LogModel>
     {
         super(database, LogModel.class, REVISION);
         this.initialize();
-        this.notAssignKey();
+        this.doStoreAsync();
     }
 
     public void logKillLog(int killer, Location loc, int killed)

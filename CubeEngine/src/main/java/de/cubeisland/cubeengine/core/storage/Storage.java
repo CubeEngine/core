@@ -5,68 +5,74 @@ import de.cubeisland.cubeengine.core.util.Callback;
 import java.util.Collection;
 
 /**
- * This interface provides basic access-methods for accessing the model V
- *
- * @param <V>
+ * This interface provides basic access-methods for accessing the model V with a Key K
+ * 
+ * @param <K> The Key of the Model M
+ * @param <M> The Model of this Storage
  */
-public interface Storage<K, V extends Model<K>>
+public interface Storage<K, M extends Model<K>>
 {
+    /**
+     * Initialize the Storage.
+     */
+    public void initialize();
+    
     /**
      * Returns the model by key
      *
      * @param key the key
      * @return the model
      */
-    public V get(K key);
+    public M get(K key);
 
     /**
      * Returns all the models
      *
      * @return the models
      */
-    public Collection<V> getAll();
+    public Collection<M> getAll();
 
     /**
      * Stores the model into the DataBase
      *
      * @param model the model to store
      */
-    public void store(V model);
+    public void store(M model);
 
     /**
      * Stores the model into the DataBase asynchonous
      *
      * @param model the model to store
      */
-    public void store(V model, boolean async);
+    public void store(M model, boolean async);
 
     /**
      * Updates the model in the DataBase
      *
      * @param model the model to update
      */
-    public void update(V model);
+    public void update(M model);
 
     /**
      * Updates the model in the DataBase asynchonous
      *
      * @param model the model to update
      */
-    public void update(V model, boolean async);
+    public void update(M model, boolean async);
 
     /**
      * Merges the model into the DataBase
      *
      * @param model the model to merge in
      */
-    public void merge(V model);
+    public void merge(M model);
 
     /**
      * Merges the model into the DataBase asynchonous
      *
      * @param model the model to merge in
      */
-    public void merge(V model, boolean async);
+    public void merge(M model, boolean async);
 
     /**
      * Deletes the model from DataBase
@@ -74,7 +80,7 @@ public interface Storage<K, V extends Model<K>>
      * @param model the model to delete
      * @return whether the model got deleted
      */
-    public void delete(V model);
+    public void delete(M model);
 
     /**
      * Deletes the model from DataBase asynchonous
@@ -82,7 +88,7 @@ public interface Storage<K, V extends Model<K>>
      * @param model the model to delete
      * @return whether the model got deleted
      */
-    public void delete(V model, boolean async);
+    public void delete(M model, boolean async);
 
     /**
      * Deletes the model by ID from DataBase
