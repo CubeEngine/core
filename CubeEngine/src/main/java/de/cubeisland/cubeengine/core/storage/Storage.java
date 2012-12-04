@@ -9,7 +9,7 @@ import java.util.Collection;
  *
  * @param <V>
  */
-public interface Storage<V extends Model>
+public interface Storage<K, V extends Model<K>>
 {
     /**
      * Returns the model by key
@@ -17,7 +17,7 @@ public interface Storage<V extends Model>
      * @param key the key
      * @return the model
      */
-    public V get(Object key);
+    public V get(K key);
 
     /**
      * Returns all the models
@@ -90,7 +90,7 @@ public interface Storage<V extends Model>
      * @param id the id to delete
      * @return whether the model got deleted
      */
-    public void deleteByKey(Object key);
+    public void deleteByKey(K key);
 
     /**
      * Deletes the model by ID from DataBase asynchonous
@@ -98,7 +98,7 @@ public interface Storage<V extends Model>
      * @param id the id to delete
      * @return whether the model got deleted
      */
-    public void deleteByKey(Object key, boolean async);
+    public void deleteByKey(K key, boolean async);
 
     /**
      * Clears the Table

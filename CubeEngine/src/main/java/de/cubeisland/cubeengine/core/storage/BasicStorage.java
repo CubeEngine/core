@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Basic Storage-implementation (1 Key only OR 1 composite-key but methods will not work)
+ * Basic Storage-implementation (1 Int-Key only)
  */
-public class BasicStorage<V extends Model> implements Storage<V>
+public class BasicStorage<M extends Model<Integer>> implements Storage<Integer, M>
 {
     protected static TableManager tableManager = null; //Init in TableManager.class
     protected final Database database;
-    protected final Class<V> modelClass;
-    protected Constructor<V> modelConstructor = null;
+    protected final Class<M> modelClass;
+    protected Constructor<M> modelConstructor = null;
     protected final String table;
     protected Collection<Callback> createCallbacks = new ArrayList<Callback>();
     protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
@@ -42,7 +42,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
     private int revision;
     private boolean initialized = false;
 
-    public BasicStorage(Database database, Class<V> model, int revision)
+    public BasicStorage(Database database, Class<M> model, int revision)
     {
         Entity entity = model.getAnnotation(Entity.class);
         if (entity == null)
@@ -90,6 +90,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
         TableBuilder tbuilder = builder.createTable(this.table, true).beginFields();
         for (Field field : this.modelClass.getFields())
         {
+            //for enum i can get the possible enum from field.getType().getEnumConstants();
             attribute = field.getAnnotation(Attribute.class);
             if (attribute != null)
             {
@@ -236,9 +237,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public V get(Object key)
+    public M get(Integer key)
     {
-        V loadedModel = null;
+        M loadedModel = null;
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "get", key);
@@ -265,9 +266,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public Collection<V> getAll()
+    public Collection<M> getAll()
     {
-        Collection<V> loadedModels = new ArrayList<V>();
+        Collection<M> loadedModels = new ArrayList<M>();
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
@@ -280,7 +281,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 {
                     values.add(resulsSet.getObject(name));
                 }
-                V loadedModel = this.modelConstructor.newInstance(values);
+                M loadedModel = this.modelConstructor.newInstance(values);
                 loadedModels.add(loadedModel);
             }
         }
@@ -296,13 +297,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public void store(final V model)
+    public void store(final M model)
     {
         this.store(model, true);
     }
 
     @Override
-    public void store(final V model, boolean async)
+    public void store(final M model, boolean async)
     {
         try
         {
@@ -347,13 +348,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public void update(final V model)
+    public void update(final M model)
     {
         this.update(model, true);
     }
 
     @Override
-    public void update(V model, boolean async)
+    public void update(M model, boolean async)
     {
         try
         {
@@ -388,13 +389,13 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public void merge(final V model)
+    public void merge(final M model)
     {
         this.merge(model, true);
     }
 
     @Override
-    public void merge(V model, boolean async)
+    public void merge(M model, boolean async)
     {
         try
         {
@@ -430,25 +431,25 @@ public class BasicStorage<V extends Model> implements Storage<V>
     }
 
     @Override
-    public void delete(V model)
+    public void delete(M model)
     {
         this.delete(model, true);
     }
 
     @Override
-    public void delete(V model, boolean async)
+    public void delete(M model, boolean async)
     {
         this.deleteByKey(model.getKey(), async);
     }
 
     @Override
-    public void deleteByKey(Object key)
+    public void deleteByKey(Integer key)
     {
         this.deleteByKey(key, true);
     }
 
     @Override
-    public void deleteByKey(Object key, boolean async)
+    public void deleteByKey(Integer key, boolean async)
     {
         try
         {
