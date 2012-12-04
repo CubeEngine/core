@@ -67,7 +67,7 @@ public class YamlCodec extends ConfigurationCodec
                 || s.startsWith("{") || s.startsWith("}") || s.startsWith("|")
                 || s.startsWith(">") || s.startsWith("!")|| s.startsWith("%")
                 || s.endsWith(":") || s.startsWith("- ") || s.startsWith(",")
-                || s.matches("[0-9]+:[0-9]+"));
+                || s.matches("[0-9]+:[0-9]+")) || s.isEmpty();
     }
 
     @Override
