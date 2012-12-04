@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.permission;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -24,14 +25,12 @@ public class PermissionManager
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
-    private final Thread mainThread;
 
     public PermissionManager(Core core)
     {
         this.pm = ((BukkitCore)core).getServer().getPluginManager();
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
-        this.mainThread = Thread.currentThread();
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }
@@ -58,7 +57,7 @@ public class PermissionManager
      */
     public void registerPermission(Module module, String perm, PermDefault permDefault)
     {
-        if (Thread.currentThread() != this.mainThread)
+        if (!CubeEngine.isMainThread())
         {
             throw new IllegalStateException("Permissions may only be registered from the main thread!");
         }

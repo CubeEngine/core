@@ -12,9 +12,8 @@ import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
+
 import java.util.logging.Logger;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
 
 /**
  * The CubeEngine provides static method to access all important Manager and the Core.
@@ -22,6 +21,7 @@ import org.bukkit.Server;
 public final class CubeEngine
 {
     private static Core core = null;
+    private static Thread mainThread;
 
     /**
      * Standard Constructor
@@ -32,7 +32,7 @@ public final class CubeEngine
     /**
      * Checks whether the CubeEngine class has been initialized.
      *
-     * @return true if the class is initilized
+     * @return true if the class is initialized
      */
     public static boolean isInitialized()
     {
@@ -46,13 +46,14 @@ public final class CubeEngine
      */
     public static void initialize(Core coreInstance)
     {
-        if (core == null)
+        if (!isInitialized())
         {
             if (coreInstance == null)
             {
                 throw new IllegalArgumentException("The core must not be null!");
             }
             core = coreInstance;
+            mainThread = Thread.currentThread();
         }
     }
 
@@ -62,6 +63,12 @@ public final class CubeEngine
     public static void clean()
     {
         core = null;
+        mainThread = null;
+    }
+
+    public static boolean isMainThread()
+    {
+        return mainThread == Thread.currentThread();
     }
 
     /**

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
@@ -23,7 +24,6 @@ public class MySQLDatabase extends AbstractDatabase
     private final MysqlDataSource ds;
     private final String            tablePrefix;
     private final MySQLQueryBuilder queryBuilder;
-    private final Thread creationThread = Thread.currentThread();
     private Connection connection;
 
     public MySQLDatabase(DatabaseConfiguration configuration) throws SQLException
@@ -73,7 +73,7 @@ public class MySQLDatabase extends AbstractDatabase
     @Override
     public QueryBuilder getQueryBuilder()
     {
-        if (Thread.currentThread() != this.creationThread)
+        if (!CubeEngine.isMainThread())
         {
             throw new IllegalStateException("This method may only be called from the thread the database was created in!");
         }
