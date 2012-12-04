@@ -20,7 +20,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * The powertool command allows binding commands/chatmakros to a specific item
+ * The powertool command allows binding commands/chatmacros to a specific item
  * using NBT-Data. /powertool
  */
 public class PowerToolCommand extends ContainerCommand
@@ -31,48 +31,98 @@ public class PowerToolCommand extends ContainerCommand
     }
 
     @Alias(names = "ptc")
-    @Command(desc = "Removes all command from your powertool", flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
+    @Command(
+    desc = "Removes all command from your powertool",
+    flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
     public void clear(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo more power for you!");
         if (context.hasFlag("a"))
         {
+            boolean cleared = false;
             for (ItemStack item : sender.getInventory().getContents())
             {
-                NBTTagCompound tag = this.getTag(item, false);
-                if (tag == null)
+                if (this.clear(context, item, true))
                 {
-                    continue;
-                }
-                tag.set("powerToolCommands", new NBTTagList());
-                String nameToRemove = BukkitUtils.getItemStackLore(item).get(0);
-                if (nameToRemove == null || nameToRemove.startsWith("§cPowertool:"))
-                {
-                    BukkitUtils.renameItemStack(sender.getItemInHand(), true, (String[]) null);
+                    cleared = true;
                 }
             }
-            context.sendMessage("basics", "&aRemoved all commands bound to item in your inventory!");
+            if (cleared)
+            {
+                context.sendMessage("basics", "&aRemoved all commands bound to items in your inventory!");
+            }
+            else
+            {
+
+                context.sendMessage("basics", "&eThere are no commands bounds to items in your inventory!");
+            }
         }
         else
         {
-            NBTTagCompound tag = this.getTag(sender.getItemInHand(), true);
-            tag.set("powerToolCommands", new NBTTagList());
-            context.sendMessage("basics", "&aRemoved all commands bound to this item!");
-            String nameToRemove = BukkitUtils.getItemStackName(sender.getItemInHand());
-            if (nameToRemove == null || nameToRemove.startsWith("§cPowerTool:"))
+            if (sender.getItemInHand().getTypeId() == 0)
             {
-                BukkitUtils.renameItemStack(sender.getItemInHand(), true, (String[]) null);
+                context.sendMessage("basics", "&eYou are not holding any item in your hand.");
+                return;
+            }
+            if (this.clear(context, sender.getItemInHand(), false))
+            {
+                context.sendMessage("basics", "&aRemoved all commands bound to this item!");
             }
         }
     }
 
+    private boolean clear(CommandContext context, ItemStack item, boolean noMessage)
+    {
+        NBTTagCompound tag = this.getTag(item, false);
+        if (!checkForTag(context, item, noMessage))
+        {
+            return false;
+        }
+        tag.remove("powerToolCommands");
+        this.removeLore(item);
+        return true;
+    }
+
+    private boolean checkForTag(CommandContext context, ItemStack item, boolean noMessage)
+    {
+        return this.checkForTag(context, this.getTag(item, false), noMessage);
+    }
+
+    private boolean checkForTag(CommandContext context, NBTTagCompound tag, boolean noMessage)
+    {
+        if (tag == null || tag.getList("powerToolCommands") == null || tag.getList("powerToolCommands").size() == 0)
+        {
+            if (!noMessage)
+            {
+                context.sendMessage("basics", "&cNo commands saved on this item!");
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void removeLore(ItemStack item)
+    {
+        String nameToRemove = BukkitUtils.getItemStackLore(item).get(0);
+        if (nameToRemove == null || nameToRemove.startsWith("§cPowertool:"))
+        {
+            BukkitUtils.renameItemStack(item, true, (String[]) null);
+        }
+    }
+
     @Alias(names = "ptr")
-    @Command(names= {"remove","del","delete","rm"},
-            desc = "Removes a command from your powertool", 
-            flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
+    @Command(
+    names = { "remove", "del", "delete", "rm" },
+    desc = "Removes a command from your powertool",
+    flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
     public void remove(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo more power for you!");
+        if (sender.getItemInHand().getTypeId() == 0)
+        {
+            context.sendMessage("basics", "&eYou are not holding any item in your hand.");
+            return;
+        }
         if (context.hasIndexed(0))
         {
             String cmd = context.getStrings(0);
@@ -80,59 +130,70 @@ public class PowerToolCommand extends ContainerCommand
             {
                 cmd = "chat:" + cmd;
             }
-            NBTTagCompound tag = this.getTag(sender.getItemInHand(), true);
-            NBTTagList ptVals = (NBTTagList)tag.get("powerToolCommands");
-            if (ptVals != null && ptVals.size() != 0)
-            {
-                NBTTagList newVals = new NBTTagList();
-                for (int i = 0; i < ptVals.size(); i++)
-                {
-                    if (((NBTTagString)ptVals.get(i)).data.equalsIgnoreCase(cmd))
-                    {
-                        context.sendMessage("basics", "&aRemoved the command: &e%s &abound to this item!", cmd);
-                    }
-                    else
-                    {
-                        newVals.add(ptVals.get(i));
-                    }
-                }
-                tag.set("powerToolCommands", newVals);
-                this.printList(sender, newVals, false);
-                this.rename(sender, newVals);
-            }
-            else
-            {
-                context.sendMessage("basics", "&cNo commands saved on this item!");
-            }
+            this.remove(context, sender.getItemInHand(), cmd);
         }
         else
         {
-            NBTTagCompound tag = this.getTag(sender.getItemInHand(), true);
-            NBTTagList ptVals = (NBTTagList)tag.get("powerToolCommands");
-            if (ptVals != null && ptVals.size() != 0)
-            {
-                NBTTagList newVals = new NBTTagList();
-                for (int i = 0; i < ptVals.size() - 1; i++)
-                {
-                    newVals.add(ptVals.get(i));
-                }
-                tag.set("powerToolCommands", newVals);
-                context.sendMessage("basics", "&aRemoved the last command bound to this item!");
-                this.printList(sender, newVals, false);
-                this.rename(sender, newVals);
-            }
-            else
-            {
-                context.sendMessage("basics", "&cNo commands saved on this item!");
-            }
+            this.remove(context, sender.getItemInHand(), null);
         }
     }
 
+    private void remove(CommandContext context, ItemStack item, String cmd)
+    {
+        NBTTagCompound tag = this.getTag(item, true);
+        if (this.checkForTag(context, tag, false))
+        {
+            return;
+        }
+        NBTTagList ptVals = (NBTTagList) tag.get("powerToolCommands");
+        NBTTagList newVals = new NBTTagList();
+        boolean removed = false;
+        for (int i = 0; i < ptVals.size() - 1; i++)
+        {
+            if (cmd == null)
+            {
+                newVals.add(ptVals.get(i));
+            }
+            else
+            {
+                if (((NBTTagString) ptVals.get(i)).data.equalsIgnoreCase(cmd))
+                {
+                    removed = true;
+                }
+                else
+                {
+                    newVals.add(ptVals.get(i));
+                }
+            }
+        }
+        if (cmd == null)
+        {
+            context.sendMessage("basics", "&aRemoved the last command bound to this item!");
+        }
+        else
+        {
+            if (removed)
+            {
+                context.sendMessage("basics", "&aRemoved the command: &e%s &abound to this item!", cmd);
+            }
+            else
+            {
+                context.sendMessage("basics", "&cThe command &e%s &cwas not found on this item!", cmd);
+                return;
+            }
+        }
+        tag.set("powerToolCommands", newVals);
+        this.printList(context, newVals, false);
+        this.rename(item, newVals);
+    }
+
     @Alias(names = "pta")
-    @Command(desc = "Adds a command to your powertool", flags = {
+    @Command(
+    desc = "Adds a command to your powertool", 
+    flags = {
         @Flag(longName = "chat", name = "c"),
-        @Flag(longName = "replace", name = "r")
-    }, usage = "<commandstring>", min = 1)
+        @Flag(longName = "replace", name = "r") }, 
+    usage = "<commandstring>", min = 1)
     public void add(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
@@ -145,11 +206,33 @@ public class PowerToolCommand extends ContainerCommand
         {
             cmd = "chat:" + cmd;
         }
-        this.addPowerTool(sender, cmd, !context.hasFlag("r"));
+        this.addPowerTool(context, sender, cmd, !context.hasFlag("r"));
+    }
+
+    private void addPowerTool(CommandContext context, User user, String command, boolean add)
+    {
+        NBTTagCompound tag = this.getTag(user.getItemInHand(), true);
+        NBTTagList ptVals;
+        if (add)
+        {
+            ptVals = (NBTTagList) tag.get("powerToolCommands");
+            if (ptVals == null)
+            {
+                tag.set("powerToolCommands", ptVals = new NBTTagList());
+            }
+        }
+        else
+        {
+            tag.set("powerToolCommands", ptVals = new NBTTagList());
+        }
+        ptVals.add(new NBTTagString(command, command));
+        this.printList(context, ptVals, true);
+        this.rename(user.getItemInHand(), ptVals);
     }
 
     @Alias(names = "ptl")
-    @Command(desc = "Lists your powertool-bindings.", flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Lists your powertool-bindings.", 
+    flags = @Flag(longName = "all", name = "a"))
     public void list(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
@@ -158,12 +241,7 @@ public class PowerToolCommand extends ContainerCommand
             for (ItemStack item : sender.getInventory().getContents())
             {
                 NBTTagCompound tag = this.getTag(item, true);
-                if (tag == null)
-                {
-                    continue;
-                }
-                NBTTagList list = (NBTTagList)tag.get("powerToolCommands");
-                if (list == null || list.size() == 0)
+                if (this.checkForTag(context, tag, true))
                 {
                     continue;
                 }
@@ -176,7 +254,7 @@ public class PowerToolCommand extends ContainerCommand
                 {
                     sender.sendMessage("&6" + itemName + "&6:");
                 }
-                this.printList(sender, list, false);
+                this.printList(context, tag.getList("powerToolCommands"), false);
             }
         }
         else
@@ -185,9 +263,12 @@ public class PowerToolCommand extends ContainerCommand
             {
                 blockCommand(context, "basics", "&eYou do not have an item in your hand.");
             }
-
             NBTTagCompound tag = this.getTag(sender.getItemInHand(), true);
-            this.printList(sender, (NBTTagList) tag.get("powerToolCommands"), false);
+            if (this.checkForTag(context, tag, false))
+            {
+                return;
+            }
+            this.printList(context, tag.getList("powerToolCommands"), false);
         }
     }
 
@@ -197,7 +278,11 @@ public class PowerToolCommand extends ContainerCommand
         {
             return null;
         }
-        CraftItemStack cis = (CraftItemStack)item;
+        CraftItemStack cis = (CraftItemStack) item;
+        if (cis.getHandle() == null)
+        {
+            return null;
+        }
         NBTTagCompound tag = cis.getHandle().getTag();
         if (tag == null && create)
         {
@@ -206,40 +291,38 @@ public class PowerToolCommand extends ContainerCommand
         return tag;
     }
 
-    private void printList(User user, NBTTagList ptVals, boolean lastAsNew)
+    private void printList(CommandContext context, NBTTagList ptVals, boolean lastAsNew)
     {
         if (ptVals == null || ptVals.size() == 0)
         {
-            user.sendMessage("basics", "&cNo commands saved on this item!");
+            context.sendMessage("basics", "&cNo commands saved on this item!");
             return;
         }
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (; i < ptVals.size() - 1; i++)
         {
-            sb.append("\n&f").append(((NBTTagString)ptVals.get(i)).data);
+            sb.append("\n&f").append(((NBTTagString) ptVals.get(i)).data);
         }
         if (lastAsNew)
         {
-            user.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&aNew: &e%s", i + 1, sb.toString(), ((NBTTagString)ptVals.get(i)).data);
+            context.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&aNew: &e%s", i + 1, sb.toString(), ((NBTTagString) ptVals.get(i)).data);
         }
         else
         {
-            user.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&f%s", i + 1, sb.toString(), ((NBTTagString)ptVals.get(i)).data);
+            context.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&f%s", i + 1, sb.toString(), ((NBTTagString) ptVals.get(i)).data);
         }
         sb.append("\n&f").append(((NBTTagString) ptVals.get(i)).data);
-
     }
 
-    private void rename(User user, NBTTagList ptVals)
+    private void rename(ItemStack item, NBTTagList ptVals)
     {
-
-        List<String> list = BukkitUtils.getItemStackLore(user.getItemInHand());
+        List<String> list = BukkitUtils.getItemStackLore(item);
         if (list == null || list.isEmpty() || list.get(0).startsWith("§cPowerTool"))
         {
             if (ptVals == null || ptVals.size() == 0)
             {
-                BukkitUtils.renameItemStack(user.getItemInHand(), true, (String[]) null);
+                BukkitUtils.renameItemStack(item, true, (String[]) null);
             }
             else
             {
@@ -249,30 +332,8 @@ public class PowerToolCommand extends ContainerCommand
                 {
                     list.add(((NBTTagString) ptVals.get(j)).data);
                 }
-                BukkitUtils.renameItemStack(user.getItemInHand(), true, list.toArray(new String[list.size()]));
+                BukkitUtils.renameItemStack(item, true, list.toArray(new String[list.size()]));
             }
         }
-
-    }
-
-    private void addPowerTool(User user, String command, boolean add)
-    {
-        NBTTagCompound tag = this.getTag(user.getItemInHand(), true);
-        NBTTagList ptVals;
-        if (add)
-        {
-            ptVals = (NBTTagList)tag.get("powerToolCommands");
-            if (ptVals == null)
-            {
-                tag.set("powerToolCommands", ptVals = new NBTTagList());
-            }
-        }
-        else
-        {
-            tag.set("powerToolCommands", ptVals = new NBTTagList());
-        }
-        ptVals.add(new NBTTagString(command, command));
-        this.printList(user, ptVals, true);
-        this.rename(user, ptVals);
     }
 }
