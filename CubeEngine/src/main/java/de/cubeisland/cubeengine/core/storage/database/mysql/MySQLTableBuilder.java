@@ -67,17 +67,17 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     @Override
     public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull)
     {
-        return this.field(name, type, length, notnull, false);
+        return this.field(name, type, false, length, notnull);
     }
 
     @Override
-    public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned)
+    public MySQLTableBuilder field(String name, AttrType type, boolean unsigned, boolean notnull)
     {
-        return this.field(name, type, length, notnull, unsigned, false);
+        return this.field(name, type, unsigned, 0, notnull);
     }
 
     @Override
-    public MySQLTableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai)
+    public MySQLTableBuilder field(String name, AttrType type, boolean unsigned, int length, boolean notnull)
     {
         if (this.fieldCounter > 0)
         {
@@ -93,12 +93,51 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
             this.query.append(" UNSIGNED");
         }
         this.query.append(notnull ? " NOT NULL" : " NULL");
-        if (ai)
-        {
-            this.query.append(" AUTO_INCREMENT");
-        }
         this.fieldCounter++;
 
+        return this;
+    }
+
+    @Override
+    public MySQLTableBuilder enumField(String name, String[] enumValues, boolean notnull)
+    {
+        if (this.fieldCounter > 0)
+        {
+            this.query.append(',');
+        }
+        if (enumValues.length == 0)
+        {
+            throw new IllegalStateException("Enum cannot be empty!");
+        }
+        this.query.append(this.database.prepareFieldName(name)).append(' ').append(AttrType.ENUM.name()).append("(").append(this.database.prepareString(enumValues[0]));
+        for (int i = 1; i < enumValues.length; ++i)
+        {
+            this.query.append(", ").append(this.database.prepareString(enumValues[i]));
+        }
+        this.query.append(notnull ? " NOT NULL" : " NULL");
+        this.fieldCounter++;
+        return this;
+    }
+
+    @Override
+    public MySQLTableBuilder defaultValue(String sql)
+    {
+        this.query.append(" DEFAULT ").append(sql);
+        return this;
+
+    }
+
+    @Override
+    public MySQLTableBuilder autoIncrement()
+    {
+        this.query.append(" AUTO_INCREMENT");
+        return this;
+    }
+
+    @Override
+    public MySQLTableBuilder index()
+    {
+        this.query.append(" KEY");
         return this;
     }
 
@@ -173,6 +212,20 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     }
 
     @Override
+    public MySQLTableBuilder unique(String field)
+    {
+        this.query.append(",UNIQUE(").append(this.database.prepareFieldName(field)).append(")");
+        return this;
+    }
+
+    @Override
+    public MySQLTableBuilder check()
+    {
+        this.query.append(" CHECK ");
+        return this;
+    }
+
+    @Override
     public QueryBuilder end()
     {
         if (this.fieldCounter >= 0)
@@ -180,19 +233,5 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
             throw new IllegalStateException("A table needs at least one field!");
         }
         return super.end();
-    }
-
-    @Override
-    public TableBuilder unique(String field)
-    {
-        this.query.append(",UNIQUE(").append(this.database.prepareFieldName(field)).append(")");
-        return this;
-    }
-
-    @Override
-    public TableBuilder check()
-    {
-        this.query.append(" CHECK ");
-        return this;
     }
 }

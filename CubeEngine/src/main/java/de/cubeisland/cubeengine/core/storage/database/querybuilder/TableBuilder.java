@@ -25,6 +25,27 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      *
      * @param name
      * @param type
+     * @param unsigned
+     * @return fluent interface
+     */
+    public TableBuilder field(String name, AttrType type, boolean unsigned);
+
+    /**
+     * Adds a field.
+     *
+     * @param name
+     * @param type
+     * @param unsigned
+     * @param notnull
+     * @return fluent interface
+     */
+    public TableBuilder field(String name, AttrType type, boolean unsigned, boolean notnull);
+
+    /**
+     * Adds a field.
+     *
+     * @param name
+     * @param type
      * @param length
      * @return fluent interface
      */
@@ -46,37 +67,44 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      *
      * @param name
      * @param type
-     * @param notnull
-     * @return fluent interface
-     */
-    public TableBuilder field(String name, AttrType type, boolean notnull);
-
-    /**
-     * Adds a field.
-     *
-     * @param name
-     * @param type
      * @param length
      * @param notnull
      * @param unsigned
      * @return fluent interface
      */
-    public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned);
+    public TableBuilder field(String name, AttrType type, boolean unsigned, int length, boolean notnull);
 
     /**
      * Adds a field.
-     *
+     * 
      * @param name
-     * @param type
-     * @param length
+     * @param enumValues
      * @param notnull
-     * @param unsigned
-     * @param ai
      * @return fluent interface
      */
-    public TableBuilder field(String name, AttrType type, int length, boolean notnull, boolean unsigned, boolean ai);
+    public TableBuilder enumField(String name, String[] enumValues, boolean notnull);
 
-    // TODO default
+    /**
+     * Adds a DEFAULT value
+     *
+     * @return fluent interface
+     */
+    public TableBuilder defaultValue(String sql);
+
+    /**
+     * Adds AUTO_INCREMENT to the current field
+     *
+     * @return fluent interface
+     */
+    public TableBuilder autoIncrement();
+
+    /**
+     * Adds an INDEX to the current field
+     *
+     * @return fluent interface
+     */
+    public TableBuilder index();
+
     /**
      * Sets the primary Key.
      *
@@ -94,8 +122,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     public TableBuilder unique(String field);
 
     /**
-     * Starts a CHECK statement.
-     * Dont forget to use beginSub and endSub.
+     * Starts a CHECK statement. Dont forget to use beginSub and endSub.
      *
      * @param field
      * @return fluent interface

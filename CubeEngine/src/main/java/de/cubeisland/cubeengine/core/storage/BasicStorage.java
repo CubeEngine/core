@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Index;
@@ -11,6 +12,7 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Storage-Implementation for single Integer-Key-Models
@@ -42,15 +44,45 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
             String dbName = this.fieldNames.get(field);
             if (this.dbKey.equals(dbName))
             {
-                tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned(), this.keyIsAi);
+                tbuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
+                if (this.keyIsAi)
+                {
+                    tbuilder.autoIncrement();
+                }
             }
             else
             {
-                tbuilder.field(dbName, attribute.type(), attribute.length(), attribute.notnull(), attribute.unsigned());
+                if (attribute.type().equals(AttrType.ENUM))
+                {
+                    if (!field.getType().isEnum())
+                    {
+                        throw new IllegalArgumentException("The field " + field.getName() + " is not an enum!");
+                    }
+                    Field[] enumConst = field.getClass().getEnumConstants();
+                    List<String> list = new ArrayList<String>();
+                    for (Field f : enumConst)
+                    {
+                        list.add(field.getName());
+                    }
+                    tbuilder.enumField(dbName, list.toArray(new String[list.size()]), attribute.notnull());
+                }
+                else
+                {
+                    tbuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
+                }
             }
-            //TODO default value
-            //TODO enum
-            //for enum i can get the possible enum from field.getType().getEnumConstants();
+            if (attribute.defaultIsValue())
+            {
+                try
+                {
+                    M model = this.modelClass.newInstance();
+                    tbuilder.defaultValue(field.get(model).toString());
+                }
+                catch (Exception e)
+                {
+                    throw new IllegalArgumentException("Default value is not set OR Default-Constructor is not accessible.");
+                }
+            }
             if (this.indexAnnotations.get(field) != null)
             {
                 Index index = this.indexAnnotations.get(field);
@@ -63,8 +95,7 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
                         tbuilder.unique(dbName);
                         break;
                     case INDEX:
-                    //TODO tbuilder.index(dbName)
-
+                        tbuilder.index();
                 }
             }
         }
