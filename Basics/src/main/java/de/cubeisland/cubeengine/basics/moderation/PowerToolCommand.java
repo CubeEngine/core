@@ -30,6 +30,18 @@ public class PowerToolCommand extends ContainerCommand
         super(module, "pt", "Binding shortcuts to an item.", "powertool");
     }
 
+    @Override
+    public void run(CommandContext context)
+    {
+        if (context.hasIndexed(0))
+        {
+            //TODO change context to have the replace flag set
+            this.add(context);
+            return;
+        }
+        super.run(context);
+    }
+
     @Alias(names = "ptc")
     @Command(
     desc = "Removes all command from your powertool",
@@ -141,7 +153,7 @@ public class PowerToolCommand extends ContainerCommand
     private void remove(CommandContext context, ItemStack item, String cmd)
     {
         NBTTagCompound tag = this.getTag(item, true);
-        if (this.checkForTag(context, tag, false))
+        if (!this.checkForTag(context, tag, false))
         {
             return;
         }
@@ -182,8 +194,16 @@ public class PowerToolCommand extends ContainerCommand
                 return;
             }
         }
-        tag.set("powerToolCommands", newVals);
-        this.printList(context, newVals, false);
+        if (newVals.size() == 0)
+        {
+            tag.remove("powerToolCommands");
+            context.sendMessage("basics", "&eNo more commands saved on this item!");
+        }
+        else
+        {
+            tag.set("powerToolCommands", newVals);
+            this.printList(context, newVals, false);
+        }
         this.rename(item, newVals);
     }
 
@@ -306,7 +326,7 @@ public class PowerToolCommand extends ContainerCommand
         }
         if (lastAsNew)
         {
-            context.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&aNew: &e%s", i + 1, sb.toString(), ((NBTTagString) ptVals.get(i)).data);
+            context.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&e%s &6(&aNEW&6)", i + 1, sb.toString(), ((NBTTagString) ptVals.get(i)).data);
         }
         else
         {
