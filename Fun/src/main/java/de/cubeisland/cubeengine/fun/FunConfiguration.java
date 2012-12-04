@@ -35,13 +35,9 @@ public class FunConfiguration extends Configuration
     public int maxFireballDelay = 30;
     
     
-    @Comment("Sets the maximum amount of changes of day to night and vice versa.")
-    @Option("disco.changes")
-    public int maxDiscoChanges = 20;
     @Comment("Sets the maximum delay between changes of day to night and vice versa.")
     @Option("disco.delay")
     public int maxDiscoDelay = 100;
-    
     
     @Comment("Sets the maximum distance between the mob and the player")
     @Option("invasion.distance")

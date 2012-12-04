@@ -3,88 +3,81 @@ package de.cubeisland.cubeengine.fun.commands;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import org.bukkit.World;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-
-public class DiscoCommand 
+public class DiscoCommand implements Runnable
 {
     private final Fun module;
     
-    private boolean running;
+    private World world;
+    private int taskId;
+    private long startTime;
+    private User player;
     
     public DiscoCommand(Fun module)
     {
         this.module = module;
-        this.running = false;
     }
     
     @Command(
         desc = "Changes from day to night and vice verca",
-        min = 1,
-        max = 1,
+        max = 0,
         params = 
         { @Param(names = {"delay", "d"}, type = Integer.class) },
-        usage = "<changes> [delay <value>]"
+        usage = "[delay <value>]"
     )
     public void disco(CommandContext context)
     {
-        if(this.running)
+        if(this.world == null)
         {
-            context.sendMessage("&eThe disco command is currently running");
-            return;
-        }
-        try
-        {
-            final int changes = Integer.valueOf(context.getString(0));
-            final World world = context.getSenderAsUser("core", "&cThis command can only be used by a player!").getWorld();
-            int delay = context.getNamed("delay", Integer.class, Integer.valueOf(10));
+            this.player = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+            this.world = player.getWorld();
+            int delay = context.getNamed("delay", Integer.class, 10);
             
             if(delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
             {
-                illegalParameter(context, "fun", "&cThe ticks has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
-            }
-            if(changes > this.module.getConfig().maxDiscoChanges || changes < 1)
-            {
-                illegalParameter(context, "fun", "&cThe number of changes of day and night shouldn't be over %d or less than 1.", this.module.getConfig().maxDiscoChanges);
+                illegalParameter(context, "fun", "&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
             }
             
-            if(world != null)
-            {
-                final long defaultTime = world.getTime();
-                for(int i = 0; i <= changes * 2; i++)
-                {
-                    this.running = true;
-                    final int j = i;
-                    this.module.getTaskManger().scheduleSyncDelayedTask(module, new Runnable() 
-                    {
-                        @Override
-                        public void run()
-                        {
-                            if(world.getTime() > 12000)
-                            {
-                                world.setTime(6000);
-                            }
-                            else 
-                            {
-                                world.setTime(18000);
-                            }
-                            
-                            if(j == changes * 2)
-                            {
-                                world.setTime(defaultTime);
-                                running = false;
-                            }
-                        }
-                    }, i * delay);
-                } 
-            }
-              
+            this.startTime = world.getTime();
+            
+            this.taskId = this.module.getTaskManger().scheduleSyncRepeatingTask(this.module, this, 0, delay);
         }
-        catch(NumberFormatException e)
+        else
         {
-            illegalParameter(context, "fun", "&c\"%s\" is not a number", context.getString(0));
+            this.remove();
+        }
+    }
+    
+    private void remove()
+    {
+        this.world.setTime(startTime);
+        this.module.getTaskManger().cancelTask(module, taskId);
+        this.taskId = -1;
+        this.world = null;
+        this.startTime = -1;
+    }
+
+    @Override
+    public void run() 
+    {
+        if(this.world != null)
+        {
+            if(this.world.getTime() > 12000)
+            {
+                this.world.setTime(6000);
+            }
+            else 
+            {
+                this.world.setTime(18000);
+            }
+        }
+        if(!player.isOnline())
+        {
+            this.remove();
         }
     }
 }
