@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
  * MYSQLQueryBuilder for creating new tables.
  */
 public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
-    implements TableBuilder
+        implements TableBuilder
 {
     private int fieldCounter;
 
@@ -103,9 +103,21 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     }
 
     @Override
-    public MySQLTableBuilder primaryKey(String key)
+    public MySQLTableBuilder primaryKey(String... keys)
     {
-        this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(key)).append(')');
+        if (keys.length == 1)
+        {
+            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(keys[0])).append(')');
+        }
+        else
+        {
+            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(keys[0]));
+            for (int i = 1; i < keys.length; ++i)
+            {
+                this.query.append(", ").append(this.database.prepareFieldName(keys[i]));
+            }
+            this.query.append(")");
+        }
         return this;
     }
 

@@ -83,7 +83,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @param key
      * @return fluent interface
      */
-    public TableBuilder primaryKey(String key);
+    public TableBuilder primaryKey(String... key);
 
     /**
      * Sets given field to be unique

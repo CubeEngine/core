@@ -11,12 +11,14 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Documented
+@Documented 
 public @interface Entity
 {
     public String name();
 
     public String engine() default "InnoDB";
 
-    public String charset() default "utf8";//utf8_general_ci  <- unknown charset
+    public String charset() default "utf8";
+    
+    public CompositeKey[] compositeKeys() default {};
 }

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.CompositeKey;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Basic Storage-implementation (1 Key only)
+ * Basic Storage-implementation (1 Key only OR 1 composite-key but methods will not work)
  */
 public class BasicStorage<V extends Model> implements Storage<V>
 {
@@ -121,11 +122,29 @@ public class BasicStorage<V extends Model> implements Storage<V>
                 }
             }
         }
-        if (dbKey == null)
+        if (dbKey != null)
         {
-            throw new IllegalArgumentException("The given model does not declare a key!");
+            tbuilder.primaryKey(dbKey);
         }
-        tbuilder.primaryKey(dbKey).endFields();
+        else
+        {
+            if (entity.compositeKeys().length > 0)
+            {
+                for (CompositeKey cKey : entity.compositeKeys())
+                {
+                    if (cKey.value().length == 0)
+                    {
+                        throw new IllegalArgumentException("The given model does declare an empty composite-key!");
+                    }
+                    tbuilder.primaryKey(cKey.value());
+                }
+            }
+            else
+            {
+                throw new IllegalArgumentException("The given model does not declare a unique primary-key!");
+            }
+        }
+        tbuilder.endFields();
 
         tbuilder.engine(entity.engine()).defaultcharset(entity.charset());
         if (this.keyIsAI)
@@ -147,31 +166,37 @@ public class BasicStorage<V extends Model> implements Storage<V>
     /**
      * Prepares the Default-Statements
      *
-     * @param key    the key
+     * @param key the key
      * @param fields the fields
      */
     private void prepareStatements(String key, String[] fields)
     {
         try
         {
+            QueryBuilder builder = this.database.getQueryBuilder();
+            this.database.storeStatement(this.modelClass, "clear", builder.truncateTable(this.table).end());
+            if (key == null)
+            {
+                return; // No single primary key
+            }
+
             String[] allFields = new String[fields.length + 1];
             allFields[0] = key;
             System.arraycopy(fields, 0, allFields, 1, fields.length);
-            QueryBuilder builder = this.database.getQueryBuilder();
 
             if (this.keyIsAI)
             {
                 builder.insert()
-                    .into(this.table)
-                    .cols(fields)
-                    .end();
+                        .into(this.table)
+                        .cols(fields)
+                        .end();
             }
             else
             {
                 builder.insert()
-                    .into(this.table)
-                    .cols(allFields)
-                    .end();
+                        .into(this.table)
+                        .cols(allFields)
+                        .end();
             }
             this.database.storeStatement(this.modelClass, "store", builder.end());
 
@@ -185,7 +210,7 @@ public class BasicStorage<V extends Model> implements Storage<V>
 
             this.database.storeStatement(this.modelClass, "delete", builder.delete().from(this.table).where().field(key).is(EQUAL).value().limit(1).end().end());
 
-            this.database.storeStatement(this.modelClass, "clear", builder.truncateTable(this.table).end());
+
         }
         catch (SQLException ex)
         {
@@ -500,9 +525,9 @@ public class BasicStorage<V extends Model> implements Storage<V>
         System.arraycopy(this.dbAttributes.toArray(), 0, allFields, 1, this.dbAttributes.size());
         QueryBuilder builder = this.database.getQueryBuilder();
         builder.insert()
-            .into(this.table)
-            .cols(allFields)
-            .end();
+                .into(this.table)
+                .cols(allFields)
+                .end();
         try
         {
             this.database.storeStatement(this.modelClass, "store", builder.end());
