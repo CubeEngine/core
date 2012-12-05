@@ -341,12 +341,12 @@ public class UserBase implements Player
     }
 
     @Override
-    public void incrementStatistic(Statistic ststc)
+    public void incrementStatistic(Statistic statistic)
     {
         final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            player.incrementStatistic(ststc);
+            player.incrementStatistic(statistic);
         }
     }
 
@@ -1855,6 +1855,7 @@ public class UserBase implements Player
      * }
      * return I18n.SOURCE_LANGUAGE;
      * } */
+
     @Override
     public void giveExpLevels(int amount)
     {
@@ -1872,6 +1873,23 @@ public class UserBase implements Player
         if (player != null)
         {
             player.setBedSpawnLocation(location, force);
+        }
+    }
+
+    @Override
+    public boolean getRemoveWhenFarAway()
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.getRemoveWhenFarAway();
+    }
+
+    @Override
+    public void setRemoveWhenFarAway(boolean state)
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.setRemoveWhenFarAway(state);
         }
     }
 }
