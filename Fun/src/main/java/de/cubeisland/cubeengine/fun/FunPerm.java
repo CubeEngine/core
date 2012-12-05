@@ -11,8 +11,15 @@ public enum FunPerm implements Permission
     EXPLOSION_PLAYER_DAMAGE,
     EXPLOSION_BLOCK_DAMAGE,
     EXPLOSION_FIRE,
+    FIREBALL_FIREBALL,
+    FIREBALL_WITHERSKULL,
+    FIREBALL_SMALLFIREBALL,
     LIGHTNING_PLAYER_DAMAGE,
-    LIGHTNING_UNSAFE
+    LIGHTNING_UNSAFE,
+    THROW_SNOW,
+    THROW_EGG,
+    THROW_ORB,
+    THROW_XP,
     ;
         
     private String permission;
