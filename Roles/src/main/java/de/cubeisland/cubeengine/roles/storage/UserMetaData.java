@@ -11,8 +11,11 @@ import de.cubeisland.cubeengine.core.util.Pair;
 public class UserMetaData implements TwoKeyModel<Integer, String>
 {
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int userId;
+    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "worlds", f_field = "key")
+    @Attribute(type = AttrType.INT)
+    public int world;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String key;
     @Attribute(type = AttrType.VARCHAR, length = 255)

@@ -8,14 +8,50 @@ class RoleManagementCommands extends ContainerCommand
 {
     public RoleManagementCommands(Module module)
     {
-        super(module, "manage", "Creates, deletes or modifies roles.");
+        super(module, "role", "Manage roles.");
     }
 
-    public void create(CommandContext context)
+    public void list(CommandContext context)
     {
     }
 
-    public void delete(CommandContext context)
+    public void checkperm(CommandContext context)
+    {
+    }
+
+    public void listperm(CommandContext context)
+    {
+    }
+
+    public void listmetadata(CommandContext context)
+    {
+    }
+
+    public void listParent(CommandContext context)
+    {
+    }
+
+    public void priority(CommandContext context)
+    {
+    }
+
+    public void setpermission(CommandContext context)
+    {
+    }
+
+    public void resetpermission(CommandContext context)
+    {
+    }
+
+    public void setmetadata(CommandContext context)
+    {
+    }
+
+    public void resetmetadata(CommandContext context)
+    {
+    }
+
+    public void clearmetadata(CommandContext context)
     {
     }
 
@@ -27,14 +63,15 @@ class RoleManagementCommands extends ContainerCommand
     {
     }
 
-    public void list(CommandContext context)
-    {//list all roles
-    }
-    
-    public void listPermission(CommandContext context)
+    public void clearParent(CommandContext context)
     {
     }
-    public void listMetaData(CommandContext context)
+
+    public void setPriority(CommandContext context)
     {
-    }        
+    }
+
+    public void rename(CommandContext context)
+    {
+    }
 }

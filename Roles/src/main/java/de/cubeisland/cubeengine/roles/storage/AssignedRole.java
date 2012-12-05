@@ -9,7 +9,7 @@ import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 @SingleIntKeyEntity(tableName = "roles", primaryKey = "key")
 public class AssignedRole implements Model<Integer>
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int key;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
