@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.role.config;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -7,7 +7,6 @@ public class Priority
 {
     private static final TIntObjectHashMap<Priority> prio = new TIntObjectHashMap<Priority>();
     private static final THashMap<String, Priority> prioNames = new THashMap<String, Priority>();
-    
     public static final Priority ABSULTEZERO = new Priority(-273, "ABSULTEZERO");
     public static final Priority MINIMUM = new Priority(0, "MINIMUM");
     public static final Priority LOWEST = new Priority(125, "LOWEST");
@@ -19,7 +18,6 @@ public class Priority
     public static final Priority OVER9000 = new Priority(9001, "OVER9000");
     public final int value;
     public final String name;
-    
 
     private Priority(int value, String name)
     {

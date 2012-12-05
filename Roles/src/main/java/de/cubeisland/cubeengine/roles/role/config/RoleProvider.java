@@ -1,10 +1,12 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.role.config;
 
+import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.Role;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.ArrayList;
@@ -12,7 +14,6 @@ import java.util.List;
 
 public class RoleProvider
 {
-
     public final String mainWorld;
     private TIntObjectHashMap<Pair<Boolean, Boolean>> worlds = new TIntObjectHashMap<Pair<Boolean, Boolean>>(); //mirror roles / users
     private THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();

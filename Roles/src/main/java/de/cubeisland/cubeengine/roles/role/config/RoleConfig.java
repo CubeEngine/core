@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.role.config;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;

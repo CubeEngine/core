@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.role.config;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class RoleProviderConverter implements Converter<RoleProvider>
 {
-
     @Override
     public Object toObject(RoleProvider object) throws ConversionException
     {

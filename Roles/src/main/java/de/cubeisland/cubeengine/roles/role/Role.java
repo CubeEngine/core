@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import de.cubeisland.cubeengine.roles.role.config.Priority;
+import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

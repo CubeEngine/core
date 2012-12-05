@@ -1,7 +1,7 @@
-
 package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.roles.role.config.Priority;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
 public class MergedRole extends Role
 {
     public final Collection<Role> mergedWith;
-    
+
     public MergedRole(Collection<Role> mergeFrom)
     {
         this.mergedWith = mergeFrom;
@@ -49,5 +49,4 @@ public class MergedRole extends Role
             this.setMetaData(data, metaData.get(data).getLeft());
         }
     }
-    
 }

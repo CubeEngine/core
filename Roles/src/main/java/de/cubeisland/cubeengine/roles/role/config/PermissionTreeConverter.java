@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.role.config;
 
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;

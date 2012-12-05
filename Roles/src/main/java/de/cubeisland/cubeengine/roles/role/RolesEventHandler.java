@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.List;
 import org.bukkit.entity.Player;
@@ -62,7 +63,7 @@ public class RolesEventHandler implements Listener
     public void preCalculateRoles(String username)
     {
         User user = this.module.getUserManager().getUser(username, true);
-        if (user.getAttribute(this.module, "roleContainer") != null) // TODO be sure that this gets removed when reloading
+        if (user.getAttribute(this.module, "roleContainer") != null)
         {
             return;
         }
@@ -98,14 +99,6 @@ public class RolesEventHandler implements Listener
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
         user.setPermission(role.getPermissions(), player);
-        //DUBUGGING:
-        System.out.println(player.getName() + " logged in as:");
-        for (Role mergerole : role.mergedWith)
-        {
-            System.out.println(mergerole.getName());
-        }
-        //########################
-
-        //TODO set metadata
+        user.setAttribute(this.module, "metadata", role.getMetaData());
     }
 }

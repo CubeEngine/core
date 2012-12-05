@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.role.config;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
@@ -29,7 +29,7 @@ public class PermissionTree
         }
     }
 
-    protected void loadFromList(List<?> list, String path)
+    public void loadFromList(List<?> list, String path)
     {
         for (Object value : list)
         {

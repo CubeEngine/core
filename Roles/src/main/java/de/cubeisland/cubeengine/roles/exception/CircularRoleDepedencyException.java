@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.exception;
 
 public class CircularRoleDepedencyException extends Exception
 {
