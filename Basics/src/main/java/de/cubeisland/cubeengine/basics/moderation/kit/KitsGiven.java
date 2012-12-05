@@ -15,11 +15,11 @@ public class KitsGiven implements TwoKeyModel<Integer, String>
 {
     // @ForeignKey(table = "user", field = "key")
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int userId;
     @Attribute(type = AttrType.VARCHAR, length = 50)
     public String kitName;
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int amount;
 
     @Override

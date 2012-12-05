@@ -11,15 +11,15 @@ import de.cubeisland.cubeengine.core.user.User;
 @SingleIntKeyEntity(tableName = "mail", primaryKey = "key")
 public class Mail implements Model<Integer>
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int key;
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String message;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int userId;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int senderId;
 
     public Mail(int userId, int senderId, String message)

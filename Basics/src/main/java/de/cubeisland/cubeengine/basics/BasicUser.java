@@ -15,14 +15,16 @@ import java.util.List;
 public class BasicUser implements Model<Integer>
 {
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public final int key; // User Key
+    @Attribute(type = AttrType.INT)
+    public int key; // User Key
     @Attribute(type = AttrType.TIMESTAMP, notnull = false)
     public Timestamp muted;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean godMode;
     public List<Mail> mailbox = new ArrayList<Mail>();
 
+    public BasicUser(){}
+    
     public BasicUser(User user)
     {
         this.key = user.getKey();

@@ -49,7 +49,7 @@ import org.bukkit.plugin.PluginManager;
 public class User extends UserBase implements LinkingModel<Integer>
 {
     public static int NO_ID = -1;
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int key;
     @Index(UNIQUE)
     @Attribute(type = AttrType.VARCHAR, length = 16)

@@ -16,7 +16,7 @@ import org.bukkit.block.BlockState;
 public class LogModel implements Model<Integer>
 {
 //TODO trim chatlog and dont log if empty then
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.INT)
     public int key;
     @Attribute(type = AttrType.TINYINT)
     public int type;
