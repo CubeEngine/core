@@ -6,19 +6,20 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
@@ -101,7 +102,7 @@ public class ItemCommands
     {
         String name = context.getString(0);
         User sender = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?");
-        CraftItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
+        ItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
         if (changedHead != null)
         {
             context.sendMessage("basics", "&aYou now hold &6%s's &ahead in your hands!", name);

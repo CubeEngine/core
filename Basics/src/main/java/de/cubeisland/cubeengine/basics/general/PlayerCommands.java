@@ -6,19 +6,20 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.sql.Timestamp;
+
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.time.Duration;
-import java.sql.Timestamp;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 public class PlayerCommands
 {
@@ -437,9 +438,9 @@ public class PlayerCommands
         context.sendMessage("basics", "&eOP: %s\n", user.isOp() ? "&atrue" : "&cfalse");
         Timestamp muted = basics.getBasicUserManager().getBasicUser(user).muted;
         context.sendMessage("basics", "&eMuted: %s\n", (muted != null && muted.getTime() > System.currentTimeMillis()) ? "&atrue" : "&cfalse");
-        if (user.getGameMode() != GameMode.CREATIVE && user.getPlayer() instanceof CraftPlayer)
+        if (user.getGameMode() != GameMode.CREATIVE)
         {
-            context.sendMessage("basics", "&eGodMode: &2%s\n", ((CraftPlayer) user.getPlayer()).getHandle().abilities.isInvulnerable ? "&atrue" : "&cfalse");
+            context.sendMessage("basics", "&eGodMode: &2%s\n", user.isInvulnerable() ? "&atrue" : "&cfalse");
         }
         context.sendMessage("basics", "&eAFK: %s", user.getAttribute(basics, "afk") == null ? "&cfalse" : "&atrue");
         // TODO event so other modules can add their information

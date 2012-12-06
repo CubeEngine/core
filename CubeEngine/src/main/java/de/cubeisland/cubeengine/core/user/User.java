@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
@@ -13,19 +12,9 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -40,6 +29,19 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 
 
 /**
@@ -293,6 +295,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         attributeMap.remove(name);
     }
 
+    // TODO move this into a Util class !
     public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
@@ -464,5 +467,15 @@ public class User extends UserBase implements LinkingModel<Integer>
             attachment.setPermission(negName, true);
         }
         player.recalculatePermissions();
+    }
+
+    public boolean isInvulnerable()
+    {
+        return BukkitUtils.isInvulnerable(this);
+    }
+
+    public void setInvulnerable(boolean state)
+    {
+        BukkitUtils.setInvulnerable(this, state);
     }
 }

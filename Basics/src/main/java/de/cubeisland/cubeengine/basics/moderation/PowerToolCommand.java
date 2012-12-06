@@ -6,18 +6,18 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import net.minecraft.server.v1_4_5.*;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 
 /**
  * The powertool command allows binding commands/chatmacros to a specific item

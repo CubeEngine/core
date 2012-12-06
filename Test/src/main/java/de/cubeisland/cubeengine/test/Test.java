@@ -19,11 +19,9 @@ import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.Packet0KeepAlive;
-import net.minecraft.server.ServerConfigurationManager;
+import net.minecraft.server.v1_4_5.*;
 import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 

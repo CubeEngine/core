@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

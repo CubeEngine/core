@@ -2,21 +2,23 @@ package de.cubeisland.cubeengine.rulebook.bookManagement;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BookItem;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
+import net.minecraft.server.v1_4_5.NBTTagCompound;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.server.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public final class RulebookManager 
 {
@@ -57,11 +59,7 @@ public final class RulebookManager
     public boolean contains(String language, int editDistance)
     {
         Set<Language> languages = this.module.getCore().getI18n().searchLanguages(language, editDistance);
-        if(languages.size() == 1 && this.rulebooks.containsKey(languages.iterator().next().getName()))
-        {
-            return true;
-        }
-        return false;
+        return languages.size() == 1 && this.rulebooks.containsKey(languages.iterator().next().getName());
     }
     
     public String[] getPages(String language)

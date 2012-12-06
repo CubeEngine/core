@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.util.time.Duration;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachment;
@@ -150,7 +149,6 @@ public class Kit
             ItemStack item = new ItemStack(kitItem.mat, kitItem.amount, kitItem.dura);
             if (kitItem.customName != null)
             {
-                item = new CraftItemStack(item);
                 BukkitUtils.renameItemStack(item, false, kitItem.customName);
             }
             list.add(item);
@@ -167,7 +165,7 @@ public class Kit
         config.kitName = this.name;
         config.limitUsage = this.limitUsagePerPlayer;
         config.limitUsageDelay = new Duration(this.limitUsageDelay);
-        config.usePerm = this.permission == null ? false : true;
+        config.usePerm = this.permission != null;
     }
 
     public String getKitName()

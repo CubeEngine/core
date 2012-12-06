@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemData
@@ -14,13 +13,10 @@ public class ItemData
     {
         this.mat = item.getTypeId();
         this.data = item.getDurability();
-        if (item instanceof CraftItemStack)
+        this.name = BukkitUtils.getItemStackName(item);
+        if (this.name == null)
         {
-            name = BukkitUtils.getItemStackName(item);
-            if (name == null)
-            {
-                name = "";
-            }
+            this.name = "";
         }
     }
 
@@ -36,7 +32,7 @@ public class ItemData
         if (obj instanceof ItemData)
         {
             ItemData o = ((ItemData)obj);
-            if (this.mat == o.mat && this.data == o.data && name.equals(o.name))
+            if (this.mat == o.mat && this.data == o.data && this.name.equals(o.name))
             {
                 return true;
             }

@@ -15,7 +15,7 @@ import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.v1_4_5.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -283,5 +283,4 @@ public class RulebookCommands extends ContainerCommand
         
         return books;
     }
-    
 }

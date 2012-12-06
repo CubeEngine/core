@@ -4,8 +4,8 @@ import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -73,7 +73,7 @@ public class GeneralsListener implements Listener
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
         if (bUser.godMode == true)
         {
-            ((CraftPlayer) user.getPlayer()).getHandle().abilities.isInvulnerable = true;
+            user.setInvulnerable(true);
         }
     }
 }

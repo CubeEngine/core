@@ -1,21 +1,21 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
+import net.minecraft.server.v1_4_5.NBTTagCompound;
+import net.minecraft.server.v1_4_5.NBTTagList;
+import net.minecraft.server.v1_4_5.NBTTagString;
 import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class BookItem
 {
-    private static final String PAGES_FIELD = "pages";
+    private static final String PAGES_FIELD  = "pages";
     private static final String AUTHOR_FIELD = "author";
-    private static final String TITLE_FIELD = "title";
+    private static final String TITLE_FIELD  = "title";
 
-    private final net.minecraft.server.ItemStack item;
-    private final CraftItemStack stack;
+    private final net.minecraft.server.v1_4_5.ItemStack item;
+    private final CraftItemStack                 stack;
 
     /**
      * Initializes this book with the given ItemStack

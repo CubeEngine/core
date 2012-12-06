@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
@@ -8,7 +9,6 @@ import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
 import de.cubeisland.cubeengine.log.storage.ItemData;
-import de.cubeisland.cubeengine.log.storage.LogManager;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.bukkit.Location;
@@ -18,7 +18,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Furnace;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
@@ -53,7 +52,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
     {
-        User user = CubeEngine.getUserManager().getExactUser((Player) event.getPlayer());
+        User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
         TObjectIntHashMap<ItemData> loggedItems = openedInventories.get(user.getKey());
         if (loggedItems == null)
         {
@@ -134,7 +133,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             else
             // both filled
             {
-                if (this.compareItemStacks(inInvent, onCursor)) // can be stacked together?
+                if (BukkitUtils.compareItemStacks(inInvent, onCursor)) // can be stacked together?
                 {
                     int toput = event.isLeftClick() ? inInvent.getAmount() : 1;
                     if (toput > inInvent.getMaxStackSize() - inInvent.getAmount()) //if stack to big
@@ -159,22 +158,6 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
                 log.put(datainInvent, log.get(datainInvent) + giveOrTake * inInvent.getAmount());
             }
         }
-    }
-
-    private boolean compareItemStacks(ItemStack item1, ItemStack item2)
-    {
-        if (item1.getTypeId() == item2.getTypeId() && item1.getDurability() == item2.getDurability())
-        {
-            if (item1 instanceof CraftItemStack && item2 instanceof CraftItemStack)
-            {
-                if (!((CraftItemStack) item1).getHandle().getTag().equals(((CraftItemStack) item1).getHandle().getTag()))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
     private boolean checkLog(ContainerType type)

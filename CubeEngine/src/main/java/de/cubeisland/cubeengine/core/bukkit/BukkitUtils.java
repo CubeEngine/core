@@ -2,16 +2,17 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.LocaleLanguage;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
-import net.minecraft.server.NetServerHandler;
-import net.minecraft.server.ServerConnection;
+import net.minecraft.server.v1_4_5.EntityPlayer;
+import net.minecraft.server.v1_4_5.LocaleLanguage;
+import net.minecraft.server.v1_4_5.NBTTagCompound;
+import net.minecraft.server.v1_4_5.NBTTagList;
+import net.minecraft.server.v1_4_5.NBTTagString;
+import net.minecraft.server.v1_4_5.NetServerHandler;
+import net.minecraft.server.v1_4_5.ServerConnection;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,10 +23,10 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.craftbukkit.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_5.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -312,6 +313,10 @@ public class BukkitUtils
 
     public static boolean renameItemStack(ItemStack itemStack, boolean asLore, String... string)
     {
+        if (!(itemStack instanceof CraftItemStack))
+        {
+            itemStack = new CraftItemStack(itemStack);
+        }
         if (string != null)
         {
             for (int i = 0; i < string.length; ++i)
@@ -401,6 +406,10 @@ public class BukkitUtils
         {
             return null;
         }
+        if (itemStack instanceof CraftItemStack)
+        {
+            return null;
+        }
         CraftItemStack cis = ((CraftItemStack) itemStack);
         if (cis.getHandle() == null)
         {
@@ -423,7 +432,7 @@ public class BukkitUtils
         return name;
     }
 
-    public static CraftItemStack changeHead(ItemStack head, String name)
+    public static ItemStack changeHead(ItemStack head, String name)
     {
         if (head.getType().equals(Material.SKULL_ITEM))
         {
@@ -438,6 +447,59 @@ public class BukkitUtils
         {
             return null;
         }
+    }
+
+    public static boolean isInvulnerable(Player player)
+    {
+        if (player != null)
+        {
+            if (player instanceof User)
+            {
+                player = ((User)player).getOfflinePlayer().getPlayer();
+            }
+            if (player != null && player instanceof CraftPlayer)
+            {
+                return ((CraftPlayer)player).getHandle().abilities.isInvulnerable;
+            }
+        }
+        return false;
+    }
+
+    public static void setInvulnerable(Player player, boolean state)
+    {
+        if (player != null && player instanceof User)
+        {
+            player = ((User)player).getOfflinePlayer().getPlayer();
+        }
+        if (player != null && player instanceof CraftPlayer)
+        {
+            ((CraftPlayer)player).getHandle().abilities.isInvulnerable = state;
+            ((CraftPlayer)player).getHandle().updateAbilities();
+        }
+    }
+
+    public static boolean compareItemStacks(ItemStack a, ItemStack b)
+    {
+        if (a == null ^ b == null)
+        {
+            return false;
+        }
+        else if (a == null && b == null)
+        {
+            return true;
+        }
+        if (a.getTypeId() == b.getTypeId() && a.getDurability() == b.getDurability())
+        {
+            if (a instanceof CraftItemStack && b instanceof CraftItemStack)
+            {
+                if (!((CraftItemStack)a).getHandle().getTag().equals(((CraftItemStack)b).getHandle().getTag()))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public static void cleanup()

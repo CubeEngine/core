@@ -5,13 +5,14 @@ import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.apache.commons.lang.Validate;
+import org.bukkit.scheduler.BukkitScheduler;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import org.apache.commons.lang.Validate;
-import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  * This class provides methods to register and unregister tasks and the global
@@ -126,6 +127,7 @@ public class TaskManager
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
+    @SuppressWarnings("deprecation")
     public int scheduleAsyncDelayedTask(Module module, Runnable runnable, long delay)
     {
         Validate.notNull(module, "The module must not be null!");
@@ -163,6 +165,7 @@ public class TaskManager
      * @param interval the interval in ticks
      * @return the ID of the task
      */
+    @SuppressWarnings("deprecation")
     public int scheduleAsyncRepeatingTask(Module module, Runnable runnable, long delay, long interval)
     {
         Validate.notNull(module, "The module must not be null!");
