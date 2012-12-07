@@ -17,14 +17,21 @@ public class Role
     private List<Role> parentRoles;
     private Map<String, Boolean> permissions;
     private Map<String, String> metaData;
+    private boolean isGlobal;
 
     public Role(RoleConfig config)
+    {
+        this(config, false);
+    }
+
+    public Role(RoleConfig config, boolean global)
     {
         this.name = config.roleName;
         this.priority = config.priority;
         this.parentRoles = new ArrayList<Role>();
         this.permissions = config.perms.getPermissions();
         this.metaData = config.metadata;
+        this.isGlobal = global;
     }
 
     public Role()
@@ -121,5 +128,10 @@ public class Role
     public void setMetaData(String key, String data)
     {
         this.metaData.put(key, data);
+    }
+
+    public boolean isGlobal()
+    {
+        return this.isGlobal;
     }
 }

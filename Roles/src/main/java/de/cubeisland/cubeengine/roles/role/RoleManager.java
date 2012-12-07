@@ -157,7 +157,7 @@ public class RoleManager
                     this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
-            role = new Role(config);
+            role = new Role(config, true);
             List<Role> parenRoles = new ArrayList<Role>();
             for (String parentName : config.parents)
             {

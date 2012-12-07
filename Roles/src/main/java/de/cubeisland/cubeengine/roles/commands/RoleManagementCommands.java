@@ -2,14 +2,13 @@ package de.cubeisland.cubeengine.roles.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.roles.Roles;
 
-class RoleManagementCommands extends ContainerCommand
+public class RoleManagementCommands extends ContainerCommand
 {
     public RoleManagementCommands(Roles module)
     {
-        super(module, "role", "Manage roles.");
+        super(module, "role", "Manage roles.");//TODO alias manrole
     }
 
     public void list(CommandContext context)

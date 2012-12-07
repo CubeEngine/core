@@ -8,8 +8,6 @@ public class RoleCommands extends ContainerCommand
     public RoleCommands(Roles module)
     {
         super(module, "role", "Manages the roles", "roles");
-        this.addChild(new RoleManagementCommands(module));
-        this.addChild(new UserManagementCommands(module));
-        this.addChild(new ModuleManagementCommands(module));
+      
     }
 }
