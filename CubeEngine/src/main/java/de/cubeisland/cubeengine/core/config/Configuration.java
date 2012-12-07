@@ -80,6 +80,19 @@ public abstract class Configuration
         this.codec.saveChildConfig(this.parent, this, this.file);
         this.onSaved(this.file);
     }
+    
+    public void load()
+    {
+        try //TODO prevent NPE etc
+        {
+            FileInputStream is = new FileInputStream(this.file);
+            this.codec.load(this, is);
+            //TODO exception handling
+        }
+        catch (Exception ignored)
+        {
+        }
+    }
 
     public <T extends Configuration> T loadChild(File sourceFile) //and save
     {
