@@ -1,11 +1,11 @@
 package de.cubeisland.cubeengine.roles.commands;
 
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.roles.Roles;
 
 public class RoleCommands extends ContainerCommand
 {
-    public RoleCommands(Module module)
+    public RoleCommands(Roles module)
     {
         super(module, "role", "Manages the roles", "roles");
         this.addChild(new RoleManagementCommands(module));

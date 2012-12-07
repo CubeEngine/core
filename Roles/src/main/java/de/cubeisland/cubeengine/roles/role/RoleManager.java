@@ -16,7 +16,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +34,28 @@ public class RoleManager
     public RoleManager(Roles rolesModule)
     {
         this.module = rolesModule;
-        this.loadProviders();
         this.rolesFolder = new File(rolesModule.getFolder(), "roles");
+        this.init();
+    }
+
+    public void saveAllConfigs()
+    {
+        for (Configuration config : this.globalConfigs.values())
+        {
+            config.save();
+        }
+        for (RoleProvider provider : this.providers.valueCollection())
+        {
+            for (Configuration config : provider.getConfigs())
+            {
+                config.save();
+            }
+        }
+    }
+
+    public void init()
+    {
+        this.loadProviders();
         this.rolesFolder.mkdir();
         this.module.getLogger().debug("Loading global roles...");
         int i = 0;
@@ -75,10 +94,11 @@ public class RoleManager
             }
         }
         this.calculateRoles();
+
     }
     private Stack<String> roleStack;
 
-    private void calculateRoles()
+    public void calculateRoles()
     {
         roleStack = new Stack<String>();
         // Calculate global roles:
@@ -415,7 +435,7 @@ public class RoleManager
         User user = this.module.getUserManager().getExactUser(player);
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
-        
+
         //TODO remove:
         System.out.print(player.getName() + " got his role assigned!");
         for (String p : role.getPermissions().keySet())
