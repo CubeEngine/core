@@ -1,36 +1,37 @@
 package de.cubeisland.cubeengine.roles.storage;
 
-import de.cubeisland.cubeengine.core.storage.TwoKeyModel;
+import de.cubeisland.cubeengine.core.storage.TripletKeyModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
-import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
+import de.cubeisland.cubeengine.core.util.Triplet;
 
-@TwoKeyEntity(tableName = "userdata", firstPrimaryKey = "userId", secondPrimaryKey = "key")
-public class UserMetaData implements TwoKeyModel<Integer, String>
+@TripletKeyEntity(tableName = "userdata", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "key")
+public class UserMetaData implements TripletKeyModel<Integer, Integer, String>
 {
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
     public int userId;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "worlds", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public int world;
+    public int worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String key;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String value;
 
     @Override
-    public Pair<Integer, String> getKey()
+    public Triplet<Integer, Integer, String> getKey()
     {
-        return new Pair<Integer, String>(this.userId, this.key);
+        return new Triplet<Integer, Integer, String>(userId, worldId, key);
     }
 
     @Override
-    public void setKey(Pair<Integer, String> key)
+    public void setKey(Triplet<Integer, Integer, String> key)
     {
-        this.userId = key.getLeft();
-        this.key = key.getRight();
+        this.userId = key.getFirst();
+        this.worldId = key.getSecond();
+        this.key = key.getThird();
     }
 }

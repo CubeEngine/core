@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer

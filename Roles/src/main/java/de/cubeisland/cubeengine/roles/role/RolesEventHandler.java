@@ -1,11 +1,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import java.util.List;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,7 +23,7 @@ public class RolesEventHandler implements Listener
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event)
     {
-        this.preCalculateRoles(event.getPlayer().getName());
+        this.manager.preCalculateRoles(event.getPlayer().getName());
         int worldFromId = this.module.getCore().getWorldManager().getWorldId(event.getFrom());
         int worldToId = this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld());
         RoleProvider fromProvider = this.manager.getProvider(worldFromId);
@@ -39,66 +35,21 @@ public class RolesEventHandler implements Listener
                 return;
             }
         }
-        this.applyRole(event.getPlayer(), worldToId);
+        this.manager.applyRole(event.getPlayer(), worldToId);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
-    {
-        this.preCalculateRoles(event.getName());
+    {//TODO SYNC this!!!
+        this.manager.preCalculateRoles(event.getName());
     }
 
     @EventHandler
     public void onLogin(PlayerLoginEvent event)
     {
-        this.preCalculateRoles(event.getPlayer().getName());
-        this.applyRole(event.getPlayer(), this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld()));
+        this.manager.preCalculateRoles(event.getPlayer().getName());
+        this.manager.applyRole(event.getPlayer(), this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld()));
     }
 
-    /**
-     * Calculates the roles in each world for this player.
-     *
-     * @param username
-     */
-    public void preCalculateRoles(String username)
-    {
-        User user = this.module.getUserManager().getUser(username, true);
-        if (user.getAttribute(this.module, "roleContainer") != null)
-        {
-            return;
-        }
-        TIntObjectHashMap<List<Role>> rolesPerWorld = new TIntObjectHashMap<List<Role>>();
-        for (RoleProvider provider : manager.getProviders())
-        {
-            TIntObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user);
-            rolesPerWorld.putAll(pRolesPerWorld);
-        }
-        TIntObjectHashMap<MergedRole> roleContainer = new TIntObjectHashMap<MergedRole>();
-        for (int worldId : rolesPerWorld.keys())
-        {
-            MergedRole mergedRole = null;
-            for (MergedRole inContainer : roleContainer.valueCollection())
-            {
-                if (inContainer.mergedWith.equals(rolesPerWorld.get(worldId)))
-                {
-                    mergedRole = inContainer;
-                }
-            }
-            if (mergedRole == null)
-            {
-                mergedRole = new MergedRole(rolesPerWorld.get(worldId)); // merge all assigned roles
-            }
-            roleContainer.put(worldId, mergedRole);
-        }
-        user.setAttribute(this.module, "roleContainer", roleContainer);
-    }
-
-    public void applyRole(Player player, int worldId)
-    {
-        User user = this.module.getUserManager().getExactUser(player);
-        TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
-        MergedRole role = roleContainer.get(worldId);
-        user.setPermission(role.getPermissions(), player);
-        user.setAttribute(this.module, "metadata", role.getMetaData());
-    }
+    
 }

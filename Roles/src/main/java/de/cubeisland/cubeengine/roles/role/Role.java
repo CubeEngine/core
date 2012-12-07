@@ -94,7 +94,7 @@ public class Role
      */
     public void setMetaData(Map<String, String> metaData)
     {
-        this.setMetaData(metaData);
+        this.metaData = metaData;
     }
 
     /**

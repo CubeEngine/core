@@ -88,7 +88,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
                 }
             }
         }
-        tbuilder.primaryKey(this.f_dbKey, this.s_dbKey).endFields();
+        tbuilder.primaryKey(this.f_dbKey, this.s_dbKey, this.t_dbKey).endFields();
 
         tbuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
         try

@@ -16,10 +16,13 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
+import org.bukkit.entity.Player;
 
 public class RoleManager
 {
@@ -170,6 +173,11 @@ public class RoleManager
         //now calculate inheritance:
         // 1. resolve permissions
         Map<String, Boolean> permissions = role.getPermissions();
+        if (permissions == null)
+        {
+            permissions = new LinkedHashMap<String, Boolean>();
+            role.setPermissions(permissions);
+        }
         for (Entry<String, Boolean> perm : mergedParentRole.getPermissions().entrySet())
         {
             if (!permissions.containsKey(perm.getKey())) //if not overridden
@@ -179,11 +187,29 @@ public class RoleManager
         }
         // 2. resolve metadata
         Map<String, String> metaData = role.getMetaData();
+        if (metaData == null)
+        {
+            metaData = new LinkedHashMap<String, String>();
+            role.setMetaData(metaData);
+        }
         for (Entry<String, String> data : mergedParentRole.getMetaData().entrySet())
         {
             if (!metaData.containsKey(data.getKey())) //if not overridden
             {
                 metaData.put(data.getKey(), data.getValue()); //add to inheritance
+            }
+        }
+
+        if (role instanceof MergedRole && mergedParentRole instanceof MergedRole)
+        {
+            {
+                Collection<Role> roles = ((MergedRole) role).getMergedWith();
+                if (roles == null)
+                {
+                    roles = new ArrayList<Role>();
+                }
+                roles.addAll(((MergedRole) mergedParentRole).getMergedWith());
+                ((MergedRole) role).setMergedWith(roles);
             }
         }
     }
@@ -331,5 +357,73 @@ public class RoleManager
         TIntObjectHashMap<List<String>> result = this.module.getDbManager().getRolesByUser(user);
         this.loadedUserRoles.put(user.key, result);
         return result;
+    }
+
+    /**
+     * Calculates the roles in each world for this player.
+     *
+     * @param username
+     */
+    public void preCalculateRoles(String username)
+    {
+        User user = this.module.getUserManager().getUser(username, true);
+        if (user.getAttribute(this.module, "roleContainer") != null)
+        {
+            return;
+        }
+        TIntObjectHashMap<List<Role>> rolesPerWorld = new TIntObjectHashMap<List<Role>>();
+        for (RoleProvider provider : this.getProviders())
+        {
+            TIntObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user);
+            rolesPerWorld.putAll(pRolesPerWorld);
+        }
+        TIntObjectHashMap<MergedRole> roleContainer = new TIntObjectHashMap<MergedRole>();
+
+        TIntObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
+        TIntObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
+
+        for (int worldId : rolesPerWorld.keys())
+        {
+            // UserSpecific Settings:
+            MergedRole userSpecificRole = new MergedRole(null);
+            userSpecificRole.setMetaData(userSpecificMeta.get(worldId));
+            userSpecificRole.setPermissions(userSpecificPerms.get(worldId));
+
+            // Roles Assigned to this user:
+            MergedRole mergedRole = null;
+            for (MergedRole inContainer : roleContainer.valueCollection())
+            {
+                if (inContainer.getMergedWith().equals(rolesPerWorld.get(worldId)))
+                {
+                    mergedRole = inContainer;
+                }
+            }
+            if (mergedRole == null)
+            {
+                List<Role> roles = rolesPerWorld.get(worldId);
+                mergedRole = new MergedRole(roles); // merge all assigned roles
+            }
+            this.applyInheritence(userSpecificRole, mergedRole);
+            roleContainer.put(worldId, userSpecificRole);
+        }
+        user.setAttribute(this.module, "roleContainer", roleContainer);
+    }
+
+    public void applyRole(Player player, int worldId)
+    {
+
+        User user = this.module.getUserManager().getExactUser(player);
+        TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
+        MergedRole role = roleContainer.get(worldId);
+        
+        //TODO remove:
+        System.out.print(player.getName() + " got his role assigned!");
+        for (String p : role.getPermissions().keySet())
+        {
+            System.out.print(p + " : " + role.getPermissions().get(p));
+        }
+
+        user.setPermission(role.getPermissions(), player);
+        user.setAttribute(this.module, "metadata", role.getMetaData());
     }
 }

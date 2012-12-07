@@ -12,12 +12,16 @@ import de.cubeisland.cubeengine.roles.role.config.PriorityConverter;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import de.cubeisland.cubeengine.roles.role.config.RoleProviderConverter;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
+import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
+import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
 
 public class Roles extends Module
 {
     private RolesConfig config;
     private RoleManager manager;
     private AssignedRoleManager dbManager;
+    private UserMetaDataManager dbUserMeta;
+    private UserPermissionsManager dbUserPerm;
     private static Roles instance;
 
     public Roles()
@@ -32,14 +36,16 @@ public class Roles extends Module
     public void onEnable()
     {
         this.dbManager = new AssignedRoleManager(this.getDatabase());
+        this.dbUserMeta = new UserMetaDataManager(this.getDatabase());
+        this.dbUserPerm = new UserPermissionsManager(this.getDatabase());
         this.manager = new RoleManager(this);
         RolesEventHandler rolesEventHandler = new RolesEventHandler(this);
         this.getEventManager().registerListener(this, rolesEventHandler);
         for (User user : this.getUserManager().getOnlineUsers()) // reapply roles on reload
         {
             user.removeAttribute(this, "roleContainer"); // remove potential old calculated roles
-            rolesEventHandler.preCalculateRoles(user.getName());
-            rolesEventHandler.applyRole(user.getPlayer(), this.getCore().getWorldManager().getWorldId(user.getWorld()));
+            this.manager.preCalculateRoles(user.getName());
+            this.manager.applyRole(user.getPlayer(), this.getCore().getWorldManager().getWorldId(user.getWorld()));
         }
     }
 
@@ -60,6 +66,16 @@ public class Roles extends Module
     public AssignedRoleManager getDbManager()
     {
         return dbManager;
+    }
+
+    public UserMetaDataManager getDbUserMeta()
+    {
+        return dbUserMeta;
+    }
+
+    public UserPermissionsManager getDbUserPerm()
+    {
+        return dbUserPerm;
     }
 
     public RoleManager getManager()

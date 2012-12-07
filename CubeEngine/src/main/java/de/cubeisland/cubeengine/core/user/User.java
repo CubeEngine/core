@@ -43,11 +43,10 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 
-
 /**
  * A CubeEngine User (can exist offline too).
  */
-@SingleIntKeyEntity(tableName = "user",primaryKey="key")
+@SingleIntKeyEntity(tableName = "user", primaryKey = "key")
 public class User extends UserBase implements LinkingModel<Integer>
 {
     public static int NO_ID = -1;
@@ -422,8 +421,8 @@ public class User extends UserBase implements LinkingModel<Integer>
         Map<String, Boolean> negative;
         if (posPerm == null)
         {
-            positive = new HashMap<String, Boolean>();
-            pm.addPermission(new Permission(posName, PermissionDefault.FALSE, positive));
+            pm.addPermission(posPerm = new Permission(posName, PermissionDefault.FALSE, new HashMap<String, Boolean>()));
+            positive = posPerm.getChildren();
         }
         else
         {
@@ -431,8 +430,8 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
         if (negPerm == null)
         {
-            negative = new HashMap<String, Boolean>();
-            pm.addPermission(new Permission(negName, PermissionDefault.FALSE, negative));
+            pm.addPermission(negPerm = new Permission(negName, PermissionDefault.FALSE, new HashMap<String, Boolean>()));
+            negative = negPerm.getChildren();
         }
         else
         {
