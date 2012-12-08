@@ -16,10 +16,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Stack;
 import org.bukkit.entity.Player;
 
@@ -157,8 +154,7 @@ public class RoleManager
                     this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
-            role = new Role(config, true);
-            List<Role> parenRoles = new ArrayList<Role>();
+            List<Role> parentRoles = new ArrayList<Role>();
             for (String parentName : config.parents)
             {
                 try
@@ -168,16 +164,15 @@ public class RoleManager
                     {
                         throw new RoleDependencyMissingException("Needed parent role " + parentName + " for " + config.roleName + " not found.");
                     }
-                    parenRoles.add(parentRole); // Role was found:
+                    parentRoles.add(parentRole); // Role was found:
                 }
                 catch (RoleDependencyMissingException ex)
                 {
                     this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
-            role.setParentRoles(parenRoles); // Add all roles found
-            Role mergedParentRole = new MergedRole(parenRoles); //merge together parentRoles  
-            this.applyInheritence(role, mergedParentRole);
+            role = new ConfigRole(config, parentRoles, true);
+
             this.roleStack.pop();
             return role;
         }
@@ -185,52 +180,6 @@ public class RoleManager
         {
             this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
             return null;
-        }
-    }
-
-    private void applyInheritence(Role role, Role mergedParentRole)
-    {
-        //now calculate inheritance:
-        // 1. resolve permissions
-        Map<String, Boolean> permissions = role.getPermissions();
-        if (permissions == null)
-        {
-            permissions = new LinkedHashMap<String, Boolean>();
-            role.setPermissions(permissions);
-        }
-        for (Entry<String, Boolean> perm : mergedParentRole.getPermissions().entrySet())
-        {
-            if (!permissions.containsKey(perm.getKey())) //if not overridden
-            {
-                permissions.put(perm.getKey(), perm.getValue()); //add to inheritance
-            }
-        }
-        // 2. resolve metadata
-        Map<String, String> metaData = role.getMetaData();
-        if (metaData == null)
-        {
-            metaData = new LinkedHashMap<String, String>();
-            role.setMetaData(metaData);
-        }
-        for (Entry<String, String> data : mergedParentRole.getMetaData().entrySet())
-        {
-            if (!metaData.containsKey(data.getKey())) //if not overridden
-            {
-                metaData.put(data.getKey(), data.getValue()); //add to inheritance
-            }
-        }
-
-        if (role instanceof MergedRole && mergedParentRole instanceof MergedRole)
-        {
-            {
-                Collection<Role> roles = ((MergedRole) role).getMergedWith();
-                if (roles == null)
-                {
-                    roles = new ArrayList<Role>();
-                }
-                roles.addAll(((MergedRole) mergedParentRole).getMergedWith());
-                ((MergedRole) role).setMergedWith(roles);
-            }
         }
     }
 
@@ -282,8 +231,8 @@ public class RoleManager
                 }
             }
             // now all parent roles should be loaded
-            role = new Role(config);
-            List<Role> parenRoles = new ArrayList<Role>();
+
+            List<Role> parentRoles = new ArrayList<Role>();
             for (String parentName : config.parents)
             {
                 try
@@ -302,16 +251,14 @@ public class RoleManager
                     {
                         throw new RoleDependencyMissingException("Needed parent role " + parentName + " for " + config.roleName + " not found.");
                     }
-                    parenRoles.add(parentRole); // Role was found:
+                    parentRoles.add(parentRole); // Role was found:
                 }
                 catch (RoleDependencyMissingException ex)
                 {
                     this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
-            role.setParentRoles(parenRoles); // Add all roles found
-            Role mergedParentRole = new MergedRole(parenRoles); //merge together parentRoles  
-            this.applyInheritence(role, mergedParentRole);
+            role = new ConfigRole(config, parentRoles, false);
             this.roleStack.pop();
             return role;
         }
@@ -405,10 +352,7 @@ public class RoleManager
         for (int worldId : rolesPerWorld.keys())
         {
             // UserSpecific Settings:
-            MergedRole userSpecificRole = new MergedRole(null);
-            userSpecificRole.setMetaData(userSpecificMeta.get(worldId));
-            userSpecificRole.setPermissions(userSpecificPerms.get(worldId));
-
+            MergedRole userSpecificRole = new MergedRole(userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
             // Roles Assigned to this user:
             MergedRole mergedRole = null;
             for (MergedRole inContainer : roleContainer.valueCollection())
@@ -423,7 +367,7 @@ public class RoleManager
                 List<Role> roles = rolesPerWorld.get(worldId);
                 mergedRole = new MergedRole(roles); // merge all assigned roles
             }
-            this.applyInheritence(userSpecificRole, mergedRole);
+            userSpecificRole.applyInheritence(mergedRole);
             roleContainer.put(worldId, userSpecificRole);
         }
         user.setAttribute(this.module, "roleContainer", roleContainer);
@@ -431,19 +375,18 @@ public class RoleManager
 
     public void applyRole(Player player, int worldId)
     {
-
         User user = this.module.getUserManager().getExactUser(player);
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
 
         //TODO remove:
         System.out.print(player.getName() + " got his role assigned!");
-        for (String p : role.getPermissions().keySet())
+        for (String p : role.getPerms().keySet())
         {
-            System.out.print(p + " : " + role.getPermissions().get(p));
+            System.out.print(p + " : " + role.getPerms().get(p).isSet());
         }
 
-        user.setPermission(role.getPermissions(), player);
+        user.setPermission(role.resolvePermissions(), player);
         user.setAttribute(this.module, "metadata", role.getMetaData());
     }
 }

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role.new_;
+package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 

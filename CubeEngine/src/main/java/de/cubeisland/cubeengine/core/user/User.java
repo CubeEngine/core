@@ -441,6 +441,10 @@ public class User extends UserBase implements LinkingModel<Integer>
         negative.clear();
         for (String perm : permissions.keySet())
         {
+            if (!perm.endsWith("*"))
+            {
+                continue;
+            }
             if (permissions.get(perm))
             {
                 positive.put(perm, true);
@@ -462,8 +466,8 @@ public class User extends UserBase implements LinkingModel<Integer>
         if (attachment == null)
         {
             attachment = player.addAttachment((Plugin) CubeEngine.getCore());
-            attachment.setPermission(posName, true);
-            attachment.setPermission(negName, true);
+            attachment.setPermission(posPerm, true);
+            attachment.setPermission(negPerm, true);
         }
         player.recalculatePermissions();
     }
