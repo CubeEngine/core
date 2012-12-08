@@ -5,13 +5,10 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
-import java.util.HashSet;
-import java.util.Set;
+import org.bukkit.Location;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
@@ -24,6 +21,12 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 public class ThrowCommands
 {
@@ -262,42 +265,46 @@ public class ThrowCommands
         @Override
         public void run()
         {
+            Location loc;
             if(material == Snowball.class || material == Egg.class)
             {
                 user.launchProjectile(material);
             }
             else if(material == ThrownExpBottle.class)
             {
-                ThrownExpBottle bottle = (ThrownExpBottle) user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection().multiply(2)), EntityType.THROWN_EXP_BOTTLE);
+                loc = user.getLocation();
+                ThrownExpBottle bottle = (ThrownExpBottle)user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.THROWN_EXP_BOTTLE);
                 bottle.setShooter(user);
-                bottle.setVelocity(user.getLocation().getDirection());
+                bottle.setVelocity(loc.getDirection());
             }
             else if(material == ExperienceOrb.class)
             {
-                ExperienceOrb orb = (ExperienceOrb) user.getWorld().spawnEntity(user.getLocation(), EntityType.EXPERIENCE_ORB);
+                loc = user.getLocation();
+                ExperienceOrb orb = (ExperienceOrb) user.getWorld().spawnEntity(loc, EntityType.EXPERIENCE_ORB);
                 orb.setExperience(0);
-                orb.setVelocity(user.getLocation().getDirection());
+                orb.setVelocity(loc.getDirection());
             }
             else
             {
                 Explosive explosive = null;
+                loc = user.getLocation();
                 if(material == Fireball.class)
                 {
-                    explosive = (Fireball) user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection().multiply(2)), EntityType.FIREBALL);
+                    explosive = (Fireball) user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.FIREBALL);
                 }
                 else if(material == SmallFireball.class)
                 {
-                    explosive = (SmallFireball) user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection().multiply(2)), EntityType.SMALL_FIREBALL);
+                    explosive = (SmallFireball) user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.SMALL_FIREBALL);
                 }
                 else if(material == WitherSkull.class)
                 {
-                    explosive = (WitherSkull) user.getWorld().spawnEntity(user.getLocation().add(user.getLocation().getDirection().multiply(2)), EntityType.WITHER_SKULL);
+                    explosive = (WitherSkull) user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.WITHER_SKULL);
                 }
                 else
                 {
                     return;
                 }
-                explosive.setVelocity(user.getLocation().getDirection());
+                explosive.setVelocity(loc.getDirection());
                 
                 if(!this.unsafe && this.material != SmallFireball.class)
                 {

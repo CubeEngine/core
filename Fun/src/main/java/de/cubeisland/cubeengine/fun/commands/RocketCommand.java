@@ -72,10 +72,9 @@ public class RocketCommand
     public class RocketListener implements Listener, Runnable
     {
         private final UserManager userManager;
-
         private final Set<RocketCMDInstance> instances;
-
         private int taskId = -1;
+        private final Location helper = new Location(null, 0, 0, 0);
 
         public RocketListener()
         {
@@ -168,7 +167,7 @@ public class RocketCommand
                 
                 if(!instance.getDown())
                 {
-                    user.getWorld().playEffect(user.getLocation(), Effect.SMOKE, 0);
+                    user.getWorld().playEffect(user.getLocation(this.helper), Effect.SMOKE, 0);
                 }
 
                 if ( instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
@@ -191,11 +190,11 @@ public class RocketCommand
 
         private class RocketCMDInstance
         {
-            private final String name;
-            private final int height;
-            private boolean down;
+            private final String  name;
+            private final int     height;
+            private       boolean down;
 
-            private RocketCMDInstance(String name, int height) 
+            private RocketCMDInstance(String name, int height)
             {
                 this.name = name;
                 this.height = height;
@@ -242,15 +241,15 @@ public class RocketCommand
                 location.add(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while ( BlockUtil.isNonSolidBlock( location.getBlock().getType() ) && location.getY() < location.getWorld().getMaxHeight())
+                while (BlockUtil.isNonSolidBlock(location.getBlock().getType()) && location.getY() < location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.add(0, 1, 0);
                 }
-                
+
                 return numberOfAirBlocks;
             }
-            
+
             public int getNumberOfAirBlocksUnderFeet()
             {
                 final User user = this.getUser();
@@ -266,7 +265,7 @@ public class RocketCommand
                 location.subtract(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while ( BlockUtil.isNonSolidBlock( location.getBlock().getType() ) || location.getY() > location.getWorld().getMaxHeight() )
+                while (BlockUtil.isNonSolidBlock(location.getBlock().getType()) || location.getY() > location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.subtract(0, 1, 0);

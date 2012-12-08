@@ -51,8 +51,9 @@ public class TeleportCommands
         {
             if (keepDirection)
             {
-                loc.setYaw(user.getLocation().getYaw());
-                loc.setPitch(user.getLocation().getPitch());
+                final Location userLocation = user.getLocation();
+                loc.setYaw(userLocation.getYaw());
+                loc.setPitch(userLocation.getPitch());
             }
             user.teleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
         }

@@ -4,8 +4,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
@@ -15,6 +13,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.util.Vector;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 public class PlayerCommands
 {
@@ -181,9 +182,10 @@ public class PlayerCommands
             illegalParameter(context, "fun", "&cOnly damage values from 1 to 20 are allowed!");
             return;
         }
-        
+
+        final Vector userDirection = user.getLocation().getDirection();
         user.damage(damage);
-        user.setVelocity(new Vector(user.getLocation().getDirection().getX() * damage / 2, 0.05 * damage, user.getLocation().getDirection().getZ() * damage / 2));
+        user.setVelocity(new Vector(userDirection.getX() * damage / 2, 0.05 * damage, userDirection.getZ() * damage / 2));
     }
     
     @Command(

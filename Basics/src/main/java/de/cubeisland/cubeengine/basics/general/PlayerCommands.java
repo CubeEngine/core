@@ -421,6 +421,7 @@ public class PlayerCommands
         context.sendMessage("basics", "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)\n", user.getFoodLevel(), (int) user.getSaturation(), user.getFoodLevel());
         context.sendMessage("basics", "&eLevel: &2%d &eExp: &2%d&f/&2100%% &eof the next Level\n", user.getLevel(), (int) (user.getExp() * 100));
         Location loc = user.getLocation(); // NPE when user is offline
+        // TODO why is this even able to be null?
         if (loc != null)
         {
             context.sendMessage("basics", "&ePosition: &2%d %d %d &ein world %2%s\n", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());

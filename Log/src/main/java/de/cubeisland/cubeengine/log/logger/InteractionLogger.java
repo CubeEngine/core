@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.NoteBlock;
@@ -20,6 +21,7 @@ import org.bukkit.material.Openable;
 
 public class InteractionLogger extends Logger<InteractionLogger.InteractionConfig>
 {
+    private final Location helper = new Location(null, 0, 0, 0);
 
     public InteractionLogger()
     {
@@ -42,18 +44,17 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                 case WOODEN_DOOR:
                 case TRAP_DOOR:
                 case FENCE_GATE:
-                    if ((block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor)
-                            || (block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
+                    if ((block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor) || (block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
                             || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate))
                     {
-                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
+                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(this.helper),
                                 block.getType(), ((Openable) blockData).isOpen() ? 1 : 0);
                     }
                     return;
                 case LEVER:
                     if (this.config.logLever)
                     {
-                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
+                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(this.helper),
                                 block.getType(), ((Lever) blockData).isPowered() ? 1 : 0);
                     }
                     return;
@@ -61,21 +62,21 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                 case WOOD_BUTTON:
                     if (this.config.logButtons)
                     {
-                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
+                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(this.helper),
                                 block.getType(), null);
                     }
                     return;
                 case CAKE_BLOCK: // data: remaining slices
                     if (this.config.logCake)
                     {
-                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
+                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(this.helper),
                                 block.getType(), ((Cake) blockData).getSlicesRemaining());
                     }
                     return;
                 case NOTE_BLOCK:
                     if (this.config.logNoteBlock)
                     {
-                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
+                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(this.helper),
                                 block.getType(), (int) ((NoteBlock) blockData).getRawNote());
                     }
                     return;
@@ -83,7 +84,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                 case DIODE_BLOCK_ON:
                     if (this.config.logDiode)
                     {
-                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
+                        this.module.getLogManager().logInteractLog(user.key, user.getLocation(this.helper),
                                 block.getType(), ((Diode) blockData).getDelay());
                     }
             }
@@ -95,7 +96,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
             {
                 case WOOD_PLATE:
                 case STONE_PLATE:
-                    this.module.getLogManager().logInteractLog(user.key, user.getLocation(),
+                    this.module.getLogManager().logInteractLog(user.key, user.getLocation(this.helper),
                             block.getType(), null);
             }
         }

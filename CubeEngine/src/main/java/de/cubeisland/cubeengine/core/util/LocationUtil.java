@@ -9,8 +9,9 @@ public class LocationUtil
 {
     public static Location getBlockBehindWall(User user, int maxDistanceToWall, int maxThicknessOfWall)
     {
-        double yaw = Math.toRadians(user.getLocation().getYaw() + 90);
-        double pitch = Math.toRadians(-user.getLocation().getPitch());
+        Location userLocation = user.getLocation();
+        double yaw = Math.toRadians(userLocation.getYaw() + 90);
+        double pitch = Math.toRadians(-userLocation.getPitch());
 
         double x = 0.5 * Math.cos(yaw) * Math.cos(pitch);
         double y = 0.5 * Math.sin(pitch);
@@ -45,8 +46,8 @@ public class LocationUtil
                 loc.setX(loc.getBlockX() + 0.5);
                 loc.setY(loc.getBlockY());
                 loc.setZ(loc.getBlockZ() + 0.5);
-                loc.setYaw(user.getLocation().getYaw());
-                loc.setPitch(user.getLocation().getPitch());
+                loc.setYaw(userLocation.getYaw());
+                loc.setPitch(userLocation.getPitch());
                 return loc;
             }
             else if (loc.getBlock().getTypeId() != 0)

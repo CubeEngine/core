@@ -6,16 +6,20 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChatLogger extends Logger<ChatLogger.ChatConfig>
 {
+    private final Location helper = new Location(null, 0, 0, 0);
+
     public ChatLogger()
     {
         super(LogAction.CHAT);
@@ -38,7 +42,7 @@ public class ChatLogger extends Logger<ChatLogger.ChatConfig>
                 }
             }
             User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            this.module.getLogManager().logChatLog(user.key, user.getLocation(), event.getMessage(), false);
+            this.module.getLogManager().logChatLog(user.key, user.getLocation(this.helper), event.getMessage(), false);
         }
     }
 
@@ -48,6 +52,7 @@ public class ChatLogger extends Logger<ChatLogger.ChatConfig>
         if (this.config.logPlayerChat)
         {
             User user = this.module.getUserManager().getExactUser(event.getPlayer());
+            // creating a new Location instance to ensure thread safety
             this.module.getLogManager().logChatLog(user.key, user.getLocation(), event.getMessage(), true);
         }
     }

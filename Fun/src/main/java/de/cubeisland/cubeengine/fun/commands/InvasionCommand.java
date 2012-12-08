@@ -36,12 +36,14 @@ public class InvasionCommand
         }
         else
         {
+            final Location helperLocation = new Location(null, 0, 0, 0);
             for(Player player : Bukkit.getOnlinePlayers())
             {
-                Location location = player.getTargetBlock(null, this.module.getConfig().maxInvasionSpawnDistance).getLocation();
+                Location location = player.getTargetBlock(null, this.module.getConfig().maxInvasionSpawnDistance).getLocation(helperLocation);
                 if(location.getBlock().getType() != Material.AIR)
                 {
-                    location.subtract(player.getLocation().getDirection().multiply(2));
+                    location = location.clone();
+                    location.subtract(player.getLocation(helperLocation).getDirection().multiply(2));
                 }
                 player.getWorld().spawnEntity(location , entityType.getBukkitType());
             }

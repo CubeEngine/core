@@ -10,6 +10,16 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,17 +27,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import de.cubeisland.cubeengine.core.util.time.Duration;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.block.Biome;
 
 public class InformationCommands
 {
@@ -112,7 +114,8 @@ public class InformationCommands
     public void getPos(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYour position: &cRight in front of your screen!");
-        sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", sender.getLocation().getBlockX(), sender.getLocation().getBlockY(), sender.getLocation().getBlockZ());
+        final Location loc = sender.getLocation();
+        sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
     @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags = {
@@ -140,13 +143,16 @@ public class InformationCommands
             radius = context.getIndexed(0, Integer.class, radius);
         }
         int squareRadius = radius * radius;
-        List<Entity> list = user.getWorld().getEntities();
+        Location userLocation = user.getLocation();
+        List<Entity> list = userLocation.getWorld().getEntities();
         LinkedList<String> outputlist = new LinkedList<String>();
         TreeMap<Double, List<Entity>> sortedMap = new TreeMap<Double, List<Entity>>();
+        final Location entityLocation = new Location(null, 0, 0, 0);
         for (Entity entity : list)
         {
-            double distance = entity.getLocation().distanceSquared(user.getLocation());
-            if (!entity.getLocation().equals(user.getLocation()))
+            entity.getLocation(entityLocation);
+            double distance = entityLocation.distanceSquared(userLocation);
+            if (!entityLocation.equals(userLocation))
             {
                 if (distance < squareRadius)
                 {

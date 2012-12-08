@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,7 +13,6 @@ import org.bukkit.block.BlockFace;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
-import de.cubeisland.cubeengine.core.util.LocationUtil;
 
 /**
  * Contains commands for fast movement. 
@@ -67,57 +67,59 @@ public class MovementCommands
     public void ascend(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        Location loc = sender.getLocation();
+        final Location userLocation = sender.getLocation();
+        final Location currentLocation = userLocation.clone();
         //go upwards until hitting solid blocks
-        while (loc.getBlock().getType().equals(Material.AIR) && loc.getBlockY() < loc.getWorld().getMaxHeight())
+        while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight())
         {
-            loc.add(0, 1, 0);
+            currentLocation.add(0, 1, 0);
         }
         // go upwards until hitting 2 airblocks again
-        while (!((loc.getBlock().getType().equals(Material.AIR))
-                && (loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)))
-                && loc.getBlockY() + 1 < loc.getWorld().getMaxHeight())
+        while (!((currentLocation.getBlock().getType().equals(Material.AIR))
+                && (currentLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)))
+                && currentLocation.getBlockY() + 1 < currentLocation.getWorld().getMaxHeight())
         {
-            loc.add(0, 1, 0);
+            currentLocation.add(0, 1, 0);
         }
-        if (loc.getWorld().getHighestBlockYAt(loc) < loc.getBlockY())
+        if (currentLocation.getWorld().getHighestBlockYAt(currentLocation) < currentLocation.getBlockY())
         {
-            loc.setY(loc.getWorld().getHighestBlockYAt(loc));
+            currentLocation.setY(currentLocation.getWorld().getHighestBlockYAt(currentLocation));
         }
-        if (loc.getY() <= sender.getLocation().getY())
+        if (currentLocation.getY() <= userLocation.getY())
         {
             blockCommand(context, "bascics", "&cYou cannot ascend here");
         }
         //reached new location
         context.sendMessage("basics", "&aAscended a level!");
-        TeleportCommands.teleport(sender, loc, true, false, true);
+        TeleportCommands.teleport(sender, currentLocation, true, false, true);
     }
 
     @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
     public void descend(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        Location loc = sender.getLocation();
+        final Location userLocation = sender.getLocation();
+        final Location currentLocation = userLocation.clone();
         //go downwards until hitting solid blocks
-        while (loc.getBlock().getType().equals(Material.AIR) && loc.getBlockY() < loc.getWorld().getMaxHeight())
+        while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight())
         {
-            loc.add(0, -1, 0);
+            currentLocation.add(0, -1, 0);
         }
         // go downwards until hitting 2 airblocks & a solid block again 
-        while (!((loc.getBlock().getType().equals(Material.AIR))
-                && (loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR))
-                && (!loc.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.AIR)))
-                && loc.getBlockY() + 1 < loc.getWorld().getMaxHeight())
+        while (!((currentLocation.getBlock().getType().equals(Material.AIR))
+                && (currentLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR))
+                && (!currentLocation.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.AIR)))
+                && currentLocation.getBlockY() + 1 < currentLocation.getWorld().getMaxHeight())
         {
-            loc.add(0, -1, 0);
+            currentLocation.add(0, -1, 0);
         }
-        if ((loc.getY() <= 0) || (loc.getY() >= sender.getLocation().getY()))
+        if ((currentLocation.getY() <= 0) || (currentLocation.getY() >= userLocation.getY()))
         {
             blockCommand(context, "bascics", "&cYou cannot descend here");
         }
         //reached new location
         context.sendMessage("basics", "&aDescended a level!");
-        TeleportCommands.teleport(sender, loc, true, false, true);
+        TeleportCommands.teleport(sender, currentLocation, true, false, true);
     }
 
     @Command(names =

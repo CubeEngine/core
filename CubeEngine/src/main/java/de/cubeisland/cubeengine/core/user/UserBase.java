@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.bukkit.Bukkit;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -1156,6 +1155,16 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getLocation();
+        }
+        return null;
+    }
+
+    public Location getLocation(Location location)
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return player.getLocation(location);
         }
         return null;
     }

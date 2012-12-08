@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
 import de.cubeisland.cubeengine.fly.database.FlyModel;
-import java.util.HashMap;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,11 +17,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+
 public class FlyListener implements Listener
 {
     private UserManager usermanager;
     private HashMap<Player, Task> tasks = new HashMap<Player, Task>();
     private Fly fly;
+    private final Location helperLocation = new Location(null, 0, 0, 0);
 
     public FlyListener(Fly fly)
     {
@@ -100,7 +103,7 @@ public class FlyListener implements Listener
             final ItemStack feather = new ItemStack(Material.FEATHER, 1);
             player.getInventory().removeItem(feather);
             player.setVelocity(player.getVelocity().setY(player.getVelocity().getY() + 1));
-            player.teleport(player.getLocation().add(new Vector(0, 0.05, 0))); //make sure the player stays flying
+            player.teleport(player.getLocation(this.helperLocation).add(new Vector(0, 0.05, 0))); //make sure the player stays flying
             player.setFlying(true);
             user.sendMessage("fly", "You can now fly!");
             Task flymore = new Task(fly)

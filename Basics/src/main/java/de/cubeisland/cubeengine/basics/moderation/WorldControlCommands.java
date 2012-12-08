@@ -37,7 +37,7 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 /**
- * Commands controling / affecting worlds. /weather /remove /butcher
+ * Commands controlling / affecting worlds. /weather /remove /butcher
  */
 public class WorldControlCommands
 {
@@ -299,15 +299,17 @@ public class WorldControlCommands
         }
         int removed = 0;
 
+        final Location entityLocation = new Location(null, 0, 0, 0);
         for (Entity entity : list)
         {
             if (type != null && !entity.getType().equals(type.getBukkitType()))
             {
                 continue;
             }
+            entity.getLocation(entityLocation);
             if (radius != -1)
             {
-                int distance = (int) (entity.getLocation().subtract(loc)).lengthSquared();
+                int distance = (int) (entityLocation.subtract(loc)).lengthSquared();
                 if (radius * radius < distance)
                 {
                     continue;
@@ -322,7 +324,7 @@ public class WorldControlCommands
             }
             if (lightning)
             {
-                entity.getWorld().strikeLightningEffect(entity.getLocation());
+                entityLocation.getWorld().strikeLightningEffect(entityLocation);
             }
             entity.remove();
             removed++;

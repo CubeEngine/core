@@ -70,9 +70,10 @@ public class SpawnCommands
             {
                 invalidUsage(context, "basics", "&cIf not used ingame you have to specify a world and coordinates!");
             }
-            x = sender.getLocation().getBlockX();
-            y = sender.getLocation().getBlockY();
-            z = sender.getLocation().getBlockZ();
+            final Location loc = sender.getLocation();
+            x = loc.getBlockX();
+            y = loc.getBlockY();
+            z = loc.getBlockZ();
         }
         world.setSpawnLocation(x, y, z);
         context.sendMessage("bascics", "&aSpawn was in world %s set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
@@ -149,10 +150,11 @@ public class SpawnCommands
                 }
             }
         }
-        Location loc = world.getSpawnLocation().add(0.5, 0, 0.5);
-        loc.setPitch(user.getLocation().getPitch());
-        loc.setYaw(user.getLocation().getYaw());
-        SpawnCommandEvent event = new SpawnCommandEvent(this.basics, user, loc);
+        final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
+        final Location userLocation = user.getLocation();
+        spawnLocation.setPitch(userLocation.getPitch());
+        spawnLocation.setYaw(userLocation.getYaw());
+        SpawnCommandEvent event = new SpawnCommandEvent(this.basics, user, spawnLocation);
         this.basics.getEventManager().fireEvent(event); // catch this event to change spawn location
         TeleportCommands.teleport(user, event.getLoc(), true, force, true);
     }
@@ -166,10 +168,11 @@ public class SpawnCommands
         {
             illegalParameter(context, "basics", "&cWorld not found!");
         }
-        Location loc = world.getSpawnLocation().add(0.5, 0, 0.5);
-        loc.setPitch(sender.getLocation().getPitch());
-        loc.setYaw(sender.getLocation().getYaw());
-        TeleportCommands.teleport(sender, loc, true, false, true);
+        final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
+        final Location userLocation = sender.getLocation();
+        spawnLocation.setPitch(userLocation.getPitch());
+        spawnLocation.setYaw(userLocation.getYaw());
+        TeleportCommands.teleport(sender, spawnLocation, true, false, true);
         context.sendMessage("basics", "&aTeleported to the spawn of world &6%s&a!", world.getName());
     }
 }

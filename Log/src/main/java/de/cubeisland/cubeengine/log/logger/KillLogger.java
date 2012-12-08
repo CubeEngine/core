@@ -6,9 +6,20 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.Location;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Giant;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -17,6 +28,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class KillLogger extends Logger<KillLogger.KillConfig>
 {
+    private final Location helper = new Location(null, 0, 0, 0);
+
     public KillLogger()
     {
         super(LogAction.KILL);
@@ -70,18 +83,18 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
                     {
                         if (((Projectile)damager).getShooter() != null)
                         {
-                            this.logKill(event.getCause(), ((Projectile)damager).getShooter(), event.getEntity(), event.getEntity().getLocation());
+                            this.logKill(event.getCause(), ((Projectile)damager).getShooter(), event.getEntity(), event.getEntity().getLocation(this.helper));
                         }
                         // else Projectile shot by Dispenser ?
                     }
                     else
                     {
-                        this.logKill(event.getCause(), damager, event.getEntity(), event.getEntity().getLocation());
+                        this.logKill(event.getCause(), damager, event.getEntity(), event.getEntity().getLocation(this.helper));
                     }
                 }
                 else
                 {
-                    this.logKill(event.getCause(), null, event.getEntity(), event.getEntity().getLocation());
+                    this.logKill(event.getCause(), null, event.getEntity(), event.getEntity().getLocation(this.helper));
                 }
             }
         }

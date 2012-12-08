@@ -51,20 +51,20 @@ public class User extends UserBase implements LinkingModel<Integer>
 {
     public static int NO_ID = -1;
     @Attribute(type = AttrType.INT)
-    public int key;
+    public       int    key;
     @Index(UNIQUE)
     @Attribute(type = AttrType.VARCHAR, length = 16)
     public final String player;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
-    public Timestamp lastseen;
+    public       Timestamp lastseen;
     @Attribute(type = AttrType.VARBINARY, length = 128, notnull = false)
-    public byte[] passwd;
+    public       byte[]    passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
     @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
-    public String language = null;
+    public  String  language   = null;
     private boolean isLoggedIn = false;
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
@@ -85,13 +85,13 @@ public class User extends UserBase implements LinkingModel<Integer>
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
-        super(Bukkit.getOfflinePlayer((String) args.get(1)));
+        super(Bukkit.getOfflinePlayer((String)args.get(1)));
         this.key = Integer.valueOf(args.get(0).toString());
         this.player = this.offlinePlayer.getName();
-        this.nogc = (Boolean) args.get(2);
-        this.lastseen = (Timestamp) args.get(3);
-        this.firstseen = (Timestamp) args.get(3);
-        this.passwd = (byte[]) args.get(4);
+        this.nogc = (Boolean)args.get(2);
+        this.lastseen = (Timestamp)args.get(3);
+        this.firstseen = (Timestamp)args.get(3);
+        this.passwd = (byte[])args.get(4);
     }
 
     public User(int key, OfflinePlayer player)
@@ -324,8 +324,9 @@ public class User extends UserBase implements LinkingModel<Integer>
         }
         if (keepDirection)
         {
-            location.setPitch(this.getLocation().getPitch());
-            location.setYaw(this.getLocation().getYaw());
+            final Location loc = this.getLocation();
+            location.setPitch(loc.getPitch());
+            location.setYaw(loc.getYaw());
         }
         this.teleport(location, cause);
     }
