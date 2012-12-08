@@ -482,4 +482,9 @@ public class User extends UserBase implements LinkingModel<Integer>
     {
         BukkitUtils.setInvulnerable(this, state);
     }
+    
+    public int getWorldId()
+    {
+        return CubeEngine.getCore().getWorldManager().getWorldId(this.getWorld());
+    }
 }

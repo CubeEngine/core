@@ -8,9 +8,11 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.MergedRole;
 import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RolePermission;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map.Entry;
 
 public class UserManagementCommands extends ContainerCommand
 {
@@ -25,18 +27,9 @@ public class UserManagementCommands extends ContainerCommand
              max = 2)
     public void list(CommandContext context)
     {
-        User user;
-        if (context.hasIndexed(0))
-        {
-            user = context.getUser(0);
-        }
-        else
-        {
-            user = context.getSenderAsUser("roles", "&cYou have to specify a player.");
-        }
+        User user = this.getUser(context, 0);
         if (user == null)
         {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(0));
             return;
         }
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
@@ -75,16 +68,12 @@ public class UserManagementCommands extends ContainerCommand
         }
     }
 
-    @Alias(names = "checkuperm")
-    @Command(desc = "Checks for permissions of a user [in world]",
-             usage = "<permission> [player] [in <world>]",
-             max = 3, min = 1)
-    public void checkperm(CommandContext context)
+    private User getUser(CommandContext context, int pos)
     {
         User user;
-        if (context.hasIndexed(1))
+        if (context.hasIndexed(pos))
         {
-            user = context.getUser(1);
+            user = context.getUser(pos);
         }
         else
         {
@@ -93,8 +82,23 @@ public class UserManagementCommands extends ContainerCommand
         if (user == null)
         {
             context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
+            return null;
+        }
+        return user;
+    }
+
+    @Alias(names = "checkuperm")
+    @Command(desc = "Checks for permissions of a user [in world]",
+             usage = "<permission> [player] [in <world>]",
+             max = 3, min = 1)
+    public void checkperm(CommandContext context)
+    {
+        User user = this.getUser(context, 1);
+        if (user == null)
+        {
             return;
         }
+
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
         if (roleContainer == null)
         {
@@ -112,7 +116,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         else
         {
-            worldId = this.getModule().getCore().getWorldManager().getWorldId(user.getWorld());
+            worldId = user.getWorldId();
         }
         String permission = context.getString(0);
         MergedRole mergedRole = roleContainer.get(worldId);
@@ -170,8 +174,42 @@ public class UserManagementCommands extends ContainerCommand
         }
     }
 
+    @Alias(names = "checkuperm")
+    @Command(desc = "List permission of a user [in world]",
+             usage = "[player] [in <world>]",
+             max = 2)
     public void listperm(CommandContext context)
     {
+        User user = this.getUser(context, 0);
+        if (user == null)
+        {
+            return;
+        }
+        Integer worldId;
+        if (context.hasIndexed(1))
+        {
+            worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(1));
+            if (worldId == null)
+            {
+                context.sendMessage("roles", "&cUnkown world %s!", context.getString(1));
+                return;
+            }
+        }
+        else
+        {
+            worldId = user.getWorldId();
+        }
+        TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
+        if (roleContainer == null)
+        {
+            throw new IllegalStateException("User has no rolecontainer!");
+        }
+        MergedRole mergedRole = roleContainer.get(worldId);
+        context.sendMessage("roles", "&ePermissions of &2%s&e:", user.getName());
+        for (Entry<String, RolePermission> entry : mergedRole.getPerms().entrySet())
+        {
+            context.sendMessage("- &e" + entry.getValue().getPerm() + ": &6" + entry.getValue().isSet());
+        }
     }
 
     public void checkmetadata(CommandContext context)
