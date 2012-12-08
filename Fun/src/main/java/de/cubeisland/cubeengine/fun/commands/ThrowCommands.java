@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
@@ -24,6 +25,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.bukkit.entity.Arrow;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
@@ -57,24 +59,34 @@ public class ThrowCommands
     @Command
     (
         names = {"throw"},
-        desc = "The CommandSender throws a certain amount of snowballs or eggs.",
-        min = 1,
+        desc = "The CommandSender throws arrow/snowballs/eggs/xp/orb/fireball/smallfireball/witherskull",
         max = 2,
         params = { @Param(names = {"delay", "d"}, type = Integer.class) },
-        usage = "<egg|snowball|xpbottle|orb> [amount] [delay <value>]"
+        flags = { @Flag(longName = "unsafe", name = "u") },
+        usage = "<material> [amount] [delay <value>] [-unsafe]"
     )
     public void throwItem(CommandContext context)
     {
         User user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
 
         ThrowItem throwItem = this.getThrowItem(user);
-        if(throwItem == null)
+        
+        if(throwItem == null && context.getIndexed().isEmpty())
         {
-            String material = context.getString(0);
+            invalidUsage(context, "fun", "&cYou has to add the material you wanna throw.");
+        }
+        else if(throwItem != null)
+        {
+            throwItem.remove();
+            user.sendMessage("&aYou throw not longer any item.");
+        }
+        else
+        {
             int amount = context.getIndexed(1, Integer.class, -1);
             int delay = context.getNamed("delay", Integer.class, 3);
+            
+            String material = context.getString(0);
             Class materialClass = null;
-            boolean permissions = true;
 
             if( (amount > this.module.getConfig().maxThrowNumber || amount < 1) && amount != -1)
             {
@@ -92,7 +104,7 @@ public class ThrowCommands
                 }
                 else
                 {
-                    denyAccess(context, "fun", "You are not allowed to throw snow");
+                    denyAccess(context, "fun", "&cYou are not allowed to throw snow");
                 }
             }
             else if(material.equalsIgnoreCase("egg"))
@@ -103,7 +115,7 @@ public class ThrowCommands
                 }
                 else
                 {
-                    denyAccess(context, "fun", "You are not allowed to throw eggs");
+                    denyAccess(context, "fun", "&cYou are not allowed to throw eggs");
                 }
             }
             else if(material.equalsIgnoreCase("xp") || material.equalsIgnoreCase("xpbottle"))
@@ -114,7 +126,7 @@ public class ThrowCommands
                 }
                 else
                 {
-                    denyAccess(context, "fun", "You are not allowed to throw xp.");
+                    denyAccess(context, "fun", "&cYou are not allowed to throw xp.");
                 }
             }
             else if(material.equalsIgnoreCase("orb"))
@@ -125,107 +137,73 @@ public class ThrowCommands
                 }
                 else
                 {
-                    denyAccess(context, "fun", "You are not allowed to throw orbs");
+                    denyAccess(context, "fun", "&cYou are not allowed to throw orbs.");
                 }
-
+            }
+            else if(material.equalsIgnoreCase("fireball"))
+            {
+                if(FunPerm.THROW_FIREBALL.isAuthorized(user))
+                {
+                    materialClass = Fireball.class;
+                }
+                else
+                {
+                    denyAccess(context, "fun", "&cYou are not allowed to throw fireballs.");
+                }
+            }
+            else if(material.equalsIgnoreCase("smallfireball"))
+            {
+                if(FunPerm.THROW_SMALLFIREBALL.isAuthorized(user))
+                {
+                    materialClass = SmallFireball.class;
+                }
+                else
+                {
+                    denyAccess(context, "fun", "&cYou are not allowed to throw small fireballs.");
+                }
+            }
+            else if(material.equalsIgnoreCase("witherskull"))
+            {
+                if(FunPerm.THROW_WITHERSKULL.isAuthorized(user))
+                {
+                    materialClass = WitherSkull.class;
+                }
+                else
+                {
+                    denyAccess(context, "fun", "&cYou are not allowed to throw wither skulls.");
+                }
+            }
+            else if(material.equalsIgnoreCase("arrow"))
+            {
+                if(FunPerm.THROW_ARROW.isAuthorized(user))
+                {
+                    materialClass = Arrow.class;
+                }
+                else
+                {
+                    denyAccess(context, "fun", "&cYou are not allowed to throw arrows.");
+                }
             }
             else
             {
                 illegalParameter(context, "fun", "&cThe Item %s is not supported!", material);
             }
 
-            throwItems.add( new ThrowItem(user, materialClass, amount, delay) );
-        }
-        else
-        {
-            throwItem.remove();
-            user.sendMessage("You throw not longer any Item");
-        }
-        
-    }
-
-    @Command
-    (
-        desc = "The CommandSender throws a certain amount of fireballs. Default is one.",
-        max = 1,
-        flags = 
-            {
-                @Flag(longName = "unsafe", name = "u"),
-                @Flag(longName = "small", name = "s"),
-                @Flag(longName = "witherskull", name = "w")
-            },
-        params = { @Param(names = {"delay", "d"}, type = Integer.class) },
-        usage = "[amount] [delay <value>] [-small] [-witherskull] [-unsafe]"
-    )
-    public void fireball(CommandContext context)
-    {
-        User user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
-
-        ThrowItem throwItem = this.getThrowItem(user);
-        if(throwItem == null)
-        {
-            int amount = context.getIndexed(0, Integer.class, 1);
-            int delay = context.getNamed("delay", Integer.class, Integer.valueOf(3));
-            Class material = null;
-
-            if( (amount < 1 || amount > this.module.getConfig().maxFireballNumber) && amount != -1)
-            {
-                illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.module.getConfig().maxFireballNumber);
-            }
-            if(delay > this.module.getConfig().maxFireballDelay || delay < 0)
-            {
-                illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.module.getConfig().maxFireballDelay);
-            }
-
-            if(context.hasFlag("s"))
-            {
-                if(FunPerm.FIREBALL_SMALLFIREBALL.isAuthorized(user))
-                {
-                    material = SmallFireball.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "You are not allowed to throw a small fireball" );
-                }
-            }
-            else if(context.hasFlag("w"))
-            {
-                if(FunPerm.FIREBALL_WITHERSKULL.isAuthorized(user))
-                {
-                    material = WitherSkull.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "You are not allowed to throw a wither skull." );
-                }
-            }
-            else
-            {
-                if(FunPerm.FIREBALL_FIREBALL.isAuthorized(user))
-                {
-                    material = Fireball.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "You are not allowed to throw a fireball." );
-                }
-            }
-
-            throwItem = new ThrowItem(user, material, amount, delay);
+            throwItem = new ThrowItem(user, materialClass, amount, delay);
             throwItems.add( throwItem );
-            if(context.hasFlag("u"))
+            
+            if(context.hasFlag("u") && ( materialClass == Fireball.class || materialClass == WitherSkull.class ) )
             {
                 throwItem.setUnsafe(true);
             }
-        }
-        else
-        {
-            throwItem.remove();
-            user.sendMessage("You throw not longer any item");
+            
+            if(amount == -1)
+            {
+                user.sendMessage("fun", "&aYou throw this item until you execute this command again.");
+            }
         }
         
-    }
-    
+    }    
     
     private class ThrowItem implements Runnable
     {
@@ -265,43 +243,42 @@ public class ThrowCommands
         @Override
         public void run()
         {
-            Location loc;
-            if(material == Snowball.class || material == Egg.class)
+            Location loc = user.getLocation();
+            loc.add(loc.getDirection().multiply(2));
+            if(material == Snowball.class || material == Egg.class || material == Arrow.class)
             {
                 user.launchProjectile(material);
             }
             else if(material == ThrownExpBottle.class)
             {
-                loc = user.getLocation();
-                ThrownExpBottle bottle = (ThrownExpBottle)user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.THROWN_EXP_BOTTLE);
+                ThrownExpBottle bottle = (ThrownExpBottle)user.getWorld().spawnEntity(loc, EntityType.THROWN_EXP_BOTTLE);
                 bottle.setShooter(user);
                 bottle.setVelocity(loc.getDirection());
             }
             else if(material == ExperienceOrb.class)
             {
-                loc = user.getLocation();
-                ExperienceOrb orb = (ExperienceOrb) user.getWorld().spawnEntity(loc, EntityType.EXPERIENCE_ORB);
+                ExperienceOrb orb = (ExperienceOrb) user.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.EXPERIENCE_ORB);
                 orb.setExperience(0);
                 orb.setVelocity(loc.getDirection());
             }
             else
             {
-                Explosive explosive = null;
-                loc = user.getLocation();
+                Explosive explosive;
                 if(material == Fireball.class)
                 {
-                    explosive = (Fireball) user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.FIREBALL);
+                    explosive = (Fireball) user.getWorld().spawnEntity(loc, EntityType.FIREBALL);
                 }
                 else if(material == SmallFireball.class)
                 {
-                    explosive = (SmallFireball) user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.SMALL_FIREBALL);
+                    explosive = (SmallFireball) user.getWorld().spawnEntity(loc, EntityType.SMALL_FIREBALL);
                 }
                 else if(material == WitherSkull.class)
                 {
-                    explosive = (WitherSkull) user.getWorld().spawnEntity(loc.add(loc.getDirection().multiply(2)), EntityType.WITHER_SKULL);
+                    explosive = (WitherSkull) user.getWorld().spawnEntity(loc, EntityType.WITHER_SKULL);
                 }
                 else
                 {
+                    this.remove();
                     return;
                 }
                 explosive.setVelocity(loc.getDirection());
