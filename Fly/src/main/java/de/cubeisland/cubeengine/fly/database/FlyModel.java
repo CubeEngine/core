@@ -12,10 +12,12 @@ public class FlyModel implements Model<Integer>
 {
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public final int key;
+    public int key;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean flying;
 
+    public FlyModel(){}
+    
     public FlyModel(User user)
     {
         this.key = user.getKey();
