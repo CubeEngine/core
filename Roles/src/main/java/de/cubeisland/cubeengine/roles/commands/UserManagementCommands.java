@@ -159,11 +159,11 @@ public class UserManagementCommands extends ContainerCommand
                     {
                         if (role.getPerms().containsKey(permFound))
                         {
-                            context.sendMessage("roles", "&eGiven by &6%s &eby the role &6%s&e!", permFound, role.getName());
+                            context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permFound, role.getName());
                             return;
                         }
                     }
-                    context.sendMessage("roles", "&eGiven by &6%s &eby the users role!", permFound);
+                    context.sendMessage("roles", "&6%s &ein the users role!", permFound);
                     return;
                 }
             }
