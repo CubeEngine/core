@@ -23,7 +23,7 @@ public class RolesEventHandler implements Listener
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event)
     {
-        this.manager.preCalculateRoles(event.getPlayer().getName());
+        this.manager.preCalculateRoles(event.getPlayer().getName(),false);
         int worldFromId = this.module.getCore().getWorldManager().getWorldId(event.getFrom());
         int worldToId = this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld());
         RoleProvider fromProvider = this.manager.getProvider(worldFromId);
@@ -41,13 +41,13 @@ public class RolesEventHandler implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
     {//TODO SYNC this!!!
-        this.manager.preCalculateRoles(event.getName());
+        this.manager.preCalculateRoles(event.getName(),false);
     }
 
     @EventHandler
     public void onLogin(PlayerLoginEvent event)
     {
-        this.manager.preCalculateRoles(event.getPlayer().getName());
+        this.manager.preCalculateRoles(event.getPlayer().getName(),false);
         this.manager.applyRole(event.getPlayer(), this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld()));
     }
 

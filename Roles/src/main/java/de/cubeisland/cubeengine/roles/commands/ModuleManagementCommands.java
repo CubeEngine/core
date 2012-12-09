@@ -24,7 +24,7 @@ public class ModuleManagementCommands extends ContainerCommand
         for (User user : module.getUserManager().getOnlineUsers())
         {
             user.clearAttributes(this.getModule()); // clear old attributes
-            module.getManager().preCalculateRoles(user.getName());
+            module.getManager().preCalculateRoles(user.getName(),true);
             module.getManager().applyRole(user.getPlayer(), module.getCore().getWorldManager().getWorldId(user.getWorld()));
         }
         context.sendMessage("roles", "&f[&6Roles&f] &areload complete!");

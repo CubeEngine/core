@@ -59,9 +59,12 @@ public class MergedRole extends Role
     public MergedRole(THashMap<String, Boolean> perms, THashMap<String, String> meta)
     {
         this.perms = new HashMap<String, RolePermission>();
-        for (String keyPerm : perms.keySet())
+        if (perms != null)
         {
-            this.perms.put(keyPerm, new RolePermission(keyPerm, perms.get(keyPerm), Priority.OVER9000));
+            for (String keyPerm : perms.keySet())
+            {
+                this.perms.put(keyPerm, new RolePermission(keyPerm, perms.get(keyPerm), Priority.OVER9000));
+            }
         }
         if (meta == null)
         {

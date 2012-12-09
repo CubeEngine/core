@@ -47,7 +47,7 @@ public class Roles extends Module
         for (User user : this.getUserManager().getOnlineUsers()) // reapply roles on reload
         {
             user.removeAttribute(this, "roleContainer"); // remove potential old calculated roles
-            this.manager.preCalculateRoles(user.getName());
+            this.manager.preCalculateRoles(user.getName(),false);
             this.manager.applyRole(user.getPlayer(), this.getCore().getWorldManager().getWorldId(user.getWorld()));
         }
         

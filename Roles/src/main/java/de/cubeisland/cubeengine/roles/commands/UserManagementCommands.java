@@ -21,7 +21,7 @@ public class UserManagementCommands extends ContainerCommand
     {
         super(module, "user", "Manage users.");//TODO alias manuser
     }
-    
+
     private User getUser(CommandContext context, int pos)
     {
         User user;
@@ -40,7 +40,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         return user;
     }
-    
+
     private Role getRole(CommandContext context, User user, int worldpos)
     {
         if (user == null)
@@ -68,7 +68,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         return roleContainer.get(worldId);
     }
-    
+
     @Alias(names = "listuroles")
     @Command(desc = "Lists roles of a user [in world]",
              usage = "[player] [in <world>]",
@@ -92,7 +92,7 @@ public class UserManagementCommands extends ContainerCommand
             }
         }
     }
-    
+
     @Alias(names = "checkuperm")
     @Command(desc = "Checks for permissions of a user [in world]",
              usage = "<permission> [player] [in <world>]",
@@ -156,7 +156,7 @@ public class UserManagementCommands extends ContainerCommand
             }
         }
     }
-    
+
     @Alias(names = "listuperm")
     @Command(desc = "List permission of a user [in world]",
              usage = "[player] [in <world>]",
@@ -172,7 +172,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("- &e" + entry.getValue().getPerm() + ": &6" + entry.getValue().isSet());
         }
     }
-    
+
     @Alias(names = "checkumeta")
     @Command(desc = "Checks for metadata of a user [in world]",
              usage = "<metadatakey> [player] [in <world>]",
@@ -192,7 +192,7 @@ public class UserManagementCommands extends ContainerCommand
         context.sendMessage("roles", "&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, value, user.getName(), world);
         //TODO show where its coming from
     }
-    
+
     @Alias(names = "listumeta")
     @Command(desc = "List metadata of a user [in world]",
              usage = "[player] [in <world>]",
@@ -208,7 +208,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
         }
     }
-    
+
     @Alias(names =
     {
         "manuadd", "assignurole", "addurole", "giveurole"
@@ -240,7 +240,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         String roleName = context.getString(0);
         role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
-        String world = context.hasIndexed(1) ? context.getString(1) : user.getWorld().getName();
+        String world = context.hasIndexed(2) ? context.getString(2) : user.getWorld().getName();
         if (role == null)
         {
             context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world);
@@ -255,12 +255,9 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world);
         }
     }
-    
-    @Command(names =
-    {
-        "assign", "add", "give"
-    },
-             desc = "Removes a role from the player [in world]",
+
+    @Alias(names = "remurole")
+    @Command(desc = "Removes a role from the player [in world]",
              usage = "<role> <player> [in <world>]",
              max = 3, min = 2)
     public void remove(CommandContext context)
@@ -283,7 +280,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         String roleName = context.getString(0);
         role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
-        String world = context.hasIndexed(1) ? context.getString(1) : user.getWorld().getName();
+        String world = context.hasIndexed(2) ? context.getString(2) : user.getWorld().getName();
         if (role == null)
         {
             context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world);
@@ -298,7 +295,11 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), roleName, world);
         }
     }
-    
+
+    @Alias(names = "clearurole")
+    @Command(desc = "Clears all roles from the player and sets the defaultworlds [in world]",
+             usage = "<player> [in <world>]",
+             max = 2, min = 1)
     public void clear(CommandContext context)
     {
         User user = context.getUser(1);
@@ -328,19 +329,19 @@ public class UserManagementCommands extends ContainerCommand
             }
         }
     }
-    
+
     public void setpermission(CommandContext context)
     {
     }
-    
+
     public void resetpermission(CommandContext context)
     {
     }
-    
+
     public void setmetadata(CommandContext context)
     {
     }
-    
+
     public void resetmetadata(CommandContext context)
     {
     }

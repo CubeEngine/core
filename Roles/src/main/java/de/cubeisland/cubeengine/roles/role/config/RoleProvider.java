@@ -65,11 +65,18 @@ public class RoleProvider
         return this.worlds;
     }
 
-    public TIntObjectHashMap<List<Role>> getRolesFor(User user)
+    public TIntObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
     {
         TIntObjectHashMap<List<Role>> result = new TIntObjectHashMap<List<Role>>();
-        TIntObjectHashMap<List<String>> rolesFromDb = Roles.getInstance().getManager().loadRoles(user);
-
+        TIntObjectHashMap<List<String>> rolesFromDb;
+        if (reload)
+        {
+            rolesFromDb = Roles.getInstance().getManager().reloadRoles(user);
+        }
+        else
+        {
+            rolesFromDb = Roles.getInstance().getManager().loadRoles(user);
+        }
         for (int worldID : rolesFromDb.keys())
         {
             Pair<Boolean, Boolean> mirrorRoleUsers = this.worlds.get(worldID);

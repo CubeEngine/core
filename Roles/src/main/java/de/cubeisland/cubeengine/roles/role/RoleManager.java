@@ -272,6 +272,7 @@ public class RoleManager
 
     private void loadProviders()
     {
+        this.providers.clear();
         for (RoleProvider provider : this.module.getConfiguration().providers)
         {
             TIntObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
@@ -332,7 +333,7 @@ public class RoleManager
      *
      * @param username
      */
-    public void preCalculateRoles(String username)
+    public void preCalculateRoles(String username, boolean reload)
     {
         User user = this.module.getUserManager().getUser(username, true);
         if (user.getAttribute(this.module, "roleContainer") != null)
@@ -342,7 +343,7 @@ public class RoleManager
         TIntObjectHashMap<List<Role>> rolesPerWorld = new TIntObjectHashMap<List<Role>>();
         for (RoleProvider provider : this.getProviders())
         {
-            TIntObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user);
+            TIntObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user, reload);
             rolesPerWorld.putAll(pRolesPerWorld);
         }
         TIntObjectHashMap<MergedRole> roleContainer = new TIntObjectHashMap<MergedRole>();
@@ -396,7 +397,7 @@ public class RoleManager
         //TODO check if role is already assigned and return false
         this.module.getDbManager().store(new AssignedRole(user.key, worldId, role.getName()));
         user.removeAttribute(this.module, "roleContainer");
-        this.preCalculateRoles(user.getName()); //TODO only recalculate & apply if needed/what is needed
+        this.preCalculateRoles(user.getName(),true); //TODO only recalculate & apply if needed/what is needed
         this.applyRole(user, worldId);
         return true;
     }
@@ -406,7 +407,8 @@ public class RoleManager
         //TODO check if not assigned and return false
 
         this.module.getDbManager().delete(user.key, role.getName(), worldId);
-        this.preCalculateRoles(user.getName()); //TODO only recalculate & apply if needed/what is needed
+        user.removeAttribute(this.module, "roleContainer");
+        this.preCalculateRoles(user.getName(),true); //TODO only recalculate & apply if needed/what is needed
         this.applyRole(user, worldId);
         return true;
     }
@@ -419,7 +421,8 @@ public class RoleManager
         {
             this.addRole(user, dRole, worldId);
         }
-        this.preCalculateRoles(user.getName());
+        user.removeAttribute(this.module, "roleContainer");
+        this.preCalculateRoles(user.getName(),true);
         this.applyRole(user, worldId);
         return result;
     }
