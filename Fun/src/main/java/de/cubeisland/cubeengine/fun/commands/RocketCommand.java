@@ -8,17 +8,17 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
@@ -163,27 +163,46 @@ public class RocketCommand
         {
             for (RocketCMDInstance instance : this.getInstances())
             {
-                User user = instance.getUser();
+                final User user = instance.getUser();
                 
-                if(!instance.getDown())
+                if(user.isOnline())
                 {
-                    user.getWorld().playEffect(user.getLocation(this.helper), Effect.SMOKE, 0);
-                }
+                    if(!instance.getDown())
+                    {
+                        Location userLocation = user.getLocation(this.helper);
+                        user.getWorld().playEffect(userLocation, Effect.SMOKE, 0);
+                        user.getWorld().playEffect(userLocation.add(1, 0, 0), Effect.SMOKE, 0);
+                        user.getWorld().playEffect(userLocation.add(-1, 0, 0), Effect.SMOKE, 0);
+                        user.getWorld().playEffect(userLocation.add(0, 0, 1), Effect.SMOKE, 0);
+                        user.getWorld().playEffect(userLocation.add(0, 0, -1), Effect.SMOKE, 0);
+                    }
 
-                if ( instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
+                    if ( instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
+                    {
+                        module.getTaskManger().scheduleSyncDelayedTask(module, new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    removeInstance(user);
+                                }
+                            }, 1);
+                    }
+
+                    if( instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getDown())
+                    {
+                        double y = (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeet()) / 10;
+                        y = (y < 10) ? y : 10;
+                        user.setVelocity(new Vector(0, (y < 9) ? (y + 1) : y, 0));
+                    }
+                    else if(!instance.getDown())
+                    {
+                        instance.setDown();
+                    }
+                }
+                else
                 {
                     this.removeInstance(user);
-                }
-                
-                if( instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getDown())
-                {
-                    double y = (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeet()) / 10;
-                    y = (y < 10) ? y : 10;
-                    user.setVelocity(new Vector(0, (y < 9) ? (y + 1) : y, 0));
-                }
-                else if(!instance.getDown())
-                {
-                    instance.setDown();
                 }
             }
         }
@@ -218,7 +237,7 @@ public class RocketCommand
 
             public User getUser()
             {
-                return CubeEngine.getUserManager().getUser(name, true);
+                return CubeEngine.getUserManager().getUser(name, false);
             }
 
             public String getName()
@@ -241,7 +260,7 @@ public class RocketCommand
                 location.add(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while (BlockUtil.isNonSolidBlock(location.getBlock().getType()) && location.getY() < location.getWorld().getMaxHeight())
+                while(BlockUtil.isNonSolidBlock(location.getBlock().getType()) && location.getY() < location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.add(0, 1, 0);
