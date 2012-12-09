@@ -246,7 +246,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world);
             return;
         }
-        if (((Roles) this.getModule()).getManager().addRole(user, role, worldId))
+        if (((Roles) this.getModule()).getManager().addRoles(user, worldId, role))
         {
             context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world);
         }
