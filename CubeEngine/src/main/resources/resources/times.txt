@@ -1,0 +1,22 @@
+0:
+  sunrise
+  morning
+3000:
+  forenoon
+6000:
+  day
+  noon
+9000:
+  afternoon
+13000:
+  dusk
+  moonrise
+15000:
+  even
+  evening
+  sunset
+18000:
+  night
+  midnight
+22500:
+  dawn

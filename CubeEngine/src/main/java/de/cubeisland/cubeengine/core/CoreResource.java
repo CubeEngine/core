@@ -27,7 +27,10 @@ public enum CoreResource implements Resource
         "data/datavalues.txt"),
     ENTITIES(
         "resources/entities.txt",
-        "data/entities.txt");
+        "data/entities.txt"),
+    TIMES(
+        "resources/times.txt",
+        "data/times.txt");
     private final String target;
     private final String source;
 
