@@ -107,4 +107,9 @@ public class RoleProvider
         }
         this.worlds.put(world, new Pair<Boolean, Boolean>(roles, users));
     }
+
+    public List<Role> getDefaultRoles()
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

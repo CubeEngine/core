@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.roles.role.RolePermission;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map.Entry;
 
 public class UserManagementCommands extends ContainerCommand
@@ -20,7 +21,7 @@ public class UserManagementCommands extends ContainerCommand
     {
         super(module, "user", "Manage users.");//TODO alias manuser
     }
-
+    
     private User getUser(CommandContext context, int pos)
     {
         User user;
@@ -39,7 +40,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         return user;
     }
-
+    
     private Role getRole(CommandContext context, User user, int worldpos)
     {
         if (user == null)
@@ -67,7 +68,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         return roleContainer.get(worldId);
     }
-
+    
     @Alias(names = "listuroles")
     @Command(desc = "Lists roles of a user [in world]",
              usage = "[player] [in <world>]",
@@ -91,7 +92,7 @@ public class UserManagementCommands extends ContainerCommand
             }
         }
     }
-
+    
     @Alias(names = "checkuperm")
     @Command(desc = "Checks for permissions of a user [in world]",
              usage = "<permission> [player] [in <world>]",
@@ -155,7 +156,7 @@ public class UserManagementCommands extends ContainerCommand
             }
         }
     }
-
+    
     @Alias(names = "listuperm")
     @Command(desc = "List permission of a user [in world]",
              usage = "[player] [in <world>]",
@@ -171,7 +172,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("- &e" + entry.getValue().getPerm() + ": &6" + entry.getValue().isSet());
         }
     }
-
+    
     @Alias(names = "checkumeta")
     @Command(desc = "Checks for metadata of a user [in world]",
              usage = "<metadatakey> [player] [in <world>]",
@@ -191,7 +192,7 @@ public class UserManagementCommands extends ContainerCommand
         context.sendMessage("roles", "&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, value, user.getName(), world);
         //TODO show where its coming from
     }
-
+    
     @Alias(names = "listumeta")
     @Command(desc = "List metadata of a user [in world]",
              usage = "[player] [in <world>]",
@@ -207,9 +208,15 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
         }
     }
-
-    @Alias(names = {"manuadd","assignurole","addurole","giveurole"})
-    @Command(names= {"assign","add","give"},
+    
+    @Alias(names =
+    {
+        "manuadd", "assignurole", "addurole", "giveurole"
+    })
+    @Command(names =
+    {
+        "assign", "add", "give"
+    },
              desc = "Assign a role to the player [in world]",
              usage = "<role> <player> [in <world>]",
              max = 3, min = 2)
@@ -241,34 +248,99 @@ public class UserManagementCommands extends ContainerCommand
         }
         if (((Roles) this.getModule()).getManager().addRole(user, role, worldId))
         {
-            context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a.", roleName, user.getName());
+            context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world);
         }
         else
         {
-            context.sendMessage("roles", "&2%s&e already had the role &6%s&e.", user.getName(), roleName);
+            context.sendMessage("roles", "&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world);
         }
     }
-
+    
+    @Command(names =
+    {
+        "assign", "add", "give"
+    },
+             desc = "Removes a role from the player [in world]",
+             usage = "<role> <player> [in <world>]",
+             max = 3, min = 2)
     public void remove(CommandContext context)
     {
+        Role role;
+        User user = context.getUser(1);
+        if (user == null)
+        {
+            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
+            return;
+        }
+        int worldId;
+        if (context.hasIndexed(2))
+        {
+            worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(2));
+        }
+        else
+        {
+            worldId = user.getWorldId();
+        }
+        String roleName = context.getString(0);
+        role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
+        String world = context.hasIndexed(1) ? context.getString(1) : user.getWorld().getName();
+        if (role == null)
+        {
+            context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world);
+            return;
+        }
+        if (((Roles) this.getModule()).getManager().removeRole(user, role, worldId))
+        {
+            context.sendMessage("roles", "&aRemoved the role &6%s&a from &2%s&a in &6%s&a.", roleName, user.getName(), world);
+        }
+        else
+        {
+            context.sendMessage("roles", "&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), roleName, world);
+        }
     }
-
+    
     public void clear(CommandContext context)
     {
+        User user = context.getUser(1);
+        if (user == null)
+        {
+            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
+            return;
+        }
+        int worldId;
+        if (context.hasIndexed(2))
+        {
+            worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(2));
+        }
+        else
+        {
+            worldId = user.getWorldId();
+        }
+        String world = context.hasIndexed(1) ? context.getString(1) : user.getWorld().getName();
+        List<Role> newRoles = ((Roles) this.getModule()).getManager().clearRoles(user, worldId);
+        context.sendMessage("roles", "&eCleared the roles of &2%s &ein &6%s&e.", user.getName(), world);
+        if (!newRoles.isEmpty())
+        {
+            context.sendMessage("roles", "&eDefault roles assigned:");
+            for (Role role : newRoles)
+            {
+                context.sendMessage("- &6" + role.getName());
+            }
+        }
     }
-
+    
     public void setpermission(CommandContext context)
     {
     }
-
+    
     public void resetpermission(CommandContext context)
     {
     }
-
+    
     public void setmetadata(CommandContext context)
     {
     }
-
+    
     public void resetmetadata(CommandContext context)
     {
     }

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AssignedRoleManager extends BasicStorage<AssignedRole>
-{
+{//TODO perhaps change this to a tripletKeyStroage
     private static final int REVISION = 1;
 
     public AssignedRoleManager(Database database)
@@ -31,6 +31,16 @@ public class AssignedRoleManager extends BasicStorage<AssignedRole>
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getallByUser",
                     builder.select().cols("worldID", "roleName").from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
+            this.database.storeStatement(modelClass, "deleteByVals",
+                    builder.delete().from(this.tableName).where().
+                    field("userId").is(EQUAL).value().and().
+                    field("worldId").is(EQUAL).value().and().
+                    field("roleName").is(EQUAL).value().end().end());
+            this.database.storeStatement(modelClass, "deleteByUserAndWorld",
+                    builder.delete().from(this.tableName).where().
+                    field("userId").is(EQUAL).value().and().
+                    field("worldId").is(EQUAL).value().end().end());
+
         }
         catch (SQLException e)
         {
@@ -61,6 +71,30 @@ public class AssignedRoleManager extends BasicStorage<AssignedRole>
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while getting Model from Database", ex);
+        }
+    }
+
+    public void delete(int userid, String name, int worldId)
+    {
+        try
+        {
+            this.database.preparedExecute(modelClass, "deleteByVals", userid, worldId, name);
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while deleting assigned Role (single)", ex);
+        }
+    }
+
+    public void clear(int userid, int worldId)
+    {
+        try
+        {
+            this.database.preparedExecute(modelClass, "deleteByUserAndWorld", userid, worldId);
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while deleting assigned Role (multi)", ex);
         }
     }
 }

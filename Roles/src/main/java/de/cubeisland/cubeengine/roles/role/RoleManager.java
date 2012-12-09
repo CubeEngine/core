@@ -375,7 +375,7 @@ public class RoleManager
     }
 
     public void applyRole(Player player, int worldId)
-    {
+    {//TODO if no role found give default role(s)
         User user = this.module.getUserManager().getExactUser(player);
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
@@ -394,10 +394,33 @@ public class RoleManager
     public boolean addRole(User user, Role role, int worldId)
     {
         //TODO check if role is already assigned and return false
-        this.module.getDbManager().store(new AssignedRole(user.key,worldId,role.getName()));
+        this.module.getDbManager().store(new AssignedRole(user.key, worldId, role.getName()));
         user.removeAttribute(this.module, "roleContainer");
         this.preCalculateRoles(user.getName()); //TODO only recalculate & apply if needed/what is needed
         this.applyRole(user, worldId);
         return true;
+    }
+
+    public boolean removeRole(User user, Role role, int worldId)
+    {
+        //TODO check if not assigned and return false
+
+        this.module.getDbManager().delete(user.key, role.getName(), worldId);
+        this.preCalculateRoles(user.getName()); //TODO only recalculate & apply if needed/what is needed
+        this.applyRole(user, worldId);
+        return true;
+    }
+
+    public List<Role> clearRoles(User user, int worldId)
+    {
+        this.module.getDbManager().clear(user.key, worldId);
+        List<Role> result = this.getProvider(worldId).getDefaultRoles();
+        for (Role dRole : result)
+        {
+            this.addRole(user, dRole, worldId);
+        }
+        this.preCalculateRoles(user.getName());
+        this.applyRole(user, worldId);
+        return result;
     }
 }
