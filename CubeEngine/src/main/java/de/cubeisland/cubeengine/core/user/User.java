@@ -442,7 +442,7 @@ public class User extends UserBase implements LinkingModel<Integer>
         negative.clear();
         for (String perm : permissions.keySet())
         {
-            if (!perm.endsWith("*"))
+            if (perm.endsWith("*"))
             {
                 continue;
             }

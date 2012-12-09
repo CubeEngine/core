@@ -64,7 +64,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
         for (int i = 1; i < updateCols.length; ++i)
         {
             col = this.database.prepareFieldName(updateCols[i]);
-            this.query.append(',').append(col).append(col).append("=VALUES(").append(col).append(')');
+            this.query.append(',').append(col).append("=VALUES(").append(col).append(')');
         }
 
         this.updateColsSpecified = true;

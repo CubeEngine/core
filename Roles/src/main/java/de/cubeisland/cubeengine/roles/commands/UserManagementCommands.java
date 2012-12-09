@@ -116,7 +116,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         if (permissionsfound.isEmpty())
         {
-            context.sendMessage("roles", "&eCould not find the permission &6%s for &2%s&e!", permission, user.getName());
+            context.sendMessage("roles", "&eCould not find the permission &6%s for &2%s&e!", context.getString(0), user.getName());
             return;
         }
         permission = context.getString(0);
@@ -129,7 +129,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         String world = context.hasIndexed(2) ? context.getString(2) : user.getWorld().getName();
         context.sendMessage("roles", (myPerm ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
-                : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c") + " in the world &6%s", user.getName(), permission, world);
+                : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c") + " in &6%s", user.getName(), permission, world);
         if (!permission.endsWith("*"))
         {
             context.sendMessage("roles", "&eSuperPerm Node: %s", superPerm); // Do not show when * permission as it would never be correct
@@ -208,8 +208,45 @@ public class UserManagementCommands extends ContainerCommand
         }
     }
 
+    @Alias(names = {"manuadd","assignurole","addurole","giveurole"})
+    @Command(names= {"assign","add","give"},
+             desc = "Assign a role to the player [in world]",
+             usage = "<role> <player> [in <world>]",
+             max = 3, min = 2)
     public void assign(CommandContext context)
     {
+        Role role;
+        User user = context.getUser(1);
+        if (user == null)
+        {
+            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
+            return;
+        }
+        int worldId;
+        if (context.hasIndexed(2))
+        {
+            worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(2));
+        }
+        else
+        {
+            worldId = user.getWorldId();
+        }
+        String roleName = context.getString(0);
+        role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
+        String world = context.hasIndexed(1) ? context.getString(1) : user.getWorld().getName();
+        if (role == null)
+        {
+            context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world);
+            return;
+        }
+        if (((Roles) this.getModule()).getManager().addRole(user, role, worldId))
+        {
+            context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a.", roleName, user.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&2%s&e already had the role &6%s&e.", user.getName(), roleName);
+        }
     }
 
     public void remove(CommandContext context)

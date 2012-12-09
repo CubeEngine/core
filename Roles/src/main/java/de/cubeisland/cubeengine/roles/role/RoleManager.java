@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
+import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
@@ -388,5 +389,15 @@ public class RoleManager
 
         user.setPermission(role.resolvePermissions(), player);
         user.setAttribute(this.module, "metadata", role.getMetaData());
+    }
+
+    public boolean addRole(User user, Role role, int worldId)
+    {
+        //TODO check if role is already assigned and return false
+        this.module.getDbManager().store(new AssignedRole(user.key,worldId,role.getName()));
+        user.removeAttribute(this.module, "roleContainer");
+        this.preCalculateRoles(user.getName()); //TODO only recalculate & apply if needed/what is needed
+        this.applyRole(user, worldId);
+        return true;
     }
 }

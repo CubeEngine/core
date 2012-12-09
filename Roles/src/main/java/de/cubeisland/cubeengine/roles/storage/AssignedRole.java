@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
 public class AssignedRole implements Model<Integer>
 {
     @Attribute(type = AttrType.INT)
-    public int key;
+    public int key = -1;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
     public int userId;
@@ -19,6 +19,13 @@ public class AssignedRole implements Model<Integer>
     public int worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String roleName;
+
+    public AssignedRole(int userId, int worldId, String roleName)
+    {
+        this.userId = userId;
+        this.worldId = worldId;
+        this.roleName = roleName;
+    }
 
     @Override
     public Integer getKey()
