@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.bukkit.Bukkit;
-import org.bukkit.permissions.Permission;
 
 public abstract class Role
 {
@@ -179,7 +178,7 @@ public abstract class Role
         return result;
     }
 
-    private void resolveBukkitPermission(String name, Map<String, Boolean> childs)
+    protected void resolveBukkitPermission(String name, Map<String, Boolean> childs)
     {
         Map<String, Boolean> childPerm = Bukkit.getPluginManager().getPermission(name).getChildren();
         for (String permKey : childPerm.keySet())

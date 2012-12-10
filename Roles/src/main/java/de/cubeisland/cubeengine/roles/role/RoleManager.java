@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
@@ -100,8 +99,9 @@ public class RoleManager
     }
 //TODO make sure when calculating ALL other plugins are loaded
     //and/or all permissions are registered
+
     private Role calculateGlobalRole(RoleConfig config)
-    {//TODO resolve * permissions
+    {
         try
         {
             Role role = this.globalRoles.get(config.roleName);
@@ -243,7 +243,7 @@ public class RoleManager
         for (int worldId : rolesPerWorld.keys())
         {
             // UserSpecific Settings:
-            MergedRole userSpecificRole = new MergedRole(userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
+            MergedRole userSpecificRole = new MergedRole(username, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
             // Roles Assigned to this user:
             MergedRole mergedRole = null;
             for (MergedRole inContainer : roleContainer.valueCollection())

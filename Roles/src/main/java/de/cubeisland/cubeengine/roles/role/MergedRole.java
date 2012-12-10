@@ -57,13 +57,29 @@ public class MergedRole extends Role
         }
     }
 
-    public MergedRole(THashMap<String, Boolean> perms, THashMap<String, String> meta)
+    /**
+     * Constructor fo userspecific-role
+     *
+     * @param perms
+     * @param meta
+     */
+    public MergedRole(String username, THashMap<String, Boolean> perms, THashMap<String, String> meta)
     {
+        this.name = username;
         this.perms = new HashMap<String, RolePermission>();
         if (perms != null)
         {
             for (String keyPerm : perms.keySet())
             {
+                if (keyPerm.endsWith("*"))
+                {
+                    Map<String, Boolean> map = new HashMap<String, Boolean>();
+                    this.resolveBukkitPermission(keyPerm, map);
+                    for (String subPermKey : map.keySet())
+                    {
+                        this.perms.put(subPermKey, new RolePermission(subPermKey, map.get(subPermKey), this));
+                    }
+                }
                 this.perms.put(keyPerm, new RolePermission(keyPerm, perms.get(keyPerm), this));
             }
         }
