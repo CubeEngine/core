@@ -4,15 +4,16 @@ import de.cubeisland.cubeengine.roles.role.config.Priority;
 
 public class RolePermission
 {
+
     private String perm;
     private boolean isSet;
-    private Priority prio;
+    private final Role origin;
 
-    public RolePermission(String perm, boolean isSet, Priority prio)
+    public RolePermission(String perm, boolean isSet, Role origin)
     {
         this.perm = perm;
         this.isSet = isSet;
-        this.prio = prio;
+        this.origin = origin;
     }
 
     public String getPerm()
@@ -20,15 +21,18 @@ public class RolePermission
         return perm;
     }
 
-    public Priority getPrio()
-    {
-        return prio;
-    }
-
     public boolean isSet()
     {
         return isSet;
     }
-    
-    
+
+    public int getPriorityValue()
+    {
+        return this.origin.priority.value;
+    }
+
+    public Role getOrigin()
+    {
+        return origin;
+    }
 }

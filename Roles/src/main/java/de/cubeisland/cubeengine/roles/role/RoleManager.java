@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 
 public class RoleManager
 {
+
     private THashMap<String, RoleConfig> globalConfigs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
@@ -66,33 +67,15 @@ public class RoleManager
             }
         }
         this.module.getLogger().debug(i + " global roles loaded!");
-        for (File file : rolesFolder.listFiles())
+        for (RoleProvider provider : this.providers.valueCollection())
         {
-            if (file.isDirectory())
-            {
-                //check if is a world
-                Integer worldID = CubeEngine.getCore().getWorldManager().getWorldId(file.getName());
-                if (worldID == null)
-                {
-                    this.module.getLogger().log(LogLevel.WARNING, "The world " + file.getName() + " does not exist. Ignoring folder...");
-                    continue;
-                }
-                this.module.getLogger().debug("Loading roles for the world " + file.getName() + ":");
-                i = 0;
-                for (File configFile : file.listFiles())
-                {
-                    if (configFile.getName().endsWith(".yml"))
-                    {
-                        ++i;
-                        RoleConfig config = Configuration.load(RoleConfig.class, configFile);
-                        this.getProvider(worldID).addConfig(config);
-                    }
-                }
-                this.module.getLogger().debug(i + " roles loaded!");
-            }
+            provider.init(rolesFolder);
         }
         this.calculateRoles();
-
+        for (RoleProvider provider : this.providers.valueCollection())
+        {
+            provider.loadDefaultRoles(this.module.getConfiguration());
+        }
     }
     private Stack<String> roleStack;
 
@@ -112,21 +95,13 @@ public class RoleManager
         // Calculate world roles:
         for (RoleProvider provider : providers.valueCollection())
         {
-            for (RoleConfig config : provider.getConfigs())
-            {
-                Role role = this.calculateRole(config, provider);
-                if (role == null)
-                {
-                    this.module.getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
-                    continue;
-                }
-                provider.setRole(role);
-            }
+            provider.calculateRoles(this.globalRoles);
         }
     }
-
+//TODO make sure when calculating ALL other plugins are loaded
+    //and/or all permissions are registered
     private Role calculateGlobalRole(RoleConfig config)
-    {
+    {//TODO resolve * permissions
         try
         {
             Role role = this.globalRoles.get(config.roleName);
@@ -174,92 +149,6 @@ public class RoleManager
             }
             role = new ConfigRole(config, parentRoles, true);
 
-            this.roleStack.pop();
-            return role;
-        }
-        catch (CircularRoleDepedencyException ex)
-        {
-            this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
-            return null;
-        }
-    }
-
-    private Role calculateRole(RoleConfig config, RoleProvider provider)
-    {
-        try
-        {
-            Role role = provider.getRole(config.roleName);
-            if (role != null)
-            {
-                return role;
-            }
-            this.roleStack.push(config.roleName);
-            for (String parentName : config.parents)
-            {
-                try
-                {
-                    if (this.roleStack.contains(parentName)) // Circular Dependency?
-                    {
-                        throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", roleStack));
-                    }
-                    RoleConfig parentConfig;
-
-                    if (parentName.startsWith("g:"))
-                    {
-                        if (this.globalRoles.containsKey(parentName.substring(2)))
-                        {
-                            continue;
-                        }
-                        throw new RoleDependencyMissingException("Could not find the global role " + parentName);
-                    }
-                    else
-                    {
-                        parentConfig = provider.getConfig(parentName);
-                    }
-                    if (parentConfig == null) // Dependency Missing?
-                    {
-                        throw new RoleDependencyMissingException("Could not find the role " + parentName);
-                    }
-                    Role parentRole = this.calculateRole(parentConfig, provider); // calculate parent-role
-                    if (parentRole != null)
-                    {
-                        provider.setRole(parentRole);
-                    }
-                }
-                catch (RoleDependencyMissingException ex)
-                {
-                    this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
-                }
-            }
-            // now all parent roles should be loaded
-
-            List<Role> parentRoles = new ArrayList<Role>();
-            for (String parentName : config.parents)
-            {
-                try
-                {
-                    Role parentRole;
-
-                    if (parentName.startsWith("g:"))
-                    {
-                        parentRole = this.globalRoles.get(parentName.substring(2));
-                    }
-                    else
-                    {
-                        parentRole = provider.getRole(parentName);
-                    }
-                    if (parentRole == null)
-                    {
-                        throw new RoleDependencyMissingException("Needed parent role " + parentName + " for " + config.roleName + " not found.");
-                    }
-                    parentRoles.add(parentRole); // Role was found:
-                }
-                catch (RoleDependencyMissingException ex)
-                {
-                    this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
-                }
-            }
-            role = new ConfigRole(config, parentRoles, false);
             this.roleStack.pop();
             return role;
         }

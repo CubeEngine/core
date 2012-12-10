@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class MergedRole extends Role
 {
+
     private Collection<Role> mergedWith;
 
     public MergedRole(Collection<Role> roleToMerge)
@@ -25,7 +26,7 @@ public class MergedRole extends Role
                 {
                     if (this.perms.containsKey(permKey))
                     {
-                        if (this.perms.get(permKey).getPrio().value >= parentPerms.get(permKey).getPrio().value)
+                        if (this.perms.get(permKey).getPriorityValue() >= parentPerms.get(permKey).getPriorityValue())
                         {
                             continue;
                         }
@@ -63,7 +64,7 @@ public class MergedRole extends Role
         {
             for (String keyPerm : perms.keySet())
             {
-                this.perms.put(keyPerm, new RolePermission(keyPerm, perms.get(keyPerm), Priority.OVER9000));
+                this.perms.put(keyPerm, new RolePermission(keyPerm, perms.get(keyPerm), this));
             }
         }
         if (meta == null)

@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class RoleProviderConverter implements Converter<RoleProvider>
 {
+
     @Override
     public Object toObject(RoleProvider object) throws ConversionException
     {
@@ -44,20 +45,23 @@ public class RoleProviderConverter implements Converter<RoleProvider>
         }
         String mainworld = read.keySet().iterator().next();
         RoleProvider provider = new RoleProvider(mainworld);
-        for (Map<String, List<String>> world : read.get(mainworld))
+        if (read.get(mainworld) != null)
         {
-            if (world.isEmpty())
+            for (Map<String, List<String>> world : read.get(mainworld))
             {
-                continue;
+                if (world.isEmpty())
+                {
+                    continue;
+                }
+                String worldName = world.keySet().iterator().next();
+                if (world.get(worldName) == null)
+                {
+                    continue;
+                }
+                boolean roles = world.get(worldName).contains("roles");
+                boolean users = world.get(worldName).contains("users");
+                provider.setWorld(worldName, roles, users);
             }
-            String worldName = world.keySet().iterator().next();
-            if (world.get(worldName) == null)
-            {
-                continue;
-            }
-            boolean roles = world.get(worldName).contains("roles");
-            boolean users = world.get(worldName).contains("users");
-            provider.setWorld(worldName, roles, users);
         }
         return provider;
     }
