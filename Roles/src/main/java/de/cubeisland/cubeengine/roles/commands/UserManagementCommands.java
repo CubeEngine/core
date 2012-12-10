@@ -139,6 +139,8 @@ public class UserManagementCommands extends ContainerCommand
         }
         if (!permissionsfound.isEmpty())
         {
+            //TODO check if this works correctly only display perms that are really set in the role not calculated perms
+            //e.g. do not show ce.basics.commands.* if ce.basics.* was set
             context.sendMessage("roles", "&ePermission inherited from:");
             for (String permFound : permissionsfound)
             {

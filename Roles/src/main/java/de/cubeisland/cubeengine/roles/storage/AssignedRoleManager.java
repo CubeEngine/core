@@ -2,18 +2,21 @@ package de.cubeisland.cubeengine.roles.storage;
 
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Triplet;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssignedRoleManager extends BasicStorage<AssignedRole>
-{//TODO perhaps change this to a tripletKeyStroage
+public class AssignedRoleManager extends TripletKeyStorage<Integer, Integer, String, AssignedRole>
+{
+
     private static final int REVISION = 1;
 
     public AssignedRoleManager(Database database)
@@ -31,16 +34,10 @@ public class AssignedRoleManager extends BasicStorage<AssignedRole>
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getallByUser",
                     builder.select().cols("worldID", "roleName").from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
-            this.database.storeStatement(modelClass, "deleteByVals",
-                    builder.delete().from(this.tableName).where().
-                    field("userId").is(EQUAL).value().and().
-                    field("worldId").is(EQUAL).value().and().
-                    field("roleName").is(EQUAL).value().end().end());
             this.database.storeStatement(modelClass, "deleteByUserAndWorld",
                     builder.delete().from(this.tableName).where().
                     field("userId").is(EQUAL).value().and().
                     field("worldId").is(EQUAL).value().end().end());
-
         }
         catch (SQLException e)
         {
@@ -76,14 +73,7 @@ public class AssignedRoleManager extends BasicStorage<AssignedRole>
 
     public void delete(int userid, String name, int worldId)
     {
-        try
-        {
-            this.database.preparedExecute(modelClass, "deleteByVals", userid, worldId, name);
-        }
-        catch (SQLException ex)
-        {
-            throw new IllegalStateException("Error while deleting assigned Role (single)", ex);
-        }
+        this.deleteByKey(new Triplet<Integer, Integer, String>(userid, worldId, name));
     }
 
     public void clear(int userid, int worldId)
