@@ -16,13 +16,13 @@ public abstract class Role
     protected Priority priority;
     protected Map<String, RolePermission> perms;
     protected List<Role> parentRoles;
-    protected Map<String, String> metaData;
+    protected Map<String, RoleMetaData> metaData;
     protected boolean isGlobal;
 
     public Role()
     {
         this.perms = new HashMap<String, RolePermission>();
-        this.metaData = new HashMap<String, String>();
+        this.metaData = new HashMap<String, RoleMetaData>();
         this.parentRoles = new ArrayList<Role>();
     }
 
@@ -47,11 +47,14 @@ public abstract class Role
         this.isGlobal = isGlobal;
         if (metaData == null)
         {
-            this.metaData = new HashMap<String, String>();
+            this.metaData = new HashMap<String, RoleMetaData>();
         }
         else
         {
-            this.metaData = metaData;
+            for (Entry<String,String> entry : metaData.entrySet())
+            {
+                this.metaData.put(entry.getKey(), new RoleMetaData(entry.getKey(), entry.getValue(), this));
+            }
         }
         if (parentRoles == null)
         {
@@ -83,7 +86,7 @@ public abstract class Role
         return perms;
     }
 
-    public Map<String, String> getMetaData()
+    public Map<String, RoleMetaData> getMetaData()
     {
         return metaData;
     }
@@ -114,7 +117,7 @@ public abstract class Role
             }
         }
         // Inherit missing metaData:
-        for (Entry<String, String> data : parent.getMetaData().entrySet())
+        for (Entry<String, RoleMetaData> data : parent.getMetaData().entrySet())
         {
             if (!metaData.containsKey(data.getKey()))
             {
@@ -129,11 +132,6 @@ public abstract class Role
         {
             this.parentRoles.add(parent);
         }
-    }
-
-    public void setMetaData(String key, String value)
-    {
-        this.metaData.put(key, value);
     }
 
     public Map<String, Boolean> resolvePermissions()

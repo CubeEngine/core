@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class MergedRole extends Role
 {
@@ -18,7 +19,7 @@ public class MergedRole extends Role
         if (roleToMerge != null && !roleToMerge.isEmpty())
         {
             this.mergedWith = roleToMerge;
-            Map<String, Pair<String, Priority>> tempMeta = new HashMap<String, Pair<String, Priority>>();
+            Map<String, RoleMetaData> tempMeta = new HashMap<String, RoleMetaData>();
             for (Role toMerge : roleToMerge)
             {
                 Map<String, RolePermission> parentPerms = toMerge.getPerms();
@@ -33,21 +34,21 @@ public class MergedRole extends Role
                     }
                     this.perms.put(permKey, parentPerms.get(permKey));
                 }
-                Map<String, String> parentData = toMerge.getMetaData();
+                Map<String, RoleMetaData> parentData = toMerge.getMetaData();
                 for (String dataKey : parentData.keySet())
                 {
                     if (tempMeta.containsKey(dataKey))
                     {
-                        if (toMerge.getPriority().value < tempMeta.get(dataKey).getRight().value)
+                        if (toMerge.getPriority().value < tempMeta.get(dataKey).getPriorityValue())
                         {
                             continue;
                         }
                     }
-                    tempMeta.put(dataKey, new Pair<String, Priority>(parentData.get(dataKey), toMerge.getPriority()));
+                    tempMeta.put(dataKey, parentData.get(dataKey));
                 }
                 for (String data : tempMeta.keySet())
                 {
-                    this.metaData.put(data, tempMeta.get(data).getLeft());
+                    this.metaData.put(data, tempMeta.get(data));
                 }
             }
         }
@@ -83,13 +84,14 @@ public class MergedRole extends Role
                 this.perms.put(keyPerm, new RolePermission(keyPerm, perms.get(keyPerm), this));
             }
         }
-        if (meta == null)
+        this.metaData = new HashMap<String, RoleMetaData>();
+        if (meta != null)
         {
-            this.metaData = new HashMap<String, String>();
-        }
-        else
-        {
-            this.metaData = meta;
+            this.metaData = new HashMap<String, RoleMetaData>();
+            for (Entry<String, String> entry : meta.entrySet())
+            {
+                this.metaData.put(entry.getKey(), new RoleMetaData(entry.getKey(), entry.getValue(), this));
+            }
         }
     }
 

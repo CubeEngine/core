@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.MergedRole;
 import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Map.Entry;
 
 public class UserManagementCommands extends ContainerCommand
 {
+
     public UserManagementCommands(Roles module)
     {
         super(module, "user", "Manage users.");//TODO alias manuser
@@ -71,8 +73,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "listuroles")
     @Command(desc = "Lists roles of a user [in world]",
-             usage = "[player] [in <world>]",
-             max = 2)
+    usage = "[player] [in <world>]",
+    max = 2)
     public void list(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -95,8 +97,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "checkuperm")
     @Command(desc = "Checks for permissions of a user [in world]",
-             usage = "<permission> [player] [in <world>]",
-             max = 3, min = 1)
+    usage = "<permission> [player] [in <world>]",
+    max = 3, min = 1)
     public void checkperm(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -142,15 +144,15 @@ public class UserManagementCommands extends ContainerCommand
             {
                 if (role.getPerms().get(permFound).isSet() == myPerm)
                 {
-                    for (Role pRole : role.getParentRoles())
+                    String permOrigin = role.getPerms().get(permFound).getOrigin().getName();
+                    if (user.getName().equals(permOrigin))
                     {
-                        if (pRole.getPerms().containsKey(permFound))
-                        {
-                            context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permFound, pRole.getName());
-                            return;
-                        }
+                        context.sendMessage("roles", "&6%s &ein the users role!", permFound);
                     }
-                    context.sendMessage("roles", "&6%s &ein the users role!", permFound);
+                    else
+                    {
+                        context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permFound, permOrigin);
+                    }
                     return;
                 }
             }
@@ -159,8 +161,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "listuperm")
     @Command(desc = "List permission of a user [in world]",
-             usage = "[player] [in <world>]",
-             max = 2)
+    usage = "[player] [in <world>]",
+    max = 2)
     public void listperm(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -175,8 +177,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "checkumeta")
     @Command(desc = "Checks for metadata of a user [in world]",
-             usage = "<metadatakey> [player] [in <world>]",
-             max = 3, min = 1)
+    usage = "<metadatakey> [player] [in <world>]",
+    max = 3, min = 1)
     public void checkmetadata(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -188,24 +190,24 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&6%s &is not set for &2%s &ein &6%s&e.", metaKey, user.getName(), world);
             return;
         }
-        String value = role.getMetaData().get(metaKey);
-        context.sendMessage("roles", "&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, value, user.getName(), world);
-        //TODO show where its coming from
+        RoleMetaData value = role.getMetaData().get(metaKey);
+        context.sendMessage("roles", "&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, value.getValue(), user.getName(), world);
+        context.sendMessage("roles", "&eOrigin: &&%s&e.", value.getOrigin().getName());
     }
 
     @Alias(names = "listumeta")
     @Command(desc = "List metadata of a user [in world]",
-             usage = "[player] [in <world>]",
-             max = 2)
+    usage = "[player] [in <world>]",
+    max = 2)
     public void listmetadata(CommandContext context)
     {
         User user = this.getUser(context, 0);
         Role role = this.getRole(context, user, 1);
         String world = context.hasIndexed(1) ? context.getString(1) : user.getWorld().getName();
         context.sendMessage("roles", "&eMetadata of &2%s&e in world &6%s&e.:", user.getName(), world);
-        for (Entry<String, String> entry : role.getMetaData().entrySet())
+        for (Entry<String, RoleMetaData> entry : role.getMetaData().entrySet())
         {
-            context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
+            context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue().getValue());
         }
     }
 
@@ -217,9 +219,9 @@ public class UserManagementCommands extends ContainerCommand
     {
         "assign", "add", "give"
     },
-             desc = "Assign a role to the player [in world]",
-             usage = "<role> <player> [in <world>]",
-             max = 3, min = 2)
+    desc = "Assign a role to the player [in world]",
+    usage = "<role> <player> [in <world>]",
+    max = 3, min = 2)
     public void assign(CommandContext context)
     {
         Role role;
@@ -258,8 +260,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "remurole")
     @Command(desc = "Removes a role from the player [in world]",
-             usage = "<role> <player> [in <world>]",
-             max = 3, min = 2)
+    usage = "<role> <player> [in <world>]",
+    max = 3, min = 2)
     public void remove(CommandContext context)
     {
         Role role;
@@ -298,8 +300,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "clearurole")
     @Command(desc = "Clears all roles from the player and sets the defaultworlds [in world]",
-             usage = "<player> [in <world>]",
-             max = 2, min = 1)
+    usage = "<player> [in <world>]",
+    max = 2, min = 1)
     public void clear(CommandContext context)
     {
         User user = context.getUser(1);
