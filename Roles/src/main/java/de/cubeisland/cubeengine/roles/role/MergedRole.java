@@ -35,16 +35,19 @@ public class MergedRole extends Role
                     this.perms.put(permKey, parentPerms.get(permKey));
                 }
                 Map<String, RoleMetaData> parentData = toMerge.getMetaData();
-                for (String dataKey : parentData.keySet())
+                if (parentData != null)
                 {
-                    if (tempMeta.containsKey(dataKey))
+                    for (String dataKey : parentData.keySet())
                     {
-                        if (toMerge.getPriority().value < tempMeta.get(dataKey).getPriorityValue())
+                        if (tempMeta.containsKey(dataKey))
                         {
-                            continue;
+                            if (toMerge.getPriority().value < tempMeta.get(dataKey).getPriorityValue())
+                            {
+                                continue;
+                            }
                         }
+                        tempMeta.put(dataKey, parentData.get(dataKey));
                     }
-                    tempMeta.put(dataKey, parentData.get(dataKey));
                 }
                 for (String data : tempMeta.keySet())
                 {

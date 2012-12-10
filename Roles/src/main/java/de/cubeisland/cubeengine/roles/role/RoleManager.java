@@ -285,7 +285,8 @@ public class RoleManager
         boolean added = false;
         for (Role role : roles)
         {
-            if (!roleContainer.get(worldId).getParentRoles().contains(role))
+            if (roleContainer.get(worldId) == null
+                    || !roleContainer.get(worldId).getParentRoles().contains(role))
             {
                 added = true;
                 this.module.getDbManager().store(new AssignedRole(user.key, worldId, role.getName()));
