@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.inventory.EntityEquipment;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -1901,5 +1902,23 @@ public class UserBase implements Player
         {
             player.setRemoveWhenFarAway(state);
         }
+    }
+
+    @Override
+    public EntityEquipment getEquipment()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setCanPickupItems(boolean pickup)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean getCanPickupItems()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
