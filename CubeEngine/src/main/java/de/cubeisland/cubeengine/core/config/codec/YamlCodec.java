@@ -5,12 +5,13 @@ import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * This class acts as a codec for yaml-configurations.
@@ -67,7 +68,7 @@ public class YamlCodec extends ConfigurationCodec
                 || s.startsWith("{") || s.startsWith("}") || s.startsWith("|")
                 || s.startsWith(">") || s.startsWith("!")|| s.startsWith("%")
                 || s.endsWith(":") || s.startsWith("- ") || s.startsWith(",")
-                || s.matches("[0-9]+:[0-9]+")) || s.isEmpty();
+                || s.matches("[0-9]+:[0-9]+")) || s.isEmpty() || s.equals("*");
     }
 
     @Override
