@@ -25,6 +25,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
@@ -47,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.bukkit.inventory.EntityEquipment;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -1907,18 +1907,28 @@ public class UserBase implements Player
     @Override
     public EntityEquipment getEquipment()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return player.getEquipment();
+        }
+        return null;
     }
 
     @Override
     public void setCanPickupItems(boolean pickup)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.setCanPickupItems(pickup);
+        }
     }
 
     @Override
     public boolean getCanPickupItems()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.getCanPickupItems();
     }
 }
