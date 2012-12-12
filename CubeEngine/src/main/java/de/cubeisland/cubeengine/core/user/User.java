@@ -34,6 +34,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,6 +278,16 @@ public class User extends UserBase implements LinkingModel<Integer>
         {
         }
         return def;
+    }
+
+    public Collection<Object> getAttributes(Module module)
+    {
+        Map<String, Object> attributeMap = this.attributes.get(module);
+        if (attributeMap == null)
+        {
+            return null;
+        }
+        return attributeMap.values();
     }
 
     /**
