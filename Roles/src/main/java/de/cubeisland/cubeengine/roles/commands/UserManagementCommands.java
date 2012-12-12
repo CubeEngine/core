@@ -73,13 +73,7 @@ public class UserManagementCommands extends ContainerCommand
     public void list(CommandContext context)
     {
         User user = this.getUser(context, 0);
-
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         Collection<Role> roles = role.getParentRoles();
@@ -106,12 +100,7 @@ public class UserManagementCommands extends ContainerCommand
     public void checkperm(CommandContext context)
     {
         User user = this.getUser(context, 1);
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         String permission = context.getString(0);
@@ -180,12 +169,7 @@ public class UserManagementCommands extends ContainerCommand
     public void listperm(CommandContext context)
     {
         User user = this.getUser(context, 0);
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         context.sendMessage("roles", "&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
@@ -204,12 +188,7 @@ public class UserManagementCommands extends ContainerCommand
     public void checkmetadata(CommandContext context)
     {
         User user = this.getUser(context, 1);
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         String metaKey = context.getString(0);
@@ -232,12 +211,7 @@ public class UserManagementCommands extends ContainerCommand
     public void listmetadata(CommandContext context)
     {
         User user = this.getUser(context, 0);
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         context.sendMessage("roles", "&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());
@@ -269,12 +243,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
             return;
         }
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         String roleName = context.getString(0);
         role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
@@ -308,12 +277,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
             return;
         }
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         String roleName = context.getString(0);
         role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
@@ -346,12 +310,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
             return;
         }
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         List<Role> newRoles = ((Roles) this.getModule()).getManager().clearRoles(user, worldId);
         context.sendMessage("roles", "&eCleared the roles of &2%s &ein &6%s&e.", user.getName(), world.getName());
@@ -398,12 +357,7 @@ public class UserManagementCommands extends ContainerCommand
             //TODO msg define true|false|reset
             return;
         }
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         UserPermissionsManager upManager = ((Roles) this.getModule()).getDbUserPerm();
         if (set == null)
@@ -440,12 +394,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&cUser %s not found!", context.getString(2));
             return;
         }
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            //TODO world not found msg
-            return;
-        }
+        World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         UserMetaDataManager umManager = ((Roles) this.getModule()).getDbUserMeta();
         umManager.merge(new UserMetaData(user.key, worldId, metaKey, metaVal));
@@ -466,18 +415,27 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
             return;
         }
-        int worldId;
-        if (context.hasIndexed(2))
-        {
-            worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(2));
-        }
-        else
-        {
-            worldId = user.getWorldId();
-        }
-        String world = context.hasIndexed(2) ? context.getString(2) : user.getWorld().getName();
+        World world = this.getWorld(context, user);
+        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         UserMetaDataManager umManager = ((Roles) this.getModule()).getDbUserMeta();
         umManager.deleteByKey(new Triplet<Integer, Integer, String>(user.key, worldId, metaKey));
         //TODO msg
+    }
+
+    /**
+     * Returns the world defined with named param "in" or the users world
+     *
+     * @param context
+     * @param user
+     * @return
+     */
+    private World getWorld(CommandContext context, User user)
+    {
+        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
+        if (world == null)
+        {
+            //TODO world not found msg as exception
+        }
+        return world;
     }
 }
