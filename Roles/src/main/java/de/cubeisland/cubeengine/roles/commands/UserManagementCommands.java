@@ -5,11 +5,14 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.MergedRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
+import de.cubeisland.cubeengine.roles.storage.UserPermission;
+import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,8 +20,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 public class UserManagementCommands extends ContainerCommand
-{
-
+{//TODO remove codeDuplication
     public UserManagementCommands(Roles module)
     {
         super(module, "user", "Manage users.");//TODO alias manuser
@@ -73,8 +75,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "listuroles")
     @Command(desc = "Lists roles of a user [in world]",
-    usage = "[player] [in <world>]",
-    max = 2)
+             usage = "[player] [in <world>]",
+             max = 2)
     public void list(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -97,8 +99,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "checkuperm")
     @Command(desc = "Checks for permissions of a user [in world]",
-    usage = "<permission> [player] [in <world>]",
-    max = 3, min = 1)
+             usage = "<permission> [player] [in <world>]",
+             max = 3, min = 1)
     public void checkperm(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -163,8 +165,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "listuperm")
     @Command(desc = "List permission of a user [in world]",
-    usage = "[player] [in <world>]",
-    max = 2)
+             usage = "[player] [in <world>]",
+             max = 2)
     public void listperm(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -179,8 +181,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "checkumeta")
     @Command(desc = "Checks for metadata of a user [in world]",
-    usage = "<metadatakey> [player] [in <world>]",
-    max = 3, min = 1)
+             usage = "<metadatakey> [player] [in <world>]",
+             max = 3, min = 1)
     public void checkmetadata(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -199,8 +201,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "listumeta")
     @Command(desc = "List metadata of a user [in world]",
-    usage = "[player] [in <world>]",
-    max = 2)
+             usage = "[player] [in <world>]",
+             max = 2)
     public void listmetadata(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -221,9 +223,9 @@ public class UserManagementCommands extends ContainerCommand
     {
         "assign", "add", "give"
     },
-    desc = "Assign a role to the player [in world]",
-    usage = "<role> <player> [in <world>]",
-    max = 3, min = 2)
+             desc = "Assign a role to the player [in world]",
+             usage = "<role> <player> [in <world>]",
+             max = 3, min = 2)
     public void assign(CommandContext context)
     {
         Role role;
@@ -262,8 +264,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "remurole")
     @Command(desc = "Removes a role from the player [in world]",
-    usage = "<role> <player> [in <world>]",
-    max = 3, min = 2)
+             usage = "<role> <player> [in <world>]",
+             max = 3, min = 2)
     public void remove(CommandContext context)
     {
         Role role;
@@ -302,8 +304,8 @@ public class UserManagementCommands extends ContainerCommand
 
     @Alias(names = "clearurole")
     @Command(desc = "Clears all roles from the player and sets the defaultworlds [in world]",
-    usage = "<player> [in <world>]",
-    max = 2, min = 1)
+             usage = "<player> [in <world>]",
+             max = 2, min = 1)
     public void clear(CommandContext context)
     {
         User user = context.getUser(1);
@@ -334,12 +336,65 @@ public class UserManagementCommands extends ContainerCommand
         }
     }
 
+    @Command(desc = "Sets a permission for this user [in world]",
+             usage = "<permission> <player> <true|false|reset> [in <world>]",
+             max = 5, min = 3)
     public void setpermission(CommandContext context)
     {
+        String perm = context.getString(0);
+        User user = context.getUser(1);
+        if (user == null)
+        {
+            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
+            return;
+        }
+        Boolean set;
+        String setTo = context.getString(2);
+        if (setTo.equalsIgnoreCase("true"))
+        {
+            set = true;
+        }
+        else if (setTo.equalsIgnoreCase("false"))
+        {
+            set = false;
+        }
+        else if (setTo.equalsIgnoreCase("reset"))
+        {
+            set = null;
+        }
+        else
+        {
+            //TODO msg define true|false|reset
+            return;
+        }
+        int worldId;
+        if (context.hasIndexed(2))
+        {
+            worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(2));
+        }
+        else
+        {
+            worldId = user.getWorldId();
+        }
+        String world = context.hasIndexed(1) ? context.getString(1) : user.getWorld().getName();
+        UserPermissionsManager upManager = ((Roles) this.getModule()).getDbUserPerm();
+        if (set == null)
+        {
+            upManager.deleteByKey(new Triplet<Integer, Integer, String>(user.key, worldId, perm));
+        }
+        else
+        {
+            UserPermission up = new UserPermission(user.key, worldId, perm, set);
+            upManager.merge(up);
+        }
+        ((Roles) this.getModule()).getManager().reloadAndApplyRole(user, worldId);
+        //TODO msg
     }
 
     public void resetpermission(CommandContext context)
     {
+        //TODO use this as proxy method for setPermission with reset
+        //other alias givePermissions for setPermission with true
     }
 
     public void setmetadata(CommandContext context)
@@ -348,5 +403,7 @@ public class UserManagementCommands extends ContainerCommand
 
     public void resetmetadata(CommandContext context)
     {
+        //TODO use this as proxy method for setmetadata with reset
+        //other alias giveMetadata for setmetadata with true
     }
 }

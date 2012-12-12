@@ -22,7 +22,6 @@ import org.bukkit.entity.Player;
 
 public class RoleManager
 {
-
     private THashMap<String, RoleConfig> globalConfigs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
@@ -279,6 +278,12 @@ public class RoleManager
         user.setAttribute(this.module, "metadata", role.getMetaData());
     }
 
+    public void reloadAndApplyRole(User user, int worldId)
+    {
+        this.preCalculateRoles(user.getName(), true); //TODO only recalculate & apply if needed/what is needed
+        this.applyRole(user, worldId);
+    }
+
     public boolean addRoles(User user, int worldId, Role... roles)
     {
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
@@ -297,8 +302,7 @@ public class RoleManager
             return false;
         }
         user.removeAttribute(this.module, "roleContainer");
-        this.preCalculateRoles(user.getName(), true); //TODO only recalculate & apply if needed/what is needed
-        this.applyRole(user, worldId);
+        this.reloadAndApplyRole(user, worldId);
         return true;
     }
 
@@ -311,8 +315,7 @@ public class RoleManager
         }
         this.module.getDbManager().delete(user.key, role.getName(), worldId);
         user.removeAttribute(this.module, "roleContainer");
-        this.preCalculateRoles(user.getName(), true); //TODO only recalculate & apply if needed/what is needed
-        this.applyRole(user, worldId);
+        this.reloadAndApplyRole(user, worldId);
         return true;
     }
 
@@ -323,8 +326,7 @@ public class RoleManager
 
         this.addRoles(user, worldId, result.toArray(new Role[result.size()]));
         user.removeAttribute(this.module, "roleContainer");
-        this.preCalculateRoles(user.getName(), true);
-        this.applyRole(user, worldId);
+        this.reloadAndApplyRole(user, worldId);
         return result;
     }
 }

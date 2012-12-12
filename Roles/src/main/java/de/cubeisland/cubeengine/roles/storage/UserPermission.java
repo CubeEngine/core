@@ -21,6 +21,18 @@ public class UserPermission implements TripletKeyModel<Integer, Integer, String>
     @Attribute(type = AttrType.BOOLEAN)
     public boolean isSet;
 
+    public UserPermission()
+    {
+    }
+
+    public UserPermission(int userId, int worldId, String perm, boolean isSet)
+    {
+        this.userId = userId;
+        this.worldId = worldId;
+        this.perm = perm;
+        this.isSet = isSet;
+    }
+    
     @Override
     public Triplet<Integer, Integer, String> getKey()
     {
