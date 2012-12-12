@@ -21,6 +21,14 @@ public class UserMetaData implements TripletKeyModel<Integer, Integer, String>
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String value;
 
+    public UserMetaData(int userId, int worldId, String key, String value)
+    {
+        this.userId = userId;
+        this.worldId = worldId;
+        this.key = key;
+        this.value = value;
+    }
+
     @Override
     public Triplet<Integer, Integer, String> getKey()
     {
