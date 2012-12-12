@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.roles.role.config.Priority;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,6 +69,7 @@ public class MergedRole extends Role
     {
         this.name = username;
         this.perms = new HashMap<String, RolePermission>();
+        this.litaralPerms = perms;
         if (perms != null)
         {
             for (String keyPerm : perms.keySet())

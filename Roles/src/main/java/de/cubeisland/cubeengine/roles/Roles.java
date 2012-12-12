@@ -39,22 +39,31 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
+        this.registerCommand(new RoleCommands(this));
+        this.getCommandManager().registerCommand(new RoleManagementCommands(this), "roles");
+        this.getCommandManager().registerCommand(new UserManagementCommands(this), "roles");
+        this.getCommandManager().registerCommand(new ModuleManagementCommands(this), "roles");
+
         this.dbManager = new AssignedRoleManager(this.getDatabase());
         this.dbUserMeta = new UserMetaDataManager(this.getDatabase());
         this.dbUserPerm = new UserPermissionsManager(this.getDatabase());
         this.manager = new RoleManager(this);
         this.getEventManager().registerListener(this, new RolesEventHandler(this));
-        for (User user : this.getUserManager().getOnlineUsers()) // reapply roles on reload
+        //TODO catch this with an event when allmodules are loaded
+        this.getTaskManger().scheduleSyncDelayedTask(this, new Runnable()
         {
-            user.removeAttribute(this, "roleContainer"); // remove potential old calculated roles
-            this.manager.preCalculateRoles(user.getName(),false);
-            this.manager.applyRole(user.getPlayer(), this.getCore().getWorldManager().getWorldId(user.getWorld()));
-        }
-        
-        this.registerCommand(new RoleCommands(this));
-        this.getCommandManager().registerCommand(new RoleManagementCommands(this), "roles");
-        this.getCommandManager().registerCommand(new UserManagementCommands(this), "roles");
-        this.getCommandManager().registerCommand(new ModuleManagementCommands(this), "roles");
+            @Override
+            public void run()
+            {
+                manager.init();
+                for (User user : instance.getUserManager().getOnlineUsers()) // reapply roles on reload
+                {
+                    user.removeAttribute(instance, "roleContainer"); // remove potential old calculated roles
+                    manager.preCalculateRoles(user.getName(), false);
+                    manager.applyRole(user.getPlayer(), instance.getCore().getWorldManager().getWorldId(user.getWorld()));
+                }
+            }
+        }, 1);
     }
 
     @Override

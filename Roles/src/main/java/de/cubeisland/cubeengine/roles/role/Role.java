@@ -11,10 +11,10 @@ import org.bukkit.Bukkit;
 
 public abstract class Role
 {
-
     protected String name;
     protected Priority priority;
     protected Map<String, RolePermission> perms;
+    protected Map<String, Boolean> litaralPerms;
     protected List<Role> parentRoles;
     protected Map<String, RoleMetaData> metaData;
     protected boolean isGlobal;
@@ -24,6 +24,7 @@ public abstract class Role
         this.perms = new HashMap<String, RolePermission>();
         this.metaData = new HashMap<String, RoleMetaData>();
         this.parentRoles = new ArrayList<Role>();
+        this.litaralPerms = new HashMap<String, Boolean>();
     }
 
     public Role(String name, Priority priority, PermissionTree permTree, List<Role> parentRoles, Map<String, String> metaData, boolean isGlobal)
@@ -31,6 +32,7 @@ public abstract class Role
         this.name = name;
         this.priority = priority;
         this.perms = new HashMap<String, RolePermission>();
+        this.litaralPerms = new HashMap<String, Boolean>();
         for (Entry<String, Boolean> entry : permTree.getPermissions().entrySet())
         {
             if (entry.getKey().endsWith("*"))
@@ -39,10 +41,11 @@ public abstract class Role
                 this.resolveBukkitPermission(entry.getKey(), subperms);
                 for (Entry<String, Boolean> subEntry : subperms.entrySet())
                 {
-                    this.perms.put(entry.getKey(), new RolePermission(subEntry.getKey(), subEntry.getValue(), this));
+                    this.perms.put(subEntry.getKey(), new RolePermission(subEntry.getKey(), subEntry.getValue() == entry.getValue(), this));
                 }
             }
             this.perms.put(entry.getKey(), new RolePermission(entry.getKey(), entry.getValue(), this));
+            this.litaralPerms.put(entry.getKey(), entry.getValue());
         }
         this.isGlobal = isGlobal;
         if (metaData == null)
@@ -51,7 +54,7 @@ public abstract class Role
         }
         else
         {
-            for (Entry<String,String> entry : metaData.entrySet())
+            for (Entry<String, String> entry : metaData.entrySet())
             {
                 this.metaData.put(entry.getKey(), new RoleMetaData(entry.getKey(), entry.getValue(), this));
             }
@@ -140,25 +143,25 @@ public abstract class Role
         for (RolePermission perm : this.perms.values())
         {
             /* TODO check if this already works
-            if (perm.getPerm().endsWith("*"))
-            {
-                Map<String, Boolean> childPerm = new HashMap<String, Boolean>();
-                this.resolveBukkitPermission(perm.getPerm(), childPerm);
-                for (String permKey : childPerm.keySet())
-                {
-                    if (tempPerm.containsKey(permKey))
-                    {
-                        if (tempPerm.get(permKey).getPriorityValue() >= perm.getPriorityValue())
-                        {
-                            continue;
-                        }
-                    }
-                    tempPerm.put(permKey,
-                            new RolePermission(permKey,
-                            ((perm.isSet() && childPerm.get(permKey)) || (!perm.isSet() && !childPerm.get(permKey))),
-                            perm.getOrigin()));
-                }
-            }*/
+             if (perm.getPerm().endsWith("*"))
+             {
+             Map<String, Boolean> childPerm = new HashMap<String, Boolean>();
+             this.resolveBukkitPermission(perm.getPerm(), childPerm);
+             for (String permKey : childPerm.keySet())
+             {
+             if (tempPerm.containsKey(permKey))
+             {
+             if (tempPerm.get(permKey).getPriorityValue() >= perm.getPriorityValue())
+             {
+             continue;
+             }
+             }
+             tempPerm.put(permKey,
+             new RolePermission(permKey,
+             ((perm.isSet() && childPerm.get(permKey)) || (!perm.isSet() && !childPerm.get(permKey))),
+             perm.getOrigin()));
+             }
+             }*/
             if (tempPerm.containsKey(perm.getPerm()))
             {
                 if (tempPerm.get(perm.getPerm()).getPriorityValue() >= perm.getPriorityValue())
@@ -187,5 +190,10 @@ public abstract class Role
             }
             childs.put(permKey, childPerm.get(permKey));
         }
+    }
+
+    public Map<String, Boolean> getLitaralPerms()
+    {
+        return litaralPerms;
     }
 }

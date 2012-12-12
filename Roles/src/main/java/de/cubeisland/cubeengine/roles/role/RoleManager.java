@@ -32,7 +32,6 @@ public class RoleManager
     {
         this.module = rolesModule;
         this.rolesFolder = new File(rolesModule.getFolder(), "roles");
-        this.init();
     }
 
     public void saveAllConfigs()

@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
@@ -17,15 +18,13 @@ import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
 import de.cubeisland.cubeengine.roles.storage.UserPermission;
 import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import org.bukkit.World;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 public class UserManagementCommands extends ContainerCommand
-{//TODO remove codeDuplication
+{
     public UserManagementCommands(Roles module)
     {
         super(module, "user", "Manage users.");//TODO alias manuser
@@ -44,8 +43,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         if (user == null)
         {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
-            return null;
+            paramNotFound(context, "roles",  "&cUser %s not found!", context.getString(1));
         }
         return user;
     }
@@ -104,59 +102,55 @@ public class UserManagementCommands extends ContainerCommand
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         String permission = context.getString(0);
-        ArrayList<String> permissionsfound = new ArrayList<String>();
-        while (permission.contains("."))
-        {
-            if (role.getPerms().containsKey(permission))
-            {
-                permissionsfound.add(permission);
-            }
-            if (permission.endsWith("*"))
-            {
-                permission = permission.substring(0, permission.lastIndexOf("."));
-            }
-            permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
-        }
-        if (permissionsfound.isEmpty())
-        {
-            context.sendMessage("roles", "&eCould not find the permission &6%s for &2%s&e!", context.getString(0), user.getName());
-            return;
-        }
-        permission = context.getString(0);
-        boolean superPerm = user.hasPermission(permission);
-        Boolean myPerm = role.resolvePermissions().get(permission); // should never be null
+        //context.sendMessage("roles", "&eCould not find the permission &6%s for &2%s&e!", context.getString(0), user.getName());
+        RolePermission myPerm = role.getPerms().get(permission); // should never be null
         if (myPerm == null)
         {
             context.sendMessage("roles", "&cThe specified permission does not exist!");
             return;
         }
-        context.sendMessage("roles", (myPerm ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
+        boolean superPerm = user.hasPermission(permission);
+        context.sendMessage("roles", (myPerm.isSet() ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
                 : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c") + " in &6%s", user.getName(), permission, world.getName());
         if (!permission.endsWith("*"))
         {
             context.sendMessage("roles", "&eSuperPerm Node: %s", superPerm); // Do not show when * permission as it would never be correct
         }
-        if (!permissionsfound.isEmpty())
+        Role originRole = myPerm.getOrigin();
+        if (!originRole.getLitaralPerms().containsKey(permission))
         {
-            //TODO check if this works correctly only display perms that are really set in the role not calculated perms
-            //e.g. do not show ce.basics.commands.* if ce.basics.* was set
-            context.sendMessage("roles", "&ePermission inherited from:");
-            for (String permFound : permissionsfound)
+            boolean found = false;
+            while (!permission.equals("*"))
             {
-                if (role.getPerms().get(permFound).isSet() == myPerm)
+                if (permission.endsWith("*"))
                 {
-                    String permOrigin = role.getPerms().get(permFound).getOrigin().getName();
-                    if (user.getName().equals(permOrigin))
+                    permission = permission.substring(0, permission.lastIndexOf("."));
+                }
+                permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
+
+                if (originRole.getLitaralPerms().containsKey(permission))
+                {
+                    if (originRole.getLitaralPerms().get(permission) == myPerm.isSet())
                     {
-                        context.sendMessage("roles", "&6%s &ein the users role!", permFound);
+                        found = true;
+                        break;
                     }
-                    else
-                    {
-                        context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permFound, permOrigin);
-                    }
-                    return;
                 }
             }
+            if (!found)
+            {
+                throw new IllegalStateException("Found permission not found in literal permissions");
+            }
+        }
+        context.sendMessage("roles", "&ePermission inherited from:");
+
+        if (user.getName().equals(originRole.getName()))
+        {
+            context.sendMessage("roles", "&6%s &ein the users role!", permission);
+        }
+        else
+        {
+            context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permission, originRole.getName());
         }
     }
 
@@ -173,9 +167,9 @@ public class UserManagementCommands extends ContainerCommand
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         context.sendMessage("roles", "&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
-        for (Entry<String, RolePermission> entry : role.getPerms().entrySet())
+        for (Entry<String, Boolean> entry : role.getLitaralPerms().entrySet())
         {
-            context.sendMessage("- &e" + entry.getValue().getPerm() + ": &6" + entry.getValue().isSet());
+            context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
         }
     }
 
