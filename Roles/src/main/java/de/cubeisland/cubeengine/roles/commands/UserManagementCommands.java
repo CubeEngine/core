@@ -90,12 +90,13 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "checkuperm")
-    @Command(desc = "Checks for permissions of a user [in world]",
+    @Command(names={"checkpermission","checkperm"},
+             desc = "Checks for permissions of a user [in world]",
              usage = "<permission> [player] [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 3, min = 1)
-    public void checkperm(CommandContext context)
+    public void checkpermission(CommandContext context)
     {
         User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
@@ -155,12 +156,13 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "listuperm")
-    @Command(desc = "List permission of a user [in world]",
+    @Command(names={"listpermission","listperm"},
+             desc = "List permission of a user [in world]",
              usage = "[player] [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 2)
-    public void listperm(CommandContext context)
+    public void listpermission(CommandContext context)
     {
         User user = this.getUser(context, 0);
         World world = this.getWorld(context, user);
@@ -318,22 +320,23 @@ public class UserManagementCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Sets a permission for this user [in world]",
-             usage = "<permission> <player> <true|false|reset> [in <world>]",
+    @Command(names={"setpermission","setperm"},
+             desc = "Sets a permission for this user [in world]",
+             usage = "<permission> <true|false|reset> <player> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 5, min = 3)
     public void setpermission(CommandContext context)
     {
         String perm = context.getString(0);
-        User user = context.getUser(1);
+        User user = context.getUser(2);
         if (user == null)
         {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
+            context.sendMessage("roles", "&cUser %s not found!", context.getString(2));
             return;
         }
         Boolean set;
-        String setTo = context.getString(2);
+        String setTo = context.getString(1);
         if (setTo.equalsIgnoreCase("true"))
         {
             set = true;

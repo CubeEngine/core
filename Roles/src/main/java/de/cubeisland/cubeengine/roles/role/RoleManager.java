@@ -279,7 +279,8 @@ public class RoleManager
 
     public void reloadAndApplyRole(User user, int worldId)
     {
-        this.preCalculateRoles(user.getName(), true); //TODO only recalculate & apply if needed/what is needed
+        user.removeAttribute(this.module, "roleContainer");
+        this.preCalculateRoles(user.getName(), true);
         this.applyRole(user, worldId);
     }
 
