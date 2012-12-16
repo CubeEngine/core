@@ -145,12 +145,36 @@ public abstract class Configuration
      */
     public static ConfigurationCodec resolveCodec(String fileExtension)
     {
+        if (fileExtension == null)
+        {
+            return null;
+        }
         ConfigurationCodec codec = codecs.get(fileExtension);
         if (codec == null)
         {
             throw new IllegalStateException("FileExtension ." + fileExtension + " cannot be used for Configurations!");
         }
         return codec;
+    }
+
+    public static <T extends Configuration> T createInstance(Class<T> clazz)
+    {
+        String codec = null;
+        Codec codecAnnotation = clazz.getAnnotation(Codec.class);
+        if (codecAnnotation != null)
+        {
+            codec = codecAnnotation.value();
+        }
+        try
+        {
+            T instance = clazz.newInstance();
+            instance.setCodec(codec);
+            return instance;
+        }
+        catch (Exception e)
+        {
+            throw new InvalidConfigurationException("Failed to create an instance of " + clazz.getName(), e);
+        }
     }
 
     /**
@@ -217,15 +241,13 @@ public abstract class Configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
     {
-        Codec type = clazz.getAnnotation(Codec.class);
-        if (type == null)
+        T config = createInstance(clazz);
+        if (config.codec == null)
         {
-            throw new InvalidConfigurationException("Configuration Type undefined!");
+            throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
         }
         try
         {
-            T config = clazz.newInstance();
-            config.setCodec(type.value());
             if (is != null)
             {
                 config.codec.load(config, is); //load config in maps -> updates -> sets fields
@@ -253,13 +275,12 @@ public abstract class Configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, Module module)
     {
-        Codec type = clazz.getAnnotation(Codec.class);
-        if (type == null)
+        Codec codecAnnotation = clazz.getAnnotation(Codec.class);
+        if (codecAnnotation == null)
         {
-            //ConfigType undefined
-            return null;
+            throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
         }
-        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + type.value()));
+        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + codecAnnotation.value()));
     }
 
     /**
@@ -280,16 +301,6 @@ public abstract class Configuration
     public void setCodec(ConfigurationCodec codec)
     {
         this.codec = codec;
-    }
-
-    /**
-     * Returns the extension for the current Codec
-     *
-     * @return the fileExtension
-     */
-    public String getCodecExtension()
-    {
-        return this.codec.getExtension();
     }
 
     /**
