@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.log.LogColorStripper;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
 import net.minecraft.server.v1_4_5.EntityPlayer;
@@ -44,7 +45,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.FileHandler;
 import java.util.logging.Filter;
+import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
@@ -173,6 +176,65 @@ public class BukkitUtils
         }
     }
 
+    private static Filter filter = null;
+    private static CommandLogFilter commandFilter = null;
+    public static void disableCommandLogging()
+    {
+        if (commandFilter == null)
+        {
+            commandFilter = new CommandLogFilter();
+        }
+        Logger logger = Bukkit.getLogger();
+        filter = logger.getFilter();
+        logger.setFilter(commandFilter);
+    }
+
+    public static void resetCommandLogging()
+    {
+        if (commandFilter != null)
+        {
+            Logger logger = Bukkit.getLogger();
+            if (logger.getFilter() == commandFilter)
+            {
+                logger.setFilter(filter);
+            }
+            filter = null;
+        }
+    }
+
+    public static Filter colorStripper = null;
+    public static void enableLogColorStripping()
+    {
+        if (colorStripper != null)
+        {
+            return;
+        }
+        colorStripper = new LogColorStripper();
+        for (Handler handler : Bukkit.getLogger().getHandlers())
+        {
+            if (handler instanceof FileHandler)
+            {
+                handler.setFilter(colorStripper);
+            }
+        }
+    }
+
+    public static void resetLogColorStripping()
+    {
+        if (colorStripper != null)
+        {
+            for (Handler handler : Bukkit.getLogger().getHandlers())
+            {
+                if (handler.getFilter() == colorStripper)
+                {
+                    handler.setFilter(null);
+                }
+            }
+            colorStripper = null;
+        }
+    }
+
+
     /**
      * Registers the packet hook injector
      *
@@ -191,42 +253,12 @@ public class BukkitUtils
         }
     }
 
-    private static Logger logger = null;
-    private static Filter filter = null;
-    private static CommandLogFilter commandFilter = null;
-    public static void disableCommandLogging()
-    {
-        if (logger == null)
-        {
-            logger = Logger.getLogger("Minecraft");
-        }
-        if (commandFilter == null)
-        {
-            commandFilter = new CommandLogFilter();
-        }
-        filter = logger.getFilter();
-        logger.setFilter(commandFilter);
-    }
-
-    public static void resetCommandLogging()
-    {
-        if (logger != null)
-        {
-            if (logger.getFilter() == commandFilter)
-            {
-                logger.setFilter(filter);
-            }
-            filter = null;
-            logger = null;
-        }
-    }
-
     private static class PacketHookInjector implements Listener
     {
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();
-        public static boolean injected = false;
+        public static       boolean            injected = false;
         private final ExecutorService executorService;
-        private final TaskQueue taskQueue;
+        private final TaskQueue       taskQueue;
 
         private PacketHookInjector()
         {
@@ -261,13 +293,14 @@ public class BukkitUtils
 
         public void swap(final Player player)
         {
-            final EntityPlayer entity = ((CraftPlayer) player).getHandle();
+            final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
             swapPlayerNetServerHandler(entity, new CubeEngineNetServerHandler(entity, this.taskQueue));
         }
     }
 
     private static final Location helperLocation = new Location(null, 0, 0, 0);
+
     public static void swapPlayerNetServerHandler(EntityPlayer player, NetServerHandler newHandler)
     {
         if (NSH_LIST_FIELD == null)
@@ -509,5 +542,6 @@ public class BukkitUtils
 
         resetCommandMap();
         resetCommandLogging();
+        resetLogColorStripping();
     }
 }
