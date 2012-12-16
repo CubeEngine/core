@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import org.apache.commons.lang.Validate;
+import org.yaml.snakeyaml.reader.ReaderException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,8 +17,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
-import org.yaml.snakeyaml.reader.ReaderException;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  * This abstract class represents a configuration.
@@ -37,8 +40,8 @@ public abstract class Configuration
     /**
      * Registers a ConfigurationCodec for given extension
      *
-     * @param extension the extension
      * @param codec     the codec
+     * @param extensions the extensions
      */
     public static void registerCodec(ConfigurationCodec codec, String... extensions)
     {
@@ -83,14 +86,18 @@ public abstract class Configuration
     
     public void load()
     {
-        try //TODO prevent NPE etc
+        if (this.file == null)
+        {
+            throw new IllegalStateException("The file must not be null in order to load the configuration!");
+        }
+        try
         {
             FileInputStream is = new FileInputStream(this.file);
             this.codec.load(this, is);
-            //TODO exception handling
         }
-        catch (Exception ignored)
+        catch (Exception e)
         {
+            CubeEngine.getLogger().log(SEVERE, "Failed to load the configuration " + this.file.getPath(), e);
         }
     }
 
