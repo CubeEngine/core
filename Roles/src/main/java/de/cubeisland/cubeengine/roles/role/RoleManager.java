@@ -136,7 +136,7 @@ public class RoleManager
                     Role parentRole = this.globalRoles.get(parentName);
                     if (parentRole == null)
                     {
-                        throw new RoleDependencyMissingException("Needed parent role " + parentName + " for " + config.roleName + " not found.");
+                        throw new RoleDependencyMissingException("Parent role " + parentName + " for " + config.roleName + " is missing.");
                     }
                     parentRoles.add(parentRole); // Role was found:
                 }
@@ -162,6 +162,7 @@ public class RoleManager
         this.providers.clear();
         for (RoleProvider provider : this.module.getConfiguration().providers)
         {
+            this.providers.put(this.module.getCore().getWorldManager().getWorldId(provider.mainWorld), provider);
             TIntObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
             for (int worldId : worlds.keys())
             {
