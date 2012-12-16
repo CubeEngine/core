@@ -407,7 +407,7 @@ public class BukkitUtils
         {
             return null;
         }
-        if (itemStack instanceof CraftItemStack)
+        if (!(itemStack instanceof CraftItemStack))
         {
             return null;
         }
