@@ -9,9 +9,6 @@ import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
 import net.minecraft.server.v1_4_5.EntityPlayer;
 import net.minecraft.server.v1_4_5.LocaleLanguage;
-import net.minecraft.server.v1_4_5.NBTTagCompound;
-import net.minecraft.server.v1_4_5.NBTTagList;
-import net.minecraft.server.v1_4_5.NBTTagString;
 import net.minecraft.server.v1_4_5.NetServerHandler;
 import net.minecraft.server.v1_4_5.ServerConnection;
 import org.apache.commons.lang.Validate;
@@ -27,7 +24,6 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_4_5.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,7 +36,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -367,6 +362,7 @@ public class BukkitUtils
         {
             itemMeta.setDisplayName(string[0]);
         }
+        itemStack.setItemMeta(itemMeta);
         return true;
     }
 
@@ -385,7 +381,9 @@ public class BukkitUtils
         if (head.getType().equals(Material.SKULL_ITEM))
         {
             head.setDurability((short)3);
-            ((SkullMeta)head.getItemMeta()).setOwner(name);
+            SkullMeta meta = ((SkullMeta)head.getItemMeta());
+            meta.setOwner(name);
+            head.setItemMeta(meta);
             return head;
         }
         else
