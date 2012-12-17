@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 
 public class RoleManager
 {
+
     private THashMap<String, RoleConfig> globalConfigs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
@@ -162,7 +163,14 @@ public class RoleManager
         this.providers.clear();
         for (RoleProvider provider : this.module.getConfiguration().providers)
         {
-            this.providers.put(this.module.getCore().getWorldManager().getWorldId(provider.mainWorld), provider);
+            Integer worldID = this.module.getCore().getWorldManager().getWorldId(provider.mainWorld);
+            if (worldID == null)
+            {
+                this.module.getLogger().log(LogLevel.WARNING,
+                        "Unkown world " + provider.mainWorld + "! Removing provider!");
+                continue;
+            }
+            this.providers.put(worldID, provider);
             TIntObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
             for (int worldId : worlds.keys())
             {

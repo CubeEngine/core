@@ -63,8 +63,66 @@ public class RoleManagementCommands extends ContainerCommand
         }
     }
 
+    @Alias(names = "checkperm")
+    @Command(names =
+    {
+        "checkperm", "checkpermission"
+    },
+    desc = "Lists all roles [in world]",
+    usage = "<role> <permission> [in <world>]",
+    params =
+    @Param(names = "in", type = World.class),
+    max = 3, min = 2)
     public void checkperm(CommandContext context)
     {
+        User sender = context.getSenderAsUser();
+        World world;
+        if (!context.hasNamed("in"))
+        {
+            if (sender == null)
+            {
+                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
+                return;
+            }
+            world = sender.getWorld();
+        }
+        else
+        {
+            world = context.getNamed("in", World.class);
+            if (world == null)
+            {
+                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+                return;
+            }
+        }
+        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        Role role = provider.getRole(context.getString(0));
+        if (role == null)
+        {
+            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
+            return;
+        }
+        if (role.getPerms().containsKey(context.getString(1)))
+        {
+            Boolean isSet = role.getPerms().get(context.getString(1)).isSet();
+            if (isSet)
+            {
+                context.sendMessage("roles", "&6%s &ais set to &2true &ain the role &6%s &ain &6%s&a.",
+                        context.getString(1), role.getName(), world.getName());
+            }
+            else
+            {
+                context.sendMessage("roles", "&6%s &cis set to &4false &cin the role &6%s &cin &6%s&c.",
+                        context.getString(1), role.getName(), world.getName());
+            }
+        }
+        else
+        {
+            context.sendMessage("roles",
+                    "&eThe permission &6%s &eis not assinged in the role &6%s &ein &6%s&e.",
+                    context.getString(1), role.getName(), world.getName());
+        }
     }
 
     public void listperm(CommandContext context)
