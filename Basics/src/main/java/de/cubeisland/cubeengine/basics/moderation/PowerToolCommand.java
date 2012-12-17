@@ -307,6 +307,8 @@ public class PowerToolCommand extends ContainerCommand
         {
             return null;
         }
+        //TODO fix it :(
+        /*
         CraftItemStack cis = (CraftItemStack) item;
         if (cis.getHandle() == null)
         {
@@ -318,6 +320,8 @@ public class PowerToolCommand extends ContainerCommand
             cis.getHandle().setTag(tag = new NBTTagCompound());
         }
         return tag;
+        */
+        return null;
     }
 
     private void printList(CommandContext context, NBTTagList ptVals, boolean lastAsNew)

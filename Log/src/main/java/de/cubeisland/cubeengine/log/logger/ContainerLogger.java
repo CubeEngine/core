@@ -133,7 +133,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             else
             // both filled
             {
-                if (BukkitUtils.compareItemStacks(inInvent, onCursor)) // can be stacked together?
+                if (inInvent.isSimilar(onCursor)) // can be stacked together?
                 {
                     int toput = event.isLeftClick() ? inInvent.getAmount() : 1;
                     if (toput > inInvent.getMaxStackSize() - inInvent.getAmount()) //if stack to big

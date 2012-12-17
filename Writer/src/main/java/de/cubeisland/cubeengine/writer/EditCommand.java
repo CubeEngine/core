@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.writer;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -14,6 +13,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import org.bukkit.inventory.meta.BookMeta;
 
 public class EditCommand
 {
@@ -44,12 +44,8 @@ public class EditCommand
         if (user.getItemInHand().getType() == Material.WRITTEN_BOOK)
         {
             ItemStack item = user.getItemInHand();
-            BookItem unsigned = new BookItem(item);
-
-            unsigned.setAuthor("");
-            unsigned.setTitle("");
-
-            item = unsigned.getItemStack();
+            ((BookMeta)item.getItemMeta()).setAuthor("");
+            ((BookMeta)item.getItemMeta()).setTitle("");
             item.setType(Material.BOOK_AND_QUILL);
 
             user.sendMessage("writer", "Your book is now unsigned and ready to be edited");

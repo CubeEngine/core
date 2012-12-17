@@ -25,6 +25,7 @@ public class PowerToolListener implements Listener
             {
                 if (BasicsPerm.POWERTOOL_USE.isAuthorized(event.getPlayer()))
                 {
+                    /* TODO fix me :(
                     CraftItemStack item = (CraftItemStack)player.getItemInHand();
                     NBTTagCompound tag = item.getHandle().getTag();
                     if (tag == null)
@@ -57,7 +58,7 @@ public class PowerToolListener implements Listener
                     if (!list.isEmpty())
                     {
                         event.setCancelled(true);
-                    }
+                    }*/
                 }
             }
         }
