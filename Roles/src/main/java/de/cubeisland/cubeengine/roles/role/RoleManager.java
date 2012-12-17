@@ -17,12 +17,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import org.bukkit.entity.Player;
 
 public class RoleManager
 {
-
     private THashMap<String, RoleConfig> globalConfigs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
@@ -278,22 +278,22 @@ public class RoleManager
         MergedRole role = roleContainer.get(worldId);
         if (role == null)
         {
-            List<Role> roles = this.getProvider(worldId).getDefaultRoles();
-            this.addRoles(user, worldId, roles.toArray(new Role[roles.size()]));
+            Set<Role> roles = this.getProvider(worldId).getDefaultRoles();
+            this.addRoles(user, player, worldId, roles.toArray(new Role[roles.size()]));
             return;
         }
         user.setPermission(role.resolvePermissions(), player);
         user.setAttribute(this.module, "metadata", role.getMetaData());
     }
 
-    public void reloadAndApplyRole(User user, int worldId)
+    public void reloadAndApplyRole(User user, Player player, int worldId)
     {
         user.removeAttribute(this.module, "roleContainer");
         this.preCalculateRoles(user.getName(), true);
-        this.applyRole(user, worldId);
+        this.applyRole(player, worldId);
     }
 
-    public boolean addRoles(User user, int worldId, Role... roles)
+    public boolean addRoles(User user, Player player, int worldId, Role... roles)
     {
         TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         boolean added = false;
@@ -311,7 +311,7 @@ public class RoleManager
             return false;
         }
         user.removeAttribute(this.module, "roleContainer");
-        this.reloadAndApplyRole(user, worldId);
+        this.reloadAndApplyRole(user, player, worldId);
         return true;
     }
 
@@ -324,18 +324,18 @@ public class RoleManager
         }
         this.module.getDbManager().delete(user.key, role.getName(), worldId);
         user.removeAttribute(this.module, "roleContainer");
-        this.reloadAndApplyRole(user, worldId);
+        this.reloadAndApplyRole(user, user.getPlayer(), worldId);
         return true;
     }
 
-    public List<Role> clearRoles(User user, int worldId)
+    public Set<Role> clearRoles(User user, int worldId)
     {
         this.module.getDbManager().clear(user.key, worldId);
-        List<Role> result = this.getProvider(worldId).getDefaultRoles();
+        Set<Role> result = this.getProvider(worldId).getDefaultRoles();
 
-        this.addRoles(user, worldId, result.toArray(new Role[result.size()]));
+        this.addRoles(user, user.getPlayer(), worldId, result.toArray(new Role[result.size()]));
         user.removeAttribute(this.module, "roleContainer");
-        this.reloadAndApplyRole(user, worldId);
+        this.reloadAndApplyRole(user, user.getPlayer(), worldId);
         return result;
     }
 }

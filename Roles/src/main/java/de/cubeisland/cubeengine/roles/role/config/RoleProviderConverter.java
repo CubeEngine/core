@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class RoleProviderConverter implements Converter<RoleProvider>
 {
-
     @Override
     public Object toObject(RoleProvider object) throws ConversionException
     {
@@ -19,10 +18,15 @@ public class RoleProviderConverter implements Converter<RoleProvider>
         result.put(object.mainWorld, worlds);
         for (int worldId : object.getWorlds().keys())
         {
+            List<String> values = new ArrayList<String>();
+            String worldName = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
+            if (object.mainWorld.equals(worldName))
+            {
+                continue;
+            }
             Map<String, List<String>> world = new HashMap<String, List<String>>();
             worlds.add(world);
-            List<String> values = new ArrayList<String>();
-            world.put(CubeEngine.getCore().getWorldManager().getWorld(worldId).getName(), values);
+            world.put(worldName, values);
             if (object.getWorlds().get(worldId).getLeft())
             {
                 values.add("roles");

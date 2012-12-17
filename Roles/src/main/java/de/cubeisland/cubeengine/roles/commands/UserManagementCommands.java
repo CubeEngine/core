@@ -21,6 +21,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.bukkit.World;
 
 public class UserManagementCommands extends ContainerCommand
@@ -43,7 +44,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         if (user == null)
         {
-            paramNotFound(context, "roles",  "&cUser %s not found!", context.getString(pos));
+            paramNotFound(context, "roles", "&cUser %s not found!", context.getString(pos));
         }
         if (!user.isOnline())
         {
@@ -94,7 +95,10 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "checkuperm")
-    @Command(names={"checkperm","checkpermission"},
+    @Command(names =
+    {
+        "checkperm", "checkpermission"
+    },
              desc = "Checks for permissions of a user [in world]",
              usage = "<permission> [player] [in <world>]",
              params =
@@ -160,7 +164,10 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "listuperm")
-    @Command(names={"listperm","listpermission"},
+    @Command(names =
+    {
+        "listperm", "listpermission"
+    },
              desc = "List permission of a user [in world]",
              usage = "[player] [in <world>]",
              params =
@@ -180,7 +187,10 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "checkumeta")
-    @Command(names={"checkdata","checkmetadata"},
+    @Command(names =
+    {
+        "checkdata", "checkmetadata"
+    },
              desc = "Checks for metadata of a user [in world]",
              usage = "<metadatakey> [player] [in <world>]",
              params =
@@ -204,7 +214,10 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "listumeta")
-    @Command(names={"listdata","listmetadata"},
+    @Command(names =
+    {
+        "listdata", "listmetadata"
+    },
              desc = "List metadata of a user [in world]",
              usage = "[player] [in <world>]",
              params =
@@ -254,7 +267,7 @@ public class UserManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
             return;
         }
-        if (((Roles) this.getModule()).getManager().addRoles(user, worldId, role))
+        if (((Roles) this.getModule()).getManager().addRoles(user, user.getPlayer(), worldId, role))
         {
             context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
         }
@@ -314,7 +327,7 @@ public class UserManagementCommands extends ContainerCommand
         }
         World world = this.getWorld(context, user);
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        List<Role> newRoles = ((Roles) this.getModule()).getManager().clearRoles(user, worldId);
+        Set<Role> newRoles = ((Roles) this.getModule()).getManager().clearRoles(user, worldId);
         context.sendMessage("roles", "&eCleared the roles of &2%s &ein &6%s&e.", user.getName(), world.getName());
         if (!newRoles.isEmpty())
         {
@@ -326,7 +339,10 @@ public class UserManagementCommands extends ContainerCommand
         }
     }
 
-    @Command(names={"setperm","setpermission"},
+    @Command(names =
+    {
+        "setperm", "setpermission"
+    },
              desc = "Sets a permission for this user [in world]",
              usage = "<permission> <true|false|reset> <player> [in <world>]",
              params =
@@ -381,7 +397,7 @@ public class UserManagementCommands extends ContainerCommand
                 context.sendMessage("roles", "&cPermission &6%s &cof &2%s&c set tp false!", perm, user.getName());
             }
         }
-        ((Roles) this.getModule()).getManager().reloadAndApplyRole(user, worldId);
+        ((Roles) this.getModule()).getManager().reloadAndApplyRole(user, user.getPlayer(),worldId);
     }
 
     public void resetpermission(CommandContext context)
@@ -390,7 +406,10 @@ public class UserManagementCommands extends ContainerCommand
         //other alias givePermissions for setPermission with true
     }
 
-    @Command(names = {"setdata","setmetadata"},
+    @Command(names =
+    {
+        "setdata", "setmetadata"
+    },
              desc = "Sets metadata for this user [in world]",
              usage = "<metaKey> <metaValue> <player> [in <world>]",
              params =
@@ -413,7 +432,10 @@ public class UserManagementCommands extends ContainerCommand
         context.sendMessage("roles", "&aMetadata &6%s &aof &2%s&a set to &6%s &ain &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
 
-    @Command(names = {"resetdata","resetmetadata"},
+    @Command(names =
+    {
+        "resetdata", "resetmetadata"
+    },
              desc = "Resets metadata for this user [in world]",
              usage = "<metaKey> <player> [in <world>]",
              params =

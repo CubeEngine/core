@@ -466,12 +466,15 @@ public class User extends UserBase implements LinkingModel<Integer>
             }
         }
         PermissionAttachment attachment = null;
-        for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions())
+        if (player.getEffectivePermissions() != null)
         {
-            if (attachmentInfo.getAttachment() != null && attachmentInfo.getAttachment().getPlugin() != null && attachmentInfo.getAttachment().getPlugin() instanceof BukkitCore)
+            for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions())
             {
-                attachment = attachmentInfo.getAttachment();
-                break;
+                if (attachmentInfo.getAttachment() != null && attachmentInfo.getAttachment().getPlugin() != null && attachmentInfo.getAttachment().getPlugin() instanceof BukkitCore)
+                {
+                    attachment = attachmentInfo.getAttachment();
+                    break;
+                }
             }
         }
         if (attachment == null)

@@ -17,7 +17,9 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 public class RoleProvider
@@ -29,7 +31,7 @@ public class RoleProvider
     private THashMap<String, Role> roles = new THashMap<String, Role>();
     private boolean init = false;
     private File worldfolder = null;
-    private List<Role> defaultRoles = new ArrayList<Role>();
+    private Set<Role> defaultRoles = new HashSet<Role>();
     private Stack<String> roleStack = new Stack<String>();
     
     public RoleProvider(String mainWorld)
@@ -137,7 +139,7 @@ public class RoleProvider
         this.worlds.put(world, new Pair<Boolean, Boolean>(roles, users));
     }
     
-    public List<Role> getDefaultRoles()
+    public Set<Role> getDefaultRoles()
     {
         return this.defaultRoles;
     }
