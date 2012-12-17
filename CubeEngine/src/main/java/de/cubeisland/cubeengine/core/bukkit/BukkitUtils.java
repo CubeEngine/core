@@ -40,6 +40,11 @@ import java.util.logging.Filter;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import java.util.logging.Level;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
+import org.bukkit.inventory.*;
+import org.bukkit.inventory.*;
+import org.bukkit.inventory.*;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -49,12 +54,21 @@ public class BukkitUtils
     private static boolean hackSucceeded = false;
     private static final Field LOCALE_STRING_FIELD = findFirstField(String.class, LocaleLanguage.class);
     private static final Field NSH_LIST_FIELD = findFirstField(List.class, ServerConnection.class);
+    private static Field handle;
 
     static
     {
         if (LOCALE_STRING_FIELD != null && NSH_LIST_FIELD != null)
         {
             hackSucceeded = true;
+        }
+        try
+        {
+            handle = CraftItemStack.class.getField("handle");
+            handle.setAccessible(true);
+        }
+        catch (Exception ex)
+        {
         }
     }
 
@@ -164,9 +178,9 @@ public class BukkitUtils
             reloadHelpMap();
         }
     }
-
     private static Filter filter = null;
     private static CommandLogFilter commandFilter = null;
+
     public static void disableCommandLogging()
     {
         if (commandFilter == null)
@@ -191,7 +205,6 @@ public class BukkitUtils
         }
     }
 
-
     /**
      * Registers the packet hook injector
      *
@@ -213,9 +226,9 @@ public class BukkitUtils
     private static class PacketHookInjector implements Listener
     {
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();
-        public static       boolean            injected = false;
+        public static boolean injected = false;
         private final ExecutorService executorService;
-        private final TaskQueue       taskQueue;
+        private final TaskQueue taskQueue;
 
         private PacketHookInjector()
         {
@@ -250,12 +263,11 @@ public class BukkitUtils
 
         public void swap(final Player player)
         {
-            final EntityPlayer entity = ((CraftPlayer)player).getHandle();
+            final EntityPlayer entity = ((CraftPlayer) player).getHandle();
 
             swapPlayerNetServerHandler(entity, new CubeEngineNetServerHandler(entity, this.taskQueue));
         }
     }
-
     private static final Location helperLocation = new Location(null, 0, 0, 0);
 
     public static void swapPlayerNetServerHandler(EntityPlayer player, NetServerHandler newHandler)
@@ -273,7 +285,7 @@ public class BukkitUtils
                 newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
                 ServerConnection sc = player.server.ae();
-                ((List<NetServerHandler>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
+                ((List<NetServerHandler>) NSH_LIST_FIELD.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
                 CubeEngine.getLogger().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
                 oldHandler.disconnected = true;
@@ -288,14 +300,14 @@ public class BukkitUtils
 
     public static void resetPlayerNetServerHandler(Player player)
     {
-        final EntityPlayer entity = ((CraftPlayer)player).getHandle();
+        final EntityPlayer entity = ((CraftPlayer) player).getHandle();
 
         swapPlayerNetServerHandler(entity, new NetServerHandler(entity.server, entity.netServerHandler.networkManager, entity));
     }
 
     public static void reloadHelpMap()
     {
-        SimpleHelpMap helpMap = (SimpleHelpMap)Bukkit.getHelpMap();
+        SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getHelpMap();
 
         helpMap.clear();
         helpMap.initializeGeneralTopics();
@@ -308,11 +320,11 @@ public class BukkitUtils
         {
             if (player instanceof User)
             {
-                player = ((User)player).getOfflinePlayer().getPlayer();
+                player = ((User) player).getOfflinePlayer().getPlayer();
             }
             if (player != null && player instanceof CraftPlayer)
             {
-                return ((CraftPlayer)player).getHandle().abilities.isInvulnerable;
+                return ((CraftPlayer) player).getHandle().abilities.isInvulnerable;
             }
         }
         return false;
@@ -322,12 +334,12 @@ public class BukkitUtils
     {
         if (player != null && player instanceof User)
         {
-            player = ((User)player).getOfflinePlayer().getPlayer();
+            player = ((User) player).getOfflinePlayer().getPlayer();
         }
         if (player != null && player instanceof CraftPlayer)
         {
-            ((CraftPlayer)player).getHandle().abilities.isInvulnerable = state;
-            ((CraftPlayer)player).getHandle().updateAbilities();
+            ((CraftPlayer) player).getHandle().abilities.isInvulnerable = state;
+            ((CraftPlayer) player).getHandle().updateAbilities();
         }
     }
 
@@ -337,5 +349,20 @@ public class BukkitUtils
 
         resetCommandMap();
         resetCommandLogging();
+    }
+
+    public static net.minecraft.server.v1_4_5.ItemStack getNmsItemStack(ItemStack item)
+    {
+        if (item instanceof CraftItemStack)
+        {
+            try
+            {
+                return (net.minecraft.server.v1_4_5.ItemStack) handle.get(item);
+            }
+            catch (Exception ignored)
+            {
+            }
+        }
+        return null;
     }
 }

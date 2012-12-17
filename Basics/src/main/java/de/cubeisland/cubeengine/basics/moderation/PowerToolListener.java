@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import net.minecraft.server.v1_4_5.*;
 import org.bukkit.Material;
@@ -25,9 +26,8 @@ public class PowerToolListener implements Listener
             {
                 if (BasicsPerm.POWERTOOL_USE.isAuthorized(event.getPlayer()))
                 {
-                    /* TODO fix me :(
-                    CraftItemStack item = (CraftItemStack)player.getItemInHand();
-                    NBTTagCompound tag = item.getHandle().getTag();
+                    ItemStack item = BukkitUtils.getNmsItemStack(player.getItemInHand());
+                    NBTTagCompound tag = item.getTag();
                     if (tag == null)
                     {
                         return;
@@ -58,7 +58,7 @@ public class PowerToolListener implements Listener
                     if (!list.isEmpty())
                     {
                         event.setCancelled(true);
-                    }*/
+                    }
                 }
             }
         }

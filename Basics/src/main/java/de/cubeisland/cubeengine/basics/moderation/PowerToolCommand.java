@@ -23,7 +23,6 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public class PowerToolCommand extends ContainerCommand
 {
-
     public PowerToolCommand(Module module)
     {
         super(module, "pt", "Binding shortcuts to an item.", "powertool");
@@ -44,7 +43,7 @@ public class PowerToolCommand extends ContainerCommand
     @Alias(names = "ptc")
     @Command(
     desc = "Removes all command from your powertool",
-    flags =
+             flags =
     @Flag(longName = "all", name = "a"), usage = "[-a]")
     public void clear(CommandContext context)
     {
@@ -130,8 +129,8 @@ public class PowerToolCommand extends ContainerCommand
     {
         "remove", "del", "delete", "rm"
     },
-    desc = "Removes a command from your powertool",
-    flags =
+             desc = "Removes a command from your powertool",
+             flags =
     @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
     public void remove(CommandContext context)
     {
@@ -202,7 +201,7 @@ public class PowerToolCommand extends ContainerCommand
         }
         if (newVals.size() == 0)
         {
-            tag.set("powerToolCommands",new NBTTagList());
+            tag.set("powerToolCommands", new NBTTagList());
             context.sendMessage("basics", "&eNo more commands saved on this item!");
         }
         else
@@ -216,12 +215,12 @@ public class PowerToolCommand extends ContainerCommand
     @Alias(names = "pta")
     @Command(
     desc = "Adds a command to your powertool",
-    flags =
+             flags =
     {
         @Flag(longName = "chat", name = "c"),
         @Flag(longName = "replace", name = "r")
     },
-    usage = "<commandstring>", min = 1)
+             usage = "<commandstring>", min = 1)
     public void add(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
@@ -260,7 +259,7 @@ public class PowerToolCommand extends ContainerCommand
 
     @Alias(names = "ptl")
     @Command(desc = "Lists your powertool-bindings.",
-    flags =
+             flags =
     @Flag(longName = "all", name = "a"))
     public void list(CommandContext context)
     {
@@ -307,21 +306,17 @@ public class PowerToolCommand extends ContainerCommand
         {
             return null;
         }
-        //TODO fix it :(
-        /*
-        CraftItemStack cis = (CraftItemStack) item;
-        if (cis.getHandle() == null)
+        net.minecraft.server.v1_4_5.ItemStack nmsItem = BukkitUtils.getNmsItemStack(item);
+        if (nmsItem == null)
         {
             return null;
         }
-        NBTTagCompound tag = cis.getHandle().getTag();
+        NBTTagCompound tag = nmsItem.getTag();
         if (tag == null && create)
         {
-            cis.getHandle().setTag(tag = new NBTTagCompound());
+            nmsItem.setTag(tag = new NBTTagCompound());
         }
         return tag;
-        */
-        return null;
     }
 
     private void printList(CommandContext context, NBTTagList ptVals, boolean lastAsNew)
