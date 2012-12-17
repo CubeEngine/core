@@ -107,10 +107,6 @@ public class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
-        if (!this.config.logColorCodes)
-        {
-            BukkitUtils.enableLogColorStripping();
-        }
         if (!this.config.logCommands)
         {
             BukkitUtils.disableCommandLogging();

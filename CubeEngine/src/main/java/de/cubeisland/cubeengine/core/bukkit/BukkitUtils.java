@@ -3,8 +3,6 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.log.LogColorStripper;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
 import net.minecraft.server.v1_4_5.EntityPlayer;
@@ -14,7 +12,6 @@ import net.minecraft.server.v1_4_5.ServerConnection;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -30,7 +27,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
@@ -40,15 +36,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.FileHandler;
 import java.util.logging.Filter;
-import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
-import java.util.Arrays;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -200,38 +191,6 @@ public class BukkitUtils
         }
     }
 
-    public static Filter colorStripper = null;
-    public static void enableLogColorStripping()
-    {
-        if (colorStripper != null)
-        {
-            return;
-        }
-        colorStripper = new LogColorStripper();
-        for (Handler handler : Bukkit.getLogger().getHandlers())
-        {
-            if (handler instanceof FileHandler)
-            {
-                handler.setFilter(colorStripper);
-            }
-        }
-    }
-
-    public static void resetLogColorStripping()
-    {
-        if (colorStripper != null)
-        {
-            for (Handler handler : Bukkit.getLogger().getHandlers())
-            {
-                if (handler.getFilter() == colorStripper)
-                {
-                    handler.setFilter(null);
-                }
-            }
-            colorStripper = null;
-        }
-    }
-
 
     /**
      * Registers the packet hook injector
@@ -378,6 +337,5 @@ public class BukkitUtils
 
         resetCommandMap();
         resetCommandLogging();
-        resetLogColorStripping();
     }
 }
