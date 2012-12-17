@@ -23,7 +23,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * This class provides the conveters.
+ * This class provides the converters.
  */
 public class Convert
 {
@@ -168,6 +168,6 @@ public class Convert
                 }
             }
         }
-        throw new IllegalArgumentException("Unkown Type: " + type);
+        throw new IllegalArgumentException("Unknown Type: " + type);
     }
 }
