@@ -224,7 +224,7 @@ public class RoleProvider
                         {
                             continue;
                         }
-                        throw new RoleDependencyMissingException("Could not find the global role " + parentName);
+                        throw new RoleDependencyMissingException("Could not find the role " + parentName);
                     }
                     else
                     {

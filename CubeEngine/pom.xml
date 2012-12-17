@@ -30,6 +30,11 @@
             <artifactId>prettytime</artifactId>
             <version>1.0.8.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.9</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -71,6 +76,7 @@
                                     <include>io.netty:*</include>
                                     <include>org.yaml:snakeyaml</include>
                                     <include>mysql-connector-java:mysql</include>
+                                    <include>org.fusesource.jansi:jansi</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

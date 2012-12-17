@@ -480,7 +480,7 @@ public class AnnouncementManager
             throw new IOException("Failed to create the announcement folder for '" + name + "'");
         }
 
-        AnnouncementConfig config = new AnnouncementConfig();
+        AnnouncementConfig config = Configuration.createInstance(AnnouncementConfig.class);
         config.setFile(new File(folder, META_FILE_NAME));
         config.delay = delay;
         config.worlds = Arrays.asList(world);

@@ -57,6 +57,10 @@ public class CoreConfiguration extends Configuration
     @Comment("Whether to log commands executed by players.")
     public boolean logCommands = false;
 
+    @Option("logging.log-color-codes")
+    @Comment("Whether to keep color codes in the log file.")
+    public boolean logColorCodes = false;
+
     @Option("after-join-event-delay")
     @Comment("How many ticks after PlayerJoinEvent the AfterJoinEvent is fired")
     public long afterJoinEventDelay = 1;

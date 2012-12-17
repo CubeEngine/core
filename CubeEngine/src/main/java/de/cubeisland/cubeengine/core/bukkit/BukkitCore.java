@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
+import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -33,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
@@ -65,7 +65,7 @@ public class BukkitCore extends JavaPlugin implements Core
     {
         if (!BukkitUtils.isCompatible())
         {
-            this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine.");
+            this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine revision.");
             return;
         }
         CubeEngine.initialize(this);
@@ -107,6 +107,14 @@ public class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
+        if (!this.config.logColorCodes)
+        {
+            BukkitUtils.enableLogColorStripping();
+        }
+        if (!this.config.logCommands)
+        {
+            BukkitUtils.disableCommandLogging();
+        }
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
@@ -146,7 +154,7 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: executor, database, Server, core config and event registration
         this.userManager = new UserManager(this);
 
-        // register Listerer for UserManger
+        // register listeners for UserManger
         pm.registerEvents(this.userManager, this);
 
         pm.registerEvents(new CoreListener(this), this);
@@ -166,10 +174,6 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this);
-        if (!this.config.logCommands)
-        {
-            BukkitUtils.disableCommandLogging();
-        }
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
@@ -180,10 +184,12 @@ public class BukkitCore extends JavaPlugin implements Core
                 worldManager = new WorldManager(database);
                 
                 // depends on: file manager
-                BukkitCore.this.moduleManager.loadModules(BukkitCore.this.fileManager.getModulesDir());
+                moduleManager.loadModules(fileManager.getModulesDir());
+
+                pm.callEvent(new FinishedLoadModulesEvent(BukkitCore.this));
 
                 // depends on: finished loading modules
-                BukkitCore.this.userManager.cleanup();
+                userManager.cleanup();
             }
         });
     }
@@ -192,7 +198,6 @@ public class BukkitCore extends JavaPlugin implements Core
     public void onDisable()
     {
         BukkitUtils.cleanup();
-        Logger.getLogger("Minecraft").setFilter(null);
 
         if (this.moduleManager != null)
         {

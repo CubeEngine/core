@@ -1,26 +1,13 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import java.util.EnumSet;
 import org.bukkit.Material;
+
+import java.util.EnumSet;
+
 import static org.bukkit.Material.*;
 
 public class BlockUtil
 {
-    /**
-     * All non solid blocks excluding fluids.
-     */
-    private static final EnumSet<Material> NON_SOLID_BLOCKS =
-            EnumSet.of(AIR, SAPLING, POWERED_RAIL, DETECTOR_RAIL, WEB, LONG_GRASS, DEAD_BUSH, YELLOW_FLOWER,
-                RED_ROSE, BROWN_MUSHROOM, RED_MUSHROOM, TORCH, FIRE, REDSTONE_WIRE, CROPS, SIGN_POST, RAILS, WALL_SIGN,
-                LEVER, STONE_PLATE, WOOD_PLATE, REDSTONE_TORCH_OFF, REDSTONE_TORCH_ON, STONE_BUTTON, SNOW, SUGAR_CANE_BLOCK,
-                PORTAL, DIODE_BLOCK_OFF, DIODE_BLOCK_ON, PUMPKIN_STEM, MELON_STEM, NETHER_WARTS, ENDER_PORTAL, COCOA,
-                TRIPWIRE_HOOK, TRIPWIRE, CARROT, POTATO);
-
-    public static boolean isNonSolidBlock(Material mat)
-    {
-        return NON_SOLID_BLOCKS.contains(mat);
-    }
-
     /**
      * All fluid blocks
      */

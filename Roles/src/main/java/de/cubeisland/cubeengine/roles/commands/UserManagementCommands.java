@@ -94,7 +94,7 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "checkuperm")
-    @Command(names={"checkpermission","checkperm"},
+    @Command(names={"checkperm","checkpermission"},
              desc = "Checks for permissions of a user [in world]",
              usage = "<permission> [player] [in <world>]",
              params =
@@ -160,7 +160,7 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "listuperm")
-    @Command(names={"listpermission","listperm"},
+    @Command(names={"listperm","listpermission"},
              desc = "List permission of a user [in world]",
              usage = "[player] [in <world>]",
              params =
@@ -180,7 +180,8 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "checkumeta")
-    @Command(desc = "Checks for metadata of a user [in world]",
+    @Command(names={"checkdata","checkmetadata"},
+             desc = "Checks for metadata of a user [in world]",
              usage = "<metadatakey> [player] [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -203,7 +204,8 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "listumeta")
-    @Command(desc = "List metadata of a user [in world]",
+    @Command(names={"listdata","listmetadata"},
+             desc = "List metadata of a user [in world]",
              usage = "[player] [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -297,7 +299,7 @@ public class UserManagementCommands extends ContainerCommand
     }
 
     @Alias(names = "clearurole")
-    @Command(desc = "Clears all roles from the player and sets the defaultworlds [in world]",
+    @Command(desc = "Clears all roles from the player and sets the defaultroles [in world]",
              usage = "<player> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -324,7 +326,7 @@ public class UserManagementCommands extends ContainerCommand
         }
     }
 
-    @Command(names={"setpermission","setperm"},
+    @Command(names={"setperm","setpermission"},
              desc = "Sets a permission for this user [in world]",
              usage = "<permission> <true|false|reset> <player> [in <world>]",
              params =
@@ -388,7 +390,8 @@ public class UserManagementCommands extends ContainerCommand
         //other alias givePermissions for setPermission with true
     }
 
-    @Command(desc = "Sets metadata for this user [in world]",
+    @Command(names = {"setdata","setmetadata"},
+             desc = "Sets metadata for this user [in world]",
              usage = "<metaKey> <metaValue> <player> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -410,7 +413,8 @@ public class UserManagementCommands extends ContainerCommand
         context.sendMessage("roles", "&aMetadata &6%s &aof &2%s&a set to &6%s &ain &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
 
-    @Command(desc = "Resets metadata for this user [in world]",
+    @Command(names = {"resetdata","resetmetadata"},
+             desc = "Resets metadata for this user [in world]",
              usage = "<metaKey> <player> [in <world>]",
              params =
     @Param(names = "in", type = World.class),

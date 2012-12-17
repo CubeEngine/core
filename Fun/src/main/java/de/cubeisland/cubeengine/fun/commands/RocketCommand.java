@@ -1,24 +1,23 @@
 package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
@@ -260,7 +259,7 @@ public class RocketCommand
                 location.add(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while(BlockUtil.isNonSolidBlock(location.getBlock().getType()) && location.getY() < location.getWorld().getMaxHeight())
+                while(!location.getBlock().getType().isSolid() && location.getY() < location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.add(0, 1, 0);
@@ -284,7 +283,7 @@ public class RocketCommand
                 location.subtract(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while (BlockUtil.isNonSolidBlock(location.getBlock().getType()) || location.getY() > location.getWorld().getMaxHeight())
+                while (!location.getBlock().getType().isSolid() || location.getY() > location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.subtract(0, 1, 0);
