@@ -103,7 +103,7 @@ public class Test extends Module
         {
             this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").end());
         }
-        catch (Exception ingore)
+        catch (Exception ignore)
         {}
         manager = new TestManager(this.getDatabase());
 
@@ -155,7 +155,7 @@ public class Test extends Module
         {//Clears the TestLogs in Database (This does always fail with new db)
             database.execute(database.getQueryBuilder().truncateTable("test_log").end());
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {}
 
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 10, "Heinz"), false);
@@ -301,6 +301,7 @@ public class Test extends Module
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void run()
         {
             for (EntityPlayer player : (List<EntityPlayer>)this.mojangServer.players)

@@ -3,12 +3,33 @@ package de.cubeisland.cubeengine.core.util.convert;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.convert.converter.*;
+import de.cubeisland.cubeengine.core.util.convert.converter.BooleanConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.ByteConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.CubeLevelConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.DateConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.DoubleConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.DurationConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.EnchantmentConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.FloatConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.IntegerConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.ItemStackConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.LongConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.ShortConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.StringConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.UserConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.WorldConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 import de.cubeisland.cubeengine.core.util.log.CubeLevel;
 import de.cubeisland.cubeengine.core.util.time.Duration;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -16,11 +37,6 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * This class provides the converters.
@@ -143,14 +159,14 @@ public class Convert
         }
         if (type instanceof Class)
         {
-            if (!((Class)type).isArray())
+            if (((Class)type).isArray())
             {
-                Converter<T> converter = matchConverter((Class)type);
-                return converter.fromObject(object);
+                return (T)ARRAY_CONVERTER.fromObject((Class<T[]>)type, object);
             }
             else
             {
-                return (T)ARRAY_CONVERTER.fromObject((Class)type, object);
+                Converter<T> converter = matchConverter((Class<T>)type);
+                return converter.fromObject(object);
             }
         }
         else if (type instanceof ParameterizedType)

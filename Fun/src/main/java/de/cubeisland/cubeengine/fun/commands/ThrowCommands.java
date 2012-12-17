@@ -2,22 +2,20 @@ package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
-import java.util.HashSet;
-import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Explosive;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.ThrownExpBottle;
@@ -25,6 +23,9 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
@@ -86,7 +87,7 @@ public class ThrowCommands
             int delay = context.getNamed("delay", Integer.class, 3);
             
             String material = context.getString(0);
-            Class materialClass = null;
+            Class<? extends Projectile> materialClass = null;
 
             if( (amount > this.module.getConfig().maxThrowNumber || amount < 1) && amount != -1)
             {
@@ -129,17 +130,18 @@ public class ThrowCommands
                     denyAccess(context, "fun", "&cYou are not allowed to throw xp.");
                 }
             }
-            else if(material.equalsIgnoreCase("orb"))
-            {
-                if(FunPerm.THROW_ORB.isAuthorized(user))
-                {
-                    materialClass = ExperienceOrb.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw orbs.");
-                }
-            }
+            // TODO FIX ME!
+//            else if(material.equalsIgnoreCase("orb"))
+//            {
+//                if(FunPerm.THROW_ORB.isAuthorized(user))
+//                {
+//                    materialClass = ExperienceOrb.class;
+//                }
+//                else
+//                {
+//                    denyAccess(context, "fun", "&cYou are not allowed to throw orbs.");
+//                }
+//            }
             else if(material.equalsIgnoreCase("fireball"))
             {
                 if(FunPerm.THROW_FIREBALL.isAuthorized(user))
@@ -207,34 +209,34 @@ public class ThrowCommands
     
     private class ThrowItem implements Runnable
     {
-        Class material;
-        User user;
-        int amount;
-        boolean unsafe;
-        
+        Class<? extends Projectile> material;
+        User                        user;
+        int                         amount;
+        boolean                     unsafe;
+
         int taskId;
 
-        public ThrowItem(User user, Class materialClass, int amount, int delay)
+        public ThrowItem(User user, Class<? extends Projectile> materialClass, int amount, int delay)
         {
             this.user = user;
             this.material = materialClass;
             this.amount = amount;
             this.unsafe = false;
-            
+
             this.taskId = CubeEngine.getTaskManager().scheduleSyncRepeatingTask(module, this, 0, delay);
         }
-        
+
         public User getUser()
         {
             return this.user;
         }
-        
+
         public void remove()
         {
             CubeEngine.getTaskManager().cancelTask(module, taskId);
             throwItems.remove(this);
         }
-        
+
         public void setUnsafe(boolean unsafe)
         {
             this.unsafe = unsafe;
@@ -245,36 +247,37 @@ public class ThrowCommands
         {
             Location loc = user.getLocation();
             loc.add(loc.getDirection().multiply(2));
-            if(material == Snowball.class || material == Egg.class || material == Arrow.class)
+            if (material == Snowball.class || material == Egg.class || material == Arrow.class)
             {
                 user.launchProjectile(material);
             }
-            else if(material == ThrownExpBottle.class)
+            else if (material == ThrownExpBottle.class)
             {
                 ThrownExpBottle bottle = (ThrownExpBottle)user.getWorld().spawnEntity(loc, EntityType.THROWN_EXP_BOTTLE);
                 bottle.setShooter(user);
                 bottle.setVelocity(loc.getDirection());
             }
-            else if(material == ExperienceOrb.class)
-            {
-                ExperienceOrb orb = (ExperienceOrb) user.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.EXPERIENCE_ORB);
-                orb.setExperience(0);
-                orb.setVelocity(loc.getDirection());
-            }
+            // TODO FIX ME AS WELL!
+//            else if (material == ExperienceOrb.class)
+//            {
+//                ExperienceOrb orb = (ExperienceOrb)user.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.EXPERIENCE_ORB);
+//                orb.setExperience(0);
+//                orb.setVelocity(loc.getDirection());
+//            }
             else
             {
                 Explosive explosive;
-                if(material == Fireball.class)
+                if (material == Fireball.class)
                 {
-                    explosive = (Fireball) user.getWorld().spawnEntity(loc, EntityType.FIREBALL);
+                    explosive = (Fireball)user.getWorld().spawnEntity(loc, EntityType.FIREBALL);
                 }
-                else if(material == SmallFireball.class)
+                else if (material == SmallFireball.class)
                 {
-                    explosive = (SmallFireball) user.getWorld().spawnEntity(loc, EntityType.SMALL_FIREBALL);
+                    explosive = (SmallFireball)user.getWorld().spawnEntity(loc, EntityType.SMALL_FIREBALL);
                 }
-                else if(material == WitherSkull.class)
+                else if (material == WitherSkull.class)
                 {
-                    explosive = (WitherSkull) user.getWorld().spawnEntity(loc, EntityType.WITHER_SKULL);
+                    explosive = (WitherSkull)user.getWorld().spawnEntity(loc, EntityType.WITHER_SKULL);
                 }
                 else
                 {
@@ -282,68 +285,63 @@ public class ThrowCommands
                     return;
                 }
                 explosive.setVelocity(loc.getDirection());
-                
-                if(!this.unsafe && this.material != SmallFireball.class)
+
+                if (!this.unsafe && this.material != SmallFireball.class)
                 {
                     throwListener.add(explosive);
                 }
-                else if(!this.unsafe && this.material == SmallFireball.class)
+                else if (!this.unsafe && this.material == SmallFireball.class)
                 {
-                    ((SmallFireball)explosive).setFireTicks(0);
+                    explosive.setFireTicks(0);
                 }
             }
-            if(!this.user.isOnline())
+            if (!this.user.isOnline())
             {
                 this.remove();
             }
-            if(this.amount != -1)
+            if (this.amount != -1)
             {
-                if(--amount == 0)
+                if (--amount == 0)
                 {
                     this.remove();
                 }
             }
         }
     }
-    
+
     public class ThrowListener implements Listener
     {
         Set<Explosive> explosive;
-        
+
         public ThrowListener()
         {
             this.explosive = new HashSet<Explosive>();
         }
-        
+
         public void add(Explosive explosive)
         {
             this.explosive.add(explosive);
         }
-        
-        public boolean contains(Object object)
+
+        public boolean contains(Explosive explosive)
         {
-            return this.explosive.contains(object);
+            return this.explosive.contains(explosive);
         }
-        
-        public void remove(Object object)
+
+        public void remove(Explosive explosive)
         {
-            this.explosive.remove(object);
+            this.explosive.remove(explosive);
         }
-        
+
         @EventHandler
         public void onBlockDamage(EntityExplodeEvent event)
         {
-            try
+            Entity entity = event.getEntity();
+            if (entity != null && entity instanceof Explosive && this.contains((Explosive)entity))
             {
-                if (this.contains(event.getEntity()))
-                {
-                    event.blockList().clear();
-                    remove(event.getEntity());
-                }
+                event.blockList().clear();
+                this.remove((Explosive)entity);
             }
-            catch (NullPointerException ignored)
-            {}
         }
     }
-
 }

@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
@@ -12,6 +11,8 @@ import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +21,6 @@ import java.util.List;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
@@ -91,7 +90,7 @@ public class ItemCommands
         ItemMeta meta = item.getItemMeta();
         if (context.hasFlag("l"))
         {
-            meta.setLore(new ArrayList(Arrays.asList(name)));
+            meta.setLore(new ArrayList<String>(Arrays.asList(name)));
         }
         else
         {
@@ -147,14 +146,7 @@ public class ItemCommands
         else
         {
             Object bln = sender.getAttribute(basics, "unlimitedItems");
-            if (bln == null)
-            {
-                unlimited = true;
-            }
-            else
-            {
-                unlimited = false;
-            }
+            unlimited = bln == null;
         }
         if (unlimited)
         {

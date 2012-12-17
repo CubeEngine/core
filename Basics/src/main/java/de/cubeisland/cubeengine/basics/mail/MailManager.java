@@ -5,14 +5,16 @@ import de.cubeisland.cubeengine.basics.BasicUserManager;
 import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 public class MailManager extends BasicStorage<Mail>
 {
@@ -98,7 +100,7 @@ public class MailManager extends BasicStorage<Mail>
         {
             this.delete(mail);
         }
-        bUser.mailbox = new ArrayList();
+        bUser.mailbox = new ArrayList<Mail>();
     }
 
     public void removeMail(User user, User sendBy)
@@ -111,7 +113,7 @@ public class MailManager extends BasicStorage<Mail>
                 this.delete(mail);
             }
         }
-        bUser.mailbox = new ArrayList(); // will have to read again from database
+        bUser.mailbox = new ArrayList<Mail>(); // will have to read again from database
     }
 
     public List<Mail> getAll(User user)
@@ -119,14 +121,14 @@ public class MailManager extends BasicStorage<Mail>
         List<Mail> loadedModels = new ArrayList<Mail>();
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", user.key);
+            ResultSet result = this.database.preparedQuery(modelClass, "getallByUser", user.key);
 
-            while (resulsSet.next())
+            while (result.next())
             {
                 Mail loadedModel = this.modelClass.newInstance();
                 for (Field field : this.fieldNames.keySet())
                 {
-                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
+                    field.set(loadedModel, result.getObject(this.fieldNames.get(field)));
                 }
                 loadedModels.add(loadedModel);
             }

@@ -19,6 +19,7 @@ public abstract class Logger<T extends SubLogConfig> implements Listener
         return this.config;
     }
 
+    @SuppressWarnings("unchecked")
     public void applyConfig(SubLogConfig config)
     {
         this.config = (T)config;

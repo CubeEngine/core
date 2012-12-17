@@ -36,6 +36,7 @@ public class RoleProviderConverter implements Converter<RoleProvider>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public RoleProvider fromObject(Object object) throws ConversionException
     {
         Map<String, List<Map<String, List<String>>>> read = (Map<String, List<Map<String, List<String>>>>) object;

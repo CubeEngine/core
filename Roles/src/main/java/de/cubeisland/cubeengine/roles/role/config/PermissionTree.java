@@ -29,6 +29,7 @@ public class PermissionTree
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void loadFromList(List<?> list, String path)
     {
         for (Object value : list)
@@ -50,7 +51,7 @@ public class PermissionTree
             }
             else if (value instanceof Map)
             {
-                this.loadFromMap((Map<String, ?>) value, path);
+                this.loadFromMap((Map<String, Object>) value, path);
             }
             else
             {
@@ -68,16 +69,17 @@ public class PermissionTree
 
     public Object convertToConfigObject()
     {
-        Map<String, Object> splittedValues = new LinkedHashMap<String, Object>();
-        //Fill result map with splitted values
+        Map<String, Object> splitValues = new LinkedHashMap<String, Object>();
+        //Fill result map with split values
         for (String permission : this.permissions.keySet())
         {
-            this.putInMap(splittedValues, permission, this.permissions.get(permission));
+            this.putInMap(splitValues, permission, this.permissions.get(permission));
         }
-        return mergeSplittedValues(splittedValues);
+        return mergeSplitValues(splitValues);
     }
 
-    private List<Object> mergeSplittedValues(Map<String, Object> baseMap)
+    @SuppressWarnings("unchecked")
+    private List<Object> mergeSplitValues(Map<String, Object> baseMap)
     {
         List<Object> result = new LinkedList<Object>();
         for (String baseKey : baseMap.keySet())
@@ -89,9 +91,9 @@ public class PermissionTree
             }
             else
             {
-                Map baseValueMap = (Map) baseValue;
-                List<Object> values = this.mergeSplittedValues(baseValueMap);
-                Map subMap = new LinkedHashMap();
+                Map<String, Object> baseValueMap = (Map<String, Object>)baseValue;
+                List<Object> values = this.mergeSplitValues(baseValueMap);
+                Map<String, Object> subMap = new LinkedHashMap<String, Object>();
 
                 int size = baseValueMap.size();
                 if (size == 1)
@@ -135,6 +137,7 @@ public class PermissionTree
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Object> putInMap(Map<String, Object> map, String path, boolean value)
     {
         String base = this.getBasePath(path);

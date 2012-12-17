@@ -1,10 +1,18 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.command.readers.*;
+import de.cubeisland.cubeengine.core.command.readers.EnchantmentReader;
+import de.cubeisland.cubeengine.core.command.readers.FloatReader;
+import de.cubeisland.cubeengine.core.command.readers.IntReader;
+import de.cubeisland.cubeengine.core.command.readers.ItemStackReader;
+import de.cubeisland.cubeengine.core.command.readers.LongReader;
+import de.cubeisland.cubeengine.core.command.readers.StringReader;
+import de.cubeisland.cubeengine.core.command.readers.UserReader;
+import de.cubeisland.cubeengine.core.command.readers.WorldReader;
 import de.cubeisland.cubeengine.core.util.Pair;
+import org.apache.commons.lang.Validate;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.apache.commons.lang.Validate;
 
 public abstract class ArgumentReader<T>
 {
@@ -52,6 +60,7 @@ public abstract class ArgumentReader<T>
         readers.put(clazz, reader);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Pair<Integer, T> read(Class<T> clazz, String... strings) throws InvalidArgumentException
     {
         ArgumentReader<T> reader = readers.get(clazz);
