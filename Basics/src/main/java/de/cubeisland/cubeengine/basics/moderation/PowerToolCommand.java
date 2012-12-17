@@ -6,18 +6,16 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import net.minecraft.server.v1_4_5.*;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import net.minecraft.server.v1_4_5.*;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * The powertool command allows binding commands/chatmacros to a specific item
@@ -117,10 +115,12 @@ public class PowerToolCommand extends ContainerCommand
 
     private void removeLore(ItemStack item)
     {
-        String nameToRemove = BukkitUtils.getItemStackLore(item).get(0);
+        String nameToRemove = item.getItemMeta().getLore().get(0);
         if (nameToRemove == null || nameToRemove.startsWith("§cPowertool:"))
         {
-            BukkitUtils.renameItemStack(item, true, (String[]) null);
+            ItemMeta meta = item.getItemMeta();
+            meta.setLore(new ArrayList<String>());
+            item.setItemMeta(meta);
         }
     }
 
@@ -274,7 +274,7 @@ public class PowerToolCommand extends ContainerCommand
                 {
                     continue;
                 }
-                String itemName = BukkitUtils.getItemStackName(item);
+                String itemName = item.getItemMeta().getDisplayName();
                 if (itemName == null)
                 {
                     sender.sendMessage("&6" + MaterialMatcher.get().getNameFor(item) + "&6:");
@@ -350,12 +350,14 @@ public class PowerToolCommand extends ContainerCommand
 
     private void rename(ItemStack item, NBTTagList ptVals)
     {
-        List<String> list = BukkitUtils.getItemStackLore(item);
+        List<String> list = item.getItemMeta().getLore();
         if (list == null || list.isEmpty() || list.get(0).startsWith("§cPowerTool"))
         {
             if (ptVals == null || ptVals.size() == 0)
             {
-                BukkitUtils.renameItemStack(item, true, (String[]) null);
+                ItemMeta meta = item.getItemMeta();
+                meta.setLore(new ArrayList<String>());
+                item.setItemMeta(meta);
             }
             else
             {
@@ -365,7 +367,9 @@ public class PowerToolCommand extends ContainerCommand
                 {
                     list.add(((NBTTagString) ptVals.get(j)).data);
                 }
-                BukkitUtils.renameItemStack(item, true, list.toArray(new String[list.size()]));
+                ItemMeta meta = item.getItemMeta();
+                meta.setLore(list);
+                item.setItemMeta(meta);
             }
         }
     }

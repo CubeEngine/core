@@ -24,6 +24,7 @@ import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * A Kit of Items a User can receive
@@ -149,7 +150,9 @@ public class Kit
             ItemStack item = new ItemStack(kitItem.mat, kitItem.amount, kitItem.dura);
             if (kitItem.customName != null)
             {
-                BukkitUtils.renameItemStack(item, false, kitItem.customName);
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(kitItem.customName);
+                item.setItemMeta(meta);
             }
             list.add(item);
         }

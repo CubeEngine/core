@@ -54,7 +54,11 @@ public class KitCommand extends ContainerCommand
                 {
                     break;
                 }
-                itemList.add(new KitItem(items[i].getType(), items[i].getDurability(), items[i].getAmount(), BukkitUtils.getItemStackName(items[i])));
+                itemList.add(
+                        new KitItem(items[i].getType(), 
+                        items[i].getDurability(), 
+                        items[i].getAmount(), 
+                        items[i].getItemMeta().getDisplayName()));
             }
         }
         else
@@ -65,7 +69,11 @@ public class KitCommand extends ContainerCommand
                 {
                     break;
                 }
-                itemList.add(new KitItem(item.getType(), item.getDurability(), item.getAmount(), BukkitUtils.getItemStackName(item)));
+                itemList.add(
+                        new KitItem(item.getType(), 
+                        item.getDurability(), 
+                        item.getAmount(), 
+                        item.getItemMeta().getDisplayName()));
             }
         }
         Kit kit = new Kit(context.getString(0), false, 0, -1, true, "", null, itemList);

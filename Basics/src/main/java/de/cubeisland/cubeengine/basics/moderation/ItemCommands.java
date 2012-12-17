@@ -20,6 +20,8 @@ import java.util.List;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
@@ -27,6 +29,7 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
  */
 public class ItemCommands
 {
+
     private Basics basics;
 
     public ItemCommands(Basics basics)
@@ -79,17 +82,20 @@ public class ItemCommands
     desc = "Changes the display name of the item in your hand.",
     usage = "<name> [-lore]",
     min = 1,
-    flags = @Flag(longName = "lore", name = "l"))
+    flags =
+    @Flag(longName = "lore", name = "l"))
     public void rename(CommandContext context)
-    {
+    {//TODO better lore
         String name = context.getStrings(0);
-        if (BukkitUtils.renameItemStack(context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand(), context.hasFlag("l"), name))
+        ItemStack item = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand();
+        ItemMeta meta = item.getItemMeta();
+        if (context.hasFlag("l"))
         {
-            context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
+            meta.setLore(new ArrayList(Arrays.asList(name)));
         }
         else
         {
-            context.sendMessage("basics", "&cRenaming failed!");
+            meta.setDisplayName(name);
         }
     }
 
@@ -102,12 +108,14 @@ public class ItemCommands
     {
         String name = context.getString(0);
         User sender = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?");
-        ItemStack changedHead = BukkitUtils.changeHead(sender.getItemInHand(), name);
-        if (changedHead != null)
+
+        if (sender.getItemInHand().getType().equals(Material.SKULL_ITEM))
         {
+            sender.getItemInHand().setDurability((short) 3);
+            SkullMeta meta = ((SkullMeta) sender.getItemInHand().getItemMeta());
+            meta.setOwner(name);
+            sender.getItemInHand().setItemMeta(meta);
             context.sendMessage("basics", "&aYou now hold &6%s's &ahead in your hands!", name);
-            sender.setItemInHand(changedHead);
-            sender.updateInventory();
         }
         else
         {
@@ -450,10 +458,7 @@ public class ItemCommands
                         continue;
                     }
                     // compare
-                    if (item2.getTypeId() == item.getTypeId()
-                            && item.getDurability() == item2.getDurability()
-                            && item.getEnchantments().equals(item2.getEnchantments())
-                            && (BukkitUtils.getItemStackName(item) == null ? BukkitUtils.getItemStackName(item2) == null : BukkitUtils.getItemStackName(item).equals(BukkitUtils.getItemStackName(item2))))
+                    if (item.isSimilar(item2))
                     {
                         if (item2.getAmount() > needed) // not enough place -> fill up stack
                         {

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemData
@@ -13,7 +12,7 @@ public class ItemData
     {
         this.mat = item.getTypeId();
         this.data = item.getDurability();
-        this.name = BukkitUtils.getItemStackName(item);
+        this.name = item.getItemMeta().getDisplayName();
         if (this.name == null)
         {
             this.name = "";

@@ -343,55 +343,6 @@ public class BukkitUtils
         helpMap.initializeCommands();
     }
 
-    public static boolean renameItemStack(ItemStack itemStack, boolean asLore, String... string)
-    {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemStack.setItemMeta(itemMeta);
-        if (string != null)
-        {
-            for (int i = 0; i < string.length; ++i)
-            {
-                string[i] = ChatFormat.parseFormats(string[i]);
-            }
-        }
-        if (asLore)
-        {
-            itemMeta.setLore(Arrays.asList(string));
-        }
-        else
-        {
-            itemMeta.setDisplayName(string[0]);
-        }
-        itemStack.setItemMeta(itemMeta);
-        return true;
-    }
-
-    public static List<String> getItemStackLore(ItemStack itemStack)
-    {
-        return itemStack.getItemMeta().getLore();
-    }
-
-    public static String getItemStackName(ItemStack itemStack)
-    {
-        return itemStack.getItemMeta().getDisplayName();
-    }
-
-    public static ItemStack changeHead(ItemStack head, String name)
-    {
-        if (head.getType().equals(Material.SKULL_ITEM))
-        {
-            head.setDurability((short)3);
-            SkullMeta meta = ((SkullMeta)head.getItemMeta());
-            meta.setOwner(name);
-            head.setItemMeta(meta);
-            return head;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     public static boolean isInvulnerable(Player player)
     {
         if (player != null)

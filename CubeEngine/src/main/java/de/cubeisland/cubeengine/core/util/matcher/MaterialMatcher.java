@@ -14,6 +14,7 @@ import java.util.*;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * This Matcher provides methods to match Material or Items.
@@ -21,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 public class MaterialMatcher
 {
     //TODO rename item ; is it possible?
+
     private THashMap<String, ItemStack> items;
     private THashMap<ItemStack, String> itemnames;
     private TIntObjectHashMap<THashMap<String, Short>> datavalues;
@@ -65,7 +67,7 @@ public class MaterialMatcher
     /**
      * Registers an Itemstack for the matcher with a list of names
      *
-     * @param item  the Item
+     * @param item the Item
      * @param names the corresponding names
      */
     private void registerItemStack(ItemStack item, List<String> names)
@@ -117,7 +119,8 @@ public class MaterialMatcher
                     }
                 }
                 catch (Exception ex)
-                {}
+                {
+                }
             }
             if (s.contains(":"))
             { // name match with data
@@ -217,8 +220,10 @@ public class MaterialMatcher
                         item.setDurability(foundEggData.getBukkitType().getTypeId());
                     }
                 case SKULL_ITEM:
-                    //TODO sadly this does not work the information gets lost
-                    item = BukkitUtils.changeHead(item, rawdata);
+                    item.setDurability((short) 3);
+                    SkullMeta meta = ((SkullMeta) item.getItemMeta());
+                    meta.setOwner(rawdata);
+                    item.setItemMeta(meta);
                 default:
                     return item;
             }
@@ -251,7 +256,8 @@ public class MaterialMatcher
             return Material.getMaterial(matId);
         }
         catch (NumberFormatException e)
-        {}
+        {
+        }
         ItemStack item = this.matchItemStack(s);
         if (item != null)
         {
@@ -436,6 +442,7 @@ public class MaterialMatcher
      */
     public enum RepairableMaterials
     {
+
         IRON_SPADE,
         IRON_PICKAXE,
         IRON_AXE,
