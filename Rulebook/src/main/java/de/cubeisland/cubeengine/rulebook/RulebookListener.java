@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
@@ -11,12 +10,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import org.bukkit.inventory.meta.BookMeta;
 
 class RulebookListener implements Listener
 {
+
     private final Rulebook module;
     private final RulebookManager rulebookManager;
-    
 
     public RulebookListener(Rulebook module)
     {
@@ -31,7 +31,7 @@ class RulebookListener implements Listener
         if (!user.hasPlayedBefore() && !this.rulebookManager.getLanguages().isEmpty())
         {
             String language = user.getLanguage();
-            
+
             if (!this.module.getRuleBookManager().contains(language))
             {
                 language = this.module.getCore().getI18n().getDefaultLanguage();
@@ -40,14 +40,12 @@ class RulebookListener implements Listener
                     language = this.rulebookManager.getLanguages().iterator().next();
                 }
             }
-            
-            BookItem ruleBook = new BookItem(new ItemStack(Material.WRITTEN_BOOK));
 
-            ruleBook.setAuthor(Bukkit.getServerName());
-            ruleBook.setTitle(_(language, "rulebook", "Rulebook"));
-            ruleBook.setPages(this.rulebookManager.getPages(language));
-            
-            user.setItemInHand(ruleBook.getItemStack());
+            ItemStack ruleBook = new ItemStack(Material.WRITTEN_BOOK);
+            ((BookMeta) ruleBook.getItemMeta()).setAuthor(Bukkit.getServerName());
+            ((BookMeta) ruleBook.getItemMeta()).setTitle(_(language, "rulebook", "Rulebook"));
+            ((BookMeta) ruleBook.getItemMeta()).setPages(this.rulebookManager.getPages(language));
+            user.setItemInHand(ruleBook);
         }
     }
 }

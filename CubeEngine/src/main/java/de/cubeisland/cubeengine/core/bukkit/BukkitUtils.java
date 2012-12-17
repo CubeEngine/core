@@ -51,6 +51,9 @@ import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import java.util.Arrays;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -347,10 +350,8 @@ public class BukkitUtils
 
     public static boolean renameItemStack(ItemStack itemStack, boolean asLore, String... string)
     {
-        if (!(itemStack instanceof CraftItemStack))
-        {
-            itemStack = new CraftItemStack(itemStack);
-        }
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemStack.setItemMeta(itemMeta);
         if (string != null)
         {
             for (int i = 0; i < string.length; ++i)
@@ -358,112 +359,25 @@ public class BukkitUtils
                 string[i] = ChatFormat.parseFormats(string[i]);
             }
         }
-        if (itemStack == null || itemStack.getType().equals(Material.AIR))
-        {
-            return false;
-        }
-        CraftItemStack cis = ((CraftItemStack)itemStack);
-        NBTTagCompound tag = cis.getHandle().getTag();
-        if (tag == null)
-        {
-            cis.getHandle().setTag(tag = new NBTTagCompound());
-        }
-        if (!tag.hasKey("display"))
-        {
-            tag.setCompound("display", new NBTTagCompound());
-        }
-        NBTTagCompound display = tag.getCompound("display");
-        if (string == null || string[0] == null || string[0].equals(""))
-        {
-            if (asLore)
-            {
-                display.remove("Lore");
-            }
-            else
-            {
-                display.remove("Name");
-            }
-            return true;
-        }
         if (asLore)
         {
-            NBTTagList list = new NBTTagList();
-            for (int i = 0; i < string.length; ++i)
-            {
-                list.add(new NBTTagString("", string[i]));
-            }
-            display.set("Lore", list);
+            itemMeta.setLore(Arrays.asList(string));
         }
         else
         {
-            display.setString("Name", string[0]);
+            itemMeta.setDisplayName(string[0]);
         }
         return true;
     }
 
     public static List<String> getItemStackLore(ItemStack itemStack)
     {
-        if (itemStack == null)
-        {
-            return null;
-        }
-        CraftItemStack cis = ((CraftItemStack)itemStack);
-        if (cis.getHandle() == null)
-        {
-            return null;
-        }
-        NBTTagCompound tag = cis.getHandle().getTag();
-        if (tag == null)
-        {
-            cis.getHandle().setTag(tag = new NBTTagCompound());
-        }
-        if (!tag.hasKey("display"))
-        {
-            return null;
-        }
-        NBTTagList loreList = tag.getCompound("display").getList("Lore");
-        if (loreList == null || loreList.size() == 0)
-        {
-            return null;
-        }
-        List<String> lore = new ArrayList<String>();
-        for (int i = 0; i < loreList.size(); ++i)
-        {
-            lore.add(((NBTTagString)loreList.get(0)).data);
-        }
-        return lore;
+        return itemStack.getItemMeta().getLore();
     }
 
     public static String getItemStackName(ItemStack itemStack)
     {
-        if (itemStack == null)
-        {
-            return null;
-        }
-        if (!(itemStack instanceof CraftItemStack))
-        {
-            return null;
-        }
-        CraftItemStack cis = ((CraftItemStack)itemStack);
-        if (cis.getHandle() == null)
-        {
-            return null;
-        }
-        NBTTagCompound tag = cis.getHandle().getTag();
-        if (tag == null)
-        {
-            cis.getHandle().setTag(tag = new NBTTagCompound());
-        }
-        if (!tag.hasKey("display"))
-        {
-            return null;
-        }
-        String name = tag.getCompound("display").getString("Name");
-        if (name.equals(""))
-        {
-            return null;
-        }
-        return name;
+        return itemStack.getItemMeta().getDisplayName();
     }
 
     public static ItemStack changeHead(ItemStack head, String name)
@@ -471,11 +385,8 @@ public class BukkitUtils
         if (head.getType().equals(Material.SKULL_ITEM))
         {
             head.setDurability((short)3);
-            CraftItemStack newHead = new CraftItemStack(head);
-            NBTTagCompound newHeadData = new NBTTagCompound();
-            newHeadData.setString("SkullOwner", name);
-            newHead.getHandle().tag = newHeadData;
-            return newHead;
+            ((SkullMeta)head.getItemMeta()).setOwner(name);
+            return head;
         }
         else
         {
@@ -510,30 +421,6 @@ public class BukkitUtils
             ((CraftPlayer)player).getHandle().abilities.isInvulnerable = state;
             ((CraftPlayer)player).getHandle().updateAbilities();
         }
-    }
-
-    public static boolean compareItemStacks(ItemStack a, ItemStack b)
-    {
-        if (a == null ^ b == null)
-        {
-            return false;
-        }
-        else if (a == null && b == null)
-        {
-            return true;
-        }
-        if (a.getTypeId() == b.getTypeId() && a.getDurability() == b.getDurability())
-        {
-            if (a instanceof CraftItemStack && b instanceof CraftItemStack)
-            {
-                if (!((CraftItemStack)a).getHandle().getTag().equals(((CraftItemStack)b).getHandle().getTag()))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
     public static void cleanup()

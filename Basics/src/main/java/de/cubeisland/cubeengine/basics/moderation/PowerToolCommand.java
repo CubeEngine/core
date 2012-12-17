@@ -25,6 +25,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
  */
 public class PowerToolCommand extends ContainerCommand
 {
+
     public PowerToolCommand(Module module)
     {
         super(module, "pt", "Binding shortcuts to an item.", "powertool");
@@ -45,7 +46,8 @@ public class PowerToolCommand extends ContainerCommand
     @Alias(names = "ptc")
     @Command(
     desc = "Removes all command from your powertool",
-    flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
+    flags =
+    @Flag(longName = "all", name = "a"), usage = "[-a]")
     public void clear(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo more power for you!");
@@ -90,7 +92,7 @@ public class PowerToolCommand extends ContainerCommand
         {
             return false;
         }
-        tag.remove("powerToolCommands");
+        tag.set("powerToolCommands", new NBTTagList());
         this.removeLore(item);
         return true;
     }
@@ -124,9 +126,13 @@ public class PowerToolCommand extends ContainerCommand
 
     @Alias(names = "ptr")
     @Command(
-    names = { "remove", "del", "delete", "rm" },
+    names =
+    {
+        "remove", "del", "delete", "rm"
+    },
     desc = "Removes a command from your powertool",
-    flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
+    flags =
+    @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
     public void remove(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eNo more power for you!");
@@ -196,7 +202,7 @@ public class PowerToolCommand extends ContainerCommand
         }
         if (newVals.size() == 0)
         {
-            tag.remove("powerToolCommands");
+            tag.set("powerToolCommands",new NBTTagList());
             context.sendMessage("basics", "&eNo more commands saved on this item!");
         }
         else
@@ -209,10 +215,12 @@ public class PowerToolCommand extends ContainerCommand
 
     @Alias(names = "pta")
     @Command(
-    desc = "Adds a command to your powertool", 
-    flags = {
+    desc = "Adds a command to your powertool",
+    flags =
+    {
         @Flag(longName = "chat", name = "c"),
-        @Flag(longName = "replace", name = "r") }, 
+        @Flag(longName = "replace", name = "r")
+    },
     usage = "<commandstring>", min = 1)
     public void add(CommandContext context)
     {
@@ -251,8 +259,9 @@ public class PowerToolCommand extends ContainerCommand
     }
 
     @Alias(names = "ptl")
-    @Command(desc = "Lists your powertool-bindings.", 
-    flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Lists your powertool-bindings.",
+    flags =
+    @Flag(longName = "all", name = "a"))
     public void list(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");

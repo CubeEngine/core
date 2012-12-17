@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
-import de.cubeisland.cubeengine.core.bukkit.BookItem;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
@@ -15,7 +14,6 @@ import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import net.minecraft.server.v1_4_5.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -271,6 +269,8 @@ public class RulebookCommands extends ContainerCommand
             
             if(item != null && item.getType().equals(Material.WRITTEN_BOOK))
             {
+                // TODO this does not work anymore (thx Bukkit)
+                /*
                 BookItem book = new BookItem(item);
                 NBTTagCompound tag = book.getTag();
                 
@@ -278,6 +278,7 @@ public class RulebookCommands extends ContainerCommand
                 {
                     books.add(i);
                 }
+                */
             }
         }
         
