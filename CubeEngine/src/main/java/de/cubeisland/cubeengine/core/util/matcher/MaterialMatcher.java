@@ -219,6 +219,7 @@ public class MaterialMatcher
                     {
                         item.setDurability(foundEggData.getBukkitType().getTypeId());
                     }
+                    return item;
                 case SKULL_ITEM:
                     item.setDurability((short) 3);
                     SkullMeta meta = ((SkullMeta) item.getItemMeta());
