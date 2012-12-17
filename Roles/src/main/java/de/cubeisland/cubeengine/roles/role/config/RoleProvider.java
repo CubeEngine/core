@@ -22,7 +22,7 @@ import java.util.Stack;
 
 public class RoleProvider
 {
-
+    
     public final String mainWorld;
     private TIntObjectHashMap<Pair<Boolean, Boolean>> worlds = new TIntObjectHashMap<Pair<Boolean, Boolean>>(); //mirror roles / users
     private THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
@@ -31,10 +31,19 @@ public class RoleProvider
     private File worldfolder = null;
     private List<Role> defaultRoles = new ArrayList<Role>();
     private Stack<String> roleStack = new Stack<String>();
-
+    
     public RoleProvider(String mainWorld)
     {
         this.mainWorld = mainWorld;
+        Integer worldId = CubeEngine.getCore().getWorldManager().getWorldId(mainWorld);
+        if (worldId == null)
+        {
+            Roles.getInstance().getLogger().log(LogLevel.WARNING, "Unkown world " + mainWorld);
+        }
+        else
+        {
+            this.worlds.put(worldId, new Pair<Boolean, Boolean>(true, true));
+        }
     }
 
     /**
@@ -47,37 +56,37 @@ public class RoleProvider
         this.mainWorld = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
         this.worlds.put(worldId, new Pair<Boolean, Boolean>(true, true));
     }
-
+    
     public Iterable<RoleConfig> getConfigs()
     {
         return this.configs.values();
     }
-
+    
     public void addConfig(RoleConfig config)
     {
         this.configs.put(config.roleName, config);
     }
-
+    
     public void setRole(Role role)
     {
         this.roles.put(role.getName(), role);
     }
-
+    
     public Role getRole(String roleName)
     {
         return this.roles.get(roleName);
     }
-
+    
     public RoleConfig getConfig(String parentName)
     {
         return this.configs.get(parentName);
     }
-
+    
     public TIntObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
     {
         return this.worlds;
     }
-
+    
     public TIntObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
     {
         TIntObjectHashMap<List<Role>> result = new TIntObjectHashMap<List<Role>>();
@@ -116,7 +125,7 @@ public class RoleProvider
         }
         return result;
     }
-
+    
     public void setWorld(String worldName, boolean roles, boolean users)
     {
         Integer world = CubeEngine.getCore().getWorldManager().getWorldId(worldName);
@@ -127,12 +136,12 @@ public class RoleProvider
         }
         this.worlds.put(world, new Pair<Boolean, Boolean>(roles, users));
     }
-
+    
     public List<Role> getDefaultRoles()
     {
         return this.defaultRoles;
     }
-
+    
     public void init(File rolesFolder)
     {
         if (this.init)
@@ -158,13 +167,13 @@ public class RoleProvider
         }
         Roles.getInstance().getLogger().debug(i + " roles loaded!");
     }
-
+    
     public void reload()
     {
         this.init = false;
         this.init(null);
     }
-
+    
     public void loadDefaultRoles(RolesConfig config)
     {
         List<String> dRoles = config.defaultRoles.get(this.mainWorld);
@@ -183,7 +192,7 @@ public class RoleProvider
             this.defaultRoles.add(role);
         }
     }
-
+    
     public void calculateRoles(THashMap<String, Role> globalRoles)
     {
         for (RoleConfig config : this.configs.values())
@@ -197,7 +206,7 @@ public class RoleProvider
             this.roles.put(role.getName(), role);
         }
     }
-
+    
     public Role calculateRole(RoleConfig config, THashMap<String, Role> globalRoles)
     {
         try
@@ -217,7 +226,7 @@ public class RoleProvider
                         throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", roleStack));
                     }
                     RoleConfig parentConfig;
-
+                    
                     if (parentName.startsWith("g:"))
                     {
                         if (globalRoles.containsKey(parentName.substring(2)))
@@ -253,7 +262,7 @@ public class RoleProvider
                 try
                 {
                     Role parentRole;
-
+                    
                     if (parentName.startsWith("g:"))
                     {
                         parentRole = globalRoles.get(parentName.substring(2));
@@ -283,7 +292,7 @@ public class RoleProvider
             return null;
         }
     }
-
+    
     public Collection<Role> getAllRoles()
     {
         return this.roles.values();
