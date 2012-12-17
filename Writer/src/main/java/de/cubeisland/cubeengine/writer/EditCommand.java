@@ -44,8 +44,10 @@ public class EditCommand
         if (user.getItemInHand().getType() == Material.WRITTEN_BOOK)
         {
             ItemStack item = user.getItemInHand();
-            ((BookMeta)item.getItemMeta()).setAuthor("");
-            ((BookMeta)item.getItemMeta()).setTitle("");
+            BookMeta meta = ((BookMeta)item.getItemMeta());
+            meta.setAuthor("");
+            meta.setTitle("");
+            item.setItemMeta(meta);
             item.setType(Material.BOOK_AND_QUILL);
 
             user.sendMessage("writer", "Your book is now unsigned and ready to be edited");

@@ -42,9 +42,11 @@ class RulebookListener implements Listener
             }
 
             ItemStack ruleBook = new ItemStack(Material.WRITTEN_BOOK);
-            ((BookMeta) ruleBook.getItemMeta()).setAuthor(Bukkit.getServerName());
-            ((BookMeta) ruleBook.getItemMeta()).setTitle(_(language, "rulebook", "Rulebook"));
-            ((BookMeta) ruleBook.getItemMeta()).setPages(this.rulebookManager.getPages(language));
+            BookMeta meta = ((BookMeta) ruleBook.getItemMeta());
+            meta.setAuthor(Bukkit.getServerName());
+            meta.setTitle(_(language, "rulebook", "Rulebook"));
+            meta.setPages(this.rulebookManager.getPages(language));
+            ruleBook.setItemMeta(meta);
             user.setItemInHand(ruleBook);
         }
     }

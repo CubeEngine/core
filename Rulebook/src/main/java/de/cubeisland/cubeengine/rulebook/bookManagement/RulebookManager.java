@@ -89,10 +89,11 @@ public final class RulebookManager
         if (this.contains(language))
         {
             ItemStack ruleBook = new ItemStack(Material.WRITTEN_BOOK);
-            ((BookMeta) ruleBook.getItemMeta()).setAuthor(Bukkit.getServerName());
-            ((BookMeta) ruleBook.getItemMeta()).setTitle(_(language, "rulebook", "Rulebook"));
-            ((BookMeta) ruleBook.getItemMeta()).setPages(this.getPages(language));
-
+            BookMeta meta = ((BookMeta) ruleBook.getItemMeta());
+            meta.setAuthor(Bukkit.getServerName());
+            meta.setTitle(_(language, "rulebook", "Rulebook"));
+            meta.setPages(this.getPages(language));
+            ruleBook.setItemMeta(meta);
             // TODO this does not work anymore (thx Bukkit)
             /*
              NBTTagCompound tag = rulebook.getTag();
