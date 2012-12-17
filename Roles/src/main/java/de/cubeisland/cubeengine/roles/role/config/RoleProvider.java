@@ -16,6 +16,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -281,5 +282,10 @@ public class RoleProvider
             Roles.getInstance().getLogger().log(LogLevel.WARNING, ex.getMessage());
             return null;
         }
+    }
+
+    public Collection<Role> getAllRoles()
+    {
+        return this.roles.values();
     }
 }

@@ -43,7 +43,11 @@ public class UserManagementCommands extends ContainerCommand
         }
         if (user == null)
         {
-            paramNotFound(context, "roles",  "&cUser %s not found!", context.getString(1));
+            paramNotFound(context, "roles",  "&cUser %s not found!", context.getString(pos));
+        }
+        if (!user.isOnline())
+        {
+            paramNotFound(context, "roles", "&2%s &cis not online!", user.getName());
         }
         return user;
     }
