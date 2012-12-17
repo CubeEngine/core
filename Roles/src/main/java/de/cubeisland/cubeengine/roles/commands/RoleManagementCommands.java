@@ -8,6 +8,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RoleMetaData;
+import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import org.bukkit.World;
 
@@ -68,7 +70,7 @@ public class RoleManagementCommands extends ContainerCommand
     {
         "checkperm", "checkpermission"
     },
-    desc = "Lists all roles [in world]",
+    desc = "Checks the permission in given role [in world]",
     usage = "<role> <permission> [in <world>]",
     params =
     @Param(names = "in", type = World.class),
@@ -125,16 +127,175 @@ public class RoleManagementCommands extends ContainerCommand
         }
     }
 
+    @Alias(names = "listperm")
+    @Command(names =
+    {
+        "listperm", "listpermission"
+    },
+    desc = "Lists all permissions of given role [in world]",
+    usage = "<role> [in <world>]",
+    params =
+    @Param(names = "in", type = World.class),
+    max = 2, min = 1)
     public void listperm(CommandContext context)
     {
+        User sender = context.getSenderAsUser();
+        World world;
+        if (!context.hasNamed("in"))
+        {
+            if (sender == null)
+            {
+                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
+                return;
+            }
+            world = sender.getWorld();
+        }
+        else
+        {
+            world = context.getNamed("in", World.class);
+            if (world == null)
+            {
+                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+                return;
+            }
+        }
+        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        Role role = provider.getRole(context.getString(0));
+        if (role == null)
+        {
+            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
+            return;
+        }
+        if (role.getPerms().isEmpty())
+        {
+            context.sendMessage("roles", "&eNo permissions set in the role &6%s &ein &6%s&e.",
+                    role.getName(), world.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&aPermissions of the role &6%s &ain &6%s&a:",
+                    role.getName(), world.getName());
+            for (String perm : role.getLitaralPerms().keySet())
+            {
+                if (role.getLitaralPerms().get(perm))
+                {
+                    context.sendMessage(" - &6" + perm + "&f: &2true");
+                }
+                else
+                {
+                    context.sendMessage(" - &6" + perm + "&f: &4false");
+                }
+            }
+        }
     }
 
+    @Alias(names = "listdata")
+    @Command(names =
+    {
+        "listdata", "listmetadata"
+    },
+    desc = "Lists all metadata of given role [in world]",
+    usage = "<role> [in <world>]",
+    params =
+    @Param(names = "in", type = World.class),
+    max = 2, min = 1)
     public void listmetadata(CommandContext context)
     {
+        User sender = context.getSenderAsUser();
+        World world;
+        if (!context.hasNamed("in"))
+        {
+            if (sender == null)
+            {
+                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
+                return;
+            }
+            world = sender.getWorld();
+        }
+        else
+        {
+            world = context.getNamed("in", World.class);
+            if (world == null)
+            {
+                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+                return;
+            }
+        }
+        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        Role role = provider.getRole(context.getString(0));
+        if (role == null)
+        {
+            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
+            return;
+        }
+        if (role.getMetaData().isEmpty())
+        {
+            context.sendMessage("roles", "&eNo metadata set in the role &6%s &ein &6%s&e.",
+                    role.getName(), world.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&aMetadata of the role &6%s &ain &6%s&a:",
+                    role.getName(), world.getName());
+            for (RoleMetaData data : role.getMetaData().values())
+            {
+                context.sendMessage(" - " + data.getKey() + ": " + data.getValue());
+            }
+        }
     }
 
+    @Command(
+    desc = "Lists all parents of given role [in world]",
+    usage = "<role> [in <world>]",
+    params =
+    @Param(names = "in", type = World.class),
+    max = 2, min = 1)
     public void listParent(CommandContext context)
     {
+        User sender = context.getSenderAsUser();
+        World world;
+        if (!context.hasNamed("in"))
+        {
+            if (sender == null)
+            {
+                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
+                return;
+            }
+            world = sender.getWorld();
+        }
+        else
+        {
+            world = context.getNamed("in", World.class);
+            if (world == null)
+            {
+                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+                return;
+            }
+        }
+        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        Role role = provider.getRole(context.getString(0));
+        if (role == null)
+        {
+            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
+            return;
+        }
+        if (role.getParentRoles().isEmpty())
+        {
+            context.sendMessage("roles", "&eThe role &6%s &ein &6%s &ehas no parent roles.",
+                    role.getName(), world.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&eThe role &6%s &ein &6%s &ehas following parent roles.",
+                    role.getName(), world.getName());
+            for (Role parent : role.getParentRoles())
+            {
+                context.sendMessage(" - " + parent.getName());
+            }
+        }
     }
 
     public void priority(CommandContext context)
