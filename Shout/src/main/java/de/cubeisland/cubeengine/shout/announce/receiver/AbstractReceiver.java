@@ -28,6 +28,7 @@ public abstract class AbstractReceiver implements Receiver
     {
         if (!motdShown && motd != null)
         {
+            this.motdShown = true;
             return new Pair<Announcement, Integer>(motd, (int)(motd.getDelay() / announcementManager.getGreatestCommonDivisor(this)));
         }
         for (int x = 0; x < this.announcements.size(); x++)

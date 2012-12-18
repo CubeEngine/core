@@ -70,8 +70,8 @@ public class ShoutSubCommands
         {
             "locale", "l"
         })
-    }, usage = "<name> [delay \"<x minutes|hours|days>\"] [world <world>] [permission <permission node>] [group <group>]" +
-            "[message \"<message>\"] [locale <locale>]")
+    }, usage = "<name> message \"<message>\" [delay \"<x minutes|hours|days>\"] [world <world>] " +
+            "[permission <permission node>] [group <group>] [locale <locale>]")
     public void create(CommandContext context)
     {
         if (!context.hasNamed("message"))
