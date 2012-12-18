@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
@@ -11,6 +12,7 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
@@ -22,6 +24,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -136,7 +139,19 @@ public class ModuleLoader
     {
         Validate.notNull(module, "The module must not be null!");
 
-        this.classLoaders.remove(module.getId());
+        ModuleClassLoader classLoader = this.classLoaders.remove(module.getId());
+        if (classLoader != null)
+        {
+            Class clazz;
+            Iterator<Map.Entry<String, Class>> iter = classLoader.getClassMap().entrySet().iterator();
+            while (iter.hasNext())
+            {
+                clazz = iter.next().getValue();
+                Convert.unregisterConverter(clazz);
+                ArgumentReader.unregisterReader(clazz);
+                iter.remove();
+            }
+        }
     }
 
     /**

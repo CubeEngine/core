@@ -12,7 +12,7 @@ import java.util.Map;
 public class ModuleClassLoader extends URLClassLoader
 {
     private final ModuleLoader moduleLoader;
-    private final Map<String, Class<?>> classMap;
+    private final Map<String, Class> classMap;
     private ModuleInfo moduleInfo;
 
     public ModuleClassLoader(ModuleLoader moduleLoader, ModuleInfo info, ClassLoader parent) throws MalformedURLException
@@ -22,7 +22,7 @@ public class ModuleClassLoader extends URLClassLoader
                 info.getFile().toURI().toURL()
             }, parent);
         this.moduleLoader = moduleLoader;
-        this.classMap = new HashMap<String, Class<?>>();
+        this.classMap = new HashMap<String, Class>();
         this.moduleInfo = info;
     }
 
@@ -37,7 +37,7 @@ public class ModuleClassLoader extends URLClassLoader
         return this.findClass(name, true);
     }
 
-    protected Class<?> findClass(String name, boolean global) throws ClassNotFoundException
+    protected Class findClass(String name, boolean global) throws ClassNotFoundException
     {
         Class<?> clazz = this.classMap.get(name);
 
@@ -67,6 +67,11 @@ public class ModuleClassLoader extends URLClassLoader
         }
 
         return clazz;
+    }
+
+    public Map<String, Class> getClassMap()
+    {
+        return this.classMap;
     }
 
     // This method got overridden to first search through the current ClassLoader

@@ -11,12 +11,13 @@ import de.cubeisland.cubeengine.core.command.readers.WorldReader;
 import de.cubeisland.cubeengine.core.util.Pair;
 import org.apache.commons.lang.Validate;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public abstract class ArgumentReader<T>
 {
-    private static final ConcurrentMap<Class<?>, ArgumentReader> readers = new ConcurrentHashMap<Class<?>, ArgumentReader>();
+    private static final Map<Class, ArgumentReader> READERS = new ConcurrentHashMap<Class, ArgumentReader>();
 
     static
     {
@@ -29,6 +30,7 @@ public abstract class ArgumentReader<T>
         registerReader(new UserReader());
         registerReader(new WorldReader());
     }
+
     private final Class<T> type;
 
     public ArgumentReader(Class<T> type)
@@ -55,22 +57,37 @@ public abstract class ArgumentReader<T>
         registerReader(reader.getType(), reader);
     }
 
-    public static <T> void registerReader(Class<?> clazz, ArgumentReader<T> reader)
+    public static <T> void registerReader(Class clazz, ArgumentReader<T> reader)
     {
-        readers.put(clazz, reader);
+        READERS.put(clazz, reader);
+    }
+
+    public static void unregisterReader(Class clazz)
+    {
+        Iterator<Map.Entry<Class, ArgumentReader>> iter = READERS.entrySet().iterator();
+
+        Map.Entry<Class, ArgumentReader> entry;
+        while (iter.hasNext())
+        {
+            entry = iter.next();
+            if (entry.getKey() == clazz || entry.getValue().getClass() == clazz)
+            {
+                iter.remove();
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
     public static <T> Pair<Integer, T> read(Class<T> clazz, String... strings) throws InvalidArgumentException
     {
-        ArgumentReader<T> reader = readers.get(clazz);
+        ArgumentReader<T> reader = READERS.get(clazz);
         if (reader == null)
         {
-            for (Class argClazz : readers.keySet())
+            for (Class argClazz : READERS.keySet())
             {
                 if (clazz.isAssignableFrom(argClazz))
                 {
-                    reader = readers.get(argClazz);
+                    reader = READERS.get(argClazz);
                     registerReader(clazz, reader);
                 }
             }

@@ -436,7 +436,7 @@ public class ModuleManager implements Cleanable
      */
     public void unloadModule(Module module)
     {
-        if (!this.modules.containsValue(module))
+        if (!module.isEnabled() && !this.modules.containsValue(module))
         {
             return;
         }
@@ -458,6 +458,9 @@ public class ModuleManager implements Cleanable
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.modules.remove(module.getName());
+
+        System.gc();
+        System.gc();
     }
 
     /**

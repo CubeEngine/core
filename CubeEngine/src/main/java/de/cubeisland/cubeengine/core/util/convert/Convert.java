@@ -35,6 +35,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Convert
 {
-    private final static ConcurrentHashMap<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<Class<?>, Converter<?>>();
+    private final static Map<Class, Converter> CONVERTERS = new ConcurrentHashMap<Class, Converter>();
     private final static MapConverter MAP_CONVERTER = new MapConverter();
     private final static ArrayConverter ARRAY_CONVERTER = new ArrayConverter();
     private final static CollectionConverter COLLECTION_CONVERTER = new CollectionConverter();
@@ -85,13 +86,28 @@ public class Convert
      * @param clazz
      * @param converter
      */
-    public static void registerConverter(Class<?> clazz, Converter<?> converter)
+    public static void registerConverter(Class clazz, Converter converter)
     {
         if (clazz == null || converter == null)
         {
             return;
         }
         CONVERTERS.put(clazz, converter);
+    }
+
+    public static void unregisterConverter(Class clazz)
+    {
+        Iterator<Map.Entry<Class, Converter>> iter = CONVERTERS.entrySet().iterator();
+
+        Map.Entry<Class, Converter> entry;
+        while (iter.hasNext())
+        {
+            entry = iter.next();
+            if (entry.getKey() == clazz || entry.getValue().getClass() == clazz)
+            {
+                iter.remove();
+            }
+        }
     }
 
     /**
@@ -109,7 +125,7 @@ public class Convert
         Converter converter = CONVERTERS.get(objectClass);
         if (converter == null)
         {
-            for (Map.Entry<Class<?>, Converter<?>> entry : CONVERTERS.entrySet())
+            for (Map.Entry<Class, Converter> entry : CONVERTERS.entrySet())
             {
                 if (entry.getKey().isAssignableFrom(objectClass))
                 {
