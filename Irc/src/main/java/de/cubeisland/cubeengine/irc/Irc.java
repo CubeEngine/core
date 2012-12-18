@@ -12,9 +12,9 @@ public class Irc extends Module {
     @Override
     public void onEnable()
     {
-        this.mgr = new BotManager(this.config);
-        this.registerListener(new IrcListener(this));
-        this.mgr.connect();
+//        this.mgr = new BotManager(this.config);
+//        this.registerListener(new IrcListener(this));
+//        this.mgr.connect();
 //        this.registerCommands(new Test(this));
 //        this.getFileManager().dropResources(Test.values());
 //        this.registerPermissions(Test.values());
@@ -24,8 +24,8 @@ public class Irc extends Module {
     @Override
     public void onDisable()
     {
-        this.mgr.clean();
-        this.mgr = null;
+//        this.mgr.clean();
+//        this.mgr = null;
     }
 
     public BotManager getBotManager()
