@@ -70,7 +70,8 @@ public class ShoutSubCommands
         {
             "locale", "l"
         })
-    })
+    }, usage = "<name> [delay \"<x minutes|hours|days>\"] [world <world>] [permission <permission node>] [group <group>]" +
+            "[message \"<message>\"] [locale <locale>]")
     public void create(CommandContext context)
     {
         if (!context.hasNamed("message"))
@@ -94,12 +95,12 @@ public class ShoutSubCommands
         {
             this.module.getAnnouncementManager().createAnnouncement(
                 context.getString(0),
+                locale,
                 message,
                 context.getString("delay", "10 minutes"),
                 context.getString("world", "*"),
                 context.getString("group", "*"),
-                context.getString("permission", "*"),
-                locale);
+                context.getString("permission", "*"));
         }
         catch (IllegalArgumentException ex)
         {
