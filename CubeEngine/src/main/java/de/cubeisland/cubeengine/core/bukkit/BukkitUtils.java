@@ -21,12 +21,14 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_4_5.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
@@ -40,11 +42,6 @@ import java.util.logging.Filter;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
-import java.util.logging.Level;
-import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.*;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
