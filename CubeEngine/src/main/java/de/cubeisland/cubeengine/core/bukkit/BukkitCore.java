@@ -23,6 +23,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
@@ -32,7 +33,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
@@ -115,6 +115,10 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
         this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
+
+        // depends on: core config, server
+        this.taskManager = new TaskManager(this, new CubeThreadFactory("CubeEngine"), config.executorThreads, this.getServer().getScheduler());
+
         if (this.config.userWebapi)
         {
             try
@@ -126,9 +130,6 @@ public class BukkitCore extends JavaPlugin implements Core
                 this.logger.log(ERROR, "The web API will not be available as the server failed to start properly...", e);
             }
         }
-
-        // depends on: core config, server
-        this.taskManager = new TaskManager(this, Executors.newScheduledThreadPool(this.config.executorThreads), this.getServer().getScheduler());
 
         // depends on: core config, file manager, task manager
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));

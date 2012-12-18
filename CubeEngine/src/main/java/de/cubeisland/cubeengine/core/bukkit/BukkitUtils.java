@@ -229,7 +229,7 @@ public class BukkitUtils
 
         private PacketHookInjector()
         {
-            this.executorService = Executors.newSingleThreadExecutor();
+            this.executorService = Executors.newSingleThreadExecutor(CubeEngine.getTaskManager().getThreadFactory());
             this.taskQueue = new AsyncTaskQueue(this.executorService);
         }
 

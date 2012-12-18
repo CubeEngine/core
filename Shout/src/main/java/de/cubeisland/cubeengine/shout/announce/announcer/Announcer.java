@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.shout.announce.announcer;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -18,7 +20,7 @@ public class Announcer
 
     public Announcer(int initDelay)
     {
-        this.executor = Executors.newSingleThreadScheduledExecutor();
+        this.executor = Executors.newSingleThreadScheduledExecutor(CubeEngine.getTaskManager().getThreadFactory());
         this.futures = new HashMap<String, ScheduledFuture>();
         this.initDelay = initDelay;
     }

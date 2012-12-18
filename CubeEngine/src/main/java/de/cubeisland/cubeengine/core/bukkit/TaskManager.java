@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
@@ -12,7 +13,13 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 
 /**
  * This class provides methods to register and unregister tasks and the global
@@ -20,15 +27,24 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class TaskManager
 {
-    private final BukkitCore corePlugin;
+    private final BukkitCore               corePlugin;
     private final ScheduledExecutorService executorService;
-    private final BukkitScheduler bukkitScheduler;
-    private final Map<Module, TIntSet> moduleTasks;
+    private final BukkitScheduler          bukkitScheduler;
+    private final Map<Module, TIntSet>     moduleTasks;
+    private final ThreadFactory            threadFactory;
 
-    public TaskManager(Core core, ScheduledExecutorService executorService, BukkitScheduler bukkitScheduler)
+    public TaskManager(Core core, ThreadFactory threadFactory, int threadPoolSize, BukkitScheduler bukkitScheduler)
     {
         this.corePlugin = (BukkitCore)core;
-        this.executorService = executorService;
+        this.threadFactory = threadFactory;
+        this.executorService = new ScheduledThreadPoolExecutor(threadPoolSize, this.threadFactory, new RejectedExecutionHandler()
+        {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
+            {
+                CubeEngine.getLogger().log(DEBUG, "Task " + r.getClass().getName() + " got rejected!");
+            }
+        });
         this.bukkitScheduler = bukkitScheduler;
         this.moduleTasks = new ConcurrentHashMap<Module, TIntSet>();
     }
@@ -56,6 +72,16 @@ public class TaskManager
     public ScheduledExecutorService getExecutorService()
     {
         return this.executorService;
+    }
+
+    /**
+     * Returns the thread factory used by the CubeEngine to create its threads
+     *
+     * @return a ThreadFactory implementation
+     */
+    public ThreadFactory getThreadFactory()
+    {
+        return threadFactory;
     }
 
     /**
