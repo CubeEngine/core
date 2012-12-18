@@ -180,7 +180,7 @@ public class UserManagementCommands extends ContainerCommand
         int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Role role = this.getRole(user, worldId);
         context.sendMessage("roles", "&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
-        for (Entry<String, Boolean> entry : role.getLitaralPerms().entrySet())
+        for (Entry<String, Boolean> entry : role.getAllLiteralPerms().entrySet())
         {
             context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
         }

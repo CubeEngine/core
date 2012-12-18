@@ -66,12 +66,12 @@ public class MergedRole extends Role
      * @param meta
      */
     public MergedRole(String username, THashMap<String, Boolean> perms, THashMap<String, String> meta)
-    {//TODO literalperms shouldn't be null / when listing all perms this is wrong have to get ALL litaral perms from subroles
+    {
         this.name = username;
         this.perms = new HashMap<String, RolePermission>();
-        this.litaralPerms = perms;
         if (perms != null)
         {
+            this.litaralPerms = perms;
             for (String keyPerm : perms.keySet())
             {
                 if (keyPerm.endsWith("*"))

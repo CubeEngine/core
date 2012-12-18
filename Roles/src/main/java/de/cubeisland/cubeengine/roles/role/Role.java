@@ -196,4 +196,15 @@ public abstract class Role
     {
         return litaralPerms;
     }
+
+    public Map<String, Boolean> getAllLiteralPerms()
+    {
+        Map<String, Boolean> result = new HashMap<String, Boolean>();
+        for (Role role : this.parentRoles)
+        {
+            result.putAll(role.getAllLiteralPerms()); //TODO merge parentroles correctly
+        }
+        result.putAll(this.litaralPerms);
+        return result;
+    }
 }
