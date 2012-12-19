@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.bukkit.event;
 
-import net.minecraft.server.v1_4_5.v1_4_5.Packet;
+import net.minecraft.server.v1_4_5.Packet;
 import org.bukkit.event.Event;
 
 public abstract class PacketEvent extends Event

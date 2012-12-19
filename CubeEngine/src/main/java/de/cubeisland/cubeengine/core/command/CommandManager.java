@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.bukkit.craftbukkit.v1_4_5.v1_4_5.CraftServer;
 
 /**
  * This class manages the registration of commands.

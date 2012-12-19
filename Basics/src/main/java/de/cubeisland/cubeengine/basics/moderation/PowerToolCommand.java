@@ -12,7 +12,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.server.v1_4_5.v1_4_5.*;
+import net.minecraft.server.v1_4_5.*;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -306,7 +306,7 @@ public class PowerToolCommand extends ContainerCommand
         {
             return null;
         }
-         net.minecraft.server.v1_4_5.v1_4_5.ItemStack nmsItem = BukkitUtils.getNmsItemStack(item);
+        net.minecraft.server.v1_4_5.ItemStack nmsItem = BukkitUtils.getNmsItemStack(item);
         if (nmsItem == null)
         {
             return null;
