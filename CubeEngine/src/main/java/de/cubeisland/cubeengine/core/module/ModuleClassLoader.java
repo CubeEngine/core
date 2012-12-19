@@ -3,11 +3,11 @@ package de.cubeisland.cubeengine.core.module;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This is the classloader used by modules
+ * This is the ClassLoader used by modules
  */
 public class ModuleClassLoader extends URLClassLoader
 {
@@ -17,12 +17,11 @@ public class ModuleClassLoader extends URLClassLoader
 
     public ModuleClassLoader(ModuleLoader moduleLoader, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {
-        super(new URL[]
-            {
+        super(new URL[] {
                 info.getFile().toURI().toURL()
             }, parent);
         this.moduleLoader = moduleLoader;
-        this.classMap = new HashMap<String, Class>();
+        this.classMap = new ConcurrentHashMap<String, Class>();
         this.moduleInfo = info;
     }
 

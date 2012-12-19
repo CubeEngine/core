@@ -47,6 +47,7 @@ public class ModuleManager implements Cleanable
     private final Map<String, ModuleInfo> moduleInfos;
     private final Map<Class<? extends Module>, Module> classMap;
     private final PluginManager pluginManager;
+    private final CoreModule coreModule;
 
     public ModuleManager(Core core)
     {
@@ -55,6 +56,8 @@ public class ModuleManager implements Cleanable
         this.modules = new ConcurrentHashMap<String, Module>();
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
+        this.coreModule = new CoreModule();
+        this.coreModule.initialize(core, new ModuleInfo(), core.getFileManager().getDataFolder(), null, null, null);
 
         this.pluginManager = ((BukkitCore)core).getServer().getPluginManager();
     }
@@ -416,12 +419,12 @@ public class ModuleManager implements Cleanable
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().unregister(module);
         this.core.getApiServer().unregisterApiHandlers(module);
+        this.core.getUserManager().clearAttributes(module);
 
         if (reloadHelp)
         {
             BukkitUtils.reloadHelpMap();
         }
-        this.core.getUserManager().clearAttributes(module); // Clean up saved attributes
     }
 
     /**
@@ -457,7 +460,25 @@ public class ModuleManager implements Cleanable
 
         this.disableModule(module);
         this.loader.unloadModule(module);
-        this.modules.remove(module.getName());
+        this.modules.remove(module.getId());
+        this.moduleInfos.remove(module.getId());
+
+        // null all the fields referencing this module
+        for (Module m : this.modules.values())
+        {
+            Class moduleClass = m.getClass();
+            for (Field field : moduleClass.getDeclaredFields())
+            {
+                if (field.getType() == module.getClass())
+                try
+                {
+                    field.setAccessible(true);
+                    field.set(m, null);
+                }
+                catch (Exception ignored)
+                {}
+            }
+        }
 
         System.gc();
         System.gc();
@@ -480,5 +501,15 @@ public class ModuleManager implements Cleanable
     {
         this.disableModules();
         this.modules.clear();
+    }
+
+    /**
+     * Returns a dummy module
+     *
+     * @return the singleton instance of the dummy CoreModule
+     */
+    public CoreModule getCoreModule()
+    {
+        return this.coreModule;
     }
 }

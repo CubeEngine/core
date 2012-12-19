@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.module.CoreModule;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 
@@ -14,7 +13,7 @@ public class ModuleCommands extends ContainerCommand
 
     public ModuleCommands(ModuleManager mm)
     {
-        super(CoreModule.get(), "module", "Provides ingame module plugin management functionality");
+        super(mm.getCoreModule(), "module", "Provides in-game module plugin management functionality");
         this.mm = mm;
     }
 

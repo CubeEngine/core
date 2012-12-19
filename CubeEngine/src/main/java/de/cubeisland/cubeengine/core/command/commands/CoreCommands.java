@@ -8,7 +8,6 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.module.CoreModule;
 import de.cubeisland.cubeengine.core.user.User;
 
 import java.util.Set;
@@ -24,7 +23,7 @@ public class CoreCommands extends ContainerCommand
 
     public CoreCommands(Core core)
     {
-        super(CoreModule.get(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
+        super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
         this.core = (BukkitCore)core;
     }
 
