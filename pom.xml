@@ -192,6 +192,7 @@
                 <version>2.12.4</version>
                 <configuration>
                     <forkMode>never</forkMode>
+                    <useSystemClassLoader>false</useSystemClassLoader>
                     <printSummary>true</printSummary>
                     <skipTests>false</skipTests>
                     <skip>false</skip>
@@ -230,6 +231,13 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <skip>true</skip>
                         </configuration>
