@@ -74,6 +74,7 @@ public class ModuleLoader
      * @throws IncompatibleDependencyException if the module depends on a newer version of a module
      * @throws IncompatibleCoreException       if the module depends on a newer core version
      */
+    @SuppressWarnings("unchecked")
     public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         final String name = info.getName();

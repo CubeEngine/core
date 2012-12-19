@@ -37,17 +37,17 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
         super.initialize();
         //Fields:
         QueryBuilder builder = this.database.getQueryBuilder();
-        TableBuilder tbuilder = builder.createTable(this.tableName, true).beginFields();
+        TableBuilder tableBuilder = builder.createTable(this.tableName, true).beginFields();
         for (Field field : this.reverseFieldNames.values())
         {
             Attribute attribute = this.attributeAnnotations.get(field);
             String dbName = this.fieldNames.get(field);
             if (this.dbKey.equals(dbName))
             {
-                tbuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
+                tableBuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
                 if (this.keyIsAi)
                 {
-                    tbuilder.autoIncrement();
+                    tableBuilder.autoIncrement();
                 }
             }
             else
@@ -64,11 +64,11 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                     {
                         list.add(field.getName());
                     }
-                    tbuilder.enumField(dbName, list.toArray(new String[list.size()]), attribute.notnull());
+                    tableBuilder.enumField(dbName, list.toArray(new String[list.size()]), attribute.notnull());
                 }
                 else
                 {
-                    tbuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
+                    tableBuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
                 }
             }
             if (attribute.defaultIsValue())
@@ -76,7 +76,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                 try
                 {
                     M model = this.modelClass.newInstance();
-                    tbuilder.defaultValue(field.get(model).toString());
+                    tableBuilder.defaultValue(field.get(model).toString());
                 }
                 catch (Exception e)
                 {
@@ -89,26 +89,26 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                 switch (index.value())
                 {
                     case FOREIGN_KEY:
-                        tbuilder.foreignKey(dbName).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
+                        tableBuilder.foreignKey(dbName).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
                         break;
                     case UNIQUE:
-                        tbuilder.unique(dbName);
+                        tableBuilder.unique(dbName);
                         break;
                     case INDEX:
-                        tbuilder.index();
+                        tableBuilder.index();
                 }
             }
         }
-        tbuilder.primaryKey(this.dbKey).endFields();
+        tableBuilder.primaryKey(this.dbKey).endFields();
 
-        tbuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
+        tableBuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
         if (this.keyIsAi)
         {
-            tbuilder.autoIncrement(1);
+            tableBuilder.autoIncrement(1);
         }
         try
         {
-            this.database.execute(tbuilder.end().end());
+            this.database.execute(tableBuilder.end().end());
         }
         catch (SQLException ex)
         {
@@ -205,6 +205,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void store(final M model, boolean async)
     {
         try

@@ -190,6 +190,7 @@ public class ModuleManager implements Cleanable
         return this.loadModule(name, moduleInfos, new Stack<String>());
     }
 
+    @SuppressWarnings("unchecked")
     private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
     {
         name = name.toLowerCase(Locale.ENGLISH);

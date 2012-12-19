@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 // TODO possibility to set an order to the fields but how? perhaps give int
-// values -> then use treemap for fields but what with map.values is it sorted?
+// values -> then use TreeMap for fields but what with map.values is it sorted?
 
 public abstract class AbstractStorage<K, M extends Model<K>, T> implements Storage<K, M>
 {
@@ -44,6 +44,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
     private boolean initialized = false;
 
+    @SuppressWarnings("unchecked")
     public AbstractStorage(Database database, Class<M> modelClass, Class<T> storageType, int revision)
     {
         this.database = database;
@@ -52,11 +53,11 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         // Get tableName from Annotation
         Annotation[] annotations = modelClass.getAnnotations();
 
-        for (Annotation annot : annotations)
+        for (Annotation annotation : annotations)
         {
-            if (annot.annotationType().isAssignableFrom(storageType))
+            if (annotation.annotationType().isAssignableFrom(storageType))
             {
-                this.storageType = (T)annot;
+                this.storageType = (T)annotation;
                 break;
             }
         }
