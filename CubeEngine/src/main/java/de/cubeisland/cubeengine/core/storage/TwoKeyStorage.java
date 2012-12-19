@@ -20,7 +20,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
     protected Field key = null;
     protected String f_dbKey = null;
     protected String s_dbKey = null;
-    
+
     public TwoKeyStorage(Database database, Class<M> model, int revision)
     {
         super(database, model, TwoKeyEntity.class, revision);
@@ -28,7 +28,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
         this.f_dbKey = this.storageType.firstPrimaryKey();
         this.s_dbKey = this.storageType.secondPrimaryKey();
     }
-    
+
     @Override
     public void initialize()
     {
@@ -87,7 +87,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             }
         }
         tbuilder.primaryKey(this.f_dbKey, this.s_dbKey).endFields();
-        
+
         tbuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
         try
         {
@@ -118,19 +118,22 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
                 }
             }
             QueryBuilder builder = this.database.getQueryBuilder();
-            
+
             this.database.storeStatement(this.modelClass, "store",
                     builder.insert().into(this.tableName).cols(this.allFields).end().end());
             
-            this.database.storeStatement(this.modelClass, "merge",
-                    builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
-            
+            if (fields.length != 0)
+            {
+                this.database.storeStatement(this.modelClass, "merge",
+                        builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
+            }
+
             this.database.storeStatement(this.modelClass, "get",
                     builder.select(allFields).from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().end().end());
-            
+
             this.database.storeStatement(this.modelClass, "update",
                     builder.update(this.tableName).set(fields).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().end().end());
-            
+
             this.database.storeStatement(this.modelClass, "delete",
                     builder.delete().from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().limit(1).end().end());
         }
@@ -139,7 +142,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             throw new IllegalStateException("Error while preparing statements for " + this.tableName, ex);
         }
     }
-    
+
     @Override
     public M get(Pair<Key_f, Key_s> key)
     {
@@ -178,7 +181,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
         }
         return loadedModel;
     }
-    
+
     @Override
     public void store(final M model, boolean async)
     {
@@ -197,7 +200,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             {
                 this.database.preparedExecute(this.modelClass, "store", values.toArray());
             }
-            
+
             for (Callback cb : this.createCallbacks)
             {
                 cb.call(model.getKey());
@@ -212,7 +215,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             throw new IllegalStateException("Error while reading Model to store", ex);
         }
     }
-    
+
     @Override
     public void update(M model, boolean async)
     {
@@ -250,10 +253,14 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             throw new StorageException("An unknown error occurred while updating the Model", ex);
         }
     }
-    
+
     @Override
     public void merge(M model, boolean async)
     {
+        if (this.allFields.length <= 2)
+        {
+            throw new UnsupportedOperationException("Merging is not supported for only-key storages!");
+        }
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
@@ -283,7 +290,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             throw new StorageException("Error while reading Model to update", ex);
         }
     }
-    
+
     @Override
     public void deleteByKey(Pair<Key_f, Key_s> key, boolean async)
     {

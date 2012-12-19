@@ -124,8 +124,11 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             this.database.storeStatement(this.modelClass, "store",
                     builder.insert().into(this.tableName).cols(this.allFields).end().end());
 
-            this.database.storeStatement(this.modelClass, "merge",
-                    builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
+            if (fields.length != 0)
+            {
+                this.database.storeStatement(this.modelClass, "merge",
+                        builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
+            }
 
             this.database.storeStatement(this.modelClass, "get",
                     builder.select(allFields).from(this.tableName).where().
@@ -266,6 +269,10 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
     @Override
     public void merge(M model, boolean async)
     {
+        if (this.allFields.length <= 2)
+        {
+            throw new UnsupportedOperationException("Merging is not supported for only-key storages!");
+        }
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
