@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.fly.database;
 
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 
-public class FlyManager extends BasicStorage<FlyModel>
+public class FlyManager extends SingleKeyStorage<Long, FlyModel>
 {
     public FlyManager(Database database, int revision)
     {

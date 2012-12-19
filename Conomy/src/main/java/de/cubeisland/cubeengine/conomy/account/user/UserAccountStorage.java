@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.conomy.account.user;
 
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 
-public class UserAccountStorage extends BasicStorage<UserAccount>
+public class UserAccountStorage extends SingleKeyStorage<Long, UserAccount>
 {
     private final UserManager cuManager;
 

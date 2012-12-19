@@ -45,7 +45,7 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
         {
             if (killCause.equals(KillCause.PLAYER))
             {
-                causeID = CubeEngine.getUserManager().getExactUser((Player)damager).getKey();
+                causeID = CubeEngine.getUserManager().getExactUser((Player)damager).getKey().intValue();
             }
             else if (damager == null)
             {
@@ -58,7 +58,7 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
             int killedId;
             if (damagee instanceof Player)
             {
-                killedId = CubeEngine.getUserManager().getExactUser((Player)damagee).getKey();
+                killedId = CubeEngine.getUserManager().getExactUser((Player)damagee).getKey().intValue();
             }
             else
             {

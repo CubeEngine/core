@@ -8,20 +8,20 @@ import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
 import de.cubeisland.cubeengine.core.util.Triplet;
 
 @TripletKeyEntity(tableName = "userdata", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "key")
-public class UserMetaData implements TripletKeyModel<Integer, Integer, String>
+public class UserMetaData implements TripletKeyModel<Long, Long, String>
 {
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public int userId;
+    public long userId;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "worlds", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public int worldId;
+    public long worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String key;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String value;
 
-    public UserMetaData(int userId, int worldId, String key, String value)
+    public UserMetaData(long userId, long worldId, String key, String value)
     {
         this.userId = userId;
         this.worldId = worldId;
@@ -30,13 +30,13 @@ public class UserMetaData implements TripletKeyModel<Integer, Integer, String>
     }
 
     @Override
-    public Triplet<Integer, Integer, String> getKey()
+    public Triplet<Long, Long, String> getKey()
     {
-        return new Triplet<Integer, Integer, String>(userId, worldId, key);
+        return new Triplet<Long, Long, String>(userId, worldId, key);
     }
 
     @Override
-    public void setKey(Triplet<Integer, Integer, String> key)
+    public void setKey(Triplet<Long, Long, String> key)
     {
         this.userId = key.getFirst();
         this.worldId = key.getSecond();

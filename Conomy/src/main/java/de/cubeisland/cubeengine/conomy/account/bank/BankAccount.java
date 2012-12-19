@@ -3,17 +3,17 @@ package de.cubeisland.cubeengine.conomy.account.bank;
 import de.cubeisland.cubeengine.conomy.account.AccountModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 
-@SingleIntKeyEntity(tableName = "bankaccount", primaryKey = "user", autoIncrement = false)
+@SingleKeyEntity(tableName = "bankaccount", primaryKey = "user", autoIncrement = false)
 public class BankAccount extends AccountModel
 {
     @Attribute(type = AttrType.INT)
-    protected int key;
+    protected Long key;
     @Attribute(type = AttrType.VARCHAR, length = 16)
     protected final String name;
 
-    public BankAccount(int key, String name, double start)
+    public BankAccount(long key, String name, double start)
     {
         this.key = key;
         this.name = name;
@@ -39,13 +39,13 @@ public class BankAccount extends AccountModel
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return this.key;
     }
 
     @Override
-    public void setKey(Integer id)
+    public void setKey(Long id)
     {
         this.key = id;
     }

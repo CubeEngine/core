@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
@@ -17,15 +17,15 @@ import java.util.List;
 /**
  * Storage-Implementation for single Integer-Key-Models
  */
-public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Integer, M, SingleIntKeyEntity>
+public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractStorage<Key_f, M, SingleKeyEntity>
 {
     protected String dbKey = null;
     protected boolean keyIsAi = false;
     private boolean storeAsync = false;
 
-    public BasicStorage(Database database, Class<M> model, int revision)
+    public SingleKeyStorage(Database database, Class<M> model, int revision)
     {
-        super(database, model, SingleIntKeyEntity.class, revision);
+        super(database, model, SingleKeyEntity.class, revision);
         this.tableName = this.storageType.tableName();
         this.dbKey = this.storageType.primaryKey();
         this.keyIsAi = this.storageType.autoIncrement();
@@ -166,7 +166,7 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
     }
 
     @Override
-    public M get(Integer key)
+    public M get(Key_f key)
     {
         M loadedModel = null;
         try
@@ -220,7 +220,7 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
             if (this.keyIsAi && !storeAsync)
             {
                 // This is never async
-                model.setKey(this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
+                model.setKey((Key_f)this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
             }
             else
             {
@@ -319,7 +319,7 @@ public class BasicStorage<M extends Model<Integer>> extends AbstractStorage<Inte
     }
 
     @Override
-    public void deleteByKey(Integer key, boolean async)
+    public void deleteByKey(Key_f key, boolean async)
     {
         try
         {

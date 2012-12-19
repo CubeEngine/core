@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import org.apache.commons.lang.Validate;
@@ -46,25 +46,25 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 /**
  * A CubeEngine User (can exist offline too).
  */
-@SingleIntKeyEntity(tableName = "user", primaryKey = "key")
-public class User extends UserBase implements LinkingModel<Integer>
+@SingleKeyEntity(tableName = "user", primaryKey = "key")
+public class User extends UserBase implements LinkingModel<Long>
 {
-    public static int NO_ID = -1;
-    @Attribute(type = AttrType.INT)
-    public       int    key;
+    public static Long NO_ID = -1L;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public Long key;
     @Index(UNIQUE)
     @Attribute(type = AttrType.VARCHAR, length = 16)
     public final String player;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean nogc = false;
     @Attribute(type = AttrType.DATETIME)
-    public       Timestamp lastseen;
+    public Timestamp lastseen;
     @Attribute(type = AttrType.VARBINARY, length = 128, notnull = false)
-    public       byte[]    passwd;
+    public byte[] passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
     @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
-    public  String  language   = null;
+    public String language = null;
     private boolean isLoggedIn = false;
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
@@ -85,16 +85,16 @@ public class User extends UserBase implements LinkingModel<Integer>
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
-        super(Bukkit.getOfflinePlayer((String)args.get(1)));
-        this.key = Integer.valueOf(args.get(0).toString());
+        super(Bukkit.getOfflinePlayer((String) args.get(1)));
+        this.key = (Long) args.get(0);
         this.player = this.offlinePlayer.getName();
-        this.nogc = (Boolean)args.get(2);
-        this.lastseen = (Timestamp)args.get(3);
-        this.firstseen = (Timestamp)args.get(3);
-        this.passwd = (byte[])args.get(4);
+        this.nogc = (Boolean) args.get(2);
+        this.lastseen = (Timestamp) args.get(3);
+        this.firstseen = (Timestamp) args.get(3);
+        this.passwd = (byte[]) args.get(4);
     }
 
-    public User(int key, OfflinePlayer player)
+    public User(Long key, OfflinePlayer player)
     {
         super(player);
         this.key = key;
@@ -123,13 +123,13 @@ public class User extends UserBase implements LinkingModel<Integer>
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return this.key;
     }
 
     @Override
-    public void setKey(Integer id)
+    public void setKey(Long id)
     {
         this.key = id;
     }
@@ -495,8 +495,8 @@ public class User extends UserBase implements LinkingModel<Integer>
     {
         BukkitUtils.setInvulnerable(this, state);
     }
-    
-    public int getWorldId()
+
+    public long getWorldId()
     {
         return CubeEngine.getCore().getWorldManager().getWorldId(this.getWorld());
     }

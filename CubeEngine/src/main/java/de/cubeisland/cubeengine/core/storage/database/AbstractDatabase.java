@@ -27,14 +27,14 @@ public abstract class AbstractDatabase implements Database
     private final          AsyncTaskQueue                           taskQueue          = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
 
     @Override
-    public int getLastInsertedId(Class owner, String name, Object... params) throws SQLException
+    public Object getLastInsertedId(Class owner, String name, Object... params) throws SQLException
     {
         PreparedStatement statement = this.bindValues(this.getStoredStatement(owner, name), params);
         statement.execute();
         final ResultSet result = statement.getGeneratedKeys();
         if (result.next())
         {
-            return result.getInt("GENERATED_KEY");
+            return result.getObject("GENERATED_KEY");
         }
         throw new SQLException("Failed to retrieve the last inserted ID!");
     }

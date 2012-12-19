@@ -28,7 +28,7 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         if (cause == BlockChangeCause.PLAYER)
         {
             User user = this.module.getUserManager().getExactUser(player);
-            this.module.getLogManager().logBlockLog(user.getKey(), newState, oldState);
+            this.module.getLogManager().logBlockLog(user.getKey().intValue(), newState, oldState);
         }
         else
         {

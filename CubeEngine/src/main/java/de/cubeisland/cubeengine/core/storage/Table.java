@@ -2,16 +2,16 @@ package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 
 /**
  * Represents a table in database with a revision.
  */
-@SingleIntKeyEntity(tableName = "tables", primaryKey = "key")
-public class Table implements Model<Integer>
+@SingleKeyEntity(tableName = "tables", primaryKey = "key")
+public class Table implements Model<Long>
 {
-    @Attribute(type = AttrType.INT)
-    public int key;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public Long key;
     @Attribute(type = AttrType.VARCHAR, length = 32)
     public String table;
     @Attribute(type = AttrType.INT)
@@ -20,7 +20,7 @@ public class Table implements Model<Integer>
     public Table()
     {
     }
-    
+
     public Table(String table, Integer revision)
     {
         this.table = table;
@@ -28,13 +28,13 @@ public class Table implements Model<Integer>
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return key;
     }
 
     @Override
-    public void setKey(Integer key)
+    public void setKey(Long key)
     {
         this.key = key;
     }

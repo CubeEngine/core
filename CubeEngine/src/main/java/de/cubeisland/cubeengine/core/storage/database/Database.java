@@ -230,7 +230,7 @@ public interface Database
      * @return the last inserted id
      * @throws SQLException
      */
-    int getLastInsertedId(Class owner, String name, Object... params) throws SQLException;
+    Object getLastInsertedId(Class owner, String name, Object... params) throws SQLException;
 
     /**
      * Queues in an operation to execute later.

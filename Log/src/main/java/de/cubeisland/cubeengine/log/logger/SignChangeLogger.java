@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
-import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -46,7 +45,7 @@ public class SignChangeLogger extends Logger<SignChangeLogger.SignChangeConfig>
         }
         else
         {
-            this.module.getLogManager().logSignLog(user.key, state.getLocation(), oldlines, newLines);
+            this.module.getLogManager().logSignLog(user.key.intValue(), state.getLocation(), oldlines, newLines);
         }
     }
 

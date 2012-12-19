@@ -6,10 +6,11 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserMetaDataManager extends TripletKeyStorage<Integer, Integer, String, UserMetaData>
+public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, UserMetaData>
 {
     private static final int REVISION = 1;
 
@@ -35,12 +36,12 @@ public class UserMetaDataManager extends TripletKeyStorage<Integer, Integer, Str
         }
     }
 
-    public TIntObjectHashMap<THashMap<String, String>> getForUser(int key)
+    public TLongObjectHashMap<THashMap<String, String>> getForUser(long key)
     {
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", key);
-            TIntObjectHashMap<THashMap<String, String>> result = new TIntObjectHashMap<THashMap<String, String>>();
+            TLongObjectHashMap<THashMap<String, String>> result = new TLongObjectHashMap<THashMap<String, String>>();
             while (resulsSet.next())
             {
                 int worldId = resulsSet.getInt("worldId");

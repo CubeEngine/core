@@ -226,8 +226,8 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     {
         this.merge(model, true);
     }
-    
-     @Override
+
+    @Override
     public void store(final M model)
     {
         this.store(model, true);
@@ -238,7 +238,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     {
         this.delete(model, true);
     }
-    
+
     @Override
     public void update(final M model)
     {
@@ -256,7 +256,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     {
         this.deleteByKey(key, true);
     }
-    
+
     @Override
     public void clear()
     {

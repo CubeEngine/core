@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.roles.storage;
 
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -8,13 +7,13 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssignedRoleManager extends TripletKeyStorage<Integer, Integer, String, AssignedRole>
+public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, AssignedRole>
 {
 
     private static final int REVISION = 1;
@@ -45,12 +44,12 @@ public class AssignedRoleManager extends TripletKeyStorage<Integer, Integer, Str
         }
     }
 
-    public TIntObjectHashMap<List<String>> getRolesByUser(User user)
+    public TLongObjectHashMap<List<String>> getRolesByUser(User user)
     {
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", user.key);
-            TIntObjectHashMap<List<String>> result = new TIntObjectHashMap<List<String>>();
+            TLongObjectHashMap<List<String>> result = new TLongObjectHashMap<List<String>>();
             while (resulsSet.next())
             {
                 int worldId = resulsSet.getInt("worldId");
@@ -71,12 +70,12 @@ public class AssignedRoleManager extends TripletKeyStorage<Integer, Integer, Str
         }
     }
 
-    public void delete(int userid, String name, int worldId)
+    public void delete(long userid, String name, long worldId)
     {
-        this.deleteByKey(new Triplet<Integer, Integer, String>(userid, worldId, name));
+        this.deleteByKey(new Triplet<Long, Long, String>(userid, worldId, name));
     }
 
-    public void clear(int userid, int worldId)
+    public void clear(long userid, long worldId)
     {
         try
         {

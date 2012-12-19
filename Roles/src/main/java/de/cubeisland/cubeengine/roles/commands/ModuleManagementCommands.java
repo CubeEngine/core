@@ -40,12 +40,12 @@ public class ModuleManagementCommands extends ContainerCommand
         module.getManager().saveAllConfigs();
         context.sendMessage("roles", "&f[&6Roles&f] &aall configurations saved!");
     }
-    public static Integer curWorldIdOfConsole = null;
+    public static Long curWorldIdOfConsole = null;
 
     @Command(desc = "Sets or resets the current default world", usage = "[world]", max = 1)
     public void defaultworld(CommandContext context)
     {
-        Integer worldId = null;
+        Long worldId = null;
         if (context.hasIndexed(0))
         {
             worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(0));

@@ -49,7 +49,7 @@ public class RoleManagementCommands extends ContainerCommand
                 return;
             }
         }
-        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
         if (provider.getAllRoles().isEmpty())
         {
@@ -97,7 +97,7 @@ public class RoleManagementCommands extends ContainerCommand
                 return;
             }
         }
-        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
@@ -159,7 +159,7 @@ public class RoleManagementCommands extends ContainerCommand
                 return;
             }
         }
-        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
@@ -222,7 +222,7 @@ public class RoleManagementCommands extends ContainerCommand
                 return;
             }
         }
-        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
@@ -274,7 +274,7 @@ public class RoleManagementCommands extends ContainerCommand
                 return;
             }
         }
-        int worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)

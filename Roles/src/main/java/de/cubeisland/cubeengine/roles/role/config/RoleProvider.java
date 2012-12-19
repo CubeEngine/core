@@ -13,7 +13,7 @@ import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +26,7 @@ public class RoleProvider
 {
     
     public final String mainWorld;
-    private TIntObjectHashMap<Pair<Boolean, Boolean>> worlds = new TIntObjectHashMap<Pair<Boolean, Boolean>>(); //mirror roles / users
+    private TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = new TLongObjectHashMap<Pair<Boolean, Boolean>>(); //mirror roles / users
     private THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> roles = new THashMap<String, Role>();
     private boolean init = false;
@@ -37,7 +37,7 @@ public class RoleProvider
     public RoleProvider(String mainWorld)
     {
         this.mainWorld = mainWorld;
-        Integer worldId = CubeEngine.getCore().getWorldManager().getWorldId(mainWorld);
+        Long worldId = CubeEngine.getCore().getWorldManager().getWorldId(mainWorld);
         if (worldId == null)
         {
             Roles.getInstance().getLogger().log(LogLevel.WARNING, "Unkown world " + mainWorld);
@@ -53,7 +53,7 @@ public class RoleProvider
      *
      * @param worldId
      */
-    public RoleProvider(int worldId)
+public RoleProvider(long worldId)
     {
         this.mainWorld = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
         this.worlds.put(worldId, new Pair<Boolean, Boolean>(true, true));
@@ -84,15 +84,15 @@ public class RoleProvider
         return this.configs.get(parentName);
     }
     
-    public TIntObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
+    public TLongObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
     {
         return this.worlds;
     }
     
-    public TIntObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
+    public TLongObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
     {
-        TIntObjectHashMap<List<Role>> result = new TIntObjectHashMap<List<Role>>();
-        TIntObjectHashMap<List<String>> rolesFromDb;
+        TLongObjectHashMap<List<Role>> result = new TLongObjectHashMap<List<Role>>();
+        TLongObjectHashMap<List<String>> rolesFromDb;
         if (reload)
         {
             rolesFromDb = Roles.getInstance().getManager().reloadRoles(user);
@@ -101,7 +101,7 @@ public class RoleProvider
         {
             rolesFromDb = Roles.getInstance().getManager().loadRoles(user);
         }
-        for (int worldID : rolesFromDb.keys())
+        for (long worldID : rolesFromDb.keys())
         {
             Pair<Boolean, Boolean> mirrorRoleUsers = this.worlds.get(worldID);
             if (mirrorRoleUsers == null)
@@ -130,7 +130,7 @@ public class RoleProvider
     
     public void setWorld(String worldName, boolean roles, boolean users)
     {
-        Integer world = CubeEngine.getCore().getWorldManager().getWorldId(worldName);
+        Long world = CubeEngine.getCore().getWorldManager().getWorldId(worldName);
         if (world == null)
         {
             Roles.getInstance().getLogger().log(LogLevel.WARNING, "Unkown world " + worldName + "! Removing from config...");

@@ -16,7 +16,7 @@ public class RoleProviderConverter implements Converter<RoleProvider>
         Map<String, List<Map<String, List<String>>>> result = new HashMap<String, List<Map<String, List<String>>>>();
         List<Map<String, List<String>>> worlds = new ArrayList<Map<String, List<String>>>();
         result.put(object.mainWorld, worlds);
-        for (int worldId : object.getWorlds().keys())
+        for (long worldId : object.getWorlds().keys())
         {
             List<String> values = new ArrayList<String>();
             String worldName = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();

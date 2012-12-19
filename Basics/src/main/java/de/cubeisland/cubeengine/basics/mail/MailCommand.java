@@ -12,6 +12,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.List;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 
 public class MailCommand extends ContainerCommand
 {
@@ -134,7 +136,7 @@ public class MailCommand extends ContainerCommand
     public void sendAll(CommandContext context)
     {
         List<User> users = this.basics.getUserManager().getOnlineUsers();
-        final TIntSet alreadySend = new TIntHashSet();
+        final TLongSet alreadySend = new TLongHashSet();
         final User sender = context.getSenderAsUser();
         final String message = context.getStrings(0);
         for (User user : users)

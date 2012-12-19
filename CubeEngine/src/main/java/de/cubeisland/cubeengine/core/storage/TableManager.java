@@ -6,7 +6,7 @@ import gnu.trove.map.hash.THashMap;
 /**
  * Manages the revision of tables in the database.
  */
-public class TableManager extends BasicStorage<Table>
+public class TableManager extends SingleKeyStorage<Long, Table>
 {
     private THashMap<String, Table> tables = new THashMap<String, Table>();
 

@@ -3,14 +3,14 @@ package de.cubeisland.cubeengine.core.storage.world;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import org.bukkit.World;
 
-@SingleIntKeyEntity(tableName = "worlds", primaryKey = "key")
-public class WorldModel implements Model<Integer>
+@SingleKeyEntity(tableName = "worlds", primaryKey = "key")
+public class WorldModel implements Model<Long>
 {
     @Attribute(type = AttrType.INT)
-    public int key = -1;
+    public Long key = -1L;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String worldName;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
@@ -27,13 +27,13 @@ public class WorldModel implements Model<Integer>
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return this.key;
     }
 
     @Override
-    public void setKey(Integer key)
+    public void setKey(Long key)
     {
         this.key = key;
     }

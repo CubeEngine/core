@@ -5,24 +5,24 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@SingleIntKeyEntity(tableName = "mail", primaryKey = "key")
-public class Mail implements Model<Integer>
+@SingleKeyEntity(tableName = "mail", primaryKey = "key")
+public class Mail implements Model<Long>
 {
-    @Attribute(type = AttrType.INT)
-    public int key;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public Long key;
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String message;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public int userId;
+    public long userId;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT)
-    public int senderId;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long senderId;
 
-    public Mail(int userId, int senderId, String message)
+    public Mail(long userId, long senderId, String message)
     {
         this.message = message;
         this.userId = userId;
@@ -30,13 +30,13 @@ public class Mail implements Model<Integer>
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return key;
     }
 
     @Override
-    public void setKey(Integer key)
+    public void setKey(Long key)
     {
         this.key = key;
     }

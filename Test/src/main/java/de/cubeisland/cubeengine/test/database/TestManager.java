@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.test.database;
 
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 
-public class TestManager extends BasicStorage<TestModel>
+public class TestManager extends SingleKeyStorage<Integer, TestModel>
 {
     public TestManager(Database database)
     {

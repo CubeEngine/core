@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +28,7 @@ public class RoleManager
     private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
     private final Roles module;
-    private TIntObjectHashMap<RoleProvider> providers = new TIntObjectHashMap<RoleProvider>();
+    private TLongObjectHashMap<RoleProvider> providers = new TLongObjectHashMap<RoleProvider>();
 
     public RoleManager(Roles rolesModule)
     {
@@ -163,7 +164,7 @@ public class RoleManager
         this.providers.clear();
         for (RoleProvider provider : this.module.getConfiguration().providers)
         {
-            Integer worldID = this.module.getCore().getWorldManager().getWorldId(provider.mainWorld);
+            Long worldID = this.module.getCore().getWorldManager().getWorldId(provider.mainWorld);
             if (worldID == null)
             {
                 this.module.getLogger().log(LogLevel.WARNING,
@@ -171,8 +172,8 @@ public class RoleManager
                 continue;
             }
             this.providers.put(worldID, provider);
-            TIntObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
-            for (int worldId : worlds.keys())
+            TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
+            for (long worldId : worlds.keys())
             {
                 if (this.providers.containsKey(worldId))
                 {
@@ -187,7 +188,7 @@ public class RoleManager
                 }
             }
         }
-        for (int worldId : this.module.getCore().getWorldManager().getAllWorldIds())
+        for (long worldId : this.module.getCore().getWorldManager().getAllWorldIds())
         {
             if (this.getProvider(worldId) == null)
             {
@@ -196,7 +197,7 @@ public class RoleManager
         }
     }
 
-    public RoleProvider getProvider(Integer worldID)
+    public RoleProvider getProvider(Long worldID)
     {
         return this.providers.get(worldID);
     }
@@ -205,11 +206,11 @@ public class RoleManager
     {
         return this.providers.valueCollection();
     }
-    private TIntObjectHashMap<TIntObjectHashMap<List<String>>> loadedUserRoles = new TIntObjectHashMap<TIntObjectHashMap<List<String>>>();
+    private TLongObjectHashMap<TLongObjectHashMap<List<String>>> loadedUserRoles = new TLongObjectHashMap<TLongObjectHashMap<List<String>>>();
 
-    public TIntObjectHashMap<List<String>> loadRoles(User user)
+    public TLongObjectHashMap<List<String>> loadRoles(User user)
     {
-        TIntObjectHashMap<List<String>> result = this.loadedUserRoles.get(user.key);
+        TLongObjectHashMap<List<String>> result = this.loadedUserRoles.get(user.key);
         if (result == null)
         {
             return this.reloadRoles(user);
@@ -217,9 +218,9 @@ public class RoleManager
         return result;
     }
 
-    public TIntObjectHashMap<List<String>> reloadRoles(User user)
+    public TLongObjectHashMap<List<String>> reloadRoles(User user)
     {
-        TIntObjectHashMap<List<String>> result = this.module.getDbManager().getRolesByUser(user);
+        TLongObjectHashMap<List<String>> result = this.module.getDbManager().getRolesByUser(user);
         this.loadedUserRoles.put(user.key, result);
         return result;
     }
@@ -236,18 +237,18 @@ public class RoleManager
         {
             return;
         }
-        TIntObjectHashMap<List<Role>> rolesPerWorld = new TIntObjectHashMap<List<Role>>();
+        TLongObjectHashMap<List<Role>> rolesPerWorld = new TLongObjectHashMap<List<Role>>();
         for (RoleProvider provider : this.getProviders())
         {
-            TIntObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user, reload);
+            TLongObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user, reload);
             rolesPerWorld.putAll(pRolesPerWorld);
         }
-        TIntObjectHashMap<MergedRole> roleContainer = new TIntObjectHashMap<MergedRole>();
+        TLongObjectHashMap<MergedRole> roleContainer = new TLongObjectHashMap<MergedRole>();
 
-        TIntObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
-        TIntObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
+        TLongObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
+        TLongObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
 
-        for (int worldId : rolesPerWorld.keys())
+        for (long worldId : rolesPerWorld.keys())
         {
             // UserSpecific Settings:
             MergedRole userSpecificRole = new MergedRole(username, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
@@ -271,10 +272,10 @@ public class RoleManager
         user.setAttribute(this.module, "roleContainer", roleContainer);
     }
 
-    public void applyRole(Player player, int worldId)
+    public void applyRole(Player player, long worldId)
     {
         User user = this.module.getUserManager().getExactUser(player);
-        TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
+        TLongObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
         if (role == null)
         {
@@ -286,16 +287,16 @@ public class RoleManager
         user.setAttribute(this.module, "metadata", role.getMetaData());
     }
 
-    public void reloadAndApplyRole(User user, Player player, int worldId)
+    public void reloadAndApplyRole(User user, Player player, long worldId)
     {
         user.removeAttribute(this.module, "roleContainer");
         this.preCalculateRoles(user.getName(), true);
         this.applyRole(player, worldId);
     }
 
-    public boolean addRoles(User user, Player player, int worldId, Role... roles)
+    public boolean addRoles(User user, Player player, long worldId, Role... roles)
     {
-        TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
+        TLongObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         boolean added = false;
         for (Role role : roles)
         {
@@ -315,9 +316,9 @@ public class RoleManager
         return true;
     }
 
-    public boolean removeRole(User user, Role role, int worldId)
+    public boolean removeRole(User user, Role role, long worldId)
     {
-        TIntObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
+        TLongObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         if (!roleContainer.get(worldId).getParentRoles().contains(role))
         {
             return false;
@@ -328,7 +329,7 @@ public class RoleManager
         return true;
     }
 
-    public Set<Role> clearRoles(User user, int worldId)
+    public Set<Role> clearRoles(User user, long worldId)
     {
         this.module.getDbManager().clear(user.key, worldId);
         Set<Role> result = this.getProvider(worldId).getDefaultRoles();

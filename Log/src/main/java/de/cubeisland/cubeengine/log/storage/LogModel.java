@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.sql.Timestamp;
@@ -12,12 +12,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
-@SingleIntKeyEntity(tableName = "logs", primaryKey = "key")
-public class LogModel implements Model<Integer>
+@SingleKeyEntity(tableName = "logs", primaryKey = "key")
+public class LogModel implements Model<Long>
 {
 //TODO trim chatlog and dont log if empty then
-    @Attribute(type = AttrType.INT)
-    public int key;
+    @Attribute(type = AttrType.INT, unsigned= true)
+    public Long key;
     @Attribute(type = AttrType.TINYINT)
     public int type;
     //Types:
@@ -32,8 +32,8 @@ public class LogModel implements Model<Integer>
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
     public int causeID;
-    @Attribute(type = AttrType.INT, notnull = false)
-    public Integer worldID;
+    @Attribute(type = AttrType.INT, notnull = false, unsigned= true)
+    public Long worldID;
     @Attribute(type = AttrType.INT, notnull = false)
     public Integer x;
     @Attribute(type = AttrType.INT, notnull = false)
@@ -252,13 +252,13 @@ public class LogModel implements Model<Integer>
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return key;
     }
 
     @Override
-    public void setKey(Integer key)
+    public void setKey(Long key)
     {
         this.key = key;
     }

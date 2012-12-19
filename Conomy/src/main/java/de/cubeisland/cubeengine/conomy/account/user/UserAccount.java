@@ -3,10 +3,10 @@ package de.cubeisland.cubeengine.conomy.account.user;
 import de.cubeisland.cubeengine.conomy.account.AccountModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.SingleIntKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@SingleIntKeyEntity(tableName = "useraccount", primaryKey = "user", autoIncrement = false)
+@SingleKeyEntity(tableName = "useraccount", primaryKey = "user", autoIncrement = false)
 public class UserAccount extends AccountModel
 {
     @Attribute(type = AttrType.INT)
@@ -36,13 +36,13 @@ public class UserAccount extends AccountModel
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return this.user.getKey();
     }
 
     @Override
-    public void setKey(Integer id)
+    public void setKey(Long id)
     {
         throw new UnsupportedOperationException("UserID cannot be changed here!.");
     }

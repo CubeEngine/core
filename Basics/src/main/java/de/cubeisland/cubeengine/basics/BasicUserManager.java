@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.entity.Player;
 
-public class BasicUserManager extends BasicStorage<BasicUser>
+public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
 {
     private static final int REVISION = 1;
 

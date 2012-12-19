@@ -9,21 +9,21 @@ import de.cubeisland.cubeengine.core.util.Triplet;
 
 @TripletKeyEntity(
         tableName = "roles",
-firstPrimaryKey = "userId",
-secondPrimaryKey = "worldId",
-thirdPrimaryKey = "roleName")
-public class AssignedRole implements TripletKeyModel<Integer, Integer, String>
+                  firstPrimaryKey = "userId",
+                  secondPrimaryKey = "worldId",
+                  thirdPrimaryKey = "roleName")
+public class AssignedRole implements TripletKeyModel<Long, Long, String>
 {
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT)
-    public int userId;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long userId;
     @Index(value = Index.IndexType.FOREIGNKEY, f_table = "worlds", f_field = "key")
-    @Attribute(type = AttrType.INT)
-    public int worldId;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String roleName;
 
-    public AssignedRole(int userId, int worldId, String roleName)
+    public AssignedRole(long userId, long worldId, String roleName)
     {
         this.userId = userId;
         this.worldId = worldId;
@@ -31,13 +31,13 @@ public class AssignedRole implements TripletKeyModel<Integer, Integer, String>
     }
 
     @Override
-    public Triplet<Integer, Integer, String> getKey()
+    public Triplet<Long, Long, String> getKey()
     {
-        return new Triplet<Integer, Integer, String>(this.userId, this.worldId, this.roleName);
+        return new Triplet<Long, Long, String>(this.userId, this.worldId, this.roleName);
     }
 
     @Override
-    public void setKey(Triplet<Integer, Integer, String> key)
+    public void setKey(Triplet<Long, Long, String> key)
     {
         this.userId = key.getFirst();
         this.worldId = key.getSecond();

@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
-public class LogManager extends BasicStorage<LogModel>
+public class LogManager extends SingleKeyStorage<Long, LogModel>
 {
     private static final int REVISION = 1;
 

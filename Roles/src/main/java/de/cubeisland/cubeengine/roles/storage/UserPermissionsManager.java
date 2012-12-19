@@ -5,11 +5,11 @@ import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserPermissionsManager extends TripletKeyStorage<Integer, Integer, String, UserPermission>
+public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String, UserPermission>
 {
     private static final int REVISION = 1;
 
@@ -35,12 +35,12 @@ public class UserPermissionsManager extends TripletKeyStorage<Integer, Integer, 
         }
     }
 
-    public TIntObjectHashMap<THashMap<String, Boolean>> getForUser(int key)
+    public TLongObjectHashMap<THashMap<String, Boolean>> getForUser(long key)
     {
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", key);
-            TIntObjectHashMap<THashMap<String, Boolean>> result = new TIntObjectHashMap<THashMap<String, Boolean>>();
+            TLongObjectHashMap<THashMap<String, Boolean>> result = new TLongObjectHashMap<THashMap<String, Boolean>>();
             while (resulsSet.next())
             {
                 int worldId = resulsSet.getInt("worldId");

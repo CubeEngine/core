@@ -2,21 +2,19 @@ package de.cubeisland.cubeengine.basics.mail;
 
 import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.BasicUserManager;
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
-
-public class MailManager extends BasicStorage<Mail>
+public class MailManager extends SingleKeyStorage<Long, Mail>
 {
     private final BasicUserManager bUserManager;
     private static final int REVISION = 1;

@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.storage.BasicStorage;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -50,8 +50,7 @@ import java.lang.reflect.Field;
  * This Manager provides methods to access the Users and saving/loading from
  * database.
  */
-public class UserManager extends BasicStorage<User> implements Cleanable,
-    Runnable, Listener
+public class UserManager extends SingleKeyStorage<Long, User> implements Cleanable, Runnable, Listener
 {
     private final Core core;
     private final List<Player> onlinePlayers;
@@ -68,11 +67,11 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         this.registerUpdaters();
         this.executor = core.getTaskManager().getExecutorService();
 
-        this.server = ((BukkitCore)core).getServer();
+        this.server = ((BukkitCore) core).getServer();
         this.users = new ConcurrentHashMap<String, User>();
-        this.onlinePlayers = new CopyOnWriteArrayList<Player>(((BukkitCore)core).getServer().getOnlinePlayers());
+        this.onlinePlayers = new CopyOnWriteArrayList<Player>(((BukkitCore) core).getServer().getOnlinePlayers());
 
-        final long delay = (long)core.getConfiguration().userManagerCleanup;
+        final long delay = (long) core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
         this.initialize();
         this.loadSalt();
@@ -100,7 +99,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
     {
         try
         {
-            this.database.preparedUpdate(modelClass, "clearpw", (Object)null);
+            this.database.preparedUpdate(modelClass, "clearpw", (Object) null);
         }
         catch (SQLException ex)
         {
@@ -117,18 +116,18 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
             {
                 database.execute(
                         database.getQueryBuilder().
-                            alterTable(tableName).
-                            add("nogc", AttrType.BOOLEAN).
-                            defaultValue("false").
-                            end().
-                            end());
+                        alterTable(tableName).
+                        add("nogc", AttrType.BOOLEAN).
+                        defaultValue("false").
+                        end().
+                        end());
                 database.execute(
                         database.getQueryBuilder().
-                            alterTable(tableName).
-                            add("lastseen", AttrType.TIMESTAMP).
-                            defaultValue().value().
-                            end().
-                            end(), new Timestamp(System.currentTimeMillis()));
+                        alterTable(tableName).
+                        add("lastseen", AttrType.TIMESTAMP).
+                        defaultValue().value().
+                        end().
+                        end(), new Timestamp(System.currentTimeMillis()));
             }
         }, 1);
         this.registerUpdater(new DatabaseUpdater()
@@ -138,10 +137,10 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
             {
                 database.execute(
                         database.getQueryBuilder().
-                            alterTable(tableName).
-                            addUniques("player").
-                            end().
-                            end());
+                        alterTable(tableName).
+                        addUniques("player").
+                        end().
+                        end());
             }
         }, 2);
     }
@@ -254,7 +253,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         }
         if (player instanceof User)
         {
-            return (User)player;
+            return (User) player;
         }
         if (!player.hasPlayedBefore())
         {
@@ -277,7 +276,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         }
         if (player instanceof User)
         {
-            return (User)player;
+            return (User) player;
         }
         return this.getUser(player.getName(), true);
     }
@@ -296,7 +295,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
         }
         if (sender instanceof User)
         {
-            return (User)sender;
+            return (User) sender;
         }
         if (sender instanceof Player)
         {
@@ -311,7 +310,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
      * @param key the key to get the user by
      * @return the user or null if not found
      */
-    public User getUser(int key)
+    public User getUser(Long key)
     {
         User user = this.get(key);
         if (user == null)
@@ -372,7 +371,8 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
             this.executor.shutdownNow();
         }
         catch (InterruptedException ignore)
-        {}
+        {
+        }
     }
 
     /**
@@ -455,7 +455,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
     {
         Player player = event.getPlayer();
         final User user = getExactUser(player);
-        user.removalTaskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)core, new Runnable()
+        user.removalTaskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin) core, new Runnable()
         {
             @Override
             public void run()
@@ -514,7 +514,7 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
 
                     while (result.next())
                     {
-                        deleteByKey(result.getInt("key"));
+                        deleteByKey(result.getLong("key"));
                     }
                 }
                 catch (Exception e)
@@ -563,7 +563,8 @@ public class UserManager extends BasicStorage<User> implements Cleanable,
                     fileWriter.close();
                 }
                 catch (Exception ignored)
-                {}
+                {
+                }
             }
         }
     }

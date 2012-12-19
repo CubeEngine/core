@@ -46,14 +46,14 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
 
     public void logContainerChange(User user, ItemData data, int amount, Location loc, int type)
     {
-        this.module.getLogManager().logChestLog(user.key, loc, data, amount, type);
+        this.module.getLogManager().logChestLog(user.key.intValue(), loc, data, amount, type);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
     {
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
-        TObjectIntHashMap<ItemData> loggedItems = openedInventories.get(user.getKey());
+        TObjectIntHashMap<ItemData> loggedItems = openedInventories.get(user.getKey().intValue());
         if (loggedItems == null)
         {
             return;
@@ -79,7 +79,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             }
             this.logContainerChanges(user, type, loggedItems, loc);
         }
-        openedInventories.remove(user.key);
+        openedInventories.remove(user.key.intValue());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -91,7 +91,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             if (event.getPlayer() instanceof Player)
             {
                 User user = CubeEngine.getUserManager().getExactUser((Player) event.getPlayer());
-                openedInventories.put(user.getKey(), new TObjectIntHashMap<ItemData>());
+                openedInventories.put(user.getKey().intValue(), new TObjectIntHashMap<ItemData>());
             }
         }
     }
@@ -101,7 +101,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     public void onInventoryClick(InventoryClickEvent event)
     {
         User user = CubeEngine.getUserManager().getExactUser((Player) event.getWhoClicked());
-        TObjectIntHashMap<ItemData> log = openedInventories.get(user.key);
+        TObjectIntHashMap<ItemData> log = openedInventories.get(user.key.intValue());
         if (log == null)
         {
             return;
