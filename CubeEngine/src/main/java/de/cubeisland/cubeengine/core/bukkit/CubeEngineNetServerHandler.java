@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketSentEvent;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
-import net.minecraft.server.v1_4_5.*;
+import net.minecraft.server.v1_4_5.v1_4_5.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 

@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
-import net.minecraft.server.v1_4_5.Packet204LocaleAndViewDistance;
+import net.minecraft.server.v1_4_5.v1_4_5.Packet204LocaleAndViewDistance;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

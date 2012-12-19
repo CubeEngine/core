@@ -8,10 +8,12 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.GREATER;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
@@ -19,12 +21,6 @@ import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
-import net.minecraft.server.v1_4_5.*;
-import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
 import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -34,9 +30,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.GREATER;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import net.minecraft.server.v1_4_5.v1_4_5.*;
+import org.apache.commons.lang.Validate;
+import org.bukkit.craftbukkit.v1_4_5.v1_4_5.CraftServer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 public class Test extends Module
 {
