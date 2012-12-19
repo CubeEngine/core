@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.permission;
 
-
 import org.bukkit.permissions.PermissionDefault;
 
 public enum PermDefault

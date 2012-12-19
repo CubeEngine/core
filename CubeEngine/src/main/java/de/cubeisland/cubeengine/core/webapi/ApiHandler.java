@@ -90,8 +90,6 @@ public final class ApiHandler
 
     /**
      * This method handles the request.
-     *
-     * @return the response
      */
     public void execute(final ApiRequest request, final ApiResponse response) throws Throwable
     {

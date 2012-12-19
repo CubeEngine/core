@@ -470,13 +470,13 @@ public class ModuleManager implements Cleanable
             for (Field field : moduleClass.getDeclaredFields())
             {
                 if (field.getType() == module.getClass())
-                try
-                {
-                    field.setAccessible(true);
-                    field.set(m, null);
-                }
-                catch (Exception ignored)
-                {}
+                    try
+                    {
+                        field.setAccessible(true);
+                        field.set(m, null);
+                    }
+                    catch (Exception ignored)
+                    {}
             }
         }
 

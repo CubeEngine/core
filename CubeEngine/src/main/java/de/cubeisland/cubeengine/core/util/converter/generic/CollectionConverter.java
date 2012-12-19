@@ -35,21 +35,20 @@ public class CollectionConverter
      *
      * @param <V>            the ValueType
      * @param <S>            the Type of collection
-     * @param collectionType the CollectionClass
+     * @param type          the type of the collection
      * @param object         the object to convert
-     * @param valueType      the ValueTypeClass
      * @return the converted collection
      * @throws ConversionException
      */
-    public <V, S extends Collection<V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
+    public <V, S extends Collection<V>> S fromObject(ParameterizedType type, Object object) throws ConversionException
     {
         try
         {
-            if (ptype.getRawType() instanceof Class)
+            if (type.getRawType() instanceof Class)
             {
-                Class<S> collectionType = (Class)ptype.getRawType();
+                Class<S> collectionType = (Class)type.getRawType();
                 S result;
-                Type subType = ptype.getActualTypeArguments()[0];
+                Type subType = type.getActualTypeArguments()[0];
                 if (collectionType.isInterface() || Modifier.isAbstract(collectionType.getModifiers()))
                 {
                     if (Set.class.isAssignableFrom(collectionType))
@@ -91,15 +90,15 @@ public class CollectionConverter
                     throw new IllegalStateException("Collection-conversion failed: Cannot convert not a collection to a collection.");
                 }
             }
-            throw new IllegalArgumentException("Unkown Collection-Type: " + ptype);
+            throw new IllegalArgumentException("Unkown Collection-Type: " + type);
         }
         catch (IllegalAccessException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
+            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + type.getRawType(), ex);
         }
         catch (InstantiationException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
+            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + type.getRawType(), ex);
         }
         catch (ConversionException ex)
         {

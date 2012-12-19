@@ -34,7 +34,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(names = {
-    "setpassword", "setpw"
+        "setpassword", "setpw"
     }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
     public void setPassword(CommandContext context)
     {
@@ -61,7 +61,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(names = {
-    "clearpassword", "clearpw"
+        "clearpassword", "clearpw"
     }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags = @Flag(longName = "all", name = "a"))
     public void clearPassword(CommandContext context)
     {

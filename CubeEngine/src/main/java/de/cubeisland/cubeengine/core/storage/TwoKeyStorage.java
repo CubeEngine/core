@@ -75,7 +75,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
                 Index index = this.indexAnnotations.get(field);
                 switch (index.value())
                 {
-                    case FOREIGNKEY:
+                    case FOREIGN_KEY:
                         tbuilder.foreignKey(dbName).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
                         break;
                     case UNIQUE:
@@ -121,7 +121,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
 
             this.database.storeStatement(this.modelClass, "store",
                     builder.insert().into(this.tableName).cols(this.allFields).end().end());
-            
+
             if (fields.length != 0)
             {
                 this.database.storeStatement(this.modelClass, "merge",

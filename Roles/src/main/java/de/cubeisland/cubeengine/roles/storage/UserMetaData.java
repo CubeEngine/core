@@ -10,12 +10,12 @@ import de.cubeisland.cubeengine.core.util.Triplet;
 @TripletKeyEntity(tableName = "userdata", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "key")
 public class UserMetaData implements TripletKeyModel<Long, Long, String>
 {
-    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
+    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public long userId;
-    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "worlds", f_field = "key")
+    public long   userId;
+    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "worlds", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public long worldId;
+    public long   worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String key;
     @Attribute(type = AttrType.VARCHAR, length = 255)

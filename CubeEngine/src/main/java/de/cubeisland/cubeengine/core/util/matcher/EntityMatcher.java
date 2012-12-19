@@ -26,7 +26,7 @@ public class EntityMatcher
         {
             try
             {
-                EntityType.fromId((short)id).registerName(entityList.get(id));
+                EntityType.fromId((short)id).registerNames(entityList.get(id));
             }
             catch (NullPointerException e)
             {
@@ -38,7 +38,7 @@ public class EntityMatcher
     /**
      * Returns an instance of the matcher
      *
-     * @return
+     * @return the singleton instance of the entity matcher
      */
     public static EntityMatcher get()
     {
@@ -52,7 +52,7 @@ public class EntityMatcher
     /**
      * Tries to match an EntityType for given string
      *
-     * @param s the string to match
+     * @param name the name to match
      * @return the found EntityType
      */
     public EntityType matchEntity(String name)
@@ -69,7 +69,7 @@ public class EntityMatcher
             short entityId = Short.parseShort(s);
             return EntityType.fromId(entityId);
         }
-        catch (NumberFormatException e)
+        catch (NumberFormatException ignored)
         {}
         if (entity == null)
         {
@@ -167,7 +167,7 @@ public class EntityMatcher
     }
 
     /**
-     * Loads in the file with the saved entitiy-names
+     * Loads in the file with the saved entity-names
      *
      * @return the loaded entities with corresponding names
      */

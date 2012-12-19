@@ -2,15 +2,16 @@ package de.cubeisland.cubeengine.core.util.matcher;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Projectile;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * This class extends the bukkit EntityType.
@@ -67,7 +68,7 @@ public enum EntityType
     EGG(org.bukkit.entity.EntityType.EGG, false),
     FISHING_HOOK(org.bukkit.entity.EntityType.FISHING_HOOK, false),
     /**
-     * Spawn with {@link World#strikeLightning(org.bukkit.Location)}.
+     * Spawn with {@link org.bukkit.World#strikeLightning(org.bukkit.Location)}.
      */
     LIGHTNING(org.bukkit.entity.EntityType.LIGHTNING, false),
     WEATHER(org.bukkit.entity.EntityType.WEATHER, false),
@@ -77,7 +78,6 @@ public enum EntityType
      * An unknown entity without an Entity Class
      */
     UNKNOWN(org.bukkit.entity.EntityType.UNKNOWN, false);
-    ;
 
     private org.bukkit.entity.EntityType type;
     private boolean spawnEgg;
@@ -149,7 +149,7 @@ public enum EntityType
     /**
      * Returns whether this Entity is alive
      *
-     * @return
+     * @return true if this type is an living entity
      */
     public boolean isAlive()
     {
@@ -159,7 +159,7 @@ public enum EntityType
     /**
      * Returns whether this Entity is a monster
      *
-     * @return
+     * @return true if this type is an monster
      */
     public boolean isMonster()
     {
@@ -169,7 +169,7 @@ public enum EntityType
     /**
      * Returns whether this Entity is a friendly mob
      *
-     * @return
+     * @return true if this type is an friendly entity
      */
     public boolean isFriendly()
     {
@@ -178,9 +178,9 @@ public enum EntityType
     }
 
     /**
-     * Returns whether this Entity is an animal
+     * Returns whether this type is an animal
      *
-     * @return
+     * @return true if this type is an animal
      */
     public boolean isAnimal()
     {
@@ -188,9 +188,9 @@ public enum EntityType
     }
 
     /**
-     * Returns whether this Entity is a projectile
+     * Returns whether this type is a projectile
      *
-     * @return
+     * @return true if this type is an projectile
      */
     public boolean isProjectile()
     {
@@ -200,9 +200,9 @@ public enum EntityType
     /**
      * Registers a list of names for this entityType
      *
-     * @param names
+     * @param names the names to register
      */
-    public void registerName(List<String> names)
+    public void registerNames(List<String> names)
     {
         if (names.isEmpty())
         {
@@ -216,9 +216,9 @@ public enum EntityType
     }
 
     /**
-     * Returns a map of names -> EntitiyType
+     * Returns a map of names -> EntityType
      *
-     * @return
+     * @return the name map
      */
     public static Map<String, EntityType> getNameSets()
     {
@@ -228,7 +228,7 @@ public enum EntityType
     /**
      * Returns the name of this EntityType
      *
-     * @return
+     * @return the name of the entity type
      */
     @Override
     public String toString()

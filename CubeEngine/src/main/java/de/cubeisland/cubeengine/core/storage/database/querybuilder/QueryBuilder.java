@@ -42,8 +42,8 @@ public interface QueryBuilder
     /**
      * STARTS a CREATE TABLE query
      *
-     * @param name
-     * @param ifNoExist
+     * @param name the table name
+     * @param ifNoExist whether to only create the table if it doesn't already exist
      * @return the TableBuilder
      */
     public TableBuilder createTable(String name, boolean ifNoExist);
@@ -51,7 +51,7 @@ public interface QueryBuilder
     /**
      * Clears the table
      *
-     * @param table
+     * @param table the table to truncate
      * @return fluent interface
      */
     public QueryBuilder truncateTable(String table);
@@ -59,7 +59,7 @@ public interface QueryBuilder
     /**
      * Drops the table
      *
-     * @param table
+     * @param tables the tables to drop
      * @return fluent interface
      */
     public QueryBuilder dropTable(String... tables);

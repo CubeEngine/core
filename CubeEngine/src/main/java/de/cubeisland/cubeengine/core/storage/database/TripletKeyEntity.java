@@ -19,6 +19,8 @@ public @interface TripletKeyEntity
     public String charset() default "utf8";
 
     public String firstPrimaryKey();
+
     public String secondPrimaryKey();
+
     public String thirdPrimaryKey();
 }

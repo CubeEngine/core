@@ -27,11 +27,11 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
  */
 public class TaskManager
 {
-    private final BukkitCore               corePlugin;
+    private final BukkitCore corePlugin;
     private final ScheduledExecutorService executorService;
-    private final BukkitScheduler          bukkitScheduler;
-    private final Map<Module, TIntSet>     moduleTasks;
-    private final ThreadFactory            threadFactory;
+    private final BukkitScheduler bukkitScheduler;
+    private final Map<Module, TIntSet> moduleTasks;
+    private final ThreadFactory threadFactory;
 
     public TaskManager(Core core, ThreadFactory threadFactory, int threadPoolSize, BukkitScheduler bukkitScheduler)
     {

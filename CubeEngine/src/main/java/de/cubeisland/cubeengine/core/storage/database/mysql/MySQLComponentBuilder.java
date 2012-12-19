@@ -62,10 +62,10 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
-    public This field(String field)
+    public This field(String name)
     {
 
-        this.query.append(this.database.prepareFieldName(field));
+        this.query.append(this.database.prepareFieldName(name));
         return (This)this;
     }
 
@@ -107,7 +107,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
-    public This is(Integer operation)
+    public This is(int operation)
     {
         switch (operation)
         {
@@ -218,18 +218,18 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
-    public This groupBy(String... field)
+    public This groupBy(String... fields)
     {
-        if (field.length == 1)
+        if (fields.length == 1)
         {
-            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(field[0]));
+            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(fields[0]));
         }
         else
         {
-            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(field[0]));
-            for (int i = 1; i < field.length; ++i)
+            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(fields[0]));
+            for (int i = 1; i < fields.length; ++i)
             {
-                this.query.append(",").append(this.database.prepareFieldName(field[i]));
+                this.query.append(",").append(this.database.prepareFieldName(fields[i]));
             }
         }
         return (This)this;

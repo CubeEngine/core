@@ -88,7 +88,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                 Index index = this.indexAnnotations.get(field);
                 switch (index.value())
                 {
-                    case FOREIGNKEY:
+                    case FOREIGN_KEY:
                         tbuilder.foreignKey(dbName).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
                         break;
                     case UNIQUE:

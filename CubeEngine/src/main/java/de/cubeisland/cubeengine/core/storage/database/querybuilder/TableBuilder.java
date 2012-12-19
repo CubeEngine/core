@@ -14,8 +14,8 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Adds a field.
      *
-     * @param name
-     * @param type
+     * @param name the name of the field
+     * @param type the type of the field
      * @return fluent interface
      */
     public TableBuilder field(String name, AttrType type);
@@ -23,9 +23,9 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Adds a field.
      *
-     * @param name
-     * @param type
-     * @param unsigned
+     * @param name the name
+     * @param type the type
+     * @param unsigned whether the field is unsigned
      * @return fluent interface
      */
     public TableBuilder field(String name, AttrType type, boolean unsigned);
@@ -33,10 +33,10 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Adds a field.
      *
-     * @param name
-     * @param type
-     * @param unsigned
-     * @param notnull
+     * @param name the name
+     * @param type the type
+     * @param unsigned whether the field is unsigned
+     * @param notnull whether the type may be null
      * @return fluent interface
      */
     public TableBuilder field(String name, AttrType type, boolean unsigned, boolean notnull);
@@ -44,9 +44,9 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Adds a field.
      *
-     * @param name
-     * @param type
-     * @param length
+     * @param name the name
+     * @param type the type
+     * @param length the length of the type
      * @return fluent interface
      */
     public TableBuilder field(String name, AttrType type, int length);
@@ -54,10 +54,10 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Adds a field.
      *
-     * @param name
-     * @param type
-     * @param length
-     * @param notnull
+     * @param name the name
+     * @param type the type
+     * @param length the length of the type
+     * @param notnull whether the type may be null
      * @return fluent interface
      */
     public TableBuilder field(String name, AttrType type, int length, boolean notnull);
@@ -65,11 +65,11 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Adds a field.
      *
-     * @param name
-     * @param type
-     * @param length
-     * @param notnull
-     * @param unsigned
+     * @param name the name
+     * @param type the type
+     * @param length the length of the type
+     * @param notnull whether the field is unsigned
+     * @param unsigned whether the type may be null
      * @return fluent interface
      */
     public TableBuilder field(String name, AttrType type, boolean unsigned, int length, boolean notnull);
@@ -77,9 +77,9 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Adds a field.
      * 
-     * @param name
-     * @param enumValues
-     * @param notnull
+     * @param name the name
+     * @param enumValues the enum values
+     * @param notnull whether the field may be null
      * @return fluent interface
      */
     public TableBuilder enumField(String name, String[] enumValues, boolean notnull);
@@ -108,23 +108,22 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets the primary Key.
      *
-     * @param key
+     * @param fields the fields to use as the primary key
      * @return fluent interface
      */
-    public TableBuilder primaryKey(String... key);
+    public TableBuilder primaryKey(String... fields);
 
     /**
      * Sets given field to be unique
      *
-     * @param field
+     * @param field the field to make unique
      * @return fluent interface
      */
     public TableBuilder unique(String field);
 
     /**
-     * Starts a CHECK statement. Dont forget to use beginSub and endSub.
+     * Starts a CHECK statement. Don't forget to use beginSub and endSub.
      *
-     * @param field
      * @return fluent interface
      */
     public TableBuilder check();
@@ -132,7 +131,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets a foreign key.
      *
-     * @param key
+     * @param key the name
      * @return fluent interface
      */
     public TableBuilder foreignKey(String key);
@@ -140,8 +139,8 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets the reference for the foreign key
      *
-     * @param table
-     * @param field
+     * @param table the table to reference
+     * @param field the field of the references table
      * @return fluent interface
      */
     public TableBuilder references(String table, String field);
@@ -149,8 +148,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets what should be done when trying to remove a key.
      *
-     * @param table
-     * @param field
+     * @param doThis what to do
      * @return fluent interface
      */
     public TableBuilder onDelete(String doThis);
@@ -165,7 +163,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets the engine
      *
-     * @param engine
+     * @param engine the name of the engine
      * @return fluent interface
      */
     public TableBuilder engine(String engine);
@@ -173,7 +171,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets the default Charset
      *
-     * @param charset
+     * @param charset the charset
      * @return fluent interface
      */
     public TableBuilder defaultcharset(String charset);
@@ -181,7 +179,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets the autoincrement.
      *
-     * @param n
+     * @param n the auto-increment start value
      * @return fluent interface
      */
     public TableBuilder autoIncrement(int n);

@@ -25,7 +25,7 @@ public @interface Option
      * If true this option will not be shown in the config with disabled advanced mode.
      * Keep in mind you will need a field:
      *
-     * @Option("advanced")
+     * \@Option("advanced")
      * public boolean advanced
      * in your config for this to work.
      *

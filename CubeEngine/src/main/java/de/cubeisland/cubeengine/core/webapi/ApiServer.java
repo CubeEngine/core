@@ -246,7 +246,6 @@ public class ApiServer
      * Sets the address the server will bind to on the next start
      *
      * @param address the address
-     * @return fluent interface
      */
     public void setBindAddress(InetAddress address)
     {
@@ -377,7 +376,6 @@ public class ApiServer
      * Sets the enabled state of the whitelisting
      *
      * @param state true to enable, false to disable
-     * @return fluent interface
      */
     public void setWhitelistEnabled(boolean state)
     {
@@ -460,7 +458,6 @@ public class ApiServer
      * Sets the enabled state of the blacklisting
      *
      * @param state true to enable, false to disable
-     * @return fluent interface
      */
     public void setBlacklistEnabled(boolean state)
     {

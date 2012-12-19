@@ -17,8 +17,8 @@ public @interface SingleKeyEntity
     public String engine() default "InnoDB";
 
     public String charset() default "utf8";
-    
+
     public boolean autoIncrement() default true;
-    
+
     public String primaryKey();
 }

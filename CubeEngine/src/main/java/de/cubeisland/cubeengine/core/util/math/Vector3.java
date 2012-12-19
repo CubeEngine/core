@@ -10,11 +10,11 @@ public class Vector3
     public final double z;
 
     /**
-     * Creates a new Vektor3 with a triple of int
+     * Creates a new Vector3 with a triple of int
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the x value
+     * @param y the y value
+     * @param z the z value
      */
     public Vector3(final int x, final int y, final int z)
     {
@@ -22,11 +22,11 @@ public class Vector3
     }
 
     /**
-     * Creates a new Vektor3 with a triple of double
+     * Creates a new Vector3 with a triple of double
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the x value
+     * @param y the y value
+     * @param z the z value
      */
     public Vector3(final double x, final double y, final double z)
     {
@@ -58,7 +58,7 @@ public class Vector3
     }
 
     /**
-     * Returns the scalar product of this Vektor and the other
+     * Returns the scalar product of this vector and the other
      *
      * @param other the second vector to multiply with
      * @return the scalar product
@@ -69,9 +69,9 @@ public class Vector3
     }
 
     /**
-     * Returns the cross product of this Vektor and the other
+     * Returns the cross product of this vector and the other
      *
-     * @param other
+     * @param other the other vector
      * @return the cross product
      */
     public Vector3 cross(Vector3 other)
@@ -96,10 +96,10 @@ public class Vector3
     /**
      * Returns the difference between an other Vector3 and this one as a Vector3
      *
-     * @param other the Vector3 to substract
+     * @param other the Vector3 to subtract
      * @return the new Vector
      */
-    public Vector3 substract(Vector3 other)
+    public Vector3 subtract(Vector3 other)
     {
         return new Vector3(this.x - other.x, this.y - other.y, this.z - other.z);
     }
@@ -107,7 +107,7 @@ public class Vector3
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public Vector3 multiply(int n)
@@ -118,7 +118,7 @@ public class Vector3
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public Vector3 multiply(double n)
@@ -129,7 +129,7 @@ public class Vector3
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public Vector3 divide(int n)
@@ -140,7 +140,7 @@ public class Vector3
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public Vector3 divide(double n)
@@ -171,12 +171,12 @@ public class Vector3
     /**
      * Returns the distance between an other Vector3 and this one as a Vector3
      *
-     * @param other the Vector3 to substract from
+     * @param other the Vector3 to subtract from
      * @return the new Vector
      */
     public Vector3 distanceVector(Vector3 other)
     {
-        return other.substract(this);
+        return other.subtract(this);
     }
 
     /**
@@ -230,7 +230,7 @@ public class Vector3
      */
     public Vector3 midpoint(Vector3 other)
     {
-        return this.add(other.substract(this).divide(2));
+        return this.add(other.subtract(this).divide(2));
     }
 
     /**
@@ -246,7 +246,7 @@ public class Vector3
     /**
      * Returns whether the Object o equals this Vector
      *
-     * @param other an Object
+     * @param o an Object
      * @return whether o is the same Vector as this one
      */
     @Override

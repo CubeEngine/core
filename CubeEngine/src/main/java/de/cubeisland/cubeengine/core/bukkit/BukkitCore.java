@@ -70,7 +70,6 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         CubeEngine.initialize(this);
 
-
         this.jsonObjectMapper = new ObjectMapper();
         this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
@@ -179,7 +178,7 @@ public class BukkitCore extends JavaPlugin implements Core
             {
                 // depends on loaded worlds
                 worldManager = new WorldManager(database);
-                
+
                 // depends on: file manager
                 moduleManager.loadModules(fileManager.getModulesDir());
 

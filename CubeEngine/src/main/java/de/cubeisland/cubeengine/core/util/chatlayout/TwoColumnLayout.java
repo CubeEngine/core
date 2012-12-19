@@ -28,7 +28,6 @@ public class TwoColumnLayout extends AbstractChatLayout<List<String[]>>
             throw new IllegalStateException("No data set yet!");
         }
 
-
         List<String> lines = new LinkedList<String>();
 
         for (String[] entry : this.data)

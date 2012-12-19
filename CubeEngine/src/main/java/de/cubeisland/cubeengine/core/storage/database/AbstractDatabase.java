@@ -21,10 +21,10 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
  */
 public abstract class AbstractDatabase implements Database
 {
-    protected static final Logger                                   LOGGER             = CubeEngine.getLogger();
-    private final          ConcurrentMap<String, String>            statements         = new ConcurrentHashMap<String, String>();
-    private final          ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    private final          AsyncTaskQueue                           taskQueue          = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
+    protected static final Logger LOGGER = CubeEngine.getLogger();
+    private final ConcurrentMap<String, String> statements = new ConcurrentHashMap<String, String>();
+    private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
+    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
 
     @Override
     public Object getLastInsertedId(Class owner, String name, Object... params) throws SQLException

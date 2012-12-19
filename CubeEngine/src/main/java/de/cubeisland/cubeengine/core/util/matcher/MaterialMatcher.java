@@ -2,19 +2,26 @@ package de.cubeisland.cubeengine.core.util.matcher;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * This Matcher provides methods to match Material or Items.
@@ -53,7 +60,7 @@ public class MaterialMatcher
     /**
      * Returns an instance of the matcher
      *
-     * @return
+     * @return the singleton instance of the material matcher
      */
     public static MaterialMatcher get()
     {
@@ -65,7 +72,7 @@ public class MaterialMatcher
     }
 
     /**
-     * Registers an Itemstack for the matcher with a list of names
+     * Registers an ItemStack for the matcher with a list of names
      *
      * @param item the Item
      * @param names the corresponding names
@@ -84,9 +91,9 @@ public class MaterialMatcher
     }
 
     /**
-     * Tries to match a Itemstack for given name
+     * Tries to match a ItemStack for given name
      *
-     * @param name
+     * @param name the name
      * @return the found ItemStack
      */
     public ItemStack matchItemStack(String name)
@@ -110,26 +117,25 @@ public class MaterialMatcher
             catch (NumberFormatException e)
             {
                 try
-                { // id and data match
+                {
+                    // id and data match
                     item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
                     this.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
-                    if (item != null)
-                    {
-                        return item;
-                    }
+                    return item;
                 }
-                catch (Exception ex)
-                {
-                }
+                catch (Exception ignored)
+                {}
             }
             if (s.contains(":"))
-            { // name match with data
+            {
+                // name match with data
                 String material = s.substring(0, s.indexOf(":"));
                 String data = name.substring(name.indexOf(":") + 1);
                 item = this.items.get(material);
                 this.setData(item, data); // Try to set data / returns null if couldn't
                 if (item == null)
-                { //name was probably wrong check ld:
+                {
+                    //name was probably wrong check ld:
                     item = matchWithLevenshteinDistance(material, items);
                     this.setData(item, data); // Try to set data / returns null if couldn't
                 }
@@ -142,7 +148,8 @@ public class MaterialMatcher
                 }
             }
             if (item == null)
-            { // ld-match
+            {
+                // ld-match
                 item = matchWithLevenshteinDistance(s, items);
                 if (item == null)
                 {
@@ -157,8 +164,8 @@ public class MaterialMatcher
     /**
      * Matches a DyeColor
      *
-     * @param data
-     * @return
+     * @param data the data
+     * @return the dye color
      */
     public DyeColor matchColorData(String data)
     {
@@ -173,13 +180,13 @@ public class MaterialMatcher
     /**
      * Sets the data for an ItemStack
      *
-     * @param item
-     * @param data
-     * @return
+     * @param item the item
+     * @param rawData the data
+     * @return the modified clone of the item
      */
-    private ItemStack setData(ItemStack item, String rawdata)
+    private ItemStack setData(ItemStack item, String rawData)
     {
-        String data = rawdata.toLowerCase(Locale.ENGLISH);
+        String data = rawData.toLowerCase(Locale.ENGLISH);
         if (item == null)
         {
             return null;
@@ -221,9 +228,9 @@ public class MaterialMatcher
                     }
                     return item;
                 case SKULL_ITEM:
-                    item.setDurability((short) 3);
-                    SkullMeta meta = ((SkullMeta) item.getItemMeta());
-                    meta.setOwner(rawdata);
+                    item.setDurability((short)3);
+                    SkullMeta meta = ((SkullMeta)item.getItemMeta());
+                    meta.setOwner(rawData);
                     item.setItemMeta(meta);
                 default:
                     return item;
@@ -245,8 +252,8 @@ public class MaterialMatcher
     /**
      * Tries to match a Material for given name
      *
-     * @param name
-     * @return
+     * @param name the name
+     * @return the material or null if not found
      */
     public Material matchMaterial(String name)
     {
@@ -256,9 +263,8 @@ public class MaterialMatcher
             int matId = Integer.parseInt(s);
             return Material.getMaterial(matId);
         }
-        catch (NumberFormatException e)
-        {
-        }
+        catch (NumberFormatException ignored)
+        {}
         ItemStack item = this.matchItemStack(s);
         if (item != null)
         {
@@ -270,10 +276,10 @@ public class MaterialMatcher
     /**
      * Loads in the file with the saved item-names.
      *
-     * @param map
-     * @param input
-     * @param update
-     * @return
+     * @param map the map to read into
+     * @param input the input to read
+     * @param update whether to update
+     * @return whether it was updated
      */
     private boolean readItems(TreeMap<Integer, TreeMap<Short, List<String>>> map, List<String> input, boolean update)
     {
@@ -528,8 +534,8 @@ public class MaterialMatcher
     /**
      * Returns the name for given ItemStack
      *
-     * @param item
-     * @return
+     * @param item the item
+     * @return the name or null if none was found
      */
     public String getNameFor(ItemStack item)
     {
@@ -537,6 +543,7 @@ public class MaterialMatcher
         {
             return null;
         }
+        // TODO find a better solution
         return this.itemnames.get(new ItemStack(item.getType(), 1, item.getDurability()));
     }
 }

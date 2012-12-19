@@ -12,15 +12,15 @@ import de.cubeisland.cubeengine.core.user.User;
 public class Mail implements Model<Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true)
-    public Long key;
+    public Long   key;
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String message;
-    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
+    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public long userId;
-    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
+    public long   userId;
+    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long senderId;
+    public long   senderId;
 
     public Mail(long userId, long senderId, String message)
     {

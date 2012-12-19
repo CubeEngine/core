@@ -22,7 +22,7 @@ public @interface Attribute
       [STORAGE {DISK|MEMORY|DEFAULT}]
       [reference_definition]
      */
-    
+
     public AttrType type();
 
     public int length() default -1;
@@ -35,11 +35,11 @@ public @interface Attribute
      * If not given will be set to fieldName
      */
     public String name() default "";
-    
+
     /**
      * If true the default value will be set to the fields value
      */
     public boolean defaultIsValue() default false;
-    
+
     //TODO later check annotation?
 }

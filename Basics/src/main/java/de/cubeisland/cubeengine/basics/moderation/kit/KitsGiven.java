@@ -14,13 +14,13 @@ tableName = "kitsgiven",
 public class KitsGiven implements TwoKeyModel<Integer, String>
 {
     // @ForeignKey(table = "user", field = "key")
-    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
+    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public int userId;
+    public int    userId;
     @Attribute(type = AttrType.VARCHAR, length = 50)
     public String kitName;
     @Attribute(type = AttrType.INT)
-    public int amount;
+    public int    amount;
 
     @Override
     public Pair<Integer, String> getKey()

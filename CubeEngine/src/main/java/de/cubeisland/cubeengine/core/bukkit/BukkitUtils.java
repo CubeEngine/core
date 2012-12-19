@@ -65,13 +65,11 @@ public class BukkitUtils
             handle.setAccessible(true);
         }
         catch (Exception ex)
-        {
-        }
+        {}
     }
 
     private BukkitUtils()
-    {
-    }
+    {}
 
     public static boolean isCompatible()
     {
@@ -90,11 +88,10 @@ public class BukkitUtils
         {
             try
             {
-                return (String) LOCALE_STRING_FIELD.get(((CraftPlayer) player).getHandle().getLocale());
+                return (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
             }
             catch (Exception e)
-            {
-            }
+            {}
         }
         return null;
     }
@@ -127,7 +124,7 @@ public class BukkitUtils
         Field serverField = findFirstField(CommandMap.class, server);
         Field pmField = findFirstField(CommandMap.class, pm);
 
-        SimpleCommandMap oldMap = ((CraftServer) server).getCommandMap();
+        SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
         if (serverField != null && pmField != null)
         {
             try
@@ -145,10 +142,10 @@ public class BukkitUtils
 
     public static void resetCommandMap()
     {
-        SimpleCommandMap current = ((CraftServer) Bukkit.getServer()).getCommandMap();
+        SimpleCommandMap current = ((CraftServer)Bukkit.getServer()).getCommandMap();
         if (current instanceof CubeCommandMap)
         {
-            CubeCommandMap cubeMap = (CubeCommandMap) current;
+            CubeCommandMap cubeMap = (CubeCommandMap)current;
             swapCommandMap(current = new SimpleCommandMap(Bukkit.getServer()));
 
             Collection<Command> commands = cubeMap.getKnownCommands().values();
@@ -163,7 +160,7 @@ public class BukkitUtils
                 String prefix = "";
                 if (command instanceof PluginCommand)
                 {
-                    prefix = ((PluginCommand) command).getPlugin().getName();
+                    prefix = ((PluginCommand)command).getPlugin().getName();
                 }
                 else if (command instanceof BukkitCommand)
                 {
@@ -175,6 +172,7 @@ public class BukkitUtils
             reloadHelpMap();
         }
     }
+
     private static Filter filter = null;
     private static CommandLogFilter commandFilter = null;
 
@@ -260,11 +258,12 @@ public class BukkitUtils
 
         public void swap(final Player player)
         {
-            final EntityPlayer entity = ((CraftPlayer) player).getHandle();
+            final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
             swapPlayerNetServerHandler(entity, new CubeEngineNetServerHandler(entity, this.taskQueue));
         }
     }
+
     private static final Location helperLocation = new Location(null, 0, 0, 0);
 
     public static void swapPlayerNetServerHandler(EntityPlayer player, NetServerHandler newHandler)
@@ -282,7 +281,7 @@ public class BukkitUtils
                 newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
                 ServerConnection sc = player.server.ae();
-                ((List<NetServerHandler>) NSH_LIST_FIELD.get(sc)).remove(oldHandler);
+                ((List<NetServerHandler>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
                 CubeEngine.getLogger().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
                 oldHandler.disconnected = true;
@@ -297,14 +296,14 @@ public class BukkitUtils
 
     public static void resetPlayerNetServerHandler(Player player)
     {
-        final EntityPlayer entity = ((CraftPlayer) player).getHandle();
+        final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
         swapPlayerNetServerHandler(entity, new NetServerHandler(entity.server, entity.netServerHandler.networkManager, entity));
     }
 
     public static void reloadHelpMap()
     {
-        SimpleHelpMap helpMap = (SimpleHelpMap) Bukkit.getHelpMap();
+        SimpleHelpMap helpMap = (SimpleHelpMap)Bukkit.getHelpMap();
 
         helpMap.clear();
         helpMap.initializeGeneralTopics();
@@ -317,11 +316,11 @@ public class BukkitUtils
         {
             if (player instanceof User)
             {
-                player = ((User) player).getOfflinePlayer().getPlayer();
+                player = ((User)player).getOfflinePlayer().getPlayer();
             }
             if (player != null && player instanceof CraftPlayer)
             {
-                return ((CraftPlayer) player).getHandle().abilities.isInvulnerable;
+                return ((CraftPlayer)player).getHandle().abilities.isInvulnerable;
             }
         }
         return false;
@@ -331,12 +330,12 @@ public class BukkitUtils
     {
         if (player != null && player instanceof User)
         {
-            player = ((User) player).getOfflinePlayer().getPlayer();
+            player = ((User)player).getOfflinePlayer().getPlayer();
         }
         if (player != null && player instanceof CraftPlayer)
         {
-            ((CraftPlayer) player).getHandle().abilities.isInvulnerable = state;
-            ((CraftPlayer) player).getHandle().updateAbilities();
+            ((CraftPlayer)player).getHandle().abilities.isInvulnerable = state;
+            ((CraftPlayer)player).getHandle().updateAbilities();
         }
     }
 
@@ -354,11 +353,10 @@ public class BukkitUtils
         {
             try
             {
-                return (net.minecraft.server.v1_4_5.ItemStack) handle.get(item);
+                return (net.minecraft.server.v1_4_5.ItemStack)handle.get(item);
             }
             catch (Exception ignored)
-            {
-            }
+            {}
         }
         return null;
     }

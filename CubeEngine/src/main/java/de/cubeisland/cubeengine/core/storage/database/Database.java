@@ -107,7 +107,7 @@ public interface Database
     ResultSet query(String query, Object... params) throws SQLException;
 
     /**
-     * Excecutes a prepared query.
+     * Executes a prepared query.
      *
      * @param owner  the owner
      * @param name   the stored name
@@ -122,24 +122,24 @@ public interface Database
      *
      * @param query  the query
      * @param params the params
-     * @return
+     * @return true if it succeeded
      * @throws SQLException
      */
     boolean execute(String query, Object... params) throws SQLException;
 
     /**
-     * Excecutes a prepared query.
+     * Executes a prepared query.
      *
      * @param owner  the owner
      * @param name   the name
      * @param params the params
-     * @return
+     * @return true if it succeeded
      * @throws SQLException
      */
     boolean preparedExecute(Class owner, String name, Object... params) throws SQLException;
 
     /**
-     * Executes a query asynchronious.
+     * Executes a query asynchronous.
      *
      * @param query  the query
      * @param params the params
@@ -147,7 +147,7 @@ public interface Database
     void asyncExecute(String query, Object... params);
 
     /**
-     * Excecutes a prepared query asynchronious.
+     * Executes a prepared query asynchronous.
      *
      * @param owner  the owner
      * @param name   the name
@@ -160,7 +160,7 @@ public interface Database
      *
      * @param query  the query
      * @param params the params
-     * @return
+     * @return the affected rows
      * @throws SQLException
      */
     int update(String query, Object... params) throws SQLException;
@@ -171,13 +171,13 @@ public interface Database
      * @param owner  the owner
      * @param name   the name
      * @param params the params
-     * @return
+     * @return the affected rows
      * @throws SQLException
      */
     int preparedUpdate(Class owner, String name, Object... params) throws SQLException;
 
     /**
-     * Executes an update query asynchronious.
+     * Executes an update query asynchronous.
      *
      * @param query  the query
      * @param params the params
@@ -185,7 +185,7 @@ public interface Database
     void asyncUpdate(String query, Object... params);
 
     /**
-     * Executes a prepared update query asynchronious.
+     * Executes a prepared update query asynchronous.
      *
      * @param owner  the owner
      * @param name   the name
@@ -217,7 +217,7 @@ public interface Database
     /**
      * Updates a table.
      *
-     * @param manager
+     * @param manager the manager
      */
     void update(Storage manager);
 

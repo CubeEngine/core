@@ -18,8 +18,7 @@ public class Table implements Model<Long>
     public int revision;
 
     public Table()
-    {
-    }
+    {}
 
     public Table(String table, Integer revision)
     {

@@ -142,18 +142,18 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     }
 
     @Override
-    public MySQLTableBuilder primaryKey(String... keys)
+    public MySQLTableBuilder primaryKey(String... fields)
     {
-        if (keys.length == 1)
+        if (fields.length == 1)
         {
-            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(keys[0])).append(')');
+            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(fields[0])).append(')');
         }
         else
         {
-            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(keys[0]));
-            for (int i = 1; i < keys.length; ++i)
+            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(fields[0]));
+            for (int i = 1; i < fields.length; ++i)
             {
-                this.query.append(", ").append(this.database.prepareFieldName(keys[i]));
+                this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
             }
             this.query.append(")");
         }

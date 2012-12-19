@@ -6,12 +6,13 @@ import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
+import org.bukkit.enchantments.Enchantment;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
-import org.bukkit.enchantments.Enchantment;
 
 /**
  * This Matcher provides methods to match Enchantments.
@@ -44,7 +45,7 @@ public class EnchantMatcher
     /**
      * Returns an instance of the matcher
      *
-     * @return
+     * @return the singleton instance of the enchantment matcher
      */
     public static EnchantMatcher get()
     {
@@ -58,12 +59,12 @@ public class EnchantMatcher
     /**
      * Gets the name for the given Enchantment
      *
-     * @param ench the enchantment to get the name for
+     * @param enchant the enchantment to get the name for
      * @return the name corresponding to the enchantment
      */
-    public String getNameFor(Enchantment ench)
+    public String getNameFor(Enchantment enchant)
     {
-        return this.enchantmentName.get(ench);
+        return this.enchantmentName.get(enchant);
     }
 
     /**
@@ -88,15 +89,15 @@ public class EnchantMatcher
      */
     public Enchantment matchEnchantment(String s)
     {
-        Enchantment ench = this.enchantments.get(s.toLowerCase(Locale.ENGLISH));
+        Enchantment enchantment = this.enchantments.get(s.toLowerCase(Locale.ENGLISH));
         try
         {
             int enchId = Integer.parseInt(s);
             return Enchantment.getById(enchId);
         }
-        catch (NumberFormatException e)
+        catch (NumberFormatException ignored)
         {}
-        if (ench == null)
+        if (enchantment == null)
         {
             if (s.length() < 4)
             {
@@ -116,7 +117,7 @@ public class EnchantMatcher
                 }
             }
         }
-        return ench;
+        return enchantment;
     }
 
     /**
@@ -129,14 +130,14 @@ public class EnchantMatcher
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
-            TreeMap<Integer, List<String>> enchs = new TreeMap<Integer, List<String>>();
-            AliasMapFormat.parseStringList(file, enchs, false);
-            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchs, true))
+            TreeMap<Integer, List<String>> enchantments = new TreeMap<Integer, List<String>>();
+            AliasMapFormat.parseStringList(file, enchantments, false);
+            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
             {
                 CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated enchantments.txt");
-                AliasMapFormat.parseAndSaveStringListMap(enchs, file);
+                AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
             }
-            return enchs;
+            return enchantments;
         }
         catch (NumberFormatException ex)
         {

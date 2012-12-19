@@ -35,7 +35,7 @@ public class YamlCodec extends ConfigurationCodec
     @Override
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
-        Map<Object, Object> map = (Map<Object, Object>) yaml.load(is);
+        Map<Object, Object> map = (Map<Object, Object>)yaml.load(is);
         if (map == null)
         {
             return null;
@@ -66,7 +66,7 @@ public class YamlCodec extends ConfigurationCodec
         return (s.startsWith("#") || s.contains(" #") || s.startsWith("@")
                 || s.startsWith("`") || s.startsWith("[") || s.startsWith("]")
                 || s.startsWith("{") || s.startsWith("}") || s.startsWith("|")
-                || s.startsWith(">") || s.startsWith("!")|| s.startsWith("%")
+                || s.startsWith(">") || s.startsWith("!") || s.startsWith("%")
                 || s.endsWith(":") || s.startsWith("- ") || s.startsWith(",")
                 || s.matches("[0-9]+:[0-9]+")) || s.isEmpty() || s.equals("*");
     }
@@ -91,7 +91,7 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof Map)
             {
                 sb.append(LINEBREAK);
-                sb.append(this.convertMap(path, (Map<String, Object>) value, off + 1, inCollection));
+                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1, inCollection));
                 return sb.toString();
             }
             else
@@ -112,11 +112,11 @@ public class YamlCodec extends ConfigurationCodec
                 {
                     if (value instanceof Collection<?>)
                     {
-                        if (((Collection<?>) value).isEmpty())
+                        if (((Collection<?>)value).isEmpty())
                         {
                             return sb.append(" []").append(LINEBREAK).toString();
                         }
-                        for (Object o : (Collection<?>) value) //Convert Collection
+                        for (Object o : (Collection<?>)value) //Convert Collection
                         {
                             sb.append(LINEBREAK).append(offset).append("- ");
                             if (o instanceof String)
@@ -132,7 +132,7 @@ public class YamlCodec extends ConfigurationCodec
                             }
                             else if (o instanceof Map)
                             {
-                                sb.append(this.convertMap(path, (Map<String, Object>) o, off + 1, true));
+                                sb.append(this.convertMap(path, (Map<String, Object>)o, off + 1, true));
                             }
                             else
                             {

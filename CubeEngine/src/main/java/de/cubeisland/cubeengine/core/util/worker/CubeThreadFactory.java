@@ -10,7 +10,7 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 public class CubeThreadFactory implements ThreadFactory
 {
     private final AtomicInteger counter;
-    private final ThreadGroup   group;
+    private final ThreadGroup group;
     private static final AtomicInteger factoryCounter = new AtomicInteger(0);
 
     public CubeThreadFactory(String name)

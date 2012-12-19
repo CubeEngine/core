@@ -233,11 +233,11 @@ public final class StringUtils
     }
 
     /**
-     * Computes the LevenshteinDistance between s and t.
+     * Computes the Levenshtein-Distance between s and t.
      * (Taken from org.apache.commons.lang.StringUtils)
      *
-     * @param s
-     * @param t
+     * @param s the first string
+     * @param t the second string
      * @return the ld between s and t
      */
     public static int getLevenshteinDistance(String s, String t)
@@ -312,15 +312,16 @@ public final class StringUtils
         return p[n];
     }
 
+    // TODO what is this used for??
     static final int wd = 1, wi = 1, wc = 1, ws = 1;
 
     /**
      * Computes the Demerau-LevenshteinDistance.
      * (Taken from http://qqqqx.blogspot.de/2011/09/dameraulevenshtein-distance.html)
      *
-     * @param a
-     * @param b
-     * @return the DemerauLevenshteinDistance between a and b.
+     * @param a the first string
+     * @param b the second string
+     * @return the Demerau-Levenshtein-Distance between a and b.
      */
     public static int getDemerauLevenshteinDistance(String a, String b)
     {
@@ -377,7 +378,7 @@ public final class StringUtils
     }
 
     /**
-     * Method used for DemerauLevenshteinDistance.
+     * Method used for Demerau-Levenshtein-Distance.
      */
     private static int min(int a, int b, int c, int d)
     {
@@ -389,7 +390,7 @@ public final class StringUtils
      *
      * @param search      the string to search
      * @param strings     the strings to match to
-     * @param maxDistance the max DemerauLevenshteinDistance
+     * @param maxDistance the max Demerau-Levenshtein-Distance
      * @return the best match
      */
     public static List<String> getBestMatches(String search, Collection<String> strings, int maxDistance)
@@ -456,22 +457,13 @@ public final class StringUtils
      *
      * @param firstLdCheck        - Index with
      * @param maxIndex            and
-     * @param maxbehindIndex      - LD at start with distance
+     * @param maxBehindIndex      - LD at start with distance
      * @param secondLdCheck       when longer than
-     *
-     * @param string
-     * @param stringlist
-     * @param caseInSensitive
-     * @param firstLdCheck
-     * @param maxIndex
-     * @param maxbehindIndex
-     * @param secondLdCheck
-     * @param percentLdOfLength
      * @return a matching String
      */
-    public static String matchString(String string, Collection<String> stringlist, boolean caseInSensitive, int firstLdCheck, int maxIndex, int maxbehindIndex, int secondLdCheck, int percentLdOfLength, boolean ignoreLdPerLengthOnLD1)
+    public static String matchString(String string, Collection<String> stringList, boolean caseInSensitive, int firstLdCheck, int maxIndex, int maxBehindIndex, int secondLdCheck, int percentLdOfLength, boolean ignoreLdPerLengthOnLD1)
     {
-        if (stringlist == null || string == null || stringlist.isEmpty())
+        if (stringList == null || string == null || stringList.isEmpty())
         {
             return null;
         }
@@ -484,14 +476,14 @@ public final class StringUtils
         }
         int searchStringLength = searchString.length();
         String foundString = null;
-        if (stringlist.contains(string))
+        if (stringList.contains(string))
         {
             return string; // Direct Match
         }
         if (firstLdCheck >= 1) // LD lower than 1 -> NO Check
         {
             distance = firstLdCheck + 1;
-            for (String inList : stringlist)
+            for (String inList : stringList)
             {
                 if ((searchStringLength < (inList.length() - 3)) || (searchStringLength > (inList.length() + 3)))
                 {
@@ -523,10 +515,10 @@ public final class StringUtils
         {
             if (maxIndex >= 0) // Index lower than 0 -> NO CHECK
             {
-                int indexfound = maxIndex;
+                int indexFound = maxIndex;
                 int index;
-                int behindindex = maxbehindIndex;
-                for (String inList : stringlist)
+                int behindIndex = maxBehindIndex;
+                for (String inList : stringList)
                 {
                     if (caseInSensitive)
                     {
@@ -536,19 +528,19 @@ public final class StringUtils
                     {
                         index = inList.indexOf(searchString);
                     }
-                    if (index != -1) // Found seachString in inList
+                    if (index != -1) // Found searchString in inList
                     {
-                        if (index < indexfound) // Compare to last match
+                        if (index < indexFound) // Compare to last match
                         {
                             CubeEngine.getLogger().log(LogLevel.DEBUG, "Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
-                            indexfound = index;
-                            behindindex = inList.length() - (index + searchStringLength);
+                            indexFound = index;
+                            behindIndex = inList.length() - (index + searchStringLength);
                             foundString = inList;
                         }
-                        if (index == indexfound && inList.length() - (index + searchStringLength) <= behindindex)
+                        if (index == indexFound && inList.length() - (index + searchStringLength) <= behindIndex)
                         {
                             CubeEngine.getLogger().log(LogLevel.DEBUG, "Index: Found " + inList + " for " + searchString + " with Index: " + index + " and behindindex: " + (inList.length() - (index + searchStringLength)));
-                            behindindex = inList.length() - (index + searchStringLength);
+                            behindIndex = inList.length() - (index + searchStringLength);
                             foundString = inList;
                         }
                     }
@@ -560,8 +552,8 @@ public final class StringUtils
             if (secondLdCheck >= 1) // LD lower than 1 -> NO Check
             {
                 distance = secondLdCheck + 1;
-                int behindindex = maxbehindIndex;
-                for (String inList : stringlist)
+                int behindIndex = maxBehindIndex;
+                for (String inList : stringList)
                 {
                     if (inList.length() >= searchStringLength) // can inList contain searchString?
                     {
@@ -580,14 +572,14 @@ public final class StringUtils
                                 {
                                     distance = ld;
                                     foundString = inList;
-                                    behindindex = inList.length() - searchStringLength;
+                                    behindIndex = inList.length() - searchStringLength;
                                 }
                                 if (ld == distance)
                                 {
-                                    if ((inList.length() - searchStringLength) < behindindex)
+                                    if ((inList.length() - searchStringLength) < behindIndex)
                                     {
                                         foundString = inList;
-                                        behindindex = inList.length() - searchStringLength;
+                                        behindIndex = inList.length() - searchStringLength;
                                     }
                                 }
                             }
@@ -600,7 +592,7 @@ public final class StringUtils
         return foundString;
     }
 
-    public static String rtrim(String string)
+    public static String trimRight(String string)
     {
         if (string == null)
         {
@@ -619,7 +611,7 @@ public final class StringUtils
         return string.substring(0, lastPos);
     }
 
-    public static String ltrim(String string)
+    public static String trimLeft(String string)
     {
         if (string == null)
         {
@@ -640,7 +632,7 @@ public final class StringUtils
 
     public static String trim(String string)
     {
-        return rtrim(ltrim(string));
+        return trimRight(trimLeft(string));
     }
 
     public static String stripFileExtention(String filename)

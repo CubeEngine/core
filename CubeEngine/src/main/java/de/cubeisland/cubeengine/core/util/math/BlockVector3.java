@@ -10,11 +10,11 @@ public class BlockVector3
     public final int z;
 
     /**
-     * Creates a new Vektor3 with a triple of int
+     * Creates a new BlockVector3 with a triple of int
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x the x value
+     * @param y the y value
+     * @param z the z value
      */
     public BlockVector3(final int x, final int y, final int z)
     {
@@ -46,7 +46,7 @@ public class BlockVector3
     }
 
     /**
-     * Returns the scalar product of this Vektor and the other
+     * Returns the dot product of this vector and the other
      *
      * @param other the second vector to multiply with
      * @return the scalar product
@@ -57,9 +57,9 @@ public class BlockVector3
     }
 
     /**
-     * Returns the cross product of this Vektor and the other
+     * Returns the cross product of this vector and the other
      *
-     * @param other
+     * @param other the other vector
      * @return the cross product
      */
     public BlockVector3 cross(BlockVector3 other)
@@ -85,10 +85,10 @@ public class BlockVector3
      * Returns the difference between an other BlockVector and this one as a
      * BlockVector
      *
-     * @param other the BlockVector to substract
+     * @param other the BlockVector to subtract
      * @return the new Vector
      */
-    public BlockVector3 substract(BlockVector3 other)
+    public BlockVector3 subtract(BlockVector3 other)
     {
         return new BlockVector3(this.x - other.x, this.y - other.y, this.z - other.z);
     }
@@ -96,7 +96,7 @@ public class BlockVector3
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public BlockVector3 multiply(int n)
@@ -107,7 +107,7 @@ public class BlockVector3
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public BlockVector3 multiply(double n)
@@ -118,7 +118,7 @@ public class BlockVector3
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public BlockVector3 divide(int n)
@@ -129,7 +129,7 @@ public class BlockVector3
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public BlockVector3 divide(double n)
@@ -161,12 +161,12 @@ public class BlockVector3
      * Returns the distance between an other BlockVector and this one as a
      * BlockVector
      *
-     * @param other the BlockVector to substract from
+     * @param other the BlockVector to subtract from
      * @return the new Vector
      */
     public BlockVector3 distanceVector(BlockVector3 other)
     {
-        return other.substract(this);
+        return other.subtract(this);
     }
 
     /**
@@ -220,7 +220,7 @@ public class BlockVector3
      */
     public BlockVector3 midpoint(BlockVector3 other)
     {
-        return this.add(other.substract(this).divide(2));
+        return this.add(other.subtract(this).divide(2));
     }
 
     /**
@@ -236,7 +236,7 @@ public class BlockVector3
     /**
      * Returns whether the Object o equals this Vector
      *
-     * @param other an Object
+     * @param o an Object
      * @return whether o is the same Vector as this one
      */
     @Override

@@ -18,11 +18,11 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
  */
 public class MySQLDatabase extends AbstractDatabase
 {
-    private static final char NAME_QUOTE   = '`';
+    private static final char NAME_QUOTE = '`';
     private static final char STRING_QUOTE = '\'';
 
     private final MysqlDataSource ds;
-    private final String            tablePrefix;
+    private final String tablePrefix;
     private final MySQLQueryBuilder queryBuilder;
     private Connection connection;
 

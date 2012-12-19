@@ -12,7 +12,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Inserts RawSQL-Code.
      *
-     * @param sql
+     * @param sql the SQL to insert
      * @return fluent interface
      */
     public This rawSQL(String sql);
@@ -20,7 +20,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds a function.
      *
-     * @param function
+     * @param function the name of the function
      * @return fluent interface
      */
     public This function(String function);
@@ -28,7 +28,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Begins a function.
      *
-     * @param function
+     * @param function the name of the function
      * @return fluent interface
      */
     public This beginFunction(String function);
@@ -43,15 +43,15 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds a quoted field.
      *
-     * @param field
+     * @param name the name of the field
      * @return fluent interface
      */
-    public This field(String field);
+    public This field(String name);
 
     /**
      * Adds a value.
      *
-     * @param value
+     * @param value the value to insert
      * @return fluent interface
      */
     public This value(Object value);
@@ -59,7 +59,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds multiple variables which can be later replaced by values.
      *
-     * @param amount
+     * @param amount the amount of values
      * @return fluent interface
      */
     public This values(int amount);
@@ -74,10 +74,10 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds an operation
      *
-     * @param operation
+     * @param operation the operation type
      * @return fluent interface
      */
-    public This is(Integer operation);
+    public This is(int operation);
 
     /**
      * Adds an equal-operation
@@ -85,7 +85,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This isEqual();
-    
+
     /**
      * Adds a wildcard.
      *
@@ -117,10 +117,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds AS
      *
-     * @param<fstatement
-     *
-
-     * @param field
+     * @param field the alias
      * @return fluent interface
      */
     public This as(String field);
@@ -128,10 +125,10 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     /**
      * Adds grouping by given fields
      *
-     * @param field
+     * @param fields the fields to group by
      * @return fluent interface
      */
-    public This groupBy(String... field);
+    public This groupBy(String... fields);
 
     /**
      * Adds HAVING.
@@ -142,7 +139,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds LIKE statement.
-     * Dont forget to add a value after this!
+     * Don't forget to add a value after this!
      *
      * @return fluent interface
      */
@@ -150,7 +147,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
 
     /**
      * Adds IN statement.
-     * Dont forget to add a value after this!
+     * Don't forget to add a value after this!
      *
      * @return fluent interface
      */
@@ -171,7 +168,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     public This endSub();
 
     /**
-     * Ends the querypart and returns the QueryBuilder
+     * Ends the query part and returns the QueryBuilder
      *
      * @return the QueryBuilder
      */

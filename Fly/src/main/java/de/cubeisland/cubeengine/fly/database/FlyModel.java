@@ -10,14 +10,16 @@ import de.cubeisland.cubeengine.core.user.User;
 @SingleKeyEntity(tableName = "fly", primaryKey = "key", autoIncrement = false)
 public class FlyModel implements Model<Long>
 {
-    @Index(value = Index.IndexType.FOREIGNKEY, f_table = "user", f_field = "key")
+    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT)
-    public Long key;
+    public Long    key;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean flying;
 
-    public FlyModel(){}
-    
+    public FlyModel()
+    {
+    }
+
     public FlyModel(User user)
     {
         this.key = user.getKey();

@@ -5,7 +5,7 @@ public interface InsertBuilder extends ComponentBuilder<InsertBuilder>
     /**
      * Adds where to insert.
      *
-     * @param table
+     * @param table the table to insert into
      * @return fluent interface
      */
     public InsertBuilder into(String table);
@@ -13,16 +13,15 @@ public interface InsertBuilder extends ComponentBuilder<InsertBuilder>
     /**
      * Adds which cols to insert into and values to be inserted later.
      *
-     * @param cols
+     * @param cols the columns
      * @return fluent interface
      */
     public InsertBuilder cols(String... cols);
 
     /**
      * Signals to insert into all col.
-     * Dont forget to call values(...) with the correct amount of cols
+     * Don't forget to call values(...) with the correct amount of cols
      *
-     * @param cols
      * @return fluent interface
      */
     public InsertBuilder allCols();
@@ -30,7 +29,7 @@ public interface InsertBuilder extends ComponentBuilder<InsertBuilder>
     /**
      * Adds the VALUES statement with the amount of values
      *
-     * @param amount
+     * @param amount the amount of values
      * @return fluent interface
      */
     public InsertBuilder values(int amount);

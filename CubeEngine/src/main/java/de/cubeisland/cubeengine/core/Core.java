@@ -13,8 +13,8 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
+
 import java.util.logging.Logger;
-import org.bukkit.Server;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
@@ -126,14 +126,14 @@ public interface Core
     /**
      * This method returns the web API server
      *
-     * @return
+     * @return the API server
      */
     public ApiServer getApiServer();
-    
+
     /**
      * This method returns the WorldManager
      *
-     * @return
+     * @return the world manager
      */
     public WorldManager getWorldManager();
 }

@@ -39,22 +39,20 @@ public class MapConverter
      * @param <K>     the KeyType
      * @param <V>     the ValueType
      * @param <S>     the MapType
-     * @param ptype   the MapTypeClass
+     * @param type   the MapTypeClass
      * @param object  the object to convert
-     * @param keyType the KeyTypeClass
-     * @param valType the ValueTypeClass
      * @return the converted map
      * @throws ConversionException
      */
-    public <K, V, S extends Map<K, V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
+    public <K, V, S extends Map<K, V>> S fromObject(ParameterizedType type, Object object) throws ConversionException
     {
         try
         {
-            if (ptype.getRawType() instanceof Class)
+            if (type.getRawType() instanceof Class)
             {
-                Class<S> mapType = (Class)ptype.getRawType();
-                Type keyType = ptype.getActualTypeArguments()[0];
-                Type valType = ptype.getActualTypeArguments()[1];
+                Class<S> mapType = (Class)type.getRawType();
+                Type keyType = type.getActualTypeArguments()[0];
+                Type valType = type.getActualTypeArguments()[1];
                 S result;
                 if (mapType.isInterface() || Modifier.isAbstract(mapType.getModifiers()))
                 {
@@ -77,15 +75,15 @@ public class MapConverter
                 }
                 throw new IllegalStateException("Map-conversion failed: Cannot convert not a map to a map.");
             }
-            throw new IllegalArgumentException("Unkown Map-Type: " + ptype);
+            throw new IllegalArgumentException("Unkown Map-Type: " + type);
         }
         catch (IllegalAccessException ex)
         {
-            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + type.getRawType(), ex);
         }
         catch (InstantiationException ex)
         {
-            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + type.getRawType(), ex);
         }
         catch (ConversionException ex)
         {

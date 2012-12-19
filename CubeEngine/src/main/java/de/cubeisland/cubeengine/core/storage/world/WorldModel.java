@@ -17,9 +17,8 @@ public class WorldModel implements Model<Long>
     public String worldUUID;
 
     public WorldModel()
-    {
-    }
-    
+    {}
+
     public WorldModel(World world)
     {
         this.worldName = world.getName();

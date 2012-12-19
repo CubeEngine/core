@@ -23,7 +23,7 @@ public enum ChatFormat
     INDIGO('9', Ansi.ansi().fg(Ansi.Color.BLUE).bold().toString()),
     BRIGHT_GREEN('a', Ansi.ansi().fg(Ansi.Color.GREEN).bold().toString()),
     AQUA('b', Ansi.ansi().fg(Ansi.Color.CYAN).bold().toString()),
-    RED('c',  Ansi.ansi().fg(Ansi.Color.RED).bold().toString()),
+    RED('c', Ansi.ansi().fg(Ansi.Color.RED).bold().toString()),
     PINK('d', Ansi.ansi().fg(Ansi.Color.MAGENTA).bold().toString()),
     YELLOW('e', Ansi.ansi().fg(Ansi.Color.YELLOW).bold().toString()),
     WHITE('f', Ansi.ansi().fg(Ansi.Color.WHITE).bold().toString()),
@@ -37,9 +37,9 @@ public enum ChatFormat
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
     private static final char BASE_CHAR = '\u00A7';
     private static final TCharObjectMap<ChatFormat> FORMAT_CHARS_MAP;
-    private static final String  FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
-    private static final Pattern STRIP_FORMATS       = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
-    private final char   formatChar;
+    private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
+    private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
+    private final char formatChar;
     private final String string;
     private final String ansiCode;
 
@@ -47,14 +47,16 @@ public enum ChatFormat
     {
         this.formatChar = formatChar;
         this.ansiCode = ansiCode;
-        this.string = String.valueOf(new char[] {BASE_CHAR, formatChar});
+        this.string = String.valueOf(new char[] {
+            BASE_CHAR, formatChar
+        });
     }
 
     /**
      * Gets a chat format by it's char
      *
      * @param theChar the char to look for
-     * @return
+     * @return the ChatFormat or null if not found
      */
     public static ChatFormat getByChar(char theChar)
     {

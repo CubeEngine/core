@@ -16,7 +16,7 @@ public interface Storage<K, M extends Model<K>>
      * Initialize the Storage.
      */
     public void initialize();
-    
+
     /**
      * Returns the model by key
      *
@@ -78,31 +78,27 @@ public interface Storage<K, M extends Model<K>>
      * Deletes the model from DataBase
      *
      * @param model the model to delete
-     * @return whether the model got deleted
      */
     public void delete(M model);
 
     /**
-     * Deletes the model from DataBase asynchonous
+     * Deletes the model from DataBase asynchronously
      *
      * @param model the model to delete
-     * @return whether the model got deleted
      */
     public void delete(M model, boolean async);
 
     /**
      * Deletes the model by ID from DataBase
      *
-     * @param id the id to delete
-     * @return whether the model got deleted
+     * @param key the id to delete
      */
     public void deleteByKey(K key);
 
     /**
-     * Deletes the model by ID from DataBase asynchonous
+     * Deletes the model by ID from DataBase asynchronously
      *
-     * @param id the id to delete
-     * @return whether the model got deleted
+     * @param key the id to delete
      */
     public void deleteByKey(K key, boolean async);
 
@@ -114,10 +110,10 @@ public interface Storage<K, M extends Model<K>>
     /**
      * Subscribes for given SubscribeType
      *
-     * @param type     the SubcribeType
+     * @param type     the SubscribeType
      * @param callback the Callback
      */
-    public void subscribe(SubcribeType type, Callback callback);
+    public void subscribe(SubscribeType type, Callback callback);
 
     /**
      * Check if DatabaseStructure needs to be updated and update
@@ -132,7 +128,7 @@ public interface Storage<K, M extends Model<K>>
      */
     public void registerUpdater(DatabaseUpdater updater, int... fromRevision);
 
-    public enum SubcribeType
+    public enum SubscribeType
     {
         CREATE,
         DELETE,

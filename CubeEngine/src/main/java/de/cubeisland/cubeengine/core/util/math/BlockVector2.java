@@ -9,10 +9,10 @@ public class BlockVector2
     public final int z;
 
     /**
-     * Creates a new Vektor2 with a pair of int
+     * Creates a new BlockVector2 with a pair of int
      *
-     * @param x
-     * @param z
+     * @param x the x value
+     * @param z the z value
      */
     public BlockVector2(final int x, final int z)
     {
@@ -68,10 +68,10 @@ public class BlockVector2
      * Returns the difference between an other BlockVector and this one as a
      * BlockVector
      *
-     * @param other the BlockVector to substract
+     * @param other the BlockVector to subtract
      * @return the new Vector
      */
-    public BlockVector2 substract(BlockVector2 other)
+    public BlockVector2 subtract(BlockVector2 other)
     {
         return new BlockVector2(this.x - other.x, this.z - other.z);
     }
@@ -79,7 +79,7 @@ public class BlockVector2
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public BlockVector2 multiply(int n)
@@ -90,7 +90,7 @@ public class BlockVector2
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public BlockVector2 multiply(double n)
@@ -101,7 +101,7 @@ public class BlockVector2
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public BlockVector2 divide(int n)
@@ -112,7 +112,7 @@ public class BlockVector2
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public BlockVector2 divide(double n)
@@ -144,12 +144,12 @@ public class BlockVector2
      * Returns the distance between an other BlockVector and this one as a
      * BlockVector
      *
-     * @param other the BlockVector to substract from
+     * @param other the BlockVector to subtract from
      * @return the new Vector
      */
     public BlockVector2 distanceVector(BlockVector2 other)
     {
-        return other.substract(this);
+        return other.subtract(this);
     }
 
     /**
@@ -203,23 +203,13 @@ public class BlockVector2
      */
     public BlockVector2 midpoint(BlockVector2 other)
     {
-        return this.add(other.substract(this).divide(2));
-    }
-
-    /**
-     * Projection into horizontal 2D Vector
-     *
-     * @return the projection
-     */
-    public Vector2 project2D()
-    {
-        return new Vector2(this.x, this.z);
+        return this.add(other.subtract(this).divide(2));
     }
 
     /**
      * Returns whether the Object o equals this Vector
      *
-     * @param other an Object
+     * @param o an Object
      * @return whether o is the same Vector as this one
      */
     @Override

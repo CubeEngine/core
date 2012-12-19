@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-//TODO possibility to set an order to the fields but how? perhaps give int values -> then use treemap for fields but what with map.values is it sorted?
+
+// TODO possibility to set an order to the fields but how? perhaps give int
+// values -> then use treemap for fields but what with map.values is it sorted?
 
 public abstract class AbstractStorage<K, M extends Model<K>, T> implements Storage<K, M>
 {
@@ -54,7 +56,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         {
             if (annot.annotationType().isAssignableFrom(storageType))
             {
-                this.storageType = (T) annot;
+                this.storageType = (T)annot;
                 break;
             }
         }
@@ -162,7 +164,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     }
 
     @Override
-    public void subscribe(SubcribeType type, Callback callback)
+    public void subscribe(SubscribeType type, Callback callback)
     {
         switch (type)
         {

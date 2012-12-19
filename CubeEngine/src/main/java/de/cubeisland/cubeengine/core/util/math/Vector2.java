@@ -9,10 +9,10 @@ public class Vector2
     public final double y;
 
     /**
-     * Creates a new Vektor2 with a pair of int
+     * Creates a new Vector2 with a pair of int
      *
-     * @param x
-     * @param y
+     * @param x the x value
+     * @param y the y value
      */
     public Vector2(int x, int y)
     {
@@ -20,10 +20,10 @@ public class Vector2
     }
 
     /**
-     * Creates a new Vektor2 with a pair of double
+     * Creates a new Vector2 with a pair of double
      *
-     * @param x
-     * @param y
+     * @param x the x value
+     * @param y the y value
      */
     public Vector2(double x, double y)
     {
@@ -54,7 +54,7 @@ public class Vector2
     }
 
     /**
-     * Returns the scalar product of this Vektor and the other
+     * Returns the scalar product of this vector and the other
      *
      * @param other the second vector to multiply with
      * @return the scalar product
@@ -78,10 +78,10 @@ public class Vector2
     /**
      * Returns the difference between an other Vector2 and this one as a Vector2
      *
-     * @param other the Vector2 to substract
+     * @param other the Vector2 to subtract
      * @return the new Vector
      */
-    public Vector2 substract(Vector2 other)
+    public Vector2 subtract(Vector2 other)
     {
         return new Vector2(this.x - other.x, this.y - other.y);
     }
@@ -89,7 +89,7 @@ public class Vector2
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public Vector2 multiply(int n)
@@ -100,7 +100,7 @@ public class Vector2
     /**
      * Returns this vector multiplied with the factor n
      *
-     * @param other the factor to multiply with
+     * @param n the factor to multiply with
      * @return the new Vector
      */
     public Vector2 multiply(double n)
@@ -111,7 +111,7 @@ public class Vector2
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public Vector2 divide(int n)
@@ -122,7 +122,7 @@ public class Vector2
     /**
      * Returns this vector divided by the quotient n
      *
-     * @param other the quotient to divide with
+     * @param n the quotient to divide with
      * @return the new Vector
      */
     public Vector2 divide(double n)
@@ -153,12 +153,12 @@ public class Vector2
     /**
      * Returns the distance between an other Vector2 and this one as a Vector2
      *
-     * @param other the Vector2 to substract from
+     * @param other the Vector2 to subtract from
      * @return the new Vector
      */
     public Vector2 distanceVector(Vector2 other)
     {
-        return other.substract(this);
+        return other.subtract(this);
     }
 
     /**
@@ -187,7 +187,6 @@ public class Vector2
      * Returns the angle of the other Vector to this one
      *
      * @param other  the other Vector2 to calculate the angle to
-     * @param degree whether to return the angle in degree or not
      * @return the angle between the vectors
      */
     public double crossAngle(Vector2 other)
@@ -213,13 +212,13 @@ public class Vector2
      */
     public Vector2 midpoint(Vector2 other)
     {
-        return this.add(other.substract(this).divide(2));
+        return this.add(other.subtract(this).divide(2));
     }
 
     /**
      * Returns whether the Object o equals this Vector
      *
-     * @param other an Object
+     * @param o an Object
      * @return whether o is the same Vector as this one
      */
     @Override

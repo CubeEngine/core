@@ -13,8 +13,8 @@ public class MathHelper
     /**
      * This method converts radians to degrees
      *
-     * @param radians
-     * @return
+     * @param radians the radian value
+     * @return the degree value
      */
     public static double radiansToDegree(double radians)
     {
@@ -24,12 +24,12 @@ public class MathHelper
     /**
      * This method converts degrees to radians
      *
-     * @param degree
-     * @return
+     * @param degrees the degree value
+     * @return the radian value
      */
-    public static double degreeToRadians(double degree)
+    public static double degreeToRadians(double degrees)
     {
-        return degree / RADIANS_DEGREE_CONVERTER;
+        return degrees / RADIANS_DEGREE_CONVERTER;
     }
 
     /**
@@ -48,7 +48,7 @@ public class MathHelper
      * This is a fast ceil implementation
      *
      * @param num the number to ceil
-     * @return the ceiled number
+     * @return the rounded up number
      */
     public static int ceil(double num)
     {
@@ -57,9 +57,9 @@ public class MathHelper
     }
 
     /**
-     * This is a fast round implemantation based in the fast floor implementation
+     * This is a fast round implementation based in the fast floor implementation
      *
-     * @param num the number to floot
+     * @param num the number to floor
      * @return the rounded number
      */
     public static int round(double num)
@@ -72,7 +72,7 @@ public class MathHelper
      *
      * @param x the base
      * @param n the exponent
-     * @return
+     * @return the n-th power of x
      */
     public static double pow(double x, int n)
     {
@@ -92,7 +92,7 @@ public class MathHelper
      *
      * @param x the base
      * @param n the exponent
-     * @return
+     * @return the n-th power of x
      */
     public static double pow(int x, int n)
     {

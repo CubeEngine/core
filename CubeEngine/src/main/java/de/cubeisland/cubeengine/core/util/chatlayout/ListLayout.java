@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.util.chatlayout;
 
-
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import java.util.Iterator;

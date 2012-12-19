@@ -17,11 +17,11 @@ public interface LinkingModel<K> extends Model<K>
     public <T extends Model> void attach(T model);
 
     /**
+     * Returns the attachment
      *
-     *
-     * @param <T>
-     * @param modelClass
-     * @return
+     * @param <T> the type of the attachment
+     * @param modelClass the attachment class
+     * @return the attachment
      */
     public <T extends Model> T getAttachment(Class<T> modelClass);
 }

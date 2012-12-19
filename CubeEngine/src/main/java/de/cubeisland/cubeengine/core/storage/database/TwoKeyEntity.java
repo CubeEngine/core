@@ -19,5 +19,6 @@ public @interface TwoKeyEntity
     public String charset() default "utf8";
 
     public String firstPrimaryKey();
+
     public String secondPrimaryKey();
 }

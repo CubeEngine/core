@@ -9,8 +9,8 @@ public class StringUtilsTest extends TestCase
         final String testString = "blabla";
         final String whilespace = " \n\t\n";
 
-        assertEquals("rtrim failed!", testString, StringUtils.rtrim(testString + whilespace));
-        assertEquals("ltrim failed!", testString, StringUtils.ltrim(whilespace + testString));
+        assertEquals("trimRight failed!", testString, StringUtils.trimRight(testString + whilespace));
+        assertEquals("trimLeft failed!", testString, StringUtils.trimLeft(whilespace + testString));
         assertEquals("trim failed!", testString, StringUtils.trim(whilespace + testString + whilespace));
     }
 

@@ -83,7 +83,7 @@ public abstract class Configuration
         this.codec.saveChildConfig(this.parent, this, this.file);
         this.onSaved(this.file);
     }
-    
+
     public void load()
     {
         if (this.file == null)
