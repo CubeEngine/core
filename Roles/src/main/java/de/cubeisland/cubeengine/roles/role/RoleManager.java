@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
+import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
@@ -162,8 +163,9 @@ public class RoleManager
     private void loadProviders()
     {
         this.providers.clear();
-        for (RoleProvider provider : this.module.getConfiguration().providers)
+        for (RoleMirror mirror : this.module.getConfiguration().mirrors)
         {
+            RoleProvider provider = new RoleProvider(mirror);
             TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
             for (long worldId : worlds.keys())
             {
@@ -171,7 +173,7 @@ public class RoleManager
                 {
                     this.module.getLogger().log(LogLevel.ERROR,
                             "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName() + " is mirrored multiple times!\n"
-                            + "Check your configuration under mirrors." + provider.mainWorld);
+                            + "Check your configuration under mirrors." + provider.getMainWorld());
                     continue;
                 }
                 if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...

@@ -24,30 +24,18 @@ import java.util.Stack;
 
 public class RoleProvider
 {
-    
-    public final String mainWorld;
-    private TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = new TLongObjectHashMap<Pair<Boolean, Boolean>>(); //mirror roles / users
+    private RoleMirror config;
     private THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> roles = new THashMap<String, Role>();
     private boolean init = false;
     private File worldfolder = null;
     private Set<Role> defaultRoles = new HashSet<Role>();
     private Stack<String> roleStack = new Stack<String>();
-    
-    private Roles module = (Roles)CubeEngine.getModuleManager().getModule("Roles");
-    
-    public RoleProvider(String mainWorld)
+    private Roles module = (Roles) CubeEngine.getModuleManager().getModule("Roles");
+
+    public RoleProvider(RoleMirror mirrorConfig)
     {
-        this.mainWorld = mainWorld;
-        Long worldId = CubeEngine.getCore().getWorldManager().getWorldId(mainWorld);
-        if (worldId == null)
-        {
-            module.getLogger().log(LogLevel.WARNING, "Unkown world " + mainWorld);
-        }
-        else
-        {
-            this.worlds.put(worldId, new Pair<Boolean, Boolean>(true, true));
-        }
+        this.config = mirrorConfig;
     }
 
     /**
@@ -57,40 +45,39 @@ public class RoleProvider
      */
     public RoleProvider(long worldId)
     {
-        this.mainWorld = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
-        this.worlds.put(worldId, new Pair<Boolean, Boolean>(true, true));
+        this.config = new RoleMirror(this.module, worldId);
     }
-    
+
     public Iterable<RoleConfig> getConfigs()
     {
         return this.configs.values();
     }
-    
+
     public void addConfig(RoleConfig config)
     {
         this.configs.put(config.roleName, config);
     }
-    
+
     public void setRole(Role role)
     {
         this.roles.put(role.getName(), role);
     }
-    
+
     public Role getRole(String roleName)
     {
         return this.roles.get(roleName);
     }
-    
+
     public RoleConfig getConfig(String parentName)
     {
         return this.configs.get(parentName);
     }
-    
+
     public TLongObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
     {
-        return this.worlds;
+        return this.config.getWorlds();
     }
-    
+
     public TLongObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
     {
         TLongObjectHashMap<List<Role>> result = new TLongObjectHashMap<List<Role>>();
@@ -105,7 +92,7 @@ public class RoleProvider
         }
         for (long worldID : rolesFromDb.keys())
         {
-            Pair<Boolean, Boolean> mirrorRoleUsers = this.worlds.get(worldID);
+            Pair<Boolean, Boolean> mirrorRoleUsers = this.config.getWorlds().get(worldID);
             if (mirrorRoleUsers == null)
             {
                 continue; // world is not in this provider
@@ -129,23 +116,12 @@ public class RoleProvider
         }
         return result;
     }
-    
-    public void setWorld(String worldName, boolean roles, boolean users)
-    {
-        Long world = CubeEngine.getCore().getWorldManager().getWorldId(worldName);
-        if (world == null)
-        {
-            module.getLogger().log(LogLevel.WARNING, "Unkown world " + worldName + "! Removing from config...");
-            return;
-        }
-        this.worlds.put(world, new Pair<Boolean, Boolean>(roles, users));
-    }
-    
+
     public Set<Role> getDefaultRoles()
     {
         return this.defaultRoles;
     }
-    
+
     public void init(File rolesFolder)
     {
         if (this.init)
@@ -155,7 +131,7 @@ public class RoleProvider
         this.init = true;
         if (this.worldfolder == null)
         {
-            this.worldfolder = new File(rolesFolder, this.mainWorld);
+            this.worldfolder = new File(rolesFolder, this.config.mainWorld);
         }
         this.worldfolder.mkdir();
         module.getLogger().debug("Loading roles for the world " + worldfolder.getName() + ":");
@@ -171,19 +147,19 @@ public class RoleProvider
         }
         module.getLogger().debug(i + " roles loaded!");
     }
-    
+
     public void reload()
     {
         this.init = false;
         this.init(null);
     }
-    
+
     public void loadDefaultRoles(RolesConfig config)
     {
-        List<String> dRoles = config.defaultRoles.get(this.mainWorld);
+        List<String> dRoles = config.defaultRoles.get(this.config.mainWorld);
         if (dRoles == null || dRoles.isEmpty())
         {
-            module.getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.mainWorld);
+            module.getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.config.mainWorld);
             return;
         }
         for (String roleName : dRoles)
@@ -196,7 +172,7 @@ public class RoleProvider
             this.defaultRoles.add(role);
         }
     }
-    
+
     public void calculateRoles(THashMap<String, Role> globalRoles)
     {
         for (RoleConfig config : this.configs.values())
@@ -210,7 +186,7 @@ public class RoleProvider
             this.roles.put(role.getName(), role);
         }
     }
-    
+
     public Role calculateRole(RoleConfig config, THashMap<String, Role> globalRoles)
     {
         try
@@ -230,7 +206,7 @@ public class RoleProvider
                         throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", roleStack));
                     }
                     RoleConfig parentConfig;
-                    
+
                     if (parentName.startsWith("g:"))
                     {
                         if (globalRoles.containsKey(parentName.substring(2)))
@@ -266,7 +242,7 @@ public class RoleProvider
                 try
                 {
                     Role parentRole;
-                    
+
                     if (parentName.startsWith("g:"))
                     {
                         parentRole = globalRoles.get(parentName.substring(2));
@@ -296,9 +272,14 @@ public class RoleProvider
             return null;
         }
     }
-    
+
     public Collection<Role> getAllRoles()
     {
         return this.roles.values();
+    }
+
+    public String getMainWorld()
+    {
+        return this.config.mainWorld;
     }
 }

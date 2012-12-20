@@ -13,8 +13,8 @@ import de.cubeisland.cubeengine.roles.role.config.PermissionTree;
 import de.cubeisland.cubeengine.roles.role.config.PermissionTreeConverter;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.PriorityConverter;
-import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
-import de.cubeisland.cubeengine.roles.role.config.RoleProviderConverter;
+import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.role.config.RoleMirrorConverter;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
 import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
 import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
@@ -31,7 +31,7 @@ public class Roles extends Module
     {
         Convert.registerConverter(PermissionTree.class, new PermissionTreeConverter());
         Convert.registerConverter(Priority.class, new PriorityConverter());
-        Convert.registerConverter(RoleProvider.class, new RoleProviderConverter());
+        Convert.registerConverter(RoleMirror.class, new RoleMirrorConverter(this));
     }
 
     @Override

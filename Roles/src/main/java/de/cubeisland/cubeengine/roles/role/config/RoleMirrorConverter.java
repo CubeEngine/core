@@ -3,15 +3,23 @@ package de.cubeisland.cubeengine.roles.role.config;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
+import de.cubeisland.cubeengine.roles.Roles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RoleProviderConverter implements Converter<RoleProvider>
+public class RoleMirrorConverter implements Converter<RoleMirror>
 {
+    private Roles module;
+
+    public RoleMirrorConverter(Roles module)
+    {
+        this.module = module;
+    }
+
     @Override
-    public Object toObject(RoleProvider object) throws ConversionException
+    public Object toObject(RoleMirror object) throws ConversionException
     {
         Map<String, List<Map<String, List<String>>>> result = new HashMap<String, List<Map<String, List<String>>>>();
         List<Map<String, List<String>>> worlds = new ArrayList<Map<String, List<String>>>();
@@ -41,7 +49,7 @@ public class RoleProviderConverter implements Converter<RoleProvider>
 
     @Override
     @SuppressWarnings("unchecked")
-    public RoleProvider fromObject(Object object) throws ConversionException
+    public RoleMirror fromObject(Object object) throws ConversionException
     {
         Map<String, List<Map<String, List<String>>>> read = (Map<String, List<Map<String, List<String>>>>) object;
         if (read.isEmpty())
@@ -49,7 +57,7 @@ public class RoleProviderConverter implements Converter<RoleProvider>
             return null;
         }
         String mainworld = read.keySet().iterator().next();
-        RoleProvider provider = new RoleProvider(mainworld);
+        RoleMirror mirror = new RoleMirror(this.module, mainworld);
         if (read.get(mainworld) != null)
         {
             for (Map<String, List<String>> world : read.get(mainworld))
@@ -65,9 +73,9 @@ public class RoleProviderConverter implements Converter<RoleProvider>
                 }
                 boolean roles = world.get(worldName).contains("roles");
                 boolean users = world.get(worldName).contains("users");
-                provider.setWorld(worldName, roles, users);
+                mirror.setWorld(worldName, roles, users);
             }
         }
-        return provider;
+        return mirror;
     }
 }
