@@ -126,13 +126,15 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             {
                 this.database.storeStatement(this.modelClass, "merge",
                         builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
+
+                this.database.storeStatement(this.modelClass, "update",
+                        builder.update(this.tableName).set(fields).where().
+                        field(this.f_dbKey).isEqual().value().and().
+                        field(this.s_dbKey).isEqual().value().end().end());
             }
 
             this.database.storeStatement(this.modelClass, "get",
                     builder.select(allFields).from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().end().end());
-
-            this.database.storeStatement(this.modelClass, "update",
-                    builder.update(this.tableName).set(fields).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().end().end());
 
             this.database.storeStatement(this.modelClass, "delete",
                     builder.delete().from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().limit(1).end().end());
@@ -219,6 +221,10 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
     @Override
     public void update(M model, boolean async)
     {
+        if (this.allFields.length <= 2)
+        {
+            throw new UnsupportedOperationException("Updating is not supported for only-key storages!");
+        }
         try
         {
             ArrayList<Object> values = new ArrayList<Object>();
