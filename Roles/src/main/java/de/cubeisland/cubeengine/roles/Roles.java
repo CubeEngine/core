@@ -26,11 +26,9 @@ public class Roles extends Module
     private AssignedRoleManager dbManager;
     private UserMetaDataManager dbUserMeta;
     private UserPermissionsManager dbUserPerm;
-    private static Roles instance;
 
     public Roles()
     {
-        instance = this; // Needed in configuration loading
         Convert.registerConverter(PermissionTree.class, new PermissionTreeConverter());
         Convert.registerConverter(Priority.class, new PriorityConverter());
         Convert.registerConverter(RoleProvider.class, new RoleProviderConverter());
@@ -50,17 +48,18 @@ public class Roles extends Module
         this.manager = new RoleManager(this);
         this.getEventManager().registerListener(this, new RolesEventHandler(this));
         //TODO catch this with an event when allmodules are loaded
+        final Roles roles = this;
         this.getTaskManger().scheduleSyncDelayedTask(this, new Runnable()
         {
             @Override
             public void run()
             {
                 manager.init();
-                for (User user : instance.getUserManager().getOnlineUsers()) // reapply roles on reload
+                for (User user : getUserManager().getOnlineUsers()) // reapply roles on reload
                 {
-                    user.removeAttribute(instance, "roleContainer"); // remove potential old calculated roles
+                    user.removeAttribute(roles, "roleContainer"); // remove potential old calculated roles
                     manager.preCalculateRoles(user.getName(), false);
-                    manager.applyRole(user.getPlayer(), instance.getCore().getWorldManager().getWorldId(user.getWorld()));
+                    manager.applyRole(user.getPlayer(), roles.getCore().getWorldManager().getWorldId(user.getWorld()));
                 }
             }
         }, 1);
@@ -98,10 +97,5 @@ public class Roles extends Module
     public RoleManager getManager()
     {
         return manager;
-    }
-
-    public static Roles getInstance()
-    {
-        return instance;
     }
 }

@@ -34,13 +34,15 @@ public class RoleProvider
     private Set<Role> defaultRoles = new HashSet<Role>();
     private Stack<String> roleStack = new Stack<String>();
     
+    private Roles module = (Roles)CubeEngine.getModuleManager().getModule("Roles");
+    
     public RoleProvider(String mainWorld)
     {
         this.mainWorld = mainWorld;
         Long worldId = CubeEngine.getCore().getWorldManager().getWorldId(mainWorld);
         if (worldId == null)
         {
-            Roles.getInstance().getLogger().log(LogLevel.WARNING, "Unkown world " + mainWorld);
+            module.getLogger().log(LogLevel.WARNING, "Unkown world " + mainWorld);
         }
         else
         {
@@ -53,7 +55,7 @@ public class RoleProvider
      *
      * @param worldId
      */
-public RoleProvider(long worldId)
+    public RoleProvider(long worldId)
     {
         this.mainWorld = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
         this.worlds.put(worldId, new Pair<Boolean, Boolean>(true, true));
@@ -95,11 +97,11 @@ public RoleProvider(long worldId)
         TLongObjectHashMap<List<String>> rolesFromDb;
         if (reload)
         {
-            rolesFromDb = Roles.getInstance().getManager().reloadRoles(user);
+            rolesFromDb = module.getManager().reloadRoles(user);
         }
         else
         {
-            rolesFromDb = Roles.getInstance().getManager().loadRoles(user);
+            rolesFromDb = module.getManager().loadRoles(user);
         }
         for (long worldID : rolesFromDb.keys())
         {
@@ -133,7 +135,7 @@ public RoleProvider(long worldId)
         Long world = CubeEngine.getCore().getWorldManager().getWorldId(worldName);
         if (world == null)
         {
-            Roles.getInstance().getLogger().log(LogLevel.WARNING, "Unkown world " + worldName + "! Removing from config...");
+            module.getLogger().log(LogLevel.WARNING, "Unkown world " + worldName + "! Removing from config...");
             return;
         }
         this.worlds.put(world, new Pair<Boolean, Boolean>(roles, users));
@@ -156,7 +158,7 @@ public RoleProvider(long worldId)
             this.worldfolder = new File(rolesFolder, this.mainWorld);
         }
         this.worldfolder.mkdir();
-        Roles.getInstance().getLogger().debug("Loading roles for the world " + worldfolder.getName() + ":");
+        module.getLogger().debug("Loading roles for the world " + worldfolder.getName() + ":");
         int i = 0;
         for (File configFile : worldfolder.listFiles())
         {
@@ -167,7 +169,7 @@ public RoleProvider(long worldId)
                 this.addConfig(config);
             }
         }
-        Roles.getInstance().getLogger().debug(i + " roles loaded!");
+        module.getLogger().debug(i + " roles loaded!");
     }
     
     public void reload()
@@ -181,7 +183,7 @@ public RoleProvider(long worldId)
         List<String> dRoles = config.defaultRoles.get(this.mainWorld);
         if (dRoles == null || dRoles.isEmpty())
         {
-            Roles.getInstance().getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.mainWorld);
+            module.getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.mainWorld);
             return;
         }
         for (String roleName : dRoles)
@@ -189,7 +191,7 @@ public RoleProvider(long worldId)
             Role role = this.roles.get(roleName);
             if (role == null)
             {
-                Roles.getInstance().getLogger().log(LogLevel.WARNING, "Could not find default-role " + roleName);
+                module.getLogger().log(LogLevel.WARNING, "Could not find default-role " + roleName);
             }
             this.defaultRoles.add(role);
         }
@@ -202,7 +204,7 @@ public RoleProvider(long worldId)
             Role role = this.calculateRole(config, globalRoles);
             if (role == null)
             {
-                Roles.getInstance().getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
+                module.getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
                 continue;
             }
             this.roles.put(role.getName(), role);
@@ -253,7 +255,7 @@ public RoleProvider(long worldId)
                 }
                 catch (RoleDependencyMissingException ex)
                 {
-                    Roles.getInstance().getLogger().log(LogLevel.WARNING, ex.getMessage());
+                    module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
             // now all parent roles should be loaded
@@ -281,7 +283,7 @@ public RoleProvider(long worldId)
                 }
                 catch (RoleDependencyMissingException ex)
                 {
-                    Roles.getInstance().getLogger().log(LogLevel.WARNING, ex.getMessage());
+                    module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
             role = new ConfigRole(config, parentRoles, false);
@@ -290,7 +292,7 @@ public RoleProvider(long worldId)
         }
         catch (CircularRoleDepedencyException ex)
         {
-            Roles.getInstance().getLogger().log(LogLevel.WARNING, ex.getMessage());
+            module.getLogger().log(LogLevel.WARNING, ex.getMessage());
             return null;
         }
     }

@@ -9,13 +9,11 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
-import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import org.bukkit.World;
 
 public class RoleManagementCommands extends ContainerCommand
 {
-
     public RoleManagementCommands(Roles module)
     {
         super(module, "role", "Manage roles.");//TODO alias manrole
@@ -23,10 +21,10 @@ public class RoleManagementCommands extends ContainerCommand
 
     @Alias(names = "listroles")
     @Command(desc = "Lists all roles [in world]",
-    usage = "[in <world>]",
-    params =
+             usage = "[in <world>]",
+             params =
     @Param(names = "in", type = World.class),
-    max = 1)
+             max = 1)
     public void list(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -50,7 +48,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
         if (provider.getAllRoles().isEmpty())
         {
             context.sendMessage("roles", "&eNo roles found in &6%s&e!", world.getName());
@@ -70,11 +68,11 @@ public class RoleManagementCommands extends ContainerCommand
     {
         "checkperm", "checkpermission"
     },
-    desc = "Checks the permission in given role [in world]",
-    usage = "<role> <permission> [in <world>]",
-    params =
+             desc = "Checks the permission in given role [in world]",
+             usage = "<role> <permission> [in <world>]",
+             params =
     @Param(names = "in", type = World.class),
-    max = 3, min = 2)
+             max = 3, min = 2)
     public void checkperm(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -98,7 +96,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -132,11 +130,11 @@ public class RoleManagementCommands extends ContainerCommand
     {
         "listperm", "listpermission"
     },
-    desc = "Lists all permissions of given role [in world]",
-    usage = "<role> [in <world>]",
-    params =
+             desc = "Lists all permissions of given role [in world]",
+             usage = "<role> [in <world>]",
+             params =
     @Param(names = "in", type = World.class),
-    max = 2, min = 1)
+             max = 2, min = 1)
     public void listperm(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -160,7 +158,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -195,11 +193,11 @@ public class RoleManagementCommands extends ContainerCommand
     {
         "listdata", "listmetadata"
     },
-    desc = "Lists all metadata of given role [in world]",
-    usage = "<role> [in <world>]",
-    params =
+             desc = "Lists all metadata of given role [in world]",
+             usage = "<role> [in <world>]",
+             params =
     @Param(names = "in", type = World.class),
-    max = 2, min = 1)
+             max = 2, min = 1)
     public void listmetadata(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -223,7 +221,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -248,10 +246,10 @@ public class RoleManagementCommands extends ContainerCommand
 
     @Command(
     desc = "Lists all parents of given role [in world]",
-    usage = "<role> [in <world>]",
-    params =
+             usage = "<role> [in <world>]",
+             params =
     @Param(names = "in", type = World.class),
-    max = 2, min = 1)
+             max = 2, min = 1)
     public void listParent(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -275,7 +273,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = Roles.getInstance().getManager().getProvider(worldId);
+        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {

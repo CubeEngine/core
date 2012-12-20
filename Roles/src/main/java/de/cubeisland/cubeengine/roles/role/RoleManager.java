@@ -164,14 +164,6 @@ public class RoleManager
         this.providers.clear();
         for (RoleProvider provider : this.module.getConfiguration().providers)
         {
-            Long worldID = this.module.getCore().getWorldManager().getWorldId(provider.mainWorld);
-            if (worldID == null)
-            {
-                this.module.getLogger().log(LogLevel.WARNING,
-                        "Unkown world " + provider.mainWorld + "! Removing provider!");
-                continue;
-            }
-            this.providers.put(worldID, provider);
             TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
             for (long worldId : worlds.keys())
             {
