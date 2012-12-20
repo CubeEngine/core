@@ -27,12 +27,13 @@ public class YamlCodec extends ConfigurationCodec
 
         COMMENT_PREFIX = "# ";
         SPACES = "  ";
-        LINEBREAK = "\n";
+        LINE_BREAK = "\n";
         QUOTE = "'";
     }
 
     //TODO \n in Strings do get lost when restarting
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, Object> loadFromInputStream(InputStream is)
     {
         Map<Object, Object> map = (Map<Object, Object>)yaml.load(is);
@@ -72,6 +73,7 @@ public class YamlCodec extends ConfigurationCodec
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String convertValue(String path, Object value, int off, boolean inCollection)
     {
         StringBuilder sb = new StringBuilder();
@@ -90,7 +92,7 @@ public class YamlCodec extends ConfigurationCodec
         {
             if (value instanceof Map)
             {
-                sb.append(LINEBREAK);
+                sb.append(LINE_BREAK);
                 sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1, inCollection));
                 return sb.toString();
             }
@@ -114,11 +116,11 @@ public class YamlCodec extends ConfigurationCodec
                     {
                         if (((Collection<?>)value).isEmpty())
                         {
-                            return sb.append(" []").append(LINEBREAK).toString();
+                            return sb.append(" []").append(LINE_BREAK).toString();
                         }
                         for (Object o : (Collection<?>)value) //Convert Collection
                         {
-                            sb.append(LINEBREAK).append(offset).append("- ");
+                            sb.append(LINE_BREAK).append(offset).append("- ");
                             if (o instanceof String)
                             {
                                 if (this.needsQuote(o))
@@ -147,9 +149,9 @@ public class YamlCodec extends ConfigurationCodec
                 }
             }
         }
-        if (!inCollection && !sb.toString().endsWith(LINEBREAK + LINEBREAK)) // if in collection the collection will append its linebreak
+        if (!inCollection && !sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if in collection the collection will append its linebreak
         {
-            sb.append(LINEBREAK);
+            sb.append(LINE_BREAK);
         }
         this.first = false;
         return sb.toString();
@@ -161,25 +163,25 @@ public class YamlCodec extends ConfigurationCodec
         StringBuilder sb = new StringBuilder();
         if (values.isEmpty())
         {
-            return sb.append(this.offset(off)).append("{}").append(LINEBREAK).toString();
+            return sb.append(this.offset(off)).append("{}").append(LINE_BREAK).toString();
         }
         for (Entry<String, Object> entry : values.entrySet())
         {
-            String subpath = off == 0 ? entry.getKey().toString() : (path + PATHSEPARATOR + entry.getKey());
-            String comment = this.buildComment(subpath, off);
+            String subPath = off == 0 ? entry.getKey() : (path + PATH_SEPARATOR + entry.getKey());
+            String comment = this.buildComment(subPath, off);
             if (!comment.isEmpty())
             {
-                if (!sb.toString().endsWith(LINEBREAK + LINEBREAK)) // if not already one line free
+                if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if not already one line free
                 {
-                    sb.append(LINEBREAK); // add free line before comment
+                    sb.append(LINE_BREAK); // add free line before comment
                 }
                 sb.append(comment);
             }
-            sb.append(this.convertValue(subpath, entry.getValue(), off, inCollection));
+            sb.append(this.convertValue(subPath, entry.getValue(), off, inCollection));
         }
-        if (!sb.toString().endsWith(LINEBREAK + LINEBREAK))
+        if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
         {
-            sb.append(LINEBREAK);
+            sb.append(LINE_BREAK);
         }
         first = true;
         return sb.toString();
@@ -194,8 +196,8 @@ public class YamlCodec extends ConfigurationCodec
             return ""; //No Comment
         }
         String offset = this.offset(off);
-        comment = comment.replace(LINEBREAK, LINEBREAK + offset + COMMENT_PREFIX); //Multiline
-        comment = offset + COMMENT_PREFIX + comment + LINEBREAK;
+        comment = comment.replace(LINE_BREAK, LINE_BREAK + offset + COMMENT_PREFIX); // multi line
+        comment = offset + COMMENT_PREFIX + comment + LINE_BREAK;
         if (this.first)
         {
             this.first = false;

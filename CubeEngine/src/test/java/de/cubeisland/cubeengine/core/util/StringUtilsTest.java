@@ -19,6 +19,6 @@ public class StringUtilsTest extends TestCase
         final String testString = "blabla";
 
         assertEquals("Something got stripped out even though there was not extention", testString, testString);
-        assertEquals("Extention not properly stripped", testString, StringUtils.stripFileExtention(testString + ".test"));
+        assertEquals("Extention not properly stripped", testString, StringUtils.stripFileExtension(testString + ".test"));
     }
 }

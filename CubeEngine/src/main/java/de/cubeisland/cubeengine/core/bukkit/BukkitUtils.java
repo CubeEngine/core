@@ -64,7 +64,7 @@ public class BukkitUtils
             handle = CraftItemStack.class.getField("handle");
             handle.setAccessible(true);
         }
-        catch (Exception ex)
+        catch (Exception ignored)
         {}
     }
 
@@ -90,7 +90,7 @@ public class BukkitUtils
             {
                 return (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {}
         }
         return null;
@@ -101,7 +101,7 @@ public class BukkitUtils
         return findFirstField(type, o.getClass());
     }
 
-    private static Field findFirstField(Class type, Class clazz)
+    private static Field findFirstField(Class<?> type, Class clazz)
     {
         for (Field field : clazz.getDeclaredFields())
         {
@@ -266,6 +266,7 @@ public class BukkitUtils
 
     private static final Location helperLocation = new Location(null, 0, 0, 0);
 
+    @SuppressWarnings("unchecked")
     public static void swapPlayerNetServerHandler(EntityPlayer player, NetServerHandler newHandler)
     {
         if (NSH_LIST_FIELD == null)

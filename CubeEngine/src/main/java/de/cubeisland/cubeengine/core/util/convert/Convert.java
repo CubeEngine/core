@@ -83,8 +83,8 @@ public class Convert
     /**
      * registers a converter to check for when converting
      *
-     * @param clazz
-     * @param converter
+     * @param clazz the class
+     * @param converter the converter
      */
     public static void registerConverter(Class clazz, Converter converter)
     {
@@ -116,6 +116,7 @@ public class Convert
      * @param objectClass the class to search for
      * @return a matching converter or null if not found
      */
+    @SuppressWarnings("unchecked")
     public static <T> Converter<T> matchConverter(Class<? extends T> objectClass)
     {
         if (objectClass == null)
@@ -145,6 +146,7 @@ public class Convert
         throw new ConverterNotFoundException("Converter not found for: " + objectClass.getName());
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Object toObject(T object) throws ConversionException
     {
         if (object == null)
@@ -167,6 +169,7 @@ public class Convert
         return converter.toObject(object);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T fromObject(Type type, Object object) throws ConversionException
     {
         if (type == null)

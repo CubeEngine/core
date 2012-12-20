@@ -15,6 +15,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This orderBy(String... cols)
     {
         Validate.notEmpty(cols, "No cols specified!");
@@ -28,6 +29,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This limit(int n)
     {
         this.query.append(" LIMIT ").append(n);
@@ -35,6 +37,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This offset(int n)
     {
         this.query.append(" OFFSET ").append(n);
@@ -42,6 +45,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This where()
     {
         this.query.append(" WHERE ");
@@ -49,6 +53,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This between()
     {
         this.query.append(" BETWEEN ? AND ?");
@@ -56,6 +61,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This asc()
     {
         this.query.append(" ASC ");
@@ -63,6 +69,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This desc()
     {
         this.query.append(" DESC ");

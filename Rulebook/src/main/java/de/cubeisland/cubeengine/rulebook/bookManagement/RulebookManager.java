@@ -34,7 +34,7 @@ public final class RulebookManager
 
         for (File book : RuleBookFile.getLanguageFiles(this.module.getFolder()))
         {
-            Language language = this.module.getCore().getI18n().searchLanguages(StringUtils.stripFileExtention(book.getName())).iterator().next();
+            Language language = this.module.getCore().getI18n().searchLanguages(StringUtils.stripFileExtension(book.getName())).iterator().next();
             try
             {
                 rulebooks.put(language.getName(), RuleBookFile.convertToPages(book));
@@ -117,7 +117,7 @@ public final class RulebookManager
 
             for (File file : RuleBookFile.getLanguageFiles(this.module.getFolder()))
             {
-                Language fileLanguage = this.module.getCore().getI18n().searchLanguages(StringUtils.stripFileExtention(file.getName())).iterator().next();
+                Language fileLanguage = this.module.getCore().getI18n().searchLanguages(StringUtils.stripFileExtension(file.getName())).iterator().next();
 
                 if (fileLanguage.getName().equalsIgnoreCase(language))
                 {

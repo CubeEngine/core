@@ -101,6 +101,7 @@ public abstract class Configuration
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Configuration> T loadChild(File sourceFile) //and save
     {
         Configuration childConfig;
@@ -139,7 +140,7 @@ public abstract class Configuration
     /**
      * Gets the Codec for given FileExtension
      *
-     * @param fileExtension
+     * @param fileExtension the file extension
      * @return the Codec
      * @throws IllegalStateException if no Codec is found for given FileExtension
      */
@@ -296,7 +297,7 @@ public abstract class Configuration
     /**
      * Sets the Codec for this Configuration
      *
-     * @param codec
+     * @param codec the Codec to set
      */
     public void setCodec(ConfigurationCodec codec)
     {
@@ -316,7 +317,7 @@ public abstract class Configuration
     /**
      * Sets the file to load from
      *
-     * @param file
+     * @param file the file
      */
     public void setFile(File file)
     {
@@ -341,7 +342,7 @@ public abstract class Configuration
     {}
 
     /**
-     * This method gets called right after the configration get saved.
+     * This method gets called right after the configuration get saved.
      */
     public void onSaved(File file)
     {}

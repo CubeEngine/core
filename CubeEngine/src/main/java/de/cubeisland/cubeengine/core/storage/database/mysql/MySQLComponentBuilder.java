@@ -24,6 +24,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This rawSQL(String sql)
     {
         this.query.append(sql);
@@ -31,6 +32,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This function(String function)
     {
         this.query.append(" ").append(function).append("()");
@@ -38,6 +40,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This beginFunction(String function)
     {
         this.query.append(" ").append(function).append("(");
@@ -46,6 +49,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This endFunction()
     {
         this.deepInFunction = false;
@@ -54,22 +58,16 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
         return (This)this;
     }
 
-    public This endFunction(String function)
-    {
-        this.query.append(")");
-        this.inFunction = false;
-        return (This)this;
-    }
-
     @Override
+    @SuppressWarnings("unchecked")
     public This field(String name)
     {
-
         this.query.append(this.database.prepareFieldName(name));
         return (This)this;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This values(int amount)
     {
         this.query.append(" VALUES (?");
@@ -82,6 +80,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This value(Object value)
     {
         if (inFunction)
@@ -107,6 +106,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This is(int operation)
     {
         switch (operation)
@@ -136,6 +136,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This isEqual()
     {
         this.query.append(" = ");
@@ -143,6 +144,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This not()
     {
         this.query.append(" NOT");
@@ -150,6 +152,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This and()
     {
         this.query.append(" AND");
@@ -157,6 +160,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This or()
     {
         this.query.append(" OR");
@@ -164,6 +168,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This beginSub()
     {
         this.query.append('(');
@@ -172,6 +177,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This endSub()
     {
         if (this.subDepth > 0)
@@ -183,6 +189,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This wildcard()
     {
         this.query.append("*");
@@ -190,6 +197,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This value()
     {
         this.query.append("?");
@@ -197,6 +205,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This like()
     {
         this.query.append(" LIKE");
@@ -204,6 +213,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This as(String field)
     {
         this.query.append(" AS ").append(this.database.prepareFieldName(field));
@@ -211,6 +221,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This in()
     {
         this.query.append(" IN ");
@@ -218,6 +229,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This groupBy(String... fields)
     {
         if (fields.length == 1)
@@ -236,6 +248,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public This having()
     {
         this.query.append(" HAVING");

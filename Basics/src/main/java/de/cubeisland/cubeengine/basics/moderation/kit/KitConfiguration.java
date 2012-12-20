@@ -91,7 +91,7 @@ public class KitConfiguration extends Configuration
         try
         {
             KitConfiguration config = Configuration.load(KitConfiguration.class, file);
-            config.kitName = StringUtils.stripFileExtention(file.getName());
+            config.kitName = StringUtils.stripFileExtension(file.getName());
             Kit kit = config.getKit();
 
             kitConfigMap.put(kit, config);

@@ -2,12 +2,13 @@ package de.cubeisland.cubeengine.core.util.convert.converter;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class LocationConverter implements Converter<Location>
 {
@@ -32,6 +33,7 @@ public class LocationConverter implements Converter<Location>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Location fromObject(Object object)
     {
         Map<String, Object> input = (Map<String, Object>)object;

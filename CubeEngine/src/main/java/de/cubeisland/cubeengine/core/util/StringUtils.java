@@ -635,7 +635,7 @@ public final class StringUtils
         return trimRight(trimLeft(string));
     }
 
-    public static String stripFileExtention(String filename)
+    public static String stripFileExtension(String filename)
     {
         if (filename == null)
         {

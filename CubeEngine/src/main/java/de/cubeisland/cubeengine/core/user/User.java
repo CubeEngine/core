@@ -69,7 +69,7 @@ public class User extends UserBase implements LinkingModel<Long>
     private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
     private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
     Integer removalTaskId; // only used in UserManager no AccessModifier is intended
-    private static MessageDigest hasher;
+    private final static MessageDigest hasher;
 
     static
     {
@@ -77,8 +77,10 @@ public class User extends UserBase implements LinkingModel<Long>
         {
             hasher = MessageDigest.getInstance("SHA-512");
         }
-        catch (NoSuchAlgorithmException ignored)
-        {}
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new RuntimeException("SHA-512 hash algorithm not available!");
+        }
     }
 
     @DatabaseConstructor
@@ -169,6 +171,7 @@ public class User extends UserBase implements LinkingModel<Long>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Model> T getAttachment(Class<T> modelClass)
     {
         if (this.attachments == null)
@@ -244,9 +247,9 @@ public class User extends UserBase implements LinkingModel<Long>
      * @param name the name/key
      * @return the value or null
      */
-    public <T extends Object> T getAttribute(Module module, String name)
+    public <T> T getAttribute(Module module, String name)
     {
-        return this.<T> getAttribute(module, name, null);
+        return this.getAttribute(module, name, null);
     }
 
     /**
@@ -257,16 +260,17 @@ public class User extends UserBase implements LinkingModel<Long>
      * @param def the default value
      * @return the attribute value or the default value
      */
-    public <T extends Object> T getAttribute(Module module, String name, T def)
+    @SuppressWarnings("unchecked")
+    public <T> T getAttribute(Module module, String name, T def)
     {
         try
         {
-            Map<String, Object> attributMap = this.attributes.get(module);
-            if (attributMap == null)
+            Map<String, Object> attributeMap = this.attributes.get(module);
+            if (attributeMap == null)
             {
                 return null;
             }
-            T value = (T)attributMap.get(name);
+            T value = (T)attributeMap.get(name);
             if (value != null)
             {
                 return value;
@@ -414,12 +418,12 @@ public class User extends UserBase implements LinkingModel<Long>
     }
 
     /**
-     * Use this method to assign permissions to a user while loging in
+     * Use this method to assign permissions to a user while logging in
      *
-     * @param permissions
-     * @param player
+     * @param permissions a map of permissions
+     * @param player the player
      */
-    public void setPermission(Map<String, Boolean> permissions, Player player)
+    void setPermission(Map<String, Boolean> permissions, Player player)
     {
         String posName = this.getName();
         String negName = "!" + this.getName();

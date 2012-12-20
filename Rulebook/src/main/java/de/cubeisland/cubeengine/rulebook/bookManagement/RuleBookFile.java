@@ -32,7 +32,7 @@ public class RuleBookFile
         {
             for(File file : directory.listFiles())
             {
-                Set<Language> languages = CubeEngine.getI18n().searchLanguages( StringUtils.stripFileExtention( file.getName() ) );
+                Set<Language> languages = CubeEngine.getI18n().searchLanguages( StringUtils.stripFileExtension(file.getName()) );
                 
                 if(languages.size() == 1)
                 {

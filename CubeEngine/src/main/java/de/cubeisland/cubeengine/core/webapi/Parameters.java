@@ -2,9 +2,10 @@ package de.cubeisland.cubeengine.core.webapi;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
+import org.apache.commons.lang.Validate;
+
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.Validate;
 
 public class Parameters
 {
@@ -15,6 +16,7 @@ public class Parameters
         this.data = data;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get(String name, int index, Class<T> type) throws InvalidArgumentException
     {
         List<String> values = this.data.get(name);
@@ -30,6 +32,7 @@ public class Parameters
         return (T)value;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get(String name, int index, T def)
     {
         Validate.notNull(def, "The default value must not be null!");
@@ -39,7 +42,7 @@ public class Parameters
         {
             value = (T)this.get(name, index, def.getClass());
         }
-        catch (InvalidArgumentException e)
+        catch (InvalidArgumentException ignored)
         {}
         return value;
     }
@@ -60,7 +63,7 @@ public class Parameters
         {
             return this.get(name, index, String.class);
         }
-        catch (InvalidArgumentException ex)
+        catch (InvalidArgumentException ignored)
         {}
         return null;
     }

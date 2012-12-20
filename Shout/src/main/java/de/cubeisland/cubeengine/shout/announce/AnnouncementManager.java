@@ -380,7 +380,7 @@ public class AnnouncementManager
         {
             for (File langFile : messageFiles)
             {
-                String name = StringUtils.stripFileExtention(langFile.getName());
+                String name = StringUtils.stripFileExtension(langFile.getName());
                 if (name.isEmpty())
                 {
                     continue;

@@ -40,6 +40,7 @@ public class CollectionConverter
      * @return the converted collection
      * @throws ConversionException
      */
+    @SuppressWarnings("unchecked")
     public <V, S extends Collection<V>> S fromObject(ParameterizedType type, Object object) throws ConversionException
     {
         try

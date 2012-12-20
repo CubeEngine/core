@@ -24,8 +24,6 @@ public class MapConverter
         {
             return result;
         }
-        Class<?> keyType = map.entrySet().iterator().next().getKey().getClass();
-        Class<?> valType = map.entrySet().iterator().next().getValue().getClass();
         for (Object key : map.keySet())
         {
             result.put(Convert.toObject(key), Convert.toObject(map.get(key)));
@@ -44,13 +42,14 @@ public class MapConverter
      * @return the converted map
      * @throws ConversionException
      */
+    @SuppressWarnings("unchecked")
     public <K, V, S extends Map<K, V>> S fromObject(ParameterizedType type, Object object) throws ConversionException
     {
         try
         {
             if (type.getRawType() instanceof Class)
             {
-                Class<S> mapType = (Class)type.getRawType();
+                Class<S> mapType = (Class<S>)type.getRawType();
                 Type keyType = type.getActualTypeArguments()[0];
                 Type valType = type.getActualTypeArguments()[1];
                 S result;
@@ -64,12 +63,12 @@ public class MapConverter
                 }
                 if (object instanceof Map)
                 {
-                    Map<?, ?> objectmap = (Map<?, ?>)object;
-                    for (Object key : objectmap.keySet())
+                    Map<?, ?> objectMap = (Map<?, ?>)object;
+                    for (Object key : objectMap.keySet())
                     {
-                        K newkey = Convert.fromObject(keyType, key);
-                        V newVal = Convert.fromObject(valType, objectmap.get(key));
-                        result.put(newkey, newVal);
+                        K newKey = Convert.fromObject(keyType, key);
+                        V newVal = Convert.fromObject(valType, objectMap.get(key));
+                        result.put(newKey, newVal);
                     }
                     return result;
                 }

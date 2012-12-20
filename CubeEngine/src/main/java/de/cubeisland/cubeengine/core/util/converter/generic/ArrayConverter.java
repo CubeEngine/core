@@ -22,6 +22,7 @@ public class ArrayConverter
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public <V> V[] fromObject(Class<V[]> arrayType, Object object) throws ConversionException
     {
         Class<V> valueType = (Class<V>)arrayType.getComponentType();

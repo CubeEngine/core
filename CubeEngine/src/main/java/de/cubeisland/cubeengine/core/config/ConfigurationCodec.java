@@ -25,24 +25,24 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * This abstract Codec can be implemented to read and write configuratons.
+ * This abstract Codec can be implemented to read and write configurations.
  */
 public abstract class ConfigurationCodec
 {
     protected String COMMENT_PREFIX;
     protected String SPACES;
-    protected String LINEBREAK;
+    protected String LINE_BREAK;
     protected String QUOTE;
-    protected final String PATHSEPARATOR = ":";
+    protected final String PATH_SEPARATOR = ":";
     protected Integer revision = null;
     private CodecContainer container = null;
     protected boolean first;
 
     /**
-     * Loads in the given configuration using the inputstream
+     * Loads in the given configuration using the InputStream
      *
      * @param config the config to load
-     * @param is the inputstream to load from
+     * @param is the InputStream to load from
      */
     public void load(Configuration config, InputStream is) throws InstantiationException, IllegalAccessException
     {
@@ -80,8 +80,9 @@ public abstract class ConfigurationCodec
 
     /**
      * Returns the offset as String
+     * TODO naming...
      *
-     * @param offset
+     * @param offset the offset
      * @return the offset
      */
     protected String offset(int offset)
@@ -165,7 +166,7 @@ public abstract class ConfigurationCodec
      *
      * @param path the path of the value
      * @param value the value at given path
-     * @param off the current offest
+     * @param off the current offset
      * @return the serialized value
      */
     public abstract String convertValue(String path, Object value, int off, boolean inCollection);
@@ -189,7 +190,7 @@ public abstract class ConfigurationCodec
     /**
      * Converts the inputStream into a String->Object map
      *
-     * @param is the inputstream
+     * @param is the InputStream
      * @return the loaded values
      */
     public abstract Map<String, Object> loadFromInputStream(InputStream is);
@@ -197,34 +198,34 @@ public abstract class ConfigurationCodec
     /**
      * Returns the last subKey of this path
      *
-     * @param path
+     * @param path the path
      * @return the last subKey
      */
     public String getSubKey(String path)
     {
-        return path.substring(path.lastIndexOf(PATHSEPARATOR) + 1);
+        return path.substring(path.lastIndexOf(PATH_SEPARATOR) + 1);
     }
 
     /**
      * Returns the subPath of this path
      *
-     * @param path
+     * @param path the path
      * @return the subPath
      */
     public String getSubPath(String path)
     {
-        return path.substring(path.indexOf(PATHSEPARATOR) + 1);
+        return path.substring(path.indexOf(PATH_SEPARATOR) + 1);
     }
 
     /**
-     * Returns the baseParh of this path
+     * Returns the base path of this path
      *
-     * @param path
+     * @param path the path
      * @return the basePath
      */
     public String getBasePath(String path)
     {
-        return path.substring(0, path.indexOf(PATHSEPARATOR));
+        return path.substring(0, path.indexOf(PATH_SEPARATOR));
     }
 
     /**
@@ -251,7 +252,7 @@ public abstract class ConfigurationCodec
         /**
          * Fills the map with values form the inputStream
          *
-         * @param is
+         * @param is an InputStream
          */
         public void fillFromInputStream(InputStream is)
         {
@@ -273,14 +274,15 @@ public abstract class ConfigurationCodec
         /**
          * Converts given object at path to fit into to the field
          *
-         * @param object
-         * @param field
-         * @param path
+         * @param object the object containing the field
+         * @param field the field
+         * @param path the path
          * @return the converted object
          * @throws ConversionException
          * @throws IllegalArgumentException
          * @throws IllegalAccessException
          */
+        @SuppressWarnings("unchecked")
         public Object convertFromObjectToFieldValue(Object object, Field field, String path) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
             Type fieldType = field.getGenericType();
@@ -297,11 +299,11 @@ public abstract class ConfigurationCodec
                 Type valType = ((ParameterizedType)fieldType).getActualTypeArguments()[1];
                 if (valType instanceof Class)
                 {
-                    Map<Object, ? extends Configuration> fieldMap = (Map)field.get(this.config);
-                    Map<String, Object> subvalues = this.getOrCreateSubSection(path, values);
+                    Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)field.get(this.config);
+                    Map<String, Object> subValues = this.getOrCreateSubSection(path, values);
                     for (Object key : fieldMap.keySet())
                     {
-                        new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subvalues),
+                        new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subValues),
                                 parentConfig == null ? null : ((Map<Object, Configuration>)(field.get(this.parentConfig))).get(key));
                     }
                     return fieldMap;
@@ -313,11 +315,9 @@ public abstract class ConfigurationCodec
         /**
          * Sets the fields with the loaded values
          *
-         * @param config
-         * @param section
-         * @throws ConversionException
+         * @param config the config
+         * @param section the section
          * @throws IllegalArgumentException
-         * @throws IllegalAccessException
          */
         private void dumpIntoFields(Configuration config, Map<String, Object> section, Configuration parent)
         {
@@ -330,7 +330,7 @@ public abstract class ConfigurationCodec
                 {
                     if (field.isAnnotationPresent(Option.class))
                     {
-                        String path = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR);
+                        String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
                         if (Configuration.class.isAssignableFrom(field.getType()))
                         {
                             Configuration subConfig = (Configuration)field.get(this.config);
@@ -350,7 +350,7 @@ public abstract class ConfigurationCodec
                         {
                             continue;
                         }
-                        Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH).replace(".", PATHSEPARATOR), section);//Get savedValue or default
+                        Object object = this.get(field.getAnnotation(Option.class).value().toLowerCase(Locale.ENGLISH).replace(".", PATH_SEPARATOR), section);//Get savedValue or default
                         if (object != null)
                         {
                             field.set(config, convertFromObjectToFieldValue(object, field, path));//Set loaded Value into Field
@@ -371,7 +371,7 @@ public abstract class ConfigurationCodec
         /**
          * Saves the values into a file
          *
-         * @param file
+         * @param file the file to save to
          * @throws IOException
          */
         private void saveIntoFile(File file) throws IOException
@@ -392,7 +392,7 @@ public abstract class ConfigurationCodec
             StringBuilder sb = new StringBuilder();
             if (config.head() != null)
             {
-                sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINEBREAK).append(LINEBREAK);
+                sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINE_BREAK).append(LINE_BREAK);
             }
             first = true;
             sb.append(convertMap("", values, 0, false).trim()).append("\n");
@@ -406,17 +406,18 @@ public abstract class ConfigurationCodec
         /**
          * Gets the value at given path in the section
          *
-         * @param path
-         * @param section
+         * @param path the path
+         * @param section the section
          * @return the requested value
          */
+        @SuppressWarnings("unchecked")
         private Object get(String path, Map<String, Object> section)
         {
             if (section == null || section.isEmpty())
             {
                 return null;
             }
-            if (path.contains(PATHSEPARATOR))
+            if (path.contains(PATH_SEPARATOR))
             {
                 return this.get(getSubPath(path), (Map<String, Object>)section.get(this.findKey(getBasePath(path))));
             }
@@ -426,13 +427,13 @@ public abstract class ConfigurationCodec
         /**
          * Sets the value to given path in the section
          *
-         * @param path
-         * @param value
-         * @param section
+         * @param path the path
+         * @param value the value
+         * @param section the section
          */
         private void set(String path, Object value, Map<String, Object> section)
         {
-            if (path.contains(PATHSEPARATOR))
+            if (path.contains(PATH_SEPARATOR))
             {
                 Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
                 this.set(getSubPath(path), value, subsection);
@@ -446,35 +447,36 @@ public abstract class ConfigurationCodec
         /**
          * Returns the subSection in the baseSection for given path
          *
-         * @param path
-         * @param basesection
+         * @param path the path
+         * @param baseSection the base section
          * @return the requested subSection
          */
-        private Map<String, Object> getOrCreateSubSection(String path, Map<String, Object> basesection)
+        @SuppressWarnings("unchecked")
+        private Map<String, Object> getOrCreateSubSection(String path, Map<String, Object> baseSection)
         {
-            if (path.contains(PATHSEPARATOR))
+            if (path.contains(PATH_SEPARATOR))
             {
-                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), basesection);
-                basesection.put(getBasePath(path), subsection);
+                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), baseSection);
+                baseSection.put(getBasePath(path), subsection);
                 return this.getOrCreateSubSection(getSubPath(path), subsection);
             }
             else
             {
-                Map<String, Object> subsection = (Map<String, Object>)basesection.get(path);
+                Map<String, Object> subsection = (Map<String, Object>)baseSection.get(path);
                 if (subsection == null)
                 {
                     subsection = new LinkedHashMap<String, Object>();
-                    basesection.put(path, subsection);
+                    baseSection.put(path, subsection);
                 }
                 return subsection;
             }
         }
 
         /**
-         * Returns the loadedKey coressponding to a lowercased key
+         * Returns the loadedKey corresponding to a lower cased key
          *
-         * @param key
-         * @return the coressponding key
+         * @param key the key
+         * @return the corresponding key
          */
         private Object findKey(String key)
         {
@@ -489,8 +491,9 @@ public abstract class ConfigurationCodec
         /**
          * saves the loaded keys into a map lowerCaseKey->Key
          *
-         * @param section
+         * @param section the section
          */
+        @SuppressWarnings("unchecked")
         private void loadKeys(Map<String, Object> section)
         {
             for (Object key : section.keySet()) //need object ere because key could be an integer when in a subMap
@@ -506,8 +509,8 @@ public abstract class ConfigurationCodec
         /**
          * adds a comment to later save
          *
-         * @param path
-         * @param comment
+         * @param path the path
+         * @param comment the comment
          */
         private void addComment(String path, String comment)
         {
@@ -560,8 +563,8 @@ public abstract class ConfigurationCodec
             Class<? extends Configuration> clazz = config.getClass();
             if (clazz.isAnnotationPresent(MapComments.class))
             {
-                MapComment[] mapcomments = clazz.getAnnotation(MapComments.class).value();
-                for (MapComment comment : mapcomments)
+                MapComment[] mapComments = clazz.getAnnotation(MapComments.class).value();
+                for (MapComment comment : mapComments)
                 {
                     if ("".equals(basePath))
                     {
@@ -569,7 +572,7 @@ public abstract class ConfigurationCodec
                     }
                     else
                     {
-                        this.addComment(basePath + PATHSEPARATOR + comment.path(), comment.text());
+                        this.addComment(basePath + PATH_SEPARATOR + comment.path(), comment.text());
                     }
                 }
             }
@@ -594,7 +597,7 @@ public abstract class ConfigurationCodec
                     {
                         continue;
                     }
-                    String path = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR);
+                    String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
                     if (field.isAnnotationPresent(Comment.class))
                     {
                         Comment comment = field.getAnnotation(Comment.class);
@@ -604,7 +607,7 @@ public abstract class ConfigurationCodec
                         }
                         else
                         {
-                            this.addComment(basePath + PATHSEPARATOR + path, comment.value());
+                            this.addComment(basePath + PATH_SEPARATOR + path, comment.value());
                         }
                     }
                     path = path.toLowerCase(Locale.ENGLISH);
@@ -626,7 +629,7 @@ public abstract class ConfigurationCodec
 
         private void remove(String path, Map<String, Object> section)
         {
-            if (path.contains(PATHSEPARATOR))
+            if (path.contains(PATH_SEPARATOR))
             {
                 Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
                 this.remove(getSubPath(path), subsection);
@@ -644,16 +647,17 @@ public abstract class ConfigurationCodec
         /**
          * Converts a field value into a serializable Object
          *
-         * @param field
-         * @param fieldValue
-         * @param basepath
-         * @param section
-         * @return the converted fieldvalue
+         * @param field the field
+         * @param fieldValue the value
+         * @param basePath the base path
+         * @param section the section
+         * @return the converted field value
          * @throws ConversionException
          * @throws IllegalArgumentException
          * @throws IllegalAccessException
          */
-        public Object convertFromFieldValueToObject(Field field, Object fieldValue, String basepath, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
+        @SuppressWarnings("unchecked")
+        public Object convertFromFieldValueToObject(Field field, Object fieldValue, String basePath, Map<String, Object> section) throws ConversionException, IllegalArgumentException, IllegalAccessException
         {
             if (fieldValue == null)
             {
@@ -662,16 +666,16 @@ public abstract class ConfigurationCodec
             Class fieldClass = fieldValue.getClass();
             if (fieldValue instanceof Configuration)
             {
-                String newPath = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR);
-                if (!basepath.isEmpty())
+                String newPath = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
+                if (!basePath.isEmpty())
                 {
-                    newPath = basepath + PATHSEPARATOR + newPath;
+                    newPath = basePath + PATH_SEPARATOR + newPath;
                 }
                 if (this.parentConfig == null)
                 {
-                    return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
+                    return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
                 }
-                return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basepath, section));
+                return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
             }
             Converter converter = Convert.matchConverter(fieldClass);
             if (converter == null)
@@ -680,15 +684,15 @@ public abstract class ConfigurationCodec
                 {
                     if (!((Map)fieldValue).isEmpty() && ((Map)fieldValue).values().iterator().next() instanceof Configuration)
                     {
-                        Map<Object, ? extends Configuration> fieldMap = (Map)fieldValue;
+                        Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
                         Map<String, Object> map = new LinkedHashMap<String, Object>();
                         Converter keyConverter = Convert.matchConverter(fieldMap.keySet().iterator().next().getClass());
                         for (Object key : fieldMap.keySet())
                         {
-                            String newPath = field.getAnnotation(Option.class).value().replace(".", PATHSEPARATOR) + PATHSEPARATOR + this.findKey(key.toString());
-                            if (!basepath.isEmpty())
+                            String newPath = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR) + PATH_SEPARATOR + this.findKey(key.toString());
+                            if (!basePath.isEmpty())
                             {
-                                newPath = basepath + PATHSEPARATOR + newPath;
+                                newPath = basePath + PATH_SEPARATOR + newPath;
                             }
                             if (this.parentConfig == null)
                             {
@@ -699,7 +703,7 @@ public abstract class ConfigurationCodec
                             else
                             {
                                 map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                new CodecContainer().fillFromFields(this, ((Map<Object, ? extends Configuration>)field.get(this.parentConfig)).get(key), fieldMap.get(key),
+                                new CodecContainer().fillFromFields(this, ((Map<Object, Configuration>)field.get(this.parentConfig)).get(key), fieldMap.get(key),
                                         newPath, this.getOrCreateSubSection(key.toString(), map)));
                             }
 

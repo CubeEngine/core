@@ -6,6 +6,8 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
+import org.apache.commons.lang.Validate;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +16,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class is a generic language that loads its translations from files.
@@ -127,6 +128,7 @@ public class NormalLanguage implements Cleanable, Language
         return this.parent;
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, String> loadMessages(String cat)
     {
         try
@@ -157,6 +159,7 @@ public class NormalLanguage implements Cleanable, Language
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, String> updateMessages(File messageFile, Map<String, String> catMessages)
     {
         InputStream resource = CubeEngine.getFileManager().getSourceOf(messageFile);

@@ -579,6 +579,7 @@ public class CommandContext
      * @param type the Class of the value
      * @return the value or null if not available
      */
+    @SuppressWarnings("unchecked")
     public <T> T getNamed(String name, Class<T> type)
     {
         Object obj = this.namedParams.get(name.toLowerCase(Locale.ENGLISH));
