@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class KitsGivenManager extends TwoKeyStorage<Integer, String, KitsGiven>
+public class KitsGivenManager extends TwoKeyStorage<Long, String, KitsGiven>
 {
     private static final int REVISION = 1;
 

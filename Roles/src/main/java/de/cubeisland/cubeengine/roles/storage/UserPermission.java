@@ -12,12 +12,12 @@ public class UserPermission implements TripletKeyModel<Long, Long, String>
 {
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long    userId;
+    public long userId;
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "worlds", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long    worldId;
+    public long worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)
-    public String  perm;
+    public String perm;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean isSet;
 

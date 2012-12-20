@@ -6,10 +6,10 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import org.bukkit.World;
 
-@SingleKeyEntity(tableName = "worlds", primaryKey = "key")
+@SingleKeyEntity(tableName = "worlds", primaryKey = "key", autoIncrement = true)
 public class WorldModel implements Model<Long>
 {
-    @Attribute(type = AttrType.INT)
+    @Attribute(type = AttrType.INT, unsigned = true)
     public Long key = -1L;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String worldName;

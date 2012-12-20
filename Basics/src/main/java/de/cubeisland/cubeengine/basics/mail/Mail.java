@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@SingleKeyEntity(tableName = "mail", primaryKey = "key")
+@SingleKeyEntity(tableName = "mail", primaryKey = "key", autoIncrement = true)
 public class Mail implements Model<Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -16,7 +16,7 @@ public class Mail implements Model<Long>
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String message;
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT)
+    @Attribute(type = AttrType.INT, unsigned = true)
     public long   userId;
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)

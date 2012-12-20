@@ -12,7 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
-@SingleKeyEntity(tableName = "logs", primaryKey = "key")
+@SingleKeyEntity(tableName = "logs", primaryKey = "key", autoIncrement = true)
 public class LogModel implements Model<Long>
 {
 //TODO trim chatlog and dont log if empty then

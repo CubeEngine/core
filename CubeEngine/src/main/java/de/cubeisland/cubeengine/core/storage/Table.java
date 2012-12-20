@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 /**
  * Represents a table in database with a revision.
  */
-@SingleKeyEntity(tableName = "tables", primaryKey = "key")
+@SingleKeyEntity(tableName = "tables", primaryKey = "key", autoIncrement = true)
 public class Table implements Model<Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true)

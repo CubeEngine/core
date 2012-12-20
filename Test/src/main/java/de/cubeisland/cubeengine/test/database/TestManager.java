@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 
-public class TestManager extends SingleKeyStorage<Integer, TestModel>
+public class TestManager extends SingleKeyStorage<Long, TestModel>
 {
     public TestManager(Database database)
     {

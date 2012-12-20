@@ -164,9 +164,9 @@ public class Test extends Module
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 20, "Heinz"), false);
         this.manager.store(new TestModel(this.getDate(2012, 8, 8), 120, "Hans"), false);
         this.manager.store(new TestModel(this.getDate(2011, 2, 8), 50, "Manfred"), false);
-        this.manager.get(2);
+        this.manager.get(2L);
         this.manager.getAll();
-        TestModel model = this.manager.get(3);
+        TestModel model = this.manager.get(3L);
         model.orderDate = this.getDate(111, 2, 2);
         model.orderPrice = 100;
         model.customer = "Paul";

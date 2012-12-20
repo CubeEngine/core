@@ -11,25 +11,25 @@ import de.cubeisland.cubeengine.core.util.Pair;
 tableName = "kitsgiven",
               firstPrimaryKey = "userId",
               secondPrimaryKey = "kitName")
-public class KitsGiven implements TwoKeyModel<Integer, String>
+public class KitsGiven implements TwoKeyModel<Long, String>
 {
     // @ForeignKey(table = "user", field = "key")
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT)
-    public int    userId;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long userId;
     @Attribute(type = AttrType.VARCHAR, length = 50)
     public String kitName;
     @Attribute(type = AttrType.INT)
-    public int    amount;
+    public int amount;
 
     @Override
-    public Pair<Integer, String> getKey()
+    public Pair<Long, String> getKey()
     {
-        return new Pair<Integer, String>(userId, kitName);
+        return new Pair<Long, String>(userId, kitName);
     }
 
     @Override
-    public void setKey(Pair<Integer, String> key)
+    public void setKey(Pair<Long, String> key)
     {
         this.userId = key.getLeft();
         this.kitName = key.getRight();

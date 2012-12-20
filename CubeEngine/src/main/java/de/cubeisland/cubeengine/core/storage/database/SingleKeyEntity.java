@@ -18,7 +18,10 @@ public @interface SingleKeyEntity
 
     public String charset() default "utf8";
 
-    public boolean autoIncrement() default true;
+    /**
+     * only use with unsigned int!
+     */
+    public boolean autoIncrement();
 
     public String primaryKey();
 }

@@ -11,8 +11,8 @@ import de.cubeisland.cubeengine.core.user.User;
 public class FlyModel implements Model<Long>
 {
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT)
-    public Long    key;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public Long key;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean flying;
 

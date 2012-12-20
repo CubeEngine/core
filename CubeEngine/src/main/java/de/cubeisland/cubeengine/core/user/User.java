@@ -46,7 +46,7 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 /**
  * A CubeEngine User (can exist offline too).
  */
-@SingleKeyEntity(tableName = "user", primaryKey = "key")
+@SingleKeyEntity(tableName = "user", primaryKey = "key", autoIncrement = true)
 public class User extends UserBase implements LinkingModel<Long>
 {
     public static Long NO_ID = -1L;
@@ -86,13 +86,13 @@ public class User extends UserBase implements LinkingModel<Long>
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
-        super(Bukkit.getOfflinePlayer((String)args.get(1)));
-        this.key = (Long)args.get(0);
+        super(Bukkit.getOfflinePlayer((String) args.get(1)));
+        this.key = (Long) args.get(0);
         this.player = this.offlinePlayer.getName();
-        this.nogc = (Boolean)args.get(2);
-        this.lastseen = (Timestamp)args.get(3);
-        this.firstseen = (Timestamp)args.get(3);
-        this.passwd = (byte[])args.get(4);
+        this.nogc = (Boolean) args.get(2);
+        this.lastseen = (Timestamp) args.get(3);
+        this.firstseen = (Timestamp) args.get(3);
+        this.passwd = (byte[]) args.get(4);
     }
 
     public User(Long key, OfflinePlayer player)
@@ -178,7 +178,7 @@ public class User extends UserBase implements LinkingModel<Long>
         {
             return null;
         }
-        return (T)this.attachments.get(modelClass);
+        return (T) this.attachments.get(modelClass);
     }
 
     /**
@@ -270,14 +270,15 @@ public class User extends UserBase implements LinkingModel<Long>
             {
                 return null;
             }
-            T value = (T)attributeMap.get(name);
+            T value = (T) attributeMap.get(name);
             if (value != null)
             {
                 return value;
             }
         }
         catch (ClassCastException ignored)
-        {}
+        {
+        }
         return def;
     }
 
@@ -481,7 +482,7 @@ public class User extends UserBase implements LinkingModel<Long>
         }
         if (attachment == null)
         {
-            attachment = player.addAttachment((Plugin)CubeEngine.getCore());
+            attachment = player.addAttachment((Plugin) CubeEngine.getCore());
             attachment.setPermission(posPerm, true);
             attachment.setPermission(negPerm, true);
         }

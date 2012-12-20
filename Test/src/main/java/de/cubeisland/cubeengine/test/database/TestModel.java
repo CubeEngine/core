@@ -6,11 +6,11 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import java.sql.Date;
 
-@SingleKeyEntity(tableName = "orders", primaryKey = "id")
-public class TestModel implements Model<Integer>
+@SingleKeyEntity(tableName = "orders", primaryKey = "id", autoIncrement = true)
+public class TestModel implements Model<Long>
 {
-    @Attribute(type = AttrType.INT)
-    public int id;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long id;
     @Attribute(type = AttrType.DATE)
     public Date orderDate;
     @Attribute(type = AttrType.DOUBLE)
@@ -21,7 +21,7 @@ public class TestModel implements Model<Integer>
     public TestModel()
     {
     }
-    
+
     public TestModel(Date orderDate, double orderPrice, String customer)
     {
         this.id = -1;
@@ -31,13 +31,13 @@ public class TestModel implements Model<Integer>
     }
 
     @Override
-    public Integer getKey()
+    public Long getKey()
     {
         return this.id;
     }
 
     @Override
-    public void setKey(Integer key)
+    public void setKey(Long key)
     {
         this.id = key;
     }

@@ -11,11 +11,11 @@ import de.cubeisland.cubeengine.core.util.Triplet;
 public class UserMetaData implements TripletKeyModel<Long, Long, String>
 {
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
-    @Attribute(type = AttrType.INT)
-    public long   userId;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long userId;
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "worlds", f_field = "key")
-    @Attribute(type = AttrType.INT)
-    public long   worldId;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)
     public String key;
     @Attribute(type = AttrType.VARCHAR, length = 255)
