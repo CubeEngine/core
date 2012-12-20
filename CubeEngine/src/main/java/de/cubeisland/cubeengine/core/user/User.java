@@ -423,7 +423,7 @@ public class User extends UserBase implements LinkingModel<Long>
      * @param permissions a map of permissions
      * @param player the player
      */
-    void setPermission(Map<String, Boolean> permissions, Player player)
+    public void setPermission(Map<String, Boolean> permissions, Player player)
     {
         String posName = this.getName();
         String negName = "!" + this.getName();
