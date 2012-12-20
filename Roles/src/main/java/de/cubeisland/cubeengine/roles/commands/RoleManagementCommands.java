@@ -296,8 +296,43 @@ public class RoleManagementCommands extends ContainerCommand
         }
     }
 
+    @Command(
+    desc = "Show the priority of given role [in world]",
+             usage = "<role> [in <world>]",
+             params =
+    @Param(names = "in", type = World.class),
+             max = 2, min = 1)
     public void priority(CommandContext context)
     {
+        User sender = context.getSenderAsUser();
+        World world;
+        if (!context.hasNamed("in"))
+        {
+            if (sender == null)
+            {
+                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
+                return;
+            }
+            world = sender.getWorld();
+        }
+        else
+        {
+            world = context.getNamed("in", World.class);
+            if (world == null)
+            {
+                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+                return;
+            }
+        }
+        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
+        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        Role role = provider.getRole(context.getString(0));
+        if (role == null)
+        {
+            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
+            return;
+        }
+        context.sendMessage("roles", "&eThe priority of the role &6%s &ein &6%s &eis: &6%d", role.getName(), world.getName(), role.getPriority().value);
     }
 
     public void setpermission(CommandContext context)
