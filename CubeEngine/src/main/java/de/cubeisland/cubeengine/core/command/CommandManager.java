@@ -8,11 +8,6 @@ import de.cubeisland.cubeengine.core.bukkit.CubeCommandMap;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -22,6 +17,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.v1_4_6.CraftServer;
 
 /**
  * This class manages the registration of commands.

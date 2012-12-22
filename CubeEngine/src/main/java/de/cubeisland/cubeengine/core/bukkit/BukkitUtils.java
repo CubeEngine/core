@@ -5,10 +5,10 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
-import net.minecraft.server.v1_4_5.EntityPlayer;
-import net.minecraft.server.v1_4_5.LocaleLanguage;
-import net.minecraft.server.v1_4_5.NetServerHandler;
-import net.minecraft.server.v1_4_5.ServerConnection;
+import net.minecraft.server.v1_4_6.EntityPlayer;
+import net.minecraft.server.v1_4_6.LocaleLanguage;
+import net.minecraft.server.v1_4_6.PlayerConnection;
+import net.minecraft.server.v1_4_6.ServerConnection;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,10 +18,10 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
-import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_4_5.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_6.CraftServer;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_6.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -267,13 +267,13 @@ public class BukkitUtils
     private static final Location helperLocation = new Location(null, 0, 0, 0);
 
     @SuppressWarnings("unchecked")
-    public static void swapPlayerNetServerHandler(EntityPlayer player, NetServerHandler newHandler)
+    public static void swapPlayerNetServerHandler(EntityPlayer player, PlayerConnection newHandler)
     {
         if (NSH_LIST_FIELD == null)
         {
             return;
         }
-        NetServerHandler oldHandler = player.netServerHandler;
+        PlayerConnection oldHandler = player.playerConnection;
         try
         {
             if (oldHandler.getClass() != newHandler.getClass())
@@ -282,7 +282,7 @@ public class BukkitUtils
                 newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
                 ServerConnection sc = player.server.ae();
-                ((List<NetServerHandler>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
+                ((List<PlayerConnection>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
                 CubeEngine.getLogger().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
                 oldHandler.disconnected = true;
@@ -290,7 +290,7 @@ public class BukkitUtils
         }
         catch (Exception e)
         {
-            player.netServerHandler = oldHandler;
+            player.playerConnection = oldHandler;
             CubeEngine.getLogger().log(DEBUG, e.getLocalizedMessage(), e);
         }
     }
@@ -299,7 +299,7 @@ public class BukkitUtils
     {
         final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
-        swapPlayerNetServerHandler(entity, new NetServerHandler(entity.server, entity.netServerHandler.networkManager, entity));
+        swapPlayerNetServerHandler(entity, new PlayerConnection(entity.server, entity.playerConnection.networkManager, entity));
     }
 
     public static void reloadHelpMap()
@@ -348,13 +348,13 @@ public class BukkitUtils
         resetCommandLogging();
     }
 
-    public static net.minecraft.server.v1_4_5.ItemStack getNmsItemStack(ItemStack item)
+    public static net.minecraft.server.v1_4_6.ItemStack getNmsItemStack(ItemStack item)
     {
         if (item instanceof CraftItemStack)
         {
             try
             {
-                return (net.minecraft.server.v1_4_5.ItemStack)handle.get(item);
+                return (net.minecraft.server.v1_4_6.ItemStack)handle.get(item);
             }
             catch (Exception ignored)
             {}

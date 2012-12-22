@@ -2,14 +2,13 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.TestCore;
-import junit.framework.TestCase;
-import net.minecraft.server.v1_4_5.NetHandler;
-import net.minecraft.server.v1_4_5.Packet;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import junit.framework.TestCase;
+import net.minecraft.server.v1_4_6.Connection;
+import net.minecraft.server.v1_4_6.Packet;
 
 public class HackTest extends TestCase
 {
@@ -21,7 +20,7 @@ public class HackTest extends TestCase
 
     public void testImplementedPacketMethods()
     {
-        Method[] nhMethods = readMethods(NetHandler.class);
+        Method[] nhMethods = readMethods(Connection.class);
         Method[] ceMethods = readMethods(CubeEngineNetServerHandler.class);
 
         System.out.println("nh methods: " + nhMethods.length);

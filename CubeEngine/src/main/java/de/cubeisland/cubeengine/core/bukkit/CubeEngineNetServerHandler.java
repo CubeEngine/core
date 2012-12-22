@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketSentEvent;
 import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
-import net.minecraft.server.v1_4_5.*;
+import net.minecraft.server.v1_4_6.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
@@ -11,7 +11,7 @@ import org.bukkit.plugin.PluginManager;
  * This class is used to replace the original NetServerHandler and calling an
  * Events when receiving packets.
  */
-public class CubeEngineNetServerHandler extends NetServerHandler
+public class CubeEngineNetServerHandler extends PlayerConnection
 {
     private final PluginManager pm;
     private final TaskQueue taskQueue;
@@ -19,7 +19,7 @@ public class CubeEngineNetServerHandler extends NetServerHandler
 
     public CubeEngineNetServerHandler(EntityPlayer player, TaskQueue taskQueue)
     {
-        super(player.server, player.netServerHandler.networkManager, player);
+        super(player.server, player.playerConnection.networkManager, player);
         this.pm = player.getBukkitEntity().getServer().getPluginManager();
         this.taskQueue = taskQueue;
         this.bukkitPlayer = player.getBukkitEntity();
@@ -185,13 +185,6 @@ public class CubeEngineNetServerHandler extends NetServerHandler
     {
         super.a(pnes);
         this.packetReceived(pnes);
-    }
-
-    @Override
-    public void a(Packet21PickupSpawn pps)
-    {
-        super.a(pps);
-        this.packetReceived(pps);
     }
 
     @Override

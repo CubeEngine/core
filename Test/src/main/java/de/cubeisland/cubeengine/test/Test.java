@@ -19,9 +19,9 @@ import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
-import net.minecraft.server.v1_4_5.*;
+import net.minecraft.server.v1_4_6.*;
 import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_6.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -291,7 +291,7 @@ public class Test extends Module
 
     private class KeepAliveTimer extends TimerTask
     {
-        private final ServerConfigurationManager mojangServer;
+        private final DedicatedPlayerList mojangServer;
         private final Random random;
 
         public KeepAliveTimer()
@@ -306,7 +306,7 @@ public class Test extends Module
         {
             for (EntityPlayer player : (List<EntityPlayer>)this.mojangServer.players)
             {
-                player.netServerHandler.sendPacket(new Packet0KeepAlive(random.nextInt()));
+                player.playerConnection.sendPacket(new Packet0KeepAlive(random.nextInt()));
             }
         }
     }
