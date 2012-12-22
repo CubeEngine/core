@@ -16,6 +16,7 @@ public abstract class Role
     protected Map<String, RolePermission> perms;
     protected Map<String, Boolean> litaralPerms;
     protected List<Role> parentRoles;
+    protected List<Role> childRoles = new ArrayList<Role>();
     protected Map<String, RoleMetaData> metaData;
     protected boolean isGlobal;
 
@@ -206,5 +207,10 @@ public abstract class Role
         }
         result.putAll(this.litaralPerms);
         return result;
+    }
+
+    public void addChild(ConfigRole role)
+    {
+        this.childRoles.add(role);
     }
 }

@@ -282,4 +282,49 @@ public class RoleProvider
     {
         return this.config.mainWorld;
     }
+
+    public void setRolePermission(Role role, String perm, Boolean set)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void setRoleMetaData(Role role, String key, String value)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void resetRoleMetaData(Role role, String key)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void clearRoleMetaData(Role role)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void setParentRole(Role role, Role pRole)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void removeParentRole(Role role, Role pRole)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void clearParentRoles(Role role)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void setRolePriority(Role role, Priority priority)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void renameRole(Role role, String newName)
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

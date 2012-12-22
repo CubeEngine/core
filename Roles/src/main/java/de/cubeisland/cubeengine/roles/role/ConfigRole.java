@@ -12,5 +12,9 @@ public class ConfigRole extends Role
         super(config.roleName, config.priority, config.perms, parentRoles, config.metadata, isGlobal);
         this.applyInheritence(new MergedRole(parentRoles));
         this.config = config;
+        for (Role role : parentRoles)
+        {
+            role.addChild(this);
+        }
     }
 }
