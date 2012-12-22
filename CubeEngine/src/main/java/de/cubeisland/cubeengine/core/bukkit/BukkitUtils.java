@@ -61,7 +61,7 @@ public class BukkitUtils
         }
         try
         {
-            handle = CraftItemStack.class.getField("handle");
+            handle = CraftItemStack.class.getDeclaredField("handle");
             handle.setAccessible(true);
         }
         catch (Exception ignored)

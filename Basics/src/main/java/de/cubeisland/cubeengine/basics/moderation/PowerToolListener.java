@@ -3,16 +3,14 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import java.util.ArrayList;
 import net.minecraft.server.v1_4_6.*;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import java.util.ArrayList;
 
 public class PowerToolListener implements Listener
 {
