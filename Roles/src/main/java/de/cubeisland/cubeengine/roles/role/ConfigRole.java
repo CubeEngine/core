@@ -111,6 +111,7 @@ public class ConfigRole extends Role
     {
         this.makeDirty();
         this.config.roleName = newName;
+
         for (Role role : this.childRoles)
         {
             role.removeParentRole(this.name);

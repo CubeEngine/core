@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.roles.role.MergedRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
+import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import de.cubeisland.cubeengine.roles.storage.UserMetaData;
 import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
 import de.cubeisland.cubeengine.roles.storage.UserPermission;
@@ -52,13 +53,13 @@ public class UserManagementCommands extends ContainerCommand
         return user;
     }
 
-    private Role getRole(User user, long worldId)
+    private UserSpecificRole getRole(User user, long worldId)
     {
         if (user == null)
         {
             return null;
         }
-        TLongObjectHashMap<MergedRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
+        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
         if (roleContainer == null)
         {
             throw new IllegalStateException("User has no rolecontainer!");
@@ -108,7 +109,7 @@ public class UserManagementCommands extends ContainerCommand
         User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getRole(user, worldId);
         String permission = context.getString(0);
         //context.sendMessage("roles", "&eCould not find the permission &6%s for &2%s&e!", context.getString(0), user.getName());
         RolePermission myPerm = role.getPerms().get(permission); // should never be null
@@ -177,7 +178,7 @@ public class UserManagementCommands extends ContainerCommand
         User user = this.getUser(context, 0);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getRole(user, worldId);
         context.sendMessage("roles", "&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
         for (Entry<String, Boolean> entry : role.getAllLiteralPerms().entrySet())
         {
@@ -200,7 +201,7 @@ public class UserManagementCommands extends ContainerCommand
         User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getRole(user, worldId);
         String metaKey = context.getString(0);
         if (!role.getMetaData().containsKey(metaKey))
         {
@@ -227,7 +228,7 @@ public class UserManagementCommands extends ContainerCommand
         User user = this.getUser(context, 0);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getRole(user, worldId);
         context.sendMessage("roles", "&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());
         for (Entry<String, RoleMetaData> entry : role.getMetaData().entrySet())
         {
@@ -377,26 +378,23 @@ public class UserManagementCommands extends ContainerCommand
         }
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserPermissionsManager upManager = ((Roles) this.getModule()).getDbUserPerm();
+        UserSpecificRole role = this.getRole(user, worldId);
+        role.setPermission(perm, set);
         if (set == null)
         {
-            upManager.deleteByKey(new Triplet<Long, Long, String>(user.key, worldId, perm));
             context.sendMessage("roles", "&ePermission &6%s &eof &2%s&e resetted!", perm, user.getName());
         }
         else
         {
-            UserPermission up = new UserPermission(user.key, worldId, perm, set);
-            upManager.merge(up);
             if (set)
             {
                 context.sendMessage("roles", "&aPermission &6%s &aof &2%s&a set to true!", perm, user.getName());
             }
             else
             {
-                context.sendMessage("roles", "&cPermission &6%s &cof &2%s&c set tp false!", perm, user.getName());
+                context.sendMessage("roles", "&cPermission &6%s &cof &2%s&c set to false!", perm, user.getName());
             }
         }
-        ((Roles) this.getModule()).getManager().reloadAndApplyRole(user, user.getPlayer(),worldId);
     }
 
     public void resetpermission(CommandContext context)
@@ -426,8 +424,8 @@ public class UserManagementCommands extends ContainerCommand
         }
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserMetaDataManager umManager = ((Roles) this.getModule()).getDbUserMeta();
-        umManager.merge(new UserMetaData(user.key, worldId, metaKey, metaVal));
+        UserSpecificRole role = this.getRole(user, worldId);
+        role.setMetaData(metaKey, metaVal);
         context.sendMessage("roles", "&aMetadata &6%s &aof &2%s&a set to &6%s &ain &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
 
@@ -451,8 +449,8 @@ public class UserManagementCommands extends ContainerCommand
         }
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserMetaDataManager umManager = ((Roles) this.getModule()).getDbUserMeta();
-        umManager.deleteByKey(new Triplet<Long, Long, String>(user.key, worldId, metaKey));
+        UserSpecificRole role = this.getRole(user, worldId);
+        role.setMetaData(metaKey, null);
         context.sendMessage("roles", "&eMetadata &6%s &eof &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
     }
 
@@ -472,4 +470,6 @@ public class UserManagementCommands extends ContainerCommand
         }
         return world;
     }
+    
+    //TODO clear meta cmd
 }

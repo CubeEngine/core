@@ -37,7 +37,7 @@ public class RolesEventHandler implements Listener
                 return;
             }
         }
-        this.manager.applyRole(event.getPlayer(), worldToId);
+        this.manager.applyRole(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -50,7 +50,7 @@ public class RolesEventHandler implements Listener
     public void onLogin(PlayerLoginEvent event)
     {
         this.manager.preCalculateRoles(event.getPlayer().getName(), false);
-        this.manager.applyRole(event.getPlayer(), this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld()));
+        this.manager.applyRole(event.getPlayer());
     }
 
     @EventHandler
@@ -61,7 +61,7 @@ public class RolesEventHandler implements Listener
         {
             user.removeAttribute(module, "roleContainer"); // remove potential old calculated roles
             manager.preCalculateRoles(user.getName(), false);
-            manager.applyRole(user.getPlayer(), module.getCore().getWorldManager().getWorldId(user.getWorld()));
+            manager.applyRole(user.getPlayer());
         }
     }
 }

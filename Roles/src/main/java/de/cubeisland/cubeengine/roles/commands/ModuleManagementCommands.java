@@ -14,7 +14,7 @@ public class ModuleManagementCommands extends ContainerCommand
         super(module, "admin", "Manages the module.");//TODO alias manadmin
     }
 
-    @Alias(names="manload")
+    @Alias(names = "manload")
     @Command(desc = "Reloads all roles from config")
     public void reload(CommandContext context)
     {
@@ -24,13 +24,13 @@ public class ModuleManagementCommands extends ContainerCommand
         for (User user : module.getUserManager().getOnlineUsers())
         {
             user.clearAttributes(this.getModule()); // clear old attributes
-            module.getManager().preCalculateRoles(user.getName(),true);
-            module.getManager().applyRole(user.getPlayer(), module.getCore().getWorldManager().getWorldId(user.getWorld()));
+            module.getManager().preCalculateRoles(user.getName(), true);
+            module.getManager().applyRole(user.getPlayer());
         }
         context.sendMessage("roles", "&f[&6Roles&f] &areload complete!");
     }
 
-    @Alias(names="mansave")
+    @Alias(names = "mansave")
     @Command(desc = "Overrides all configs with current settings")
     public void save(CommandContext context)
     {

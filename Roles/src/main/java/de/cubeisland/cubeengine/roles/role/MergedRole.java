@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import de.cubeisland.cubeengine.roles.role.config.Priority;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +10,6 @@ import java.util.Map.Entry;
 
 public class MergedRole extends Role
 {
-
     private Collection<Role> mergedWith;
 
     public MergedRole(Collection<Role> roleToMerge)
@@ -65,7 +65,7 @@ public class MergedRole extends Role
      * @param perms
      * @param meta
      */
-    public MergedRole(String username, THashMap<String, Boolean> perms, THashMap<String, String> meta)
+    MergedRole(String username, THashMap<String, Boolean> perms, THashMap<String, String> meta)
     {
         this.name = username;
         this.perms = new HashMap<String, RolePermission>();
@@ -100,5 +100,53 @@ public class MergedRole extends Role
     public Collection<Role> getMergedWith()
     {
         return mergedWith;
+    }
+
+    @Override
+    public void setPermission(String perm, Boolean set)
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void setMetaData(String key, String value)
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void clearMetaData()
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void setParentRole(String pRole)
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public boolean removeParentRole(String pRole)
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void clearParentRoles()
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void setPriority(Priority priority)
+    {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void rename(String newName)
+    {
+        throw new UnsupportedOperationException("Not supported.");
     }
 }
