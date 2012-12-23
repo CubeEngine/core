@@ -13,7 +13,6 @@ import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class RoleManager
         {
             provider.init(rolesFolder);
         }
-        this.calculateRoles();
+        this.recalculateAllRoles();
         for (RoleProvider provider : this.providers.valueCollection())
         {
             provider.loadDefaultRoles(this.module.getConfiguration());
@@ -79,7 +78,7 @@ public class RoleManager
     }
     private Stack<String> roleStack;
 
-    public void calculateRoles()
+    public void recalculateAllRoles()
     {
         roleStack = new Stack<String>();
         // Calculate global roles:
@@ -92,14 +91,12 @@ public class RoleManager
             }
             this.globalRoles.put(roleName, role);
         }
-        // Calculate world roles:
+        // Calculate world roles for each world-provider:
         for (RoleProvider provider : providers.valueCollection())
         {
             provider.calculateRoles(this.globalRoles);
         }
     }
-//TODO make sure when calculating ALL other plugins are loaded
-    //and/or all permissions are registered
 
     private Role calculateGlobalRole(RoleConfig config)
     {

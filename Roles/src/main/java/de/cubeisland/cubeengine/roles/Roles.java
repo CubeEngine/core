@@ -47,22 +47,7 @@ public class Roles extends Module
         this.dbUserPerm = new UserPermissionsManager(this.getDatabase());
         this.manager = new RoleManager(this);
         this.getEventManager().registerListener(this, new RolesEventHandler(this));
-        //TODO catch this with an event when allmodules are loaded
-        final Roles roles = this;
-        this.getTaskManger().scheduleSyncDelayedTask(this, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                manager.init();
-                for (User user : getUserManager().getOnlineUsers()) // reapply roles on reload
-                {
-                    user.removeAttribute(roles, "roleContainer"); // remove potential old calculated roles
-                    manager.preCalculateRoles(user.getName(), false);
-                    manager.applyRole(user.getPlayer(), roles.getCore().getWorldManager().getWorldId(user.getWorld()));
-                }
-            }
-        }, 1);
+        //init on FinishedLoadModulesEvent
     }
 
     @Override
