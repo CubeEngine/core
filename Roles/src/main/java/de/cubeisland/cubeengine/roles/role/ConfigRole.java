@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
+import java.io.File;
 import java.util.List;
 
 public class ConfigRole extends Role
@@ -16,5 +17,17 @@ public class ConfigRole extends Role
         {
             role.addChild(this);
         }
+    }
+
+    public void saveConfigToFile()
+    {
+        this.config.save();
+    }
+
+    public void saveConfigToNewFile()
+    {
+        this.config.getFile().delete();
+        this.config.setFile(new File(this.config.getFile().getParentFile(), this.name + "yml"));
+        this.config.save();
     }
 }

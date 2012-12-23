@@ -53,6 +53,7 @@ public class RolesEventHandler implements Listener
         this.manager.applyRole(event.getPlayer(), this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld()));
     }
 
+    @EventHandler
     public void onAllModulesLoaded(FinishedLoadModulesEvent event)
     {
         manager.init();

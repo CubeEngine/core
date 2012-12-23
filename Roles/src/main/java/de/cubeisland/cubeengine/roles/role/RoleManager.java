@@ -51,10 +51,14 @@ public class RoleManager
         }
     }
 
+    /**
+     * Initializes the RoleManager and all RoleProviders and Roles for currently
+     * loaded worlds.
+     */
     public void init()
     {
-        this.loadProviders();
         this.rolesFolder.mkdir();
+        // Global roles:
         this.module.getLogger().debug("Loading global roles...");
         int i = 0;
         for (File file : rolesFolder.listFiles())
@@ -66,9 +70,11 @@ public class RoleManager
             }
         }
         this.module.getLogger().debug(i + " global roles loaded!");
+        // World roles:
+        this.createAllProviders();
         for (RoleProvider provider : this.providers.valueCollection())
         {
-            provider.init(rolesFolder);
+            provider.init(this.rolesFolder);
         }
         this.recalculateAllRoles();
         for (RoleProvider provider : this.providers.valueCollection())
@@ -80,8 +86,9 @@ public class RoleManager
 
     public void recalculateAllRoles()
     {
-        roleStack = new Stack<String>();
+        this.roleStack = new Stack<String>();
         // Calculate global roles:
+        this.module.getLogger().debug("Calculating global Roles...");
         for (String roleName : this.globalConfigs.keySet())
         {
             Role role = this.calculateGlobalRole(this.globalConfigs.get(roleName));
@@ -94,7 +101,11 @@ public class RoleManager
         // Calculate world roles for each world-provider:
         for (RoleProvider provider : providers.valueCollection())
         {
-            provider.calculateRoles(this.globalRoles);
+            if (!provider.isCalculated())
+            {
+                this.module.getLogger().debug("Calculating roles for " + provider.getMainWorld() + "...");
+                provider.calculateRoles(this.globalRoles, false);
+            }
         }
     }
 
@@ -148,6 +159,7 @@ public class RoleManager
             role = new ConfigRole(config, parentRoles, true);
 
             this.roleStack.pop();
+            this.module.getLogger().debug(role.getName() + " loaded!");
             return role;
         }
         catch (CircularRoleDepedencyException ex)
@@ -157,7 +169,11 @@ public class RoleManager
         }
     }
 
-    private void loadProviders()
+    /**
+     * Clears and recreates all needed providers with their respective
+     * RoleMirrors
+     */
+    private void createAllProviders()
     {
         this.providers.clear();
         for (RoleMirror mirror : this.module.getConfiguration().mirrors)
@@ -226,41 +242,45 @@ public class RoleManager
         User user = this.module.getUserManager().getUser(username, true);
         if (user.getAttribute(this.module, "roleContainer") != null)
         {
-            return;
+            return; // Roles are calculated!
         }
-        TLongObjectHashMap<List<Role>> rolesPerWorld = new TLongObjectHashMap<List<Role>>();
+        TLongObjectHashMap<List<Role>> userRolesPerWorld = new TLongObjectHashMap<List<Role>>();
         for (RoleProvider provider : this.getProviders())
         {
             TLongObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user, reload);
-            rolesPerWorld.putAll(pRolesPerWorld);
+            userRolesPerWorld.putAll(pRolesPerWorld);
         }
         TLongObjectHashMap<MergedRole> roleContainer = new TLongObjectHashMap<MergedRole>();
 
         TLongObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
         TLongObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
 
-        for (long worldId : rolesPerWorld.keys())
+        for (long worldId : userRolesPerWorld.keys())
         {
-            // UserSpecific Settings:
-            MergedRole userSpecificRole = new MergedRole(username, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
-            // Roles Assigned to this user:
-            MergedRole mergedRole = null;
-            for (MergedRole inContainer : roleContainer.valueCollection())
-            {
-                if (inContainer.getMergedWith().equals(rolesPerWorld.get(worldId)))
-                {
-                    mergedRole = inContainer;
-                }
-            }
-            if (mergedRole == null)
-            {
-                List<Role> roles = rolesPerWorld.get(worldId);
-                mergedRole = new MergedRole(roles); // merge all assigned roles
-            }
-            userSpecificRole.applyInheritence(mergedRole);
-            roleContainer.put(worldId, userSpecificRole);
+            this.preCalculateRole(user, roleContainer, userRolesPerWorld.get(worldId), worldId, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
         }
         user.setAttribute(this.module, "roleContainer", roleContainer);
+    }
+
+    public void preCalculateRole(User user, TLongObjectHashMap<MergedRole> roleContainer, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
+    {
+        // UserSpecific Settings:
+        MergedRole userSpecificRole = new MergedRole(user.getName(), userPerms, userMeta);
+        // Roles Assigned to this user:
+        MergedRole mergedRole = null;
+        for (MergedRole inContainer : roleContainer.valueCollection())
+        {
+            if (inContainer.getMergedWith().equals(roles))
+            {
+                mergedRole = inContainer;
+            }
+        }
+        if (mergedRole == null)
+        {
+            mergedRole = new MergedRole(roles); // merge all assigned roles
+        }
+        userSpecificRole.applyInheritence(mergedRole);
+        roleContainer.put(worldId, userSpecificRole);
     }
 
     public void applyRole(Player player, long worldId)

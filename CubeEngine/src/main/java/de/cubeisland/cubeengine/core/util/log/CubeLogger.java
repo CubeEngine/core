@@ -1,15 +1,14 @@
 package de.cubeisland.cubeengine.core.util.log;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import java.util.logging.Level;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * This logger is used for all of CubeEngine's messages.

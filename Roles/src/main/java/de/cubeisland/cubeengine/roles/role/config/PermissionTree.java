@@ -63,7 +63,6 @@ public class PermissionTree
     protected void addPermission(String permission, boolean setTrue)
     {
         permission = permission.toLowerCase(Locale.ENGLISH);
-        CubeEngine.getLogger().log(LogLevel.DEBUG, permission + ": " + setTrue);
         this.permissions.put(permission, setTrue);
     }
 

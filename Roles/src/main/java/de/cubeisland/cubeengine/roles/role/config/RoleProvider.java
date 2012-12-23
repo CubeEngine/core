@@ -24,10 +24,11 @@ import java.util.Stack;
 
 public class RoleProvider
 {
-    private RoleMirror config;
+    private RoleMirror mirrorConfig;
     private THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
     private THashMap<String, Role> roles = new THashMap<String, Role>();
     private boolean init = false;
+    private boolean rolesCalculated = false;
     private File worldfolder = null;
     private Set<Role> defaultRoles = new HashSet<Role>();
     private Stack<String> roleStack = new Stack<String>();
@@ -35,7 +36,7 @@ public class RoleProvider
 
     public RoleProvider(RoleMirror mirrorConfig)
     {
-        this.config = mirrorConfig;
+        this.mirrorConfig = mirrorConfig;
     }
 
     /**
@@ -45,7 +46,7 @@ public class RoleProvider
      */
     public RoleProvider(long worldId)
     {
-        this.config = new RoleMirror(this.module, worldId);
+        this.mirrorConfig = new RoleMirror(this.module, worldId);
     }
 
     public Iterable<RoleConfig> getConfigs()
@@ -75,7 +76,7 @@ public class RoleProvider
 
     public TLongObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
     {
-        return this.config.getWorlds();
+        return this.mirrorConfig.getWorlds();
     }
 
     public TLongObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
@@ -92,7 +93,7 @@ public class RoleProvider
         }
         for (long worldID : rolesFromDb.keys())
         {
-            Pair<Boolean, Boolean> mirrorRoleUsers = this.config.getWorlds().get(worldID);
+            Pair<Boolean, Boolean> mirrorRoleUsers = this.mirrorConfig.getWorlds().get(worldID);
             if (mirrorRoleUsers == null)
             {
                 continue; // world is not in this provider
@@ -122,30 +123,37 @@ public class RoleProvider
         return this.defaultRoles;
     }
 
+    /**
+     * Initializes this RoleProvider with its configurations
+     *
+     * @param rolesFolder
+     */
     public void init(File rolesFolder)
     {
-        if (this.init)
+        if (this.init) // provider is already initialized!
         {
             return;
         }
-        this.init = true;
         if (this.worldfolder == null)
         {
-            this.worldfolder = new File(rolesFolder, this.config.mainWorld);
+            // Sets the folder for this provider
+            this.worldfolder = new File(rolesFolder, this.mirrorConfig.mainWorld);
         }
-        this.worldfolder.mkdir();
-        module.getLogger().debug("Loading roles for the world " + worldfolder.getName() + ":");
+        this.worldfolder.mkdir(); // Creates folder for this privder if not existant
+        this.module.getLogger().debug("Reading roles for the world-provider " + this.mirrorConfig.mainWorld + ":");
         int i = 0;
-        for (File configFile : worldfolder.listFiles())
+        for (File configFile : this.worldfolder.listFiles())
         {
             if (configFile.getName().endsWith(".yml"))
             {
                 ++i;
                 RoleConfig config = Configuration.load(RoleConfig.class, configFile);
                 this.addConfig(config);
+                this.module.getLogger().debug(config.roleName);
             }
         }
-        module.getLogger().debug(i + " roles loaded!");
+        this.module.getLogger().debug(i + " roles read!");
+        this.init = true;
     }
 
     public void reload()
@@ -156,10 +164,10 @@ public class RoleProvider
 
     public void loadDefaultRoles(RolesConfig config)
     {
-        List<String> dRoles = config.defaultRoles.get(this.config.mainWorld);
+        List<String> dRoles = config.defaultRoles.get(this.mirrorConfig.mainWorld);
         if (dRoles == null || dRoles.isEmpty())
         {
-            module.getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.config.mainWorld);
+            module.getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.mirrorConfig.mainWorld);
             return;
         }
         for (String roleName : dRoles)
@@ -173,8 +181,48 @@ public class RoleProvider
         }
     }
 
-    public void calculateRoles(THashMap<String, Role> globalRoles)
+    public void recalculateRoles(THashMap<String, Role> globalRoles)
     {
+        this.calculateRoles(globalRoles, true);
+    }
+
+    public void recalculateDirtyRoles(THashMap<String, Role> globalRoles)
+    {
+        List<Role> dirtyChilds = new ArrayList<Role>();
+        for (Role role : this.roles.values())
+        {
+            if (role.isDirty())
+            {
+                dirtyChilds.add(role);
+            }
+        }
+        this.recalculateDirtyRoles(dirtyChilds, globalRoles);
+    }
+
+    private void recalculateDirtyRoles(List<Role> dirtyRoles, THashMap<String, Role> globalRoles)
+    {
+        List<Role> dirtyChilds = new ArrayList<Role>();
+        for (Role role : dirtyRoles)
+        {
+            this.calculateRole(this.configs.get(role.getName()), globalRoles);
+            for (Role childRole : role.getChildRoles())
+            {
+                dirtyChilds.add(childRole);
+            }
+        }
+        if (!dirtyChilds.isEmpty())
+        {
+            this.recalculateDirtyRoles(dirtyChilds, globalRoles);
+        }
+    }
+
+    public boolean calculateRoles(THashMap<String, Role> globalRoles, boolean recalculate)
+    {
+        if (this.rolesCalculated && !recalculate)
+        {
+            return false;
+        }
+        this.rolesCalculated = true;
         for (RoleConfig config : this.configs.values())
         {
             Role role = this.calculateRole(config, globalRoles);
@@ -185,6 +233,7 @@ public class RoleProvider
             }
             this.roles.put(role.getName(), role);
         }
+        return true;
     }
 
     public Role calculateRole(RoleConfig config, THashMap<String, Role> globalRoles)
@@ -205,7 +254,7 @@ public class RoleProvider
                     {
                         throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", roleStack));
                     }
-                    RoleConfig parentConfig;
+                    RoleConfig parentConfig = null;
 
                     if (parentName.startsWith("g:"))
                     {
@@ -213,7 +262,6 @@ public class RoleProvider
                         {
                             continue;
                         }
-                        throw new RoleDependencyMissingException("Could not find the role " + parentName);
                     }
                     else
                     {
@@ -221,7 +269,7 @@ public class RoleProvider
                     }
                     if (parentConfig == null) // Dependency Missing?
                     {
-                        throw new RoleDependencyMissingException("Could not find the role " + parentName);
+                        throw new RoleDependencyMissingException("ParentRole missing for \"" + config.roleName + "\"\nUnkown role: " + parentName);
                     }
                     Role parentRole = this.calculateRole(parentConfig, globalRoles); // calculate parent-role
                     if (parentRole != null)
@@ -235,35 +283,27 @@ public class RoleProvider
                 }
             }
             // now all parent roles should be loaded
-
             List<Role> parentRoles = new ArrayList<Role>();
             for (String parentName : config.parents)
             {
-                try
+                Role parentRole;
+                if (parentName.startsWith("g:"))
                 {
-                    Role parentRole;
-
-                    if (parentName.startsWith("g:"))
-                    {
-                        parentRole = globalRoles.get(parentName.substring(2));
-                    }
-                    else
-                    {
-                        parentRole = this.roles.get(parentName);
-                    }
-                    if (parentRole == null)
-                    {
-                        throw new RoleDependencyMissingException("Needed parent role " + parentName + " for " + config.roleName + " not found.");
-                    }
-                    parentRoles.add(parentRole); // Role was found:
+                    parentRole = globalRoles.get(parentName.substring(2));
                 }
-                catch (RoleDependencyMissingException ex)
+                else
                 {
-                    module.getLogger().log(LogLevel.WARNING, ex.getMessage());
+                    parentRole = this.roles.get(parentName);
                 }
+                if (parentRole == null)
+                {
+                    continue; // In case parent role was missing ingore it
+                }
+                parentRoles.add(parentRole); // Role was found:
             }
             role = new ConfigRole(config, parentRoles, false);
             this.roleStack.pop();
+            this.module.getLogger().debug(role.getName() + " loaded!");
             return role;
         }
         catch (CircularRoleDepedencyException ex)
@@ -280,7 +320,12 @@ public class RoleProvider
 
     public String getMainWorld()
     {
-        return this.config.mainWorld;
+        return this.mirrorConfig.mainWorld;
+    }
+
+    public boolean isCalculated()
+    {
+        return rolesCalculated;
     }
 
     public void setRolePermission(Role role, String perm, Boolean set)

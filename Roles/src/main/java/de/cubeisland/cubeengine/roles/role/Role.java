@@ -19,6 +19,7 @@ public abstract class Role
     protected List<Role> childRoles = new ArrayList<Role>();
     protected Map<String, RoleMetaData> metaData;
     protected boolean isGlobal;
+    private boolean dirty;
 
     public Role()
     {
@@ -212,5 +213,20 @@ public abstract class Role
     public void addChild(ConfigRole role)
     {
         this.childRoles.add(role);
+    }
+
+    public boolean isDirty()
+    {
+        return this.dirty;
+    }
+
+    public void makeDirty()
+    {
+        this.dirty = true;
+    }
+
+    public List<Role> getChildRoles()
+    {
+        return childRoles;
     }
 }
