@@ -229,4 +229,44 @@ public abstract class Role
     {
         return childRoles;
     }
+
+    public void setPermission(String perm, Boolean set)
+    {
+        throw new UnsupportedOperationException("Cannot change permissions of a non-configrole!");
+    }
+
+    public void setMetaData(String key, String value)
+    {
+        throw new UnsupportedOperationException("Cannot change metadata of a non-configrole!");
+    }
+
+    public void clearMetaData()
+    {
+        throw new UnsupportedOperationException("Cannot change metadata of a non-configrole!");
+    }
+
+    public void setParentRole(String pRole)
+    {
+        throw new UnsupportedOperationException("Cannot change parents of a non-configrole!");
+    }
+
+    public boolean removeParentRole(String pRole)
+    {
+        throw new UnsupportedOperationException("Cannot change parents of a non-configrole!");
+    }
+
+    public void clearParentRoles()
+    {
+        throw new UnsupportedOperationException("Cannot change parents of a non-configrole!");
+    }
+
+    public void setPriority(Priority priority)
+    {
+        throw new UnsupportedOperationException("Cannot change priority of a non-configrole!");
+    }
+
+    public void rename(String newName)
+    {
+       throw new UnsupportedOperationException("Cannot rename a non-configrole!");
+    }
 }

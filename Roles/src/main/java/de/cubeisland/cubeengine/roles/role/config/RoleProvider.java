@@ -204,6 +204,7 @@ public class RoleProvider
         List<Role> dirtyChilds = new ArrayList<Role>();
         for (Role role : dirtyRoles)
         {
+            this.roles.remove(role.getName());
             this.calculateRole(this.configs.get(role.getName()), globalRoles);
             for (Role childRole : role.getChildRoles())
             {
@@ -330,46 +331,64 @@ public class RoleProvider
 
     public void setRolePermission(Role role, String perm, Boolean set)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        role.setPermission(perm, set);
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
     public void setRoleMetaData(Role role, String key, String value)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        role.setMetaData(key, value);
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
     public void resetRoleMetaData(Role role, String key)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        role.setMetaData(key, null);
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
     public void clearRoleMetaData(Role role)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        role.clearMetaData();
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
     public void setParentRole(Role role, Role pRole)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        role.setParentRole(pRole.getName());
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
-    public void removeParentRole(Role role, Role pRole)
+    public boolean removeParentRole(Role role, Role pRole)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        boolean removed = role.removeParentRole(pRole.getName());
+        if (removed)
+        {
+            this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        }
+        return removed; //TODO handle return value
     }
 
     public void clearParentRoles(Role role)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        role.clearParentRoles();
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
     public void setRolePriority(Role role, Priority priority)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        role.setPriority(priority);
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
-    public void renameRole(Role role, String newName)
+    public boolean renameRole(Role role, String newName)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (this.roles.containsKey(newName)) 
+        {
+            return false; //TODO handle return value
+        }
+        role.rename(newName);
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        return true;
     }
 }

@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.sql.ResultSet;
 import java.sql.SQLException;

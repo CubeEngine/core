@@ -732,6 +732,11 @@ public class RoleManagementCommands extends ContainerCommand
             return;
         }
         String newName = context.getString(1);
+        if (role.getName().equalsIgnoreCase(newName))
+        {
+            context.sendMessage("roles","&cThese are the same names!");
+            return;
+        }
         provider.renameRole(role, newName);
     }
 }

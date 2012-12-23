@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.roles.role.config;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;

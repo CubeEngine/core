@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import java.io.File;
 import java.util.List;
@@ -29,5 +30,91 @@ public class ConfigRole extends Role
         this.config.getFile().delete();
         this.config.setFile(new File(this.config.getFile().getParentFile(), this.name + "yml"));
         this.config.save();
+    }
+
+    @Override
+    public void setPermission(String perm, Boolean set)
+    {
+        this.makeDirty();
+        if (set != null)
+        {
+            this.config.perms.getPermissions().put(perm, set);
+        }
+        else
+        {
+            this.config.perms.getPermissions().remove(perm);
+        }
+        this.saveConfigToFile();
+    }
+
+    @Override
+    public void setMetaData(String key, String value)
+    {
+        this.makeDirty();
+        if (value != null)
+        {
+            this.config.metadata.put(key, value);
+        }
+        else
+        {
+            this.config.metadata.remove(key);
+        }
+        this.saveConfigToFile();
+    }
+
+    @Override
+    public void clearMetaData()
+    {
+        this.makeDirty();
+        this.config.metadata.clear();
+        this.saveConfigToFile();
+    }
+
+    @Override
+    public void setParentRole(String pRole)
+    {
+        this.makeDirty();
+        this.config.parents.add(pRole);
+        this.saveConfigToFile();
+    }
+
+    @Override
+    public boolean removeParentRole(String pRole)
+    {
+        if (this.config.parents.remove(pRole))
+        {
+            this.makeDirty();
+            this.saveConfigToFile();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void clearParentRoles()
+    {
+        this.makeDirty();
+        this.config.parents.clear();
+        this.saveConfigToFile();
+    }
+
+    @Override
+    public void setPriority(Priority priority)
+    {
+        this.makeDirty();
+        this.config.priority = priority;
+        this.saveConfigToFile();
+    }
+
+    @Override
+    public void rename(String newName)
+    {
+        this.makeDirty();
+        this.config.roleName = newName;
+        for (Role role : this.childRoles)
+        {
+            role.removeParentRole(this.name);
+            role.setParentRole(newName);
+        }
     }
 }

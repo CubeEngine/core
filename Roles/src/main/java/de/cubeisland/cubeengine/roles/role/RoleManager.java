@@ -350,4 +350,11 @@ public class RoleManager
         this.reloadAndApplyRole(user, user.getPlayer(), worldId);
         return result;
     }
+
+    public THashMap<String, Role> getGlobalRoles()
+    {
+        return this.globalRoles;
+    }
+    
+    //TODO handle when roles have the same name casinsensitive!!
 }
