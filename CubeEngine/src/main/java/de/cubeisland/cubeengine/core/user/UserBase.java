@@ -1940,4 +1940,24 @@ public class UserBase implements Player
             player.setTexturePack(string);
         }
     }
+
+    @Override
+    public void setMaxHealth(int health)
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.setMaxHealth(health);
+        }
+    }
+
+    @Override
+    public void resetMaxHealth()
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.resetMaxHealth();
+        }
+    }
 }
