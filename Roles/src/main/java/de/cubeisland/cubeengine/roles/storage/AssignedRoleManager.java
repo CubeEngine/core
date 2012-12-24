@@ -15,7 +15,6 @@ import java.util.List;
 
 public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, AssignedRole>
 {
-
     private static final int REVISION = 1;
 
     public AssignedRoleManager(Database database)

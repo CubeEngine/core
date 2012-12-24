@@ -15,7 +15,6 @@ import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -241,10 +240,16 @@ public class RoleManager
     public void preCalculateRoles(String username, boolean reload)
     {
         User user = this.module.getUserManager().getUser(username, true);
-        if (user.getAttribute(this.module, "roleContainer") != null)
+        this.preCalculateRoles(user, reload);
+    }
+
+    public void preCalculateRoles(User user, boolean reload)
+    {
+        if (!reload && user.getAttribute(this.module, "roleContainer") != null)
         {
             return; // Roles are calculated!
         }
+        user.removeAttribute(module, "roleContainer");
         TLongObjectHashMap<List<Role>> userRolesPerWorld = new TLongObjectHashMap<List<Role>>();
         for (RoleProvider provider : this.getProviders())
         {
@@ -260,6 +265,7 @@ public class RoleManager
             this.preCalculateRole(user, roleContainer, userRolesPerWorld.get(worldId), worldId, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
         }
         user.setAttribute(this.module, "roleContainer", roleContainer);
+
     }
 
     public void preCalculateRole(User user, TLongObjectHashMap<UserSpecificRole> roleContainer, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
@@ -287,7 +293,7 @@ public class RoleManager
     {
         this.applyRole(player, this.module.getCore().getWorldManager().getWorldId(player.getWorld()));
     }
-    
+
     private void applyRole(Player player, long worldId)
     {
         User user = this.module.getUserManager().getExactUser(player);

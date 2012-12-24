@@ -17,7 +17,7 @@ public class RolesConfig extends Configuration
 {
     @Option("default.roles")
     @Comment("The list of roles a user will get when first joining the server.")
-    public Map<String,List<String>> defaultRoles = new HashMap<String, List<String>>();
+    public Map<String, List<String>> defaultRoles = new HashMap<String, List<String>>();
     @Option("mirrors")
     public List<RoleMirror> mirrors = new ArrayList<RoleMirror>();
 }

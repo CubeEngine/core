@@ -9,6 +9,7 @@ import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageExcept
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
@@ -20,9 +21,12 @@ import org.bukkit.World;
 
 public class UserManagementCommands extends ContainerCommand
 {
+    private RoleManager manager;
+
     public UserManagementCommands(Roles module)
     {
         super(module, "user", "Manage users.");//TODO alias manuser
+        this.manager = module.getManager();
     }
 
     private User getUser(CommandContext context, int pos)
@@ -40,15 +44,12 @@ public class UserManagementCommands extends ContainerCommand
         {
             paramNotFound(context, "roles", "&cUser %s not found!", context.getString(pos));
         }
-        if (!user.isOnline())
-        {
-            paramNotFound(context, "roles", "&2%s &cis not online!", user.getName());
-        }
         return user;
     }
 
-    private UserSpecificRole getRole(User user, long worldId)
+    private UserSpecificRole getUserRole(User user, World world)
     {
+        long worldId = this.getWorldId(world);
         if (user == null)
         {
             return null;
@@ -56,9 +57,40 @@ public class UserManagementCommands extends ContainerCommand
         TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
         if (roleContainer == null)
         {
-            throw new IllegalStateException("User has no rolecontainer!");
+            if (user.isOnline())
+            {
+                throw new IllegalStateException("User has no rolecontainer!");
+            }
+            else
+            {
+                this.manager.preCalculateRoles(user.getName(), true);
+                roleContainer = user.getAttribute(this.getModule(), "roleContainer");
+            }
         }
         return roleContainer.get(worldId);
+    }
+
+    private long getWorldId(World world)
+    {
+        return this.getModule().getCore().getWorldManager().getWorldId(world);
+    }
+
+    /**
+     * Returns the world defined with named param "in" or the users world
+     *
+     * @param context
+     * @param user
+     * @return
+     */
+    private World getWorld(CommandContext context, User user)
+    {
+        //TODO consider setting for default world always show which world is set
+        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
+        if (world == null)
+        {
+            paramNotFound(context, "roles", "&cWorld %s not found!", context.getString("in"));
+        }
+        return world;
     }
 
     @Alias(names = "listuroles")
@@ -71,8 +103,8 @@ public class UserManagementCommands extends ContainerCommand
     {
         User user = this.getUser(context, 0);
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.getRole(user, worldId);
+        Role role = this.getUserRole(user, world);
+        // List all assigned roles
         Collection<Role> roles = role.getParentRoles();
         context.sendMessage("roles", "&eRoles of &2%s&e in &6%s&e:", user.getName(), world.getName());
         for (Role pRole : roles)
@@ -102,27 +134,28 @@ public class UserManagementCommands extends ContainerCommand
     {
         User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserSpecificRole role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getUserRole(user, world);
+        // Search for permission
         String permission = context.getString(0);
-        //context.sendMessage("roles", "&eCould not find the permission &6%s for &2%s&e!", context.getString(0), user.getName());
-        RolePermission myPerm = role.getPerms().get(permission); // should never be null
+        RolePermission myPerm = role.getPerms().get(permission);
         if (myPerm == null)
         {
-            context.sendMessage("roles", "&cThe specified permission does not exist!");
+            context.sendMessage("roles", "&cCould not find the specified permission!");
             return;
         }
-        boolean superPerm = user.hasPermission(permission);
-        context.sendMessage("roles", (myPerm.isSet() ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
-                : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c") + " in &6%s", user.getName(), permission, world.getName());
-        if (!permission.endsWith("*"))
+        context.sendMessage("roles", (myPerm.isSet()
+                ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
+                : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c")
+                + " in &6%s", user.getName(), permission, world.getName());
+        if (user.isOnline() && !permission.endsWith("*")) // Can have superperm
         {
-            context.sendMessage("roles", "&eSuperPerm Node: %s", superPerm); // Do not show when * permission as it would never be correct
+            boolean superPerm = user.hasPermission(permission);
+            context.sendMessage("roles", "&eSuperPerm Node: %s", superPerm);
         }
+        // Display origin
         Role originRole = myPerm.getOrigin();
         if (!originRole.getLitaralPerms().containsKey(permission))
         {
-            boolean found = false;
             while (!permission.equals("*"))
             {
                 if (permission.endsWith("*"))
@@ -135,18 +168,12 @@ public class UserManagementCommands extends ContainerCommand
                 {
                     if (originRole.getLitaralPerms().get(permission) == myPerm.isSet())
                     {
-                        found = true;
                         break;
                     }
                 }
             }
-            if (!found)
-            {
-                throw new IllegalStateException("Found permission not found in literal permissions");
-            }
         }
         context.sendMessage("roles", "&ePermission inherited from:");
-
         if (user.getName().equals(originRole.getName()))
         {
             context.sendMessage("roles", "&6%s &ein the users role!", permission);
@@ -171,12 +198,19 @@ public class UserManagementCommands extends ContainerCommand
     {
         User user = this.getUser(context, 0);
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserSpecificRole role = this.getRole(user, worldId);
-        context.sendMessage("roles", "&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
-        for (Entry<String, Boolean> entry : role.getAllLiteralPerms().entrySet())
+        UserSpecificRole role = this.getUserRole(user, world);
+        // List permissions
+        if (role.getAllLiteralPerms().isEmpty())
         {
-            context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
+            context.sendMessage("roles", "&2%s &ehas no permissions set in &6%s&e.", user.getName(), world.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
+            for (Entry<String, Boolean> entry : role.getAllLiteralPerms().entrySet())
+            {
+                context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
+            }
         }
     }
 
@@ -194,8 +228,8 @@ public class UserManagementCommands extends ContainerCommand
     {
         User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserSpecificRole role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getUserRole(user, world);
+        // Check metadata
         String metaKey = context.getString(0);
         if (!role.getMetaData().containsKey(metaKey))
         {
@@ -204,7 +238,10 @@ public class UserManagementCommands extends ContainerCommand
         }
         RoleMetaData value = role.getMetaData().get(metaKey);
         context.sendMessage("roles", "&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, value.getValue(), user.getName(), world.getName());
-        context.sendMessage("roles", "&eOrigin: &&%s&e.", value.getOrigin().getName());
+        if (value.getOrigin() != role)
+        {
+            context.sendMessage("roles", "&eOrigin: &&%s&e.", value.getOrigin().getName());
+        }
     }
 
     @Alias(names = "listumeta")
@@ -221,8 +258,8 @@ public class UserManagementCommands extends ContainerCommand
     {
         User user = this.getUser(context, 0);
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserSpecificRole role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getUserRole(user, world);
+        // List all metadata
         context.sendMessage("roles", "&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());
         for (Entry<String, RoleMetaData> entry : role.getMetaData().entrySet())
         {
@@ -245,23 +282,17 @@ public class UserManagementCommands extends ContainerCommand
              max = 3, min = 2)
     public void assign(CommandContext context)
     {
-        Role role;
-        User user = context.getUser(1);
-        if (user == null)
-        {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
-            return;
-        }
+        User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         String roleName = context.getString(0);
-        role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
+        Role role = this.manager.getProvider(worldId).getRole(roleName);
         if (role == null)
         {
             context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
             return;
         }
-        if (((Roles) this.getModule()).getManager().addRoles(user, user.getPlayer(), worldId, role))
+        if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
         {
             context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
         }
@@ -279,29 +310,22 @@ public class UserManagementCommands extends ContainerCommand
              max = 3, min = 2)
     public void remove(CommandContext context)
     {
-        Role role;
-        User user = context.getUser(1);
-        if (user == null)
-        {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
-            return;
-        }
+        User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        String roleName = context.getString(0);
-        role = ((Roles) this.getModule()).getManager().getProvider(worldId).getRole(roleName);
+        Role role = this.manager.getProvider(worldId).getRole(context.getString(0));
         if (role == null)
         {
-            context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
+            context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", context.getString(0), world.getName());
             return;
         }
-        if (((Roles) this.getModule()).getManager().removeRole(user, role, worldId))
+        if (this.manager.removeRole(user, role, worldId))
         {
-            context.sendMessage("roles", "&aRemoved the role &6%s&a from &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
+            context.sendMessage("roles", "&aRemoved the role &6%s&a from &2%s&a in &6%s&a.", role.getName(), user.getName(), world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
+            context.sendMessage("roles", "&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), role.getName(), world.getName());
         }
     }
 
@@ -313,15 +337,10 @@ public class UserManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void clear(CommandContext context)
     {
-        User user = context.getUser(1);
-        if (user == null)
-        {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
-            return;
-        }
+        User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Set<Role> newRoles = ((Roles) this.getModule()).getManager().clearRoles(user, worldId);
+        Set<Role> newRoles = this.manager.clearRoles(user, worldId);
         context.sendMessage("roles", "&eCleared the roles of &2%s &ein &6%s&e.", user.getName(), world.getName());
         if (!newRoles.isEmpty())
         {
@@ -344,13 +363,8 @@ public class UserManagementCommands extends ContainerCommand
              max = 5, min = 3)
     public void setpermission(CommandContext context)
     {
+        User user = this.getUser(context, 2);
         String perm = context.getString(0);
-        User user = context.getUser(2);
-        if (user == null)
-        {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(2));
-            return;
-        }
         Boolean set;
         String setTo = context.getString(1);
         if (setTo.equalsIgnoreCase("true"))
@@ -367,12 +381,11 @@ public class UserManagementCommands extends ContainerCommand
         }
         else
         {
-            //TODO msg define true|false|reset
+            context.sendMessage("roles", "&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
             return;
         }
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserSpecificRole role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getUserRole(user, world);
         role.setPermission(perm, set);
         if (set == null)
         {
@@ -399,7 +412,7 @@ public class UserManagementCommands extends ContainerCommand
 
     @Command(names =
     {
-        "setdata", "setmetadata"
+        "setdata", "setmeta", "setmetadata"
     },
              desc = "Sets metadata for this user [in world]",
              usage = "<metaKey> <metaValue> <player> [in <world>]",
@@ -410,22 +423,16 @@ public class UserManagementCommands extends ContainerCommand
     {
         String metaKey = context.getString(0);
         String metaVal = context.getString(1);
-        User user = context.getUser(2);
-        if (user == null)
-        {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(2));
-            return;
-        }
+        User user = this.getUser(context, 2);
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserSpecificRole role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getUserRole(user, world);
         role.setMetaData(metaKey, metaVal);
         context.sendMessage("roles", "&aMetadata &6%s &aof &2%s&a set to &6%s &ain &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
 
     @Command(names =
     {
-        "resetdata", "resetmetadata"
+        "resetdata", "resetmeta", "resetmetadata"
     },
              desc = "Resets metadata for this user [in world]",
              usage = "<metaKey> <player> [in <world>]",
@@ -435,35 +442,28 @@ public class UserManagementCommands extends ContainerCommand
     public void resetmetadata(CommandContext context)
     {
         String metaKey = context.getString(0);
-        User user = context.getUser(1);
-        if (user == null)
-        {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(1));
-            return;
-        }
+        User user = this.getUser(context, 1);
         World world = this.getWorld(context, user);
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        UserSpecificRole role = this.getRole(user, worldId);
+        UserSpecificRole role = this.getUserRole(user, world);
         role.setMetaData(metaKey, null);
         context.sendMessage("roles", "&eMetadata &6%s &eof &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
     }
 
-    /**
-     * Returns the world defined with named param "in" or the users world
-     *
-     * @param context
-     * @param user
-     * @return
-     */
-    private World getWorld(CommandContext context, User user)
+    @Command(names =
     {
-        World world = context.hasNamed("in") ? context.getNamed("in", World.class) : user.getWorld();
-        if (world == null)
-        {
-            paramNotFound(context, "roles", "&cWorld %s not found!", context.getString("in"));
-        }
-        return world;
+        "cleardata", "clearmeta", "clearmetadata"
+    },
+             desc = "Resets metadata for this user [in world]",
+             usage = "<player> [in <world>]",
+             params =
+    @Param(names = "in", type = World.class),
+             max = 2, min = 1)
+    public void clearMetaData(CommandContext context)
+    {
+        User user = this.getUser(context, 0);
+        World world = this.getWorld(context, user);
+        UserSpecificRole role = this.getUserRole(user, world);
+        role.clearMetaData();
+        context.sendMessage("roles", "&eMetadata of &2%s &ecleared in &6%s&e!", user.getName(), world.getName());
     }
-    
-    //TODO clear meta cmd
 }

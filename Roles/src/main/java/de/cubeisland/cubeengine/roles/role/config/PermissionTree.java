@@ -88,7 +88,7 @@ public class PermissionTree
             }
             else
             {
-                Map<String, Object> baseValueMap = (Map<String, Object>)baseValue;
+                Map<String, Object> baseValueMap = (Map<String, Object>) baseValue;
                 List<Object> values = this.mergeSplitValues(baseValueMap);
                 Map<String, Object> subMap = new LinkedHashMap<String, Object>();
 

@@ -13,6 +13,8 @@ public class UserSpecificRole extends MergedRole
 {
     public final User user;
     private Roles module;
+    private UserMetaDataManager umManager;
+    private UserPermissionsManager upManager;
     private long worldId;
 
     public UserSpecificRole(Roles module, User user, long worldId, THashMap<String, Boolean> perms, THashMap<String, String> meta)
@@ -21,12 +23,13 @@ public class UserSpecificRole extends MergedRole
         this.user = user;
         this.module = module;
         this.worldId = worldId;
+        this.umManager = module.getDbUserMeta();
+        this.upManager = module.getDbUserPerm();
     }
 
     @Override
     public void setPermission(String perm, Boolean set)
     {
-        UserPermissionsManager upManager = this.module.getDbUserPerm();
         if (set == null)
         {
             upManager.deleteByKey(new Triplet<Long, Long, String>(user.key, worldId, perm));
@@ -43,7 +46,6 @@ public class UserSpecificRole extends MergedRole
     @Override
     public void setMetaData(String key, String value)
     {
-        UserMetaDataManager umManager = this.module.getDbUserMeta();
         if (value == null)
         {
             umManager.deleteByKey(new Triplet<Long, Long, String>(user.key, worldId, key));
@@ -58,7 +60,7 @@ public class UserSpecificRole extends MergedRole
     @Override
     public void clearMetaData()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-        //TODO query for deleting alll by user in world
+        umManager.clearByUser(user.key);
+        this.module.getManager().reloadRoleAndApply(user, worldId);
     }
 }

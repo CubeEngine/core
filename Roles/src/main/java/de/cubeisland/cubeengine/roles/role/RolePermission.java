@@ -1,10 +1,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.role.config.Priority;
-
 public class RolePermission
 {
-
     private String perm;
     private boolean isSet;
     private final Role origin;

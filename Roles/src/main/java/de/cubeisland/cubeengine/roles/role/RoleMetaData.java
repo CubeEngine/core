@@ -27,10 +27,9 @@ public class RoleMetaData
     {
         return value;
     }
-    
+
     public int getPriorityValue()
     {
         return this.origin.priority.value;
     }
-    
 }

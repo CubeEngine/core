@@ -28,6 +28,8 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getallByUser",
                     builder.select().cols("worldId", "key", "value").from(this.tableName).where().field("userId").isEqual().value().end().end());
+            this.database.storeStatement(modelClass, "deleteAllByUser",
+                    builder.delete().from(this.tableName).where().field("userId").isEqual().value().end().end());
         }
         catch (SQLException e)
         {
@@ -58,6 +60,18 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while getting Model from Database", ex);
+        }
+    }
+
+    public void clearByUser(Long key)
+    {
+        try
+        {
+            this.database.preparedExecute(modelClass, "deleteAllByUser", key);
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while deleting Models in Database", ex);
         }
     }
 }

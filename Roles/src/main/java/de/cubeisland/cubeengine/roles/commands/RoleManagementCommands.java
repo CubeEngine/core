@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
@@ -19,9 +20,42 @@ import org.bukkit.World;
 
 public class RoleManagementCommands extends ContainerCommand
 {
+    private RoleManager manager;
+
     public RoleManagementCommands(Roles module)
     {
         super(module, "role", "Manage roles.");//TODO alias manrole
+        this.manager = module.getManager();
+    }
+
+    public World getWorld(CommandContext context)
+    {
+
+        User sender = context.getSenderAsUser();
+        World world;
+        if (!context.hasNamed("in"))
+        {
+            if (sender == null)
+            {
+                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
+                return null;
+            }
+            world = sender.getWorld();
+        }
+        else
+        {
+            world = context.getNamed("in", World.class);
+            if (world == null)
+            {
+                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+            }
+        }
+        return world;
+    }
+
+    public RoleProvider getProvider(World world)
+    {
+        return this.manager.getProvider(this.getModule().getCore().getWorldManager().getWorldId(world));
     }
 
     @Alias(names = "listroles")
@@ -32,28 +66,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 1)
     public void list(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         if (provider.getAllRoles().isEmpty())
         {
             context.sendMessage("roles", "&eNo roles found in &6%s&e!", world.getName());
@@ -80,28 +98,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 3, min = 2)
     public void checkperm(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -171,28 +173,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void listperm(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -234,28 +220,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void listmetadata(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -286,28 +256,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void listParent(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -338,28 +292,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void priority(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -377,28 +315,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 4, min = 3)
     public void setpermission(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -425,10 +347,10 @@ public class RoleManagementCommands extends ContainerCommand
         }
         else
         {
-            //TODO msg define true|false|reset
+            context.sendMessage("roles", "&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
             return;
         }
-        ((Roles) this.getModule()).getManager().getProvider(worldId).setRolePermission(role, permission, set);
+        provider.setRolePermission(role, permission, set);
     }
 
     public void resetpermission(CommandContext context)
@@ -444,28 +366,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 4, min = 3)
     public void setmetadata(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -474,7 +380,7 @@ public class RoleManagementCommands extends ContainerCommand
         }
         String key = context.getString(1);
         String value = context.getString(2);
-        ((Roles) this.getModule()).getManager().getProvider(worldId).setRoleMetaData(role, key, value);
+        provider.setRoleMetaData(role, key, value);
         if (value == null)
         {
             context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
@@ -494,28 +400,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 3, min = 2)
     public void resetmetadata(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -523,7 +413,7 @@ public class RoleManagementCommands extends ContainerCommand
             return;
         }
         String key = context.getString(1);
-        ((Roles) this.getModule()).getManager().getProvider(worldId).resetRoleMetaData(role, key);
+        provider.resetRoleMetaData(role, key);
         context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
     }
 
@@ -535,35 +425,19 @@ public class RoleManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void clearmetadata(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
             context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
             return;
         }
-        ((Roles) this.getModule()).getManager().getProvider(worldId).clearRoleMetaData(role);
+        provider.clearRoleMetaData(role);
         context.sendMessage("roles", "&eMetadata cleared for the role &6%s &ein &6%s&e!", role.getName(), world.getName());
     }
 
@@ -575,28 +449,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 3, min = 2)
     public void addParent(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -627,28 +485,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 3, min = 2)
     public void removeParent(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -669,7 +511,6 @@ public class RoleManagementCommands extends ContainerCommand
         {
             context.sendMessage("roles", "&6%s &eis not a parent-role of &6%s&e!", pRole.getName(), role.getName());
         }
-        //TODO msg
     }
 
     @Command(
@@ -680,28 +521,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void clearParent(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -720,28 +545,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 3, min = 2)
     public void setPriority(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
@@ -771,28 +580,12 @@ public class RoleManagementCommands extends ContainerCommand
              max = 2, min = 1)
     public void rename(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (!context.hasNamed("in"))
+        World world = this.getWorld(context);
+        if (world == null)
         {
-            if (sender == null)
-            {
-                context.sendMessage("roles", "&ePlease provide a world.");//TODO show usage
-                return;
-            }
-            world = sender.getWorld();
+            return;
         }
-        else
-        {
-            world = context.getNamed("in", World.class);
-            if (world == null)
-            {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        RoleProvider provider = ((Roles) this.getModule()).getManager().getProvider(worldId);
+        RoleProvider provider = this.getProvider(world);
         Role role = provider.getRole(context.getString(0));
         if (role == null)
         {
