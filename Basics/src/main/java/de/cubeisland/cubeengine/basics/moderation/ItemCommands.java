@@ -21,6 +21,8 @@ import java.util.List;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import org.bukkit.ChatColor;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
@@ -88,6 +90,7 @@ public class ItemCommands
         String name = context.getStrings(0);
         ItemStack item = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand();
         ItemMeta meta = item.getItemMeta();
+        name = ChatFormat.parseFormats(name);
         if (context.hasFlag("l"))
         {
             meta.setLore(new ArrayList<String>(Arrays.asList(name)));
@@ -96,6 +99,8 @@ public class ItemCommands
         {
             meta.setDisplayName(name);
         }
+        item.setItemMeta(meta);
+        context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
     }
 
     @Command(names =
