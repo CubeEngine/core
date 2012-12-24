@@ -5,7 +5,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.roles.commands.ModuleManagementCommands;
 import de.cubeisland.cubeengine.roles.commands.RoleCommands;
+import de.cubeisland.cubeengine.roles.commands.RoleInformationCommands;
 import de.cubeisland.cubeengine.roles.commands.RoleManagementCommands;
+import de.cubeisland.cubeengine.roles.commands.UserInformationCommands;
 import de.cubeisland.cubeengine.roles.commands.UserManagementCommands;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
@@ -38,8 +40,10 @@ public class Roles extends Module
     public void onEnable()
     {
         this.registerCommand(new RoleCommands(this));
-        this.getCommandManager().registerCommand(new RoleManagementCommands(this), "roles");
-        this.getCommandManager().registerCommand(new UserManagementCommands(this), "roles");
+        this.getCommandManager().registerCommand(new RoleInformationCommands(this), "roles");
+        this.registerCommands(new RoleManagementCommands(this), "roles", "role");
+        this.getCommandManager().registerCommand(new UserInformationCommands(this), "roles");
+        this.registerCommands(new UserManagementCommands(this), "roles", "user");
         this.getCommandManager().registerCommand(new ModuleManagementCommands(this), "roles");
 
         this.dbManager = new AssignedRoleManager(this.getDatabase());
