@@ -17,6 +17,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -139,7 +140,7 @@ public class RoleManager
                     this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
-            List<Role> parentRoles = new ArrayList<Role>();
+            Set<Role> parentRoles = new HashSet<Role>();
             for (String parentName : config.parents)
             {
                 try

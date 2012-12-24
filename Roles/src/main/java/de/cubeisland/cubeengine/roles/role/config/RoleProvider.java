@@ -205,7 +205,7 @@ public class RoleProvider
         for (Role role : dirtyRoles)
         {
             this.roles.remove(role.getName());
-            this.calculateRole(this.configs.get(role.getName()), globalRoles);
+            this.roles.put(role.getName(), this.calculateRole(this.configs.get(role.getName()), globalRoles));
             for (Role childRole : role.getChildRoles())
             {
                 dirtyChilds.add(childRole);
@@ -284,7 +284,7 @@ public class RoleProvider
                 }
             }
             // now all parent roles should be loaded
-            List<Role> parentRoles = new ArrayList<Role>();
+            Set<Role> parentRoles = new HashSet<Role>();
             for (String parentName : config.parents)
             {
                 Role parentRole;
@@ -383,11 +383,20 @@ public class RoleProvider
 
     public boolean renameRole(Role role, String newName)
     {
-        if (this.roles.containsKey(newName)) 
+        if (this.roles.containsKey(newName))
         {
             return false; //TODO handle return value
         }
         role.rename(newName);
+        // Removing old role
+        RoleConfig config = this.configs.remove(role.getName());
+        this.roles.remove(role.getName());
+        // Set new role
+        this.configs.put(newName, config);
+        Role newRole = this.calculateRole(config, this.module.getManager().getGlobalRoles());
+        newRole.setChildRoles(role.getChildRoles());
+        this.roles.put(newName, newRole);
+        // Recalculate dependend roles
         this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
         return true;
     }

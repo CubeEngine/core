@@ -3,13 +3,13 @@ package de.cubeisland.cubeengine.roles.role;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import java.io.File;
-import java.util.List;
+import java.util.Set;
 
 public class ConfigRole extends Role
 {
     private RoleConfig config;
 
-    public ConfigRole(RoleConfig config, List<Role> parentRoles, boolean isGlobal)
+    public ConfigRole(RoleConfig config, Set<Role> parentRoles, boolean isGlobal)
     {
         super(config.roleName, config.priority, config.perms, parentRoles, config.metadata, isGlobal);
         this.applyInheritence(new MergedRole(parentRoles));
@@ -28,7 +28,7 @@ public class ConfigRole extends Role
     public void saveConfigToNewFile()
     {
         this.config.getFile().delete();
-        this.config.setFile(new File(this.config.getFile().getParentFile(), this.name + "yml"));
+        this.config.setFile(new File(this.config.getFile().getParentFile(), this.config.roleName + ".yml"));
         this.config.save();
     }
 
@@ -111,7 +111,7 @@ public class ConfigRole extends Role
     {
         this.makeDirty();
         this.config.roleName = newName;
-
+        this.saveConfigToNewFile();
         for (Role role : this.childRoles)
         {
             role.removeParentRole(this.name);

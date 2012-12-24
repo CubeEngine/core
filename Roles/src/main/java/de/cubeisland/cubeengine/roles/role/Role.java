@@ -2,11 +2,11 @@ package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.roles.role.config.PermissionTree;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.bukkit.Bukkit;
 
 public abstract class Role
@@ -15,8 +15,8 @@ public abstract class Role
     protected Priority priority;
     protected Map<String, RolePermission> perms;
     protected Map<String, Boolean> litaralPerms;
-    protected List<Role> parentRoles;
-    protected List<Role> childRoles = new ArrayList<Role>();
+    protected Set<Role> parentRoles;
+    protected Set<Role> childRoles = new HashSet<Role>();
     protected Map<String, RoleMetaData> metaData;
     protected boolean isGlobal;
     private boolean dirty;
@@ -25,11 +25,11 @@ public abstract class Role
     {
         this.perms = new HashMap<String, RolePermission>();
         this.metaData = new HashMap<String, RoleMetaData>();
-        this.parentRoles = new ArrayList<Role>();
+        this.parentRoles = new HashSet<Role>();
         this.litaralPerms = new HashMap<String, Boolean>();
     }
 
-    public Role(String name, Priority priority, PermissionTree permTree, List<Role> parentRoles, Map<String, String> metaData, boolean isGlobal)
+    public Role(String name, Priority priority, PermissionTree permTree, Set<Role> parentRoles, Map<String, String> metaData, boolean isGlobal)
     {
         this.name = name;
         this.priority = priority;
@@ -63,7 +63,7 @@ public abstract class Role
         }
         if (parentRoles == null)
         {
-            this.parentRoles = new ArrayList<Role>();
+            this.parentRoles = new HashSet<Role>();
         }
         else
         {
@@ -81,7 +81,7 @@ public abstract class Role
         return priority;
     }
 
-    public List<Role> getParentRoles()
+    public Set<Role> getParentRoles()
     {
         return parentRoles;
     }
@@ -101,7 +101,7 @@ public abstract class Role
         return isGlobal;
     }
 
-    public void setParentRoles(List<Role> parentRoles)
+    public void setParentRoles(Set<Role> parentRoles)
     {
         this.parentRoles = parentRoles;
     }
@@ -110,7 +110,7 @@ public abstract class Role
     {
         if (this.parentRoles == null)
         {
-            this.parentRoles = new ArrayList<Role>();
+            this.parentRoles = new HashSet<Role>();
         }
         // Inherit missing permissions:
         Map<String, RolePermission> parentPerms = parent.getPerms();
@@ -225,7 +225,7 @@ public abstract class Role
         this.dirty = true;
     }
 
-    public List<Role> getChildRoles()
+    public Set<Role> getChildRoles()
     {
         return childRoles;
     }
@@ -245,4 +245,9 @@ public abstract class Role
     public abstract void setPriority(Priority priority);
 
     public abstract void rename(String newName);
+
+    public void setChildRoles(Set<Role> childRoles)
+    {
+        this.childRoles = childRoles;
+    }
 }

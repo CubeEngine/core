@@ -6,9 +6,10 @@ import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Codec("yml")
 @DefaultConfig
@@ -27,7 +28,7 @@ public class RoleConfig extends Configuration
     @Option("parents")
     @Comment("The roles this role will inherit from.\n"
     + "Any priority of parents will be ignored!")
-    public List<String> parents = new ArrayList<String>();
+    public Set<String> parents = new HashSet<String>();
     @Option("metadata")
     @Comment("such as prefix / suffix")
     public Map<String, String> metadata = new LinkedHashMap<String, String>();
@@ -41,7 +42,7 @@ public class RoleConfig extends Configuration
         }
         if (this.parents == null)
         {
-            this.parents = new ArrayList<String>();
+            this.parents = new HashSet<String>();
         }
         if (this.metadata == null)
         {
