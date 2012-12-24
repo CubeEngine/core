@@ -71,11 +71,12 @@ public class ConfigRole extends Role
     }
 
     @Override
-    public void setParentRole(String pRole)
+    public boolean setParentRole(String pRole)
     {
         this.makeDirty();
-        this.config.parents.add(pRole);
+        boolean added = this.config.parents.add(pRole);
         this.saveConfigToFile();
+        return added;
     }
 
     @Override

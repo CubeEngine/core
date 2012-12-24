@@ -236,7 +236,7 @@ public abstract class Role
 
     public abstract void clearMetaData();
 
-    public abstract void setParentRole(String pRole);
+    public abstract boolean setParentRole(String pRole);
 
     public abstract boolean removeParentRole(String pRole);
 

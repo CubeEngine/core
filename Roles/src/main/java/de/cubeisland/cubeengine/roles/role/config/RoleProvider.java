@@ -353,10 +353,14 @@ public class RoleProvider
         this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
-    public void setParentRole(Role role, Role pRole)
+    public boolean setParentRole(Role role, Role pRole)
     {
-        role.setParentRole(pRole.getName());
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        boolean added = role.setParentRole(pRole.getName());
+        if (added)
+        {
+            this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        }
+        return added;
     }
 
     public boolean removeParentRole(Role role, Role pRole)
@@ -366,7 +370,7 @@ public class RoleProvider
         {
             this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
         }
-        return removed; //TODO handle return value
+        return removed;
     }
 
     public void clearParentRoles(Role role)
@@ -385,7 +389,7 @@ public class RoleProvider
     {
         if (this.roles.containsKey(newName))
         {
-            return false; //TODO handle return value
+            return false;
         }
         role.rename(newName);
         // Removing old role

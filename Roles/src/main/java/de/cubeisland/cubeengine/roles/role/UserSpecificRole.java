@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.roles.role;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.storage.UserMetaData;
 import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
 import de.cubeisland.cubeengine.roles.storage.UserPermission;
@@ -22,7 +21,6 @@ public class UserSpecificRole extends MergedRole
         this.user = user;
         this.module = module;
         this.worldId = worldId;
-
     }
 
     @Override

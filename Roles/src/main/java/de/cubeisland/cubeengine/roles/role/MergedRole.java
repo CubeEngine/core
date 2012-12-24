@@ -121,7 +121,7 @@ public class MergedRole extends Role
     }
 
     @Override
-    public void setParentRole(String pRole)
+    public boolean setParentRole(String pRole)
     {
         throw new UnsupportedOperationException("Not supported.");
     }
