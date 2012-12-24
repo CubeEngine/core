@@ -6,20 +6,24 @@ import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
+import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import org.bukkit.World;
-//TODO detect g: roles as global roles
+
 public class RoleManagementCommands extends ContainerCommand
 {
     public RoleManagementCommands(Roles module)
     {
         super(module, "role", "Manage roles.");//TODO alias manrole
     }
-    
+
     @Alias(names = "listroles")
     @Command(desc = "Lists all roles [in world]",
              usage = "[in <world>]",
@@ -63,7 +67,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
     }
-    
+
     @Alias(names = "checkperm")
     @Command(names =
     {
@@ -104,10 +108,11 @@ public class RoleManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
             return;
         }
-        if (role.getPerms().containsKey(context.getString(1)))
+        String permission = context.getString(1);
+        RolePermission myPerm = role.getPerms().get(permission);
+        if (myPerm != null)
         {
-            Boolean isSet = role.getPerms().get(context.getString(1)).isSet();
-            if (isSet)
+            if (myPerm.isSet())
             {
                 context.sendMessage("roles", "&6%s &ais set to &2true &ain the role &6%s &ain &6%s&a.",
                         context.getString(1), role.getName(), world.getName());
@@ -124,8 +129,36 @@ public class RoleManagementCommands extends ContainerCommand
                     "&eThe permission &6%s &eis not assinged in the role &6%s &ein &6%s&e.",
                     context.getString(1), role.getName(), world.getName());
         }
+        Role originRole = myPerm.getOrigin();
+        if (!originRole.getLitaralPerms().containsKey(permission))
+        {
+            boolean found = false;
+            while (!permission.equals("*"))
+            {
+                if (permission.endsWith("*"))
+                {
+                    permission = permission.substring(0, permission.lastIndexOf("."));
+                }
+                permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
+
+                if (originRole.getLitaralPerms().containsKey(permission))
+                {
+                    if (originRole.getLitaralPerms().get(permission) == myPerm.isSet())
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found)
+            {
+                throw new IllegalStateException("Found permission not found in literal permissions");
+            }
+        }
+        context.sendMessage("roles", "&ePermission inherited from:");
+        context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permission, originRole.getName());
     }
-    
+
     @Alias(names = "listperm")
     @Command(names =
     {
@@ -188,7 +221,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
     }
-    
+
     @Alias(names = "listdata")
     @Command(names =
     {
@@ -244,7 +277,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
     }
-    
+
     @Command(
     desc = "Lists all parents of given role [in world]",
              usage = "<role> [in <world>]",
@@ -296,7 +329,7 @@ public class RoleManagementCommands extends ContainerCommand
             }
         }
     }
-    
+
     @Command(
     desc = "Show the priority of given role [in world]",
              usage = "<role> [in <world>]",
@@ -335,7 +368,7 @@ public class RoleManagementCommands extends ContainerCommand
         }
         context.sendMessage("roles", "&eThe priority of the role &6%s &ein &6%s &eis: &6%d", role.getName(), world.getName(), role.getPriority().value);
     }
-    
+
     @Command(
     desc = "Sets the permission for given role [in world]",
              usage = "<role> <permission> <true|false|reset> [in <world>]",
@@ -378,14 +411,17 @@ public class RoleManagementCommands extends ContainerCommand
         if (setTo.equalsIgnoreCase("true"))
         {
             set = true;
+            context.sendMessage("roles", "&6%s &ais now set to &2true &afor the role &6%s &ain &6%s&a!", permission, role.getName(), world.getName());
         }
         else if (setTo.equalsIgnoreCase("false"))
         {
             set = false;
+            context.sendMessage("roles", "&6%s &cis now set to &4false &cfor the role &6%s &cin &6%s&c!", permission, role.getName(), world.getName());
         }
         else if (setTo.equalsIgnoreCase("reset"))
         {
             set = null;
+            context.sendMessage("roles", "&6%s &eis now resetted for the role &6%s &ein &6%s&e!", permission, role.getName(), world.getName());
         }
         else
         {
@@ -393,14 +429,13 @@ public class RoleManagementCommands extends ContainerCommand
             return;
         }
         ((Roles) this.getModule()).getManager().getProvider(worldId).setRolePermission(role, permission, set);
-        //TODO msg
     }
-    
+
     public void resetpermission(CommandContext context)
     {
         //same as setpermission with reset as 3rd param
     }
-    
+
     @Command(
     desc = "Sets the metadata for given role [in world]",
              usage = "<role> <key> [value] [in <world>]",
@@ -440,9 +475,17 @@ public class RoleManagementCommands extends ContainerCommand
         String key = context.getString(1);
         String value = context.getString(2);
         ((Roles) this.getModule()).getManager().getProvider(worldId).setRoleMetaData(role, key, value);
-        //TODO msg
+        if (value == null)
+        {
+            context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&aMetadata &6%s &aset to &6%s &afor the role &6%s &ain &6%s&a!", key, value, role.getName(), world.getName());
+        }
+
     }
-    
+
     @Command(
     desc = "Resets the metadata for given role [in world]",
              usage = "<role> <key> [in <world>]",
@@ -481,9 +524,9 @@ public class RoleManagementCommands extends ContainerCommand
         }
         String key = context.getString(1);
         ((Roles) this.getModule()).getManager().getProvider(worldId).resetRoleMetaData(role, key);
-        //TODO msg
+        context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
     }
-    
+
     @Command(
     desc = "Clears the metadata for given role [in world]",
              usage = "<role> [in <world>]",
@@ -521,9 +564,9 @@ public class RoleManagementCommands extends ContainerCommand
             return;
         }
         ((Roles) this.getModule()).getManager().getProvider(worldId).clearRoleMetaData(role);
-        //TODO msg
+        context.sendMessage("roles", "&eMetadata cleared for the role &6%s &ein &6%s&e!", role.getName(), world.getName());
     }
-    
+
     @Command(
     desc = "Adds a parent role to given role [in world]",
              usage = "<[g:]role> <[g:]parentrole> [in <world>]",
@@ -575,7 +618,7 @@ public class RoleManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&6%s &eis already parent-role of &6%s&a!", pRole.getName(), role.getName());
         }
     }
-    
+
     @Command(
     desc = "Removes a parent role from given role [in world]",
              usage = "<[g:]role> <[g:]parentrole> [in <world>]",
@@ -628,7 +671,7 @@ public class RoleManagementCommands extends ContainerCommand
         }
         //TODO msg
     }
-    
+
     @Command(
     desc = "Removes all parent roles from given role [in world]",
              usage = "<[g:]role> [in <world>]",
@@ -666,14 +709,15 @@ public class RoleManagementCommands extends ContainerCommand
             return;
         }
         provider.clearParentRoles(role);
+        context.sendMessage("roles", "&eAll parent-roles of &6%s &ecleared!", role.getName());
     }
-    
+
     @Command(
     desc = "Sets the priority of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
+             usage = "<[g:]role> <priority> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+             max = 3, min = 2)
     public void setPriority(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -704,10 +748,21 @@ public class RoleManagementCommands extends ContainerCommand
             context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
             return;
         }
-        Priority priority = null;//TODO set me
+        Converter<Priority> converter = Convert.matchConverter(Priority.class);
+        Priority priority;
+        try
+        {
+            priority = converter.fromObject(context.getString(1));
+        }
+        catch (ConversionException ex)
+        {
+            context.sendMessage("roles", "&6%s &cis not a valid priority!", context.getString(1));
+            return;
+        }
         provider.setRolePriority(role, priority);
+        context.sendMessage("roles", "&aPriority of &6%s &aset to &6%s &ain &6%s&a!", role.getName(), context.getString(1), world.getName());
     }
-    
+
     @Command(
     desc = "Renames given role [in world]",
              usage = "<[g:]role> <new name> [in <world>]",
@@ -752,11 +807,11 @@ public class RoleManagementCommands extends ContainerCommand
         }
         if (provider.renameRole(role, newName))
         {
-            context.sendMessage("roles", "&6%s &arenamed to &6%s&a!", role.getName(), newName);
+            context.sendMessage("roles", "&6%s &arenamed to &6%s &ain &&%s&a!", role.getName(), newName, world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&cRenaming failed! The role &6%s &calready exists!", newName);
+            context.sendMessage("roles", "&cRenaming failed! The role &6%s &calready exists in &6%s&c!", newName, world.getName());
         }
     }
 }

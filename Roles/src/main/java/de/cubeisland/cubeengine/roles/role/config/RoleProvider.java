@@ -66,6 +66,10 @@ public class RoleProvider
 
     public Role getRole(String roleName)
     {
+        if (roleName.startsWith("g:"))
+        {
+            return this.module.getManager().getGlobalRoles().get(roleName.substring(2));
+        }
         return this.roles.get(roleName);
     }
 

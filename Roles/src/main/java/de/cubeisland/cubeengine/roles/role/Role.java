@@ -50,11 +50,8 @@ public abstract class Role
             this.litaralPerms.put(entry.getKey(), entry.getValue());
         }
         this.isGlobal = isGlobal;
-        if (metaData == null)
-        {
-            this.metaData = new HashMap<String, RoleMetaData>();
-        }
-        else
+        this.metaData = new HashMap<String, RoleMetaData>();
+        if (metaData != null)
         {
             for (Entry<String, String> entry : metaData.entrySet())
             {
