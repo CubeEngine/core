@@ -26,6 +26,8 @@
         <module>Roles</module>
         <module>Rulebook</module>
         <module>Irc</module>
+        <module>Chat</module>
+
         <!--
         <module>CubeWar</module>
         <module>CubeAuctions</module>

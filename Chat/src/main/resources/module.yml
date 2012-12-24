@@ -1,0 +1,5 @@
+name: Chat
+revision: 1
+description: Chat formatting
+soft-dependency:
+- Roles
