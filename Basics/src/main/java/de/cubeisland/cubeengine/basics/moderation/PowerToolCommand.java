@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.ArrayList;
 import java.util.List;
@@ -357,7 +358,7 @@ public class PowerToolCommand extends ContainerCommand
             else
             {
                 list = new ArrayList<String>();
-                list.add("&cPowerTool");
+                list.add(ChatFormat.parseFormats("&cPowerTool"));
                 for (int j = 0; j < ptVals.size(); j++)
                 {
                     list.add(((NBTTagString) ptVals.get(j)).data);
