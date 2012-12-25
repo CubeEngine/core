@@ -7,15 +7,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import org.bukkit.Bukkit;
 
-public abstract class Role
+public abstract class Role implements Comparable<Role>
 {
     protected String name;
     protected Priority priority;
     protected Map<String, RolePermission> perms;
     protected Map<String, Boolean> litaralPerms;
-    protected Set<Role> parentRoles;
+    protected TreeSet<Role> parentRoles;
     protected Set<Role> childRoles = new HashSet<Role>();
     protected Map<String, RoleMetaData> metaData;
     protected boolean isGlobal;
@@ -25,11 +26,11 @@ public abstract class Role
     {
         this.perms = new HashMap<String, RolePermission>();
         this.metaData = new HashMap<String, RoleMetaData>();
-        this.parentRoles = new HashSet<Role>();
+        this.parentRoles = new TreeSet<Role>();
         this.litaralPerms = new HashMap<String, Boolean>();
     }
 
-    public Role(String name, Priority priority, PermissionTree permTree, Set<Role> parentRoles, Map<String, String> metaData, boolean isGlobal)
+    public Role(String name, Priority priority, PermissionTree permTree, TreeSet<Role> parentRoles, Map<String, String> metaData, boolean isGlobal)
     {
         this.name = name;
         this.priority = priority;
@@ -60,7 +61,7 @@ public abstract class Role
         }
         if (parentRoles == null)
         {
-            this.parentRoles = new HashSet<Role>();
+            this.parentRoles = new TreeSet<Role>();
         }
         else
         {
@@ -98,7 +99,7 @@ public abstract class Role
         return isGlobal;
     }
 
-    public void setParentRoles(Set<Role> parentRoles)
+    public void setParentRoles(TreeSet<Role> parentRoles)
     {
         this.parentRoles = parentRoles;
     }
@@ -107,7 +108,7 @@ public abstract class Role
     {
         if (this.parentRoles == null)
         {
-            this.parentRoles = new HashSet<Role>();
+            this.parentRoles = new TreeSet<Role>();
         }
         // Inherit missing permissions:
         Map<String, RolePermission> parentPerms = parent.getPerms();
@@ -179,11 +180,43 @@ public abstract class Role
     public Map<String, Boolean> getAllLiteralPerms()
     {
         Map<String, Boolean> result = new HashMap<String, Boolean>();
-        for (Role role : this.parentRoles)
+        for (Role role : this.parentRoles)//TODO check if treeset is ordered in right order
         {
-            result.putAll(role.getAllLiteralPerms()); //TODO merge parentroles correctly
+            for (Entry<String, Boolean> entry : role.getAllLiteralPerms().entrySet())
+            {
+                if (entry.getKey().endsWith("*"))
+                {
+                    for (String perm : result.keySet())
+                    {
+                        if (perm.startsWith(entry.getKey().substring(0, entry.getKey().length() - 1)))
+                        {
+                            result.remove(perm); // Overridden by * permission
+                        }
+                    }
+                }
+                else
+                {
+                    result.put(entry.getKey(), entry.getValue());
+                }
+            }
         }
-        result.putAll(this.litaralPerms);
+        for (Entry<String, Boolean> entry : this.litaralPerms.entrySet())
+        {
+            if (entry.getKey().endsWith("*"))
+            {
+                for (String perm : result.keySet())
+                {
+                    if (perm.startsWith(entry.getKey().substring(0, entry.getKey().length() - 1)))
+                    {
+                        result.remove(perm); // Overridden by * permission
+                    }
+                }
+            }
+            else
+            {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
         return result;
     }
 
@@ -226,5 +259,11 @@ public abstract class Role
     public void setChildRoles(Set<Role> childRoles)
     {
         this.childRoles = childRoles;
+    }
+
+    @Override
+    public int compareTo(Role o)
+    {
+        return this.priority.value - o.priority.value;
     }
 }

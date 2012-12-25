@@ -15,11 +15,11 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 import org.bukkit.entity.Player;
 
 public class RoleManager
@@ -141,7 +141,7 @@ public class RoleManager
                     this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
-            Set<Role> parentRoles = new HashSet<Role>();
+            TreeSet<Role> parentRoles = new TreeSet<Role>();
             for (String parentName : config.parents)
             {
                 parentName = parentName.toLowerCase(Locale.ENGLISH);
@@ -358,7 +358,6 @@ public class RoleManager
     {
         return this.globalRoles;
     }
-    //TODO handle when roles have the same name casinsensitive!!
 
     public boolean createGlobalRole(String roleName)
     {

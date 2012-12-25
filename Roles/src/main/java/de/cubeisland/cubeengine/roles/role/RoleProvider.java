@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 import org.apache.commons.lang.Validate;
 
 public class RoleProvider
@@ -275,7 +276,7 @@ public class RoleProvider
                     }
                     else
                     {
-                        parentConfig = this.configs.get(parentName);;
+                        parentConfig = this.configs.get(parentName);
                     }
                     if (parentConfig == null) // Dependency Missing?
                     {
@@ -293,7 +294,7 @@ public class RoleProvider
                 }
             }
             // now all parent roles should be loaded
-            Set<Role> parentRoles = new HashSet<Role>();
+            TreeSet<Role> parentRoles = new TreeSet<Role>();
             for (String parentName : config.parents)
             {
                 Role parentRole;

@@ -3,13 +3,13 @@ package de.cubeisland.cubeengine.roles.role;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import java.io.File;
-import java.util.Set;
+import java.util.TreeSet;
 
 public class ConfigRole extends Role
 {
     private RoleConfig config;
 
-    public ConfigRole(RoleConfig config, Set<Role> parentRoles, boolean isGlobal)
+    public ConfigRole(RoleConfig config, TreeSet<Role> parentRoles, boolean isGlobal)
     {
         super(config.roleName, config.priority, config.perms, parentRoles, config.metadata, isGlobal);
         this.applyInheritence(new MergedRole(parentRoles));
