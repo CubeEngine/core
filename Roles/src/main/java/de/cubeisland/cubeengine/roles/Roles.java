@@ -28,6 +28,7 @@ public class Roles extends Module
     private AssignedRoleManager dbManager;
     private UserMetaDataManager dbUserMeta;
     private UserPermissionsManager dbUserPerm;
+    private RolesAPI api;
 
     public Roles()
     {
@@ -53,6 +54,8 @@ public class Roles extends Module
 
         this.getEventManager().registerListener(this, new RolesEventHandler(this));
         //init on FinishedLoadModulesEvent
+
+        this.api = new RolesAPI(this);
     }
 
     @Override
@@ -87,5 +90,10 @@ public class Roles extends Module
     public RoleManager getManager()
     {
         return manager;
+    }
+
+    public RolesAPI getApi()
+    {
+        return api;
     }
 }
