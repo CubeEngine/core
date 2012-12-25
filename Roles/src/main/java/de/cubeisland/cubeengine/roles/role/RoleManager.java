@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
-import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -18,6 +17,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 import org.bukkit.entity.Player;
@@ -66,7 +66,7 @@ public class RoleManager
             if (file.getName().endsWith(".yml"))
             {
                 RoleConfig config = Configuration.load(RoleConfig.class, file);
-                this.globalConfigs.put(config.roleName, config);
+                this.globalConfigs.put(config.roleName.toLowerCase(Locale.ENGLISH), config);
             }
         }
         this.module.getLogger().debug(i + " global roles loaded!");
@@ -91,6 +91,7 @@ public class RoleManager
         this.module.getLogger().debug("Calculating global Roles...");
         for (String roleName : this.globalConfigs.keySet())
         {
+            roleName = roleName.toLowerCase(Locale.ENGLISH);
             Role role = this.calculateGlobalRole(this.globalConfigs.get(roleName));
             if (role == null)
             {
@@ -113,14 +114,15 @@ public class RoleManager
     {
         try
         {
-            Role role = this.globalRoles.get(config.roleName);
+            Role role = this.globalRoles.get(config.roleName.toLowerCase(Locale.ENGLISH));
             if (role != null)
             {
                 return role;
             }
-            this.roleStack.push(config.roleName);
+            this.roleStack.push(config.roleName.toLowerCase(Locale.ENGLISH));
             for (String parentName : config.parents)
             {
+                parentName = parentName.toLowerCase(Locale.ENGLISH);
                 try
                 {
                     if (this.roleStack.contains(parentName)) // Circular Dependency?
@@ -142,6 +144,7 @@ public class RoleManager
             Set<Role> parentRoles = new HashSet<Role>();
             for (String parentName : config.parents)
             {
+                parentName = parentName.toLowerCase(Locale.ENGLISH);
                 try
                 {
                     Role parentRole = this.globalRoles.get(parentName);
@@ -359,6 +362,7 @@ public class RoleManager
 
     public boolean createGlobalRole(String roleName)
     {
+        roleName = roleName.toLowerCase(Locale.ENGLISH);
         if (this.globalRoles.containsKey(roleName))
         {
             return false;

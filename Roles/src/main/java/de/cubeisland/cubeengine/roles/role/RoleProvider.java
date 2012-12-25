@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role.config;
+package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
@@ -10,8 +10,9 @@ import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.config.Priority;
+import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
+import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 import org.apache.commons.lang.Validate;
@@ -57,12 +59,12 @@ public class RoleProvider
 
     public void addConfig(RoleConfig config)
     {
-        this.configs.put(config.roleName, config);
+        this.configs.put(config.roleName.toLowerCase(Locale.ENGLISH), config);
     }
 
     public void setRole(Role role)
     {
-        this.roles.put(role.getName(), role);
+        this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
     }
 
     public Role getRole(String roleName)
@@ -70,14 +72,14 @@ public class RoleProvider
         Validate.notNull(roles, "The RoleName cannot be null!");
         if (roleName.startsWith("g:"))
         {
-            return this.module.getManager().getGlobalRoles().get(roleName.substring(2));
+            return this.module.getManager().getGlobalRoles().get(roleName.substring(2).toLowerCase(Locale.ENGLISH));
         }
-        return this.roles.get(roleName);
+        return this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
     }
 
     public RoleConfig getConfig(String parentName)
     {
-        return this.configs.get(parentName);
+        return this.configs.get(parentName.toLowerCase(Locale.ENGLISH));
     }
 
     public TLongObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
@@ -178,7 +180,7 @@ public class RoleProvider
         }
         for (String roleName : dRoles)
         {
-            Role role = this.roles.get(roleName);
+            Role role = this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
             if (role == null)
             {
                 module.getLogger().log(LogLevel.WARNING, "Could not find default-role " + roleName);
@@ -210,8 +212,9 @@ public class RoleProvider
         Set<Role> dirtyChilds = new HashSet<Role>();
         for (Role role : dirtyRoles)
         {
-            this.roles.remove(role.getName());
-            this.roles.put(role.getName(), this.calculateRole(this.configs.get(role.getName()), globalRoles));
+            String roleName = role.getName().toLowerCase(Locale.ENGLISH);
+            this.roles.remove(roleName);
+            this.roles.put(roleName, this.calculateRole(this.configs.get(roleName), globalRoles));
             for (Role childRole : role.getChildRoles())
             {
                 dirtyChilds.add(childRole);
@@ -238,7 +241,7 @@ public class RoleProvider
                 module.getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
                 continue;
             }
-            this.roles.put(role.getName(), role);
+            this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
         }
         return true;
     }
@@ -281,7 +284,7 @@ public class RoleProvider
                     Role parentRole = this.calculateRole(parentConfig, globalRoles); // calculate parent-role
                     if (parentRole != null)
                     {
-                        this.roles.put(parentRole.getName(), parentRole);
+                        this.roles.put(parentRole.getName().toLowerCase(Locale.ENGLISH), parentRole);
                     }
                 }
                 catch (RoleDependencyMissingException ex)
@@ -294,6 +297,7 @@ public class RoleProvider
             for (String parentName : config.parents)
             {
                 Role parentRole;
+                parentName = parentName.toLowerCase(Locale.ENGLISH);
                 if (parentName.startsWith("g:"))
                 {
                     parentRole = globalRoles.get(parentName.substring(2));
@@ -406,16 +410,17 @@ public class RoleProvider
 
     public boolean renameRole(Role role, String newName)
     {
+        newName = newName.toLowerCase(Locale.ENGLISH);
         if (this.roles.containsKey(newName))
         {
             return false;
         }
         role.rename(newName);
         // Removing old role
-        RoleConfig config = this.configs.remove(role.getName());
+        RoleConfig config = this.configs.remove(role.getName().toLowerCase(Locale.ENGLISH));
         this.roles.remove(role.getName());
         // Set new role
-        this.configs.put(newName, config);
+        this.configs.put(newName.toLowerCase(Locale.ENGLISH), config);
         Role newRole = this.calculateRole(config, this.module.getManager().getGlobalRoles());
         newRole.setChildRoles(role.getChildRoles());
         this.roles.put(newName, newRole);
@@ -426,6 +431,7 @@ public class RoleProvider
 
     public boolean createRole(String roleName)
     {
+        roleName = roleName.toLowerCase(Locale.ENGLISH);
         if (this.roles.containsKey(roleName))
         {
             return false;
@@ -433,7 +439,7 @@ public class RoleProvider
         RoleConfig config = new RoleConfig();
         config.setCodec("yml");
         config.roleName = roleName;
-        this.configs.put(roleName, config);
+        this.configs.put(roleName.toLowerCase(Locale.ENGLISH), config);
         config.onLoaded();
         config.setFile(new File(this.worldfolder, roleName + ".yml"));
         config.save();

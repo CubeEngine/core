@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
-import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
+import de.cubeisland.cubeengine.roles.role.RoleProvider;
 import org.bukkit.World;
 
 public class RoleManagementCommands extends RoleCommandHelper

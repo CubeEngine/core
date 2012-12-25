@@ -141,26 +141,6 @@ public abstract class Role
         Map<String, RolePermission> tempPerm = new HashMap<String, RolePermission>();
         for (RolePermission perm : this.perms.values())
         {
-            /* TODO check if this already works
-             if (perm.getPerm().endsWith("*"))
-             {
-             Map<String, Boolean> childPerm = new HashMap<String, Boolean>();
-             this.resolveBukkitPermission(perm.getPerm(), childPerm);
-             for (String permKey : childPerm.keySet())
-             {
-             if (tempPerm.containsKey(permKey))
-             {
-             if (tempPerm.get(permKey).getPriorityValue() >= perm.getPriorityValue())
-             {
-             continue;
-             }
-             }
-             tempPerm.put(permKey,
-             new RolePermission(permKey,
-             ((perm.isSet() && childPerm.get(permKey)) || (!perm.isSet() && !childPerm.get(permKey))),
-             perm.getOrigin()));
-             }
-             }*/
             if (tempPerm.containsKey(perm.getPerm()))
             {
                 if (tempPerm.get(perm.getPerm()).getPriorityValue() >= perm.getPriorityValue())

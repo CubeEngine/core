@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.roles.role;
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
