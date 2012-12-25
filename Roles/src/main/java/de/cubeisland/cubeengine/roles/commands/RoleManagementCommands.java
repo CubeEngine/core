@@ -7,9 +7,12 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.World;
 
 public class RoleManagementCommands extends RoleCommandHelper
@@ -29,12 +32,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         String permission = context.getString(1);
         Boolean set;
         String setTo = context.getString(2);
@@ -76,12 +74,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         String key = context.getString(1);
         String value = context.getString(2);
         provider.setRoleMetaData(role, key, value);
@@ -105,12 +98,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         String key = context.getString(1);
         provider.resetRoleMetaData(role, key);
         context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
@@ -126,12 +114,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         provider.clearRoleMetaData(role);
         context.sendMessage("roles", "&eMetadata cleared for the role &6%s &ein &6%s&e!", role.getName(), world.getName());
     }
@@ -146,25 +129,27 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         Role pRole = provider.getRole(context.getString(1));
         if (pRole == null)
         {
             context.sendMessage("roles", "&eCould not find the parent-role &6%s&e.", context.getString(1));
             return;
         }
-        if (provider.setParentRole(role, pRole))
+        try
         {
-            context.sendMessage("roles", "&aAdded &6%s &aas parent-role for &6%s&a!", pRole.getName(), role.getName());
+            if (provider.setParentRole(role, pRole))
+            {
+                context.sendMessage("roles", "&aAdded &6%s &aas parent-role for &6%s&a!", pRole.getName(), role.getName());
+            }
+            else
+            {
+                context.sendMessage("roles", "&6%s &eis already parent-role of &6%s&a!", pRole.getName(), role.getName());
+            }
         }
-        else
+        catch (CircularRoleDepedencyException ex)
         {
-            context.sendMessage("roles", "&6%s &eis already parent-role of &6%s&a!", pRole.getName(), role.getName());
+            context.sendMessage("roles", "&cCircular Dependency! &6%s &cdepends on &6%s&c!", pRole.getName(), role.getName());
         }
     }
 
@@ -178,12 +163,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         Role pRole = provider.getRole(context.getString(1));
         if (pRole == null)
         {
@@ -210,12 +190,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         provider.clearParentRoles(role);
         context.sendMessage("roles", "&eAll parent-roles of &6%s &ecleared!", role.getName());
     }
@@ -230,12 +205,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         Converter<Priority> converter = Convert.matchConverter(Priority.class);
         Priority priority;
         try
@@ -261,12 +231,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         String newName = context.getString(1);
         if (role.getName().equalsIgnoreCase(newName))
         {
@@ -275,7 +240,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
         if (provider.renameRole(role, newName))
         {
-            context.sendMessage("roles", "&6%s &arenamed to &6%s &ain &&%s&a!", role.getName(), newName, world.getName());
+            context.sendMessage("roles", "&6%s &arenamed to &6%s &ain &6%s&a!", role.getName(), newName, world.getName());
         }
         else
         {

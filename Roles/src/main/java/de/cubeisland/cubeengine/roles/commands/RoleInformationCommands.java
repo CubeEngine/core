@@ -56,12 +56,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         String permission = context.getString(1);
         RolePermission myPerm = role.getPerms().get(permission);
         if (myPerm != null)
@@ -127,12 +122,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         if (role.getPerms().isEmpty())
         {
             context.sendMessage("roles", "&eNo permissions set in the role &6%s &ein &6%s&e.",
@@ -170,12 +160,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         if (role.getMetaData().isEmpty())
         {
             context.sendMessage("roles", "&eNo metadata set in the role &6%s &ein &6%s&e.",
@@ -202,12 +187,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         if (role.getParentRoles().isEmpty())
         {
             context.sendMessage("roles", "&eThe role &6%s &ein &6%s &ehas no parent roles.",
@@ -234,12 +214,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         RoleProvider provider = this.getProvider(world);
-        Role role = provider.getRole(context.getString(0));
-        if (role == null)
-        {
-            context.sendMessage("roles", "&eCould not find the role &6%s&e.", context.getString(0));
-            return;
-        }
+        Role role = this.getRole(context, provider, context.getString(0), world);
         context.sendMessage("roles", "&eThe priority of the role &6%s &ein &6%s &eis: &6%d", role.getName(), world.getName(), role.getPriority().value);
     }
 }

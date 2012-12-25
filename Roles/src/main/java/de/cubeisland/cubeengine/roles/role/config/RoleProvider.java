@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import org.apache.commons.lang.Validate;
 
 public class RoleProvider
 {
@@ -66,6 +67,7 @@ public class RoleProvider
 
     public Role getRole(String roleName)
     {
+        Validate.notNull(roles, "The RoleName cannot be null!");
         if (roleName.startsWith("g:"))
         {
             return this.module.getManager().getGlobalRoles().get(roleName.substring(2));
@@ -192,7 +194,7 @@ public class RoleProvider
 
     public void recalculateDirtyRoles(THashMap<String, Role> globalRoles)
     {
-        List<Role> dirtyChilds = new ArrayList<Role>();
+        Set<Role> dirtyChilds = new HashSet<Role>();
         for (Role role : this.roles.values())
         {
             if (role.isDirty())
@@ -203,9 +205,9 @@ public class RoleProvider
         this.recalculateDirtyRoles(dirtyChilds, globalRoles);
     }
 
-    private void recalculateDirtyRoles(List<Role> dirtyRoles, THashMap<String, Role> globalRoles)
+    private void recalculateDirtyRoles(Set<Role> dirtyRoles, THashMap<String, Role> globalRoles)
     {
-        List<Role> dirtyChilds = new ArrayList<Role>();
+        Set<Role> dirtyChilds = new HashSet<Role>();
         for (Role role : dirtyRoles)
         {
             this.roles.remove(role.getName());
@@ -357,14 +359,27 @@ public class RoleProvider
         this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 
-    public boolean setParentRole(Role role, Role pRole)
+    public boolean setParentRole(Role role, Role pRole) throws CircularRoleDepedencyException
     {
+        this.checkCircularDependency(role, pRole);
         boolean added = role.setParentRole(pRole.getName());
         if (added)
         {
             this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
         }
         return added;
+    }
+
+    private void checkCircularDependency(Role role, Role pRole) throws CircularRoleDepedencyException
+    {
+        for (Role cRole : pRole.getParentRoles())
+        {
+            if (cRole.equals(role))
+            {
+                throw new CircularRoleDepedencyException("Cannot add parent!");
+            }
+            this.checkCircularDependency(role, cRole);
+        }
     }
 
     public boolean removeParentRole(Role role, Role pRole)

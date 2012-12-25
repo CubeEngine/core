@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import org.bukkit.World;
@@ -39,6 +40,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
                     invalidUsage(context, "roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
                 }
                 world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
+                context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
             }
             else
             {
@@ -46,6 +48,10 @@ public abstract class RoleCommandHelper extends ContainerCommand
                 if (world == null)
                 {
                     world = sender.getWorld();
+                }
+                else
+                {
+                    context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
                 }
             }
         }
@@ -63,5 +69,15 @@ public abstract class RoleCommandHelper extends ContainerCommand
     protected RoleProvider getProvider(World world)
     {
         return this.manager.getProvider(this.worldManager.getWorldId(world));
+    }
+
+    protected Role getRole(CommandContext context, RoleProvider provider, String name, World world)
+    {
+        Role role = provider.getRole(name);
+        if (role == null)
+        {
+            paramNotFound(context, "roles", "&cCould not find the role &6%s &cin &6%s&c.", name, world.getName());
+        }
+        return role;
     }
 }
