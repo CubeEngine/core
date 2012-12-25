@@ -23,7 +23,11 @@ public class RoleManagementCommands extends RoleCommandHelper
     }
 
     @Command(
-    desc = "Sets the permission for given role [in world]",
+            names =
+    {
+        "setperm", "setpermission"
+    },
+             desc = "Sets the permission for given role [in world]",
              usage = "<role> <permission> <true|false|reset> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -65,7 +69,11 @@ public class RoleManagementCommands extends RoleCommandHelper
     }
 
     @Command(
-    desc = "Sets the metadata for given role [in world]",
+            names =
+    {
+        "setdata", "setmeta", "setmetadata"
+    },
+             desc = "Sets the metadata for given role [in world]",
              usage = "<role> <key> [value] [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -89,7 +97,11 @@ public class RoleManagementCommands extends RoleCommandHelper
     }
 
     @Command(
-    desc = "Resets the metadata for given role [in world]",
+            names =
+    {
+        "resetdata", "resetmeta", "resetmetadata"
+    },
+             desc = "Resets the metadata for given role [in world]",
              usage = "<role> <key> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -105,7 +117,11 @@ public class RoleManagementCommands extends RoleCommandHelper
     }
 
     @Command(
-    desc = "Clears the metadata for given role [in world]",
+            names =
+    {
+        "cleardata", "clearmeta", "clearmetadata"
+    },
+             desc = "Clears the metadata for given role [in world]",
              usage = "<role> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
@@ -196,7 +212,11 @@ public class RoleManagementCommands extends RoleCommandHelper
     }
 
     @Command(
-    desc = "Sets the priority of given role [in world]",
+            names =
+    {
+        "setprio", "setPriority"
+    },
+             desc = "Sets the priority of given role [in world]",
              usage = "<[g:]role> <priority> [in <world>]",
              params =
     @Param(names = "in", type = World.class),

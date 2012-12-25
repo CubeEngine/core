@@ -42,7 +42,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         }
     }
 
-    @Alias(names = "checkperm")
+    @Alias(names = "checkrperm")
     @Command(names =
     {
         "checkperm", "checkpermission"
@@ -108,7 +108,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permission, originRole.getName());
     }
 
-    @Alias(names = "listperm")
+    @Alias(names = "listrperm")
     @Command(names =
     {
         "listperm", "listpermission"
@@ -146,10 +146,10 @@ public class RoleInformationCommands extends RoleCommandHelper
         }
     }
 
-    @Alias(names = "listdata")
+    @Alias(names = "listrdata")
     @Command(names =
     {
-        "listdata", "listmetadata"
+        "listdata", "listmeta", "listmetadata"
     },
              desc = "Lists all metadata of given role [in world]",
              usage = "<role> [in <world>]",
@@ -205,7 +205,11 @@ public class RoleInformationCommands extends RoleCommandHelper
     }
 
     @Command(
-    desc = "Show the priority of given role [in world]",
+            names =
+    {
+        "prio", "priotory"
+    },
+             desc = "Show the priority of given role [in world]",
              usage = "<role> [in <world>]",
              params =
     @Param(names = "in", type = World.class),

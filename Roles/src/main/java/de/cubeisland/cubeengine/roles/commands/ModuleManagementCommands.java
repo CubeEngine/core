@@ -54,7 +54,7 @@ public class ModuleManagementCommands extends ContainerCommand
                 context.sendMessage("roles", "&cInvalid world! No world &6%s &cfound", context.getString(0));
                 return;
             }
-            context.sendMessage("roles", "&aAll your roles commands will now have the world &6%s &aas default!", context.getString(0));
+            context.sendMessage("roles", "&aAll your roles commands will now have &6%s &aas default world!", context.getString(0));
         }
         else
         {

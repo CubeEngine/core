@@ -145,7 +145,7 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkumeta")
     @Command(names =
     {
-        "checkdata", "checkmetadata"
+        "checkdata", "checkmeta", "checkmetadata"
     },
              desc = "Checks for metadata of a user [in world]",
              usage = "<metadatakey> [player] [in <world>]",
@@ -175,7 +175,7 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "listumeta")
     @Command(names =
     {
-        "listdata", "listmetadata"
+        "listdata", "listmeta", "listmetadata"
     },
              desc = "List metadata of a user [in world]",
              usage = "[player] [in <world>]",
