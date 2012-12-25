@@ -268,23 +268,13 @@ public class RoleManager
 
     }
 
-    public void preCalculateRole(User user, TLongObjectHashMap<UserSpecificRole> roleContainer, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
+    private void preCalculateRole(User user, TLongObjectHashMap<UserSpecificRole> roleContainer, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
     {
         // UserSpecific Settings:
         UserSpecificRole userSpecificRole = new UserSpecificRole(this.module, user, worldId, userPerms, userMeta);
         // Roles Assigned to this user:
-        MergedRole mergedRole = null;
-        for (UserSpecificRole inContainer : roleContainer.valueCollection())
-        {
-            if (inContainer.getMergedWith().equals(roles))
-            {
-                mergedRole = inContainer;
-            }
-        }
-        if (mergedRole == null)
-        {
-            mergedRole = new MergedRole(roles); // merge all assigned roles
-        }
+        MergedRole mergedRole = new MergedRole(roles); // merge all assigned roles
+        // Apply inheritance
         userSpecificRole.applyInheritence(mergedRole);
         roleContainer.put(worldId, userSpecificRole);
     }
@@ -314,20 +304,6 @@ public class RoleManager
         user.removeAttribute(this.module, "roleContainer");
         this.preCalculateRoles(user.getName(), true);
         this.applyRole(player);
-    }
-
-    public void reloadRoleAndApply(User user, long worldId)
-    {
-        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(module, "roleContainer");
-        TLongObjectHashMap<List<Role>> userRolesPerWorld = new TLongObjectHashMap<List<Role>>();
-        TLongObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
-        TLongObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
-        this.preCalculateRole(user, roleContainer, userRolesPerWorld.get(worldId), worldId, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
-        long curWorldId = this.module.getCore().getWorldManager().getWorldId(user.getWorld());
-        if (worldId == curWorldId)
-        {
-            applyRole(user.getPlayer(), worldId);
-        }
     }
 
     public boolean addRoles(User user, Player player, long worldId, Role... roles)
@@ -360,8 +336,7 @@ public class RoleManager
             return false;
         }
         this.module.getDbManager().delete(user.key, role.getName(), worldId);
-        user.removeAttribute(this.module, "roleContainer");
-        this.reloadRoleAndApply(user, worldId);
+        this.reloadAllRolesAndApply(user, user.getPlayer());
         return true;
     }
 

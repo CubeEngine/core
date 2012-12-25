@@ -40,7 +40,7 @@ public class UserSpecificRole extends MergedRole
             upManager.merge(up);
 
         }
-        this.module.getManager().reloadRoleAndApply(user, worldId);
+        this.module.getManager().reloadAllRolesAndApply(user, user.getPlayer());
     }
 
     @Override
@@ -54,13 +54,13 @@ public class UserSpecificRole extends MergedRole
         {
             umManager.merge(new UserMetaData(user.key, worldId, key, value));
         }
-        this.module.getManager().reloadRoleAndApply(user, worldId);
+        this.module.getManager().reloadAllRolesAndApply(user, user.getPlayer());
     }
 
     @Override
     public void clearMetaData()
     {
         umManager.clearByUser(user.key);
-        this.module.getManager().reloadRoleAndApply(user, worldId);
+        this.module.getManager().reloadAllRolesAndApply(user, user.getPlayer());
     }
 }

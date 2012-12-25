@@ -53,7 +53,10 @@ public class UserManagementCommands extends UserCommandHelper
         }
     }
 
-    @Alias(names = "remurole")
+    @Alias(names =
+    {
+        "remurole", "manudel"
+    })
     @Command(desc = "Removes a role from the player [in world]",
              usage = "<role> <player> [in <world>]",
              params =
@@ -88,7 +91,7 @@ public class UserManagementCommands extends UserCommandHelper
              max = 2, min = 1)
     public void clear(CommandContext context)
     {
-        User user = this.getUser(context, 1);
+        User user = this.getUser(context, 0);
         World world = this.getWorld(context, user);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Set<Role> newRoles = this.manager.clearRoles(user, worldId);

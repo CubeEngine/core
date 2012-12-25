@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.chat;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.roles.Roles;
 import org.bukkit.entity.Player;
@@ -14,7 +15,6 @@ import java.util.Map;
 public class Chat extends Module implements Listener
 {
     private static final String DEFAULT_FORMAT = new AsyncPlayerChatEvent(true, null, null, null).getFormat();
-
     private ChatConfig config;
     private Roles roles;
     private String format;
@@ -56,11 +56,12 @@ public class Chat extends Module implements Listener
         // set the placeholder instead of the actual value to allow other plugins to change the value
         format = format.replace("{MESSAGE}", "%2$s");
 
-//        User user = getUserManager().getUser(player.getName(), false);
-//        if (user != null)
-//        {
-//            user.getAttribute(roles, "");
-//        }
+        if (roles != null)
+        {
+            User user = this.getUserManager().getExactUser(player);
+            format = format.replace("{ROLE.PREFIX}",  ChatFormat.parseFormats(roles.getApi().getMetaData(user, player.getWorld(), "prefix")));
+            format = format.replace("{ROLE.SUFFIX}",  ChatFormat.parseFormats(roles.getApi().getMetaData(user, player.getWorld(), "suffix")));
+        }
 
         this.getEventManager().fireEvent(formatEvent);
 

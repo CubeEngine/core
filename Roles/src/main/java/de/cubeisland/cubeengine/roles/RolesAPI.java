@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
-import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.bukkit.World;
 
