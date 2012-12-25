@@ -39,6 +39,11 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
+        this.dbManager = new AssignedRoleManager(this.getDatabase());
+        this.dbUserMeta = new UserMetaDataManager(this.getDatabase());
+        this.dbUserPerm = new UserPermissionsManager(this.getDatabase());
+        this.manager = new RoleManager(this);
+
         this.registerCommand(new RoleCommands(this));
         this.getCommandManager().registerCommand(new RoleInformationCommands(this), "roles");
         this.registerCommands(new RoleManagementCommands(this), "roles", "role");
@@ -46,10 +51,6 @@ public class Roles extends Module
         this.registerCommands(new UserManagementCommands(this), "roles", "user");
         this.getCommandManager().registerCommand(new ModuleManagementCommands(this), "roles");
 
-        this.dbManager = new AssignedRoleManager(this.getDatabase());
-        this.dbUserMeta = new UserMetaDataManager(this.getDatabase());
-        this.dbUserPerm = new UserPermissionsManager(this.getDatabase());
-        this.manager = new RoleManager(this);
         this.getEventManager().registerListener(this, new RolesEventHandler(this));
         //init on FinishedLoadModulesEvent
     }

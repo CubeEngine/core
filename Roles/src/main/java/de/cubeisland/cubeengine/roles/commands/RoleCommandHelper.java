@@ -2,11 +2,12 @@ package de.cubeisland.cubeengine.roles.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
 import org.bukkit.World;
 
@@ -33,10 +34,20 @@ public abstract class RoleCommandHelper extends ContainerCommand
         {
             if (sender == null)
             {
-                invalidUsage(context, "roles", "&ePlease provide a world.");//TODO msg can set world to use with cmd
+                if (ModuleManagementCommands.curWorldIdOfConsole == null)
+                {
+                    invalidUsage(context, "roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
+                }
+                world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
             }
-            //TODO get default world if set
-            world = sender.getWorld();
+            else
+            {
+                world = this.worldManager.getWorld((Long) sender.getAttribute(this.module, "curWorldId"));
+                if (world == null)
+                {
+                    world = sender.getWorld();
+                }
+            }
         }
         else
         {

@@ -72,8 +72,12 @@ public class WorldManager extends SingleKeyStorage<Long, WorldModel>
         return this.worldIds.keys();
     }
 
-    public World getWorld(long worldId)
+    public World getWorld(Long worldId)
     {
+        if (worldId == null)
+        {
+            return null;
+        }
         return this.worldIds.get(worldId);
     }
 }
