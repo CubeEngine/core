@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -11,8 +12,6 @@ import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleProvider;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.World;
 
 public class RoleManagementCommands extends RoleCommandHelper
@@ -268,8 +267,40 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    //TODO create role
-    public void createRole(CommandContext context)
+    @Command(
+    desc = "Creates a new role [in world]",
+             usage = "<rolename> [in <world>] [-global]",
+             params =
+    @Param(names = "in", type = World.class),
+             flags =
+    @Flag(longName = "global", name = "g"),
+             max = 2, min = 1)
+    public void create(CommandContext context)
     {
+        String roleName = context.getString(0);
+        if (context.hasFlag("g"))
+        {
+            if (this.manager.createGlobalRole(roleName))
+            {
+                context.sendMessage("roles", "&aGlobal role created!");
+            }
+            else
+            {
+                context.sendMessage("roles", "&eThere is already a global role named &6%s&e.", roleName);
+            }
+        }
+        else
+        {
+            World world = this.getWorld(context);
+            RoleProvider provider = this.getProvider(world);
+            if (provider.createRole(roleName))
+            {
+                context.sendMessage("roles", "&aRole created!");
+            }
+            else
+            {
+                context.sendMessage("roles", "&eThere is already a role named &6%s&e.", roleName);
+            }
+        }
     }
 }

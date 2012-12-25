@@ -423,4 +423,21 @@ public class RoleProvider
         this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
         return true;
     }
+
+    public boolean createRole(String roleName)
+    {
+        if (this.roles.containsKey(roleName))
+        {
+            return false;
+        }
+        RoleConfig config = new RoleConfig();
+        config.setCodec("yml");
+        config.roleName = roleName;
+        this.configs.put(roleName, config);
+        config.onLoaded();
+        config.setFile(new File(this.worldfolder, roleName + ".yml"));
+        config.save();
+        this.roles.put(roleName, this.calculateRole(config, this.module.getManager().getGlobalRoles()));
+        return true;
+    }
 }

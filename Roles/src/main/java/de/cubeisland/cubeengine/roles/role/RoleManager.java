@@ -356,4 +356,21 @@ public class RoleManager
         return this.globalRoles;
     }
     //TODO handle when roles have the same name casinsensitive!!
+
+    public boolean createGlobalRole(String roleName)
+    {
+        if (this.globalRoles.containsKey(roleName))
+        {
+            return false;
+        }
+        RoleConfig config = new RoleConfig();
+        config.setCodec("yml");
+        config.roleName = roleName;
+        this.globalConfigs.put(roleName, config);
+        config.onLoaded();
+        config.setFile(new File(this.rolesFolder, roleName + ".yml"));
+        config.save();
+        this.globalRoles.put(roleName, this.calculateGlobalRole(config));
+        return true;
+    }
 }
