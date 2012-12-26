@@ -27,8 +27,8 @@ public class RolesEventHandler implements Listener
         this.manager.preCalculateRoles(event.getPlayer().getName(), false);
         long worldFromId = this.module.getCore().getWorldManager().getWorldId(event.getFrom());
         long worldToId = this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld());
-        RoleProvider fromProvider = this.manager.getProvider(worldFromId);
-        RoleProvider toProvider = this.manager.getProvider(worldToId);
+        WorldRoleProvider fromProvider = this.manager.getProvider(worldFromId);
+        WorldRoleProvider toProvider = this.manager.getProvider(worldToId);
         if (fromProvider.equals(toProvider))
         {
             if (toProvider.getWorlds().get(worldToId).getRight())

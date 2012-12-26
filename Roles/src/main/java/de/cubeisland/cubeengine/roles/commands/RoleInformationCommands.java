@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
+import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
 import org.bukkit.World;
 
 public class RoleInformationCommands extends RoleCommandHelper
@@ -26,16 +27,19 @@ public class RoleInformationCommands extends RoleCommandHelper
              max = 1)
     public void list(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        if (provider.getAllRoles().isEmpty())
+        boolean global = context.hasNamed("in");
+        World world = global ? null : this.getWorld(context);
+        WorldRoleProvider provider = this.manager.getProvider(world);
+        if (provider.getRoles().isEmpty())
         {
-            context.sendMessage("roles", "&eNo roles found in &6%s&e!", world.getName());
+            context.sendMessage("roles", global ? "&eNo global roles found!" : "&eNo roles found in &6%s&e!", world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&aThe following roles are available in &6%s&a!", world.getName());
-            for (Role role : provider.getAllRoles())
+            context.sendMessage("roles", global
+                    ? "&aThe following global roles are available!"
+                    : "&aThe following roles are available in &6%s&a!", world.getName());
+            for (Role role : provider.getRoles().values())
             {
                 context.sendMessage(String.format(" - &6%s", role.getName()));
             }
@@ -48,15 +52,16 @@ public class RoleInformationCommands extends RoleCommandHelper
         "checkperm", "checkpermission"
     },
              desc = "Checks the permission in given role [in world]",
-             usage = "<role> <permission> [in <world>]",
+             usage = "<[g:]role> <permission> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 3, min = 2)
     public void checkperm(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         String permission = context.getString(1);
         RolePermission myPerm = role.getPerms().get(permission);
         if (myPerm != null)
@@ -114,15 +119,16 @@ public class RoleInformationCommands extends RoleCommandHelper
         "listperm", "listpermission"
     },
              desc = "Lists all permissions of given role [in world]",
-             usage = "<role> [in <world>]",
+             usage = "<[g:]role> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 2, min = 1)
     public void listperm(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role.getPerms().isEmpty())
         {
             context.sendMessage("roles", "&eNo permissions set in the role &6%s &ein &6%s&e.",
@@ -152,15 +158,16 @@ public class RoleInformationCommands extends RoleCommandHelper
         "listdata", "listmeta", "listmetadata"
     },
              desc = "Lists all metadata of given role [in world]",
-             usage = "<role> [in <world>]",
+             usage = "<[g:]role> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 2, min = 1)
     public void listmetadata(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role.getMetaData().isEmpty())
         {
             context.sendMessage("roles", "&eNo metadata set in the role &6%s &ein &6%s&e.",
@@ -179,15 +186,16 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Command(
     desc = "Lists all parents of given role [in world]",
-             usage = "<role> [in <world>]",
+             usage = "<[g:]role> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 2, min = 1)
     public void listParent(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role.getParentRoles().isEmpty())
         {
             context.sendMessage("roles", "&eThe role &6%s &ein &6%s &ehas no parent roles.",
@@ -210,15 +218,16 @@ public class RoleInformationCommands extends RoleCommandHelper
         "prio", "priotory"
     },
              desc = "Show the priority of given role [in world]",
-             usage = "<role> [in <world>]",
+             usage = "<[g:]role> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 2, min = 1)
     public void priority(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         context.sendMessage("roles", "&eThe priority of the role &6%s &ein &6%s &eis: &6%d", role.getName(), world.getName(), role.getPriority().value);
     }
 }

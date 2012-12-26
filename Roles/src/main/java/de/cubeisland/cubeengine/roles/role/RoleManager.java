@@ -1,14 +1,11 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
-import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
-import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
@@ -16,29 +13,28 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class RoleManager
 {
-    private THashMap<String, RoleConfig> globalConfigs = new THashMap<String, RoleConfig>();
-    private THashMap<String, Role> globalRoles = new THashMap<String, Role>();
     private final File rolesFolder;
     private final Roles module;
-    private TLongObjectHashMap<RoleProvider> providers = new TLongObjectHashMap<RoleProvider>();
+    private TLongObjectHashMap<WorldRoleProvider> providers = new TLongObjectHashMap<WorldRoleProvider>();
+    private GlobalRoleProvider globalProvider;
+    private WorldManager worldManager;
 
     public RoleManager(Roles rolesModule)
     {
         this.module = rolesModule;
+        this.worldManager = rolesModule.getCore().getWorldManager();
         this.rolesFolder = new File(rolesModule.getFolder(), "roles");
     }
 
     public void saveAllConfigs()
     {
-        for (Configuration config : this.globalConfigs.values())
+        for (Configuration config : this.globalProvider.getConfigs())
         {
             config.save();
         }
@@ -59,17 +55,8 @@ public class RoleManager
     {
         this.rolesFolder.mkdir();
         // Global roles:
-        this.module.getLogger().debug("Loading global roles...");
-        int i = 0;
-        for (File file : rolesFolder.listFiles())
-        {
-            if (file.getName().endsWith(".yml"))
-            {
-                RoleConfig config = Configuration.load(RoleConfig.class, file);
-                this.globalConfigs.put(config.roleName.toLowerCase(Locale.ENGLISH), config);
-            }
-        }
-        this.module.getLogger().debug(i + " global roles loaded!");
+        this.globalProvider = new GlobalRoleProvider(module);
+        this.globalProvider.init(rolesFolder);
         // World roles:
         this.createAllProviders();
         for (RoleProvider provider : this.providers.valueCollection())
@@ -77,98 +64,24 @@ public class RoleManager
             provider.init(this.rolesFolder);
         }
         this.recalculateAllRoles();
-        for (RoleProvider provider : this.providers.valueCollection())
+        for (WorldRoleProvider provider : this.providers.valueCollection())
         {
             provider.loadDefaultRoles(this.module.getConfiguration());
         }
     }
-    private Stack<String> roleStack;
 
     public void recalculateAllRoles()
     {
-        this.roleStack = new Stack<String>();
-        // Calculate global roles:
         this.module.getLogger().debug("Calculating global Roles...");
-        for (String roleName : this.globalConfigs.keySet())
-        {
-            roleName = roleName.toLowerCase(Locale.ENGLISH);
-            Role role = this.calculateGlobalRole(this.globalConfigs.get(roleName));
-            if (role == null)
-            {
-                this.module.getLogger().log(LogLevel.WARNING, roleName + " could not be calculated!");
-            }
-            this.globalRoles.put(roleName, role);
-        }
+        this.globalProvider.calculateRoles(true);
         // Calculate world roles for each world-provider:
-        for (RoleProvider provider : providers.valueCollection())
+        for (WorldRoleProvider provider : providers.valueCollection())
         {
             if (!provider.isCalculated())
             {
                 this.module.getLogger().debug("Calculating roles for " + provider.getMainWorld() + "...");
-                provider.calculateRoles(this.globalRoles, false);
+                provider.calculateRoles(false);
             }
-        }
-    }
-
-    private Role calculateGlobalRole(RoleConfig config)
-    {
-        try
-        {
-            Role role = this.globalRoles.get(config.roleName.toLowerCase(Locale.ENGLISH));
-            if (role != null)
-            {
-                return role;
-            }
-            this.roleStack.push(config.roleName.toLowerCase(Locale.ENGLISH));
-            for (String parentName : config.parents)
-            {
-                parentName = parentName.toLowerCase(Locale.ENGLISH);
-                try
-                {
-                    if (this.roleStack.contains(parentName)) // Circular Dependency?
-                    {
-                        throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", roleStack));
-                    }
-                    RoleConfig parentConfig = this.globalConfigs.get(parentName);
-                    if (parentConfig == null) // Dependency Missing?
-                    {
-                        throw new RoleDependencyMissingException("Could not find the role " + parentName);
-                    }
-                    this.calculateGlobalRole(parentConfig); // calculate parent-role
-                }
-                catch (RoleDependencyMissingException ex)
-                {
-                    this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
-                }
-            }
-            TreeSet<Role> parentRoles = new TreeSet<Role>();
-            for (String parentName : config.parents)
-            {
-                parentName = parentName.toLowerCase(Locale.ENGLISH);
-                try
-                {
-                    Role parentRole = this.globalRoles.get(parentName);
-                    if (parentRole == null)
-                    {
-                        throw new RoleDependencyMissingException("Parent role " + parentName + " for " + config.roleName + " is missing.");
-                    }
-                    parentRoles.add(parentRole); // Role was found:
-                }
-                catch (RoleDependencyMissingException ex)
-                {
-                    this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
-                }
-            }
-            role = new ConfigRole(config, parentRoles, true);
-
-            this.roleStack.pop();
-            this.module.getLogger().debug(role.getName() + " loaded!");
-            return role;
-        }
-        catch (CircularRoleDepedencyException ex)
-        {
-            this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
-            return null;
         }
     }
 
@@ -181,7 +94,7 @@ public class RoleManager
         this.providers.clear();
         for (RoleMirror mirror : this.module.getConfiguration().mirrors)
         {
-            RoleProvider provider = new RoleProvider(mirror);
+            WorldRoleProvider provider = new WorldRoleProvider(module, mirror);
             TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
             for (long worldId : worlds.keys())
             {
@@ -202,19 +115,29 @@ public class RoleManager
         {
             if (this.getProvider(worldId) == null)
             {
-                this.providers.put(worldId, new RoleProvider(worldId));
+                this.providers.put(worldId, new WorldRoleProvider(module, worldId));
             }
         }
     }
 
-    public RoleProvider getProvider(Long worldID)
+    public WorldRoleProvider getProvider(Long worldID)
     {
         return this.providers.get(worldID);
     }
 
-    public Collection<RoleProvider> getProviders()
+    public <Provider extends RoleProvider> Provider getProvider(World world)
+    {
+        return (Provider) (world == null ? this.globalProvider : this.getProvider(this.worldManager.getWorldId(world)));
+    }
+
+    public Collection<WorldRoleProvider> getProviders()
     {
         return this.providers.valueCollection();
+    }
+
+    public GlobalRoleProvider getGlobalProvider()
+    {
+        return globalProvider;
     }
     private TLongObjectHashMap<TLongObjectHashMap<List<String>>> loadedUserRoles = new TLongObjectHashMap<TLongObjectHashMap<List<String>>>();
 
@@ -254,7 +177,7 @@ public class RoleManager
         }
         user.removeAttribute(module, "roleContainer");
         TLongObjectHashMap<List<Role>> userRolesPerWorld = new TLongObjectHashMap<List<Role>>();
-        for (RoleProvider provider : this.getProviders())
+        for (WorldRoleProvider provider : this.getProviders())
         {
             TLongObjectHashMap<List<Role>> pRolesPerWorld = provider.getRolesFor(user, reload);
             userRolesPerWorld.putAll(pRolesPerWorld);
@@ -346,7 +269,7 @@ public class RoleManager
     public Set<Role> clearRoles(User user, long worldId)
     {
         this.module.getDbManager().clear(user.key, worldId);
-        Set<Role> result = this.getProvider(worldId).getDefaultRoles();
+        Set<Role> result = this.providers.get(worldId).getDefaultRoles();
 
         this.addRoles(user, user.getPlayer(), worldId, result.toArray(new Role[result.size()]));
         user.removeAttribute(this.module, "roleContainer");
@@ -356,24 +279,25 @@ public class RoleManager
 
     public THashMap<String, Role> getGlobalRoles()
     {
-        return this.globalRoles;
+        return this.globalProvider.getRoles();
     }
 
-    public boolean createGlobalRole(String roleName)
+    /**
+     * Creates a new role
+     *
+     * @param roleName
+     * @param worldId the worldId or null for global-roles
+     * @return
+     */
+    public boolean createRole(String roleName, World world)
     {
-        roleName = roleName.toLowerCase(Locale.ENGLISH);
-        if (this.globalRoles.containsKey(roleName))
+        if (world == null)
         {
-            return false;
+            return this.globalProvider.createRole(roleName);
         }
-        RoleConfig config = new RoleConfig();
-        config.setCodec("yml");
-        config.roleName = roleName;
-        this.globalConfigs.put(roleName, config);
-        config.onLoaded();
-        config.setFile(new File(this.rolesFolder, roleName + ".yml"));
-        config.save();
-        this.globalRoles.put(roleName, this.calculateGlobalRole(config));
-        return true;
+        else
+        {
+            return this.getProvider(world).createRole(roleName);
+        }
     }
 }

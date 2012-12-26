@@ -1,56 +1,37 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
-import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 import org.apache.commons.lang.Validate;
 
-public class RoleProvider
+public abstract class RoleProvider
 {
-    private RoleMirror mirrorConfig;
-    private THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
-    private THashMap<String, Role> roles = new THashMap<String, Role>();
-    private boolean init = false;
-    private boolean rolesCalculated = false;
-    private File worldfolder = null;
-    private Set<Role> defaultRoles = new HashSet<Role>();
-    private Stack<String> roleStack = new Stack<String>();
-    private Roles module = (Roles) CubeEngine.getModuleManager().getModule("Roles");
+    protected THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
+    protected THashMap<String, Role> roles = new THashMap<String, Role>();
+    protected boolean init = false;
+    protected boolean rolesCalculated = false;
+    protected File folder = null;
+    protected Stack<String> roleStack = new Stack<String>();
+    protected Roles module;
+    public final boolean isGlobal;
 
-    public RoleProvider(RoleMirror mirrorConfig)
+    public RoleProvider(Roles module, boolean isGlobal)
     {
-        this.mirrorConfig = mirrorConfig;
-    }
-
-    /**
-     * RoleProvider for a single world
-     *
-     * @param worldId
-     */
-    public RoleProvider(long worldId)
-    {
-        this.mirrorConfig = new RoleMirror(this.module, worldId);
+        this.module = module;
+        this.isGlobal = false;
     }
 
     public Iterable<RoleConfig> getConfigs()
@@ -83,55 +64,6 @@ public class RoleProvider
         return this.configs.get(parentName.toLowerCase(Locale.ENGLISH));
     }
 
-    public TLongObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
-    {
-        return this.mirrorConfig.getWorlds();
-    }
-
-    public TLongObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
-    {
-        TLongObjectHashMap<List<Role>> result = new TLongObjectHashMap<List<Role>>();
-        TLongObjectHashMap<List<String>> rolesFromDb;
-        if (reload)
-        {
-            rolesFromDb = module.getManager().reloadRoles(user);
-        }
-        else
-        {
-            rolesFromDb = module.getManager().loadRoles(user);
-        }
-        for (long worldID : rolesFromDb.keys())
-        {
-            Pair<Boolean, Boolean> mirrorRoleUsers = this.mirrorConfig.getWorlds().get(worldID);
-            if (mirrorRoleUsers == null)
-            {
-                continue; // world is not in this provider
-            }
-            List<Role> roleList = new ArrayList<Role>();
-            result.put(worldID, roleList);
-            if (mirrorRoleUsers.getLeft() == mirrorRoleUsers.getRight()// both true -> full mirror
-                    || mirrorRoleUsers.getLeft()) // roles are mirrored BUT but assigned roles are not mirrored!
-            {
-                for (String roleName : rolesFromDb.get(worldID))
-                {
-                    Role role = this.getRole(roleName);
-                    if (role == null)
-                    {
-                        throw new IllegalStateException("Role does not exist!");
-                    }
-                    roleList.add(role);
-                }
-            }
-            //else roles are not mirrored BUT assigned roles are mirrored! -> this world will have its own provider
-        }
-        return result;
-    }
-
-    public Set<Role> getDefaultRoles()
-    {
-        return this.defaultRoles;
-    }
-
     /**
      * Initializes this RoleProvider with its configurations
      *
@@ -139,19 +71,9 @@ public class RoleProvider
      */
     public void init(File rolesFolder)
     {
-        if (this.init) // provider is already initialized!
-        {
-            return;
-        }
-        if (this.worldfolder == null)
-        {
-            // Sets the folder for this provider
-            this.worldfolder = new File(rolesFolder, this.mirrorConfig.mainWorld);
-        }
-        this.worldfolder.mkdir(); // Creates folder for this privder if not existant
-        this.module.getLogger().debug("Reading roles for the world-provider " + this.mirrorConfig.mainWorld + ":");
+        this.folder.mkdir(); // Creates folder for this privder if not existant
         int i = 0;
-        for (File configFile : this.worldfolder.listFiles())
+        for (File configFile : this.folder.listFiles())
         {
             if (configFile.getName().endsWith(".yml"))
             {
@@ -171,28 +93,9 @@ public class RoleProvider
         this.init(null);
     }
 
-    public void loadDefaultRoles(RolesConfig config)
+    public void recalculateRoles()
     {
-        List<String> dRoles = config.defaultRoles.get(this.mirrorConfig.mainWorld);
-        if (dRoles == null || dRoles.isEmpty())
-        {
-            module.getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.mirrorConfig.mainWorld);
-            return;
-        }
-        for (String roleName : dRoles)
-        {
-            Role role = this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
-            if (role == null)
-            {
-                module.getLogger().log(LogLevel.WARNING, "Could not find default-role " + roleName);
-            }
-            this.defaultRoles.add(role);
-        }
-    }
-
-    public void recalculateRoles(THashMap<String, Role> globalRoles)
-    {
-        this.calculateRoles(globalRoles, true);
+        this.calculateRoles(true);
     }
 
     public void recalculateDirtyRoles(THashMap<String, Role> globalRoles)
@@ -227,8 +130,9 @@ public class RoleProvider
         }
     }
 
-    public boolean calculateRoles(THashMap<String, Role> globalRoles, boolean recalculate)
+    public boolean calculateRoles(boolean recalculate)
     {
+        THashMap<String, Role> globalRoles = this.module.getManager().getGlobalRoles();
         if (this.rolesCalculated && !recalculate)
         {
             return false;
@@ -325,14 +229,9 @@ public class RoleProvider
         }
     }
 
-    public Collection<Role> getAllRoles()
+    public THashMap<String, Role> getRoles()
     {
-        return this.roles.values();
-    }
-
-    public String getMainWorld()
-    {
-        return this.mirrorConfig.mainWorld;
+        return roles;
     }
 
     public boolean isCalculated()
@@ -442,7 +341,7 @@ public class RoleProvider
         config.roleName = roleName;
         this.configs.put(roleName.toLowerCase(Locale.ENGLISH), config);
         config.onLoaded();
-        config.setFile(new File(this.worldfolder, roleName + ".yml"));
+        config.setFile(new File(this.folder, roleName + ".yml"));
         config.save();
         this.roles.put(roleName, this.calculateRole(config, this.module.getManager().getGlobalRoles()));
         return true;

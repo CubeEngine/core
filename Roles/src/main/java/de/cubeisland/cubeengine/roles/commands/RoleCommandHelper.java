@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
+import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
 import org.bukkit.World;
 
 public abstract class RoleCommandHelper extends ContainerCommand
@@ -28,7 +29,6 @@ public abstract class RoleCommandHelper extends ContainerCommand
 
     protected World getWorld(CommandContext context)
     {
-
         User sender = context.getSenderAsUser();
         World world;
         if (!context.hasNamed("in"))
@@ -64,11 +64,6 @@ public abstract class RoleCommandHelper extends ContainerCommand
             }
         }
         return world;
-    }
-
-    protected RoleProvider getProvider(World world)
-    {
-        return this.manager.getProvider(this.worldManager.getWorldId(world));
     }
 
     protected Role getRole(CommandContext context, RoleProvider provider, String name, World world)

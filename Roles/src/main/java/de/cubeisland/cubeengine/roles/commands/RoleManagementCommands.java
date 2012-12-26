@@ -10,8 +10,8 @@ import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
+import de.cubeisland.cubeengine.roles.role.config.Priority;
 import org.bukkit.World;
 
 public class RoleManagementCommands extends RoleCommandHelper
@@ -27,15 +27,16 @@ public class RoleManagementCommands extends RoleCommandHelper
         "setperm", "setpermission"
     },
              desc = "Sets the permission for given role [in world]",
-             usage = "<role> <permission> <true|false|reset> [in <world>]",
+             usage = "<[g:]role> <permission> <true|false|reset> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 4, min = 3)
     public void setpermission(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         String permission = context.getString(1);
         Boolean set;
         String setTo = context.getString(2);
@@ -73,15 +74,16 @@ public class RoleManagementCommands extends RoleCommandHelper
         "setdata", "setmeta", "setmetadata"
     },
              desc = "Sets the metadata for given role [in world]",
-             usage = "<role> <key> [value] [in <world>]",
+             usage = "<[g:]role> <key> [value] [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 4, min = 3)
     public void setmetadata(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         String key = context.getString(1);
         String value = context.getString(2);
         provider.setRoleMetaData(role, key, value);
@@ -101,15 +103,16 @@ public class RoleManagementCommands extends RoleCommandHelper
         "resetdata", "resetmeta", "resetmetadata"
     },
              desc = "Resets the metadata for given role [in world]",
-             usage = "<role> <key> [in <world>]",
+             usage = "<[g:]role> <key> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 3, min = 2)
     public void resetmetadata(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         String key = context.getString(1);
         provider.resetRoleMetaData(role, key);
         context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
@@ -121,15 +124,16 @@ public class RoleManagementCommands extends RoleCommandHelper
         "cleardata", "clearmeta", "clearmetadata"
     },
              desc = "Clears the metadata for given role [in world]",
-             usage = "<role> [in <world>]",
+             usage = "<[g:]role> [in <world>]",
              params =
     @Param(names = "in", type = World.class),
              max = 2, min = 1)
     public void clearmetadata(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         provider.clearRoleMetaData(role);
         context.sendMessage("roles", "&eMetadata cleared for the role &6%s &ein &6%s&e!", role.getName(), world.getName());
     }
@@ -142,18 +146,18 @@ public class RoleManagementCommands extends RoleCommandHelper
              max = 3, min = 2)
     public void addParent(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         Role pRole = provider.getRole(context.getString(1));
-        if (pRole == null)
-        {
-            context.sendMessage("roles", "&eCould not find the parent-role &6%s&e.", context.getString(1));
-            return;
-        }
         try
         {
-            if (provider.setParentRole(role, pRole))
+            if (pRole == null)
+            {
+                context.sendMessage("roles", "&eCould not find the parent-role &6%s&e.", context.getString(1));
+            }
+            else if (provider.setParentRole(role, pRole))
             {
                 context.sendMessage("roles", "&aAdded &6%s &aas parent-role for &6%s&a!", pRole.getName(), role.getName());
             }
@@ -176,16 +180,16 @@ public class RoleManagementCommands extends RoleCommandHelper
              max = 3, min = 2)
     public void removeParent(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         Role pRole = provider.getRole(context.getString(1));
         if (pRole == null)
         {
             context.sendMessage("roles", "&eCould not find the parent-role &6%s&e.", context.getString(1));
-            return;
         }
-        if (provider.removeParentRole(role, pRole))
+        else if (provider.removeParentRole(role, pRole))
         {
             context.sendMessage("roles", "&aRemoved the parent-role &6%s &afrom &6%s&a!", pRole.getName(), role.getName());
         }
@@ -203,9 +207,10 @@ public class RoleManagementCommands extends RoleCommandHelper
              max = 2, min = 1)
     public void clearParent(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         provider.clearParentRoles(role);
         context.sendMessage("roles", "&eAll parent-roles of &6%s &ecleared!", role.getName());
     }
@@ -222,9 +227,10 @@ public class RoleManagementCommands extends RoleCommandHelper
              max = 3, min = 2)
     public void setPriority(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         Converter<Priority> converter = Convert.matchConverter(Priority.class);
         Priority priority;
         try
@@ -242,22 +248,22 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Command(
     desc = "Renames given role [in world]",
-             usage = "<[g:]role> <new name> [in <world>]",
+             usage = "<[g:]role> <new name> [in <world>]|[-global]",
              params =
     @Param(names = "in", type = World.class),
              max = 2, min = 1)
     public void rename(CommandContext context)
     {
-        World world = this.getWorld(context);
-        RoleProvider provider = this.getProvider(world);
-        Role role = this.getRole(context, provider, context.getString(0), world);
+        String roleName = context.getString(0);
+        World world = roleName.startsWith("g:") ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
         String newName = context.getString(1);
         if (role.getName().equalsIgnoreCase(newName))
         {
             context.sendMessage("roles", "&cThese are the same names!");
-            return;
         }
-        if (provider.renameRole(role, newName))
+        else if (provider.renameRole(role, newName))
         {
             context.sendMessage("roles", "&6%s &arenamed to &6%s &ain &6%s&a!", role.getName(), newName, world.getName());
         }
@@ -269,7 +275,7 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Command(
     desc = "Creates a new role [in world]",
-             usage = "<rolename> [in <world>] [-global]",
+             usage = "<rolename> [in <world>]|[-global]",
              params =
     @Param(names = "in", type = World.class),
              flags =
@@ -278,29 +284,16 @@ public class RoleManagementCommands extends RoleCommandHelper
     public void create(CommandContext context)
     {
         String roleName = context.getString(0);
-        if (context.hasFlag("g"))
+        World world = null;
+        if (this.manager.createRole(roleName, context.hasFlag("g") ? null : (world = this.getWorld(context))))
         {
-            if (this.manager.createGlobalRole(roleName))
-            {
-                context.sendMessage("roles", "&aGlobal role created!");
-            }
-            else
-            {
-                context.sendMessage("roles", "&eThere is already a global role named &6%s&e.", roleName);
-            }
+            context.sendMessage("roles", world == null ? "&aGlobal role created!" : "&aRole created!");
         }
         else
         {
-            World world = this.getWorld(context);
-            RoleProvider provider = this.getProvider(world);
-            if (provider.createRole(roleName))
-            {
-                context.sendMessage("roles", "&aRole created!");
-            }
-            else
-            {
-                context.sendMessage("roles", "&eThere is already a role named &6%s&e.", roleName);
-            }
+            context.sendMessage("roles", world == null
+                    ? "&eThere is already a global role named &6%s&e."
+                    : "&eThere is already a role named &6%s &ein &6%s&e.", roleName, world);
         }
     }
 }
