@@ -40,20 +40,30 @@ public class RoleManagementCommands extends RoleCommandHelper
         String permission = context.getString(1);
         Boolean set;
         String setTo = context.getString(2);
+        String worldName = world == null ? null : world.getName();
         if (setTo.equalsIgnoreCase("true"))
         {
             set = true;
-            context.sendMessage("roles", "&6%s &ais now set to &2true &afor the role &6%s &ain &6%s&a!", permission, role.getName(), world.getName());
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&6%s &ais now set to &2true &afor the global role &6%s&a!"
+                    : "&6%s &ais now set to &2true &afor the role &6%s &ain &6%s&a!",
+                    permission, role.getName(), worldName);
         }
         else if (setTo.equalsIgnoreCase("false"))
         {
             set = false;
-            context.sendMessage("roles", "&6%s &cis now set to &4false &cfor the role &6%s &cin &6%s&c!", permission, role.getName(), world.getName());
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&6%s &cis now set to &4false &cfor the global role &6%s&c!"
+                    : "&6%s &cis now set to &4false &cfor the role &6%s &cin &6%s&c!",
+                    permission, role.getName(), worldName);
         }
         else if (setTo.equalsIgnoreCase("reset"))
         {
             set = null;
-            context.sendMessage("roles", "&6%s &eis now resetted for the role &6%s &ein &6%s&e!", permission, role.getName(), world.getName());
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&6%s &eis now resetted for the global role &6%s&e!"
+                    : "&6%s &eis now resetted for the role &6%s &ein &6%s&e!",
+                    permission, role.getName(), worldName);
         }
         else
         {
@@ -87,13 +97,20 @@ public class RoleManagementCommands extends RoleCommandHelper
         String key = context.getString(1);
         String value = context.getString(2);
         provider.setRoleMetaData(role, key, value);
+        String worldName = world == null ? null : world.getName();
         if (value == null)
         {
-            context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&eMetadata &6%s &eresetted for the global role &6%s&e!"
+                    : "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!",
+                    key, role.getName(), worldName);
         }
         else
         {
-            context.sendMessage("roles", "&aMetadata &6%s &aset to &6%s &afor the role &6%s &ain &6%s&a!", key, value, role.getName(), world.getName());
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&aMetadata &6%s &aset to &6%s &afor the global role &6%s&a!"
+                    : "&aMetadata &6%s &aset to &6%s &afor the role &6%s &ain &6%s&a!",
+                    key, value, role.getName(), worldName);
         }
     }
 
@@ -115,7 +132,10 @@ public class RoleManagementCommands extends RoleCommandHelper
         Role role = this.getRole(context, provider, roleName, world);
         String key = context.getString(1);
         provider.resetRoleMetaData(role, key);
-        context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!", key, role.getName(), world.getName());
+        context.sendMessage("roles", roleName.startsWith("g:")
+                ? "&eMetadata &6%s &eresetted for the global role &6%s&e!"
+                : "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!",
+                key, role.getName(), world == null ? null : world.getName());
     }
 
     @Command(
@@ -135,7 +155,10 @@ public class RoleManagementCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         provider.clearRoleMetaData(role);
-        context.sendMessage("roles", "&eMetadata cleared for the role &6%s &ein &6%s&e!", role.getName(), world.getName());
+        context.sendMessage("roles", roleName.startsWith("g:")
+                ? "&eMetadata cleared for the global role &6%s&e!"
+                : "&eMetadata cleared for the role &6%s &ein &6%s&e!",
+                role.getName(), world == null ? null : world.getName());
     }
 
     @Command(
@@ -152,7 +175,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         Role role = this.getRole(context, provider, roleName, world);
         Role pRole = provider.getRole(context.getString(1));
         try
-        {
+        {//TODO show world / global
             if (pRole == null)
             {
                 context.sendMessage("roles", "&eCould not find the parent-role &6%s&e.", context.getString(1));
@@ -185,6 +208,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         Role pRole = provider.getRole(context.getString(1));
+        //TODO show world / global
         if (pRole == null)
         {
             context.sendMessage("roles", "&eCould not find the parent-role &6%s&e.", context.getString(1));
@@ -212,7 +236,10 @@ public class RoleManagementCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         provider.clearParentRoles(role);
-        context.sendMessage("roles", "&eAll parent-roles of &6%s &ecleared!", role.getName());
+        context.sendMessage("roles", roleName.startsWith("g:")
+                ? "&eAll parent-roles of the global role &6%s &ecleared!"
+                : "&eAll parent-roles of the role &6%s &ein &6%s cleared!",
+                role.getName(), world == null ? null : world.getName());
     }
 
     @Command(
@@ -236,14 +263,17 @@ public class RoleManagementCommands extends RoleCommandHelper
         try
         {
             priority = converter.fromObject(context.getString(1));
+            provider.setRolePriority(role, priority);
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&aPriority of the global role &6%s &aset to &6%s&a!"
+                    : "&aPriority of the role &6%s &aset to &6%s &ain &6%s&a!",
+                    role.getName(), context.getString(1), world == null ? null : world.getName());
         }
         catch (ConversionException ex)
         {
             context.sendMessage("roles", "&6%s &cis not a valid priority!", context.getString(1));
-            return;
         }
-        provider.setRolePriority(role, priority);
-        context.sendMessage("roles", "&aPriority of &6%s &aset to &6%s &ain &6%s&a!", role.getName(), context.getString(1), world.getName());
+
     }
 
     @Command(
@@ -265,11 +295,17 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
         else if (provider.renameRole(role, newName))
         {
-            context.sendMessage("roles", "&6%s &arenamed to &6%s &ain &6%s&a!", role.getName(), newName, world.getName());
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&aGlobal role &6%s &arenamed to &6%s&a!"
+                    : "&6%s &arenamed to &6%s &ain &6%s&a!",
+                    role.getName(), newName, world == null ? null : world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&cRenaming failed! The role &6%s &calready exists in &6%s&c!", newName, world.getName());
+            context.sendMessage("roles", roleName.startsWith("g:")
+                    ? "&cRenaming failed! The role global &6%s &calready exists!"
+                    : "&cRenaming failed! The role &6%s &calready exists in &6%s&c!",
+                    newName, world == null ? null : world.getName());
         }
     }
 
