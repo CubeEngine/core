@@ -69,7 +69,7 @@ public abstract class RoleProvider
      *
      * @param rolesFolder
      */
-    public void init(File rolesFolder)
+    public void loadInConfigurations(File rolesFolder)
     {
         this.folder.mkdir(); // Creates folder for this privder if not existant
         int i = 0;
@@ -90,7 +90,7 @@ public abstract class RoleProvider
     public void reload()
     {
         this.init = false;
-        this.init(null);
+        this.loadInConfigurations(null);
     }
 
     public void recalculateRoles()

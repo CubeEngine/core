@@ -56,12 +56,12 @@ public class RoleManager
         this.rolesFolder.mkdir();
         // Global roles:
         this.globalProvider = new GlobalRoleProvider(module);
-        this.globalProvider.init(rolesFolder);
+        this.globalProvider.loadInConfigurations(rolesFolder);
         // World roles:
         this.createAllProviders();
         for (RoleProvider provider : this.providers.valueCollection())
         {
-            provider.init(this.rolesFolder);
+            provider.loadInConfigurations(this.rolesFolder);
         }
         this.recalculateAllRoles();
         for (WorldRoleProvider provider : this.providers.valueCollection())

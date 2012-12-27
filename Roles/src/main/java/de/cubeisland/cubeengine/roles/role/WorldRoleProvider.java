@@ -99,9 +99,8 @@ public class WorldRoleProvider extends RoleProvider
         }
     }
 
-    
     @Override
-    public void init(File rolesFolder)
+    public void loadInConfigurations(File rolesFolder)
     {
         if (this.init) // provider is already initialized!
         {
@@ -113,7 +112,7 @@ public class WorldRoleProvider extends RoleProvider
             this.folder = new File(rolesFolder, this.mirrorConfig.mainWorld);
         }
         this.module.getLogger().debug("Loading roles for provider of " + this.mirrorConfig.mainWorld + ":");
-        super.init(rolesFolder);
+        super.loadInConfigurations(rolesFolder);
     }
 
     public String getMainWorld()

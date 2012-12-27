@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.roles.role;
 import de.cubeisland.cubeengine.roles.Roles;
 import java.io.File;
 import java.util.Locale;
-import org.apache.commons.lang.Validate;
 
 public class GlobalRoleProvider extends RoleProvider
 {
@@ -13,7 +12,7 @@ public class GlobalRoleProvider extends RoleProvider
     }
 
     @Override
-    public void init(File rolesFolder)
+    public void loadInConfigurations(File rolesFolder)
     {
         this.module.getLogger().debug("Loading global roles...");
         if (this.init) // provider is already initialized!
@@ -25,13 +24,16 @@ public class GlobalRoleProvider extends RoleProvider
             // Sets the folder for this provider
             this.folder = rolesFolder;
         }
-        super.init(rolesFolder);
+        super.loadInConfigurations(rolesFolder);
     }
-    
+
     @Override
     public Role getRole(String roleName)
     {
-        Validate.notNull(roles, "The RoleName cannot be null!");
+        if (roleName == null)
+        {
+            return null;
+        }
         if (roleName.startsWith("g:"))
         {
             roleName = roleName.substring(2);

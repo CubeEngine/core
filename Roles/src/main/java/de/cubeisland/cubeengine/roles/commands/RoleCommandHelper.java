@@ -3,18 +3,17 @@ package de.cubeisland.cubeengine.roles.commands;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
-import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
 import org.bukkit.World;
 
 public abstract class RoleCommandHelper extends ContainerCommand
 {
+    protected static final String GLOBAL_PREFIX = "g:";
     protected RoleManager manager;
     protected Roles module;
     protected WorldManager worldManager;
@@ -71,7 +70,14 @@ public abstract class RoleCommandHelper extends ContainerCommand
         Role role = provider.getRole(name);
         if (role == null)
         {
-            paramNotFound(context, "roles", "&cCould not find the role &6%s &cin &6%s&c.", name, world.getName());
+            if (world == null)
+            {
+                paramNotFound(context, "roles", "&cCould not find the global role &6%s&c.", name);
+            }
+            else
+            {
+                paramNotFound(context, "roles", "&cCould not find the role &6%s &cin &6%s&c.", name, world.getName());
+            }
         }
         return role;
     }
