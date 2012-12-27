@@ -7,7 +7,9 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
+import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,6 +38,10 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
                     builder.delete().from(this.tableName).where().
                     field("userId").is(EQUAL).value().and().
                     field("worldId").is(EQUAL).value().end().end());
+            this.database.storeStatement(modelClass, "rename",
+                    builder.update(this.tableName).set("roleName").
+                    where().field("worldId").isEqual().value().
+                    and().field("roleName").isEqual().value().end().end());
         }
         catch (SQLException e)
         {
@@ -83,6 +89,29 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while deleting assigned Role (multi)", ex);
+        }
+    }
+
+    public void rename(WorldRoleProvider provider, String name, String newName)
+    {
+        try
+        {
+            PreparedStatement stm = this.database.getStoredStatement(modelClass, "rename");
+            for (long worldId : provider.getWorlds().keys())
+            {
+                if (provider.getWorlds().get(worldId).getLeft())
+                {
+                    stm.setObject(1, newName);
+                    stm.setObject(2, worldId);
+                    stm.setObject(3, name);
+                    stm.addBatch();
+                }
+            }
+            stm.executeBatch();
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while renaming roles in database!",ex);
         }
     }
 }

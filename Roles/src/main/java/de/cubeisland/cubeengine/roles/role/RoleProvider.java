@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
@@ -109,6 +110,11 @@ public abstract class RoleProvider
             }
         }
         this.recalculateDirtyRoles(dirtyChilds, globalRoles);
+        for (User user : module.getUserManager().getOnlineUsers())
+        {
+            module.getManager().preCalculateRoles(user, true);
+            module.getManager().applyRole(user.getPlayer());
+        }
     }
 
     private void recalculateDirtyRoles(Set<Role> dirtyRoles, THashMap<String, Role> globalRoles)
@@ -324,6 +330,10 @@ public abstract class RoleProvider
         Role newRole = this.calculateRole(config, this.module.getManager().getGlobalRoles());
         newRole.setChildRoles(role.getChildRoles());
         this.roles.put(newName, newRole);
+        if (this instanceof WorldRoleProvider)
+        {
+            this.module.getDbManager().rename((WorldRoleProvider) this, role.getName(), newName);
+        }
         // Recalculate dependend roles
         this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
         return true;

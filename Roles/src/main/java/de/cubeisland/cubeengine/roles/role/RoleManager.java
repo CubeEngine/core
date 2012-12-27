@@ -242,7 +242,7 @@ public class RoleManager
                     || !roleContainer.get(worldId).getParentRoles().contains(role))
             {
                 added = true;
-                this.module.getDbManager().store(new AssignedRole(user.key, worldId, role.getName()));
+                this.module.getDbManager().store(new AssignedRole(user.key, worldId, role.getName()), false);
             }
         }
         if (!added)
