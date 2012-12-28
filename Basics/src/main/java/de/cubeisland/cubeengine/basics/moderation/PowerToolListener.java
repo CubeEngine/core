@@ -1,16 +1,15 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
 import java.util.ArrayList;
-import net.minecraft.server.v1_4_6.*;
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class PowerToolListener implements Listener
 {
@@ -24,38 +23,37 @@ public class PowerToolListener implements Listener
             {
                 if (BasicsPerm.POWERTOOL_USE.isAuthorized(event.getPlayer()))
                 {
-                    ItemStack item = BukkitUtils.getNmsItemStack(player.getItemInHand());
-                    NBTTagCompound tag = item.getTag();
-                    if (tag == null)
+                    ItemMeta meta = player.getItemInHand().getItemMeta();
+                    if (meta != null)
                     {
-                        return;
-                    }
-                    NBTTagList ptVals = (NBTTagList)tag.get("powerToolCommands");
-                    if (ptVals == null)
-                    {
-                        return;
-                    }
-                    ArrayList<String> list = new ArrayList<String>();
-                    for (int i = 0; i < ptVals.size(); i++)
-                    {
-                        list.add(((NBTTagString)ptVals.get(i)).data);
-                    }
-                    for (String command : list)
-                    {
-                        if (command.startsWith("chat:"))
+                        List<String> lore = meta.getLore();
+                        List<String> powerTool = new ArrayList<String>();
+                        boolean ptStart = false;
+                        if (lore != null)
                         {
-                            command = command.substring(5);
-                            command = ChatFormat.parseFormats(command);
+                            for (String l : lore)
+                            {
+                                if (!ptStart)
+                                {
+                                    if (l.equals("§2PowerTool"))
+                                    {
+                                        ptStart = true;
+                                    }
+                                }
+                                else
+                                {
+                                    powerTool.add(l);
+                                }
+                            }
                         }
-                        else
+                        for (String command : powerTool)
                         {
-                            command = "/" + command;
+                            player.chat(command);
                         }
-                        player.chat(command);
-                    }
-                    if (!list.isEmpty())
-                    {
-                        event.setCancelled(true);
+                        if (!powerTool.isEmpty())
+                        {
+                            event.setCancelled(true);
+                        }
                     }
                 }
             }
