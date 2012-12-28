@@ -181,7 +181,7 @@ public abstract class Role implements Comparable<Role>
     public Map<String, Boolean> getAllLiteralPerms()
     {
         Map<String, Boolean> result = new HashMap<String, Boolean>();
-        for (Role role : this.parentRoles)//TODO check if treeset is ordered in right order
+        for (Role role : this.parentRoles)
         {
             for (Entry<String, Boolean> entry : role.getAllLiteralPerms().entrySet())
             {

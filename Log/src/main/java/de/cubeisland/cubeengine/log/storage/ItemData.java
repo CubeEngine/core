@@ -12,7 +12,10 @@ public class ItemData
     {
         this.mat = item.getTypeId();
         this.data = item.getDurability();
-        this.name = item.getItemMeta().getDisplayName();
+        if (item.getItemMeta() != null)
+        {
+            this.name = item.getItemMeta().getDisplayName();
+        }
         if (this.name == null)
         {
             this.name = "";
@@ -30,7 +33,7 @@ public class ItemData
     {
         if (obj instanceof ItemData)
         {
-            ItemData o = ((ItemData)obj);
+            ItemData o = ((ItemData) obj);
             if (this.mat == o.mat && this.data == o.data && this.name.equals(o.name))
             {
                 return true;
