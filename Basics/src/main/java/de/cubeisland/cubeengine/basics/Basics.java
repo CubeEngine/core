@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.basics.general.AfkListener;
 import de.cubeisland.cubeengine.basics.general.ChatCommands;
+import de.cubeisland.cubeengine.basics.general.ColoredSigns;
 import de.cubeisland.cubeengine.basics.general.GeneralsListener;
 import de.cubeisland.cubeengine.basics.general.InformationCommands;
 import de.cubeisland.cubeengine.basics.general.LagTimer;
@@ -58,6 +59,8 @@ public class Basics extends Module
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.registerPermissions(BasicsPerm.values());
 
+        this.registerListener(new ColoredSigns());
+        
         //General:
         this.registerCommands(new ChatCommands(this));
         this.registerCommands(new InformationCommands(this));

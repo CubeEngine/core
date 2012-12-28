@@ -1,13 +1,11 @@
 package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
-import org.bukkit.permissions.Permissible;
-
-import java.util.Locale;
-
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import java.util.Locale;
+import org.bukkit.permissions.Permissible;
 
 public enum BasicsPerm implements Permission
 {
@@ -54,7 +52,8 @@ public enum BasicsPerm implements Permission
     COMMAND_BUTCHER_FLAG_OTHER,
     COMMAND_BUTCHER_FLAG_NPC,
     COMMAND_WALKSPEED_OTHER,
-    WALKSPEED_ISALLOWED,;
+    WALKSPEED_ISALLOWED,
+    SIGN_COLORED;
 
     private String      permission;
     private PermDefault def;
