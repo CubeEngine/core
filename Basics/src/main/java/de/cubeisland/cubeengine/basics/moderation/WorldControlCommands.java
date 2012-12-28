@@ -7,11 +7,16 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -29,15 +34,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.WaterMob;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Commands controlling / affecting worlds. /weather /remove /butcher
@@ -318,18 +314,18 @@ public class WorldControlCommands
             throw new IllegalStateException("Unknown Location with radius");
         }
         int removed = 0;
-        EnumSet<org.bukkit.entity.EntityType> bukkiTypes = EnumSet.noneOf(org.bukkit.entity.EntityType.class);
+        EnumSet<org.bukkit.entity.EntityType> bukkitTypes = EnumSet.noneOf(org.bukkit.entity.EntityType.class);
         if (types != null)
         {
             for (EntityType type : types)
             {
-                bukkiTypes.add(type.getBukkitType());
+                bukkitTypes.add(type.getBukkitType());
             }
         }
         final Location entityLocation = new Location(null, 0, 0, 0);
         for (Entity entity : list)
         {
-            if (entity instanceof Player || types != null && !bukkiTypes.contains(entity.getType()))
+            if (entity instanceof Player || types != null && !bukkitTypes.contains(entity.getType()))
             {
                 continue;
             }
