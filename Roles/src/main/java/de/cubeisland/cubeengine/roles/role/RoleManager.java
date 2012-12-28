@@ -186,22 +186,24 @@ public class RoleManager
         TLongObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
         TLongObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
 
-        for (long worldId : userRolesPerWorld.keys())
+        for (long worldId : this.worldManager.getAllWorldIds())
         {
             this.preCalculateRole(user, roleContainer, userRolesPerWorld.get(worldId), worldId, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
         }
         user.setAttribute(this.module, "roleContainer", roleContainer);
-
     }
 
     private void preCalculateRole(User user, TLongObjectHashMap<UserSpecificRole> roleContainer, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
     {
         // UserSpecific Settings:
         UserSpecificRole userSpecificRole = new UserSpecificRole(this.module, user, worldId, userPerms, userMeta);
-        // Roles Assigned to this user:
-        MergedRole mergedRole = new MergedRole(roles); // merge all assigned roles
-        // Apply inheritance
-        userSpecificRole.applyInheritence(mergedRole);
+        if (roles != null)
+        {
+            // Roles Assigned to this user:
+            MergedRole mergedRole = new MergedRole(roles); // merge all assigned roles
+            // Apply inheritance
+            userSpecificRole.applyInheritence(mergedRole);
+        }
         roleContainer.put(worldId, userSpecificRole);
     }
 
@@ -215,7 +217,7 @@ public class RoleManager
         User user = this.module.getUserManager().getExactUser(player);
         TLongObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
-        if (role == null)
+        if (role.getParentRoles().isEmpty())
         {
             Set<Role> roles = this.getProvider(worldId).getDefaultRoles();
             this.addRoles(user, player, worldId, roles.toArray(new Role[roles.size()]));

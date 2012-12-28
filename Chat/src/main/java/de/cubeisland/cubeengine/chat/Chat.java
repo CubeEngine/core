@@ -59,8 +59,16 @@ public class Chat extends Module implements Listener
         if (roles != null)
         {
             User user = this.getUserManager().getExactUser(player);
-            format = format.replace("{ROLE.PREFIX}",  ChatFormat.parseFormats(roles.getApi().getMetaData(user, player.getWorld(), "prefix")));
-            format = format.replace("{ROLE.SUFFIX}",  ChatFormat.parseFormats(roles.getApi().getMetaData(user, player.getWorld(), "suffix")));
+            if (format.contains("{ROLE.PREFIX}"))
+            {
+                String prefix = roles.getApi().getMetaData(user, player.getWorld(), "prefix");
+                format = format.replace("{ROLE.PREFIX}", prefix == null ? "" : ChatFormat.parseFormats(prefix));
+            }
+            if (format.contains("{ROLE.SUFFIX}"))
+            {
+                String suffix = roles.getApi().getMetaData(user, player.getWorld(), "suffix");
+                format = format.replace("{ROLE.SUFFIX}", suffix == null ? "" : ChatFormat.parseFormats(suffix));
+            }
         }
 
         this.getEventManager().fireEvent(formatEvent);

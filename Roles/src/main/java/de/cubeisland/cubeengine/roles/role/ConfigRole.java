@@ -119,4 +119,9 @@ public class ConfigRole extends Role
             role.setParentRole(newName);
         }
     }
+
+    public void deleteConfigFile()
+    {
+        this.config.getFile().delete();
+    }
 }

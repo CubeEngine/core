@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
+import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import org.bukkit.World;
 
@@ -466,6 +467,56 @@ public class RoleManagementCommands extends RoleCommandHelper
             {
                 context.sendMessage("roles", "&eThere is already a role named &6%s &ein &6%s&e.", roleName, world.getName());
             }
+        }
+    }
+
+    @Command(
+    desc = "Deletes a role [in world]",
+             usage = "<[g:]rolename> [in <world>]",
+             params =
+    @Param(names = "in", type = World.class),
+             max = 2, min = 1)
+    public void delete(CommandContext context)
+    {
+        String roleName = context.getString(0);
+        boolean global = roleName.startsWith(GLOBAL_PREFIX);
+        World world = global ? null : this.getWorld(context);
+        RoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
+        provider.deleteRole(role);
+        if (global)
+        {
+            context.sendMessage("roles", "&aGlobal role &6%s &adeleted!", role.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&aDeleted the role &6%s &ain &6%s&a!", role.getName(), world.getName());
+        }
+    }
+
+    @Command(
+            names =
+    {
+        "toggledefault", "toggledef", "toggledefaultrole"
+    },
+             desc = "Toggles weather given role is a default-role [in world]",
+             usage = "<rolename> [in <world>]",
+             params =
+    @Param(names = "in", type = World.class),
+             max = 2, min = 1)
+    public void toggleDefaultRole(CommandContext context)
+    {
+        String roleName = context.getString(0);
+        World world = this.getWorld(context);
+        WorldRoleProvider provider = this.manager.getProvider(world);
+        Role role = this.getRole(context, provider, roleName, world);
+        if (provider.toggleDefaultRole(role))
+        {
+            context.sendMessage("roles", "&6%s &ais now a default-role in &6%s&a!", role.getName(), world.getName());
+        }
+        else
+        {
+            context.sendMessage("roles", "&6%s &ais no longer a default-role in &6%s&a!", role.getName(), world.getName());
         }
     }
 }

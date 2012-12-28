@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.roles.role.config.PermissionTree;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -186,36 +187,40 @@ public abstract class Role implements Comparable<Role>
             {
                 if (entry.getKey().endsWith("*"))
                 {
+                    ArrayList<String> toRem = new ArrayList<String>();
                     for (String perm : result.keySet())
                     {
                         if (perm.startsWith(entry.getKey().substring(0, entry.getKey().length() - 1)))
                         {
-                            result.remove(perm); // Overridden by * permission
+                            toRem.add(perm);
                         }
                     }
+                    for (String perm : toRem)
+                    {
+                        result.remove(perm);
+                    }
                 }
-                else
-                {
-                    result.put(entry.getKey(), entry.getValue());
-                }
+                result.put(entry.getKey(), entry.getValue());
             }
         }
         for (Entry<String, Boolean> entry : this.litaralPerms.entrySet())
         {
             if (entry.getKey().endsWith("*"))
             {
+                ArrayList<String> toRem = new ArrayList<String>();
                 for (String perm : result.keySet())
                 {
                     if (perm.startsWith(entry.getKey().substring(0, entry.getKey().length() - 1)))
                     {
-                        result.remove(perm); // Overridden by * permission
+                        toRem.add(perm);
                     }
                 }
+                for (String perm : toRem)
+                {
+                    result.remove(perm);
+                }
             }
-            else
-            {
-                result.put(entry.getKey(), entry.getValue());
-            }
+            result.put(entry.getKey(), entry.getValue());
         }
         return result;
     }

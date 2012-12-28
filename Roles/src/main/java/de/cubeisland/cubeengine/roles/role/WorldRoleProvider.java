@@ -119,4 +119,24 @@ public class WorldRoleProvider extends RoleProvider
     {
         return this.mirrorConfig.mainWorld;
     }
+
+    public boolean toggleDefaultRole(Role role)
+    {
+        if (this.defaultRoles.contains(role))
+        {
+            List<String> defaultConfigRoles = this.module.getConfiguration().defaultRoles.get(this.mirrorConfig.mainWorld);
+            defaultConfigRoles.remove(role.getName());
+            this.defaultRoles.remove(role);
+            this.module.getConfiguration().save();
+            return false;
+        }
+        else
+        {
+            List<String> defaultConfigRoles = this.module.getConfiguration().defaultRoles.get(this.mirrorConfig.mainWorld);
+            defaultConfigRoles.add(role.getName());
+            this.defaultRoles.add(role);
+            this.module.getConfiguration().save();
+            return true;
+        }
+    }
 }

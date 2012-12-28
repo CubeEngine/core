@@ -356,4 +356,16 @@ public abstract class RoleProvider
         this.roles.put(roleName, this.calculateRole(config, this.module.getManager().getGlobalRoles()));
         return true;
     }
+
+    public void deleteRole(Role role)
+    {
+        for (Role crole : role.getChildRoles())
+        {
+            crole.removeParentRole(role.getName());
+        }
+        this.roles.remove(role.getName());
+        this.configs.remove(role.getName());
+        ((ConfigRole) role).deleteConfigFile();
+        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+    }
 }
