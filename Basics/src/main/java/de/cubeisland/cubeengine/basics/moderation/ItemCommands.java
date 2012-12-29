@@ -22,7 +22,6 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import org.bukkit.ChatColor;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give

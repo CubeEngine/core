@@ -29,7 +29,6 @@ import java.util.TreeMap;
 public class MaterialMatcher
 {
     //TODO rename item ; is it possible?
-
     private THashMap<String, ItemStack> items;
     private THashMap<ItemStack, String> itemnames;
     private TIntObjectHashMap<THashMap<String, Short>> datavalues;
@@ -120,30 +119,30 @@ public class MaterialMatcher
                 {
                     // id and data match
                     item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
-                    this.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
+                    item = this.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
                     return item;
                 }
                 catch (Exception ignored)
-                {}
+                {
+                }
             }
             if (s.contains(":"))
             {
                 // name match with data
                 String material = s.substring(0, s.indexOf(":"));
                 String data = name.substring(name.indexOf(":") + 1);
-                item = this.items.get(material);
-                this.setData(item, data); // Try to set data / returns null if couldn't
+                item = this.setData(this.items.get(material), data); // Try to set data / returns null if couldn't
                 if (item == null)
                 {
                     //name was probably wrong check ld:
                     item = matchWithLevenshteinDistance(material, items);
-                    this.setData(item, data); // Try to set data / returns null if couldn't
+                    item = this.setData(item, data); // Try to set data / returns null if couldn't
                 }
                 if (item == null) // Contained ":" but could not find any matching item
                 {
                     // Try to match bukkit name
                     item = this.matchWithLevenshteinDistance(s, bukkitnames);
-                    this.setData(item, data);
+                    item = this.setData(item, data);
                     return item;
                 }
             }
@@ -195,6 +194,7 @@ public class MaterialMatcher
         try
         { // try dataValue as Number
             item.setDurability(Short.parseShort(data));
+            return item;
         }
         catch (NumberFormatException e)
         { // check for special cases
@@ -228,15 +228,15 @@ public class MaterialMatcher
                     }
                     return item;
                 case SKULL_ITEM:
-                    item.setDurability((short)3);
-                    SkullMeta meta = ((SkullMeta)item.getItemMeta());
+                    item.setDurability((short) 3);
+                    SkullMeta meta = ((SkullMeta) item.getItemMeta());
                     meta.setOwner(rawData);
                     item.setItemMeta(meta);
-                default:
                     return item;
+                default:
+                    return null;
             }
         }
-        return null; //could not set data -> invalid item
     }
 
     private ItemStack matchWithLevenshteinDistance(String s, Map<String, ItemStack> map)
@@ -264,7 +264,8 @@ public class MaterialMatcher
             return Material.getMaterial(matId);
         }
         catch (NumberFormatException ignored)
-        {}
+        {
+        }
         ItemStack item = this.matchItemStack(s);
         if (item != null)
         {
@@ -449,7 +450,6 @@ public class MaterialMatcher
      */
     public enum RepairableMaterials
     {
-
         IRON_SPADE,
         IRON_PICKAXE,
         IRON_AXE,
