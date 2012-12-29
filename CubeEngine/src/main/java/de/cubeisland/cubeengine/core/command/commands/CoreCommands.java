@@ -16,6 +16,8 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CoreCommands extends ContainerCommand
 {
@@ -24,7 +26,7 @@ public class CoreCommands extends ContainerCommand
     public CoreCommands(Core core)
     {
         super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
-        this.core = (BukkitCore)core;
+        this.core = (BukkitCore) core;
     }
 
     @Command(desc = "Disables the CubeEngine")
@@ -33,7 +35,8 @@ public class CoreCommands extends ContainerCommand
         this.core.getServer().getPluginManager().disablePlugin(this.core);
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "setpassword", "setpw"
     }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
     public void setPassword(CommandContext context)
@@ -56,13 +59,37 @@ public class CoreCommands extends ContainerCommand
                 blockCommand(context, "core", "&cUser %s not found!", context.getString(1));
             }
         }
+        int strength = this.computePasswordStrength(context.getString(0));
+        if (strength < 28)
+        {
+            context.sendMessage("core", "&cYour passwords strength is too weak! \n&eTry using at least 8 letters and numbers!");
+            return;
+        }
+        else if (strength < 36)
+        {
+            context.sendMessage("core", "&eYour passwords strength is weak!");
+        }
+        else if (strength < 60)
+        {
+            context.sendMessage("core", "&aYour passwords strength is ok!");
+        }
+        else if (strength < 128)
+        {
+            context.sendMessage("core", "&aYour passwords strength is good!");
+        }
+        else
+        {
+            context.sendMessage("core", "&aYour passwords strength is very good!");
+        }
         user.setPassword(context.getString(0));
         context.sendMessage("core", "&aPassword set!");
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "clearpassword", "clearpw"
-    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags = @Flag(longName = "all", name = "a"))
+    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags =
+    @Flag(longName = "all", name = "a"))
     public void clearPassword(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -211,5 +238,74 @@ public class CoreCommands extends ContainerCommand
                 context.getSenderAsUser("basics", "&eYour language is &e%s&a (&e%s&a).", lang.getName(), lang.getLocalName());
             }
         }
+    }
+
+    private int computePasswordStrength(String pass)
+    {
+        double strengthPerChar = Math.log(getCharSetSize(pass) / Math.log(2));
+        double strength = 0;
+        Map<Character, Double> chars = new HashMap<Character, Double>();
+        for (char c : pass.toCharArray())
+        {
+            if (chars.containsKey(c))
+            {
+                double loweredStrengthPerChar = chars.get(c);
+                loweredStrengthPerChar *= 0.75;
+                strength += loweredStrengthPerChar;
+                chars.put(c, loweredStrengthPerChar);
+            }
+            else
+            {
+                chars.put(c, strengthPerChar);
+                strength += strengthPerChar;
+            }
+        }
+
+        return (int) strength;
+    }
+
+    private int getCharSetSize(String pass)
+    {
+        boolean lower = true, upper = true, number = true, symbols1 = true, symbols2 = true, space = true, symbols3 = true;
+        int chars = 0;
+        for (char c : pass.toCharArray())
+        {
+            if (lower && "abcdefghijklmnopqrstuvwxyz".indexOf(c) >= 0)
+            {
+                chars += 26;
+                lower = false;
+            }
+            else if (upper && "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0)
+            {
+                chars += 26;
+                upper = false;
+            }
+            else if (number && "0123456789".indexOf(c) >= 0)
+            {
+                chars += 10;
+                number = false;
+            }
+            else if (symbols1 && "!@#$%^&*()".indexOf(c) >= 0)
+            {
+                chars += 10;
+                symbols1 = false;
+            }
+            else if (symbols2 && "`~-_=+[{]}\\|;:'\",<.>/?".indexOf(c) >= 0)
+            {
+                chars += 20;
+                symbols2 = false;
+            }
+            else if (space && c == ' ')
+            {
+                chars += 1;
+                space = false;
+            }
+            else if (symbols3 && (c < ' ' || c > '~'))
+            {
+                chars += 32 + 128;
+                symbols3 = false;
+            }
+        }
+        return chars;
     }
 }
