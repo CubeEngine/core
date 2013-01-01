@@ -1,14 +1,22 @@
 package de.cubeisland.cubeengine.conomy;
 
-import de.cubeisland.cubeengine.conomy.account.BankAccount;
+import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.ConomyResponse;
+import de.cubeisland.cubeengine.conomy.account.CurrencyAccount;
 import de.cubeisland.cubeengine.conomy.account.IAccount;
-import de.cubeisland.cubeengine.conomy.account.UserAccount;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.user.User;
 import java.util.Collection;
 
 public class ConomyAPI
 {
+    private final Conomy module;
+
+    public ConomyAPI(Conomy conomy)
+    {
+        this.module = conomy;
+    }
+
     /**
      * Returns the main currency (first currency declared in the configuration)
      *
@@ -16,7 +24,7 @@ public class ConomyAPI
      */
     public Currency getMainCurrency()
     {
-        return null;
+        return this.module.getCurrencyManager().getMainCurrency();
     }
 
     /**
@@ -26,7 +34,7 @@ public class ConomyAPI
      */
     public Collection<Currency> getAllCurrencies()
     {
-        return null;
+        return this.module.getCurrencyManager().getAllCurrencies();
     }
 
     /**
@@ -46,9 +54,9 @@ public class ConomyAPI
      * @param currency
      * @return
      */
-    public BankAccount createAccount(String name, Currency currency)
+    public IAccount createAccount(String name, Currency currency)
     {
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
@@ -57,9 +65,9 @@ public class ConomyAPI
      * @param user
      * @return
      */
-    public UserAccount createUserAccount(User user)
+    public IAccount createUserAccount(User user)
     {
-        return null;
+        return this.module.getAccountsManager().createNewAccount(user);
     }
 
     /**
@@ -69,9 +77,9 @@ public class ConomyAPI
      * @param user
      * @return
      */
-    public UserAccount getUserAccount(User user)
+    public IAccount getUserAccount(User user)
     {
-        return null;
+        return this.module.getAccountsManager().getAccount(user);
     }
 
     /**
@@ -84,19 +92,30 @@ public class ConomyAPI
      */
     public boolean transaction(IAccount source, IAccount target, long amount)
     {
+        return this.transaction(source, target, this.getMainCurrency(), amount);
+    }
+
+    public boolean transaction(IAccount source, IAccount target, Currency currency, long amount)
+    {
+        if (source.doesSupport(currency.getName()) && target.doesSupport(currency.getName()))
+        {
+            source.take(amount, currency.getName());
+            target.give(amount, currency.getName());
+            this.module.getCurrencyAccountManager().update(source.getCurrencyAccount(currency.getName()));
+            this.module.getCurrencyAccountManager().update(target.getCurrencyAccount(currency.getName()));
+        }
         return false;
     }
 
     /**
-     * Returns if the user has an account on the server yet (for the main
-     * currency) this is equivalent to hasAccount(user, getMainCurrency())
+     * Returns if the user has an account on the server yet.
      *
      * @param user
      * @return if the player has an account
      */
     public boolean hasAccount(User user)
     {
-        return false;
+        return this.module.getAccountsManager().hasAccount(user);
     }
 
     /**
@@ -108,6 +127,11 @@ public class ConomyAPI
      */
     public boolean hasAccount(User user, Currency currency)
     {
+        if (this.hasAccount(user))
+        {
+            IAccount acc = this.getUserAccount(user);
+            return acc.doesSupport(currency.getName());
+        }
         return false;
     }
 
@@ -120,7 +144,7 @@ public class ConomyAPI
      */
     public Long getBalance(User user)
     {
-        return null;
+        return this.getBalance(user, this.getMainCurrency());
     }
 
     /**
@@ -132,6 +156,34 @@ public class ConomyAPI
      */
     public Long getBalance(User user, Currency currency)
     {
+        if (this.hasAccount(user))
+        {
+            ConomyResponse response = this.module.getAccountsManager().getAccount(user).balance(currency.getName());
+            if (response.success)
+            {
+                return response.balance;
+            }
+        }
         return null;
+    }
+
+    /**
+     * Resets all currency-accounts of this user to the default vaöue
+     *
+     * @param user
+     */
+    public boolean resetAllAccountsToDefault(User user)
+    {
+        if (this.hasAccount(user))
+        {
+            Account acc = this.module.getAccountsManager().getAccount(user);
+            acc.resetAllToDefault();
+            for (CurrencyAccount cAcc : acc.getCurrencyAccounts())
+            {
+                this.module.getCurrencyAccountManager().update(cAcc);
+            }
+            return false;
+        }
+        return false;
     }
 }

@@ -17,7 +17,7 @@ public class ConomyConfiguration extends Configuration
     public LinkedHashMap<String, CurrencyConfiguration> currencies = new LinkedHashMap<String, CurrencyConfiguration>();
     @Comment("0.5 means that 1 of currency1 is equal to 2 of currency2 (always using highest/first subcurrency)")
     @Option("relations")
-    public LinkedHashMap<String, Map<String,Double>> relations;
+    public LinkedHashMap<String, Map<String, Double>> relations;
     /*
      relations:
      EchtGeld:
@@ -26,7 +26,7 @@ public class ConomyConfiguration extends Configuration
      */
 
     @Override
-    public void onLoaded() 
+    public void onLoaded()
     {
         // Create a default currency when none given
         if (currencies == null || currencies.isEmpty())

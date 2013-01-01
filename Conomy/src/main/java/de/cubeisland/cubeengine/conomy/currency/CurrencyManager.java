@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.config.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import gnu.trove.map.hash.THashMap;
+import java.util.Collection;
 import java.util.Map;
 
 public class CurrencyManager
@@ -24,5 +25,15 @@ public class CurrencyManager
         {
             this.currencies.put(entry.getKey(), new Currency(entry.getKey(), entry.getValue()));
         }
+    }
+
+    public Collection<Currency> getAllCurrencies()
+    {
+        return this.currencies.values();
+    }
+
+    public Currency getMainCurrency()
+    {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
