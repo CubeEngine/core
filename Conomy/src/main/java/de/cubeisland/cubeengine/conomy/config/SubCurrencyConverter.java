@@ -22,7 +22,11 @@ public class SubCurrencyConverter implements Converter<SubCurrencyConfig>
         {
             HashMap<String, Object> map = (HashMap<String, Object>) object;
             String shortName = map.get("shortname").toString();
-            int value = Integer.valueOf(map.get("value").toString());
+            Integer value = 1;
+            if (map.get("value") != null)
+            {
+                value = Integer.valueOf(map.get("value").toString());
+            }
             return new SubCurrencyConfig(shortName, value);
         }
         catch (Exception e)

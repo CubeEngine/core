@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.conomy.config;
 import java.util.LinkedHashMap;
 
 public class CurrencyConfiguration
-{
+{//TODO singular / plural names
     public LinkedHashMap<String, SubCurrencyConfig> subcurrencies;
     public String formatLong;
     public String formatShort;

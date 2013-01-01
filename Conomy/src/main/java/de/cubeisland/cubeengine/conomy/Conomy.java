@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfigurationConverter;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConfig;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConverter;
+import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.io.File;
@@ -25,6 +26,8 @@ public class Conomy extends Module
     @Override
     public void onEnable()
     {
+        CurrencyManager manager = new CurrencyManager(this, config);
+        manager.load();
     }
 
     @Override
