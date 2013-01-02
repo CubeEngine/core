@@ -23,6 +23,7 @@ public class FileManager
     private final File languageDir;
     private final File logDir;
     private final File modulesDir;
+    private final File tempDir;
     private ConcurrentMap<File, Resource> fileSources;
 
     public FileManager(File dataFolder) throws IOException
@@ -75,6 +76,16 @@ public class FileManager
             throw new IOException("The modules folder is not writable!");
         }
 
+        this.tempDir = new File(this.dataFolder, "temp");
+        if (!this.tempDir.isDirectory() && !this.tempDir.mkdirs())
+        {
+            throw new IOException("Failed to create the temp folder");
+        }
+        if (!this.tempDir.canWrite())
+        {
+            throw new IOException("The temp folder is not writable!");
+        }
+
         this.fileSources = new ConcurrentHashMap<File, Resource>();
     }
 
@@ -116,6 +127,16 @@ public class FileManager
     public File getModulesDir()
     {
         return this.modulesDir;
+    }
+
+    /**
+     * Returns the modules directory
+     *
+     * @return the directory
+     */
+    public File getTempDir()
+    {
+        return this.tempDir;
     }
 
     private static String getSaneSource(Resource resource)
@@ -201,7 +222,7 @@ public class FileManager
      * @param clazz     the class of the resource
      * @param resPath   the resource path
      * @param file      the target file
-     * @param overwrite wheter to overwrite an existing file
+     * @param overwrite whether to overwrite an existing file
      * @return a file
      */
     public File dropResource(Class clazz, String resPath, File file, boolean overwrite)
