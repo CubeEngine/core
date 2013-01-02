@@ -11,9 +11,11 @@ public class Currency
     private String formatlong;
     private String formatshort;
     private String name;
+    private CurrencyManager manager;
 
-    public Currency(String name, CurrencyConfiguration config)
+    public Currency(CurrencyManager manager, String name, CurrencyConfiguration config)
     {
+        this.manager = manager;
         this.name = name;
         this.formatlong = config.formatLong;
         this.formatshort = config.formatShort;
@@ -28,5 +30,15 @@ public class Currency
     public String getName()
     {
         return name;
+    }
+
+    public boolean canConvert(Currency currency)
+    {
+        return this.manager.canConvert(this, currency);
+    }
+
+    public Long getDefaultValue()
+    {//Default value in config
+        return 42L; //TODO
     }
 }

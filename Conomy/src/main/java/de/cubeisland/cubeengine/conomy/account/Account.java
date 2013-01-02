@@ -1,16 +1,16 @@
 package de.cubeisland.cubeengine.conomy.account;
 
+import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
-import gnu.trove.map.hash.THashMap;
-import java.util.Collection;
 
 @SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true)
-public class Account implements IAccount, Model<Long>
+public class Account implements Model<Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true)
     public long key = -1;
@@ -19,185 +19,113 @@ public class Account implements IAccount, Model<Long>
     public Long user_id;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String name;
-    //TODO currency limits in config too (e.g. min money set to 0 )
-    private THashMap<String, CurrencyAccount> accounts = new THashMap<String, CurrencyAccount>();
+    @Attribute(type = AttrType.VARCHAR, length = 64)
+    public String currencyName;
+    @Attribute(type = AttrType.INT, unsigned = true)
+    public long value = 0;
+    public Currency currency;
 
     public Account()
     {
     }
 
-    public Account(User user)
+    public Account(Currency currency, User user)
     {
         this.user_id = user.key;
+        this.currency = currency;
+        this.currencyName = currency.getName();
         this.name = null;
+        this.value = currency.getDefaultValue();
     }
 
-    public Account(String name)
+    public Account(Currency currency, String name)
     {
+        this.currency = currency;
+        this.currencyName = currency.getName();
         this.user_id = null;
         this.name = name;
+
     }
 
-    public void loadInCurrencyAccounts(Collection<CurrencyAccount> caccounts)
+    /**
+     * Adds given amount of money to this account.
+     *
+     * @param amount the amount to give (can be negative)
+     * @return the new amount
+     */
+    public long trancaction(long amount)
     {
-        for (CurrencyAccount cacc : caccounts)
-        {
-            this.accounts.put(cacc.currencyName, cacc);
-        }
+        this.value += amount;
+        return this.value;
     }
 
-    @Override
-    public ConomyResponse give(long amount, String currencyName)
+    /**
+     * Transfers given amount of money from the source-Account to this one
+     *
+     * @param source the source-Account
+     * @param amount the amount to transfer (can be negative)
+     * @return
+     */
+    public long transaction(Account source, long amount) throws IllegalArgumentException
     {
-        if (amount < 0)
+        if (this.currency.canConvert(source.currency))
         {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Cannot give a negative amount!");
+            source.trancaction(amount);
+            this.trancaction(amount);
+            return this.value;
         }
-        if (!this.doesSupport(currencyName))
-        {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Unsupported currency!");
-        }
-        CurrencyAccount acc = accounts.get(currencyName);
-        acc.setBalance(acc.getBalance() + amount);
-        return new ConomyResponse(true, currencyName, this, amount, acc.getBalance(), null);
+        throw new IllegalArgumentException("Cannot convert " + source.currencyName + " into " + this.currencyName);
     }
 
-    @Override
-    public ConomyResponse take(long amount, String currencyName)
+    /**
+     * Returns the current balance.
+     *
+     * @return the balance
+     */
+    public long balance()
     {
-        if (amount < 0)
-        {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Cannot take a negative amount!");
-        }
-        if (!this.doesSupport(currencyName))
-        {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Unsupported currency!");
-        }
-        CurrencyAccount acc = accounts.get(currencyName);
-        acc.setBalance(acc.getBalance() - amount);
-        return new ConomyResponse(true, currencyName, this, amount, acc.getBalance(), null);
+        return this.balance();
     }
 
-    @Override
-    public ConomyResponse deposit(IAccount target, long amount, String currencyName)
+    /**
+     * Resets the balance to the defined default value.
+     */
+    public void resetToDefault()
     {
-        if (amount < 0)
-        {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Cannot deposit a negative amount!");
-        }
-        if (!this.doesSupport(currencyName))
-        {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Unsupported currency!");
-        }
-        ConomyResponse response = target.give(amount, currencyName);
-        if (response.success)
-        {
-            response = this.take(amount, currencyName);
-            if (!response.success)
-            {
-                target.take(amount, currencyName);
-            }
-        }
-        return response;
+        this.value = this.currency.getDefaultValue();
     }
 
-    @Override
-    public ConomyResponse withdraw(IAccount source, long amount, String currencyName)
+    /**
+     * Sets the balance to the specified amount.
+     *
+     * @param amount the amount to set
+     */
+    public void set(long amount)
     {
-        if (amount < 0)
-        {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Cannot deposit a negative amount!");
-        }
-        if (!this.doesSupport(currencyName))
-        {
-            return new ConomyResponse(false, currencyName, this, amount, null, "Unsupported currency!");
-        }
-        ConomyResponse response = source.take(amount, currencyName);
-        if (response.success)
-        {
-            response = this.give(amount, currencyName);
-            if (!response.success)
-            {
-                source.give(amount, currencyName);
-            }
-        }
-        return response;
+        this.value = amount;
     }
 
-    @Override
-    public ConomyResponse balance(String currencyName)
+    /**
+     * Scales the balance with the given factor (always rounding down if
+     * necessary)
+     *
+     * @param factor the factor to scale with
+     * @return the new balance
+     */
+    public long scale(double factor)
     {
-        if (!this.doesSupport(currencyName))
-        {
-            return new ConomyResponse(false, currencyName, this, null, null, "Unsupported currency!");
-        }
-        return new ConomyResponse(true, currencyName, this, null, this.accounts.get(currencyName).getBalance(), null);
+        this.value = (long) (factor * this.value);
+        return this.value;
     }
 
-    @Override
-    public ConomyResponse reset(String currencyname)
+    /**
+     * Returns true if the account is bound to a user
+     *
+     * @return
+     */
+    public boolean isUserAccount()
     {
-        if (!this.doesSupport(currencyname))
-        {
-            return new ConomyResponse(false, currencyname, this, null, null, "Unsupported currency!");
-        }
-        this.accounts.get(currencyname).setBalance(0L);
-        return new ConomyResponse(true, currencyname, this, null, 0L, null);
-    }
-
-    @Override
-    public void resetAll()
-    {
-        for (String currency : this.accounts.keySet())
-        {
-            this.reset(currency);
-        }
-    }
-
-    @Override
-    public void resetAllToDefault()
-    {
-        for (String currency : this.accounts.keySet())
-        {
-            this.resetToDefault(currency);
-        }
-    }
-
-    @Override
-    public void resetToDefault(String currencyname)
-    {
-        this.accounts.get(currencyname).balance = 0L; //TODO get default
-    }
-
-    @Override
-    public ConomyResponse set(long amount, String currencyName)
-    {
-        if (!this.doesSupport(currencyName))
-        {
-            return new ConomyResponse(false, currencyName, this, null, null, "Unsupported currency!");
-        }
-        this.accounts.get(currencyName).setBalance(amount);
-        return new ConomyResponse(true, currencyName, this, null, amount, null);
-    }
-
-    @Override
-    public ConomyResponse scale(double factor, String currencyName)
-    {
-        if (!this.doesSupport(currencyName))
-        {
-            return new ConomyResponse(false, currencyName, this, null, null, "Unsupported currency!");
-        }
-        CurrencyAccount acc = this.accounts.get(currencyName);
-        long balance = acc.getBalance();
-        balance *= factor;
-        acc.setBalance(balance);
-        return new ConomyResponse(true, currencyName, this, null, balance, null);
-    }
-
-    @Override
-    public boolean doesSupport(String currencyName)
-    {
-        return this.accounts.keySet().contains(currencyName);
+        return this.user_id != null;
     }
 
     @Override
@@ -212,21 +140,8 @@ public class Account implements IAccount, Model<Long>
         this.key = key;
     }
 
-    @Override
-    public boolean isUserAccount()
+    void setCurrency(CurrencyManager currencyManager)
     {
-        return user_id != null;
-    }
-
-    @Override
-    public Collection<CurrencyAccount> getCurrencyAccounts()
-    {
-        return this.accounts.values();
-    }
-
-    @Override
-    public CurrencyAccount getCurrencyAccount(String currencyName)
-    {
-        return this.accounts.get(currencyName);
+        this.currency = currencyManager.getCurrencyByName(currencyName);
     }
 }

@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.conomy.account;
 
 import de.cubeisland.cubeengine.conomy.Conomy;
+import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
@@ -14,14 +16,20 @@ import java.sql.SQLException;
 public class AccountsManager extends SingleKeyStorage<Long, Account>
 {
     private static final int REVISION = 1;
-    private THashMap<String, Account> bankaccounts = new THashMap<String, Account>();
-    private TLongObjectHashMap<Account> useraccounts = new TLongObjectHashMap<Account>();
+    private THashMap<Currency, THashMap<String, Account>> bankaccounts = new THashMap<Currency, THashMap<String, Account>>();
+    private THashMap<Currency, TLongObjectHashMap<Account>> useraccounts = new THashMap<Currency, TLongObjectHashMap<Account>>();
     private Conomy module;
+    private CurrencyManager currencyManager;
 
     public AccountsManager(Conomy module)
     {
         super(module.getDatabase(), Account.class, REVISION);
         this.module = module;
+        this.currencyManager = module.getCurrencyManager();
+        for (Currency currency : this.currencyManager.getAllCurrencies())
+        {
+            this.useraccounts.put(currency, new TLongObjectHashMap<Account>());
+        }
         this.initialize();
     }
 
@@ -33,8 +41,8 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getByUserID",
-                    builder.select().cols(allFields).from(this.tableName).where()
-                    .field("user_id").isEqual().value().end().end());
+                    builder.select().cols(allFields).from(this.tableName).
+                    where().field("user_id").isEqual().value().end().end());
         }
         catch (SQLException e)
         {
@@ -44,32 +52,39 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
 
     public Account getAccount(User user)
     {
-        return this.useraccounts.get(user.key);
+        return this.getAccount(user, this.module.getCurrencyManager().getMainCurrency());
+    }
+
+    public Currency getMainCurrency()
+    {
+        return this.module.getCurrencyManager().getMainCurrency();
+    }
+
+    public Account getAccount(User user, Currency currency)
+    {
+        return this.useraccounts.get(currency).get(user.key);
     }
 
     public boolean hasAccount(User user)
     {
-        if (this.useraccounts.containsKey(user.key))
-        {
-            return true;
-        }
-        Account acc = this.loadAccount(user.key);
-        if (acc == null)
-        {
-            return false;
-        }
-        acc.loadInCurrencyAccounts(this.module.getCurrencyAccountManager().getAccounts(acc));
-        this.useraccounts.put(user.key, acc);
-        return true;
+        return this.hasAccount(user, this.getMainCurrency());
+    }
+
+    public boolean hasAccount(User user, Currency currency)
+    {
+        return this.useraccounts.get(currency).containsKey(user.key);
     }
 
     public Account createNewAccount(User user)
     {
-        Account acc = new Account(user);
+        return this.createNewAccount(user, this.getMainCurrency());
+    }
+
+    public Account createNewAccount(User user, Currency currency)
+    {
+        Account acc = new Account(currency, user);
         this.store(acc);
-        //TODO permission check for the currencies
-        acc.loadInCurrencyAccounts(this.module.getCurrencyAccountManager().createAccounts(acc));
-        this.useraccounts.put(user.key, acc);
+        this.useraccounts.get(currency).put(user.key, acc);
         return acc;
     }
 
@@ -86,6 +101,7 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
                 {
                     field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
                 }
+                loadedModel.setCurrency(this.currencyManager);
             }
             return loadedModel;
         }
