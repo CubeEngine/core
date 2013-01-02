@@ -19,10 +19,10 @@ public interface QueryBuilder
     /**
      * Starts an SELECT query.
      *
-     * @param tables the tables to select from
+     * @param cols the tables to select from
      * @return the SelectBuilder
      */
-    public SelectBuilder select(String... tables);
+    public SelectBuilder select(String... cols);
 
     /**
      * Starts an UPDATE query.
