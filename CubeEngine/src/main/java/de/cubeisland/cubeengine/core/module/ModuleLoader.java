@@ -171,10 +171,6 @@ public class ModuleLoader
         {
             throw new IllegalArgumentException("The file must exist!");
         }
-        if (!FileExtentionFilter.JAR.accept(file))
-        {
-            throw new IllegalArgumentException("The file doesn't seem to be a JAR file");
-        }
         ModuleInfo info;
         JarFile jarFile = null;
         try
