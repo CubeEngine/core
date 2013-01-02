@@ -1,23 +1,23 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import org.apache.commons.lang.Validate;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.NOTICE;
+
 /**
  * Manages all the configurations of the CubeEngine.
  */
-public class FileManager
+public class FileManager implements Cleanable
 {
+    private static final boolean WINDOWS = File.separatorChar == '\\' && File.pathSeparatorChar == ';';
     private static final Logger LOGGER = CubeEngine.getLogger();
     private final File dataFolder;
     private final File languageDir;
@@ -40,11 +40,11 @@ public class FileManager
         {
             throw new IOException("The data folder was found, but it doesn't seem to be directory!");
         }
-        this.dataFolder = dataFolder;
-        if (!this.dataFolder.canWrite())
+        if (!dataFolder.canWrite())
         {
             throw new IOException("The CubeEngine plugin folder is not writable!");
         }
+        this.dataFolder = dataFolder;
 
         this.languageDir = new File(this.dataFolder, "language");
         if (!this.languageDir.isDirectory() && !this.languageDir.mkdirs())
@@ -76,7 +76,13 @@ public class FileManager
             throw new IOException("The modules folder is not writable!");
         }
 
-        this.tempDir = new File(this.dataFolder, "temp");
+
+        String tempName = "temp";
+        if (!WINDOWS)
+        {
+            tempName = "." + tempName;
+        }
+        this.tempDir = new File(this.dataFolder, tempName);
         if (!this.tempDir.isDirectory() && !this.tempDir.mkdirs())
         {
             throw new IOException("Failed to create the temp folder");
@@ -84,6 +90,17 @@ public class FileManager
         if (!this.tempDir.canWrite())
         {
             throw new IOException("The temp folder is not writable!");
+        }
+        if (WINDOWS)
+        {
+            try
+            {
+                Runtime.getRuntime().exec("attrib +H \"" + this.tempDir.getAbsolutePath() + "\"");
+            }
+            catch (Exception e)
+            {
+                LOGGER.log(NOTICE, "Your OS was detected as Windows, but setting the temp folder hidden failed. This can be ignored!");
+            }
         }
 
         this.fileSources = new ConcurrentHashMap<File, Resource>();
@@ -137,6 +154,45 @@ public class FileManager
     public File getTempDir()
     {
         return this.tempDir;
+    }
+
+    public void clearTempDir()
+    {
+        for (File file : this.tempDir.listFiles())
+        {
+            try
+            {
+                deleteRecursive(file);
+            }
+            catch (IOException e)
+            {
+                LOGGER.log(NOTICE, "Failed to remove the file ''{0}''", file.getAbsolutePath());
+            }
+        }
+    }
+
+    public static void deleteRecursive(File file) throws IOException
+    {
+        if (file == null)
+        {
+            return;
+        }
+        if (file.isDirectory())
+        {
+            for (File f : file.listFiles())
+            {
+                try
+                {
+                    deleteRecursive(f);
+                }
+                catch (FileNotFoundException ignored)
+                {}
+            }
+        }
+        if (!file.delete())
+        {
+            throw new IOException("File to delete the file '" + file.getAbsolutePath() + "'");
+        }
     }
 
     private static String getSaneSource(Resource resource)
@@ -293,5 +349,11 @@ public class FileManager
     public InputStream getSourceOf(File file)
     {
         return this.getResourceStream(this.fileSources.get(file));
+    }
+
+    @Override
+    public void clean()
+    {
+        this.clearTempDir();
     }
 }

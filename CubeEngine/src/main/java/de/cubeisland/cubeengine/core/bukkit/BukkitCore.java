@@ -89,7 +89,7 @@ public class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
-
+        this.fileManager.clearTempDir();
         this.fileManager.dropResources(CoreResource.values());
 
         try
@@ -214,7 +214,11 @@ public class BukkitCore extends JavaPlugin implements Core
             this.apiServer = null;
         }
 
-        this.fileManager = null;
+        if (this.fileManager != null)
+        {
+            this.fileManager.clean();
+            this.fileManager = null;
+        }
 
         if (this.userManager != null)
         {
