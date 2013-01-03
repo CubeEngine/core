@@ -15,7 +15,6 @@ public class Conomy extends Module
 {
     public static boolean debugMode = false;
     protected File dataFolder;
-    private static final String PERMISSION_BASE = "cubeengine.conomy";
     private ConomyConfiguration config;
     private AccountsManager accountsManager;
     private CurrencyManager currencyManager;

@@ -18,12 +18,6 @@ public class ConomyConfiguration extends Configuration
     @Comment("0.5 means that 1 of currency1 is equal to 2 of currency2 (always using highest/first subcurrency)")
     @Option("relations")
     public LinkedHashMap<String, Map<String, Double>> relations;
-    /*
-     relations:
-     EchtGeld:
-     - AuslandGeld: 0.5
-     - IngameGeld: 20
-     */
 
     @Override
     public void onLoaded()

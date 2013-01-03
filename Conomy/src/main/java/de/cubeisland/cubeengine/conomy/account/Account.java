@@ -44,7 +44,6 @@ public class Account implements Model<Long>
         this.currencyName = currency.getName();
         this.user_id = null;
         this.name = name;
-
     }
 
     /**
