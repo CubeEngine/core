@@ -142,7 +142,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.tableManager = new TableManager(this);
 
         // depends on: plugin manager
-        this.permissionRegistration = new PermissionManager(this);
+        this.permissionRegistration = new BukkitPermissionManager(this);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
@@ -162,7 +162,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.commandManager = new CommandManager(this);
 
         // depends on: database
-        this.moduleManager = new ModuleManager(this);
+        this.moduleManager = new BukkitModuleManager(this);
 
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
