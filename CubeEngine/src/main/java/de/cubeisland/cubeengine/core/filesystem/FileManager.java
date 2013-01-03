@@ -77,12 +77,7 @@ public class FileManager implements Cleanable
             throw new IOException("The modules folder is not writable!");
         }
 
-        String tempName = "temp";
-        if (!WINDOWS)
-        {
-            tempName = "." + tempName;
-        }
-        this.tempDir = new File(this.dataFolder, tempName);
+        this.tempDir = new File(this.dataFolder, "temp");
         if (!this.tempDir.isDirectory() && !this.tempDir.mkdirs())
         {
             throw new IOException("Failed to create the temp folder");
