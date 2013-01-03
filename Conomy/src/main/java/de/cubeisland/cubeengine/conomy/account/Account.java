@@ -6,16 +6,20 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true)
+@SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true,
+                 indices =
+{
+    @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key")
+})
 public class Account implements Model<Long>
 {//TODO hide account (dont show unless forced)
     @Attribute(type = AttrType.INT, unsigned = true)
     public long key = -1;
     @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     public Long user_id;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String name;
@@ -26,7 +30,8 @@ public class Account implements Model<Long>
     public Currency currency;
 
     public Account()
-    {}
+    {
+    }
 
     public Account(Currency currency, User user)
     {
@@ -112,7 +117,7 @@ public class Account implements Model<Long>
      */
     public long scale(double factor)
     {
-        this.value = (long)(factor * this.value);
+        this.value = (long) (factor * this.value);
         return this.value;
     }
 

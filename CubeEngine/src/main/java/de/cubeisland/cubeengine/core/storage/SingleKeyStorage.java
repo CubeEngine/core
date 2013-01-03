@@ -83,22 +83,30 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                     throw new IllegalArgumentException("Default value is not set OR Default-Constructor is not accessible.");
                 }
             }
-            if (this.indexAnnotations.get(field) != null)
+
+        }
+        for (Index index : this.storageType.indices())
+        {
+            for (String indexField : index.fields())
             {
-                Index index = this.indexAnnotations.get(field);
-                switch (index.value())
+                if (!this.fieldNames.containsValue(indexField))
                 {
-                    case FOREIGN_KEY:
-                        tableBuilder.foreignKey(dbName).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
-                        break;
-                    case UNIQUE:
-                        tableBuilder.unique(dbName);
-                        break;
-                    case INDEX:
-                        tableBuilder.index();
+                    throw new IllegalStateException("Cannot create Index! Field " + indexField + " not found!");
                 }
             }
+            switch (index.value())
+            {
+                case FOREIGN_KEY:
+                    tableBuilder.foreignKey(index.fields()).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
+                    break;
+                case UNIQUE:
+                    tableBuilder.unique(index.fields());
+                    break;
+                case INDEX:
+                    tableBuilder.index(index.fields());
+            }
         }
+
         tableBuilder.primaryKey(this.dbKey).endFields();
 
         tableBuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
@@ -221,7 +229,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             if (this.keyIsAi && !storeAsync)
             {
                 // This is never async
-                model.setKey((Key_f)this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
+                model.setKey((Key_f) this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
             }
             else
             {

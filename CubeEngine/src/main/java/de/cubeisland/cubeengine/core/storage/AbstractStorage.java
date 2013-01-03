@@ -33,7 +33,6 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     protected Map<Field, String> fieldNames; // fieldName in database
     protected Map<String, Field> reverseFieldNames;
     protected Map<Field, Attribute> attributeAnnotations; // coresponding attribute-annotation
-    protected Map<Field, Index> indexAnnotations; // coresponding index-annotation
     protected String[] allFields;
     //Callbacks:
     protected Collection<Callback> createCallbacks = new ArrayList<Callback>();
@@ -78,7 +77,6 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         fieldNames = new LinkedHashMap<Field, String>();
         reverseFieldNames = new LinkedHashMap<String, Field>();
         attributeAnnotations = new LinkedHashMap<Field, Attribute>();
-        indexAnnotations = new LinkedHashMap<Field, Index>();
         Attribute attribute;
         for (Field field : this.modelClass.getFields())
         {
@@ -89,10 +87,6 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
                 this.reverseFieldNames.put(name, field);
                 this.attributeAnnotations.put(field, attribute);
                 this.fieldNames.put(field, name);
-                if (field.isAnnotationPresent(Index.class))
-                {
-                    this.indexAnnotations.put(field, field.getAnnotation(Index.class));
-                }
             }
         }
         this.allFields = this.fieldNames.values().toArray(new String[this.fieldNames.size()]);

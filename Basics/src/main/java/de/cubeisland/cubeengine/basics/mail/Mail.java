@@ -5,20 +5,24 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@SingleKeyEntity(tableName = "mail", primaryKey = "key", autoIncrement = true)
+@SingleKeyEntity(tableName = "mail", primaryKey = "key", autoIncrement = true,
+                 indices =
+{
+    @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
+    @Index(value = FOREIGN_KEY, fields = "senderId", f_table = "user", f_field = "key")
+})
 public class Mail implements Model<Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true)
     public Long key;
     @Attribute(type = AttrType.VARCHAR, length = 100)
     public String message;
-    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public long userId;
-    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public long senderId;
 

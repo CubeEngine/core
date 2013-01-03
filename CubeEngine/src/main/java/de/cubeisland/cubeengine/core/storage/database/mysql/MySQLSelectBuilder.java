@@ -7,7 +7,7 @@ import org.apache.commons.lang.Validate;
  * MYSQLQueryBuilder for selecting from tables.
  */
 public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder>
-    implements SelectBuilder
+        implements SelectBuilder
 {
     protected MySQLSelectBuilder(MySQLQueryBuilder parent)
     {
@@ -17,6 +17,10 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder>
     @Override
     public MySQLSelectBuilder select()
     {
+        if (this.query != null)
+        {
+            throw new IllegalStateException("Cannot create a nested SELECT query!");
+        }
         this.query = new StringBuilder("SELECT ");
         return this;
     }

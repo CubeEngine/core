@@ -99,11 +99,11 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     public TableBuilder autoIncrement();
 
     /**
-     * Adds an INDEX to the current field
+     * Adds an INDEX to given fields
      *
      * @return fluent interface
      */
-    public TableBuilder index();
+    public TableBuilder index(String... fields);
 
     /**
      * Sets the primary Key.
@@ -114,12 +114,12 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     public TableBuilder primaryKey(String... fields);
 
     /**
-     * Sets given field to be unique
+     * Sets given fields to be unique
      *
-     * @param field the field to make unique
+     * @param fields the fields to make unique
      * @return fluent interface
      */
-    public TableBuilder unique(String field);
+    public TableBuilder unique(String... fields);
 
     /**
      * Starts a CHECK statement. Don't forget to use beginSub and endSub.
@@ -134,7 +134,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @param key the name
      * @return fluent interface
      */
-    public TableBuilder foreignKey(String key);
+    public TableBuilder foreignKey(String... keys);
 
     /**
      * Sets the reference for the foreign key
@@ -143,7 +143,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * @param field the field of the references table
      * @return fluent interface
      */
-    public TableBuilder references(String table, String field);
+    public TableBuilder references(String table, String... fields);
 
     /**
      * Sets what should be done when trying to remove a key.

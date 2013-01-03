@@ -6,7 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines the tableName and/or engine/defaultCharset for a single-integer-key model.
+ * Defines the tableName and/or engine/defaultCharset for a single-integer-key
+ * model.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -24,4 +25,6 @@ public @interface SingleKeyEntity
     public boolean autoIncrement();
 
     public String primaryKey();
+
+    public Index[] indices() default {};
 }

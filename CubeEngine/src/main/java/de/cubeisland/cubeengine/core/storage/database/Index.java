@@ -13,11 +13,13 @@ import java.lang.annotation.Target;
  * Identifies a field as a ForeignKey for the database.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 public @interface Index
 {
     public IndexType value();
 
+    public String[] fields();    
+    
     /**
      * Needed for FOREIGN_KEY
      */
@@ -26,7 +28,7 @@ public @interface Index
     /**
      * Needed for FOREIGN_KEY
      */
-    public String f_field() default "";
+    public String[] f_field() default {};
 
     /**
      * Needed for FOREIGN_KEY.

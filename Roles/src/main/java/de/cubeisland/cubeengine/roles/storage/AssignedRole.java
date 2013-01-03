@@ -4,16 +4,20 @@ import de.cubeisland.cubeengine.core.storage.TripletKeyModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
 import de.cubeisland.cubeengine.core.util.Triplet;
 
-@TripletKeyEntity(tableName = "roles", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "roleName")
+@TripletKeyEntity(tableName = "roles", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "roleName",
+                  indices =
+{
+    @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
+    @Index(value = FOREIGN_KEY, fields = "worldId", f_table = "worlds", f_field = "key")
+})
 public class AssignedRole implements TripletKeyModel<Long, Long, String>
 {
-    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public long userId;
-    @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "worlds", f_field = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
     public long worldId;
     @Attribute(type = AttrType.VARCHAR, length = 255)

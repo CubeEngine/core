@@ -35,7 +35,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
         super.initialize();
         //Fields:
         QueryBuilder builder = this.database.getQueryBuilder();
-        TableBuilder tbuilder = builder.createTable(this.tableName, true).beginFields();
+        TableBuilder tableBuilder = builder.createTable(this.tableName, true).beginFields();
         for (Field field : this.reverseFieldNames.values())
         {
             Attribute attribute = this.attributeAnnotations.get(field);
@@ -52,46 +52,52 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
                 {
                     list.add(field.getName());
                 }
-                tbuilder.enumField(dbName, list.toArray(new String[list.size()]), attribute.notnull());
+                tableBuilder.enumField(dbName, list.toArray(new String[list.size()]), attribute.notnull());
             }
             else
             {
-                tbuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
+                tableBuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
             }
             if (attribute.defaultIsValue())
             {
                 try
                 {
                     M model = this.modelClass.newInstance();
-                    tbuilder.defaultValue(field.get(model).toString());
+                    tableBuilder.defaultValue(field.get(model).toString());
                 }
                 catch (Exception e)
                 {
                     throw new IllegalArgumentException("Default value is not set OR Default-Constructor is not accessible.");
                 }
             }
-            if (this.indexAnnotations.get(field) != null)
+        }
+        for (Index index : this.storageType.indices())
+        {
+            for (String indexField : index.fields())
             {
-                Index index = this.indexAnnotations.get(field);
-                switch (index.value())
+                if (!this.fieldNames.containsValue(indexField))
                 {
-                    case FOREIGN_KEY:
-                        tbuilder.foreignKey(dbName).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
-                        break;
-                    case UNIQUE:
-                        tbuilder.unique(dbName);
-                        break;
-                    case INDEX:
-                        tbuilder.index();
+                    throw new IllegalStateException("Cannot create Index! Field " + indexField + " not found!");
                 }
             }
+            switch (index.value())
+            {
+                case FOREIGN_KEY:
+                    tableBuilder.foreignKey(index.fields()).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
+                    break;
+                case UNIQUE:
+                    tableBuilder.unique(index.fields());
+                    break;
+                case INDEX:
+                    tableBuilder.index(index.fields());
+            }
         }
-        tbuilder.primaryKey(this.f_dbKey, this.s_dbKey).endFields();
+        tableBuilder.primaryKey(this.f_dbKey, this.s_dbKey).endFields();
 
-        tbuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
+        tableBuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
         try
         {
-            this.database.execute(tbuilder.end().end());
+            this.database.execute(tableBuilder.end().end());
         }
         catch (SQLException ex)
         {
@@ -129,8 +135,8 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
 
                 this.database.storeStatement(this.modelClass, "update",
                         builder.update(this.tableName).set(fields).where().
-                            field(this.f_dbKey).isEqual().value().and().
-                            field(this.s_dbKey).isEqual().value().end().end());
+                        field(this.f_dbKey).isEqual().value().and().
+                        field(this.s_dbKey).isEqual().value().end().end());
             }
 
             this.database.storeStatement(this.modelClass, "get",
