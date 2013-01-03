@@ -7,10 +7,9 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 /**
  * Abstract MYSQLlQueryBuilder used by other builders.
  */
-public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
-    implements ComponentBuilder<This>
+public abstract class MySQLComponentBuilder<This extends ComponentBuilder> implements ComponentBuilder<This>
 {
-    protected StringBuilder query = new StringBuilder();
+    protected StringBuilder query;
     protected Database database;
     private boolean inFunction = false;
     private boolean deepInFunction = false;
@@ -25,17 +24,9 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
 
     @Override
     @SuppressWarnings("unchecked")
-    public This rawSQL(String sql)
-    {
-        this.query.append(sql);
-        return (This)this;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
     public This function(String function)
     {
-        this.query.append(" ").append(function).append("()");
+        this.query.append(' ').append(function).append("()");
         return (This)this;
     }
 
@@ -43,7 +34,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     @SuppressWarnings("unchecked")
     public This beginFunction(String function)
     {
-        this.query.append(" ").append(function).append("(");
+        this.query.append(' ').append(function).append('(');
         this.inFunction = true;
         return (This)this;
     }
@@ -54,7 +45,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     {
         this.deepInFunction = false;
         this.inFunction = false;
-        this.query.append(")");
+        this.query.append(')');
         return (This)this;
     }
 
@@ -87,7 +78,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
         {
             if (deepInFunction)
             {
-                query.append(",");
+                query.append(',');
             }
             else
             {
@@ -192,7 +183,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     @SuppressWarnings("unchecked")
     public This wildcard()
     {
-        this.query.append("*");
+        this.query.append('*');
         return (This)this;
     }
 
@@ -200,7 +191,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     @SuppressWarnings("unchecked")
     public This value()
     {
-        this.query.append("?");
+        this.query.append('?');
         return (This)this;
     }
 
@@ -241,7 +232,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
             this.query.append(" GROUP BY ").append(this.database.prepareFieldName(fields[0]));
             for (int i = 1; i < fields.length; ++i)
             {
-                this.query.append(",").append(this.database.prepareFieldName(fields[i]));
+                this.query.append(',').append(this.database.prepareFieldName(fields[i]));
             }
         }
         return (This)this;
@@ -258,6 +249,11 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder>
     @Override
     public QueryBuilder end()
     {
+        if (this.subDepth != 0)
+        {
+            this.subDepth = 0;
+            throw new IllegalStateException("Not all subs where ended!");
+        }
         this.parent.query.append(this.query);
         this.query = null;
         return this.parent;

@@ -1,10 +1,8 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.exception.*;
-import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 

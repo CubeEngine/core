@@ -10,14 +10,6 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     public static final int GREATER_OR_EQUAL = 6;
 
     /**
-     * Inserts RawSQL-Code.
-     *
-     * @param sql the SQL to insert
-     * @return fluent interface
-     */
-    public This rawSQL(String sql);
-
-    /**
      * Adds a function.
      *
      * @param function the name of the function
