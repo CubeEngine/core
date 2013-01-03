@@ -12,6 +12,8 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class AccountsManager extends SingleKeyStorage<Long, Account>
 {//TODO custom queries for money top
@@ -42,7 +44,7 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getByUserID",
                     builder.select().cols(allFields).from(this.tableName).
-                        where().field("user_id").isEqual().value().end().end());
+                    where().field("user_id").isEqual().value().end().end());
         }
         catch (SQLException e)
         {
@@ -62,6 +64,7 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
 
     public Account getAccount(User user, Currency currency)
     {
+        this.hasAccount(user, currency); //loads accounts if not yet loaded
         return this.useraccounts.get(currency).get(user.key);
     }
 
@@ -72,7 +75,13 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
 
     public boolean hasAccount(User user, Currency currency)
     {
-        return this.useraccounts.get(currency).containsKey(user.key);
+        boolean found = this.useraccounts.get(currency).containsKey(user.key);
+        if (!found)
+        {
+            this.loadAccount(user.key);
+            found = this.useraccounts.get(currency).containsKey(user.key);
+        }
+        return found;
     }
 
     public Account createNewAccount(User user)
@@ -88,22 +97,21 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
         return acc;
     }
 
-    public Account loadAccount(Long key)
+    public void loadAccount(Long key)
     {
         try
         {
-            Account loadedModel = null;
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByUserID", key);
-            if (resulsSet.next())
+            while (resulsSet.next())
             {
-                loadedModel = this.modelClass.newInstance();
+                Account loadedModel = this.modelClass.newInstance();
                 for (Field field : this.fieldNames.keySet())
                 {
                     field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
                 }
                 loadedModel.setCurrency(this.currencyManager);
+                this.useraccounts.get(loadedModel.currency).put(key, loadedModel);
             }
-            return loadedModel;
         }
         catch (SQLException ex)
         {
@@ -113,5 +121,19 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
         {
             throw new IllegalStateException("Error while creating fresh Model from Database", ex);
         }
+    }
+
+    public Collection<Account> getAccounts(User user)
+    {
+        ArrayList<Account> result = new ArrayList<Account>();
+        for (Currency currency : this.module.getCurrencyManager().getAllCurrencies())
+        {
+            Account acc = this.useraccounts.get(currency).get(user.key);
+            if (acc != null)
+            {
+                result.add(acc);
+            }
+        }
+        return result;
     }
 }

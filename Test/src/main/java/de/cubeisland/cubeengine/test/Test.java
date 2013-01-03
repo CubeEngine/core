@@ -179,7 +179,7 @@ public class Test extends Module
                 .field("OrderPrice")
                 .endFunction()
                 .as("OrderAverage")
-                .from("Orders")
+                .from("orders")
                 .end()
                 .end());
 
@@ -191,7 +191,7 @@ public class Test extends Module
                 .field("OrderPrice")
                 .endFunction()
                 .as("OrderAverage")
-                .from("Orders")
+                .from("orders")
                 .groupBy("Customer")
                 .having()
                 .beginFunction("sum")
@@ -229,7 +229,7 @@ public class Test extends Module
             .rawSQL(",").value("0")
             .endFunction()
             .as("UnitPrice")
-            .from("Products")
+            .from("products")
             .end()
             .end();
 

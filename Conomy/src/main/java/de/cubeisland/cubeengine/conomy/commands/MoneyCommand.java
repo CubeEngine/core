@@ -2,16 +2,18 @@ package de.cubeisland.cubeengine.conomy.commands;
 
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
+import java.util.Collection;
 
 public class MoneyCommand extends ContainerCommand
 {
     //TODO multicurrencies
-
     private Conomy module;
 
     public MoneyCommand(Conomy module)
@@ -22,7 +24,11 @@ public class MoneyCommand extends ContainerCommand
 //TODO different main currencies in different worlds?
 
     @Alias(names = "money")
-    @Command(desc = "Shows your balance", usage = "[player] [in <currency>]")
+    @Command(desc = "Shows your balance",
+             usage = "[player] [in <currency>]", flags =
+    {
+        @Flag(longName = "all", name = "a")
+    })
     public void balance(CommandContext context)
     {
         User user;
@@ -39,10 +45,33 @@ public class MoneyCommand extends ContainerCommand
         {
             user = context.getSenderAsUser("conomy", "&cYou are out of money! Better go work than typing silly commands in the console.");
         }
-        //TODO flag all accounts 
-        //TODO named one currency
-        Account acc = this.module.getAccountsManager().getAccount(user);
-        context.sendMessage("conomey", "&aBalance: &6%s", acc.currency.formatLong(acc.balance()));
+        if (context.hasFlag("a"))
+        {
+            Collection<Account> accs = this.module.getAccountsManager().getAccounts(user);
+            for (Account acc : accs)
+            {
+                context.sendMessage("conomey", "&a%s-Balance: &6%s", acc.currency.getName(), acc.currency.formatLong(acc.balance()));
+            }
+        }
+        else
+        {
+            Account acc;
+            if (context.hasNamed("in"))
+            {
+                Currency currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
+                if (currency == null)
+                {
+                    context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
+                    return;
+                }
+                acc = this.module.getAccountsManager().getAccount(user, currency);
+            }
+            else
+            {
+                acc = this.module.getAccountsManager().getAccount(user);
+            }
+            context.sendMessage("conomey", "&aBalance: &6%s", acc.currency.formatLong(acc.balance()));
+        }
     }
 
     @Alias(names =
