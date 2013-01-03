@@ -130,7 +130,7 @@ public abstract class Role implements Comparable<Role>
         }
         if (parent instanceof MergedRole)
         {
-            this.parentRoles.addAll(((MergedRole) parent).getMergedWith());
+            this.parentRoles.addAll(((MergedRole)parent).getMergedWith());
         }
         else
         {

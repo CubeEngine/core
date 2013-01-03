@@ -20,7 +20,7 @@ public class SubCurrencyConverter implements Converter<SubCurrencyConfig>
     {
         try
         {
-            HashMap<String, Object> map = (HashMap<String, Object>) object;
+            HashMap<String, Object> map = (HashMap<String, Object>)object;
             String shortName = map.get("shortname").toString();
             Integer value = 1;
             if (map.get("value") != null)

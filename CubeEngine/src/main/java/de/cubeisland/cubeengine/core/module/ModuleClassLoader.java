@@ -27,7 +27,9 @@ public class ModuleClassLoader extends URLClassLoader
 
     public ModuleClassLoader(ModuleLoader moduleLoader, URL jarURL, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {
-        super(new URL[] {jarURL}, parent);
+        super(new URL[] {
+            jarURL
+        }, parent);
         this.moduleLoader = moduleLoader;
         this.classMap = new ConcurrentHashMap<String, Class>();
         this.moduleInfo = info;

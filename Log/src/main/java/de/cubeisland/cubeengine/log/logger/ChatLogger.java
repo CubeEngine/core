@@ -78,7 +78,6 @@ public class ChatLogger extends Logger<ChatLogger.ChatConfig>
         @Option("ignore-commands")
         public List<String> ignoreRegex = new ArrayList<String>();//TODO add default CE pw setting
 
-
         @Override
         public String getName()
         {

@@ -22,16 +22,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         super(module);
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "setperm", "setpermission"
-    },
-             desc = "Sets the permission for given role [in world]",
-             usage = "<[g:]role> <permission> <true|false|reset> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 4, min = 3)
+    }, desc = "Sets the permission for given role [in world]", usage = "<[g:]role> <permission> <true|false|reset> [in <world>]", params = @Param(names = "in", type = World.class), max = 4, min = 3)
     public void setpermission(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -94,19 +87,12 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     public void resetpermission(CommandContext context)
     {
-        //TODO same as setpermission with reset as 3rd param
+    //TODO same as setpermission with reset as 3rd param
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "setdata", "setmeta", "setmetadata"
-    },
-             desc = "Sets the metadata for given role [in world]",
-             usage = "<[g:]role> <key> [value] [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 4, min = 3)
+    }, desc = "Sets the metadata for given role [in world]", usage = "<[g:]role> <key> [value] [in <world>]", params = @Param(names = "in", type = World.class), max = 4, min = 3)
     public void setmetadata(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -144,16 +130,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "resetdata", "resetmeta", "resetmetadata"
-    },
-             desc = "Resets the metadata for given role [in world]",
-             usage = "<[g:]role> <key> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+    }, desc = "Resets the metadata for given role [in world]", usage = "<[g:]role> <key> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void resetmetadata(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -175,16 +154,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "cleardata", "clearmeta", "clearmetadata"
-    },
-             desc = "Clears the metadata for given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    }, desc = "Clears the metadata for given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void clearmetadata(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -204,12 +176,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-    desc = "Adds a parent role to given role [in world]",
-             usage = "<[g:]role> <[g:]parentrole> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+    @Command(desc = "Adds a parent role to given role [in world]", usage = "<[g:]role> <[g:]parentrole> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void addParent(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -269,12 +236,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-    desc = "Removes a parent role from given role [in world]",
-             usage = "<[g:]role> <[g:]parentrole> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+    @Command(desc = "Removes a parent role from given role [in world]", usage = "<[g:]role> <[g:]parentrole> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void removeParent(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -322,12 +284,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-    desc = "Removes all parent roles from given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    @Command(desc = "Removes all parent roles from given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void clearParent(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -348,16 +305,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "setprio", "setPriority"
-    },
-             desc = "Sets the priority of given role [in world]",
-             usage = "<[g:]role> <priority> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+    }, desc = "Sets the priority of given role [in world]", usage = "<[g:]role> <priority> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void setPriority(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -389,12 +339,7 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     }
 
-    @Command(
-    desc = "Renames given role [in world]",
-             usage = "<[g:]role> <new name> [in <world>]|[-global]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    @Command(desc = "Renames given role [in world]", usage = "<[g:]role> <new name> [in <world>]|[-global]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void rename(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -434,14 +379,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-    desc = "Creates a new role [in world]",
-             usage = "<rolename> [in <world>]|[-global]",
-             params =
-    @Param(names = "in", type = World.class),
-             flags =
-    @Flag(longName = "global", name = "g"),
-             max = 2, min = 1)
+    @Command(desc = "Creates a new role [in world]", usage = "<rolename> [in <world>]|[-global]", params = @Param(names = "in", type = World.class), flags = @Flag(longName = "global", name = "g"), max = 2, min = 1)
     public void create(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -470,12 +408,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-    desc = "Deletes a role [in world]",
-             usage = "<[g:]rolename> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    @Command(desc = "Deletes a role [in world]", usage = "<[g:]rolename> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void delete(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -494,16 +427,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "toggledefault", "toggledef", "toggledefaultrole"
-    },
-             desc = "Toggles weather given role is a default-role [in world]",
-             usage = "<rolename> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    }, desc = "Toggles weather given role is a default-role [in world]", usage = "<rolename> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void toggleDefaultRole(CommandContext context)
     {
         String roleName = context.getString(0);

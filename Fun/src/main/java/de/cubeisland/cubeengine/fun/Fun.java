@@ -17,7 +17,7 @@ public class Fun extends Module
     {
         this.getCore().getFileManager().dropResources(FunResource.values());
         this.registerPermissions(FunPerm.values());
-        
+
         this.registerCommands(new ThrowCommands(this));
         this.registerCommands(new NukeCommand(this));
         this.registerCommands(new PlayerCommands(this));

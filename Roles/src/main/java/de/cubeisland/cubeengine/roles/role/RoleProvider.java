@@ -332,7 +332,7 @@ public abstract class RoleProvider
         this.roles.put(newName, newRole);
         if (this instanceof WorldRoleProvider)
         {
-            this.module.getDbManager().rename((WorldRoleProvider) this, role.getName(), newName);
+            this.module.getDbManager().rename((WorldRoleProvider)this, role.getName(), newName);
         }
         // Recalculate dependend roles
         this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
@@ -365,7 +365,7 @@ public abstract class RoleProvider
         }
         this.roles.remove(role.getName());
         this.configs.remove(role.getName());
-        ((ConfigRole) role).deleteConfigFile();
+        ((ConfigRole)role).deleteConfigFile();
         this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
     }
 }

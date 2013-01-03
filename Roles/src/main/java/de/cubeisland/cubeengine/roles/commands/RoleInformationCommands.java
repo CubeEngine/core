@@ -22,13 +22,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     }
 
     @Alias(names = "listroles")
-    @Command(desc = "Lists all roles [in world]|[-global]",
-             usage = "[in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             flags =
-    @Flag(longName = "global", name = "g"),
-             max = 1)
+    @Command(desc = "Lists all roles [in world]|[-global]", usage = "[in <world>]", params = @Param(names = "in", type = World.class), flags = @Flag(longName = "global", name = "g"), max = 1)
     public void list(CommandContext context)
     {
         boolean global = context.hasFlag("g");
@@ -63,15 +57,9 @@ public class RoleInformationCommands extends RoleCommandHelper
     }
 
     @Alias(names = "checkrperm")
-    @Command(names =
-    {
+    @Command(names = {
         "checkperm", "checkpermission"
-    },
-             desc = "Checks the permission in given role [in world]",
-             usage = "<[g:]role> <permission> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+    }, desc = "Checks the permission in given role [in world]", usage = "<[g:]role> <permission> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void checkperm(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -154,15 +142,9 @@ public class RoleInformationCommands extends RoleCommandHelper
     }
 
     @Alias(names = "listrperm")
-    @Command(names =
-    {
+    @Command(names = {
         "listperm", "listpermission"
-    },
-             desc = "Lists all permissions of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    }, desc = "Lists all permissions of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void listperm(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -206,15 +188,9 @@ public class RoleInformationCommands extends RoleCommandHelper
     }
 
     @Alias(names = "listrdata")
-    @Command(names =
-    {
+    @Command(names = {
         "listdata", "listmeta", "listmetadata"
-    },
-             desc = "Lists all metadata of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    }, desc = "Lists all metadata of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void listmetadata(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -250,12 +226,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-    desc = "Lists all parents of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    @Command(desc = "Lists all parents of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void listParent(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -291,16 +262,9 @@ public class RoleInformationCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "prio", "priotory"
-    },
-             desc = "Show the priority of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    }, desc = "Show the priority of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void priority(CommandContext context)
     {
         String roleName = context.getString(0);
@@ -317,16 +281,9 @@ public class RoleInformationCommands extends RoleCommandHelper
         }
     }
 
-    @Command(
-            names =
-    {
+    @Command(names = {
         "listdefault", "listdefroles", "listdefaultroles"
-    },
-             desc = "Lists all default roles [in world]",
-             usage = "[in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 1)
+    }, desc = "Lists all default roles [in world]", usage = "[in <world>]", params = @Param(names = "in", type = World.class), max = 1)
     public void listDefaultRoles(CommandContext context)
     {
         World world = this.getWorld(context);

@@ -12,40 +12,35 @@ import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
-public class InvasionCommand 
+public class InvasionCommand
 {
     private final Fun module;
-    
+
     public InvasionCommand(Fun module)
     {
         this.module = module;
     }
-    
-    @Command(
-        desc = "spawns the mob next to every player on the server",
-        min = 1,
-        max = 1,
-        usage = "<mob>"
-    )
+
+    @Command(desc = "spawns the mob next to every player on the server", min = 1, max = 1, usage = "<mob>")
     public void invasion(CommandContext context)
     {
         EntityType entityType = EntityMatcher.get().matchMob(context.getString(0, null));
-        if(entityType == null)
+        if (entityType == null)
         {
             illegalParameter(context, "fun", "&cEntityType %s not found", context.getString(0));
         }
         else
         {
             final Location helperLocation = new Location(null, 0, 0, 0);
-            for(Player player : Bukkit.getOnlinePlayers())
+            for (Player player : Bukkit.getOnlinePlayers())
             {
                 Location location = player.getTargetBlock(null, this.module.getConfig().maxInvasionSpawnDistance).getLocation(helperLocation);
-                if(location.getBlock().getType() != Material.AIR)
+                if (location.getBlock().getType() != Material.AIR)
                 {
                     location = location.clone();
                     location.subtract(player.getLocation(helperLocation).getDirection().multiply(2));
                 }
-                player.getWorld().spawnEntity(location , entityType.getBukkitType());
+                player.getWorld().spawnEntity(location, entityType.getBukkitType());
             }
         }
     }

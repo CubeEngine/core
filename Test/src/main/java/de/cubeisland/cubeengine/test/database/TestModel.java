@@ -19,8 +19,7 @@ public class TestModel implements Model<Long>
     public String customer;
 
     public TestModel()
-    {
-    }
+    {}
 
     public TestModel(Date orderDate, double orderPrice, String customer)
     {

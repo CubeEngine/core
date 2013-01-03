@@ -89,7 +89,7 @@ public final class RulebookManager
         if (this.contains(language))
         {
             ItemStack ruleBook = new ItemStack(Material.WRITTEN_BOOK);
-            BookMeta meta = ((BookMeta) ruleBook.getItemMeta());
+            BookMeta meta = ((BookMeta)ruleBook.getItemMeta());
             meta.setAuthor(Bukkit.getServerName());
             meta.setTitle(_(language, "rulebook", "Rulebook"));
             meta.setPages(this.getPages(language));
@@ -145,7 +145,7 @@ public final class RulebookManager
             try
             {
                 File file = new File(this.module.getFolder().getAbsoluteFile(), lang.getName() + ".txt");
-                List<String> pages = ((BookMeta) book.getItemMeta()).getPages();
+                List<String> pages = ((BookMeta)book.getItemMeta()).getPages();
                 RuleBookFile.createFile(file, pages.toArray(new String[pages.size()]));
 
                 this.rulebooks.put(language, RuleBookFile.convertToPages(file));

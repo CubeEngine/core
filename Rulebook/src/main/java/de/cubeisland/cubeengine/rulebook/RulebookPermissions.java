@@ -12,18 +12,18 @@ public enum RulebookPermissions implements Permission
 
     private String permission;
     private PermDefault def;
-        
+
     private RulebookPermissions()
     {
         this(PermDefault.OP);
     }
-    
+
     private RulebookPermissions(PermDefault def)
     {
         this.permission = "cubeengine.rulebook." + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
     }
-        
+
     @Override
     public boolean isAuthorized(Permissible player)
     {
@@ -41,5 +41,5 @@ public enum RulebookPermissions implements Permission
     {
         return this.def;
     }
-    
+
 }

@@ -51,7 +51,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
     @SuppressWarnings("unchecked")
     public RoleMirror fromObject(Object object) throws ConversionException
     {
-        Map<String, List<Map<String, List<String>>>> read = (Map<String, List<Map<String, List<String>>>>) object;
+        Map<String, List<Map<String, List<String>>>> read = (Map<String, List<Map<String, List<String>>>>)object;
         if (read.isEmpty())
         {
             return null;

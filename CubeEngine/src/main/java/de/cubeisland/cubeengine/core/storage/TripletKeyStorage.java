@@ -130,22 +130,22 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
                         builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
                 this.database.storeStatement(this.modelClass, "update",
                         builder.update(this.tableName).set(fields).where().
-                        field(this.f_dbKey).isEqual().value().and().
-                        field(this.s_dbKey).isEqual().value().and().
-                        field(this.t_dbKey).isEqual().value().end().end());
+                            field(this.f_dbKey).isEqual().value().and().
+                            field(this.s_dbKey).isEqual().value().and().
+                            field(this.t_dbKey).isEqual().value().end().end());
             }
 
             this.database.storeStatement(this.modelClass, "get",
                     builder.select(allFields).from(this.tableName).where().
-                    field(this.f_dbKey).isEqual().value().and().
-                    field(this.s_dbKey).isEqual().value().and().
-                    field(this.t_dbKey).isEqual().value().end().end());
+                        field(this.f_dbKey).isEqual().value().and().
+                        field(this.s_dbKey).isEqual().value().and().
+                        field(this.t_dbKey).isEqual().value().end().end());
 
             this.database.storeStatement(this.modelClass, "delete",
                     builder.delete().from(this.tableName).where().
-                    field(this.f_dbKey).isEqual().value().and().
-                    field(this.s_dbKey).isEqual().value().and().
-                    field(this.t_dbKey).isEqual().value().limit(1).end().end());
+                        field(this.f_dbKey).isEqual().value().and().
+                        field(this.s_dbKey).isEqual().value().and().
+                        field(this.t_dbKey).isEqual().value().limit(1).end().end());
         }
         catch (SQLException ex)
         {

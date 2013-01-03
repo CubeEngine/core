@@ -18,7 +18,7 @@ public class PermissionTree
             Object mapValue = map.get(key);
             if (mapValue instanceof List)
             {
-                this.loadFromList((List) mapValue, path.isEmpty() ? key : (path + "." + key));
+                this.loadFromList((List)mapValue, path.isEmpty() ? key : (path + "." + key));
             }
             else
             {
@@ -34,7 +34,7 @@ public class PermissionTree
         {
             if (value instanceof String)
             {
-                String permissionString = (String) value;
+                String permissionString = (String)value;
                 boolean isSet = true;
                 if (permissionString.startsWith("!") || permissionString.startsWith("^") || permissionString.startsWith("-"))
                 {
@@ -49,7 +49,7 @@ public class PermissionTree
             }
             else if (value instanceof Map)
             {
-                this.loadFromMap((Map<String, Object>) value, path);
+                this.loadFromMap((Map<String, Object>)value, path);
             }
             else
             {
@@ -84,11 +84,11 @@ public class PermissionTree
             Object baseValue = baseMap.get(baseKey);
             if (baseKey.startsWith(" "))
             {
-                result.add(((Boolean) baseValue ? "" : "-") + baseKey.trim());
+                result.add(((Boolean)baseValue ? "" : "-") + baseKey.trim());
             }
             else
             {
-                Map<String, Object> baseValueMap = (Map<String, Object>) baseValue;
+                Map<String, Object> baseValueMap = (Map<String, Object>)baseValue;
                 List<Object> values = this.mergeSplitValues(baseValueMap);
                 Map<String, Object> subMap = new LinkedHashMap<String, Object>();
 
@@ -101,9 +101,9 @@ public class PermissionTree
                         {
                             if (subValue instanceof String)
                             {
-                                if (((String) subValue).startsWith("-"))
+                                if (((String)subValue).startsWith("-"))
                                 {
-                                    result.add("-" + baseKey + "." + ((String) subValue).substring(1));
+                                    result.add("-" + baseKey + "." + ((String)subValue).substring(1));
                                 }
                                 else
                                 {
@@ -112,13 +112,14 @@ public class PermissionTree
                             }
                             else
                             {
-                                Object subKey = ((Map) subValue).keySet().iterator().next();
-                                subMap.put(baseKey + "." + subKey, ((Map) subValue).get(subKey));
+                                Object subKey = ((Map)subValue).keySet().iterator().next();
+                                subMap.put(baseKey + "." + subKey, ((Map)subValue).get(subKey));
                                 result.add(subMap);
                             }
                         }
                     }
-                    else // multiple values add as subMap
+                    else
+                    // multiple values add as subMap
                     {
                         subMap.put(baseKey, values);
                         result.add(subMap);
@@ -143,7 +144,7 @@ public class PermissionTree
             map.put(" " + path, value);
             return map;
         }
-        Map<String, Object> subMap = (Map<String, Object>) map.get(base); // this should never give an exception if it does something went wrong!
+        Map<String, Object> subMap = (Map<String, Object>)map.get(base); // this should never give an exception if it does something went wrong!
         if (subMap == null) // sub map not yet existant?
         {
             subMap = new LinkedHashMap<String, Object>();

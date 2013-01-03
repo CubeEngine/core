@@ -22,8 +22,7 @@ public class UserPermission implements TripletKeyModel<Long, Long, String>
     public boolean isSet;
 
     public UserPermission()
-    {
-    }
+    {}
 
     public UserPermission(long userId, long worldId, String perm, boolean isSet)
     {

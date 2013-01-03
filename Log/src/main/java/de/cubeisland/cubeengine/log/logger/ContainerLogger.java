@@ -42,6 +42,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         super(LogAction.CONTAINER);
         this.config = new ContainerConfig();
     }
+
     private static TIntObjectHashMap<TObjectIntHashMap<ItemData>> openedInventories = new TIntObjectHashMap<TObjectIntHashMap<ItemData>>();
 
     public void logContainerChange(User user, ItemData data, int amount, Location loc, int type)
@@ -65,13 +66,13 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             Inventory topInv = event.getView().getTopInventory();
             if (topInv.getHolder() instanceof DoubleChest)
             {
-                loc = ((BlockState) ((DoubleChest) topInv.getHolder()).getLeftSide()).getLocation();
+                loc = ((BlockState)((DoubleChest)topInv.getHolder()).getLeftSide()).getLocation();
             }
             else if (!(topInv instanceof AnvilInventory || topInv instanceof BeaconInventory
                     || topInv instanceof CraftingInventory || topInv instanceof EnchantingInventory
                     || topInv instanceof MerchantInventory || topInv instanceof PlayerInventory))
             {
-                loc = ((BlockState) event.getView().getTopInventory().getHolder()).getLocation();
+                loc = ((BlockState)event.getView().getTopInventory().getHolder()).getLocation();
             }
             else
             {
@@ -90,7 +91,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         {
             if (event.getPlayer() instanceof Player)
             {
-                User user = CubeEngine.getUserManager().getExactUser((Player) event.getPlayer());
+                User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
                 openedInventories.put(user.getKey().intValue(), new TObjectIntHashMap<ItemData>());
             }
         }
@@ -100,7 +101,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     //TODO figure out how it works...
     public void onInventoryClick(InventoryClickEvent event)
     {
-        User user = CubeEngine.getUserManager().getExactUser((Player) event.getWhoClicked());
+        User user = CubeEngine.getUserManager().getExactUser((Player)event.getWhoClicked());
         TObjectIntHashMap<ItemData> log = openedInventories.get(user.key.intValue());
         if (log == null)
         {
@@ -176,7 +177,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
                 return this.config.logOtherBlock;
             default:
                 return false;
-            //TODO storage minecart
+                //TODO storage minecart
         }
     }
 
@@ -193,7 +194,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         }
         if (!logged && this.config.logNothing) //Player just looked into container
         {
-            this.logContainerChange(user, new ItemData(0, (short) 0), 0, loc, type.getId());
+            this.logContainerChange(user, new ItemData(0, (short)0), 0, loc, type.getId());
         }
     }
 
@@ -237,19 +238,19 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
     public static enum ContainerType
     {
         CHEST(
-        1),
+            1),
         FURNACE(
-        2),
+            2),
         BREWINGSTAND(
-        3),
+            3),
         DISPENSER(
-        4),
+            4),
         OTHER(
-        5),
+            5),
         STORAGEMINECART(
-        6),
+            6),
         HUMANENTITY(
-        7),;
+            7), ;
         private final int id;
         private static final TIntObjectHashMap<ContainerType> map;
 

@@ -47,8 +47,7 @@ public class WorldControlCommands
         this.config = basics.getConfiguration();
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params =
-    @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -117,14 +116,10 @@ public class WorldControlCommands
         }
     }
 
-    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius] [in <world>] [-a] [-f]",
-             flags =
-    {
+    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius] [in <world>] [-a] [-f]", flags = {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "alltypes", name = "*")
-    }, params =
-    @Param(names =
-    {
+    }, params = @Param(names = {
         "in"
     }, type = World.class), min = 1)
     public void remove(CommandContext context)
@@ -169,7 +164,7 @@ public class WorldControlCommands
         int entitiesRemoved;
         if (context.hasFlag("*"))
         {
-            entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, null, false, (EntityType[]) null);
+            entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, null, false, (EntityType[])null);
         }
         else
         {
@@ -216,8 +211,7 @@ public class WorldControlCommands
         }
     }
 
-    @Command(desc = "Gets rid of living animals nearby you", flags =
-    {
+    @Command(desc = "Gets rid of living animals nearby you", flags = {
         @Flag(longName = "pets", name = "p"),
         @Flag(longName = "golems", name = "g"),
         @Flag(longName = "animals", name = "a"),
@@ -226,9 +220,7 @@ public class WorldControlCommands
         @Flag(longName = "alltypes", name = "*"), // all living entities (but not players)
         @Flag(longName = "lightning", name = "l"),
         @Flag(longName = "all", name = "all")
-    }, params =
-    @Param(names =
-    {
+    }, params = @Param(names = {
         "choose", "c"
     }, type = String.class), usage = "[radius] [world] [choose|c <entityType>] [flags]")
     public void butcher(CommandContext context)
@@ -285,7 +277,7 @@ public class WorldControlCommands
         }
         else if (context.hasFlag("*") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender())) //remove all living
         {
-            removed = this.removeEntityType(list, loc, radius, null, lightning, (EntityType[]) null);
+            removed = this.removeEntityType(list, loc, radius, null, lightning, (EntityType[])null);
         }
         else
         {
@@ -293,7 +285,7 @@ public class WorldControlCommands
             for (Entity entity : list)
             {
                 if (entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast || entity instanceof EnderDragon
-                        || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable) entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
+                        || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
                         || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
                         || (context.hasFlag("n") && entity instanceof NPC && BasicsPerm.COMMAND_BUTCHER_FLAG_NPC.isAuthorized(context.getSender()))
                         || (context.hasFlag("a") && entity instanceof Animals && !(entity instanceof Tameable) && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender()))
@@ -302,7 +294,7 @@ public class WorldControlCommands
                     filteredList.add(entity);
                 }
             }
-            removed = this.removeEntityType(filteredList, loc, radius, null, lightning, (EntityType[]) null);
+            removed = this.removeEntityType(filteredList, loc, radius, null, lightning, (EntityType[])null);
         }
         context.sendMessage("basics", removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
     }
@@ -332,7 +324,7 @@ public class WorldControlCommands
             entity.getLocation(entityLocation);
             if (radius != -1)
             {
-                int distance = (int) (entityLocation.subtract(loc)).lengthSquared();
+                int distance = (int)(entityLocation.subtract(loc)).lengthSquared();
                 if (radius * radius < distance)
                 {
                     continue;
@@ -340,7 +332,7 @@ public class WorldControlCommands
             }
             if (entity instanceof Item && itemtype != null)
             {
-                if (!((Item) entity).getItemStack().getType().equals(itemtype))
+                if (!((Item)entity).getItemStack().getType().equals(itemtype))
                 {
                     continue;
                 }

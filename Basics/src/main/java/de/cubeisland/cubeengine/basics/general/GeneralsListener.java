@@ -28,7 +28,7 @@ public class GeneralsListener implements Listener
     {
         if (event.getEntity() instanceof Player)
         {
-            BasicUser bUser = this.basics.getBasicUserManager().getBasicUser((Player) event.getEntity());
+            BasicUser bUser = this.basics.getBasicUserManager().getBasicUser((Player)event.getEntity());
             if (bUser.godMode)
             {
                 event.setCancelled(true);

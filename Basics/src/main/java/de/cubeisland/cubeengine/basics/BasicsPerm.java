@@ -55,7 +55,7 @@ public enum BasicsPerm implements Permission
     WALKSPEED_ISALLOWED,
     SIGN_COLORED;
 
-    private String      permission;
+    private String permission;
     private PermDefault def;
 
     private BasicsPerm()

@@ -129,8 +129,8 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
 
                 this.database.storeStatement(this.modelClass, "update",
                         builder.update(this.tableName).set(fields).where().
-                        field(this.f_dbKey).isEqual().value().and().
-                        field(this.s_dbKey).isEqual().value().end().end());
+                            field(this.f_dbKey).isEqual().value().and().
+                            field(this.s_dbKey).isEqual().value().end().end());
             }
 
             this.database.storeStatement(this.modelClass, "get",

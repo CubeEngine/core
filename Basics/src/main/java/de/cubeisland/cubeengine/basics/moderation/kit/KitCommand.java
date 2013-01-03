@@ -35,18 +35,14 @@ public class KitCommand extends ContainerCommand
         }
     }
 
-    @Command(
-            desc = "Creates a new kit with the items in your inventory.",
-             flags =
-    @Flag(longName = "toolbar", name = "t"),
-             usage="<kitName> [-toolbar]")
+    @Command(desc = "Creates a new kit with the items in your inventory.", flags = @Flag(longName = "toolbar", name = "t"), usage = "<kitName> [-toolbar]")
     public void create(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&cJust log in or use the config!");
         List<KitItem> itemList = new ArrayList<KitItem>();
         if (context.hasFlag("t"))
         {
-            
+
             ItemStack[] items = sender.getInventory().getContents();
             for (int i = 0; i <= 8; ++i)
             {
@@ -55,10 +51,10 @@ public class KitCommand extends ContainerCommand
                     break;
                 }
                 itemList.add(
-                        new KitItem(items[i].getType(), 
-                        items[i].getDurability(), 
-                        items[i].getAmount(), 
-                        items[i].getItemMeta().getDisplayName()));
+                        new KitItem(items[i].getType(),
+                            items[i].getDurability(),
+                            items[i].getAmount(),
+                            items[i].getItemMeta().getDisplayName()));
             }
         }
         else
@@ -70,10 +66,10 @@ public class KitCommand extends ContainerCommand
                     break;
                 }
                 itemList.add(
-                        new KitItem(item.getType(), 
-                        item.getDurability(), 
-                        item.getAmount(), 
-                        item.getItemMeta().getDisplayName()));
+                        new KitItem(item.getType(),
+                            item.getDurability(),
+                            item.getAmount(),
+                            item.getItemMeta().getDisplayName()));
             }
         }
         Kit kit = new Kit(context.getString(0), false, 0, -1, true, "", null, itemList);
@@ -86,12 +82,7 @@ public class KitCommand extends ContainerCommand
     }
 
     @Alias(names = "kit")
-    @Command(
-    desc = "Gives a kit of items.",
-             usage = "<kitname> [player]",
-             min = 1, max = 2,
-             flags =
-    {
+    @Command(desc = "Gives a kit of items.", usage = "<kitname> [player]", min = 1, max = 2, flags = {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f")
     })

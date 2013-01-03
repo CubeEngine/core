@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 public class Lookup
 {
     boolean showCoords;
-    
+
     private List<LogModel> blocklogs;
 
     //private List<ChatLog> chatlogs;
@@ -27,7 +27,7 @@ public class Lookup
     //TODO possibility to "give" the lookup to an other User
     public void printLookup(User user)
     {
-        //TODO sort by timestamp (or other)
+    //TODO sort by timestamp (or other)
     }
 
     public Lookup filterSelection()//TODO the selection as param / & / how to get the selection?
@@ -85,7 +85,7 @@ public class Lookup
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
-    
+
     public static Lookup getBlocklogs()
     {
         int blocklog = LogModel.BLOCKLOG;
@@ -93,7 +93,7 @@ public class Lookup
         Location loc2;
         List<User> userList;
         List<BlockData> blockList;
-        
+
         //LazyLoading of prepared statements:
         //Building statement name
         //log_<type>_<world?>_<checkLocation?>_<Anz_Users>_<Anz_BlockType>
@@ -122,7 +122,7 @@ public class Lookup
                 //SELECT a USER
                 //make sure both Loc are in the same world
                 field("causeID").isEqual().value(); //CONNECT LIST WITH OR & put () around
-       builder.select().wildcard().
+        builder.select().wildcard().
                 from("logs").
                 where().
                 //SELECT BlockTypes
@@ -130,8 +130,8 @@ public class Lookup
                         field("newBlockOrLines").isEqual().value().or().
                         field("oldBlockOrLines").isEqual().value().
                 endSub(); //CONNECT LIST WITH OR & put () around
-        return null;      
-        
+        return null;
+
     }
-    
+
 }

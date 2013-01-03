@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import java.util.Locale;
 import org.bukkit.permissions.Permissible;
 
-public enum FunPerm implements Permission  
+public enum FunPerm implements Permission
 {
     EXPLOSION_OTHER,
     EXPLOSION_PLAYER_DAMAGE,
@@ -20,9 +20,8 @@ public enum FunPerm implements Permission
     THROW_ORB,
     THROW_SMALLFIREBALL,
     THROW_WITHERSKULL,
-    THROW_XP,
-    ;
-        
+    THROW_XP, ;
+
     private String permission;
     private PermDefault def;
 

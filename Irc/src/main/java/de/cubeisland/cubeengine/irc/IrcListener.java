@@ -10,9 +10,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class IrcListener implements Listener
 {
-    private final Irc         irc;
+    private final Irc irc;
     private final TaskManager taskmgr;
-    private final BotManager  botmgr;
+    private final BotManager botmgr;
 
     public IrcListener(Irc irc)
     {

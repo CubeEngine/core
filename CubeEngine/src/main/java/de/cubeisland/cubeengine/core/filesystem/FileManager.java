@@ -77,7 +77,6 @@ public class FileManager implements Cleanable
             throw new IOException("The modules folder is not writable!");
         }
 
-
         String tempName = "temp";
         if (!WINDOWS)
         {

@@ -290,20 +290,20 @@ public abstract class ConfigurationCodec
                 return Convert.fromObject(fieldType, object);
             }
             if (fieldType instanceof ParameterizedType // can be a map?
-                    && ((ParameterizedType) fieldType).getRawType() instanceof Class // rawIsClass
-                    && Map.class.isAssignableFrom((Class) ((ParameterizedType) fieldType).getRawType()) // isMap
-                    && ((ParameterizedType) fieldType).getActualTypeArguments()[1] instanceof Class // mapValue is class
-                    && Configuration.class.isAssignableFrom(((Class) ((ParameterizedType) fieldType).getActualTypeArguments()[1]))) // mapValue is Config
+                && ((ParameterizedType)fieldType).getRawType() instanceof Class // rawIsClass
+                && Map.class.isAssignableFrom((Class)((ParameterizedType)fieldType).getRawType()) // isMap
+                && ((ParameterizedType)fieldType).getActualTypeArguments()[1] instanceof Class // mapValue is class
+                && Configuration.class.isAssignableFrom(((Class)((ParameterizedType)fieldType).getActualTypeArguments()[1]))) // mapValue is Config
             {
-                Type valType = ((ParameterizedType) fieldType).getActualTypeArguments()[1];
+                Type valType = ((ParameterizedType)fieldType).getActualTypeArguments()[1];
                 if (valType instanceof Class)
                 {
-                    Map<Object, Configuration> fieldMap = (Map<Object, Configuration>) field.get(this.config);
+                    Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)field.get(this.config);
                     Map<String, Object> subValues = this.getOrCreateSubSection(path, values);
                     for (Object key : fieldMap.keySet())
                     {
                         new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subValues),
-                                parentConfig == null ? null : ((Map<Object, Configuration>) (field.get(this.parentConfig))).get(key));
+                                parentConfig == null ? null : ((Map<Object, Configuration>)(field.get(this.parentConfig))).get(key));
                     }
                     return fieldMap;
                 }
@@ -332,7 +332,7 @@ public abstract class ConfigurationCodec
                         String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
                         if (Configuration.class.isAssignableFrom(field.getType()))
                         {
-                            Configuration subConfig = (Configuration) field.get(this.config);
+                            Configuration subConfig = (Configuration)field.get(this.config);
                             CodecContainer subContainer = new CodecContainer();
                             if (parent == null)
                             {
@@ -340,7 +340,7 @@ public abstract class ConfigurationCodec
                             }
                             else
                             {
-                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), (Configuration) field.get(parent));
+                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), (Configuration)field.get(parent));
                             }
                             continue;
                         }
@@ -418,7 +418,7 @@ public abstract class ConfigurationCodec
             }
             if (path.contains(PATH_SEPARATOR))
             {
-                return this.get(getSubPath(path), (Map<String, Object>) section.get(this.findKey(getBasePath(path))));
+                return this.get(getSubPath(path), (Map<String, Object>)section.get(this.findKey(getBasePath(path))));
             }
             return section.get(this.findKey(path));
         }
@@ -461,7 +461,7 @@ public abstract class ConfigurationCodec
             }
             else
             {
-                Map<String, Object> subsection = (Map<String, Object>) baseSection.get(path);
+                Map<String, Object> subsection = (Map<String, Object>)baseSection.get(path);
                 if (subsection == null)
                 {
                     subsection = new LinkedHashMap<String, Object>();
@@ -500,7 +500,7 @@ public abstract class ConfigurationCodec
                 this.loadedKeys.put(key.toString().toLowerCase(Locale.ENGLISH), key);
                 if (section.get(key) instanceof Map)
                 {
-                    this.loadKeys((Map<String, Object>) section.get(key));
+                    this.loadKeys((Map<String, Object>)section.get(key));
                 }
             }
         }
@@ -582,8 +582,7 @@ public abstract class ConfigurationCodec
                 advanced = field.getBoolean(config);
             }
             catch (Exception ignored)
-            {
-            }
+            {}
             for (Field field : clazz.getFields())
             {
                 if (field.isAnnotationPresent(Option.class))
@@ -673,24 +672,24 @@ public abstract class ConfigurationCodec
                 }
                 if (this.parentConfig == null)
                 {
-                    return new CodecContainer().fillFromFields(this, null, (Configuration) fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
+                    return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
                 }
-                return new CodecContainer().fillFromFields(this, (Configuration) field.get(this.parentConfig), (Configuration) fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
+                return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
             }
             Converter converter = Convert.matchConverter(fieldClass);
             if (converter == null)
             {
                 if (Map.class.isAssignableFrom(fieldClass))
                 {
-                    if (!((Map) fieldValue).isEmpty() && ((Map) fieldValue).values().iterator().next() instanceof Configuration)
+                    if (!((Map)fieldValue).isEmpty() && ((Map)fieldValue).values().iterator().next() instanceof Configuration)
                     {
-                        Map<Object, Configuration> fieldMap = (Map<Object, Configuration>) fieldValue;
+                        Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
                         Map<String, Object> map = new LinkedHashMap<String, Object>();
                         Converter keyConverter = Convert.matchConverter(fieldMap.keySet().iterator().next().getClass());
                         Map<Object, Configuration> parentConfigs = null;
                         if (this.parentConfig != null)
                         {
-                            parentConfigs = ((Map<Object, Configuration>) field.get(this.parentConfig));
+                            parentConfigs = ((Map<Object, Configuration>)field.get(this.parentConfig));
                         }
                         for (Object key : fieldMap.keySet())
                         {
@@ -701,7 +700,7 @@ public abstract class ConfigurationCodec
                             }
                             Configuration parentSubConfig = parentConfig == null ? null : parentConfigs.get(key);
                             map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
-                                        new CodecContainer().fillFromFields(this, parentSubConfig,
+                            new CodecContainer().fillFromFields(this, parentSubConfig,
                                         fieldMap.get(key), newPath, this.getOrCreateSubSection(key.toString(), map)));
                         }
                         return map;

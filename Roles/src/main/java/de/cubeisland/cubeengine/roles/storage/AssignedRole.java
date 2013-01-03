@@ -7,11 +7,7 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
 import de.cubeisland.cubeengine.core.util.Triplet;
 
-@TripletKeyEntity(
-        tableName = "roles",
-                  firstPrimaryKey = "userId",
-                  secondPrimaryKey = "worldId",
-                  thirdPrimaryKey = "roleName")
+@TripletKeyEntity(tableName = "roles", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "roleName")
 public class AssignedRole implements TripletKeyModel<Long, Long, String>
 {
     @Index(value = Index.IndexType.FOREIGN_KEY, f_table = "user", f_field = "key")

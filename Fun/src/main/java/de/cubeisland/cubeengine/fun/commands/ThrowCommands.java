@@ -34,49 +34,49 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 public class ThrowCommands
 {
     private static Set<ThrowItem> throwItems = new HashSet<ThrowItem>();
-    
+
     private final Fun module;
     private final ThrowListener throwListener;
-    
+
     public ThrowCommands(Fun module)
     {
         this.module = module;
         this.throwListener = new ThrowListener();
         module.registerListener(throwListener);
     }
-    
+
     private ThrowItem getThrowItem(User user)
     {
-        for(ThrowItem throwItem : throwItems)
+        for (ThrowItem throwItem : throwItems)
         {
-            if(throwItem.getUser().getName().equals(user.getName()))
+            if (throwItem.getUser().getName().equals(user.getName()))
             {
                 return throwItem;
             }
         }
         return null;
     }
-    
-    @Command
-    (
-        names = {"throw"},
-        desc = "The CommandSender throws arrow/snowballs/eggs/xp/orb/fireball/smallfireball/witherskull",
-        max = 2,
-        params = { @Param(names = {"delay", "d"}, type = Integer.class) },
-        flags = { @Flag(longName = "unsafe", name = "u") },
-        usage = "<material> [amount] [delay <value>] [-unsafe]"
-    )
+
+    @Command(names = {
+        "throw"
+    }, desc = "The CommandSender throws arrow/snowballs/eggs/xp/orb/fireball/smallfireball/witherskull", max = 2, params = {
+        @Param(names = {
+        "delay", "d"
+        }, type = Integer.class)
+    }, flags = {
+        @Flag(longName = "unsafe", name = "u")
+    }, usage = "<material> [amount] [delay <value>] [-unsafe]")
     public void throwItem(CommandContext context)
     {
         User user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
 
         ThrowItem throwItem = this.getThrowItem(user);
-        
-        if(throwItem == null && context.getIndexed().isEmpty())
+
+        if (throwItem == null && context.getIndexed().isEmpty())
         {
             invalidUsage(context, "fun", "&cYou has to add the material you wanna throw.");
         }
-        else if(throwItem != null)
+        else if (throwItem != null)
         {
             throwItem.remove();
             user.sendMessage("&aYou throw not longer any item.");
@@ -85,21 +85,21 @@ public class ThrowCommands
         {
             int amount = context.getIndexed(1, Integer.class, -1);
             int delay = context.getNamed("delay", Integer.class, 3);
-            
+
             String material = context.getString(0);
             Class<? extends Projectile> materialClass = null;
 
-            if( (amount > this.module.getConfig().maxThrowNumber || amount < 1) && amount != -1)
+            if ((amount > this.module.getConfig().maxThrowNumber || amount < 1) && amount != -1)
             {
                 illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.module.getConfig().maxThrowNumber);
             }
-            if(delay > this.module.getConfig().maxThrowDelay || delay < 0)
+            if (delay > this.module.getConfig().maxThrowDelay || delay < 0)
             {
                 illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.module.getConfig().maxThrowDelay);
             }
             if (material.equalsIgnoreCase("snowball"))
             {
-                if(FunPerm.THROW_SNOW.isAuthorized(user))
+                if (FunPerm.THROW_SNOW.isAuthorized(user))
                 {
                     materialClass = Snowball.class;
                 }
@@ -108,9 +108,9 @@ public class ThrowCommands
                     denyAccess(context, "fun", "&cYou are not allowed to throw snow");
                 }
             }
-            else if(material.equalsIgnoreCase("egg"))
+            else if (material.equalsIgnoreCase("egg"))
             {
-                if(FunPerm.THROW_EGG.isAuthorized(user))
+                if (FunPerm.THROW_EGG.isAuthorized(user))
                 {
                     materialClass = Egg.class;
                 }
@@ -119,9 +119,9 @@ public class ThrowCommands
                     denyAccess(context, "fun", "&cYou are not allowed to throw eggs");
                 }
             }
-            else if(material.equalsIgnoreCase("xp") || material.equalsIgnoreCase("xpbottle"))
+            else if (material.equalsIgnoreCase("xp") || material.equalsIgnoreCase("xpbottle"))
             {
-                if(FunPerm.THROW_XP.isAuthorized(user))
+                if (FunPerm.THROW_XP.isAuthorized(user))
                 {
                     materialClass = ThrownExpBottle.class;
                 }
@@ -131,20 +131,20 @@ public class ThrowCommands
                 }
             }
             // TODO FIX ME!
-//            else if(material.equalsIgnoreCase("orb"))
-//            {
-//                if(FunPerm.THROW_ORB.isAuthorized(user))
-//                {
-//                    materialClass = ExperienceOrb.class;
-//                }
-//                else
-//                {
-//                    denyAccess(context, "fun", "&cYou are not allowed to throw orbs.");
-//                }
-//            }
-            else if(material.equalsIgnoreCase("fireball"))
+            //            else if(material.equalsIgnoreCase("orb"))
+            //            {
+            //                if(FunPerm.THROW_ORB.isAuthorized(user))
+            //                {
+            //                    materialClass = ExperienceOrb.class;
+            //                }
+            //                else
+            //                {
+            //                    denyAccess(context, "fun", "&cYou are not allowed to throw orbs.");
+            //                }
+            //            }
+            else if (material.equalsIgnoreCase("fireball"))
             {
-                if(FunPerm.THROW_FIREBALL.isAuthorized(user))
+                if (FunPerm.THROW_FIREBALL.isAuthorized(user))
                 {
                     materialClass = Fireball.class;
                 }
@@ -153,9 +153,9 @@ public class ThrowCommands
                     denyAccess(context, "fun", "&cYou are not allowed to throw fireballs.");
                 }
             }
-            else if(material.equalsIgnoreCase("smallfireball"))
+            else if (material.equalsIgnoreCase("smallfireball"))
             {
-                if(FunPerm.THROW_SMALLFIREBALL.isAuthorized(user))
+                if (FunPerm.THROW_SMALLFIREBALL.isAuthorized(user))
                 {
                     materialClass = SmallFireball.class;
                 }
@@ -164,9 +164,9 @@ public class ThrowCommands
                     denyAccess(context, "fun", "&cYou are not allowed to throw small fireballs.");
                 }
             }
-            else if(material.equalsIgnoreCase("witherskull"))
+            else if (material.equalsIgnoreCase("witherskull"))
             {
-                if(FunPerm.THROW_WITHERSKULL.isAuthorized(user))
+                if (FunPerm.THROW_WITHERSKULL.isAuthorized(user))
                 {
                     materialClass = WitherSkull.class;
                 }
@@ -175,9 +175,9 @@ public class ThrowCommands
                     denyAccess(context, "fun", "&cYou are not allowed to throw wither skulls.");
                 }
             }
-            else if(material.equalsIgnoreCase("arrow"))
+            else if (material.equalsIgnoreCase("arrow"))
             {
-                if(FunPerm.THROW_ARROW.isAuthorized(user))
+                if (FunPerm.THROW_ARROW.isAuthorized(user))
                 {
                     materialClass = Arrow.class;
                 }
@@ -192,27 +192,27 @@ public class ThrowCommands
             }
 
             throwItem = new ThrowItem(user, materialClass, amount, delay);
-            throwItems.add( throwItem );
-            
-            if(context.hasFlag("u") && ( materialClass == Fireball.class || materialClass == WitherSkull.class ) )
+            throwItems.add(throwItem);
+
+            if (context.hasFlag("u") && (materialClass == Fireball.class || materialClass == WitherSkull.class))
             {
                 throwItem.setUnsafe(true);
             }
-            
-            if(amount == -1)
+
+            if (amount == -1)
             {
                 user.sendMessage("fun", "&aYou throw this item until you execute this command again.");
             }
         }
-        
-    }    
-    
+
+    }
+
     private class ThrowItem implements Runnable
     {
         Class<? extends Projectile> material;
-        User                        user;
-        int                         amount;
-        boolean                     unsafe;
+        User user;
+        int amount;
+        boolean unsafe;
 
         int taskId;
 
@@ -258,12 +258,12 @@ public class ThrowCommands
                 bottle.setVelocity(loc.getDirection());
             }
             // TODO FIX ME AS WELL!
-//            else if (material == ExperienceOrb.class)
-//            {
-//                ExperienceOrb orb = (ExperienceOrb)user.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.EXPERIENCE_ORB);
-//                orb.setExperience(0);
-//                orb.setVelocity(loc.getDirection());
-//            }
+            //            else if (material == ExperienceOrb.class)
+            //            {
+            //                ExperienceOrb orb = (ExperienceOrb)user.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.EXPERIENCE_ORB);
+            //                orb.setExperience(0);
+            //                orb.setVelocity(loc.getDirection());
+            //            }
             else
             {
                 Explosive explosive;

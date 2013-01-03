@@ -122,8 +122,7 @@ public class MovementCommands
         TeleportCommands.teleport(sender, currentLocation, true, false, true);
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "jumpto", "jump", "j"
     }, desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
@@ -140,7 +139,7 @@ public class MovementCommands
     }
 
     @Command(names = {
-    "through", "thru"
+        "through", "thru"
     }, desc = "Jumps to the position you are looking at.", max = 0)
     public void through(CommandContext context)
     {
@@ -172,7 +171,7 @@ public class MovementCommands
     }
 
     @Command(names = {
-    "place", "put"
+        "place", "put"
     }, desc = "Jumps to the position you are looking at.", max = 1, min = 1, usage = "<player>")
     public void place(CommandContext context)
     {

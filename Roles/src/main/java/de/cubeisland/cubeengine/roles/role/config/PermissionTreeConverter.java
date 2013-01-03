@@ -18,7 +18,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
         PermissionTree permTree = new PermissionTree();
         if (object instanceof List)
         {
-            permTree.loadFromList((List) object, "");
+            permTree.loadFromList((List)object, "");
         }
         return permTree;
     }

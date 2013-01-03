@@ -42,7 +42,7 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getByUserID",
                     builder.select().cols(allFields).from(this.tableName).
-                    where().field("user_id").isEqual().value().end().end());
+                        where().field("user_id").isEqual().value().end().end());
         }
         catch (SQLException e)
         {

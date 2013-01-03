@@ -26,7 +26,7 @@ public class CoreCommands extends ContainerCommand
     public CoreCommands(Core core)
     {
         super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
-        this.core = (BukkitCore) core;
+        this.core = (BukkitCore)core;
     }
 
     @Command(desc = "Disables the CubeEngine")
@@ -35,8 +35,7 @@ public class CoreCommands extends ContainerCommand
         this.core.getServer().getPluginManager().disablePlugin(this.core);
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "setpassword", "setpw"
     }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
     public void setPassword(CommandContext context)
@@ -85,11 +84,9 @@ public class CoreCommands extends ContainerCommand
         context.sendMessage("core", "&aPassword set!");
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "clearpassword", "clearpw"
-    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags =
-    @Flag(longName = "all", name = "a"))
+    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags = @Flag(longName = "all", name = "a"))
     public void clearPassword(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -261,7 +258,7 @@ public class CoreCommands extends ContainerCommand
             }
         }
 
-        return (int) strength;
+        return (int)strength;
     }
 
     private int getCharSetSize(String pass)

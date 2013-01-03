@@ -17,6 +17,4 @@ public class KitItem
         this.customName = customName;
     }
 
-    
-    
 }

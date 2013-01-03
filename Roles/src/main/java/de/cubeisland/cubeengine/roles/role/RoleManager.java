@@ -102,7 +102,7 @@ public class RoleManager
                 {
                     this.module.getLogger().log(LogLevel.ERROR,
                             "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName() + " is mirrored multiple times!\n"
-                            + "Check your configuration under mirrors." + provider.getMainWorld());
+                                + "Check your configuration under mirrors." + provider.getMainWorld());
                     continue;
                 }
                 if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
@@ -127,7 +127,7 @@ public class RoleManager
 
     public <Provider extends RoleProvider> Provider getProvider(World world)
     {
-        return (Provider) (world == null ? this.globalProvider : this.getProvider(this.worldManager.getWorldId(world)));
+        return (Provider)(world == null ? this.globalProvider : this.getProvider(this.worldManager.getWorldId(world)));
     }
 
     public Collection<WorldRoleProvider> getProviders()
@@ -139,6 +139,7 @@ public class RoleManager
     {
         return globalProvider;
     }
+
     private TLongObjectHashMap<TLongObjectHashMap<List<String>>> loadedUserRoles = new TLongObjectHashMap<TLongObjectHashMap<List<String>>>();
 
     public TLongObjectHashMap<List<String>> loadRoles(User user)

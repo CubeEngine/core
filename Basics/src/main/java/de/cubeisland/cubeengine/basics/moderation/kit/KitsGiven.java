@@ -7,10 +7,7 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
 import de.cubeisland.cubeengine.core.util.Pair;
 
-@TwoKeyEntity(
-tableName = "kitsgiven",
-              firstPrimaryKey = "userId",
-              secondPrimaryKey = "kitName")
+@TwoKeyEntity(tableName = "kitsgiven", firstPrimaryKey = "userId", secondPrimaryKey = "kitName")
 public class KitsGiven implements TwoKeyModel<Long, String>
 {
     // @ForeignKey(table = "user", field = "key")

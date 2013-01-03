@@ -32,8 +32,7 @@ public class PlayerCommands
         this.um = basics.getUserManager();
     }
 
-    @Command(desc = "Refills your hunger bar", max = 1, flags =
-    @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Refills your hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void feed(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -84,8 +83,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Empties the hunger bar", max = 1, flags =
-    @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Empties the hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void starve(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -136,8 +134,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Heals a Player", max = 1, flags =
-    @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Heals a Player", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void heal(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -190,8 +187,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "gamemode", "gm"
     }, max = 2, desc = "Changes the gamemode", usage = "[gamemode] [player]")
     public void gamemode(CommandContext context)
@@ -259,11 +255,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "kill", "slay"
-    }, desc = "Kills a player", usage = "<player>|-a", flags =
-    {
+    }, desc = "Kills a player", usage = "<player>|-a", flags = {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f"),
         @Flag(longName = "lightning", name = "l")
@@ -335,8 +329,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags =
-    @Flag(longName = "chat", name = "c"))
+    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = @Flag(longName = "chat", name = "c"))
     public void sudo(CommandContext context)
     {
         User user = context.getUser(0);
@@ -418,8 +411,8 @@ public class PlayerCommands
         }
         context.sendMessage("basics", "&eNickname: &2%s", user.getName());
         context.sendMessage("basics", "&eLife: &2%d&f/&2%d\n", user.getHealth(), user.getMaxHealth());
-        context.sendMessage("basics", "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)\n", user.getFoodLevel(), (int) user.getSaturation(), user.getFoodLevel());
-        context.sendMessage("basics", "&eLevel: &2%d &eExp: &2%d&f/&2100%% &eof the next Level\n", user.getLevel(), (int) (user.getExp() * 100));
+        context.sendMessage("basics", "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)\n", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
+        context.sendMessage("basics", "&eLevel: &2%d &eExp: &2%d&f/&2100%% &eof the next Level\n", user.getLevel(), (int)(user.getExp() * 100));
         Location loc = user.getLocation(); // NPE when user is offline
         // TODO why is this even able to be null?
         if (loc != null)
@@ -497,8 +490,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Changes your walkspeed.",
-             usage = "<speed> [player <player>]", min = 1)
+    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player <player>]", min = 1)
     public void walkspeed(CommandContext context)
     {
         User sender = context.getSenderAsUser();

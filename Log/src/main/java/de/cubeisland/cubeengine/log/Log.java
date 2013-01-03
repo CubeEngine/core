@@ -54,7 +54,7 @@ public class Log extends Module
             //TODO use world configs instead of global
             file = new File(this.getFolder(), "worlds" + File.separator + world.getName());
             file.mkdir();
-            this.worldConfigs.put(world, (LogConfiguration) globalConfig.loadChild(new File(file, "config.yml")));
+            this.worldConfigs.put(world, (LogConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
         }
 
     }

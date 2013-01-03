@@ -26,8 +26,7 @@ public class Account implements Model<Long>
     public Currency currency;
 
     public Account()
-    {
-    }
+    {}
 
     public Account(Currency currency, User user)
     {
@@ -113,7 +112,7 @@ public class Account implements Model<Long>
      */
     public long scale(double factor)
     {
-        this.value = (long) (factor * this.value);
+        this.value = (long)(factor * this.value);
         return this.value;
     }
 

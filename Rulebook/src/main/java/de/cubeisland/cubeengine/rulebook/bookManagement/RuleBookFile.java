@@ -15,26 +15,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RuleBookFile 
+public class RuleBookFile
 {
     private final static int NumberOfCharsPerPage = 260;
     private final static int NumberOfCharsPerLine = 20;
-    
+
     public static File loadFile(String parent, String child)
     {
         return new File(parent, child);
     }
-    
+
     public static Set<File> getLanguageFiles(File directory)
     {
         Set<File> files = new HashSet<File>();
-        if(directory.isDirectory())
+        if (directory.isDirectory())
         {
-            for(File file : directory.listFiles())
+            for (File file : directory.listFiles())
             {
-                Set<Language> languages = CubeEngine.getI18n().searchLanguages( StringUtils.stripFileExtension(file.getName()) );
-                
-                if(languages.size() == 1)
+                Set<Language> languages = CubeEngine.getI18n().searchLanguages(StringUtils.stripFileExtension(file.getName()));
+
+                if (languages.size() == 1)
                 {
                     files.add(file);
                 }
@@ -42,19 +42,19 @@ public class RuleBookFile
         }
         return files;
     }
-    
+
     public static String[] convertToPages(File file) throws IOException
     {
         return convertToBookPageArray(convertToLines(readFile(file)));
     }
-    
+
     private static String readFile(File file) throws IOException
     {
-        if(!file.exists())
+        if (!file.exists())
         {
             createFile(file, "");
         }
-        
+
         String text = "";
         String line;
         BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -63,20 +63,20 @@ public class RuleBookFile
             text += (line + "\n");
         }
         reader.close();
-        
+
         return text;
     }
-    
+
     public static void createFile(File file, String[] txt) throws IOException
     {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        for(String page : txt)
+        for (String page : txt)
         {
             writer.write(page);
         }
         writer.close();
     }
-    
+
     public static void createFile(File file, String txt) throws IOException
     {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
@@ -84,7 +84,7 @@ public class RuleBookFile
         writer.close();
     }
 
-    private static String[] convertToBookPageArray(List<String> lines) 
+    private static String[] convertToBookPageArray(List<String> lines)
     {
         List<String> pages = new ArrayList<String>();
         pages.add("");
@@ -106,11 +106,11 @@ public class RuleBookFile
                 pages.set(page, pages.get(page) + "\n" + line);
             }
         }
-        
+
         return pages.toArray(new String[pages.size()]);
     }
 
-    private static List<String> convertToLines(String text) 
+    private static List<String> convertToLines(String text)
     {
         List<String> lines = new ArrayList<String>();
         for (String line : text.split("\n"))
@@ -130,10 +130,10 @@ public class RuleBookFile
         }
         return lines;
     }
-    
+
     public static int getNumberOfLines(String string)
     {
-        return (int)Math.ceil((double)string.length() / (double) NumberOfCharsPerLine);
+        return (int)Math.ceil((double)string.length() / (double)NumberOfCharsPerLine);
     }
 
     public static int getNumberOfLines(String[] strings)

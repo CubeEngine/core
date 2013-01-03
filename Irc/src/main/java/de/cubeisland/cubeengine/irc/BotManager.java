@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentMap;
 
 public class BotManager implements Cleanable
 {
-    private final IrcConfig                       config;
-    private final SocketFactory                   socketFactory;
-    private final PircBotX                        mainBot;
+    private final IrcConfig config;
+    private final SocketFactory socketFactory;
+    private final PircBotX mainBot;
     private final ConcurrentMap<String, PircBotX> players;
-    private final BotListener                     listener;
+    private final BotListener listener;
 
     public BotManager(IrcConfig config)
     {

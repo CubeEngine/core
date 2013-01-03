@@ -123,8 +123,7 @@ public class MaterialMatcher
                     return item;
                 }
                 catch (Exception ignored)
-                {
-                }
+                {}
             }
             if (s.contains(":"))
             {
@@ -228,8 +227,8 @@ public class MaterialMatcher
                     }
                     return item;
                 case SKULL_ITEM:
-                    item.setDurability((short) 3);
-                    SkullMeta meta = ((SkullMeta) item.getItemMeta());
+                    item.setDurability((short)3);
+                    SkullMeta meta = ((SkullMeta)item.getItemMeta());
                     meta.setOwner(rawData);
                     item.setItemMeta(meta);
                     return item;
@@ -264,8 +263,7 @@ public class MaterialMatcher
             return Material.getMaterial(matId);
         }
         catch (NumberFormatException ignored)
-        {
-        }
+        {}
         ItemStack item = this.matchItemStack(s);
         if (item != null)
         {

@@ -94,7 +94,7 @@ public class Kit
                 denyAccess(sender, "basics", "You are not allowed to give this kit.");
             }
         }
-        if (basics.getKitGivenManager().reachedUsageLimit(user,this.name,this.limitUsagePerPlayer))
+        if (basics.getKitGivenManager().reachedUsageLimit(user, this.name, this.limitUsagePerPlayer))
         {
             denyAccess(sender, "basics", "&cKit-limit reached.");
         }
@@ -187,13 +187,11 @@ public class Kit
 
         @Override
         public void sendMessage(String string)
-        {
-        }
+        {}
 
         @Override
         public void sendMessage(String[] strings)
-        {
-        }
+        {}
 
         @Override
         public Server getServer()
@@ -257,13 +255,11 @@ public class Kit
 
         @Override
         public void removeAttachment(PermissionAttachment pa)
-        {
-        }
+        {}
 
         @Override
         public void recalculatePermissions()
-        {
-        }
+        {}
 
         @Override
         public Set<PermissionAttachmentInfo> getEffectivePermissions()
@@ -279,7 +275,6 @@ public class Kit
 
         @Override
         public void setOp(boolean bln)
-        {
-        }
+        {}
     }
 }

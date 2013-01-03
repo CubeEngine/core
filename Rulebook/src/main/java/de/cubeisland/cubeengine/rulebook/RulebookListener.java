@@ -42,7 +42,7 @@ class RulebookListener implements Listener
             }
 
             ItemStack ruleBook = new ItemStack(Material.WRITTEN_BOOK);
-            BookMeta meta = ((BookMeta) ruleBook.getItemMeta());
+            BookMeta meta = ((BookMeta)ruleBook.getItemMeta());
             meta.setAuthor(Bukkit.getServerName());
             meta.setTitle(_(language, "rulebook", "Rulebook"));
             meta.setPages(this.rulebookManager.getPages(language));

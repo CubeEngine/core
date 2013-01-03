@@ -28,14 +28,14 @@ public class KitsGivenManager extends TwoKeyStorage<Long, String, KitsGiven>
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getLimitForUser",
                     builder.select().cols("amount").
-                    from(this.tableName).
-                    where().field(this.s_dbKey).isEqual().value()
-                    .and().field(this.s_dbKey).isEqual().value().end().end());
+                        from(this.tableName).
+                        where().field(this.s_dbKey).isEqual().value()
+                        .and().field(this.s_dbKey).isEqual().value().end().end());
 
             this.database.storeStatement(modelClass, "mergeLimitForUser",
                     builder.merge().into(this.tableName).
-                    cols(this.allFields).
-                    updateCols("amount").end().end());
+                        cols(this.allFields).
+                        updateCols("amount").end().end());
         }
         catch (SQLException e)
         {

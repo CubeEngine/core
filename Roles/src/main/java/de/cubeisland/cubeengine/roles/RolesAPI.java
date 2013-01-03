@@ -19,7 +19,6 @@ public class RolesAPI
         this.module = module;
         this.worldManager = module.getCore().getWorldManager();
 
-
     }
 
     public String getMetaData(User user, World world, String metaKey)

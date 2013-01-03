@@ -19,7 +19,7 @@ public class CurrencyConfigurationConverter implements Converter<CurrencyConfigu
             subCurrencies.put(entry.getKey(), Convert.toObject(entry.getValue()));
         }
         currency.put("sub-currencies", subCurrencies);
-        HashMap<String, Object> firstSub = (HashMap<String, Object>) subCurrencies.entrySet().iterator().next().getValue();
+        HashMap<String, Object> firstSub = (HashMap<String, Object>)subCurrencies.entrySet().iterator().next().getValue();
         firstSub.remove("value");
         LinkedHashMap<String, Object> format = new LinkedHashMap<String, Object>();
         currency.put("formatting", format);
@@ -31,13 +31,13 @@ public class CurrencyConfigurationConverter implements Converter<CurrencyConfigu
     @Override
     public CurrencyConfiguration fromObject(Object object) throws ConversionException
     {
-        LinkedHashMap<String, Object> currency = (LinkedHashMap<String, Object>) object;
-        LinkedHashMap<String, Object> subCurrencies = (LinkedHashMap<String, Object>) currency.get("sub-currencies");
-        LinkedHashMap<String, String> format = (LinkedHashMap<String, String>) currency.get("formatting");
+        LinkedHashMap<String, Object> currency = (LinkedHashMap<String, Object>)object;
+        LinkedHashMap<String, Object> subCurrencies = (LinkedHashMap<String, Object>)currency.get("sub-currencies");
+        LinkedHashMap<String, String> format = (LinkedHashMap<String, String>)currency.get("formatting");
         LinkedHashMap<String, SubCurrencyConfig> subConfigs = new LinkedHashMap<String, SubCurrencyConfig>();
         for (Map.Entry<String, Object> entry : subCurrencies.entrySet())
         {
-            subConfigs.put(entry.getKey(), (SubCurrencyConfig) Convert.fromObject(SubCurrencyConfig.class, entry.getValue()));
+            subConfigs.put(entry.getKey(), (SubCurrencyConfig)Convert.fromObject(SubCurrencyConfig.class, entry.getValue()));
         }
         CurrencyConfiguration currencyConfig = new CurrencyConfiguration(subConfigs, format.get("long"), format.get("short"));
         return currencyConfig;

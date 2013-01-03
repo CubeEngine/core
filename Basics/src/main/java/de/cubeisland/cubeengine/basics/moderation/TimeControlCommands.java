@@ -77,17 +77,17 @@ public class TimeControlCommands
             9000,
             "afternoon");
 
-        public static final int                         TICKS_PER_HOUR     = 1000;
-        public static final int                         TICKS_PER_DAY      = 24 * TICKS_PER_HOUR;
-        public static final int                         HALF_DAY           = TICKS_PER_DAY / 2;
-        public static final int                         LIGHT_SHIFT        = HALF_DAY / 2;
-        public static final double                      TICKS_TO_MINUTES   = (double)TICKS_PER_DAY / 1440D;
+        public static final int TICKS_PER_HOUR = 1000;
+        public static final int TICKS_PER_DAY = 24 * TICKS_PER_HOUR;
+        public static final int HALF_DAY = TICKS_PER_DAY / 2;
+        public static final int LIGHT_SHIFT = HALF_DAY / 2;
+        public static final double TICKS_TO_MINUTES = (double)TICKS_PER_DAY / 1440D;
 
-        private static final Pattern                    PARSE_TIME_PATTERN = Pattern.compile("^([012]?\\d)(?::(\\d{2}))?(pm|am)?$", Pattern.CASE_INSENSITIVE);
-        private static final THashMap<String, Time>     times              = new THashMap<String, Time>(values().length);
-        private static final TLongObjectHashMap<String> timeNames          = new TLongObjectHashMap<String>();
+        private static final Pattern PARSE_TIME_PATTERN = Pattern.compile("^([012]?\\d)(?::(\\d{2}))?(pm|am)?$", Pattern.CASE_INSENSITIVE);
+        private static final THashMap<String, Time> times = new THashMap<String, Time>(values().length);
+        private static final TLongObjectHashMap<String> timeNames = new TLongObjectHashMap<String>();
         private final String[] names;
-        private final long     time;
+        private final long time;
 
         static
         {

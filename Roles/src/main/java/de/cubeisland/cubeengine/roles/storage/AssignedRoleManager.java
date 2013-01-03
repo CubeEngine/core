@@ -36,12 +36,12 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
                     builder.select().cols("worldID", "roleName").from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
             this.database.storeStatement(modelClass, "deleteByUserAndWorld",
                     builder.delete().from(this.tableName).where().
-                    field("userId").is(EQUAL).value().and().
-                    field("worldId").is(EQUAL).value().end().end());
+                        field("userId").is(EQUAL).value().and().
+                        field("worldId").is(EQUAL).value().end().end());
             this.database.storeStatement(modelClass, "rename",
                     builder.update(this.tableName).set("roleName").
-                    where().field("worldId").isEqual().value().
-                    and().field("roleName").isEqual().value().end().end());
+                        where().field("worldId").isEqual().value().
+                        and().field("roleName").isEqual().value().end().end());
         }
         catch (SQLException e)
         {
@@ -111,7 +111,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while renaming roles in database!",ex);
+            throw new IllegalStateException("Error while renaming roles in database!", ex);
         }
     }
 }

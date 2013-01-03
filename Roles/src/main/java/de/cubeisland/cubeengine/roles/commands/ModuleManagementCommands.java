@@ -18,7 +18,7 @@ public class ModuleManagementCommands extends ContainerCommand
     @Command(desc = "Reloads all roles from config")
     public void reload(CommandContext context)
     {
-        Roles module = (Roles) this.getModule();
+        Roles module = (Roles)this.getModule();
         module.getConfiguration().load(); // reloads main config
         module.getManager().init(); // reloads all roleconfigs
         for (User user : module.getUserManager().getOnlineUsers())
@@ -35,11 +35,12 @@ public class ModuleManagementCommands extends ContainerCommand
     public void save(CommandContext context)
     {
         // database is up to date so only saving configs
-        Roles module = (Roles) this.getModule();
+        Roles module = (Roles)this.getModule();
         module.getConfiguration().save();
         module.getManager().saveAllConfigs();
         context.sendMessage("roles", "&f[&6Roles&f] &aall configurations saved!");
     }
+
     public static Long curWorldIdOfConsole = null;
 
     @Command(desc = "Sets or resets the current default world", usage = "[world]", max = 1)

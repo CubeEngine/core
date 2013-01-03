@@ -15,34 +15,23 @@ public class MoneyCommand extends ContainerCommand
     }
 
     @Alias(names = "money")
-    @Command(
-            desc = "Shows your balance",
-             usage = "[player]")
+    @Command(desc = "Shows your balance", usage = "[player]")
     public void balance(CommandContext context)
-    {
-    }
+    {}
 
-    @Alias(names =
-    {
+    @Alias(names = {
         "toplist", "balancetop"
     })
-    @Command(
-            desc = "Shows the players with the highest balance.",
-             usage = "<page>")
+    @Command(desc = "Shows the players with the highest balance.", usage = "<page>")
     public void top(CommandContext context)
-    {
-    }
+    {}
 
     //TODO flag for banks
     //TODO named .as <name>
-    @Alias(names =
-    {
+    @Alias(names = {
         "toplist", "balancetop"
     })
-    @Command(
-            desc = "Transfer the given amount to another account.",
-             usage = "<player> <amount> [as <player>]|[asBank <bank>] [-bank]")
+    @Command(desc = "Transfer the given amount to another account.", usage = "<player> <amount> [as <player>]|[asBank <bank>] [-bank]")
     public void pay(CommandContext context)
-    {
-    }
+    {}
 }

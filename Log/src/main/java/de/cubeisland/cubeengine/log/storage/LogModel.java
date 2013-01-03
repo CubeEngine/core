@@ -15,8 +15,8 @@ import org.bukkit.block.BlockState;
 @SingleKeyEntity(tableName = "logs", primaryKey = "key", autoIncrement = true)
 public class LogModel implements Model<Long>
 {
-//TODO trim chatlog and dont log if empty then
-    @Attribute(type = AttrType.INT, unsigned= true)
+    //TODO trim chatlog and dont log if empty then
+    @Attribute(type = AttrType.INT, unsigned = true)
     public Long key;
     @Attribute(type = AttrType.TINYINT)
     public int type;
@@ -32,7 +32,7 @@ public class LogModel implements Model<Long>
     public Timestamp timestamp;
     @Attribute(type = AttrType.INT)
     public int causeID;
-    @Attribute(type = AttrType.INT, notnull = false, unsigned= true)
+    @Attribute(type = AttrType.INT, notnull = false, unsigned = true)
     public Long worldID;
     @Attribute(type = AttrType.INT, notnull = false)
     public Integer x;
@@ -72,8 +72,7 @@ public class LogModel implements Model<Long>
             }
         }
         catch (ConversionException ignored)
-        {
-        }
+        {}
     }
 
     public BlockData getNewBlockData()
@@ -105,6 +104,7 @@ public class LogModel implements Model<Long>
         this.initBlockData();
         return ((oldBlockData.mat != Material.AIR) && (newBlockData.mat != Material.AIR));
     }
+
     //-end of BlockLog Methods & Fields
     // ChestLog Methods & Fields:
     private ItemData itemData = null;
@@ -125,10 +125,10 @@ public class LogModel implements Model<Long>
                 this.itemData.name = this.itemNameOrChat;
             }
             catch (ConversionException ingored)
-            {
-            }
+            {}
         }
     }
+
     //-end of ChestLog Methods & Fields
 
     private LogModel(int type, int causeID, Location loc)
@@ -158,11 +158,11 @@ public class LogModel implements Model<Long>
         try
         {
             this.newBlockOrLines = newBlock == null
-                    ? (String) Convert.toObject(new BlockData(Material.AIR, (byte) 0))
-                    : (String) Convert.toObject(new BlockData(newBlock.getType(), newBlock.getRawData()));
+                    ? (String)Convert.toObject(new BlockData(Material.AIR, (byte)0))
+                    : (String)Convert.toObject(new BlockData(newBlock.getType(), newBlock.getRawData()));
             this.oldBlockOrLines = oldBlock == null
-                    ? (String) Convert.toObject(new BlockData(Material.AIR, (byte) 0))
-                    : (String) Convert.toObject(new BlockData(oldBlock.getType(), oldBlock.getRawData()));
+                    ? (String)Convert.toObject(new BlockData(Material.AIR, (byte)0))
+                    : (String)Convert.toObject(new BlockData(oldBlock.getType(), oldBlock.getRawData()));
         }
         catch (ConversionException ignored)
         {
@@ -184,14 +184,13 @@ public class LogModel implements Model<Long>
         this(CHESTLOG, userId, loc);
         try
         {
-            this.chestItemOrInteractItem = (String) Convert.toObject(item);
+            this.chestItemOrInteractItem = (String)Convert.toObject(item);
             this.amountOrInteractData = amount;
             this.itemNameOrChat = item.name;
             this.containerTypeOrKilledId = containerType;
         }
         catch (ConversionException ingored)
-        {
-        }
+        {}
     }
 
     /**

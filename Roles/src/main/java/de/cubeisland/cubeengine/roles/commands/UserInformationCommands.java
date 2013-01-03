@@ -22,11 +22,7 @@ public class UserInformationCommands extends UserCommandHelper
     }
 
     @Alias(names = "listuroles")
-    @Command(desc = "Lists roles of a user [in world]",
-             usage = "[player] [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2)
+    @Command(desc = "Lists roles of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
     public void list(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -49,15 +45,9 @@ public class UserInformationCommands extends UserCommandHelper
     }
 
     @Alias(names = "checkuperm")
-    @Command(names =
-    {
+    @Command(names = {
         "checkperm", "checkpermission"
-    },
-             desc = "Checks for permissions of a user [in world]",
-             usage = "<permission> [player] [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 1)
+    }, desc = "Checks for permissions of a user [in world]", usage = "<permission> [player] [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
     public void checkpermission(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -113,15 +103,9 @@ public class UserInformationCommands extends UserCommandHelper
     }
 
     @Alias(names = "listuperm")
-    @Command(names =
-    {
+    @Command(names = {
         "listperm", "listpermission"
-    },
-             desc = "List permission of a user [in world]",
-             usage = "[player] [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2)
+    }, desc = "List permission of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
     public void listpermission(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -143,15 +127,9 @@ public class UserInformationCommands extends UserCommandHelper
     }
 
     @Alias(names = "checkumeta")
-    @Command(names =
-    {
+    @Command(names = {
         "checkdata", "checkmeta", "checkmetadata"
-    },
-             desc = "Checks for metadata of a user [in world]",
-             usage = "<metadatakey> [player] [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 1)
+    }, desc = "Checks for metadata of a user [in world]", usage = "<metadatakey> [player] [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
     public void checkmetadata(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -173,15 +151,9 @@ public class UserInformationCommands extends UserCommandHelper
     }
 
     @Alias(names = "listumeta")
-    @Command(names =
-    {
+    @Command(names = {
         "listdata", "listmeta", "listmetadata"
-    },
-             desc = "List metadata of a user [in world]",
-             usage = "[player] [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2)
+    }, desc = "List metadata of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
     public void listmetadata(CommandContext context)
     {
         User user = this.getUser(context, 0);

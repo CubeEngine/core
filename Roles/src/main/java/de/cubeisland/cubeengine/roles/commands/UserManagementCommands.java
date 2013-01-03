@@ -18,19 +18,12 @@ public class UserManagementCommands extends UserCommandHelper
         super(module);
     }
 
-    @Alias(names =
-    {
+    @Alias(names = {
         "manuadd", "assignurole", "addurole", "giveurole"
     })
-    @Command(names =
-    {
+    @Command(names = {
         "assign", "add", "give"
-    },
-             desc = "Assign a role to the player [in world]",
-             usage = "<role> <player> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+    }, desc = "Assign a role to the player [in world]", usage = "<role> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void assign(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -53,15 +46,10 @@ public class UserManagementCommands extends UserCommandHelper
         }
     }
 
-    @Alias(names =
-    {
+    @Alias(names = {
         "remurole", "manudel"
     })
-    @Command(desc = "Removes a role from the player [in world]",
-             usage = "<role> <player> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+    @Command(desc = "Removes a role from the player [in world]", usage = "<role> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void remove(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -84,11 +72,7 @@ public class UserManagementCommands extends UserCommandHelper
     }
 
     @Alias(names = "clearurole")
-    @Command(desc = "Clears all roles from the player and sets the defaultroles [in world]",
-             usage = "<player> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    @Command(desc = "Clears all roles from the player and sets the defaultroles [in world]", usage = "<player> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void clear(CommandContext context)
     {
         User user = this.getUser(context, 0);
@@ -106,15 +90,9 @@ public class UserManagementCommands extends UserCommandHelper
         }
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "setperm", "setpermission"
-    },
-             desc = "Sets a permission for this user [in world]",
-             usage = "<permission> <true|false|reset> <player> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 5, min = 3)
+    }, desc = "Sets a permission for this user [in world]", usage = "<permission> <true|false|reset> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 5, min = 3)
     public void setpermission(CommandContext context)
     {
         User user = this.getUser(context, 2);
@@ -160,19 +138,13 @@ public class UserManagementCommands extends UserCommandHelper
 
     public void resetpermission(CommandContext context)
     {
-        //TODO use this as proxy method for setPermission with reset
-        //other alias givePermissions for setPermission with true
+    //TODO use this as proxy method for setPermission with reset
+    //other alias givePermissions for setPermission with true
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "setdata", "setmeta", "setmetadata"
-    },
-             desc = "Sets metadata for this user [in world]",
-             usage = "<metaKey> <metaValue> <player> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 4, min = 3)
+    }, desc = "Sets metadata for this user [in world]", usage = "<metaKey> <metaValue> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 4, min = 3)
     public void setmetadata(CommandContext context)
     {
         String metaKey = context.getString(0);
@@ -184,15 +156,9 @@ public class UserManagementCommands extends UserCommandHelper
         context.sendMessage("roles", "&aMetadata &6%s &aof &2%s&a set to &6%s &ain &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "resetdata", "resetmeta", "resetmetadata"
-    },
-             desc = "Resets metadata for this user [in world]",
-             usage = "<metaKey> <player> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 4, min = 3)
+    }, desc = "Resets metadata for this user [in world]", usage = "<metaKey> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 4, min = 3)
     public void resetmetadata(CommandContext context)
     {
         String metaKey = context.getString(0);
@@ -203,15 +169,9 @@ public class UserManagementCommands extends UserCommandHelper
         context.sendMessage("roles", "&eMetadata &6%s &eof &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "cleardata", "clearmeta", "clearmetadata"
-    },
-             desc = "Resets metadata for this user [in world]",
-             usage = "<player> [in <world>]",
-             params =
-    @Param(names = "in", type = World.class),
-             max = 2, min = 1)
+    }, desc = "Resets metadata for this user [in world]", usage = "<player> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void clearMetaData(CommandContext context)
     {
         User user = this.getUser(context, 0);

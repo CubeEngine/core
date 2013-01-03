@@ -43,7 +43,7 @@ public class Basics extends Module
     private KitsGivenManager kitGivenManager;
 
     private static Basics instance;
-    
+
     public int afkListenerTask;
 
     public static Basics getInstance()
@@ -60,7 +60,7 @@ public class Basics extends Module
         this.registerPermissions(BasicsPerm.values());
 
         this.registerListener(new ColoredSigns());
-        
+
         //General:
         this.registerCommands(new ChatCommands(this));
         this.registerCommands(new InformationCommands(this));

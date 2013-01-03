@@ -21,29 +21,28 @@ import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 
-public class RocketCommand 
+public class RocketCommand
 {
     private final Fun module;
     private final RocketListener rocketListener;
-    
-    public RocketCommand(Fun module) 
+
+    public RocketCommand(Fun module)
     {
         this.module = module;
         this.rocketListener = new RocketListener();
         this.module.registerListener(rocketListener);
     }
-    
+
     public RocketListener getRocketListener()
     {
         return this.rocketListener;
     }
-    
-    @Command(
-        desc = "rockets a player",
-        max = 1,
-        usage = "[height] [player <name>]",
-        params = {@Param(names = {"player", "p"}, type = User.class)}
-    )
+
+    @Command(desc = "rockets a player", max = 1, usage = "[height] [player <name>]", params = {
+        @Param(names = {
+        "player", "p"
+        }, type = User.class)
+    })
     public void rocket(CommandContext context)
     {
         int height = context.getIndexed(0, Integer.class, 10);
@@ -67,7 +66,7 @@ public class RocketCommand
 
         rocketListener.addInstance(user, height);
     }
-    
+
     public class RocketListener implements Listener, Runnable
     {
         private final UserManager userManager;
@@ -163,10 +162,10 @@ public class RocketCommand
             for (RocketCMDInstance instance : this.getInstances())
             {
                 final User user = instance.getUser();
-                
-                if(user.isOnline())
+
+                if (user.isOnline())
                 {
-                    if(!instance.getDown())
+                    if (!instance.getDown())
                     {
                         Location userLocation = user.getLocation(this.helper);
                         user.getWorld().playEffect(userLocation, Effect.SMOKE, 0);
@@ -176,7 +175,7 @@ public class RocketCommand
                         user.getWorld().playEffect(userLocation.add(0, 0, -1), Effect.SMOKE, 0);
                     }
 
-                    if ( instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
+                    if (instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
                     {
                         module.getTaskManger().scheduleSyncDelayedTask(module, new Runnable()
                             {
@@ -188,13 +187,13 @@ public class RocketCommand
                             }, 1);
                     }
 
-                    if( instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getDown())
+                    if (instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getDown())
                     {
-                        double y = (double) (instance.getHeight() - instance.getNumberOfAirBlocksUnderFeet()) / 10;
+                        double y = (double)(instance.getHeight() - instance.getNumberOfAirBlocksUnderFeet()) / 10;
                         y = (y < 10) ? y : 10;
                         user.setVelocity(new Vector(0, (y < 9) ? (y + 1) : y, 0));
                     }
-                    else if(!instance.getDown())
+                    else if (!instance.getDown())
                     {
                         instance.setDown();
                     }
@@ -208,9 +207,9 @@ public class RocketCommand
 
         private class RocketCMDInstance
         {
-            private final String  name;
-            private final int     height;
-            private       boolean down;
+            private final String name;
+            private final int height;
+            private boolean down;
 
             private RocketCMDInstance(String name, int height)
             {
@@ -259,7 +258,7 @@ public class RocketCommand
                 location.add(0, 1, 0);
                 int numberOfAirBlocks = 0;
 
-                while(!location.getBlock().getType().isSolid() && location.getY() < location.getWorld().getMaxHeight())
+                while (!location.getBlock().getType().isSolid() && location.getY() < location.getWorld().getMaxHeight())
                 {
                     numberOfAirBlocks++;
                     location.add(0, 1, 0);

@@ -17,8 +17,7 @@ public class FlyModel implements Model<Long>
     public boolean flying;
 
     public FlyModel()
-    {
-    }
+    {}
 
     public FlyModel(User user)
     {

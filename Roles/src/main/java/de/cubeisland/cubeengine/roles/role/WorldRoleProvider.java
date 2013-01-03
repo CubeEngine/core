@@ -58,7 +58,7 @@ public class WorldRoleProvider extends RoleProvider
             List<Role> roleList = new ArrayList<Role>();
             result.put(worldID, roleList);
             if (mirrorRoleUsers.getLeft() == mirrorRoleUsers.getRight()// both true -> full mirror
-                    || mirrorRoleUsers.getLeft()) // roles are mirrored BUT but assigned roles are not mirrored!
+                || mirrorRoleUsers.getLeft()) // roles are mirrored BUT but assigned roles are not mirrored!
             {
                 for (String roleName : rolesFromDb.get(worldID))
                 {

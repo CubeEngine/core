@@ -34,7 +34,6 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
     {
         Block block = event.getClickedBlock();
 
-
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
         {
             MaterialData blockData = block.getState().getData();
@@ -48,14 +47,14 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                             || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate))
                     {
                         this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Openable) blockData).isOpen() ? 1 : 0);
+                                block.getType(), ((Openable)blockData).isOpen() ? 1 : 0);
                     }
                     return;
                 case LEVER:
                     if (this.config.logLever)
                     {
                         this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Lever) blockData).isPowered() ? 1 : 0);
+                                block.getType(), ((Lever)blockData).isPowered() ? 1 : 0);
                     }
                     return;
                 case STONE_BUTTON:
@@ -70,14 +69,14 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     if (this.config.logCake)
                     {
                         this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Cake) blockData).getSlicesRemaining());
+                                block.getType(), ((Cake)blockData).getSlicesRemaining());
                     }
                     return;
                 case NOTE_BLOCK:
                     if (this.config.logNoteBlock)
                     {
                         this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), (int) ((NoteBlock) blockData).getRawNote());
+                                block.getType(), (int)((NoteBlock)blockData).getRawNote());
                     }
                     return;
                 case DIODE_BLOCK_OFF:
@@ -85,7 +84,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     if (this.config.logDiode)
                     {
                         this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Diode) blockData).getDelay());
+                                block.getType(), ((Diode)blockData).getDelay());
                     }
             }
         }

@@ -43,7 +43,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
             }
             else
             {
-                world = this.worldManager.getWorld((Long) sender.getAttribute(this.module, "curWorldId"));
+                world = this.worldManager.getWorld((Long)sender.getAttribute(this.module, "curWorldId"));
                 if (world == null)
                 {
                     world = sender.getWorld();
