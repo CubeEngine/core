@@ -137,7 +137,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
                     builder.select(allFields).from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().end().end());
 
             this.database.storeStatement(this.modelClass, "delete",
-                    builder.delete().from(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().limit(1).end().end());
+                    builder.deleteFrom(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().limit(1).end().end());
         }
         catch (SQLException ex)
         {

@@ -35,7 +35,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
             this.database.storeStatement(modelClass, "getallByUser",
                     builder.select().cols("worldID", "roleName").from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
             this.database.storeStatement(modelClass, "deleteByUserAndWorld",
-                    builder.delete().from(this.tableName).where().
+                    builder.deleteFrom(this.tableName).where().
                         field("userId").is(EQUAL).value().and().
                         field("worldId").is(EQUAL).value().end().end());
             this.database.storeStatement(modelClass, "rename",

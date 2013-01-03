@@ -97,14 +97,14 @@ public class MySQLQueryBuilder implements QueryBuilder
     }
 
     @Override
-    public DeleteBuilder delete()
+    public DeleteBuilder deleteFrom(String table)
     {
         if (this.deleteBuilder == null)
         {
             this.deleteBuilder = new MySQLDeleteBuilder(this);
         }
         this.init();
-        return this.deleteBuilder;
+        return this.deleteBuilder.from(table);
     }
 
     @Override

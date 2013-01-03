@@ -142,7 +142,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
                         field(this.t_dbKey).isEqual().value().end().end());
 
             this.database.storeStatement(this.modelClass, "delete",
-                    builder.delete().from(this.tableName).where().
+                    builder.deleteFrom(this.tableName).where().
                         field(this.f_dbKey).isEqual().value().and().
                         field(this.s_dbKey).isEqual().value().and().
                         field(this.t_dbKey).isEqual().value().limit(1).end().end());

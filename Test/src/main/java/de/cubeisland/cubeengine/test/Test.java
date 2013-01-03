@@ -45,7 +45,6 @@ public class Test extends Module
     protected TestConfig config;
     public static List<String> aListOfPlayers;
     public Basics basicsModule;
-    private BukkitCore core;
     private Timer timer;
 
     @Override
@@ -91,7 +90,7 @@ public class Test extends Module
         });
 
         this.getLogger().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(basicsModule));
-        this.getLogger().log(LogLevel.DEBUG, "BukkitCore-Plugin: {0}", String.valueOf(core));
+        this.getLogger().log(LogLevel.DEBUG, "BukkitCore-Plugin: {0}", String.valueOf(this.getCore()));
 
         timer = new Timer("keepAliveTimer");
         timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
@@ -171,80 +170,6 @@ public class Test extends Module
         model.orderPrice = 100;
         model.customer = "Paul";
         this.manager.update(model);
-
-        database.query(
-            database.getQueryBuilder()
-                .select()
-                .beginFunction("AVG")
-                .field("OrderPrice")
-                .endFunction()
-                .as("OrderAverage")
-                .from("orders")
-                .end()
-                .end());
-
-        database.query(
-            database.getQueryBuilder()
-                .select().cols("id", "Customer")
-                .rawSQL(",")
-                .beginFunction("SUM")
-                .field("OrderPrice")
-                .endFunction()
-                .as("OrderAverage")
-                .from("orders")
-                .groupBy("Customer")
-                .having()
-                .beginFunction("sum")
-                .field("OrderPrice")
-                .endFunction()
-                .is(GREATER)
-                .value(100)
-                .end()
-                .end());
-
-        //SELECT ROUND(AVG(*)) FROM `table` WHERE `dob_year`>1920
-        database.getQueryBuilder()
-            .select()
-            .beginFunction("round")
-            .beginFunction("avg")
-            .wildcard()
-            .endFunction()
-            .endFunction()
-            .from("table")
-            .beginFunction("where")
-            .field("dob_year")
-            .is(GREATER)
-            .value("1920")
-            .endFunction()
-            .end()
-            .end();
-
-        //SELECT ProductName, ROUND(UnitPrice,0) as UnitPrice FROM Products
-        database.getQueryBuilder()
-            .select()
-            .cols("ProductName")
-            .rawSQL(",")
-            .beginFunction("round")
-            .field("UnitPrice")
-            .rawSQL(",").value("0")
-            .endFunction()
-            .as("UnitPrice")
-            .from("products")
-            .end()
-            .end();
-
-        //SELECT LCASE(LastName) as LastName,FirstName FROM Persons
-        database.getQueryBuilder()
-            .select()
-            .beginFunction("lcase")
-            .field("LastName")
-            .endFunction()
-            .as("LastName")
-            .rawSQL(",")
-            .field("FirstName")
-            .from("Persons")
-            .end()
-            .end();
     }
 
     public void testl18n()
@@ -296,7 +221,7 @@ public class Test extends Module
 
         public KeepAliveTimer()
         {
-            this.mojangServer = ((CraftServer)core.getServer()).getHandle();
+            this.mojangServer = ((CraftServer)((BukkitCore)getCore()).getServer()).getHandle();
             this.random = new Random();
         }
 

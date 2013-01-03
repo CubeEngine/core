@@ -37,7 +37,7 @@ public interface QueryBuilder
      *
      * @return the DeleteBuilder
      */
-    public DeleteBuilder delete();
+    public DeleteBuilder deleteFrom(String table);
 
     /**
      * STARTS a CREATE TABLE query

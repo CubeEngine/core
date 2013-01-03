@@ -29,7 +29,7 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
             this.database.storeStatement(modelClass, "getallByUser",
                     builder.select().cols("worldId", "key", "value").from(this.tableName).where().field("userId").isEqual().value().end().end());
             this.database.storeStatement(modelClass, "deleteAllByUser",
-                    builder.delete().from(this.tableName).where().field("userId").isEqual().value().end().end());
+                    builder.deleteFrom(this.tableName).where().field("userId").isEqual().value().end().end());
         }
         catch (SQLException e)
         {

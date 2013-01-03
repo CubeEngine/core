@@ -157,7 +157,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
 
             this.database.storeStatement(this.modelClass, "update", builder.update(this.tableName).set(fields).where().field(this.dbKey).isEqual().value().end().end());
 
-            this.database.storeStatement(this.modelClass, "delete", builder.delete().from(this.tableName).where().field(this.dbKey).isEqual().value().limit(1).end().end());
+            this.database.storeStatement(this.modelClass, "delete", builder.deleteFrom(this.tableName).where().field(this.dbKey).isEqual().value().limit(1).end().end());
         }
         catch (SQLException ex)
         {
