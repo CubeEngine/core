@@ -1,13 +1,15 @@
 package de.cubeisland.cubeengine.conomy.currency;
 
+import com.google.common.collect.Lists;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConfig;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class Currency
 {
-    private LinkedHashSet<SubCurrency> sub = new LinkedHashSet<SubCurrency>();
+
+    private LinkedList<SubCurrency> sub = new LinkedList<SubCurrency>();
     private String formatlong;
     private String formatshort;
     private String name;
@@ -40,5 +42,25 @@ public class Currency
     public Long getDefaultValue()
     {//Default value in config
         return 42L; //TODO
+    }
+
+    public String formatLong(Long balance)
+    {
+        String format = this.formatlong;
+        for (SubCurrency subcur : Lists.reverse(this.sub))
+        {
+            Long subBalance = balance % subcur.getValueForParent();
+            if (subcur.equals(this.sub.getFirst()))
+            {
+                format = format.replace("%" + subcur.getSymbol(), balance.toString());
+            }
+            else
+            {
+                format = format.replace("%" + subcur.getSymbol(), subBalance.toString());
+            }
+            balance -= balance % subcur.getValueForParent();
+            balance /= subcur.getValueForParent();
+        }
+        return format;
     }
 }

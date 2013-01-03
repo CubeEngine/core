@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AccountsManager extends SingleKeyStorage<Long, Account>
-{
+{//TODO custom queries for money top
     private static final int REVISION = 1;
     private THashMap<Currency, THashMap<String, Account>> bankaccounts = new THashMap<Currency, THashMap<String, Account>>();
     private THashMap<Currency, TLongObjectHashMap<Account>> useraccounts = new THashMap<Currency, TLongObjectHashMap<Account>>();

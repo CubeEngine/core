@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.conomy;
 
 import de.cubeisland.cubeengine.conomy.account.AccountsManager;
+import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
 import de.cubeisland.cubeengine.conomy.config.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfigurationConverter;
@@ -18,6 +19,9 @@ public class Conomy extends Module
     private ConomyConfiguration config;
     private AccountsManager accountsManager;
     private CurrencyManager currencyManager;
+    
+    //TODO Roles support (e.g. allow all user of a role to access a bank)
+    //TODO logfile for all transactions
 
     public Conomy()
     {
@@ -32,6 +36,7 @@ public class Conomy extends Module
         this.currencyManager.load();
         this.accountsManager = new AccountsManager(this);
         this.registerListener(new ConomyListener(this));
+        this.registerCommand(new MoneyCommand(this));
     }
 
     public AccountsManager getAccountsManager()

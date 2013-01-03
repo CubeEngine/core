@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.core.user.User;
 
 @SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true)
 public class Account implements Model<Long>
-{
+{//TODO hide account (dont show unless forced)
     @Attribute(type = AttrType.INT, unsigned = true)
     public long key = -1;
     @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
@@ -82,7 +82,7 @@ public class Account implements Model<Long>
      */
     public long balance()
     {
-        return this.balance();
+        return this.value;
     }
 
     /**
