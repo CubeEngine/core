@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 public class AccountsManager extends SingleKeyStorage<Long, Account>
 {//TODO custom queries for money top
@@ -45,6 +46,10 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
             this.database.storeStatement(modelClass, "getByUserID",
                     builder.select().cols(allFields).from(this.tableName).
                     where().field("user_id").isEqual().value().end().end());
+            this.database.storeStatement(modelClass, "getTopBalance",
+                    builder.select().cols(allFields).from(this.tableName).
+                    where().field("currencyName").isEqual().value().
+                    orderBy("value").desc().limit().offset().end().end());
         }
         catch (SQLException e)
         {
@@ -135,5 +140,38 @@ public class AccountsManager extends SingleKeyStorage<Long, Account>
             }
         }
         return result;
+    }
+
+    public Collection<Account> getTopAccounts(Currency currency, int fromRank, int toRank)
+    {
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName(), toRank - fromRank, fromRank-1);
+            LinkedList<Account> list = new LinkedList<Account>();
+            while (resulsSet.next())
+            {
+                Account loadedModel = this.modelClass.newInstance();
+                for (Field field : this.fieldNames.keySet())
+                {
+                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
+                }
+                loadedModel.setCurrency(this.currencyManager);
+                list.add(loadedModel);
+            }
+            return list;
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while reading from Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+    }
+
+    public Collection<Account> getTopAccounts(int fromRank, int toRank)
+    {
+        return this.getTopAccounts(this.getMainCurrency(), fromRank, toRank);
     }
 }

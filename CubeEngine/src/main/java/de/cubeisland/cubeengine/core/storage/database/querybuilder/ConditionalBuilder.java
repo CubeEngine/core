@@ -18,6 +18,13 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends
      * @return fluent interface
      */
     public This limit(int n);
+    
+    /**
+     * Adds LIMIT ?
+     *
+     * @return fluent interface
+     */
+    public This limit();
 
     /**
      * Sets the offset.
@@ -26,6 +33,13 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends
      * @return fluent interface
      */
     public This offset(int n);
+    
+    /**
+     * Adds OFFSET ?
+     *
+     * @return fluent interface
+     */
+    public This offset();
 
     /**
      * Starts a WHERE condition.

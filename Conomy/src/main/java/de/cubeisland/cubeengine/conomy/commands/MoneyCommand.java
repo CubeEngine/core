@@ -13,7 +13,6 @@ import java.util.Collection;
 
 public class MoneyCommand extends ContainerCommand
 {
-    //TODO multicurrencies
     private Conomy module;
 
     public MoneyCommand(Conomy module)
@@ -21,11 +20,10 @@ public class MoneyCommand extends ContainerCommand
         super(module, "money", "Manages your money.");
         this.module = module;
     }
-//TODO different main currencies in different worlds?
 
     @Alias(names = "money")
     @Command(desc = "Shows your balance",
-             usage = "[player] [in <currency>]", flags =
+             usage = "[player] [in <currency>]|[-a]", flags =
     {
         @Flag(longName = "all", name = "a")
     })
@@ -78,11 +76,59 @@ public class MoneyCommand extends ContainerCommand
     {
         "toplist", "balancetop"
     })
-    @Command(desc = "Shows the players with the highest balance.", usage = "[[fromRank]-ToRank]")
+    @Command(desc = "Shows the players with the highest balance.", usage = "[[fromRank]-ToRank] [in <currency>]")
     // money top 5 shows rank 0 to 5
     // money top 50-60 shows rank 50 to 60
     public void top(CommandContext context)
     {
+        int fromRank = 1;
+        int toRank = 10;
+        if (context.hasIndexed(0))
+        {
+            try
+            {
+                String range = context.getString(0);
+                if (range.contains("-"))
+                {
+                    fromRank = Integer.parseInt(range.substring(0, range.indexOf("-")));
+                    range = range.substring(range.indexOf("-") + 1);
+                }
+                toRank = Integer.parseInt(range);
+            }
+            catch (NumberFormatException e)
+            {
+                context.sendMessage("conomy", "&cInvalid rank!");
+                return;
+            }
+        }
+        Collection<Account> accounts;
+        if (context.hasNamed("in"))
+        {
+            Currency currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
+            if (currency == null)
+            {
+                context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
+                return;
+            }
+            accounts = this.module.getAccountsManager().getTopAccounts(currency, fromRank, toRank);
+        }
+        else
+        {
+            accounts = this.module.getAccountsManager().getTopAccounts(fromRank, toRank);
+        }
+        int i = fromRank;
+        if (fromRank == 1)
+        {
+            context.sendMessage("conomy", "&aTop Balance &f(&6%d&f)", accounts.size());
+        }
+        else
+        {
+            context.sendMessage("conomy", "&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + accounts.size());
+        }
+        for (Account account : accounts)
+        {
+            context.sendMessage("conomy", "&a%d &f- &2%s&f: &6%s", i++, this.module.getUserManager().getUser(account.user_id).getName(), account.currency.formatLong(account.balance()));
+        }
     }
 
     //TODO flag for banks

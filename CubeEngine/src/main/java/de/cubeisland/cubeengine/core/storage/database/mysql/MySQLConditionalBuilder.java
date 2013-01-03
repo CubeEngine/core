@@ -7,7 +7,7 @@ import org.apache.commons.lang.Validate;
  * Abstract MYSQLlQueryBuilder used by other builders.
  */
 public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
-    extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
+        extends MySQLComponentBuilder<This> implements ConditionalBuilder<This>
 {
     protected MySQLConditionalBuilder(MySQLQueryBuilder parent)
     {
@@ -25,7 +25,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
         {
             this.query.append(',').append(this.database.prepareFieldName(cols[i]));
         }
-        return (This)this;
+        return (This) this;
     }
 
     @Override
@@ -33,7 +33,15 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     public This limit(int n)
     {
         this.query.append(" LIMIT ").append(n);
-        return (This)this;
+        return (This) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public This limit()
+    {
+        this.query.append(" LIMIT ?");
+        return (This) this;
     }
 
     @Override
@@ -41,7 +49,15 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     public This offset(int n)
     {
         this.query.append(" OFFSET ").append(n);
-        return (This)this;
+        return (This) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public This offset()
+    {
+        this.query.append(" OFFSET ?");
+        return (This) this;
     }
 
     @Override
@@ -49,7 +65,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     public This where()
     {
         this.query.append(" WHERE ");
-        return (This)this;
+        return (This) this;
     }
 
     @Override
@@ -57,7 +73,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     public This between()
     {
         this.query.append(" BETWEEN ? AND ?");
-        return (This)this;
+        return (This) this;
     }
 
     @Override
@@ -65,7 +81,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     public This asc()
     {
         this.query.append(" ASC ");
-        return (This)this;
+        return (This) this;
     }
 
     @Override
@@ -73,6 +89,6 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     public This desc()
     {
         this.query.append(" DESC ");
-        return (This)this;
+        return (This) this;
     }
 }
