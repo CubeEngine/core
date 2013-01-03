@@ -1,30 +1,25 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.LoadFrom;
-import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -38,13 +33,20 @@ public class ModuleLoader
     private final Core core;
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
-    protected final String infoFileName = "module.yml";
+    protected final String infoFileName;
+    private final File tempFolder;
 
-    protected ModuleLoader(Core core)
+    ModuleLoader(Core core)
     {
         this.core = core;
         this.libClassLoader = new LibraryClassLoader(this.getClass().getClassLoader());
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
+        this.infoFileName = "module.yml";
+        this.tempFolder = new File(core.getFileManager().getTempDir(), "modules");
+        if (!this.tempFolder.exists() && !this.tempFolder.mkdir())
+        {
+            throw new RuntimeException("Failed to create a temporary folder for the modules!");
+        }
     }
 
     /**
@@ -86,7 +88,12 @@ public class ModuleLoader
 
         try
         {
-            ModuleClassLoader classLoader = new ModuleClassLoader(this, info, getClass().getClassLoader());
+            File tempFile = new File(this.tempFolder, System.nanoTime() + "_" + info.getFile().getName());
+            tempFile.delete();
+            tempFile.createNewFile();
+            FileManager.copyFile(info.getFile(), tempFile);
+
+            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, getClass().getClassLoader());
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
 
@@ -136,22 +143,14 @@ public class ModuleLoader
      *
      * @param module the module
      */
-    public void unloadModule(Module module)
+    void unloadModule(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
 
         ModuleClassLoader classLoader = this.classLoaders.remove(module.getId());
         if (classLoader != null)
         {
-            Class clazz;
-            Iterator<Map.Entry<String, Class>> iter = classLoader.getClassMap().entrySet().iterator();
-            while (iter.hasNext())
-            {
-                clazz = iter.next().getValue();
-                Convert.unregisterConverter(clazz);
-                ArgumentReader.unregisterReader(clazz);
-                iter.remove();
-            }
+            classLoader.shutdown();
         }
     }
 
@@ -185,7 +184,7 @@ public class ModuleLoader
             InputStream configStream = jarFile.getInputStream(entry);
             try
             {
-                info = new ModuleInfo(file, Configuration.load(ModuleConfiguration.class, configStream));
+                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, configStream));
             }
             finally
             {
@@ -243,7 +242,7 @@ public class ModuleLoader
         }
 
         Set<String> alreadyChecked = new THashSet<String>(this.classLoaders.size() / 2);
-        alreadyChecked.add(info.getName());
+        alreadyChecked.add(info.getId());
 
         for (String dep : info.getSoftDependencies().keySet())
         {
@@ -344,5 +343,11 @@ public class ModuleLoader
         {
             return null;
         }
+    }
+
+    void shutdown()
+    {
+        this.classLoaders.clear();
+        this.libClassLoader.shutdown();
     }
 }

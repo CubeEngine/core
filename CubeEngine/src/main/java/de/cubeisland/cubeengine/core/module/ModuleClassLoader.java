@@ -1,33 +1,36 @@
 package de.cubeisland.cubeengine.core.module;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
+
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
 
 /**
  * This is the ClassLoader used by modules
  */
 public class ModuleClassLoader extends URLClassLoader
 {
-    private final ModuleLoader moduleLoader;
-    private final Map<String, Class> classMap;
+    private ModuleLoader moduleLoader;
+    private Map<String, Class> classMap;
     private ModuleInfo moduleInfo;
 
-    public ModuleClassLoader(ModuleLoader moduleLoader, ModuleInfo info, ClassLoader parent) throws MalformedURLException
+    public ModuleClassLoader(ModuleLoader moduleLoader, URL jarURL, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {
-        super(new URL[] {
-                info.getFile().toURI().toURL()
-            }, parent);
+        super(new URL[] {jarURL}, parent);
         this.moduleLoader = moduleLoader;
         this.classMap = new ConcurrentHashMap<String, Class>();
         this.moduleInfo = info;
-    }
-
-    public ModuleInfo getModuleInfo()
-    {
-        return this.moduleInfo;
     }
 
     @Override
@@ -68,11 +71,6 @@ public class ModuleClassLoader extends URLClassLoader
         return clazz;
     }
 
-    public Map<String, Class> getClassMap()
-    {
-        return this.classMap;
-    }
-
     // This method got overridden to first search through the current ClassLoader
     @Override
     public URL getResource(String name)
@@ -84,5 +82,31 @@ public class ModuleClassLoader extends URLClassLoader
         }
 
         return url;
+    }
+
+    void shutdown()
+    {
+        this.moduleInfo = null;
+        this.moduleLoader = null;
+        Class clazz;
+        final Iterator<Map.Entry<String, Class>> iter = this.classMap.entrySet().iterator();
+        while (iter.hasNext())
+        {
+            clazz = iter.next().getValue();
+            Convert.unregisterConverter(clazz);
+            ArgumentReader.unregisterReader(clazz);
+            iter.remove();
+        }
+
+        try
+        {
+            Method method = this.getClass().getMethod("close");
+            method.setAccessible(true);
+            method.invoke(this);
+        }
+        catch (Exception ignored)
+        {
+            CubeEngine.getLogger().log(WARNING, "Failed to close the class loader of the module ''{0}''", this.moduleInfo.getName());
+        }
     }
 }

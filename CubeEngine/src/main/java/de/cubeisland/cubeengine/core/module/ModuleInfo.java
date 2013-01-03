@@ -45,7 +45,7 @@ public final class ModuleInfo
         this.loadAfter = this.pluginDependencies;
     }
 
-    public ModuleInfo(File file, ModuleConfiguration config)
+    public ModuleInfo(File file, ModuleConfig config)
     {
         Validate.notNull(config, "The module configuration failed to loaded!");
         Validate.notNull(config.name, "The module doesn't seem to have a name.");
@@ -123,7 +123,7 @@ public final class ModuleInfo
      *
      * @return the module file
      */
-    public File getFile()
+    File getFile()
     {
         return this.file;
     }

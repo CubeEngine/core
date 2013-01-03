@@ -10,7 +10,7 @@ import java.util.Set;
  * This configuration is used to parse the module.yml file.
  */
 @Codec("yml")
-public class ModuleConfiguration extends Configuration
+public class ModuleConfig extends Configuration
 {
     @Option("main")
     public String main;

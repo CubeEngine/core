@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.NOTICE;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -192,6 +193,52 @@ public class FileManager implements Cleanable
         if (!file.delete())
         {
             throw new IOException("File to delete the file '" + file.getAbsolutePath() + "'");
+        }
+    }
+
+    public static boolean copyFile(File source, File target) throws FileNotFoundException
+    {
+        final InputStream is = new FileInputStream(source);
+        final OutputStream os = new FileOutputStream(target);
+
+        try
+        {
+            copyFile(is, os);
+            return true;
+        }
+        catch (IOException ignored)
+        {}
+        finally
+        {
+            try
+            {
+                is.close();
+            }
+            catch (IOException e)
+            {
+                LOGGER.log(WARNING, "Failed to close a file stream!", e);
+            }
+
+            try
+            {
+                os.close();
+            }
+            catch (IOException e)
+            {
+                LOGGER.log(WARNING, "Failed to close a file stream!", e);
+            }
+        }
+        return false;
+    }
+
+    public static void copyFile(InputStream is, OutputStream os) throws IOException
+    {
+        final byte[] buffer = new byte[1024 * 4];
+        int bytesRead;
+
+        while ((bytesRead = is.read(buffer, 0, buffer.length)) > 0)
+        {
+            os.write(buffer, 0, bytesRead);
         }
     }
 

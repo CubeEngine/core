@@ -22,13 +22,7 @@ import org.bukkit.plugin.PluginManager;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -440,11 +434,6 @@ public class ModuleManager implements Cleanable
      */
     public void unloadModule(Module module)
     {
-        if (!module.isEnabled() && !this.modules.containsValue(module))
-        {
-            return;
-        }
-
         Set<Module> disable = new HashSet<Module>();
         for (Module m : this.modules.values())
         {
@@ -481,6 +470,8 @@ public class ModuleManager implements Cleanable
             }
         }
 
+        module.getClassLoader().shutdown();
+
         System.gc();
         System.gc();
     }
@@ -497,11 +488,27 @@ public class ModuleManager implements Cleanable
         BukkitUtils.reloadHelpMap();
     }
 
+    /**
+     * This method disables all modules
+     */
+    public void unloadModules()
+    {
+        this.disableModules();
+        Iterator<Map.Entry<String, Module>> iter = this.modules.entrySet().iterator();
+        while (iter.hasNext())
+        {
+            this.unloadModule(iter.next().getValue());
+        }
+        this.modules.clear();
+    }
+
     @Override
     public void clean()
     {
-        this.disableModules();
+        this.unloadModules();
         this.modules.clear();
+        this.moduleInfos.clear();
+        this.loader.shutdown();
     }
 
     /**
