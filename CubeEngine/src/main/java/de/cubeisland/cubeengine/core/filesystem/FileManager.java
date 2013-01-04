@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.NOTICE;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
 
@@ -153,6 +154,7 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
+        LOGGER.log(INFO, "Clearing the temporary folder ''{0}''...", this.tempDir.getAbsolutePath());
         for (File file : this.tempDir.listFiles())
         {
             try
@@ -164,6 +166,7 @@ public class FileManager implements Cleanable
                 LOGGER.log(NOTICE, "Failed to remove the file ''{0}''", file.getAbsolutePath());
             }
         }
+        LOGGER.log(INFO, "Temporary folder cleared!");
     }
 
     public static void deleteRecursive(File file) throws IOException
