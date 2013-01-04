@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
@@ -13,25 +12,13 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 
 public class FlyCommand
 {
-    UserManager um;
-    FlyConfiguration config;
-
-    public FlyCommand(Fly module)
-    {
-        this.um = module.getUserManager();
-        this.config = module.getConfiguration();
-    }
-
-    @Command(desc = "Lets you fly away", max = 1, params = {
-        @Param(names = "player", type = User.class)
-    }, usage = "[flyspeed] [player <player>]")
+    @Command(
+        desc = "Lets you fly away", max = 1,
+        params = @Param(names = {"player", "p"}, type = User.class),
+        usage = "[flyspeed] [player <player>]"
+    )
     public void fly(CommandContext context)
     {
-        if (!this.config.flycommand)
-        {
-            denyAccess(context, "fly", "The fly-command is disabled in the configuration!");
-            return;
-        }
         User sender = context.getSenderAsUser();
         User user = sender;
         boolean other = false;
@@ -43,14 +30,11 @@ public class FlyCommand
                 other = true;
             }
         }
-        else
-        { // Sender is console and no player given!
-            if (sender == null)
-            {
-                context.sendMessage("fly", "&6ProTip: &eIf your server flies away it will go offline.");
-                context.sendMessage("fly", "So... Stopping the Server in &c3..");
-                invalidUsage(context);
-            }
+        else if (sender == null) // Sender is console and no player given!
+        {
+            context.sendMessage("fly", "&6ProTip: &eIf your server flies away it will go offline.");
+            context.sendMessage("fly", "So... Stopping the Server in &c3..");
+            invalidUsage(context);
         }
         if (user == null)
         {
@@ -68,21 +52,7 @@ public class FlyCommand
                 denyAccess(context, "fly", "&cYou are not allowed to change the fly-mode of other user!");
             }
         }
-        else
-        {
-            if (!FlyPerm.COMMAND_FLY_SELF.isAuthorized(context.getSender())) // /fly [speed]
-            {
-                context.sendMessage("core", "You dont have permission to use this Command!");
-                user.setAllowFlight(false); //Disable when player is flying
-                return;
-            }
-        }
-        if (!FlyPerm.FLY_CANFLY.isAuthorized(user)) // if user can get his flymode changed
-        {
-            denyAccess(context, "The User %s is not allowed to fly!", user.getName());
-            return;
-        }
-        FlyStartEvent event = new FlyStartEvent(CubeEngine.getCore(), user);
+        FlyStartEvent event = new FlyStartEvent(context.getCore(), user);
         if (event.isCancelled())
         {
             user.sendMessage("fly", "You are not allowed to fly now!");
@@ -102,13 +72,10 @@ public class FlyCommand
                 }
                 else
                 {
+                    user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
                     if (speed > 9000)
                     {
                         user.sendMessage("fly", "&cIt's over 9000!");
-                    }
-                    else
-                    {
-                        user.sendMessage("fly", "FlySpeed has to be a Number between 0 and 10!");
                     }
                 }
             }

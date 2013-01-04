@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 @Codec("yml")
 @DefaultConfig
-public class FlyConfiguration extends Configuration
+public class FlyConfig extends Configuration
 {
     @Option("enablemode.flycommand")
     public boolean flycommand = true; //if false fly command does not work

@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
-import de.cubeisland.cubeengine.fly.database.FlyModel;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,8 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -33,33 +30,6 @@ public class FlyListener implements Listener
     }
 
     @EventHandler
-    public void playerJoin(final PlayerJoinEvent event)
-    {
-        User user = usermanager.getExactUser(event.getPlayer());
-        if (fly.getFlyManager().getFlyModel(user).flying)
-        {
-            user.setAllowFlight(true);
-            user.setFlying(true);
-        }
-    }
-
-    @EventHandler
-    public void playerQuit(final PlayerQuitEvent event)
-    {
-        User user = usermanager.getExactUser(event.getPlayer());
-        if (user.isFlying())
-        {
-            FlyModel model = fly.getFlyManager().getFlyModel(user);
-            model.flying = true;
-            fly.getFlyManager().merge(model);
-        }
-        else
-        {
-            fly.getFlyManager().deleteByKey(user.getKey());
-        }
-    }
-
-    @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
@@ -75,11 +45,6 @@ public class FlyListener implements Listener
         if (user == null)//User does not exist
         {
             return;
-        }
-        // TODO other perms
-        if (!fly.getConfiguration().flyfeather)
-        {
-            user.sendMessage("fly", "Feather-flying is disabled in the configuration!");
         }
 
         if (!FlyPerm.FLY_FEATHER.isAuthorized(player))
