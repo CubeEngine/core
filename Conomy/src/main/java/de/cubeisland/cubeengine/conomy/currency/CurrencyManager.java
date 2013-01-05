@@ -46,6 +46,6 @@ public class CurrencyManager
 
     public boolean canConvert(Currency currency1, Currency currency2)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return true; // TODO implement me
     }
 }

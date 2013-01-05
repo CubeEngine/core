@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.conomy.account;
 
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
@@ -27,6 +28,8 @@ public class Account implements Model<Long>
     public String currencyName;
     @Attribute(type = AttrType.INT, unsigned = true)
     public long value = 0;
+    @Attribute(type = AttrType.BOOLEAN)
+    public boolean positive = true;
     public Currency currency;
 
     public Account()
@@ -73,7 +76,7 @@ public class Account implements Model<Long>
     {
         if (this.currency.canConvert(source.currency))
         {
-            source.trancaction(amount);
+            source.trancaction(-amount);
             this.trancaction(amount);
             return this.value;
         }
@@ -143,8 +146,17 @@ public class Account implements Model<Long>
         this.key = key;
     }
 
-    void setCurrency(CurrencyManager currencyManager)
+    void init(CurrencyManager currencyManager)
     {
         this.currency = currencyManager.getCurrencyByName(currencyName);
+        if (!this.positive)
+        {
+            this.value *= -1;
+        }
+    }
+
+    public User getUser()
+    {
+        return this.user_id == null ? null : CubeEngine.getUserManager().getUser(this.user_id);
     }
 }
