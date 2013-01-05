@@ -23,7 +23,7 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
     }
 
-    @Alias(names = "money")
+    @Alias(names = "money")//TODO this does not WORK  :( fix it @Quick_Wango
     @Command(desc = "Shows your balance",
              usage = "[player] [in <currency>]|[-a]", flags =
     {
@@ -132,13 +132,18 @@ public class MoneyCommand extends ContainerCommand
 
     @Alias(names =
     {
-        "toplist", "balancetop"
+        "pay"
     })
-    @Command(desc = "Transfer the given amount to another account.",
+    @Command(names =
+    {
+        "pay", "give"
+    },
+             desc = "Transfer the given amount to another account.",
              usage = "<player> [as <player>] <amount> [-bank]",
              params =
     {
-        @Param(names = "as", type = User.class)
+        @Param(names = "as", type = User.class),
+        @Param(names = "in", type = String.class)
     },
              flags =
     {
@@ -148,7 +153,8 @@ public class MoneyCommand extends ContainerCommand
              min = 2, max = 2)
     public void pay(CommandContext context)
     {
-
+        //TODO later try to autodetect currency if not given
+        //if containing Symbols of only one currency
         Currency currency;
         if (context.hasNamed("in"))
         {
@@ -191,10 +197,12 @@ public class MoneyCommand extends ContainerCommand
             if (source == null)
             {
                 context.sendMessage("conomy", "&cCannot find user-account for &2%s&c!", sender.getName());
+                return;
             }
             if (target == null)
             {
                 context.sendMessage("conomy", "&cCannot find bank-account &6%s&c!", context.getString(0));
+                return;
             }
             if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
             {
@@ -219,7 +227,12 @@ public class MoneyCommand extends ContainerCommand
             }
             Account source = this.module.getAccountsManager().getAccount(sender, currency);
             Account target = this.module.getAccountsManager().getAccount(user, currency);
-
+            if (source == null || target == null)
+            {
+                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                        source == null ? sender.getName() : user.getName(), currency.getName());
+                return;
+            }
             if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
             {
                 context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", currency.formatLong(amount), sender.getName(), user.getName());

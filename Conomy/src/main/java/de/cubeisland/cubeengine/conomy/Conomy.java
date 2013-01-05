@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.conomy;
 
 import de.cubeisland.cubeengine.conomy.account.AccountManager;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
+import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
 import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
 import de.cubeisland.cubeengine.conomy.config.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
@@ -39,6 +40,7 @@ public class Conomy extends Module
         this.accountsManager = new AccountManager(this); // Needs cManager / aStorage
         this.registerListener(new ConomyListener(this));
         this.registerCommand(new MoneyCommand(this));
+        this.registerCommand(new EcoCommands(this));
     }
 
     public AccountManager getAccountsManager()
