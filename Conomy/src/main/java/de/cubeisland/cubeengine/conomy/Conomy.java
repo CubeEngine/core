@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.conomy;
 
-import de.cubeisland.cubeengine.conomy.account.AccountsManager;
+import de.cubeisland.cubeengine.conomy.account.AccountManager;
+import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
 import de.cubeisland.cubeengine.conomy.config.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
@@ -17,12 +18,12 @@ public class Conomy extends Module
     public static boolean debugMode = false;
     protected File dataFolder;
     private ConomyConfiguration config;
-    private AccountsManager accountsManager;
+    private AccountManager accountsManager;
+    private AccountStorage accountsStorage;
     private CurrencyManager currencyManager;
-    
+
     //TODO Roles support (e.g. allow all user of a role to access a bank)
     //TODO logfile for all transactions
-
     public Conomy()
     {
         Convert.registerConverter(SubCurrencyConfig.class, new SubCurrencyConverter());
@@ -34,12 +35,13 @@ public class Conomy extends Module
     {
         this.currencyManager = new CurrencyManager(this, config);
         this.currencyManager.load();
-        this.accountsManager = new AccountsManager(this);
+        this.accountsStorage = new AccountStorage(this.getDatabase());
+        this.accountsManager = new AccountManager(this); // Needs cManager / aStorage
         this.registerListener(new ConomyListener(this));
         this.registerCommand(new MoneyCommand(this));
     }
 
-    public AccountsManager getAccountsManager()
+    public AccountManager getAccountsManager()
     {
         return accountsManager;
     }
@@ -48,4 +50,10 @@ public class Conomy extends Module
     {
         return currencyManager;
     }
+
+    public AccountStorage getAccountsStorage()
+    {
+        return accountsStorage;
+    }
+    
 }

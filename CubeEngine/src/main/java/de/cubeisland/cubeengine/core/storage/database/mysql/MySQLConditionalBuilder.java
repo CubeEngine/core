@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ConditionalBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -13,14 +14,23 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     {
         super(parent);
     }
+    private boolean orderBy = false;
 
     @Override
     @SuppressWarnings("unchecked")
     public This orderBy(String... cols)
     {
         Validate.notEmpty(cols, "No cols specified!");
-
-        this.query.append(" ORDER BY ").append(this.database.prepareFieldName(cols[0]));
+        if (!orderBy)
+        {
+            orderBy = true;
+            this.query.append(" ORDER BY ");
+        }
+        else
+        {
+            this.query.append(",");
+        }
+        this.query.append(this.database.prepareFieldName(cols[0]));
         for (int i = 1; i < cols.length; ++i)
         {
             this.query.append(',').append(this.database.prepareFieldName(cols[i]));
@@ -90,5 +100,12 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     {
         this.query.append(" DESC ");
         return (This) this;
+    }
+
+    @Override
+    public QueryBuilder end()
+    {
+        this.orderBy = false;
+        return super.end();
     }
 }

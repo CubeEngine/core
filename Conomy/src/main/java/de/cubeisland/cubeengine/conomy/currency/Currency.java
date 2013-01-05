@@ -55,6 +55,12 @@ public class Currency
 
     public String formatLong(Long balance)
     {
+        boolean neg = false;
+        if (balance < 0)
+        {
+            balance *= -1;
+            neg = true;
+        }
         String format = this.formatlong;
         for (SubCurrency subcur : Lists.reverse(this.sub))
         {
@@ -70,6 +76,7 @@ public class Currency
             balance -= balance % subcur.getValueForParent();
             balance /= subcur.getValueForParent();
         }
+        format = format.replace("%-", neg ? "-" : "");
         return format;
     }
     String NUMBERSEPARATOR = ",";
@@ -115,7 +122,7 @@ public class Currency
                         {
                             return null;
                         }
-                        if (read.length() == 1&& !first)
+                        if (read.length() == 1 && !first)
                         {
                             read += "0";
                         }

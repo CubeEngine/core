@@ -1,96 +1,80 @@
 package de.cubeisland.cubeengine.conomy.account;
 
+import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.Model;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.Index;
-import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
-import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true,
-                 indices =
-{
-    @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key")
-})
-public class Account implements Model<Long>
+public class Account
 {//TODO hide account (dont show unless forced)
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long key = -1;
-    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    public Long user_id;
-    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
-    public String name;
-    @Attribute(type = AttrType.VARCHAR, length = 64)
-    public String currencyName;
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long value = 0;
-    @Attribute(type = AttrType.BOOLEAN)
-    public boolean positive = true;
-    public Currency currency;
+    private User user;
+    private AccountModel model;
+    private final Currency currency;
+    private final AccountManager manager;
 
-    public Account()
+    public Account(AccountManager manager, Currency currency, AccountModel model)
     {
+        this.manager = manager;
+        this.currency = currency;
+        this.model = model;
+        this.user = model.user_id == null ? null : CubeEngine.getUserManager().getUser(model.user_id);
     }
 
-    public Account(Currency currency, User user)
+    public User getUser()
     {
-        this.user_id = user.key;
-        this.currency = currency;
-        this.currencyName = currency.getName();
-        this.name = null;
-        this.value = currency.getDefaultValue();
+        return user;
     }
 
-    public Account(Currency currency, String name)
+    public boolean isUserAccount()
     {
-        this.currency = currency;
-        this.currencyName = currency.getName();
-        this.user_id = null;
-        this.name = name;
+        return user != null;
+    }
+
+    public long getBalance()
+    {
+        return this.model.value;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
+    private void updateModel()
+    {
+        this.manager.getStorage().update(this.model);
     }
 
     /**
-     * Adds given amount of money to this account.
+     * Transfers given amount of money from the source-account to this one.
      *
-     * @param amount the amount to give (can be negative)
-     * @return the new amount
-     */
-    public long trancaction(long amount)
-    {
-        this.value += amount;
-        return this.value;
-    }
-
-    /**
-     * Transfers given amount of money from the source-Account to this one
-     *
-     * @param source the source-Account
-     * @param amount the amount to transfer (can be negative)
-     * @return
+     * @param source the source-account (can be null)
+     * @param amount the amount to transfer (can be negative) in this accounts
+     * currency
+     * @throws IllegalArgumentException when currencies are not convertible
+     * @return the new balance
      */
     public long transaction(Account source, long amount) throws IllegalArgumentException
     {
-        if (this.currency.canConvert(source.currency))
+        if (source != null)
         {
-            source.trancaction(-amount);
-            this.trancaction(amount);
-            return this.value;
+            if (!source.currency.equals(this.currency))
+            {
+                if (!this.currency.canConvert(source.currency))
+                {
+                    throw new IllegalArgumentException("Cannot convert " + source.currency.getName() + " into " + this.currency.getName());
+                }
+                //TODO convert
+            }
+            else
+            {
+                source.model.value -= amount;
+            }
+            source.updateModel();
         }
-        throw new IllegalArgumentException("Cannot convert " + source.currencyName + " into " + this.currencyName);
-    }
-
-    /**
-     * Returns the current balance.
-     *
-     * @return the balance
-     */
-    public long balance()
-    {
-        return this.value;
+        this.model.value += amount;
+        this.updateModel();
+        return this.model.value;
     }
 
     /**
@@ -98,7 +82,8 @@ public class Account implements Model<Long>
      */
     public void resetToDefault()
     {
-        this.value = this.currency.getDefaultValue();
+        this.model.value = this.currency.getDefaultValue();
+        this.updateModel();
     }
 
     /**
@@ -108,7 +93,8 @@ public class Account implements Model<Long>
      */
     public void set(long amount)
     {
-        this.value = amount;
+        this.model.value = amount;
+        this.updateModel();
     }
 
     /**
@@ -120,43 +106,8 @@ public class Account implements Model<Long>
      */
     public long scale(double factor)
     {
-        this.value = (long) (factor * this.value);
-        return this.value;
-    }
-
-    /**
-     * Returns true if the account is bound to a user
-     *
-     * @return
-     */
-    public boolean isUserAccount()
-    {
-        return this.user_id != null;
-    }
-
-    @Override
-    public Long getKey()
-    {
-        return this.key;
-    }
-
-    @Override
-    public void setKey(Long key)
-    {
-        this.key = key;
-    }
-
-    void init(CurrencyManager currencyManager)
-    {
-        this.currency = currencyManager.getCurrencyByName(currencyName);
-        if (!this.positive)
-        {
-            this.value *= -1;
-        }
-    }
-
-    public User getUser()
-    {
-        return this.user_id == null ? null : CubeEngine.getUserManager().getUser(this.user_id);
+        this.model.value = (long) (factor * this.model.value);
+        this.updateModel();
+        return this.model.value;
     }
 }

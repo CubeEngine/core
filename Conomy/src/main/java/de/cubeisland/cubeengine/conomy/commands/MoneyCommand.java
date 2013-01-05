@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.conomy.commands;
 
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -49,7 +50,7 @@ public class MoneyCommand extends ContainerCommand
             Collection<Account> accs = this.module.getAccountsManager().getAccounts(user);
             for (Account acc : accs)
             {
-                context.sendMessage("conomey", "&a%s-Balance: &6%s", acc.currency.getName(), acc.currency.formatLong(acc.balance()));
+                context.sendMessage("conomey", "&a%s-Balance: &6%s", acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
             }
         }
         else
@@ -69,7 +70,7 @@ public class MoneyCommand extends ContainerCommand
             {
                 acc = this.module.getAccountsManager().getAccount(user);
             }
-            context.sendMessage("conomey", "&aBalance: &6%s", acc.currency.formatLong(acc.balance()));
+            context.sendMessage("conomey", "&aBalance: &6%s", acc.getCurrency().formatLong(acc.getBalance()));
         }
     }
 
@@ -101,33 +102,31 @@ public class MoneyCommand extends ContainerCommand
                 return;
             }
         }
-        Collection<Account> accounts;
+        Collection<AccountModel> models;
+        Currency currency = this.module.getAccountsManager().getMainCurrency();
         if (context.hasNamed("in"))
         {
-            Currency currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
+            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
             {
                 context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
                 return;
             }
-            accounts = this.module.getAccountsManager().getTopAccounts(currency, fromRank, toRank);
         }
-        else
-        {
-            accounts = this.module.getAccountsManager().getTopAccounts(fromRank, toRank);
-        }
+        models = this.module.getAccountsStorage().getTopAccounts(currency, fromRank, toRank);
         int i = fromRank;
         if (fromRank == 1)
         {
-            context.sendMessage("conomy", "&aTop Balance &f(&6%d&f)", accounts.size());
+            context.sendMessage("conomy", "&aTop Balance &f(&6%d&f)", models.size());
         }
         else
         {
-            context.sendMessage("conomy", "&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + accounts.size());
+            context.sendMessage("conomy", "&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + models.size());
         }
-        for (Account account : accounts)
+        for (AccountModel account : models)
         {
-            context.sendMessage("conomy", "&a%d &f- &2%s&f: &6%s", i++, this.module.getUserManager().getUser(account.user_id).getName(), account.currency.formatLong(account.balance()));
+            context.sendMessage("conomy", "&a%d &f- &2%s&f: &6%s", i++,
+                    this.module.getUserManager().getUser(account.user_id).getName(), currency.formatLong(account.value));
         }
     }
 
@@ -197,7 +196,7 @@ public class MoneyCommand extends ContainerCommand
             {
                 context.sendMessage("conomy", "&cCannot find bank-account &6%s&c!", context.getString(0));
             }
-            if (this.module.getAccountsManager().transaction(source, target, amount, true))
+            if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
             {
                 context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato the bank.account &6%s!", currency.formatLong(amount), sender.getName(), context.getString(0));
             }
