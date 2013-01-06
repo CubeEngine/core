@@ -48,4 +48,9 @@ public class CurrencyManager
     {
         return true; // TODO implement me
     }
+    
+    public Currency matchCurrency(String amountString)
+    {
+        return null; //TODO implement me
+    }
 }

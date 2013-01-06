@@ -251,7 +251,7 @@ public class AccountManager
 
     /**
      * Transfers money from the source-account to the target-amount.
-     * 
+     *
      * @param source the source
      * @param target the target
      * @param amount the amount in target-currency
@@ -267,5 +267,61 @@ public class AccountManager
         }
         target.transaction(source, amount);
         return true;
+    }
+
+    /**
+     * Gives money to all user-accounts
+     *
+     * @param currency the currency
+     * @param amount the amount
+     * @param online set to true if only online users
+     */
+    public void transactAll(Currency currency, long amount, boolean online)
+    {
+        if (online)
+        {
+            for (User user : this.module.getUserManager().getOnlineUsers())
+            {
+                this.hasAccount(user);
+                Account acc = this.useraccounts.get(user.key).get(currency);
+                if (acc != null)
+                {
+                    acc.transaction(null, amount);
+                }
+            }
+        }
+        else
+        {
+            this.accountStorage.transactAll(currency, amount);
+            this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
+        }
+    }
+
+    /**
+     * Sets all user-account
+     *
+     * @param currency the currency
+     * @param amount the amount
+     * @param online set to true if only online users
+     */
+    public void setAll(Currency currency, long amount, boolean online)
+    {
+        if (online)
+        {
+            for (User user : this.module.getUserManager().getOnlineUsers())
+            {
+                this.hasAccount(user);
+                Account acc = this.useraccounts.get(user.key).get(currency);
+                if (acc != null)
+                {
+                    acc.set(amount);
+                }
+            }
+        }
+        else
+        {
+             this.accountStorage.setAll(currency, amount);
+             this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
+        }
     }
 }

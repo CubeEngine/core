@@ -176,6 +176,7 @@ public class MoneyCommand extends ContainerCommand
             context.sendMessage("conomy", "&cCould not parse amount!");
             return;
         }
+        String formattedAmount = currency.formatLong(amount);
         User sender;
         if (context.hasNamed("as"))
         {
@@ -206,7 +207,7 @@ public class MoneyCommand extends ContainerCommand
             }
             if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
             {
-                context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato the bank.account &6%s!", currency.formatLong(amount), sender.getName(), context.getString(0));
+                context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato the bank.account &6%s!", formattedAmount, sender.getName(), context.getString(0));
             }
             else if (context.hasNamed("as"))
             {
@@ -235,7 +236,8 @@ public class MoneyCommand extends ContainerCommand
             }
             if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
             {
-                context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", currency.formatLong(amount), sender.getName(), user.getName());
+                context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", formattedAmount, sender.getName(), user.getName());
+                user.sendMessage("conomy", "&2%s &ajust send you &6%s!", sender.getName(), formattedAmount);
             }
             else if (context.hasNamed("as"))
             {

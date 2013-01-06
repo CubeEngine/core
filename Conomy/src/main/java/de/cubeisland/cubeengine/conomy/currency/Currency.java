@@ -108,7 +108,7 @@ public class Currency
                     {
                         result *= subCur.getValueForParent();
                         int nextSeparator = tempString.indexOf(NUMBERSEPARATOR);
-                        String read;//TODO if read is 1 parse to 10
+                        String read;
                         if (nextSeparator == -1)
                         {
                             read = tempString;

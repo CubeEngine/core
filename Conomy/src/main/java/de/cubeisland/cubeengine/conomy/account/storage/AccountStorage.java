@@ -39,6 +39,16 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
                     builder.select().cols(allFields).from(this.tableName).
                     where().field("currencyName").isEqual().value().
                     orderBy("value").desc().limit().offset().end().end());
+
+            this.database.storeStatement(modelClass, "setAllUser",
+                    builder.update(this.tableName).set("value").
+                    where().field("currencyName").isEqual().value().
+                    and().not().field("user_id").isEqual().value(null).end().end());
+
+            this.database.storeStatement(modelClass, "transactAllUser",
+                    builder.update(this.tableName).set("value").beginFunction("+").field("value").endFunction().
+                    where().field("currencyName").isEqual().value().
+                    and().not().field("user_id").isEqual().value(null).end().end());
         }
         catch (SQLException e)
         {
@@ -124,6 +134,30 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         catch (Exception ex)
         {
             throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+    }
+
+    public void transactAll(Currency currency, long amount)
+    {
+        try
+        {
+            this.database.preparedUpdate(modelClass, "transactAllUser", amount, currency.getName());
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while updating database", ex);
+        }
+    }
+
+    public void setAll(Currency currency, long amount)
+    {
+        try
+        {
+            this.database.preparedUpdate(modelClass, "setAllUser", amount, currency.getName());
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while updating database", ex);
         }
     }
 }
