@@ -8,21 +8,22 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOR
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 
 @SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true,
-                 indices =
+indices =
 {
     @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key")
 })
 public class AccountModel implements Model<Long>
 {
+
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long key = -1;
-    @Attribute(type = AttrType.BIGINT, notnull = false)
+    public long key;
+    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
     public Long user_id;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String name;
     @Attribute(type = AttrType.VARCHAR, length = 64)
     public String currencyName;
-    @Attribute(type = AttrType.INT, unsigned = true)
+    @Attribute(type = AttrType.BIGINT)
     public long value;
 
     @Override

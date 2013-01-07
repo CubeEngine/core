@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class Currency
 {
+
     private LinkedList<SubCurrency> sub = new LinkedList<SubCurrency>();
     private String formatlong;
     private String formatshort;
@@ -79,6 +80,13 @@ public class Currency
         format = format.replace("%-", neg ? "-" : "");
         return format;
     }
+    
+    public String formatShort(Long balance)
+    {
+        return null; //TODO implement me
+    }
+    
+    
     String NUMBERSEPARATOR = ",";
 
     public Long parse(String amountString)
@@ -94,39 +102,44 @@ public class Currency
                 if (separators == 0) // No separator try if its long
                 {
                     result = Long.parseLong(tempString);
-                    for (SubCurrency subCur : sub)
-                    {
-                        result *= subCur.getValueForParent();
-                    }
-                    return result / 100;
+                    result *= this.sub.get(0).getValueInLowest();
+                    return result;
                 }
                 else if (separators <= this.sub.size() - 1)
                 {
                     boolean first = true;
+                    boolean end = false;
                     result = 0;
                     for (SubCurrency subCur : sub)
                     {
                         result *= subCur.getValueForParent();
+                        if (end)
+                        {
+                            break;
+                        }
+                        int subCurLen = String.valueOf(subCur.getValueForParent() - 1).length();
                         int nextSeparator = tempString.indexOf(NUMBERSEPARATOR);
                         String read;
                         if (nextSeparator == -1)
                         {
                             read = tempString;
+                            end = true;
                         }
                         else
                         {
                             read = tempString.substring(0, nextSeparator);
                             tempString = tempString.substring(nextSeparator + 1);
                         }
-                        if (!first && read.length() > 2)
+
+                        if (!first && read.length() > subCurLen)
                         {
                             return null;
                         }
-                        if (read.length() == 1 && !first)
+                        while (read.length() < subCurLen && !first)
                         {
                             read += "0";
                         }
-                        result += Long.parseLong(read) * subCur.getValueForParent() / 100;
+                        result += Long.parseLong(read);
                         first = false;
                     }
                     return result;

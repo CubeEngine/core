@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.user.User;
 
 public class EcoCommands extends ContainerCommand
 {
+
     private Conomy module;
 
     public EcoCommands(Conomy module)
@@ -24,15 +25,15 @@ public class EcoCommands extends ContainerCommand
     {
         "give", "grant"
     },
-             desc = "Gives money to given user",
-             usage = "<player>|<-all[online]> <amount> [in <currency>]",
-             flags =
+    desc = "Gives money to given user",
+    usage = "<player>|<-all[online]> <amount> [in <currency>]",
+    flags =
     {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "allonline", name = "ao")
     },
-             min = 1, max = 2)
-    public void give(CommandContext context)//TODO implement all flag
+    min = 1, max = 2)
+    public void give(CommandContext context)
     {
         Currency currency;
         if (context.hasNamed("in"))
@@ -46,7 +47,7 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO choose currency / or match with formatting
+            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO match with formatting if currency not chosen
         }
         String amountString = context.hasFlag("a") || context.hasFlag("ao") ? context.getString(0) : context.getString(1);
         Long amount = currency.parse(amountString);
@@ -95,15 +96,15 @@ public class EcoCommands extends ContainerCommand
     {
         "take", "remove"
     },
-             desc = "Takes money from given user",
-             usage = "<player>|<-all[online]> <amount> [in <currency>]",
-             flags =
+    desc = "Takes money from given user",
+    usage = "<player>|<-all[online]> <amount> [in <currency>]",
+    flags =
     {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "allonline", name = "ao")
     },
-             min = 1, max = 2)
-    public void take(CommandContext context)//TODO implement all flag
+    min = 1, max = 2)
+    public void take(CommandContext context)
     {
         Currency currency;
         if (context.hasNamed("in"))
@@ -117,7 +118,7 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO choose currency / or match with formatting
+            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO match with formatting
         }
         String amountString = context.hasFlag("a") || context.hasFlag("ao") ? context.getString(0) : context.getString(1);
         Long amount = currency.parse(amountString);
@@ -164,13 +165,13 @@ public class EcoCommands extends ContainerCommand
 
     @Command(
              desc = "Reset the money from given user",
-             usage = "<player>|<-all[online]> [in <currency>]",//TODO implement all flag
-             flags =
+    usage = "<player>|<-all[online]> [in <currency>]",
+    flags =
     {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "allonline", name = "ao")
     },
-             max = 1)
+    max = 1)
     public void reset(CommandContext context)
     {
         Currency currency;
@@ -185,7 +186,7 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO choose currency / or match with formatting
+            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO match with formatting
         }
         if (context.hasFlag("a"))
         {
@@ -223,14 +224,14 @@ public class EcoCommands extends ContainerCommand
 
     @Command(
              desc = "Sets the money from given user",
-             usage = "<player>|<-all[online]> <amount> [in <currency>]",
-             flags =
+    usage = "<player>|<-all[online]> <amount> [in <currency>]",
+    flags =
     {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "allonline", name = "ao")
     },
-             min = 1, max = 2)
-    public void set(CommandContext context)//TODO implement all flag
+    min = 1, max = 2)
+    public void set(CommandContext context)
     {
         Currency currency;
         if (context.hasNamed("in"))
@@ -244,8 +245,9 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO choose currency / or match with formatting
+            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO match with formatting
         }
+        //TODO catch if index not given
         String amountString = context.hasFlag("a") || context.hasFlag("ao") ? context.getString(0) : context.getString(1);
         Long amount = currency.parse(amountString);
         if (amount == null)
