@@ -95,8 +95,14 @@ public class Currency
         {
             return null;
         }
+        amountString = amountString.toLowerCase();
         long result;
         String tempString = amountString;
+        if (tempString.endsWith(this.name.toLowerCase())) // remove currency name at the end
+        //allows parsing e.g.: 1,4Euro
+        {
+            tempString = tempString.substring(0, tempString.length() - this.name.length());
+        }
         // Without CurrencySymbols:
         if (!tempString.matches("[^\\d" + NUMBERSEPARATOR + "]") && tempString.matches("[^a-zA-Z]+"))
         {
