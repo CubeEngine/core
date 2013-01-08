@@ -50,7 +50,7 @@ public class MoneyCommand extends ContainerCommand
             Collection<Account> accs = this.module.getAccountsManager().getAccounts(user);
             for (Account acc : accs)
             {
-                context.sendMessage("conomey", "&a%s-Balance: &6%s", acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
+                context.sendMessage("conomey", "&2%s's &a%s-Balance: &6%s", user.getName(), acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
             }
         }
         else
@@ -70,7 +70,7 @@ public class MoneyCommand extends ContainerCommand
             {
                 acc = this.module.getAccountsManager().getAccount(user);
             }
-            context.sendMessage("conomey", "&aBalance: &6%s", acc.getCurrency().formatLong(acc.getBalance()));
+            context.sendMessage("conomey", "&2%s's &aBalance: &6%s", user.getName(), acc.getCurrency().formatLong(acc.getBalance()));
         }
     }
 

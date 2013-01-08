@@ -38,7 +38,6 @@ public class Conomy extends Module
         this.currencyManager.load();
         this.accountsStorage = new AccountStorage(this.getDatabase());
         this.accountsManager = new AccountManager(this); // Needs cManager / aStorage
-        this.registerListener(new ConomyListener(this));
         this.registerCommand(new MoneyCommand(this));
         this.registerCommand(new EcoCommands(this));
     }

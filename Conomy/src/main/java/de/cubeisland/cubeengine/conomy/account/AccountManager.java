@@ -60,7 +60,7 @@ public class AccountManager
      */
     public Account getAccount(User user, Currency currency)
     {
-        this.hasAccount(user, currency); //loads accounts if not yet loaded
+        this.userAccountExists(user, currency); //loads accounts if not yet loaded
         return this.useraccounts.get(user.key).get(currency);
     }
 
@@ -84,7 +84,7 @@ public class AccountManager
      */
     public Account getAccount(String name, Currency currency)
     {
-        this.hasAccount(name, currency);
+        this.bankAccountExists(name, currency);
         return this.bankaccounts.get(name).get(currency);
 
     }
@@ -95,9 +95,9 @@ public class AccountManager
      * @param user the user
      * @return true if the user has an account
      */
-    public boolean hasAccount(User user)
+    public boolean userAccountExists(User user)
     {
-        return this.hasAccount(user, this.getMainCurrency());
+        return this.userAccountExists(user, this.getMainCurrency());
     }
 
     /**
@@ -107,7 +107,7 @@ public class AccountManager
      * @param currency the currency
      * @return true if the user has an account
      */
-    public boolean hasAccount(User user, Currency currency)
+    public boolean userAccountExists(User user, Currency currency)
     {
         if (this.useraccounts.containsKey(user.key))
         {
@@ -115,7 +115,7 @@ public class AccountManager
         }
         else
         {
-            this.loadAccounts(user);
+            this.loadUserAccounts(user);
             return this.useraccounts.get(user.key).containsKey(currency);
         }
     }
@@ -126,9 +126,9 @@ public class AccountManager
      * @param name the bank's name
      * @return true if the bank-account exists
      */
-    public boolean hasAccount(String name)
+    public boolean bankAccountExists(String name)
     {
-        return this.hasAccount(name, this.getMainCurrency());
+        return this.bankAccountExists(name, this.getMainCurrency());
     }
 
     /**
@@ -138,7 +138,7 @@ public class AccountManager
      * @param currency the currency
      * @return true if the bank-account exists
      */
-    public boolean hasAccount(String name, Currency currency)
+    public boolean bankAccountExists(String name, Currency currency)
     {
         if (this.bankaccounts.containsKey(name))
         {
@@ -146,7 +146,7 @@ public class AccountManager
         }
         else
         {
-            this.loadAccounts(name);
+            this.loadBankAccounts(name);
             return this.bankaccounts.get(name).containsKey(currency);
         }
     }
@@ -171,10 +171,15 @@ public class AccountManager
      */
     public Account createNewAccount(User user, Currency currency)
     {
-        if (this.hasAccount(user, currency))
+        if (this.userAccountExists(user, currency))
         {
             return null;
         }
+        return this.createNewAccountNoCheck(user, currency);
+    }
+
+    private Account createNewAccountNoCheck(User user, Currency currency)
+    {
         AccountModel model = new AccountModel(user.key, null, currency.getName(), currency.getDefaultValue());
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
@@ -202,10 +207,15 @@ public class AccountManager
      */
     public Account createNewAccount(String name, Currency currency)
     {
-        if (this.hasAccount(name, currency))
+        if (this.bankAccountExists(name, currency))
         {
             return null;
         }
+        return this.createNewAccountNoCheck(name, currency);
+    }
+
+    private Account createNewAccountNoCheck(String name, Currency currency)
+    {
         AccountModel model = new AccountModel(null, name, currency.getName(), currency.getDefaultValue());
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
@@ -213,7 +223,7 @@ public class AccountManager
         return account;
     }
 
-    private void loadAccounts(User user)
+    private void loadUserAccounts(User user)
     {
         Collection<AccountModel> models = this.accountStorage.loadAccounts(user.key);
         this.useraccounts.put(user.key, new THashMap<Currency, Account>());
@@ -223,9 +233,19 @@ public class AccountManager
             Account account = new Account(this, currency, model);
             this.useraccounts.get(user.key).put(currency, account);
         }
+        if (user.hasPlayedBefore()) // only if user has played on the server create missing accounts
+        {
+            for (Currency currency : this.currencyManager.getAllCurrencies())
+            {
+                if (!this.useraccounts.get(user.key).containsKey(currency))
+                {
+                    this.createNewAccountNoCheck(user, currency); // No check i just did check in db
+                }
+            }
+        }
     }
 
-    private void loadAccounts(String name)
+    private void loadBankAccounts(String name)
     {
         Collection<AccountModel> models = this.accountStorage.loadAccounts(name);
         this.bankaccounts.put(name, new THashMap<Currency, Account>());
@@ -245,7 +265,7 @@ public class AccountManager
      */
     public Collection<Account> getAccounts(User user)
     {
-        this.loadAccounts(user);
+        this.loadUserAccounts(user);
         return this.useraccounts.get(user.key).values();
     }
 
@@ -282,7 +302,7 @@ public class AccountManager
         {
             for (User user : this.module.getUserManager().getOnlineUsers())
             {
-                this.hasAccount(user);
+                this.userAccountExists(user);
                 Account acc = this.useraccounts.get(user.key).get(currency);
                 if (acc != null)
                 {
@@ -310,7 +330,7 @@ public class AccountManager
         {
             for (User user : this.module.getUserManager().getOnlineUsers())
             {
-                this.hasAccount(user);
+                this.userAccountExists(user);
                 Account acc = this.useraccounts.get(user.key).get(currency);
                 if (acc != null)
                 {
@@ -320,8 +340,8 @@ public class AccountManager
         }
         else
         {
-             this.accountStorage.setAll(currency, amount);
-             this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
+            this.accountStorage.setAll(currency, amount);
+            this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
         }
     }
 }
