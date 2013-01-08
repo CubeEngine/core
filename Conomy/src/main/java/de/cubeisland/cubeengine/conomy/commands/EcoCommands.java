@@ -190,12 +190,12 @@ public class EcoCommands extends ContainerCommand
         }
         if (context.hasFlag("a"))
         {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultValue(), false);
+            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
             context.sendMessage("conomy", "&aYou resetted every user account!");
         }
         else if (context.hasFlag("ao"))
         {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultValue(), true);
+            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
             context.sendMessage("conomy", "&aYou resetted every online user account!");
         }
         else
@@ -257,12 +257,12 @@ public class EcoCommands extends ContainerCommand
         }
         if (context.hasFlag("a"))
         {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultValue(), false);
+            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
             context.sendMessage("conomy", "&aYou have set every user account to &6%s&a!", currency.formatLong(amount));
         }
         else if (context.hasFlag("ao"))
         {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultValue(), true);
+            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
             context.sendMessage("conomy", "&aYou have set every online user account to &6%s&a!", currency.formatLong(amount));
         }
         else

@@ -12,12 +12,12 @@ import org.apache.commons.lang.StringUtils;
 
 public class Currency
 {
-
     private LinkedList<SubCurrency> sub = new LinkedList<SubCurrency>();
     private String formatlong;
     private String formatshort;
     private String name;
     private CurrencyManager manager;
+    private long defaultBalance;
 
     public Currency(CurrencyManager manager, String name, CurrencyConfiguration config)
     {
@@ -25,6 +25,8 @@ public class Currency
         this.name = name;
         this.formatlong = config.formatLong;
         this.formatshort = config.formatShort;
+        this.defaultBalance = config.defaultBalance;
+
         SubCurrency parent = null;
         for (Map.Entry<String, SubCurrencyConfig> entry : config.subcurrencies.entrySet())
         {
@@ -49,9 +51,9 @@ public class Currency
         return this.manager.canConvert(this, currency);
     }
 
-    public Long getDefaultValue()
-    {//Default value in config
-        return 42L; //TODO
+    public Long getDefaultBalance()
+    {
+        return this.defaultBalance;
     }
 
     public String formatLong(Long balance)
@@ -80,13 +82,11 @@ public class Currency
         format = format.replace("%-", neg ? "-" : "");
         return format;
     }
-    
+
     public String formatShort(Long balance)
     {
         return null; //TODO implement me
     }
-    
-    
     String NUMBERSEPARATOR = ",";
 
     public Long parse(String amountString)

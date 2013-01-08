@@ -7,11 +7,13 @@ public class CurrencyConfiguration
     public LinkedHashMap<String, SubCurrencyConfig> subcurrencies;
     public String formatLong;
     public String formatShort;
+    public long defaultBalance = 0;
 
-    public CurrencyConfiguration(LinkedHashMap<String, SubCurrencyConfig> subcurrencies, String formatLong, String formatShort)
+    public CurrencyConfiguration(LinkedHashMap<String, SubCurrencyConfig> subcurrencies, String formatLong, String formatShort, long defaultBalance)
     {
         this.subcurrencies = subcurrencies;
         this.formatLong = formatLong;
         this.formatShort = formatShort;
+        this.defaultBalance = defaultBalance;
     }
 }

@@ -180,7 +180,7 @@ public class AccountManager
 
     private Account createNewAccountNoCheck(User user, Currency currency)
     {
-        AccountModel model = new AccountModel(user.key, null, currency.getName(), currency.getDefaultValue());
+        AccountModel model = new AccountModel(user.key, null, currency.getName(), currency.getDefaultBalance());
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
         this.useraccounts.get(user.key).put(currency, account);
@@ -216,7 +216,7 @@ public class AccountManager
 
     private Account createNewAccountNoCheck(String name, Currency currency)
     {
-        AccountModel model = new AccountModel(null, name, currency.getName(), currency.getDefaultValue());
+        AccountModel model = new AccountModel(null, name, currency.getName(), currency.getDefaultBalance());
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
         this.bankaccounts.get(name).put(currency, account);

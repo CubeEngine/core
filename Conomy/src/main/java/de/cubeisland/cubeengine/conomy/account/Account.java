@@ -82,7 +82,7 @@ public class Account
      */
     public void resetToDefault()
     {
-        this.model.value = this.currency.getDefaultValue();
+        this.model.value = this.currency.getDefaultBalance();
         this.updateModel();
     }
 

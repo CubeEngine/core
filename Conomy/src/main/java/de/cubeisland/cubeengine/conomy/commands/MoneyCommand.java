@@ -23,12 +23,15 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
     }
 
-    @Alias(names = "money")//TODO this does not WORK  :( fix it @Quick_Wango
+    @Alias(names =
+    {
+        "money",//TODO this does not WORK  :( fix it @Quick_Wango
+        "balance", "moneybalance"
+    })
     @Command(desc = "Shows your balance",
              usage = "[player] [in <currency>]|[-a]", flags =
-    {
-        @Flag(longName = "all", name = "a")
-    }, max = 1)
+    @Flag(longName = "all", name = "a"), params =
+    @Param(names = "in", type = String.class), max = 1)
     public void balance(CommandContext context)
     {
         User user;
@@ -79,7 +82,8 @@ public class MoneyCommand extends ContainerCommand
         "toplist", "balancetop"
     })
     @Command(desc = "Shows the players with the highest balance.",
-             usage = "[[fromRank]-ToRank] [in <currency>]")
+             usage = "[[fromRank]-ToRank] [in <currency>]", params =
+    @Param(names = "in", type = String.class))
     public void top(CommandContext context)
     {
         int fromRank = 1;
