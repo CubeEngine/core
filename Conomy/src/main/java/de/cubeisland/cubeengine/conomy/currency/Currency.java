@@ -87,16 +87,20 @@ public class Currency
     {
         return null; //TODO implement me
     }
-    String NUMBERSEPARATOR = ",";
+    Character NUMBERSEPARATOR = ',';
 
     public Long parse(String amountString)
     {
+        if (amountString == null)
+        {
+            return null;
+        }
         long result;
         String tempString = amountString;
         // Without CurrencySymbols:
-        if (!tempString.matches("[^\\d" + NUMBERSEPARATOR + "]"))
+        if (!tempString.matches("[^\\d" + NUMBERSEPARATOR + "]") && tempString.matches("[^a-zA-Z]+"))
         {
-            int separators = StringUtils.countMatches(tempString, NUMBERSEPARATOR);
+            int separators = StringUtils.countMatches(tempString, NUMBERSEPARATOR.toString());
             try
             {
                 if (separators == 0) // No separator try if its long
@@ -151,6 +155,7 @@ public class Currency
         }
         tempString = amountString;
         //TODO parse known patterns formatLong/short
+        //e.g.: 1,4Euro
         final int stringLen = tempString.length();
         char current;
         StringBuilder token = new StringBuilder();
@@ -188,6 +193,11 @@ public class Currency
                     if (!Character.isWhitespace(current))
                     {
                         token.append(current);
+                        if (NUMBERSEPARATOR == current)
+                        {
+                            tokens.add(token.toString());
+                            token = new StringBuilder();
+                        }
                     }
                 }
                 else
@@ -205,12 +215,7 @@ public class Currency
         {
             System.out.println(s);
         }
-        HashMap<String, SubCurrency> symbols = new HashMap<String, SubCurrency>();
-        for (SubCurrency currency : sub)
-        {
-            symbols.put(currency.getName().toLowerCase(Locale.ENGLISH), currency);
-            symbols.put(currency.getSymbol().toLowerCase(Locale.ENGLISH), currency);
-        }
+        HashMap<String, SubCurrency> symbols = this.getAllSymbolsAndNames();
         try
         {
             result = 0;
@@ -237,12 +242,40 @@ public class Currency
                     }
                 }
             }
-
         }
         catch (NumberFormatException ingored)
         {
             return null;
         }
         return result;
+    }
+
+    public HashMap<String, SubCurrency> getAllSymbolsAndNames()
+    {
+        HashMap<String, SubCurrency> symbols = new HashMap<String, SubCurrency>();
+        symbols.putAll(this.getAllNames());
+        symbols.putAll(this.getAllSymbols());
+        return symbols;
+    }
+
+    public HashMap<String, SubCurrency> getAllSymbols()
+    {
+
+        HashMap<String, SubCurrency> symbols = new HashMap<String, SubCurrency>();
+        for (SubCurrency currency : sub)
+        {
+            symbols.put(currency.getSymbol().toLowerCase(Locale.ENGLISH), currency);
+        }
+        return symbols;
+    }
+
+    public HashMap<String, SubCurrency> getAllNames()
+    {
+        HashMap<String, SubCurrency> symbols = new HashMap<String, SubCurrency>();
+        for (SubCurrency currency : sub)
+        {
+            symbols.put(currency.getName().toLowerCase(Locale.ENGLISH), currency);
+        }
+        return symbols;
     }
 }

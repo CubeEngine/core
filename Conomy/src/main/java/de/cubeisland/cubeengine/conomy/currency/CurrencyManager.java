@@ -4,7 +4,9 @@ import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.config.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import gnu.trove.map.hash.THashMap;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class CurrencyManager
@@ -48,9 +50,52 @@ public class CurrencyManager
     {
         return true; // TODO implement me
     }
-    
+
     public Currency matchCurrency(String amountString)
     {
         return null; //TODO implement me
+    }
+
+    public Collection<Currency> matchCurrency(String amountString, boolean returnDefaultIfNotFound)
+    {
+        List<Currency> found = new ArrayList<Currency>();
+        for (Currency currency : this.currencies.values()) // match currencyNames & long names
+        {
+            if (amountString.toLowerCase().contains(currency.getName().toLowerCase()))
+            {
+                found.add(currency);
+                continue;
+            }
+            else
+            {
+                for (String sub : currency.getAllNames().keySet())
+                {
+                    if (amountString.toLowerCase().contains(sub))
+                    {
+                        found.add(currency);
+                        continue;
+                    }
+                }
+            }
+        }
+        if (found.isEmpty()) // match symbols
+        {
+            for (Currency currency : this.currencies.values())
+            {
+                for (String subSymbol : currency.getAllSymbols().keySet())
+                {
+                    if (amountString.toLowerCase().contains(subSymbol))
+                    {
+                        found.add(currency);
+                        continue;
+                    }
+                }
+            }
+        }
+        if (found.isEmpty())
+        {
+            found.add(this.mainCurrency);
+        }
+        return found;
     }
 }
