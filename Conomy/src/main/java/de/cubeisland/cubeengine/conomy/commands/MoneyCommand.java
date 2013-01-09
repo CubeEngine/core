@@ -157,8 +157,6 @@ public class MoneyCommand extends ContainerCommand
              min = 2, max = 2)
     public void pay(CommandContext context)
     {
-        //TODO later try to autodetect currency if not given
-        //if containing Symbols of only one currency
         Currency currency;
         String amountString = context.getString(1);
         if (context.hasNamed("in"))

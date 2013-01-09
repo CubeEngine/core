@@ -53,7 +53,7 @@ public class CurrencyManager
 
     public Currency matchCurrency(String amountString)
     {
-        return null; //TODO implement me
+        return this.matchCurrency(amountString, true).iterator().next();
     }
 
     public Collection<Currency> matchCurrency(String amountString, boolean returnDefaultIfNotFound)
