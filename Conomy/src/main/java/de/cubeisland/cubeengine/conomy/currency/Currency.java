@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 
 public class Currency
@@ -18,6 +19,10 @@ public class Currency
     private String name;
     private CurrencyManager manager;
     private long defaultBalance;
+    private long minMoney = 0;
+    private Character numberseparator = ',';//TODO config
+    private Pattern pattern2 = Pattern.compile("[^a-zA-Z]+");
+    private Pattern pattern1;
 
     public Currency(CurrencyManager manager, String name, CurrencyConfiguration config)
     {
@@ -26,6 +31,8 @@ public class Currency
         this.formatlong = config.formatLong;
         this.formatshort = config.formatShort;
         this.defaultBalance = config.defaultBalance;
+
+        this.pattern1 = Pattern.compile("[^\\d" + numberseparator + "]");
 
         SubCurrency parent = null;
         for (Map.Entry<String, SubCurrencyConfig> entry : config.subcurrencies.entrySet())
@@ -87,7 +94,6 @@ public class Currency
     {
         return null; //TODO implement me
     }
-    Character NUMBERSEPARATOR = ',';
 
     public Long parse(String amountString)
     {
@@ -104,9 +110,9 @@ public class Currency
             tempString = tempString.substring(0, tempString.length() - this.name.length());
         }
         // Without CurrencySymbols:
-        if (!tempString.matches("[^\\d" + NUMBERSEPARATOR + "]") && tempString.matches("[^a-zA-Z]+"))
+        if (!pattern1.matcher(tempString).find() && pattern2.matcher(tempString).find())
         {
-            int separators = StringUtils.countMatches(tempString, NUMBERSEPARATOR.toString());
+            int separators = StringUtils.countMatches(tempString, numberseparator.toString());
             try
             {
                 if (separators == 0) // No separator try if its long
@@ -128,7 +134,7 @@ public class Currency
                             break;
                         }
                         int subCurLen = String.valueOf(subCur.getValueForParent() - 1).length();
-                        int nextSeparator = tempString.indexOf(NUMBERSEPARATOR);
+                        int nextSeparator = tempString.indexOf(numberseparator);
                         String read;
                         if (nextSeparator == -1)
                         {
@@ -199,7 +205,7 @@ public class Currency
                     if (!Character.isWhitespace(current))
                     {
                         token.append(current);
-                        if (NUMBERSEPARATOR == current)
+                        if (numberseparator == current)
                         {
                             tokens.add(token.toString());
                             token = new StringBuilder();
@@ -283,5 +289,10 @@ public class Currency
             symbols.put(currency.getName().toLowerCase(Locale.ENGLISH), currency);
         }
         return symbols;
+    }
+
+    public long getMinMoney()
+    {
+        return minMoney;
     }
 }

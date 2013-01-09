@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.conomy.account;
 
 import de.cubeisland.cubeengine.conomy.Conomy;
+import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
@@ -283,6 +284,21 @@ public class AccountManager
     {
         if (!force)
         {
+            if (source != null)
+            {
+                if (source.getBalance() - amount < source.getCurrency().getMinMoney())
+                {
+                    if (source.isUserAccount() && !ConomyPermissions.ACCOOUNT_ALLOWUNDERMIN.isAuthorized(source.getUser()))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return false; // TODO bank minimum
+                    }
+                }
+            }
+
             //TODO perm checks etc.
         }
         target.transaction(source, amount);

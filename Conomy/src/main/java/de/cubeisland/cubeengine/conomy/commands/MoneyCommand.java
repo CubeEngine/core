@@ -160,6 +160,7 @@ public class MoneyCommand extends ContainerCommand
         //TODO later try to autodetect currency if not given
         //if containing Symbols of only one currency
         Currency currency;
+        String amountString = context.getString(1);
         if (context.hasNamed("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
@@ -171,9 +172,8 @@ public class MoneyCommand extends ContainerCommand
         }
         else
         {
-            currency = this.module.getCurrencyManager().getMainCurrency(); //TODO choose currency / or match with formatting
+            currency = this.module.getCurrencyManager().matchCurrency(amountString);
         }
-        String amountString = context.getString(1);
         Long amount = currency.parse(amountString);
         if (amount == null)
         {

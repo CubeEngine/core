@@ -7,8 +7,11 @@ public class CurrencyConfiguration
     public LinkedHashMap<String, SubCurrencyConfig> subcurrencies;
     public String formatLong;
     public String formatShort;
-    public long defaultBalance = 0;
+    public long defaultBalance;
 
+    //TODO minimum money (can be less with perm)
+    //TODO numberseparator (here?)
+    
     public CurrencyConfiguration(LinkedHashMap<String, SubCurrencyConfig> subcurrencies, String formatLong, String formatShort, long defaultBalance)
     {
         this.subcurrencies = subcurrencies;

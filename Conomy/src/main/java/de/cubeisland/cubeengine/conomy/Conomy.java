@@ -34,6 +34,7 @@ public class Conomy extends Module
     @Override
     public void onEnable()
     {
+        this.registerPermissions(ConomyPermissions.values());
         this.currencyManager = new CurrencyManager(this, config);
         this.currencyManager.load();
         this.accountsStorage = new AccountStorage(this.getDatabase());
