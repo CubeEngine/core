@@ -179,6 +179,14 @@ public class AccountManager
         return this.createNewAccountNoCheck(user, currency);
     }
 
+    /**
+     * Creates a new account for the user in given currency without checking for
+     * eventually existing account.
+     *
+     * @param user
+     * @param currency
+     * @return
+     */
     private Account createNewAccountNoCheck(User user, Currency currency)
     {
         AccountModel model = new AccountModel(user.key, null, currency.getName(), currency.getDefaultBalance());
@@ -282,6 +290,10 @@ public class AccountManager
      */
     public boolean transaction(Account source, Account target, Long amount, boolean force) throws IllegalArgumentException
     {
+        if (source.getCurrency().canConvert(target.getCurrency()))
+        {
+            return false; // currencies are not convertible
+        }
         if (!force)
         {
             if (source != null)
@@ -298,10 +310,10 @@ public class AccountManager
                     }
                 }
             }
-
             //TODO perm checks etc.
         }
         target.transaction(source, amount);
+        //TODO logging
         return true;
     }
 

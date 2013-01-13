@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class CurrencyManager
 {
@@ -26,9 +27,28 @@ public class CurrencyManager
     {
         for (Map.Entry<String, CurrencyConfiguration> entry : config.currencies.entrySet())
         {
-            this.currencies.put(entry.getKey(), new Currency(this, entry.getKey(), entry.getValue()));
+            this.currencies.put(entry.getKey().toLowerCase(), new Currency(this, entry.getKey(), entry.getValue()));
         }
         this.mainCurrency = this.currencies.get(config.currencies.keySet().iterator().next());
+
+        for (Entry<String, Map<String, Double>> entry : this.config.relations.entrySet())
+        {
+            Currency currency = this.getCurrencyByName(entry.getKey().toLowerCase());
+            if (currency == null)
+            {
+                module.getLogger().warning("Unknown currency in relations! " + entry.getKey());
+            }
+            for (Entry<String, Double> relation : entry.getValue().entrySet())
+            {
+                Currency relatedCurrency = this.getCurrencyByName(relation.getKey().toLowerCase());
+                if (relatedCurrency == null)
+                {
+                    module.getLogger().warning("Unknown currency in relations! " + relation.getKey());
+                }
+                currency.addConversionRate(relatedCurrency, relation.getValue());
+                relatedCurrency.addConversionRate(currency, 1 / relation.getValue());
+            }
+        }
     }
 
     public Collection<Currency> getAllCurrencies()
@@ -44,11 +64,6 @@ public class CurrencyManager
     public Currency getCurrencyByName(String currencyName)
     {
         return this.currencies.get(currencyName);
-    }
-
-    public boolean canConvert(Currency currency1, Currency currency2)
-    {
-        return true; // TODO implement me
     }
 
     public Currency matchCurrency(String amountString)

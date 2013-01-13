@@ -64,7 +64,8 @@ public class Account
                 {
                     throw new IllegalArgumentException("Cannot convert " + source.currency.getName() + " into " + this.currency.getName());
                 }
-                //TODO convert
+                long sourceAmount = source.currency.convert(this.currency, amount);
+                source.model.value -= sourceAmount;
             }
             else
             {

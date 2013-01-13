@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.conomy.currency;
 import com.google.common.collect.Lists;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConfig;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,6 +24,7 @@ public class Currency
     private Character numberseparator = ',';//TODO config
     private Pattern pattern2 = Pattern.compile("[^a-zA-Z]+");
     private Pattern pattern1;
+    private TObjectDoubleHashMap<Currency> conversionRates = new TObjectDoubleHashMap<Currency>();
 
     public Currency(CurrencyManager manager, String name, CurrencyConfiguration config)
     {
@@ -53,17 +55,12 @@ public class Currency
         return name;
     }
 
-    public boolean canConvert(Currency currency)
-    {
-        return this.manager.canConvert(this, currency);
-    }
-
     public Long getDefaultBalance()
     {
         return this.defaultBalance;
     }
-
-    public String formatLong(Long balance)
+    
+    private String format(String format, Long balance)
     {
         boolean neg = false;
         if (balance < 0)
@@ -71,7 +68,6 @@ public class Currency
             balance *= -1;
             neg = true;
         }
-        String format = this.formatlong;
         for (SubCurrency subcur : Lists.reverse(this.sub))
         {
             Long subBalance = balance % subcur.getValueForParent();
@@ -90,9 +86,14 @@ public class Currency
         return format;
     }
 
+    public String formatLong(Long balance)
+    {
+        return this.format(this.formatlong, balance);
+    }
+
     public String formatShort(Long balance)
     {
-        return null; //TODO implement me
+         return this.format(this.formatshort, balance);
     }
 
     public Long parse(String amountString)
@@ -294,5 +295,36 @@ public class Currency
     public long getMinMoney()
     {
         return minMoney;
+    }
+
+    public void addConversionRate(Currency cur, double rate)
+    {
+        this.conversionRates.put(cur, rate);
+    }
+
+    public boolean canConvert(Currency currency)
+    {
+        if (this.equals(currency))
+        {
+            return true;
+        }
+        return this.conversionRates.containsKey(currency);
+    }
+
+    /**
+     * Converts the amount in given currency into this currency.
+     *
+     * @param currency
+     * @param amount
+     * @return
+     */
+    public long convert(Currency currency, long amount)
+    {
+        Double rate = currency.conversionRates.get(currency);
+        if (rate == null)
+        {
+            throw new IllegalArgumentException("Currency not conversible! " + currency.getName() + " & " + this.getName());
+        }
+        return amount *= rate;
     }
 }

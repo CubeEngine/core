@@ -5,16 +5,20 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 
 @SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true,
-indices =
+                 indices =
 {
-    @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key")
+    @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key"),
+    @Index(value = UNIQUE, fields = // prevent multiple accounts for a user/bank in the same currency
+    {
+        "user_id", "name", "currencyName"
+    })
 })
 public class AccountModel implements Model<Long>
 {
-
     @Attribute(type = AttrType.INT, unsigned = true)
     public long key;
     @Attribute(type = AttrType.INT, unsigned = true, notnull = false)

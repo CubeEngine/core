@@ -25,31 +25,20 @@ public class EcoCommands extends ContainerCommand
     {
         "give", "grant"
     },
-             desc = "Gives money to given user",
-             usage = "<player>|<-all[online]> <amount> [in <currency>]", flags =
+             desc = "Gives money to given user or all [online] users",
+             usage = "<player>|* [-o] <amount> [in <currency>]",
+             flags =
+    @Flag(longName = "online", name = "o"),
+             params =
+    @Param(names =
     {
-        @Flag(longName = "all", name = "a"),
-        @Flag(longName = "allonline", name = "ao")
-    }, params =
-    @Param(names = "in", type = String.class),
-             min = 1, max = 2)
+        "in", "c", "currency"
+    }, type = String.class),
+             min = 2, max = 2)
     public void give(CommandContext context)
     {
         Currency currency;
-        String amountString;
-        if (context.hasFlag("a") || context.hasFlag("ao"))
-        {
-            amountString = context.getString(0);
-        }
-        else if (context.hasIndexed(1))
-        {
-            amountString = context.getString(1);
-        }
-        else
-        {
-            //TODO Show default msg for out of range /context.outOfRange(hasRange, shouldHaveRange);
-            return;
-        }
+        String amountString = context.getString(1);
         if (context.hasNamed("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
@@ -69,15 +58,18 @@ public class EcoCommands extends ContainerCommand
             context.sendMessage("conomy", "&cCould not parse amount!");
             return;
         }
-        if (context.hasFlag("a"))
+        if (context.getString(0).equalsIgnoreCase("*"))
         {
-            this.module.getAccountsManager().transactAll(currency, amount, false);
-            context.sendMessage("conomy", "&aYou gave &6%s &ato every user!", currency.formatLong(amount));
-        }
-        else if (context.hasFlag("ao"))
-        {
-            this.module.getAccountsManager().transactAll(currency, amount, true);
-            context.sendMessage("conomy", "&aYou gave &6%s &ato every online user!", currency.formatLong(amount));
+            if (context.hasFlag("o"))
+            {
+                this.module.getAccountsManager().transactAll(currency, amount, true);
+                context.sendMessage("conomy", "&aYou gave &6%s &ato every online user!", currency.formatLong(amount));
+            }
+            else
+            {
+                this.module.getAccountsManager().transactAll(currency, amount, false);
+                context.sendMessage("conomy", "&aYou gave &6%s &ato every user!", currency.formatLong(amount));
+            }
         }
         else
         {
@@ -110,31 +102,19 @@ public class EcoCommands extends ContainerCommand
         "take", "remove"
     },
              desc = "Takes money from given user",
-             usage = "<player>|<-all[online]> <amount> [in <currency>]",
+             usage = "<player>|* [-o] <amount> [in <currency>]",
              flags =
+    @Flag(longName = "online", name = "o"),
+             params =
+    @Param(names =
     {
-        @Flag(longName = "all", name = "a"),
-        @Flag(longName = "allonline", name = "ao")
-    }, params =
-    @Param(names = "in", type = String.class),
+        "in", "c", "currency"
+    }, type = String.class),
              min = 1, max = 2)
     public void take(CommandContext context)
     {
         Currency currency;
-        String amountString;
-        if (context.hasFlag("a") || context.hasFlag("ao"))
-        {
-            amountString = context.getString(0);
-        }
-        else if (context.hasIndexed(1))
-        {
-            amountString = context.getString(1);
-        }
-        else
-        {
-            //TODO Show default msg for out of range /context.outOfRange(hasRange, shouldHaveRange);
-            return;
-        }
+        String amountString = context.getString(1);
         if (context.hasNamed("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
@@ -154,15 +134,18 @@ public class EcoCommands extends ContainerCommand
             context.sendMessage("conomy", "&cCould not parse amount!");
             return;
         }
-        if (context.hasFlag("a"))
+        if (context.getString(0).equalsIgnoreCase("*"))
         {
-            this.module.getAccountsManager().transactAll(currency, amount, false);
-            context.sendMessage("conomy", "&aYou took &6%s &afrom every user!", currency.formatLong(amount));
-        }
-        else if (context.hasFlag("ao"))
-        {
-            this.module.getAccountsManager().transactAll(currency, amount, true);
-            context.sendMessage("conomy", "&aYou took &6%s &afrom every online euser!", currency.formatLong(amount));
+            if (context.hasFlag("o"))
+            {
+                this.module.getAccountsManager().transactAll(currency, -amount, false);
+                context.sendMessage("conomy", "&aYou took &6%s &afrom every user!", currency.formatLong(amount));
+            }
+            else
+            {
+                this.module.getAccountsManager().transactAll(currency, -amount, true);
+                context.sendMessage("conomy", "&aYou took &6%s &afrom every online euser!", currency.formatLong(amount));
+            }
         }
         else
         {
@@ -192,14 +175,12 @@ public class EcoCommands extends ContainerCommand
 
     @Command(
              desc = "Reset the money from given user",
-             usage = "<player>|<-all[online]> [in <currency>]",
-             flags =
+             usage = "<player>|* [-o] [in <currency>]", flags =
+    @Flag(longName = "online", name = "o"), params =
+    @Param(names =
     {
-        @Flag(longName = "all", name = "a"),
-        @Flag(longName = "allonline", name = "ao")
-    }, params =
-    @Param(names = "in", type = String.class),
-             max = 1)
+        "in", "c", "currency"
+    }, type = String.class), max = 1)
     public void reset(CommandContext context)
     {
         Currency currency;
@@ -216,15 +197,18 @@ public class EcoCommands extends ContainerCommand
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
-        if (context.hasFlag("a"))
+        if (context.getString(0).equalsIgnoreCase("*"))
         {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
-            context.sendMessage("conomy", "&aYou resetted every user account!");
-        }
-        else if (context.hasFlag("ao"))
-        {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
-            context.sendMessage("conomy", "&aYou resetted every online user account!");
+            if (context.hasFlag("o"))
+            {
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
+                context.sendMessage("conomy", "&aYou resetted every user account!");
+            }
+            else
+            {
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
+                context.sendMessage("conomy", "&aYou resetted every online user account!");
+            }
         }
         else
         {
@@ -252,31 +236,16 @@ public class EcoCommands extends ContainerCommand
 
     @Command(
              desc = "Sets the money from given user",
-             usage = "<player>|<-all[online]> <amount> [in <currency>]",
-             flags =
+             usage = "<player>|* [-o] <amount> [in <currency>]", flags =
+    @Flag(longName = "online", name = "o"), params =
+    @Param(names =
     {
-        @Flag(longName = "all", name = "a"),
-        @Flag(longName = "allonline", name = "ao")
-    }, params =
-    @Param(names = "in", type = String.class),
-             min = 1, max = 2)
+        "in", "c", "currency"
+    }, type = String.class), min = 1, max = 2)
     public void set(CommandContext context)
     {
         Currency currency;
-        String amountString;
-        if (context.hasFlag("a") || context.hasFlag("ao"))
-        {
-            amountString = context.getString(0);
-        }
-        else if (context.hasIndexed(1))
-        {
-            amountString = context.getString(1);
-        }
-        else
-        {
-            //TODO Show default msg for out of range /context.outOfRange(hasRange, shouldHaveRange);
-            return;
-        }
+        String amountString = context.getString(1);
         if (context.hasNamed("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
@@ -296,15 +265,18 @@ public class EcoCommands extends ContainerCommand
             context.sendMessage("conomy", "&cCould not parse amount!");
             return;
         }
-        if (context.hasFlag("a"))
+        if (context.getString(0).equalsIgnoreCase("*"))
         {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
-            context.sendMessage("conomy", "&aYou have set every user account to &6%s&a!", currency.formatLong(amount));
-        }
-        else if (context.hasFlag("ao"))
-        {
-            this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
-            context.sendMessage("conomy", "&aYou have set every online user account to &6%s&a!", currency.formatLong(amount));
+            if (context.hasFlag("o"))
+            {
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
+                context.sendMessage("conomy", "&aYou have set every user account to &6%s&a!", currency.formatLong(amount));
+            }
+            else
+            {
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
+                context.sendMessage("conomy", "&aYou have set every online user account to &6%s&a!", currency.formatLong(amount));
+            }
         }
         else
         {
