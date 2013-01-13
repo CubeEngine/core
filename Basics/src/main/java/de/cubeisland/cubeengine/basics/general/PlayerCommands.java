@@ -32,7 +32,8 @@ public class PlayerCommands
         this.um = basics.getUserManager();
     }
 
-    @Command(desc = "Refills your hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Refills your hunger bar", max = 1, flags =
+    @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void feed(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -83,7 +84,8 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Empties the hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Empties the hunger bar", max = 1, flags =
+    @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void starve(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -134,7 +136,8 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Heals a Player", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Heals a Player", max = 1, flags =
+    @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
     public void heal(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -187,7 +190,8 @@ public class PlayerCommands
         }
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "gamemode", "gm"
     }, max = 2, desc = "Changes the gamemode", usage = "[gamemode] [player]")
     public void gamemode(CommandContext context)
@@ -255,9 +259,11 @@ public class PlayerCommands
         }
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "kill", "slay"
-    }, desc = "Kills a player", usage = "<player>|-a", flags = {
+    }, desc = "Kills a player", usage = "<player>|-a", flags =
+    {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f"),
         @Flag(longName = "lightning", name = "l")
@@ -329,7 +335,8 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = @Flag(longName = "chat", name = "c"))
+    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags =
+    @Flag(longName = "chat", name = "c"))
     public void sudo(CommandContext context)
     {
         User user = context.getUser(0);
@@ -410,33 +417,42 @@ public class PlayerCommands
             illegalParameter(context, "basics", "User not found!");
         }
         context.sendMessage("basics", "&eNickname: &2%s", user.getName());
-        context.sendMessage("basics", "&eLife: &2%d&f/&2%d\n", user.getHealth(), user.getMaxHealth());
-        context.sendMessage("basics", "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)\n", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
-        context.sendMessage("basics", "&eLevel: &2%d &eExp: &2%d&f/&2100%% &eof the next Level\n", user.getLevel(), (int)(user.getExp() * 100));
+        context.sendMessage("basics", "&eLife: &2%d&f/&2%d", user.getHealth(), user.getMaxHealth());
+        context.sendMessage("basics", "&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)", user.getFoodLevel(), (int) user.getSaturation(), user.getFoodLevel());
+        context.sendMessage("basics", "&eLevel: &2%d &f+ &2%d%%", user.getLevel(), (int) (user.getExp() * 100));
         Location loc = user.getLocation(); // NPE when user is offline
         // TODO why is this even able to be null?
         if (loc != null)
         {
-            context.sendMessage("basics", "&ePosition: &2%d %d %d &ein world %2%s\n", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+            context.sendMessage("basics", "&ePosition: &2%d&f:&2%d&f:&2%d &ein &6%s\n", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
         }
-        context.sendMessage("basics", "&eIP: &2%s\n", user.getAddress().getAddress().getHostAddress());
-        context.sendMessage("basics", "&eGamemode: &2%s\n", user.getGameMode().toString());
+        context.sendMessage("basics", "&eIP: &2%s", user.getAddress().getAddress().getHostAddress());
+        context.sendMessage("basics", "&eGamemode: &2%s", user.getGameMode().toString());
         if (user.getAllowFlight())
         {
-            context.sendMessage("basics", "&eFlymode: &atrue &f(%s)\n", user.isFlying() ? "flying" : "not flying");
+            context.sendMessage("basics", "&eFlymode: &atrue &f(%s)", user.isFlying() ? "flying" : "not flying");
         }
         else
         {
             context.sendMessage("basics", "&eFlymode: &cfalse\n");
         }
-        context.sendMessage("basics", "&eOP: %s\n", user.isOp() ? "&atrue" : "&cfalse");
+        if (user.isOp())
+        {
+            context.sendMessage("basics", "&eOP: &atrue");
+        }
         Timestamp muted = basics.getBasicUserManager().getBasicUser(user).muted;
-        context.sendMessage("basics", "&eMuted: %s\n", (muted != null && muted.getTime() > System.currentTimeMillis()) ? "&atrue" : "&cfalse");
+        if (muted != null && muted.getTime() > System.currentTimeMillis())
+        {
+            context.sendMessage("basics", "&eMuted: &ctrue"); //TODO show time
+        }
         if (user.getGameMode() != GameMode.CREATIVE)
         {
             context.sendMessage("basics", "&eGodMode: &2%s\n", user.isInvulnerable() ? "&atrue" : "&cfalse");
         }
-        context.sendMessage("basics", "&eAFK: %s", user.getAttribute(basics, "afk") == null ? "&cfalse" : "&atrue");
+        if (user.getAttribute(basics, "afk") != null)
+        {
+            context.sendMessage("basics", "&eAFK: &atrue");
+        }
         // TODO event so other modules can add their information
     }
 
