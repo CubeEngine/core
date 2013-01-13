@@ -138,13 +138,13 @@ public class EcoCommands extends ContainerCommand
         {
             if (context.hasFlag("o"))
             {
-                this.module.getAccountsManager().transactAll(currency, -amount, false);
-                context.sendMessage("conomy", "&aYou took &6%s &afrom every user!", currency.formatLong(amount));
+                this.module.getAccountsManager().transactAll(currency, -amount, true);
+                context.sendMessage("conomy", "&aYou took &6%s &afrom every online euser!", currency.formatLong(amount));
             }
             else
             {
-                this.module.getAccountsManager().transactAll(currency, -amount, true);
-                context.sendMessage("conomy", "&aYou took &6%s &afrom every online euser!", currency.formatLong(amount));
+                this.module.getAccountsManager().transactAll(currency, -amount, false);
+                context.sendMessage("conomy", "&aYou took &6%s &afrom every user!", currency.formatLong(amount));
             }
         }
         else
@@ -201,13 +201,13 @@ public class EcoCommands extends ContainerCommand
         {
             if (context.hasFlag("o"))
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
-                context.sendMessage("conomy", "&aYou resetted every user account!");
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
+                context.sendMessage("conomy", "&aYou resetted every online user account!");
             }
             else
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
-                context.sendMessage("conomy", "&aYou resetted every online user account!");
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
+                context.sendMessage("conomy", "&aYou resetted every user account!");
             }
         }
         else
@@ -269,13 +269,13 @@ public class EcoCommands extends ContainerCommand
         {
             if (context.hasFlag("o"))
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
-                context.sendMessage("conomy", "&aYou have set every user account to &6%s&a!", currency.formatLong(amount));
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
+                context.sendMessage("conomy", "&aYou have set every online user account to &6%s&a!", currency.formatLong(amount));
             }
             else
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
-                context.sendMessage("conomy", "&aYou have set every online user account to &6%s&a!", currency.formatLong(amount));
+                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
+                context.sendMessage("conomy", "&aYou have set every user account to &6%s&a!", currency.formatLong(amount));
             }
         }
         else
