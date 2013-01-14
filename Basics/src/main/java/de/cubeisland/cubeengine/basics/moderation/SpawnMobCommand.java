@@ -29,6 +29,7 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class SpawnMobCommand
 {
+
     private BasicsConfiguration config;
 
     public SpawnMobCommand(Basics basics)
@@ -39,6 +40,8 @@ public class SpawnMobCommand
     @Command(desc = "Spawns the specified Mob", max = 3, usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {
+        // TODO fix skeleton not having a bow
+        // TODO custom loot items
         // TODO adjust MaxHealth of a mob
         User sender = context.getSenderAsUser();
         if (!context.hasIndexed(2) && sender == null)
@@ -166,7 +169,7 @@ public class SpawnMobCommand
             {
                 if (entityType.isAnimal())
                 {
-                    ((Animals)entity).setBaby();
+                    ((Animals) entity).setBaby();
                 }
                 else
                 {
@@ -177,7 +180,7 @@ public class SpawnMobCommand
             {
                 if (entity instanceof Pig)
                 {
-                    ((Pig)entity).setSaddle(true);
+                    ((Pig) entity).setSaddle(true);
                 }
                 else
                 {
@@ -188,11 +191,11 @@ public class SpawnMobCommand
             {
                 if (entityType.equals(EntityType.WOLF))
                 {
-                    ((Wolf)entity).setAngry(true);
+                    ((Wolf) entity).setAngry(true);
                 }
                 else if (entityType.equals(EntityType.PIG_ZOMBIE))
                 {
-                    ((PigZombie)entity).setAngry(true);
+                    ((PigZombie) entity).setAngry(true);
                 }
             }
             else if ("tamed".equals(match))
@@ -200,10 +203,10 @@ public class SpawnMobCommand
                 if (entity instanceof Tameable) // Wolf or Ocelot
                 {
 
-                    ((Tameable)entity).setTamed(true);
+                    ((Tameable) entity).setTamed(true);
                     if (sender instanceof AnimalTamer)
                     {
-                        ((Tameable)entity).setOwner((AnimalTamer)sender);
+                        ((Tameable) entity).setOwner((AnimalTamer) sender);
                     }
                     else
                     {
@@ -215,11 +218,11 @@ public class SpawnMobCommand
             {
                 if (entity instanceof Wolf)
                 {
-                    ((Wolf)entity).setSitting(true);
+                    ((Wolf) entity).setSitting(true);
                 }
                 else if (entity instanceof Ocelot)
                 {
-                    ((Ocelot)entity).setSitting(true);
+                    ((Ocelot) entity).setSitting(true);
                 }
                 else
                 {
@@ -230,7 +233,7 @@ public class SpawnMobCommand
             {
                 if (entityType.equals(EntityType.CREEPER))
                 {
-                    ((Creeper)entity).setPowered(true);
+                    ((Creeper) entity).setPowered(true);
                 }
                 else
                 {
@@ -248,13 +251,14 @@ public class SpawnMobCommand
                         color = DyeColor.getByData(byteData);
                     }
                     catch (Exception ignored)
-                    {}
+                    {
+                    }
                     if (color == null)
                     {
                         blockCommand(sender, "basics", "&cInvalid SheepColor: " + data);
                     }
                 }
-                ((Sheep)entity).setColor(color);
+                ((Sheep) entity).setColor(color);
             }
             else if (entityType.equals(EntityType.SLIME) || entityType.equals(EntityType.MAGMA_CUBE))
             {
@@ -285,7 +289,7 @@ public class SpawnMobCommand
                 }
                 if (size >= 0 && size <= 250)
                 {
-                    ((Slime)entity).setSize(size);
+                    ((Slime) entity).setSize(size);
                 }
                 else
                 {
@@ -299,7 +303,7 @@ public class SpawnMobCommand
                 {
                     illegalParameter(sender, "basics", "Unknown villager-profession!");
                 }
-                ((Villager)entity).setProfession(profession);
+                ((Villager) entity).setProfession(profession);
             }
             else if (entityType.equals(EntityType.ENDERMAN))
             {
@@ -308,7 +312,7 @@ public class SpawnMobCommand
                 {
                     illegalParameter(sender, "basics", "Material not found!");
                 }
-                ((Enderman)entity).setCarriedMaterial(item.getData());
+                ((Enderman) entity).setCarriedMaterial(item.getData());
             }
         }
     }
