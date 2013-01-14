@@ -47,7 +47,8 @@ public class WorldControlCommands
         this.config = basics.getConfiguration();
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params =
+    @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -116,10 +117,10 @@ public class WorldControlCommands
         }
     }
 
-    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius] [in <world>] [-a] [-f]", flags = {
-        @Flag(longName = "all", name = "a"),
-        @Flag(longName = "alltypes", name = "*")
-    }, params = @Param(names = {
+    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags =
+    @Flag(longName = "all", name = "a"), params =
+    @Param(names =
+    {
         "in"
     }, type = World.class), min = 1)
     public void remove(CommandContext context)
@@ -155,63 +156,115 @@ public class WorldControlCommands
                 illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
             }
         }
-
         Location loc = null;
         if (sender != null)
         {
             loc = sender.getLocation();
         }
         int entitiesRemoved;
-        if (context.hasFlag("*"))
+        if (context.getString(0).equalsIgnoreCase("*"))
         {
-            entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, null, false, (EntityType[])null);
+            List<Entity> list = new ArrayList<Entity>();
+            for (Entity entity : world.getEntities())
+            {
+                if (!(entity instanceof LivingEntity))
+                {
+                    list.add(entity);
+                }
+            }
+            entitiesRemoved = this.removeEntities(list, loc, radius, false);
         }
         else
         {
-            String s_type = context.getString(0);
-            EntityType type = EntityMatcher.get().matchEntity(s_type);
-            Material itemtype = null;
-            if (type == null)
+            List<Entity> list = world.getEntities(); // All entites remaining in that list will not get deleted!
+            String[] s_entityTypes = StringUtils.explode(",", context.getString(0));
+            List<org.bukkit.entity.EntityType> types = new ArrayList<org.bukkit.entity.EntityType>();
+            for (String s_entityType : s_entityTypes)
             {
-                if (s_type.contains(":"))
+                if (s_entityType.contains(":"))
                 {
-                    type = EntityMatcher.get().matchEntity(s_type.substring(0, s_type.indexOf(":")));
-                    itemtype = MaterialMatcher.get().matchMaterial(s_type.substring(s_type.indexOf(":") + 1));
+                    EntityType type = EntityMatcher.get().matchEntity(s_entityType.substring(0, s_entityType.indexOf(":")));
+                    if (EntityType.DROPPED_ITEM.equals(type))
+                    {
+                        Material itemtype = MaterialMatcher.get().matchMaterial(s_entityType.substring(s_entityType.indexOf(":") + 1));
+                        List<Entity> remList = new ArrayList<Entity>();
+                        for (Entity entity : list)
+                        {
+                            if (entity.getType().equals(EntityType.DROPPED_ITEM.getBukkitType()) && ((Item) entity).getItemStack().getType().equals(itemtype))
+                            {
+                                remList.add(entity);
+                            }
+                        }
+                        list.removeAll(remList);
+                    }
+                    else
+                    {
+                        context.sendMessage("basics", "&cYou can only specify data for removing items!");
+                        return;
+                    }
                 }
-                if (type == null)
+                else
                 {
-                    paramNotFound(context, "basics", "&cInvalid entity-type!\n&eUse &6"
-                            + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
-                            + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
-                            + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
-                            + EntityType.EXPERIENCE_ORB);
+                    EntityType type = EntityMatcher.get().matchEntity(s_entityType);
+                    if (type == null)
+                    {
+                        context.sendMessage("basics", "&cInvalid entity-type!\n&eUse &6"
+                                + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
+                                + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
+                                + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
+                                + EntityType.EXPERIENCE_ORB);
+                        return;
+                    }
+                    if (type.isAlive())
+                    {
+                        blockCommand(context, "basics", "&cTo kill living entities use the &e/butcher &ccommand!");
+                    }
+                    types.add(type.getBukkitType());
                 }
             }
-            if (type.isAlive())
+            List<Entity> remList = new ArrayList<Entity>();
+            for (Entity entity : list)
             {
-                blockCommand(context, "basics", "&cTo kill living entities use the &e/butcher &ccommand!");
+                if (types.contains(entity.getType()))
+                {
+                    remList.add(entity);
+                }
             }
-            entitiesRemoved = this.removeEntityType(world.getEntities(), loc, radius, itemtype, false, type);
-
+            list.removeAll(remList);
+            remList = world.getEntities();
+            remList.removeAll(list);
+            entitiesRemoved = this.removeEntities(remList, loc, radius, false);
         }
         if (entitiesRemoved == 0)
         {
             context.sendMessage("basics", "&eNo entities to remove!");
         }
-        else
+        else if (context.getString(0).equalsIgnoreCase("*"))
         {
-            if (context.hasFlag("*"))
+            if (radius == -1)
             {
                 context.sendMessage("basics", "&aRemoved all entities in &6%s&a! &f(&6%d&f)", world.getName(), entitiesRemoved);
             }
             else
             {
-                context.sendMessage("basics", "&aRemoved &e%d &aentities!", entitiesRemoved);
+                context.sendMessage("basics", "&aRemoved all entities around you! &f(&6%d&f)", entitiesRemoved);
+            }
+        }
+        else
+        {
+            if (radius == -1)
+            {
+                context.sendMessage("basics", "&aRemoved &e%d &aentities in '&6%s&a!", entitiesRemoved, world.getName());
+            }
+            else
+            {
+                context.sendMessage("basics", "&aRemoved &e%d &aentities around you!", entitiesRemoved);
             }
         }
     }
 
-    @Command(desc = "Gets rid of living animals nearby you", flags = {
+    @Command(desc = "Gets rid of living animals nearby you", flags =
+    {
         @Flag(longName = "pets", name = "p"),
         @Flag(longName = "golems", name = "g"),
         @Flag(longName = "animals", name = "a"),
@@ -220,7 +273,9 @@ public class WorldControlCommands
         @Flag(longName = "alltypes", name = "*"), // all living entities (but not players)
         @Flag(longName = "lightning", name = "l"),
         @Flag(longName = "all", name = "all")
-    }, params = @Param(names = {
+    }, params =
+    @Param(names =
+    {
         "choose", "c"
     }, type = String.class), usage = "[radius] [world] [choose|c <entityType>] [flags]")
     public void butcher(CommandContext context)
@@ -273,11 +328,12 @@ public class WorldControlCommands
             {
                 blockCommand(context, "basics", "%cUnkown Mob-Type!");
             }
-            removed = this.removeEntityType(list, loc, radius, null, lightning, type);
+            //TODO choosing mobs
+            removed = this.removeEntities(list, loc, radius, lightning);
         }
         else if (context.hasFlag("*") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender())) //remove all living
         {
-            removed = this.removeEntityType(list, loc, radius, null, lightning, (EntityType[])null);
+            removed = this.removeEntities(list, loc, radius, lightning);
         }
         else
         {
@@ -285,7 +341,7 @@ public class WorldControlCommands
             for (Entity entity : list)
             {
                 if (entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast || entity instanceof EnderDragon
-                        || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
+                        || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable) entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
                         || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
                         || (context.hasFlag("n") && entity instanceof NPC && BasicsPerm.COMMAND_BUTCHER_FLAG_NPC.isAuthorized(context.getSender()))
                         || (context.hasFlag("a") && entity instanceof Animals && !(entity instanceof Tameable) && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender()))
@@ -294,45 +350,34 @@ public class WorldControlCommands
                     filteredList.add(entity);
                 }
             }
-            removed = this.removeEntityType(filteredList, loc, radius, null, lightning, (EntityType[])null);
+            removed = this.removeEntities(filteredList, loc, radius, lightning);
         }
         context.sendMessage("basics", removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
     }
 
-    private int removeEntityType(List<Entity> list, Location loc, int radius, Material itemtype, boolean lightning, EntityType... types)
+    private int removeEntities(List<Entity> remList, Location loc, int radius, boolean lightning)
     {
-        if (loc == null && radius != -1)
+        int removed = 0;
+
+        if (radius != -1 && loc == null)
         {
             throw new IllegalStateException("Unknown Location with radius");
         }
-        int removed = 0;
-        EnumSet<org.bukkit.entity.EntityType> bukkitTypes = EnumSet.noneOf(org.bukkit.entity.EntityType.class);
-        if (types != null)
-        {
-            for (EntityType type : types)
-            {
-                bukkitTypes.add(type.getBukkitType());
-            }
-        }
+        boolean all = radius == -1;
+        int radiusSquared = radius * radius;
         final Location entityLocation = new Location(null, 0, 0, 0);
-        for (Entity entity : list)
+        for (Entity entity : remList)
         {
-            if (entity instanceof Player || types != null && !bukkitTypes.contains(entity.getType()))
+            if (entity instanceof Player)
             {
                 continue;
             }
             entity.getLocation(entityLocation);
-            if (radius != -1)
+            if (!all)
             {
-                int distance = (int)(entityLocation.subtract(loc)).lengthSquared();
-                if (radius * radius < distance)
-                {
-                    continue;
-                }
-            }
-            if (entity instanceof Item && itemtype != null)
-            {
-                if (!((Item)entity).getItemStack().getType().equals(itemtype))
+
+                int distance = (int) (entityLocation.subtract(loc)).lengthSquared();
+                if (radiusSquared < distance)
                 {
                     continue;
                 }

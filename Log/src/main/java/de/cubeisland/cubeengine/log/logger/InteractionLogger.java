@@ -86,6 +86,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                         this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
                                 block.getType(), ((Diode) blockData).getDelay());
                     }
+                    //TODO add new blocks in 1.5
             }
         }
         else if (event.getAction().equals(Action.PHYSICAL) && this.config.logPressurePlate)
