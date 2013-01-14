@@ -266,7 +266,7 @@ public class WorldControlCommands
             }
         }
     }
-    private Collection<String> BUTCHER_TARGETS = new HashSet<String>()
+    private static final Collection<String> BUTCHER_TARGETS = new HashSet<String>()
     {
         
         {
