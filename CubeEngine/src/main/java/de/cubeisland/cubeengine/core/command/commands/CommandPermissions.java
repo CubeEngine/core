@@ -2,9 +2,8 @@ package de.cubeisland.cubeengine.core.command.commands;
 
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import org.bukkit.permissions.Permissible;
-
 import java.util.Locale;
+import org.bukkit.permissions.Permissible;
 
 public enum CommandPermissions implements Permission
 {

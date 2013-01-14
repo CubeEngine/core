@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 public class CurrencyManager
 {
+
     private THashMap<String, Currency> currencies = new THashMap<String, Currency>();
     private Conomy module;
     private ConomyConfiguration config;
@@ -31,22 +32,25 @@ public class CurrencyManager
         }
         this.mainCurrency = this.currencies.get(config.currencies.keySet().iterator().next());
 
-        for (Entry<String, Map<String, Double>> entry : this.config.relations.entrySet())
+        if (this.config.relations != null)
         {
-            Currency currency = this.getCurrencyByName(entry.getKey().toLowerCase());
-            if (currency == null)
+            for (Entry<String, Map<String, Double>> entry : this.config.relations.entrySet())
             {
-                module.getLogger().warning("Unknown currency in relations! " + entry.getKey());
-            }
-            for (Entry<String, Double> relation : entry.getValue().entrySet())
-            {
-                Currency relatedCurrency = this.getCurrencyByName(relation.getKey().toLowerCase());
-                if (relatedCurrency == null)
+                Currency currency = this.getCurrencyByName(entry.getKey().toLowerCase());
+                if (currency == null)
                 {
-                    module.getLogger().warning("Unknown currency in relations! " + relation.getKey());
+                    module.getLogger().warning("Unknown currency in relations! " + entry.getKey());
                 }
-                currency.addConversionRate(relatedCurrency, relation.getValue());
-                relatedCurrency.addConversionRate(currency, 1 / relation.getValue());
+                for (Entry<String, Double> relation : entry.getValue().entrySet())
+                {
+                    Currency relatedCurrency = this.getCurrencyByName(relation.getKey().toLowerCase());
+                    if (relatedCurrency == null)
+                    {
+                        module.getLogger().warning("Unknown currency in relations! " + relation.getKey());
+                    }
+                    currency.addConversionRate(relatedCurrency, relation.getValue());
+                    relatedCurrency.addConversionRate(currency, 1 / relation.getValue());
+                }
             }
         }
     }

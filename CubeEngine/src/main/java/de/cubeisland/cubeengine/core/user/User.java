@@ -369,6 +369,11 @@ public class User extends UserBase implements LinkingModel<Long>
         this.passwd = null;
         CubeEngine.getUserManager().update(this);
     }
+    
+    public boolean isPasswordSet()
+    {
+        return this.passwd.length > 0;
+    }
 
     public boolean checkPassword(String password)
     {

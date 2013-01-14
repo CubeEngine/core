@@ -7,26 +7,25 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.user.User;
-
-import java.util.Set;
-
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.user.User;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class CoreCommands extends ContainerCommand
 {
+
     private final BukkitCore core;
 
     public CoreCommands(Core core)
     {
         super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
-        this.core = (BukkitCore)core;
+        this.core = (BukkitCore) core;
     }
 
     @Command(desc = "Disables the CubeEngine")
@@ -35,7 +34,8 @@ public class CoreCommands extends ContainerCommand
         this.core.getServer().getPluginManager().disablePlugin(this.core);
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "setpassword", "setpw"
     }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
     public void setPassword(CommandContext context)
@@ -56,6 +56,16 @@ public class CoreCommands extends ContainerCommand
             if (user == null)
             {
                 blockCommand(context, "core", "&cUser %s not found!", context.getString(1));
+            }
+            // Setting pw of others can only be done when perm is set / no need to login
+        }
+        else
+        {
+            // Check if pw is set AND user is not logged in
+            if (user.isPasswordSet() && !user.isLoggedIn())
+            {
+                context.sendMessage("core", "&cYou cannot change your password when not logged in!");
+                return;
             }
         }
         int strength = this.computePasswordStrength(context.getString(0));
@@ -84,9 +94,11 @@ public class CoreCommands extends ContainerCommand
         context.sendMessage("core", "&aPassword set!");
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "clearpassword", "clearpw"
-    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags = @Flag(longName = "all", name = "a"))
+    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags =
+    @Flag(longName = "all", name = "a"))
     public void clearPassword(CommandContext context)
     {
         if (context.hasFlag("a"))
@@ -258,7 +270,7 @@ public class CoreCommands extends ContainerCommand
             }
         }
 
-        return (int)strength;
+        return (int) strength;
     }
 
     private int getCharSetSize(String pass)
