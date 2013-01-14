@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.core.util.matcher;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
@@ -18,6 +20,7 @@ import java.util.Map;
  */
 public enum EntityType
 {
+
     DROPPED_ITEM(org.bukkit.entity.EntityType.DROPPED_ITEM, false),
     EXPERIENCE_ORB(org.bukkit.entity.EntityType.EXPERIENCE_ORB, false),
     PAINTING(org.bukkit.entity.EntityType.PAINTING, false),
@@ -79,6 +82,18 @@ public enum EntityType
      */
     UNKNOWN(org.bukkit.entity.EntityType.UNKNOWN, false);
 
+    public static Collection<String> livingEntities()
+    {
+        Collection<String> result = new ArrayList<String>();
+        for (EntityType type : values())
+        {
+            if (type.isAlive() && REVERSE_NAME_MAP.get(type) != null)
+            {
+                result.add(REVERSE_NAME_MAP.get(type));
+            }
+        }
+        return result;
+    }
     private org.bukkit.entity.EntityType type;
     private boolean spawnEgg;
     private static final Map<EntityType, String> REVERSE_NAME_MAP = new EnumMap<EntityType, String>(EntityType.class);
@@ -174,7 +189,7 @@ public enum EntityType
     public boolean isFriendly()
     {
         return this.isAnimal() || NPC.class.isAssignableFrom(this.
-            getEntityClass());
+                getEntityClass());
     }
 
     /**

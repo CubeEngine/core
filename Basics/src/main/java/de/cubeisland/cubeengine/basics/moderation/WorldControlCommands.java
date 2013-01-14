@@ -15,7 +15,8 @@ import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,12 +35,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.Wither;
 
 /**
  * Commands controlling / affecting worlds. /weather /remove /butcher
  */
 public class WorldControlCommands
 {
+
     private BasicsConfiguration config;
 
     public WorldControlCommands(Basics basics)
@@ -47,7 +50,8 @@ public class WorldControlCommands
         this.config = basics.getConfiguration();
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params =
+    @Command(desc = "Changes the weather", min = 1, max = 3,
+    usage = "<sun|rain|storm> [duration] [in <world>]", params =
     @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
     {
@@ -262,22 +266,26 @@ public class WorldControlCommands
             }
         }
     }
+    private Collection<String> BUTCHER_TARGETS = new HashSet<String>()
+    {
+        
+        {
+            this.add("pet");
+            this.add("golem");
+            this.add("animal");
+            this.add("npc");
+            this.add("other");
+            this.add("boss");
+            this.add("monster");
+        }
+    };
 
-    @Command(desc = "Gets rid of living animals nearby you", flags =
+    @Command(desc = "Gets rid of living mobs nearby you", flags =
     {
-        @Flag(longName = "pets", name = "p"),
-        @Flag(longName = "golems", name = "g"),
-        @Flag(longName = "animals", name = "a"),
-        @Flag(longName = "npc", name = "n"),
-        @Flag(longName = "other", name = "o"), //squids & bats
-        @Flag(longName = "alltypes", name = "*"), // all living entities (but not players)
-        @Flag(longName = "lightning", name = "l"),
-        @Flag(longName = "all", name = "all")
+        @Flag(longName = "lightning", name = "l"), // die with style
+        @Flag(longName = "all", name = "a") // infinite radius
     }, params =
-    @Param(names =
-    {
-        "choose", "c"
-    }, type = String.class), usage = "[radius] [world] [choose|c <entityType>] [flags]")
+    @Param(names = "in", type = World.class), usage = "[types...] [radius] [in world] [-l] [-all]")
     public void butcher(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -293,9 +301,9 @@ public class WorldControlCommands
         {
             loc = sender.getLocation();
         }
-        if (context.hasIndexed(0))
+        if (context.hasIndexed(1))
         {
-            radius = context.getIndexed(0, Integer.class, 0);
+            radius = context.getIndexed(1, Integer.class, 0);
             if (radius < 0)
             {
                 if (!(radius == -1 && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender())))
@@ -304,7 +312,7 @@ public class WorldControlCommands
                 }
             }
         }
-        if (context.hasFlag("all") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender()))
+        if (context.hasFlag("a") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender()))
         {
             radius = -1;
         }
@@ -313,45 +321,75 @@ public class WorldControlCommands
         {
             lightning = true;
         }
-        List<Entity> list = new ArrayList<Entity>();
-        for (Entity entity : loc.getWorld().getEntities())
+        List<Entity> list = loc.getWorld().getEntities(); // entities remaining in that list will NOT get removed
+        String[] s_types =
         {
-            if (entity instanceof LivingEntity && !(entity instanceof Player))
+            "monster"
+        };
+        boolean allTypes = false;
+        if (context.hasIndexed(0))
+        {
+            if (context.getString(0).equals("*"))
             {
-                list.add(entity); // only living entities that are not players
+                allTypes = true;
+            }
+            else
+            {
+                s_types = StringUtils.explode(",", context.getString(0));
             }
         }
-        if (context.hasNamed("c"))
+        List<Entity> remList;
+        if (!allTypes)
         {
-            EntityType type = EntityMatcher.get().matchMob(context.getNamed("c", String.class));
-            if (type == null)
+            for (String s_type : s_types)
             {
-                blockCommand(context, "basics", "%cUnkown Mob-Type!");
-            }
-            //TODO choosing mobs
-            removed = this.removeEntities(list, loc, radius, lightning);
-        }
-        else if (context.hasFlag("*") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender())) //remove all living
-        {
-            removed = this.removeEntities(list, loc, radius, lightning);
-        }
-        else
-        {
-            List<Entity> filteredList = new ArrayList<Entity>();
-            for (Entity entity : list)
-            {
-                if (entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast || entity instanceof EnderDragon
-                        || (context.hasFlag("p") && entity instanceof Tameable && ((Tameable) entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
-                        || (context.hasFlag("g") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
-                        || (context.hasFlag("n") && entity instanceof NPC && BasicsPerm.COMMAND_BUTCHER_FLAG_NPC.isAuthorized(context.getSender()))
-                        || (context.hasFlag("a") && entity instanceof Animals && !(entity instanceof Tameable) && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender()))
-                        || (context.hasFlag("o") && BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER.isAuthorized(context.getSender()) && (entity instanceof Ambient || entity instanceof WaterMob)))
+                String match = StringUtils.matchString(s_type, this.BUTCHER_TARGETS);
+                boolean specialmatch = false;
+                if (match == null)
                 {
-                    filteredList.add(entity);
+                    match = StringUtils.matchString(s_type, EntityType.livingEntities());
+                    if (match == null)
+                    {
+                        return; //TODO msg
+                    }
+                    specialmatch = true;
                 }
+                remList = new ArrayList<Entity>();
+                for (Entity entity : list)
+                {
+                    if ( //TODO change perms
+                            (match.equals("pet") && entity instanceof Tameable && ((Tameable) entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
+                            || (match.equals("golem") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
+                            || (match.equals("animal") && entity instanceof Animals && !(entity instanceof Tameable) && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender()))
+                            || (match.equals("npc") && entity instanceof NPC && BasicsPerm.COMMAND_BUTCHER_FLAG_NPC.isAuthorized(context.getSender()))
+                            || (match.equals("other") && (entity instanceof Ambient || entity instanceof WaterMob) && BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER.isAuthorized(context.getSender()))
+                            || (match.equals("boss") && (entity instanceof EnderDragon || entity instanceof Wither)) //TODO perm
+                            || (match.equals("monster") && entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast)//TODO perm
+                            || (specialmatch
+                            && (entity.getType().equals(EntityMatcher.get().matchEntity(match).getBukkitType()))) //TODO perms
+                            )
+                    {
+                        remList.add(entity);
+                    }
+                }
+                list.removeAll(remList);
             }
-            removed = this.removeEntities(filteredList, loc, radius, lightning);
         }
+        remList = loc.getWorld().getEntities();
+        if (!allTypes)
+        {
+            remList.removeAll(list);
+        }
+        list.clear();
+        for (Entity entity : remList)
+        {
+            if (entity.getType().isAlive())
+            {
+                list.add(entity);
+            }
+        }
+        remList.retainAll(list);
+        removed = this.removeEntities(remList, loc, radius, lightning);
         context.sendMessage("basics", removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
     }
 
