@@ -6,28 +6,24 @@ import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 /**
- * Commands changing time.
- * /time
- * /ptime
+ * Commands changing time. /time /ptime
  */
 public class TimeControlCommands
 {
@@ -46,43 +42,42 @@ public class TimeControlCommands
     private enum Time
     {
         // TODO what about a matcher + alias file?
-        DAY(
-            6000,
-            "day",
-            "noon"),
-        NIGHT(
-            18000,
-            "night",
-            "midnight"),
-        DAWN(
-            22500,
-            "dawn"),
-        SUNRISE(
-            0,
-            "sunrise",
-            "morning"),
-        DUSK(
-            13000,
-            "dusk",
-            "moonrise"),
-        EVEN(
-            15000,
-            "even",
-            "evening",
-            "sunset"),
-        FORENOON(
-            3000,
-            "forenoon"),
-        AFTERNOON(
-            9000,
-            "afternoon");
 
+        DAY(
+        6000,
+        "day",
+        "noon"),
+        NIGHT(
+        18000,
+        "night",
+        "midnight"),
+        DAWN(
+        22500,
+        "dawn"),
+        SUNRISE(
+        0,
+        "sunrise",
+        "morning"),
+        DUSK(
+        13000,
+        "dusk",
+        "moonrise"),
+        EVEN(
+        15000,
+        "even",
+        "evening",
+        "sunset"),
+        FORENOON(
+        3000,
+        "forenoon"),
+        AFTERNOON(
+        9000,
+        "afternoon");
         public static final int TICKS_PER_HOUR = 1000;
         public static final int TICKS_PER_DAY = 24 * TICKS_PER_HOUR;
         public static final int HALF_DAY = TICKS_PER_DAY / 2;
         public static final int LIGHT_SHIFT = HALF_DAY / 2;
-        public static final double TICKS_TO_MINUTES = (double)TICKS_PER_DAY / 1440D;
-
+        public static final double TICKS_TO_MINUTES = (double) TICKS_PER_DAY / 1440D;
         private static final Pattern PARSE_TIME_PATTERN = Pattern.compile("^([012]?\\d)(?::(\\d{2}))?(pm|am)?$", Pattern.CASE_INSENSITIVE);
         private static final THashMap<String, Time> times = new THashMap<String, Time>(values().length);
         private static final TLongObjectHashMap<String> timeNames = new TLongObjectHashMap<String>();
@@ -176,7 +171,7 @@ public class TimeControlCommands
                     hours = (hours - LIGHT_SHIFT + TICKS_PER_DAY) % TICKS_PER_DAY;
 
                     // calculate the ticks
-                    return hours + Math.round(TICKS_TO_MINUTES * (double)minutes);
+                    return hours + Math.round(TICKS_TO_MINUTES * (double) minutes);
                 }
 
                 long daytime = Long.parseLong(string);
@@ -192,7 +187,8 @@ public class TimeControlCommands
                 return daytime;
             }
             catch (NumberFormatException ignored)
-            {}
+            {
+            }
             return -1;
         }
 
@@ -204,8 +200,8 @@ public class TimeControlCommands
             {
                 // shift the time back to show a matching to the light
                 time = (time + LIGHT_SHIFT) % TICKS_PER_DAY;
-                int hours = (int)(time / TICKS_PER_HOUR);
-                int minutes = (int)Math.round((double)(time % TICKS_PER_HOUR) / TICKS_TO_MINUTES);
+                int hours = (int) (time / TICKS_PER_HOUR);
+                int minutes = (int) Math.round((double) (time % TICKS_PER_HOUR) / TICKS_TO_MINUTES);
 
                 formatted = StringUtils.padLeft("" + hours, '0', 2) + ":" + StringUtils.padRight("" + minutes, '0', 2);
             }
@@ -213,166 +209,106 @@ public class TimeControlCommands
         }
     }
 
-    @Command(desc = "Changes the time of a world", max = -1, usage = "<time> [world] [world] ...")
+    @Command(desc = "Changes the time of a world", flags =
+    @Flag(longName = "lock", name = "l"),
+    max = -1, usage = "<time> [worlds]...")
     public void time(CommandContext context)
     {
         User sender = context.getSenderAsUser();
 
-        if (sender != null)
+        if (!context.hasIndexed(0))
         {
-            if (!context.hasIndexed(0))
-            {
-                context.sendMessage("basics", "&aIt's currently &e%s&a in this world.", Time.format(sender.getWorld().getTime()));
-            }
-            else
-            {
-                String timeString = context.getString(0);
-                final long time;
-                if ("lock".equalsIgnoreCase(timeString))
-                {
-                    time = -2;
-                }
-                else if ("unlock".equalsIgnoreCase(timeString))
-                {
-                    time = -3;
-                }
-                else
-                {
-                    time = Time.matchTime(timeString);
-                }
-                if (time == -1)
-                {
-                    World world = Bukkit.getWorld(context.getString(0));
-                    if (world != null)
-                    {
-                        context.sendMessage("basics", "&aIt's currently &e%s&a in this world.", Time.format(world.getTime()));
-                    }
-                    else
-                    {
-                        context.sendMessage("basics", "&cThe time you entered is not valid!");
-                    }
-                    return;
-                }
-                if (context.hasIndexed(1))
-                {
-                    List<World> worlds;
-                    String worldName = context.getString(1);
-                    if ("*".equals(worldName))
-                    {
-                        worlds = Bukkit.getWorlds();
-                    }
-                    else
-                    {
-                        worlds = new ArrayList<World>();
-                        int i = 1;
-                        World world;
-                        do
-                        {
-                            world = Bukkit.getWorld(worldName);
-                            if (world != null)
-                            {
-                                worlds.add(world);
-                            }
-                        }
-                        while ((worldName = context.getString(++i)) != null);
-                    }
-
-                    if (worlds.isEmpty())
-                    {
-                        context.sendMessage("basics", "&cNone of the specified worlds were found!");
-                        return;
-                    }
-                    for (World world : worlds)
-                    {
-                        this.setTime(world, time);
-                    }
-
-                    if (worlds.size() == 1)
-                    {
-                        context.sendMessage("basics", "&aThe time of &e%s&a has been set to &e%s&a!", worlds.get(0).getName(), Time.format(time));
-                    }
-                    else
-                    {
-                        context.sendMessage("basics", "&aThe time of &e%s world(s)&a has been set to &e%s&a!", worlds.size(), Time.format(time));
-                    }
-                }
-                else
-                {
-                    this.setTime(sender.getWorld(), time);
-                }
-            }
+            context.sendMessage("basics", "&aIt's currently &e%s&a in &6%s&a.",
+                    Time.format(sender.getWorld().getTime()), sender.getWorld().getName());
         }
         else
         {
-            if (context.indexedCount() == 0)
-            {
-                context.sendMessage("basics", "&cYou have to specify a world when using this command from the console!");
-            }
-            else if (context.indexedCount() == 1)
+            Collection<World> worlds;
+            final long time;
+            time = Time.matchTime(context.getString(0));
+            if (time == -1)
             {
                 World world = Bukkit.getWorld(context.getString(0));
-                if (world == null)
+                if (world != null)
                 {
-                    context.sendMessage("basics", "&cThe specified world wasn't found!");
-                    return;
+                    context.sendMessage("basics", "&aIt's currently &e%s&a in this world.", Time.format(world.getTime()));
                 }
-                context.sendMessage("basics", "&aIt's currently &e%s&a in this world.", Time.format(world.getTime()));
-            }
-            else
-            {
-                final long time = Time.matchTime(context.getString(0));
-                if (time == -1)
+                else
                 {
                     context.sendMessage("basics", "&cThe time you entered is not valid!");
-                    return;
                 }
-
-                List<World> worlds;
-                String worldName = context.getString(1);
-                if ("*".equals(worldName))
+                return;
+            }
+            if (context.hasIndexed(1))
+            {
+                if (context.getString(1).equals("*"))
                 {
                     worlds = Bukkit.getWorlds();
                 }
                 else
                 {
+                    String[] worldNames = StringUtils.explode(",", context.getString(1));
                     worlds = new ArrayList<World>();
-                    int i = 1;
-                    World world;
-                    do
+                    for (String worldName : worldNames)
                     {
-                        world = Bukkit.getWorld(worldName);
+                        World world = Bukkit.getWorld(worldName);
                         if (world != null)
                         {
                             worlds.add(world);
-                        }
+                        } //else ignore if not found
                     }
-                    while ((worldName = context.getString(++i)) != null);
                 }
-
                 if (worlds.isEmpty())
                 {
                     context.sendMessage("basics", "&cNone of the specified worlds were found!");
                     return;
                 }
-                for (World world : worlds)
+            }
+            else if (sender == null)
+            {
+                context.sendMessage("basics", "&cYou have to specify a world when using this command from the console!");
+                return;
+            }
+            else
+            {
+                worlds = new ArrayList<World>();
+                worlds.add(sender.getWorld());
+            }
+            if (worlds.size() == 1)
+            {
+                context.sendMessage("basics", "&aThe time of &e%s&a has been set to &6%s&a!", worlds.iterator().next().getName(), Time.format(time));
+            }
+            else if (context.getString(1).equals("*"))
+            {
+                context.sendMessage("basics", "&aThe time of all worlds have been set to &6%s&a!", Time.format(time));
+            }
+            else
+            {
+                context.sendMessage("basics", "&aThe time of &6%s &aworlds have been set to &6%s&a!", worlds.size(), Time.format(time));
+            }
+            for (World world : worlds)
+            {
+                this.setTime(world, time);
+                if (context.hasFlag("l"))
                 {
-                    this.setTime(world, time);
-                }
-
-                if (worlds.size() == 1)
-                {
-                    context.sendMessage("basics", "&aThe time of &e%s&a has been set to &e%s&a!", worlds.get(0).getName(), Time.format(time));
-                }
-                else
-                {
-                    context.sendMessage("basics", "&aThe time of &e%s world(s)&a has been set to &e%s&a!", worlds.size(), Time.format(time));
+                    if (this.lockTask.worlds.containsKey(world.getName()))
+                    {
+                        this.lockTask.remove(world);
+                        context.sendMessage("basics", "&aTime locked for &6%s&a!", world.getName());
+                    }
+                    else
+                    {
+                        this.lockTask.add(world);
+                        context.sendMessage("basics", "&aTime unlocked for &6%s&a!", world.getName());
+                    }
                 }
             }
         }
     }
 
-    @Command(desc = "Changes the time for a player", min = 1, max = 2, flags = {
-        @Flag(longName = "relative", name = "rel")
+    @Command(desc = "Changes the time for a player", min = 1, max = 2, flags =
+    {
+        @Flag(longName = "lock", name = "l")
     }, usage = "<<time>|reset> [player]")
     public void ptime(CommandContext context)
     {
@@ -402,7 +338,7 @@ public class TimeControlCommands
                 invalidUsage(context, "core", "&cUser %s not found!", context.getUser(0));
             }
             if (!BasicsPerm.COMMAND_PTIME_OTHER.
-                isAuthorized(context.getSender()))
+                    isAuthorized(context.getSender()))
             {
                 denyAccess(context, "basics", "&cYou are not allowed to change the time of other players!");
             }
@@ -419,15 +355,15 @@ public class TimeControlCommands
         }
         else
         {
-            if (context.hasFlag("rel"))
+            if (context.hasFlag("l"))
             {
                 user.resetPlayerTime();
-                user.setPlayerTime(user.getWorld().getTime() - time, true);
+                user.setPlayerTime(time, false);
             }
             else
             {
                 user.resetPlayerTime();
-                user.setPlayerTime(time, false);
+                user.setPlayerTime(user.getWorld().getTime() - time, true);
             }
             String timeName = Time.getTimeName(time);
             if (timeName == null)
@@ -454,22 +390,12 @@ public class TimeControlCommands
 
     private void setTime(World world, long time)
     {
-        if (time == -2)
-        {
-            this.lockTask.add(world);
-        }
-        else if (time == -3)
-        {
-            this.lockTask.remove(world);
-        }
-        else
-        {
-            world.setTime(time);
-        }
+        world.setTime(time);
     }
 
     private final class LockTask implements Runnable
     {
+
         private final Map<String, Long> worlds = new HashMap<String, Long>();
         private int taskid = -1;
 
