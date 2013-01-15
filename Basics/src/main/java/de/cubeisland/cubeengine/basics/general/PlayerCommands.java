@@ -6,20 +6,20 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.time.Duration;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
-
-import java.sql.Timestamp;
-
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import java.sql.Timestamp;
+import java.util.TreeSet;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public class PlayerCommands
 {
@@ -273,11 +273,33 @@ public class PlayerCommands
         //TODO kill a player looking at if possible
         boolean lightning = context.hasFlag("l") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
         boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
-        if (!((context.hasIndexed(0) || context.hasFlag("a"))))
+        User user = null;
+        if (context.hasIndexed(0))
         {
-            blockCommand(context, "basics", "&eYou need to specify who you want to kill!");
+            user = context.getUser(0);
         }
-        User user = context.getUser(0);
+        else if (!context.hasFlag("a"))
+        {
+            User sender = context.getSenderAsUser("basics", "&cPlease speicify a victim!");
+            TreeSet<Entity> entities = sender.getTargets(150);
+            for (Entity entity : entities)
+            {
+                if (!sender.hasLineOfSight(entity))
+                {
+                    break; // entity cannot be seen directly
+                }
+                if (entity instanceof Player)
+                {
+                    user = this.um.getExactUser((Player) entity);
+                    break;
+                }
+            }
+            if (user == null)
+            {
+                context.sendMessage("basics", "&cNo player to kill in sight!");
+                return;
+            }
+        }
         if (user == null)
         {
             if (!context.hasFlag("a"))

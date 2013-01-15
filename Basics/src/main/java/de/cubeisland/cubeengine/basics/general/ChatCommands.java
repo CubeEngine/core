@@ -33,7 +33,7 @@ public class ChatCommands
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastMessage("basics", "* &2%s &f%s", context.getSender().getName(), message); // Here no category so -> no Translation
+        this.um.broadcastMessage("basics", "* &2%s &f%s", context.getSender().getName(), message);
     }
 
     @Command(desc = "Sends a private message to someone", names = {

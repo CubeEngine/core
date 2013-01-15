@@ -42,6 +42,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.TreeSet;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Spider;
+import org.bukkit.util.BlockIterator;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -369,7 +377,7 @@ public class User extends UserBase implements LinkingModel<Long>
         this.passwd = null;
         CubeEngine.getUserManager().update(this);
     }
-    
+
     public boolean isPasswordSet()
     {
         return this.passwd.length > 0;
@@ -510,5 +518,56 @@ public class User extends UserBase implements LinkingModel<Long>
     public long getWorldId()
     {
         return CubeEngine.getCore().getWorldManager().getWorldId(this.getWorld());
+    }
+
+    /**
+     * Returns all entities in line of sight of this player
+     *
+     * @param distance the max distance
+     * @return a set of all entities in line of sight OR null if not online
+     */
+    public TreeSet<Entity> getTargets(int distance)
+    {
+        if (this.offlinePlayer.isOnline())
+        {
+            final Location blockLoc = new Location(null, 0, 0, 0);
+            final Location entityLoc = new Location(null, 0, 0, 0);
+            final Location playerLoc = this.getLocation();
+            Comparator<Entity> compare = new Comparator<Entity>()
+            {
+                final Location l1 = new Location(null, 0, 0, 0);
+                final Location l2 = new Location(null, 0, 0, 0);
+                @Override
+                public int compare(Entity o1, Entity o2)
+                {
+                    o1.getLocation(l1);
+                    o2.getLocation(l2);
+                    return (int) (l1.distanceSquared(playerLoc) - l2.distanceSquared(playerLoc));
+                }
+            };
+            BlockIterator iterator = new BlockIterator(
+                    this.getPlayer().getWorld(),
+                    this.getLocation().toVector(),
+                    this.getEyeLocation().getDirection(),
+                    0, distance);
+            TreeSet<Entity> targets = new TreeSet<Entity>(compare);
+            Collection<Entity> list = this.getNearbyEntities(distance, distance, distance);
+            double detectDistance = 1;
+            while (iterator.hasNext())
+            {
+                Block block = iterator.next();
+                detectDistance += 0.015;
+                block.getLocation(blockLoc).add(0.5, 0.5, 0.5);
+                for (Entity entity : list)
+                {
+                    if (entity.getLocation(entityLoc).distanceSquared(blockLoc) < ((entity instanceof Spider) ? detectDistance + 0.5 : detectDistance))
+                    {
+                        targets.add(entity);
+                    }
+                }
+            }
+            return targets;
+        }
+        return null;
     }
 }
