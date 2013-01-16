@@ -23,13 +23,15 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The /spawnmob command.
  */
 public class SpawnMobCommand
 {
-
     private BasicsConfiguration config;
 
     public SpawnMobCommand(Basics basics)
@@ -126,10 +128,10 @@ public class SpawnMobCommand
     {
         String entityName = mobString;
         EntityType entityType;
-        String entityData = null;
+        List<String> entityData = new ArrayList<String>();
         if (entityName.contains(":"))
         {
-            entityData = entityName.substring(entityName.indexOf(":") + 1, entityName.length());
+            entityData = Arrays.asList(StringUtils.explode(":", entityName.substring(entityName.indexOf(":") + 1, entityName.length())));
             entityName = entityName.substring(0, entityName.indexOf(":"));
             entityType = EntityMatcher.get().matchMob(entityName);
         }
@@ -158,161 +160,181 @@ public class SpawnMobCommand
         return spawnedMobs;
     }
 
-    private void applyDataToMob(CommandSender sender, EntityType entityType, Entity entity, String data)
+    private void applyDataToMob(CommandSender sender, EntityType entityType, Entity entity, List<String> datas)
     {
         //TODO other additional data?
-        if (data != null)
+        for (String data : datas)
         {
-            String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "saddled", "baby", "angry", "tamed", "power", "charged", "sitting");
-            //TODO this list configurable something like datavalues.txt
-            if ("baby".equals(match))
+            if (data != null)
             {
-                if (entityType.isAnimal())
+                String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "saddled", "baby", "angry", "tamed", "power", "charged", "sitting");
+                //TODO this list configurable something like datavalues.txt
+                if (match == null)
                 {
-                    ((Animals) entity).setBaby();
-                }
-                else
-                {
-                    blockCommand(sender, "basics", "&eThis entity can not be a baby! Can you?");
-                }
-            }
-            else if ("saddled".equals(match))
-            {
-                if (entity instanceof Pig)
-                {
-                    ((Pig) entity).setSaddle(true);
-                }
-                else
-                {
-                    blockCommand(sender, "basics", "&eOnly Pigs can be saddled!");
-                }
-            }
-            else if ("angry".equals(match))
-            {
-                if (entityType.equals(EntityType.WOLF))
-                {
-                    ((Wolf) entity).setAngry(true);
-                }
-                else if (entityType.equals(EntityType.PIG_ZOMBIE))
-                {
-                    ((PigZombie) entity).setAngry(true);
-                }
-            }
-            else if ("tamed".equals(match))
-            {
-                if (entity instanceof Tameable) // Wolf or Ocelot
-                {
-
-                    ((Tameable) entity).setTamed(true);
-                    if (sender instanceof AnimalTamer)
+                    if (data.toLowerCase(Locale.ENGLISH).endsWith("hp"))
                     {
-                        ((Tameable) entity).setOwner((AnimalTamer) sender);
+                        try
+                        {
+                            int hp = Integer.parseInt(data.substring(0, data.length() - 2));
+                            ((LivingEntity) entity).setMaxHealth(hp);
+                            ((LivingEntity) entity).setHealth(hp);
+                            continue;
+                        }
+                        catch (NumberFormatException e)
+                        {
+                            blockCommand(sender, "basics", "&cInvalid HP amount!");
+                        }
+                    }
+                }
+                if ("baby".equals(match))
+                {
+                    if (entityType.isAnimal())
+                    {
+                        ((Animals) entity).setBaby();
                     }
                     else
                     {
-                        blockCommand(sender, "basics", "&eYou can not own any Animals!");
+                        blockCommand(sender, "basics", "&eThis entity can not be a baby! Can you?");
                     }
                 }
-            }
-            else if ("sitting".equals(match))
-            {
-                if (entity instanceof Wolf)
+                else if ("saddled".equals(match))
                 {
-                    ((Wolf) entity).setSitting(true);
-                }
-                else if (entity instanceof Ocelot)
-                {
-                    ((Ocelot) entity).setSitting(true);
-                }
-                else
-                {
-                    blockCommand(sender, "basics", "&eOnly a wolfs and ocelots can sit!");
-                }
-            }
-            else if ("charged".equals(match) || data.equalsIgnoreCase("power"))
-            {
-                if (entityType.equals(EntityType.CREEPER))
-                {
-                    ((Creeper) entity).setPowered(true);
-                }
-                else
-                {
-                    blockCommand(sender, "basics", "&eYou can only charge creepers!");
-                }
-            }
-            else if (entityType.equals(EntityType.SHEEP))
-            {
-                DyeColor color = MaterialMatcher.get().matchColorData(data);
-                if (color == null)
-                {
-                    try
+                    if (entity instanceof Pig)
                     {
-                        byte byteData = Byte.parseByte(data);
-                        color = DyeColor.getByData(byteData);
+                        ((Pig) entity).setSaddle(true);
                     }
-                    catch (Exception ignored)
+                    else
                     {
+                        blockCommand(sender, "basics", "&eOnly Pigs can be saddled!");
                     }
+                }
+                else if ("angry".equals(match))
+                {
+                    if (entityType.equals(EntityType.WOLF))
+                    {
+                        ((Wolf) entity).setAngry(true);
+                    }
+                    else if (entityType.equals(EntityType.PIG_ZOMBIE))
+                    {
+                        ((PigZombie) entity).setAngry(true);
+                    }
+                }
+                else if ("tamed".equals(match))
+                {
+                    if (entity instanceof Tameable) // Wolf or Ocelot
+                    {
+
+                        ((Tameable) entity).setTamed(true);
+                        if (sender instanceof AnimalTamer)
+                        {
+                            ((Tameable) entity).setOwner((AnimalTamer) sender);
+                        }
+                        else
+                        {
+                            blockCommand(sender, "basics", "&eYou can not own any Animals!");
+                        }
+                    }
+                }
+                else if ("sitting".equals(match))
+                {
+                    if (entity instanceof Wolf)
+                    {
+                        ((Wolf) entity).setSitting(true);
+                    }
+                    else if (entity instanceof Ocelot)
+                    {
+                        ((Ocelot) entity).setSitting(true);
+                    }
+                    else
+                    {
+                        blockCommand(sender, "basics", "&eOnly a wolfs and ocelots can sit!");
+                    }
+                }
+                else if ("charged".equals(match) || data.equalsIgnoreCase("power"))
+                {
+                    if (entityType.equals(EntityType.CREEPER))
+                    {
+                        ((Creeper) entity).setPowered(true);
+                    }
+                    else
+                    {
+                        blockCommand(sender, "basics", "&eYou can only charge creepers!");
+                    }
+                }
+                else if (entityType.equals(EntityType.SHEEP))
+                {
+                    DyeColor color = MaterialMatcher.get().matchColorData(data);
                     if (color == null)
                     {
-                        blockCommand(sender, "basics", "&cInvalid SheepColor: " + data);
+                        try
+                        {
+                            byte byteData = Byte.parseByte(data);
+                            color = DyeColor.getByData(byteData);
+                        }
+                        catch (Exception ignored)
+                        {
+                        }
+                        if (color == null)
+                        {
+                            blockCommand(sender, "basics", "&cInvalid SheepColor: " + data);
+                        }
                     }
+                    ((Sheep) entity).setColor(color);
                 }
-                ((Sheep) entity).setColor(color);
-            }
-            else if (entityType.equals(EntityType.SLIME) || entityType.equals(EntityType.MAGMA_CUBE))
-            {
-                int size = 4;
-                match = StringUtils.matchString(data, "tiny", "small", "big");
-                if ("tiny".equals(match))
+                else if (entityType.equals(EntityType.SLIME) || entityType.equals(EntityType.MAGMA_CUBE))
                 {
-                    size = 0;
-                }
-                else if ("small".equals(match))
-                {
-                    size = 2;
-                }
-                else if ("big".equals(match))
-                {
-                    size = 4;
-                }
-                else
-                {
-                    try
+                    int size = 4;
+                    match = StringUtils.matchString(data, "tiny", "small", "big");
+                    if ("tiny".equals(match))
                     {
-                        size = Integer.parseInt(data);
+                        size = 0;
                     }
-                    catch (NumberFormatException e)
+                    else if ("small".equals(match))
                     {
-                        illegalParameter(sender, "basics", "&eThe slime-size has to be a number or tiny, small or big!");
+                        size = 2;
+                    }
+                    else if ("big".equals(match))
+                    {
+                        size = 4;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            size = Integer.parseInt(data);
+                        }
+                        catch (NumberFormatException e)
+                        {
+                            illegalParameter(sender, "basics", "&eThe slime-size has to be a number or tiny, small or big!");
+                        }
+                    }
+                    if (size >= 0 && size <= 250)
+                    {
+                        ((Slime) entity).setSize(size);
+                    }
+                    else
+                    {
+                        illegalParameter(sender, "basics", "&eThe slime-size can not be smaller than 0 or bigger than 250!");
                     }
                 }
-                if (size >= 0 && size <= 250)
+                else if (entityType.equals(EntityType.VILLAGER))
                 {
-                    ((Slime) entity).setSize(size);
+                    Villager.Profession profession = ProfessionMatcher.get().matchProfession(data);
+                    if (profession == null)
+                    {
+                        illegalParameter(sender, "basics", "Unknown villager-profession!");
+                    }
+                    ((Villager) entity).setProfession(profession);
                 }
-                else
+                else if (entityType.equals(EntityType.ENDERMAN))
                 {
-                    illegalParameter(sender, "basics", "&eThe slime-size can not be smaller than 0 or bigger than 250!");
+                    ItemStack item = MaterialMatcher.get().matchItemStack(data);
+                    if (item == null)
+                    {
+                        illegalParameter(sender, "basics", "Material not found!");
+                    }
+                    ((Enderman) entity).setCarriedMaterial(item.getData());
                 }
-            }
-            else if (entityType.equals(EntityType.VILLAGER))
-            {
-                Villager.Profession profession = ProfessionMatcher.get().matchProfession(data);
-                if (profession == null)
-                {
-                    illegalParameter(sender, "basics", "Unknown villager-profession!");
-                }
-                ((Villager) entity).setProfession(profession);
-            }
-            else if (entityType.equals(EntityType.ENDERMAN))
-            {
-                ItemStack item = MaterialMatcher.get().matchItemStack(data);
-                if (item == null)
-                {
-                    illegalParameter(sender, "basics", "Material not found!");
-                }
-                ((Enderman) entity).setCarriedMaterial(item.getData());
             }
         }
     }
