@@ -4,6 +4,8 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.LocationUtil;
 import org.bukkit.Location;
@@ -11,18 +13,18 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
-
 /**
  * Contains commands for fast movement. 
  * /up 
  * /ascend 
  * /descend 
  * /jumpto 
- * /through /thru 
+ * /through
+ * /thru 
  * /back 
- * /place /put
+ * /place 
+ * /put 
+ * /swap
  */
 public class MovementCommands
 {
@@ -122,7 +124,8 @@ public class MovementCommands
         TeleportCommands.teleport(sender, currentLocation, true, false, true);
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "jumpto", "jump", "j"
     }, desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
@@ -138,7 +141,8 @@ public class MovementCommands
         context.sendMessage("basics", "&aYou just jumped!");
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "through", "thru"
     }, desc = "Jumps to the position you are looking at.", max = 0)
     public void through(CommandContext context)
@@ -154,7 +158,8 @@ public class MovementCommands
         context.sendMessage("basics", "&aYou just passed the wall!");
     }
 
-    @Command(desc = "Teleports you to your last location", max = 0, flags = {
+    @Command(desc = "Teleports you to your last location", max = 0, flags =
+    {
         @Flag(longName = "unsafe", name = "u")
     })
     public void back(CommandContext context)
@@ -170,7 +175,8 @@ public class MovementCommands
         sender.sendMessage("basics", "&aTeleported to your last location!");
     }
 
-    @Command(names = {
+    @Command(names =
+    {
         "place", "put"
     }, desc = "Jumps to the position you are looking at.", max = 1, min = 1, usage = "<player>")
     public void place(CommandContext context)
@@ -190,5 +196,26 @@ public class MovementCommands
         TeleportCommands.teleport(user, loc, true, false, true);
         context.sendMessage("basics", "&aYou just placed &2%s &awhere you were looking!", user.getName());
         user.sendMessage("basics", "&aYou were placed somewhere!");
+    }
+
+    @Command(desc = "Swaps your and another players position",
+             min = 1, max = 1, usage = "<player>")
+    public void swap(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&cSuccesfully swapped your socks!");
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            blockCommand(context, "basics", "&cUser %s not found!", context.getString(0));
+        }
+        if (user == sender)
+        {
+            context.sendMessage("basics", "&aSwapped position with &cyourself!? &eAre you kidding me?");
+            return;
+        }
+        Location userLoc = user.getLocation();
+        TeleportCommands.teleport(user, sender.getLocation(), true, false, false);
+        TeleportCommands.teleport(sender, userLoc, true, false, false);
+        context.sendMessage("basics", "&aSwapped position with &2%s&a!", user.getName());
     }
 }
