@@ -15,6 +15,7 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
+import de.cubeisland.cubeengine.core.storage.Registry;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
@@ -59,6 +60,8 @@ public class BukkitCore extends JavaPlugin implements Core
     private ObjectMapper jsonObjectMapper;
     private ApiServer apiServer;
     private WorldManager worldManager;
+    
+    private Registry registry;
 
     @Override
     public void onEnable()
@@ -168,6 +171,8 @@ public class BukkitCore extends JavaPlugin implements Core
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
 
+        this.registry = new Registry(this.database);
+        
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this);
 
@@ -353,5 +358,10 @@ public class BukkitCore extends JavaPlugin implements Core
     public WorldManager getWorldManager()
     {
         return this.worldManager;
+    }
+
+    public Registry getRegistry()
+    {
+        return registry;
     }
 }

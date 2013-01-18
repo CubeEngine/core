@@ -1,0 +1,98 @@
+package de.cubeisland.cubeengine.core.storage;
+
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import gnu.trove.map.hash.THashMap;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class Registry
+{
+    private String TABLENAME = "registry";
+    private THashMap<String, THashMap<String, String>> data = new THashMap<String, THashMap<String, String>>();
+    private final Database database;
+
+    public Registry(Database database)
+    {
+        this.database = database;
+        try
+        {
+            QueryBuilder builder = database.getQueryBuilder();
+            String sql = builder.createTable(TABLENAME, true).beginFields()
+                    .field("key", AttrType.VARCHAR, 16)
+                    .field("module", AttrType.VARCHAR, 16)
+                    .field("value", AttrType.VARCHAR, 256)
+                    .primaryKey("key", "module")
+                    // TODO module thingy... foreignKey("module").references("modules", "key")
+                    .endFields()
+                    .engine("InnoDB").defaultcharset("utf8").end().end();
+            database.execute(sql);
+            database.storeStatement(this.getClass(), "getAllByModule", builder.select("key", "value").from(TABLENAME).where().field("module").isEqual().value().end().end());
+            database.storeStatement(this.getClass(), "merge", builder.merge().into(TABLENAME).cols("key", "module", "value").updateCols("value").end().end());
+            database.storeStatement(this.getClass(), "delete", builder.deleteFrom(TABLENAME).where().field("key").isEqual().value().and().field("module").isEqual().value().end().end());
+
+        }
+        catch (SQLException ex)
+        {
+            //TODO handle me
+        }
+    }
+
+    public void merge(Module module, String key, String value)
+    {
+        try
+        {
+            this.loadForModule(module);
+            this.database.preparedExecute(this.getClass(), "merge", key, module.getId(), value);
+            this.data.get(module.getId()).put(key, value);
+        }
+        catch (SQLException ex)
+        {
+            //TODO handle me
+        }
+    }
+
+    public void delete(Module module, String key)
+    {
+        try
+        {
+            this.database.preparedExecute(this.getClass(), "delete", key, module.getId());
+            this.loadForModule(module);
+        }
+        catch (SQLException ex)
+        {
+            //TODO handle me
+        }
+    }
+
+    public void loadForModule(Module module)
+    {
+        try
+        {
+            ResultSet result = this.database.preparedQuery(this.getClass(), "getAllByModule", module.getId());
+            THashMap<String, String> map = this.data.get(module.getId());
+            if (map == null)
+            {
+                map = new THashMap<String, String>();
+                this.data.put(module.getId(), map);
+            }
+            map.clear();
+            while (result.next())
+            {
+                map.put(result.getString("key"), result.getString("value"));
+            }
+        }
+        catch (SQLException ex)
+        {
+            //TODO handle me
+        }
+    }
+    
+    public String getValue(String key , Module module)
+    {
+        this.loadForModule(module);
+        return this.data.get(module.getId()).get(key);
+    }
+}
