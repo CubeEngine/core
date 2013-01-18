@@ -12,22 +12,15 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 
 /**
- * Contains commands for fast movement. 
- * /up 
- * /ascend 
- * /descend 
- * /jumpto 
- * /through
- * /thru 
- * /back 
- * /place 
- * /put 
- * /swap
+ * Contains commands for fast movement. /up /ascend /descend /jumpto /through
+ * /thru /back /place /put /swap
  */
 public class MovementCommands
 {
+
     private Basics basics;
 
     public MovementCommands(Basics basics)
@@ -199,10 +192,29 @@ public class MovementCommands
     }
 
     @Command(desc = "Swaps your and another players position",
-             min = 1, max = 1, usage = "<player>")
+    min = 1, max = 2, usage = "<player> [player]")
     public void swap(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cSuccesfully swapped your socks!");
+        User sender;
+        if (context.hasIndexed(1))
+        {
+            sender = context.getUser(1);
+            if (sender == null)
+            {
+                blockCommand(context, "basics", "&cUser %s not found!", context.getString(0));
+            }
+        }
+        else
+        {
+            sender = context.getSenderAsUser();
+            if (sender == null)
+            {
+
+                context.sendMessage("basics", "&cSuccesfully swapped your socks!\n"
+                        + "&eAs console you have to provide both players!");
+                return;
+            }
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -210,12 +222,26 @@ public class MovementCommands
         }
         if (user == sender)
         {
-            context.sendMessage("basics", "&aSwapped position with &cyourself!? &eAre you kidding me?");
+            if (context.getSender() instanceof Player)
+            {
+                context.sendMessage("basics", "&aSwapped position with &cyourself!? &eAre you kidding me?");
+            }
+            else
+            {
+                context.sendMessage("basics", "&aTruely a hero! &eTrying to swap a users position with himself...");
+            }
             return;
         }
         Location userLoc = user.getLocation();
         TeleportCommands.teleport(user, sender.getLocation(), true, false, false);
         TeleportCommands.teleport(sender, userLoc, true, false, false);
-        context.sendMessage("basics", "&aSwapped position with &2%s&a!", user.getName());
+        if (context.hasIndexed(1))
+        {
+            context.sendMessage("basics", "&aSwapped position of &2%s &aand &2%s&a!", user.getName(), sender.getName());
+        }
+        else
+        {
+            context.sendMessage("basics", "&aSwapped position with &2%s&a!", user.getName());
+        }
     }
 }
