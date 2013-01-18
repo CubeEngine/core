@@ -73,6 +73,12 @@ public class KickBanCommands
     })
     public void ban(CommandContext context)
     {
+        if (!Bukkit.getOnlineMode())
+        {
+            context.sendMessage("basics", "&eThe server is running in &cOFFLINE-mode&e. "
+                    + "\nPlayers could change their username with a cracked client!\n"
+                    + "&aYou can IP-ban to prevent banning a real player in that case.");
+        }
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         if (player.isBanned())
         {
