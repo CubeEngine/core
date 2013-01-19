@@ -13,25 +13,13 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
 @SingleKeyEntity(tableName = "logs", primaryKey = "key", autoIncrement = true)
-public class LogModel implements Model<Long>
+public class LogModel_old implements Model<Long>
 {
     //TODO trim chatlog and dont log if empty then
     @Attribute(type = AttrType.INT, unsigned = true)
     public Long key;
-    @Attribute(type = AttrType.TINYINT)
-    public int type;
-    //Types:
-    public static final int BLOCKLOG = 1;
-    public static final int CHESTLOG = 2;
-    public static final int KILLLOG = 3;
-    public static final int SIGNCHANGELOG = 4;
-    public static final int CHATLOG = 5;
-    public static final int COMMANDLOG = 6;
-    public static final int INTERACTLOG = 7;
     @Attribute(type = AttrType.DATETIME)
     public Timestamp timestamp;
-    @Attribute(type = AttrType.INT)
-    public int causeID;
     @Attribute(type = AttrType.INT, notnull = false, unsigned = true)
     public Long worldID;
     @Attribute(type = AttrType.INT, notnull = false)
@@ -40,6 +28,32 @@ public class LogModel implements Model<Long>
     public Integer y;
     @Attribute(type = AttrType.INT, notnull = false)
     public Integer z;
+    @Attribute(type = AttrType.TINYINT)
+    public int action;
+    public static final int BLOCK_PLACE = 0x00;
+    public static final int BLOCK_BREAK = 0x01;
+    public static final int BLOCK_CHANGE = 0x02; //changing blockdata / interactlog
+    public static final int BLOCK_SIGN = 0x03; //sign change
+    public static final int KILL_PVP = 0x10; //player killed by player
+    public static final int KILL_PVE = 0x11; //player killed by environement
+    public static final int KILL_EVE = 0x12; //mob killed by environement
+    public static final int KILL_EVP = 0x13; //mob killed by player
+    public static final int CHEST_PUT = 0x20;
+    public static final int CHEST_TAKE = 0x21;
+    public static final int CHAT = 0x30;
+    public static final int COMMAND = 0x31;
+    @Attribute(type = AttrType.BIGINT)
+    public int causerID;
+
+    ////////////////////////////////////////////////////////////
+    //actionTypes:
+    public static final int BLOCKLOG = 1;
+    public static final int CHESTLOG = 2;
+    public static final int KILLLOG = 3;
+    public static final int SIGNCHANGELOG = 4;
+    public static final int CHATLOG = 5;
+    public static final int COMMANDLOG = 6;
+    public static final int INTERACTLOG = 7;
     // BlockLog OR SignChangeLog:
     @Attribute(type = AttrType.VARCHAR, length = 67, notnull = false)
     public String newBlockOrLines = null;
@@ -72,7 +86,8 @@ public class LogModel implements Model<Long>
             }
         }
         catch (ConversionException ignored)
-        {}
+        {
+        }
     }
 
     public BlockData getNewBlockData()
@@ -104,7 +119,6 @@ public class LogModel implements Model<Long>
         this.initBlockData();
         return ((oldBlockData.mat != Material.AIR) && (newBlockData.mat != Material.AIR));
     }
-
     //-end of BlockLog Methods & Fields
     // ChestLog Methods & Fields:
     private ItemData itemData = null;
@@ -125,17 +139,17 @@ public class LogModel implements Model<Long>
                 this.itemData.name = this.itemNameOrChat;
             }
             catch (ConversionException ingored)
-            {}
+            {
+            }
         }
     }
 
     //-end of ChestLog Methods & Fields
-
-    private LogModel(int type, int causeID, Location loc)
+    private LogModel_old(int type, int causeID, Location loc)
     {
         this.timestamp = new Timestamp(System.currentTimeMillis());
-        this.type = type;
-        this.causeID = causeID;
+//        this.type = type;
+//        this.causeID = causeID;
         if (loc != null)
         {
             this.worldID = CubeEngine.getCore().getWorldManager().getWorldId(loc.getWorld());
@@ -152,17 +166,17 @@ public class LogModel implements Model<Long>
      * @param newBlock
      * @param oldBlock
      */
-    public LogModel(int causeID, BlockState newBlock, BlockState oldBlock)
+    public LogModel_old(int causeID, BlockState newBlock, BlockState oldBlock)
     {
         this(BLOCKLOG, causeID, newBlock == null ? oldBlock.getLocation() : newBlock.getLocation());
         try
-        {
+        {oldBlock.getRawData();
             this.newBlockOrLines = newBlock == null
-                    ? (String)Convert.toObject(new BlockData(Material.AIR, (byte)0))
-                    : (String)Convert.toObject(new BlockData(newBlock.getType(), newBlock.getRawData()));
+                    ? (String) Convert.toObject(new BlockData(Material.AIR, (byte) 0))
+                    : (String) Convert.toObject(new BlockData(newBlock.getType(), newBlock.getRawData()));
             this.oldBlockOrLines = oldBlock == null
-                    ? (String)Convert.toObject(new BlockData(Material.AIR, (byte)0))
-                    : (String)Convert.toObject(new BlockData(oldBlock.getType(), oldBlock.getRawData()));
+                    ? (String) Convert.toObject(new BlockData(Material.AIR, (byte) 0))
+                    : (String) Convert.toObject(new BlockData(oldBlock.getType(), oldBlock.getRawData()));
         }
         catch (ConversionException ignored)
         {
@@ -179,18 +193,19 @@ public class LogModel implements Model<Long>
      * @param amount
      * @param containerType
      */
-    public LogModel(Integer userId, Location loc, ItemData item, int amount, int containerType)
+    public LogModel_old(Integer userId, Location loc, ItemData item, int amount, int containerType)
     {
         this(CHESTLOG, userId, loc);
         try
         {
-            this.chestItemOrInteractItem = (String)Convert.toObject(item);
+            this.chestItemOrInteractItem = (String) Convert.toObject(item);
             this.amountOrInteractData = amount;
             this.itemNameOrChat = item.name;
             this.containerTypeOrKilledId = containerType;
         }
         catch (ConversionException ingored)
-        {}
+        {
+        }
     }
 
     /**
@@ -201,7 +216,7 @@ public class LogModel implements Model<Long>
      * @param oldLines
      * @param newLines
      */
-    public LogModel(int userID, Location loc, String[] oldLines, String[] newLines)
+    public LogModel_old(int userID, Location loc, String[] oldLines, String[] newLines)
     {
         this(SIGNCHANGELOG, userID, loc);
         this.newBlockOrLines = "";//TODO separator for lines
@@ -215,7 +230,7 @@ public class LogModel implements Model<Long>
      * @param loc
      * @param killedId
      */
-    public LogModel(int killerId, Location loc, int killedId)
+    public LogModel_old(int killerId, Location loc, int killedId)
     {
         this(KILLLOG, killerId, loc);
         this.containerTypeOrKilledId = killedId;
@@ -229,25 +244,10 @@ public class LogModel implements Model<Long>
      * @param chat
      * @param isChat
      */
-    public LogModel(int senderId, Location loc, String chat, boolean isChat)
+    public LogModel_old(int senderId, Location loc, String chat, boolean isChat)
     {
         this(isChat ? CHATLOG : COMMANDLOG, senderId, loc);
         this.itemNameOrChat = chat;
-    }
-
-    /**
-     * InteractLog-Constructor
-     *
-     * @param userId
-     * @param loc
-     * @param mat
-     * @param data
-     */
-    public LogModel(int userId, Location loc, Material mat, Integer data)
-    {
-        this(INTERACTLOG, userId, loc);
-        this.chestItemOrInteractItem = String.valueOf(mat.getId());
-        this.amountOrInteractData = data;
     }
 
     @Override

@@ -38,56 +38,73 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
         {
             MaterialData blockData = block.getState().getData();
             User user = this.module.getUserManager().getExactUser(event.getPlayer());
+            byte newData = -1;
             switch (event.getClickedBlock().getType())
             {
+                //toggle 0x4
+
                 case WOODEN_DOOR:
                 case TRAP_DOOR:
                 case FENCE_GATE:
-                    if ((block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor) || (block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
-                            || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate))
+                    if (!((block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor) || (block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
+                            || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate)))
                     {
-                        this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Openable) blockData).isOpen() ? 1 : 0);
+                        return;
                     }
-                    return;
+                    newData = (byte) (block.getData() ^ 0x4);
+                    break;
                 case LEVER:
-                    if (this.config.logLever)
+                    if (!this.config.logLever)
                     {
-                        this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Lever) blockData).isPowered() ? 1 : 0);
+                        return;
                     }
-                    return;
                 case STONE_BUTTON:
                 case WOOD_BUTTON:
-                    if (this.config.logButtons)
+                    if (!this.config.logButtons)
                     {
-                        this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), null);
+                        return;
                     }
-                    return;
+                    newData = block.getData();
+                    newData ^= 0x8;
+                    break;
                 case CAKE_BLOCK: // data: remaining slices
-                    if (this.config.logCake)
+                    if (!this.config.logCake)
                     {
-                        this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Cake) blockData).getSlicesRemaining());
+                        return;
                     }
-                    return;
+                    newData = block.getData();
+                    newData += 1;
+                    break;
                 case NOTE_BLOCK:
-                    if (this.config.logNoteBlock)
+                    if (!this.config.logNoteBlock)
                     {
-                        this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), (int) ((NoteBlock) block.getState()).getRawNote());
+                        return;
                     }
-                    return;
+                    newData = ((NoteBlock) block.getState()).getRawNote();
+                    newData += 1;
+                    if (newData == 25)
+                    {
+                        newData = 0;
+                    }
+                    break;
                 case DIODE_BLOCK_OFF:
                 case DIODE_BLOCK_ON:
-                    if (this.config.logDiode)
+                    if (!this.config.logDiode)
                     {
-                        this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                                block.getType(), ((Diode) blockData).getDelay());
+                        return;
                     }
-                    //TODO add new blocks in 1.5
+                    int delay = ((Diode) blockData).getDelay();
+                    delay += 1;
+                    if (delay == 5)
+                    {
+                        delay = 1;
+                    }
+                    ((Diode) blockData).setDelay(delay);
+                    newData = blockData.getData();
+                //TODO add new blocks in 1.5
+                //TODO anvil
             }
+            this.module.getLogManager().logBlockChange(user.key, block.getState(), newData);
         }
         else if (event.getAction().equals(Action.PHYSICAL) && this.config.logPressurePlate)
         {
@@ -96,8 +113,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
             {
                 case WOOD_PLATE:
                 case STONE_PLATE:
-                    this.module.getLogManager().logInteractLog(user.key.intValue(), user.getLocation(this.helper),
-                            block.getType(), null);
+                    this.module.getLogManager().logBlockChange(user.key, block.getState(), (byte) 1);
             }
         }
     }
