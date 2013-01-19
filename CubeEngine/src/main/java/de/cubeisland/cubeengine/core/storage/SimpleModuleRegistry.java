@@ -2,12 +2,12 @@ package de.cubeisland.cubeengine.core.storage;
 
 import de.cubeisland.cubeengine.core.module.Module;
 
-public class SimpleRegistry implements ModuleRegistry
+public class SimpleModuleRegistry implements ModuleRegistry
 {
     private final Module module;
     private final Registry registry;
 
-    public SimpleRegistry(Module module, Registry registry)
+    public SimpleModuleRegistry(Module module, Registry registry)
     {
         this.module = module;
         this.registry = registry;
