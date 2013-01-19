@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.storage.Registry;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
@@ -26,7 +27,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * This class is used to load modules and provide a centralized place for class lookups.
+ * This class is used to load modules and provide a centralized place for class
+ * lookups.
  */
 public class ModuleLoader
 {
@@ -35,6 +37,7 @@ public class ModuleLoader
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final File tempFolder;
+    private Registry registry;
 
     ModuleLoader(Core core)
     {
@@ -43,6 +46,7 @@ public class ModuleLoader
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
         this.infoFileName = "module.yml";
         this.tempFolder = new File(core.getFileManager().getTempDir(), "modules");
+        this.registry = new Registry(core.getDB());
         if (!this.tempFolder.exists() && !this.tempFolder.mkdir())
         {
             throw new RuntimeException("Failed to create a temporary folder for the modules!");
@@ -55,10 +59,13 @@ public class ModuleLoader
      * @param file the file to load from
      * @return the loaded module
      *
-     * @throws InvalidModuleException          if the file is not a valid module
-     * @throws MissingDependencyException      if the module has missing hard dependencies
-     * @throws IncompatibleDependencyException if the module depends on a newer version of a module
-     * @throws IncompatibleCoreException       if the module depends on a newer core version
+     * @throws InvalidModuleException if the file is not a valid module
+     * @throws MissingDependencyException if the module has missing hard
+     * dependencies
+     * @throws IncompatibleDependencyException if the module depends on a newer
+     * version of a module
+     * @throws IncompatibleCoreException if the module depends on a newer core
+     * version
      */
     public synchronized Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
@@ -71,10 +78,13 @@ public class ModuleLoader
      * @param info the module info
      * @return the loaded module
      *
-     * @throws InvalidModuleException          if the file is not a valid module
-     * @throws MissingDependencyException      if the module has missing hard dependencies
-     * @throws IncompatibleDependencyException if the module depends on a newer version of a module
-     * @throws IncompatibleCoreException       if the module depends on a newer core version
+     * @throws InvalidModuleException if the file is not a valid module
+     * @throws MissingDependencyException if the module has missing hard
+     * dependencies
+     * @throws IncompatibleDependencyException if the module depends on a newer
+     * version of a module
+     * @throws IncompatibleCoreException if the module depends on a newer core
+     * version
      */
     @SuppressWarnings("unchecked")
     public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
@@ -98,12 +108,12 @@ public class ModuleLoader
             Module module = moduleClass.getConstructor().newInstance();
 
             module.initialize(
-                this.core,
-                info,
-                new File(info.getFile().getParentFile(), name),
-                new ModuleLogger(this.core, info),
-                this,
-                classLoader);
+                    this.core,
+                    info,
+                    new File(info.getFile().getParentFile(), name),
+                    new ModuleLogger(this.core, info),
+                    this,
+                    classLoader);
 
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
 
@@ -111,7 +121,7 @@ public class ModuleLoader
             {
                 if (Configuration.class.isAssignableFrom(field.getType()) && field.getType().isAnnotationPresent(Codec.class))
                 {
-                    Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
+                    Class<? extends Configuration> configClass = (Class<? extends Configuration>) field.getType();
 
                     String filename = null;
                     if (configClass.isAnnotationPresent(DefaultConfig.class))
@@ -193,7 +203,8 @@ public class ModuleLoader
                     configStream.close();
                 }
                 catch (IOException ignored)
-                {}
+                {
+                }
             }
         }
         catch (IOException e)
@@ -209,7 +220,8 @@ public class ModuleLoader
                     jarFile.close();
                 }
                 catch (IOException ignored)
-                {}
+                {
+                }
             }
         }
         return info;
@@ -234,7 +246,8 @@ public class ModuleLoader
             clazz = this.libClassLoader.findClass(name);
         }
         catch (ClassNotFoundException ignored)
-        {}
+        {
+        }
 
         if (clazz != null)
         {
@@ -260,7 +273,8 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException ignore)
-            {}
+            {
+            }
         }
 
         for (String dep : info.getDependencies().keySet())
@@ -279,7 +293,8 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException ignored)
-            {}
+            {
+            }
         }
 
         for (String module : this.classLoaders.keySet())
@@ -295,7 +310,8 @@ public class ModuleLoader
                     }
                 }
                 catch (ClassNotFoundException ignored)
-                {}
+                {
+                }
             }
         }
 
@@ -349,5 +365,10 @@ public class ModuleLoader
     {
         this.classLoaders.clear();
         this.libClassLoader.shutdown();
+    }
+
+    Registry getRegistry()
+    {
+        return this.registry;
     }
 }

@@ -32,11 +32,12 @@ public class Registry
             database.storeStatement(this.getClass(), "getAllByModule", builder.select("key", "value").from(TABLENAME).where().field("module").isEqual().value().end().end());
             database.storeStatement(this.getClass(), "merge", builder.merge().into(TABLENAME).cols("key", "module", "value").updateCols("value").end().end());
             database.storeStatement(this.getClass(), "delete", builder.deleteFrom(TABLENAME).where().field("key").isEqual().value().and().field("module").isEqual().value().end().end());
+            database.storeStatement(this.getClass(), "clear", builder.deleteFrom(TABLENAME).where().field("module").isEqual().value().end().end());
 
         }
         catch (SQLException ex)
         {
-            //TODO handle me
+            throw new StorageException("Error while creating Registry-Statements");
         }
     }
 
@@ -50,49 +51,65 @@ public class Registry
         }
         catch (SQLException ex)
         {
-            //TODO handle me
+            throw new StorageException("Error while merging Registry");
         }
     }
 
-    public void delete(Module module, String key)
+    public String delete(Module module, String key)
     {
         try
         {
-            this.database.preparedExecute(this.getClass(), "delete", key, module.getId());
             this.loadForModule(module);
+            this.database.preparedExecute(this.getClass(), "delete", key, module.getId());
+            return this.data.get(module.getId()).remove(key);
         }
         catch (SQLException ex)
         {
-            //TODO handle me
+            throw new StorageException("Error while deleting Registry");
         }
     }
 
     public void loadForModule(Module module)
     {
-        try
+        if (this.data.get(module.getId()) == null)
         {
-            ResultSet result = this.database.preparedQuery(this.getClass(), "getAllByModule", module.getId());
-            THashMap<String, String> map = this.data.get(module.getId());
-            if (map == null)
+            try
             {
-                map = new THashMap<String, String>();
-                this.data.put(module.getId(), map);
+                ResultSet result = this.database.preparedQuery(this.getClass(), "getAllByModule", module.getId());
+                THashMap<String, String> map = this.data.get(module.getId());
+                if (map == null)
+                {
+                    map = new THashMap<String, String>();
+                    this.data.put(module.getId(), map);
+                }
+                map.clear();
+                while (result.next())
+                {
+                    map.put(result.getString("key"), result.getString("value"));
+                }
             }
-            map.clear();
-            while (result.next())
+            catch (SQLException ex)
             {
-                map.put(result.getString("key"), result.getString("value"));
+                throw new StorageException("Error while loading Registry");
             }
-        }
-        catch (SQLException ex)
-        {
-            //TODO handle me
         }
     }
-    
-    public String getValue(String key , Module module)
+
+    public String getValue(String key, Module module)
     {
         this.loadForModule(module);
         return this.data.get(module.getId()).get(key);
+    }
+
+    public void clear(Module module)
+    {
+        try
+        {
+            this.database.preparedExecute(this.getClass(), "clear", module.getId());
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while clearing Registry");
+        }
     }
 }

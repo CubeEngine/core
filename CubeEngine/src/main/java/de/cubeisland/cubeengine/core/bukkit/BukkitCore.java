@@ -60,8 +60,6 @@ public class BukkitCore extends JavaPlugin implements Core
     private ObjectMapper jsonObjectMapper;
     private ApiServer apiServer;
     private WorldManager worldManager;
-    
-    private Registry registry;
 
     @Override
     public void onEnable()
@@ -171,8 +169,6 @@ public class BukkitCore extends JavaPlugin implements Core
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
 
-        this.registry = new Registry(this.database);
-        
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this);
 
@@ -358,10 +354,5 @@ public class BukkitCore extends JavaPlugin implements Core
     public WorldManager getWorldManager()
     {
         return this.worldManager;
-    }
-
-    public Registry getRegistry()
-    {
-        return registry;
     }
 }

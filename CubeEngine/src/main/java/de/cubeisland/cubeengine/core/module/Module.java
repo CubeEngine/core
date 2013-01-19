@@ -9,16 +9,16 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
+import de.cubeisland.cubeengine.core.storage.SimpleRegistry;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
-import org.apache.commons.lang.Validate;
-import org.bukkit.event.Listener;
-
 import java.io.File;
 import java.io.InputStream;
-
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
+import org.apache.commons.lang.Validate;
+import org.bukkit.event.Listener;
 
 /**
  * Module for CubeEngine.
@@ -30,6 +30,7 @@ public abstract class Module
     private ModuleInfo info;
     private ModuleLogger logger;
     private ModuleLoader loader;
+    private ModuleRegistry registry = null;
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
@@ -349,5 +350,14 @@ public abstract class Module
     public TaskManager getTaskManger()
     {
         return this.core.getTaskManager();
+    }
+    
+    public ModuleRegistry getRegistry()
+    {
+        if (this.registry == null)
+        {
+            this.registry = new SimpleRegistry(this, this.loader.getRegistry());
+        }
+        return this.registry;
     }
 }
