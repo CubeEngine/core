@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
-import de.cubeisland.cubeengine.core.storage.SimpleRegistry;
+import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
@@ -356,7 +356,7 @@ public abstract class Module
     {
         if (this.registry == null)
         {
-            this.registry = new SimpleRegistry(this, this.loader.getRegistry());
+            this.registry = new SimpleModuleRegistry(this, this.loader.getRegistry());
         }
         return this.registry;
     }
