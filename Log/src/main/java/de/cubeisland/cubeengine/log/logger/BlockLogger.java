@@ -25,6 +25,14 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
                 return;
             }
         }
+        if (oldState != null && oldState.getTypeId() == 0)
+        {
+            oldState = null;
+        }
+        if (newState != null && newState.getTypeId() == 0)
+        {
+            newState = null;
+        }
         if (cause == BlockChangeCause.PLAYER)
         {
             User user = this.module.getUserManager().getExactUser(player);
@@ -39,33 +47,32 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
     public static enum BlockChangeCause
     {
         PLAYER(
-            -1),
+        -1),
         LAVA(
-            -2),
+        -2),
         WATER(
-            -3),
+        -3),
         EXPLOSION(
-            -4),
+        -4),
         FIRE(
-            -5),
+        -5),
         ENDERMAN(
-            -6),
+        -6),
         FADE(
-            -7),
+        -7),
         FORM(
-            -7),
+        -7),
         DECAY(
-            -8),
+        -8),
         GROW(
-            -8),
+        -8),
         WITHER(
-            -9);
+        -9);
 
         private BlockChangeCause(int causeID)
         {
             this.causeID = causeID;
         }
-
         final private int causeID;
 
         public int getId()

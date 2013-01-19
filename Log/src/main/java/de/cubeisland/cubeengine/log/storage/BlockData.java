@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.log.storage;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.NoteBlock;
 
 public class BlockData
 {
@@ -13,6 +14,28 @@ public class BlockData
     {
         this.mat = mat;
         this.data = data;
+    }
+
+    public static BlockData get(BlockState state)
+    {
+        if (state == null)
+        {
+            return null;
+        }
+        if (state.getType() == Material.NOTE_BLOCK)
+        {
+            return new BlockData(state.getType(), ((NoteBlock) state).getRawNote());
+        }
+        return new BlockData(state.getType(), state.getRawData());
+    }
+
+    public static BlockData get(BlockState state, byte customData)
+    {
+        if (state == null)
+        {
+            return null;
+        }
+        return new BlockData(state.getType(), customData);
     }
 
     public BlockData(Block block)

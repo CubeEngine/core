@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.storage.LogModel_old;
 import java.util.Collection;
 import java.util.Date;
 import org.bukkit.Location;
@@ -83,27 +82,7 @@ public class LogCommands extends ContainerCommand
         
     }
     
-    public Collection<LogModel_old> getBlockLog(World world, Location loc1, Location loc2)
-    {
-        StringBuilder sb = new StringBuilder("blocklog");
-        if (world != null)
-        {
-            sb.append("_world");
-            if (loc1 != null)
-            {
-                if (loc2 != null)
-                {
-                    sb.append("_range");
-                }
-                else
-                {
-                    sb.append("_loc");
-                }
-            }
-        }
-        return null;
-    }
-
+  
     //TODO remove that
     @Command(names =
     {

@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
-import de.cubeisland.cubeengine.log.storage.LogManager_old;
+import de.cubeisland.cubeengine.log.storage.LogManager;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class Log extends Module
     private static Log instance;
     private LogConfiguration globalConfig;
     private Map<World, LogConfiguration> worldConfigs = new HashMap<World, LogConfiguration>();
-    private LogManager_old lm;
+    private LogManager logManager;
 
     static
     {
@@ -45,7 +45,7 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         //this.lm = new LogManager(this);
-        this.lm = new LogManager_old(this.getDatabase());
+        this.logManager = new LogManager(this);
         this.registerCommand(new LogCommands(this));
         File file = new File(this.getFolder(), "worlds");
         file.mkdir();
@@ -64,9 +64,10 @@ public class Log extends Module
         return null;
     }
 
-    public LogManager_old getLogManager()
+   
+    public LogManager getLogManager()
     {
-        return lm;
+        return this.logManager;
     }
 
     public static Log getInstance()

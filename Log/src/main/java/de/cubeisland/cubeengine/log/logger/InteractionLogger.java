@@ -13,11 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.Cake;
 import org.bukkit.material.Diode;
-import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Openable;
 
 public class InteractionLogger extends Logger<InteractionLogger.InteractionConfig>
 {
@@ -58,6 +55,9 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     {
                         return;
                     }
+                    newData = block.getData();
+                    newData ^= 0x8;
+                    break;
                 case STONE_BUTTON:
                 case WOOD_BUTTON:
                     if (!this.config.logButtons)
@@ -65,7 +65,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                         return;
                     }
                     newData = block.getData();
-                    newData ^= 0x8;
+                    newData &= 0x8;
                     break;
                 case CAKE_BLOCK: // data: remaining slices
                     if (!this.config.logCake)
@@ -101,6 +101,9 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     }
                     ((Diode) blockData).setDelay(delay);
                     newData = blockData.getData();
+                    break;
+                default:
+                    return;
                 //TODO add new blocks in 1.5
                 //TODO anvil
             }

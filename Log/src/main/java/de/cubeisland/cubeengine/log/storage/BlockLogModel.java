@@ -7,8 +7,6 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @SingleKeyEntity(tableName = "blocklogs", primaryKey = "key", autoIncrement = false, indices =
 @Index(value = Index.IndexType.FOREIGN_KEY, fields = "key", f_field = "key", f_table = "logs"))

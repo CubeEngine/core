@@ -3,8 +3,6 @@ package de.cubeisland.cubeengine.log;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.storage.BlockData;
-import de.cubeisland.cubeengine.log.storage.LogManager_old;
-import de.cubeisland.cubeengine.log.storage.LogModel_old;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +18,6 @@ public class Lookup
 {
     boolean showCoords;
 
-    private List<LogModel_old> blocklogs;
 
     //private List<ChatLog> chatlogs;
     //private List<ChestLog> chestlogs;
@@ -32,17 +29,6 @@ public class Lookup
 
     public Lookup filterSelection()//TODO the selection as param / & / how to get the selection?
     {
-        List<LogModel_old> newBlockLogs = new ArrayList<LogModel_old>();
-        for (LogModel_old blocklog : blocklogs)
-        {
-            //TODO if in selection
-            if (1 == 0)
-            {
-                newBlockLogs.add(blocklog);
-            }
-        }
-        //TODO same with chatlogs
-        blocklogs = newBlockLogs;
         return this;
     }
 
@@ -88,7 +74,6 @@ public class Lookup
 
     public static Lookup getBlocklogs()
     {
-        int blocklog = LogModel_old.BLOCKLOG;
         Location loc1;
         Location loc2;
         List<User> userList;
