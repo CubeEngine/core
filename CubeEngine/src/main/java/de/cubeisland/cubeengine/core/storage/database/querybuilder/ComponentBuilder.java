@@ -49,12 +49,29 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     public This value(Object value);
 
     /**
-     * Adds multiple variables which can be later replaced by values.
+     * Adds the VALUE Statement and multiple variables which can be later
+     * replaced by values.
      *
      * @param amount the amount of values
      * @return fluent interface
      */
     public This values(int amount);
+
+    /**
+     * Adds multiple variables in brackets which can be later replaced by values.
+     *
+     * @param amount the amount of values
+     * @return fluent interface
+     */
+    public This valuesInBrackets(int amount);
+    
+    /**
+     * Adds multiple values in brackets separated by comma
+     * 
+     * @param values the values
+     * @return fluent interface 
+     */
+    public This valuesInBrackets(Object[] values);
 
     /**
      * Adds a variable which can be later replaced by a value.
@@ -130,16 +147,14 @@ public interface ComponentBuilder<This extends ComponentBuilder>
     public This having();
 
     /**
-     * Adds LIKE statement.
-     * Don't forget to add a value after this!
+     * Adds LIKE statement. Don't forget to add a value after this!
      *
      * @return fluent interface
      */
     public This like();
 
     /**
-     * Adds IN statement.
-     * Don't forget to add a value after this!
+     * Adds IN statement. Don't forget to add a value after this!
      *
      * @return fluent interface
      */

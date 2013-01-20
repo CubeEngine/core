@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
 import de.cubeisland.cubeengine.log.storage.LogManager;
+import de.cubeisland.cubeengine.log.tool.ToolListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class Log extends Module
             file.mkdir();
             this.worldConfigs.put(world, (LogConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
         }
+        this.registerListener(new ToolListener(this));
 
     }
 

@@ -4,11 +4,15 @@ import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.Log;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -36,6 +40,7 @@ public class LogManager
         this.module = module;
         try
         {
+            //TODO add index action / causer
             // Main table:
             QueryBuilder builder = database.getQueryBuilder();
             String sql = builder.createTable("log_logs", true).beginFields()
@@ -48,6 +53,11 @@ public class LogManager
                     .field("action", AttrType.TINYINT)
                     .field("causer", AttrType.BIGINT)
                     .foreignKey("world_id").references("worlds", "key")
+                    .index("x")
+                    .index("y")
+                    .index("z")
+                    .index("action")
+                    .index("causer")
                     .primaryKey("key").endFields()
                     .engine("innoDB").defaultcharset("utf8")
                     .end().end();
@@ -59,15 +69,17 @@ public class LogManager
             //Block logging:
             sql = builder.createTable("log_blockLogs", true).beginFields()
                     .field("key", AttrType.INT, true)
-                    .field("oldBlock", AttrType.VARCHAR, 32, false)
-                    .field("newBlock", AttrType.VARCHAR, 32, false)
+                    .field("oldBlock", AttrType.INT, false, false)
+                    .field("oldBlockData", AttrType.TINYINT, false, false)
+                    .field("newBlock", AttrType.INT, false, false)
+                    .field("newBlockData", AttrType.TINYINT, false, false)
                     .foreignKey("key").references("log_logs", "key").onDelete("CASCADE")
                     .primaryKey("key").endFields()
                     .engine("innoDB").defaultcharset("utf8")
                     .end().end();
             this.database.execute(sql);
             sql = builder.insert().into("log_blockLogs")
-                    .cols("key", "oldBlock", "newBlock")
+                    .cols("key", "oldBlock", "oldBlockData", "newBlock", "newBlockData")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeBlockLog", sql);
             //Sign logging:
@@ -134,6 +146,49 @@ public class LogManager
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeChestLogs", sql);
 
+            /* //INSERTING 160k TESTOBJECTS
+             Location locc = new Location(Bukkit.getWorlds().get(0), 1, 1, 1);
+             String[] ar1 =
+             {
+             "alte", "Zeilen", "toll", ":)"
+             };
+             String[] ar2 =
+             {
+             "neue", "Zeilen", "besser", ":)"
+             };
+        
+             long a = System.currentTimeMillis();
+             database.getConnection().setAutoCommit(false);
+             for (int j = 1; j < 50; j++)
+             {
+             for (int i = 1; i < 2000; i++)
+             {
+             this.logSignLog(1, locc, ar1, ar2);
+             }
+             database.getConnection().commit();
+             System.out.println(j*2000);
+             }
+             database.getConnection().commit();
+             database.getConnection().setAutoCommit(true);
+             System.out.println((System.currentTimeMillis() - a) / 1000 + "sec");
+             Bukkit.shutdown();
+             //*/
+            /*//TEST FOR querybuilding:
+            this.getBlockLogs(
+                    Bukkit.getWorlds().get(0),
+                    new Location(null, -1000, 0, -1000),
+                    new Location(null, 1000, 120, 1000),
+                    new Integer[]
+                    {
+                        1, 2
+                    }, new Long[]
+                    {
+                    }, new BlockData[]
+                    {
+                    },
+                    new Timestamp(System.currentTimeMillis() - 50000),
+                    new Timestamp(System.currentTimeMillis()));
+            //*/
         }
         catch (SQLException ex)
         {
@@ -178,14 +233,13 @@ public class LogManager
     {
         try
         {
-            this.database.preparedExecute(this.getClass(), "storeBlockLog", logID, Convert.toObject(oldData), Convert.toObject(newData));
+            this.database.preparedExecute(this.getClass(), "storeBlockLog", logID,
+                    oldData == null ? null : oldData.mat.getId(), oldData == null ? null : oldData.data,
+                    newData == null ? null : newData.mat.getId(), newData == null ? null : newData.data);
         }
         catch (SQLException ex)
         {
             throw new StorageException("Error while storing block Log-Entry", ex);
-        }
-        catch (ConversionException ignored) // cannot happen
-        {
         }
     }
 
@@ -395,5 +449,138 @@ public class LogManager
     {
         long logID = this.storeLog(location.getWorld(), location, (amount > 0 ? CHEST_PUT : CHEST_TAKE), userId);
         this.storeChestLog(logID, itemData, amount, containerType);
+    }
+
+    //TODO return the results
+    public void getBlockLogs(World world, Location loc1, Location loc2, Integer[] actions, Long[] causers, BlockData[] blockdatas, Timestamp fromDate, Timestamp toDate)
+    {
+        for (int action : actions) // Check actions
+        {
+            switch (action)
+            {
+                case BLOCK_PLACE:
+                case BLOCK_BREAK:
+                case BLOCK_CHANGE:
+                    break;
+                default:
+                    throw new IllegalStateException("Not a Block-Log!");
+            }
+        }
+        QueryBuilder builder = this.database.getQueryBuilder();
+        SelectBuilder sbuilder = builder.select().wildcard()
+                .from("log_logs")
+                .joinOnEqual("log_blocklogs", "key", "log_logs", "key").where();
+        Boolean range = null;
+        if (world != null)
+        {
+            sbuilder.field("world_id").isEqual().value(this.module.getCore().getWorldManager().getWorldId(world));
+            if (loc1 != null)
+            {
+                if (loc2 == null) // single location
+                {
+                    range = false;
+                    sbuilder.and().field("x").isEqual().value(loc1.getBlockX())
+                            .and().field("y").isEqual().value(loc1.getBlockY())
+                            .and().field("z").isEqual().value(loc1.getBlockZ());
+                }
+                else // range of locations
+                {
+                    range = true;
+                    sbuilder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX())
+                            .and().field("y").between(loc1.getBlockY(), loc2.getBlockY())
+                            .and().field("z").between(loc1.getBlockZ(), loc2.getBlockZ());
+                }
+            }
+            sbuilder.and();
+        }
+        if (actions.length > 0)
+        {
+            sbuilder.beginSub().field("action").in().valuesInBrackets(actions);
+            sbuilder.endSub().and();
+        }
+        if (causers.length > 0)
+        {
+            sbuilder.beginSub().field("causer").in().valuesInBrackets(causers);
+            sbuilder.endSub().and();
+        }
+        if (blockdatas.length > 0)
+        {
+            sbuilder.beginSub();
+            if (blockdatas[0].data == null)
+            {
+                sbuilder.beginSub()
+                        .field("oldBlock").isEqual().value(blockdatas[0].mat.getId()).or()
+                        .field("newBlock").isEqual().value(blockdatas[0].mat.getId())
+                        .endSub();
+            }
+            else
+            {
+                sbuilder.beginSub().beginSub()
+                        .field("oldBlock").isEqual().value(blockdatas[0].mat.getId()).and()
+                        .field("oldBlockData").isEqual().value(blockdatas[0].data)
+                        .endSub().or()
+                        .beginSub()
+                        .field("newBlock").isEqual().value(blockdatas[0].mat.getId()).and()
+                        .field("newBlockData").isEqual().value(blockdatas[0].data)
+                        .endSub().endSub();
+            }
+            for (int i = 1; i < blockdatas.length; ++i)
+            {
+                sbuilder.or().beginSub();
+                if (blockdatas[i].data == null)
+                {
+                    sbuilder.field("oldBlock").isEqual().value().or()
+                            .field("newBlock").isEqual().value();
+
+                }
+                else
+                {
+                    sbuilder.beginSub()
+                            .field("oldBlock").isEqual().value().and()
+                            .field("oldBlockData").isEqual().value()
+                            .endSub().or()
+                            .beginSub()
+                            .field("newBlock").isEqual().value().and()
+                            .field("newBlockData").isEqual().value()
+                            .endSub();
+                }
+                sbuilder.endSub();
+            }
+            sbuilder.endSub().and();
+        }
+        sbuilder.beginSub().field("date").between(fromDate, toDate).endSub();
+        String sql = sbuilder.end().end();
+
+        System.out.println("\n\n" + sql); //<---TODO remove this
+        try
+        {
+            ResultSet result = this.database.query(sql);
+            while (result.next())
+            {
+                int b = 1;
+                System.out.println(result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++)+";"+
+                        result.getObject(b++));
+
+
+            }
+
+            //TODO read resultSet
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not execute query for block-logs!", ex);
+        }
+
     }
 }

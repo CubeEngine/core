@@ -8,9 +8,9 @@ import org.bukkit.block.NoteBlock;
 public class BlockData
 {
     public Material mat;
-    public byte data;
+    public Byte data;
 
-    public BlockData(Material mat, byte data)
+    public BlockData(Material mat, Byte data)
     {
         this.mat = mat;
         this.data = data;

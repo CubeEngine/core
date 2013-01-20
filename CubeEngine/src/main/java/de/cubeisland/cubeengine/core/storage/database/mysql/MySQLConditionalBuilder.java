@@ -74,7 +74,7 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     @SuppressWarnings("unchecked")
     public This where()
     {
-        this.query.append(" WHERE ");
+        this.query.append(" \nWHERE ");
         return (This) this;
     }
 
@@ -82,8 +82,15 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
     @SuppressWarnings("unchecked")
     public This between()
     {
-        this.query.append(" BETWEEN ? AND ?");
-        return (This) this;
+        this.query.append(" BETWEEN ");
+        return (This) this.value().and().value();
+    }
+
+    @Override
+    public This between(Object val1, Object val2)
+    {
+        this.query.append(" BETWEEN ");
+        return (This) this.value(val1).and().value(val2);
     }
 
     @Override

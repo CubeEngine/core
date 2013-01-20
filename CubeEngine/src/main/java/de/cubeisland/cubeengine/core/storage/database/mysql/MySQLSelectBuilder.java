@@ -6,8 +6,7 @@ import org.apache.commons.lang.Validate;
 /**
  * MYSQLQueryBuilder for selecting from tables.
  */
-public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder>
-        implements SelectBuilder
+public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> implements SelectBuilder
 {
     protected MySQLSelectBuilder(MySQLQueryBuilder parent)
     {
@@ -43,7 +42,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder>
     public MySQLSelectBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-        this.query.append(" FROM ").append(this.database.prepareTableName(tables[0]));
+        this.query.append(" \nFROM ").append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
             this.query.append(',').append(this.database.prepareTableName(tables[i]));
@@ -75,7 +74,37 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder>
     @Override
     public SelectBuilder in(String database)
     {
-        this.query.append(" IN ").append(this.database.prepareString(database));//TODO prepare db name correct?
+        this.query.append(" IN ").append(this.database.prepareFieldName(database));
+        return this;
+    }
+
+    @Override
+    public SelectBuilder leftJoinOnEqual(String table, String key, String otherTable, String otherKey)
+    {
+        this.query.append(" \nLEFT JOIN ").append(this.database.prepareTableName(table));
+        this.onEqual(table, key, otherTable, otherKey);
+        return this;
+    }
+
+    private void onEqual(String table, String key, String otherTable, String otherKey)
+    {
+        this.query.append(" ON ").append(this.database.prepareFieldName(table + "." + key))
+                .append(" = ").append(this.database.prepareFieldName(otherTable + "." + otherKey));
+    }
+
+    @Override
+    public SelectBuilder rightJoinOnEqual(String table, String key, String otherTable, String otherKey)
+    {
+        this.query.append(" \nRIGHT JOIN ").append(this.database.prepareTableName(table));
+        this.onEqual(table, key, otherTable, otherKey);
+        return this;
+    }
+
+    @Override
+    public SelectBuilder joinOnEqual(String table, String key, String otherTable, String otherKey)
+    {
+        this.query.append(" JOIN ").append(this.database.prepareTableName(table));
+        this.onEqual(table, key, otherTable, otherKey);
         return this;
     }
 }

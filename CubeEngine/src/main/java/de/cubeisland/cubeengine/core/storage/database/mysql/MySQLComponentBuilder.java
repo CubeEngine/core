@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import java.sql.Timestamp;
 
 /**
  * Abstract MYSQLlQueryBuilder used by other builders.
@@ -61,13 +62,31 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @SuppressWarnings("unchecked")
     public This values(int amount)
     {
-        this.query.append(" VALUES (?");
+        this.query.append(" \nVALUES");
+        return this.valuesInBrackets(amount);
+    }
+
+    @Override
+    public This valuesInBrackets(int amount)
+    {
+        this.beginSub().value();
         for (int i = 1; i < amount; ++i)
         {
             this.query.append(",?");
         }
-        this.query.append(')');
-        return (This) this;
+        return (This) this.endSub();
+    }
+
+    @Override
+    public This valuesInBrackets(Object[] values)
+    {
+        this.beginSub().value(values[0]);
+        for (int i = 1; i < values.length; ++i)
+        {
+            this.query.append(",");
+            this.value(values[i]);
+        }
+        return (This) this.endSub();
     }
 
     @Override
@@ -89,9 +108,9 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         {
             this.query.append("NULL");
         }
-        else if (value instanceof String)
+        else if (value instanceof String || value instanceof Timestamp)
         {
-            this.query.append(this.database.prepareString((String) value));
+            this.query.append(this.database.prepareString(value.toString()));
         }
         else
         {
@@ -150,7 +169,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @SuppressWarnings("unchecked")
     public This and()
     {
-        this.query.append(" AND");
+        this.query.append(" AND ");
         return (This) this;
     }
 

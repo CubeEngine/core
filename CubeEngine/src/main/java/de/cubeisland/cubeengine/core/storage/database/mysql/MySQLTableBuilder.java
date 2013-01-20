@@ -82,7 +82,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     {
         if (this.fieldCounter > 0)
         {
-            this.query.append(',');
+            this.query.append(",\n");
         }
         this.query.append(this.database.prepareFieldName(name)).append(' ').append(type.name());
         if (length > 0)

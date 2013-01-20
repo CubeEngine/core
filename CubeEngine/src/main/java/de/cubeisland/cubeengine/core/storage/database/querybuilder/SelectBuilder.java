@@ -18,8 +18,8 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
     public SelectBuilder cols(String... cols);
 
     /**
-     * Adds the INTO statement.
-     * This will create a new table containing the values selected in the query.
+     * Adds the INTO statement. This will create a new table containing the
+     * values selected in the query.
      *
      * @param table the table-name
      * @return fluent interface
@@ -27,9 +27,8 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
     public SelectBuilder into(String table);
 
     /**
-     * Adds the IN statement to specify in which database a table is.
-     * Use after INTO
-     * e.g. into("backup_table").in("Backup_database")
+     * Adds the IN statement to specify in which database a table is. Use after
+     * INTO e.g. into("backup_table").in("Backup_database")
      *
      * @param database
      * @return fluent interface
@@ -52,11 +51,43 @@ public interface SelectBuilder extends ConditionalBuilder<SelectBuilder>
     public SelectBuilder distinct();
 
     /**
-     * Creates a UNION of to SELECT statements
+     * Creates a UNION of two SELECT statements
      *
      * @param all if false returns distinct values else all
      * @return fluent interface
      */
     public SelectBuilder union(boolean all);
-    // TODO Inner / Left / Right / Full Join
+
+    /**
+     * Creates a LEFT JOIN table ON table.key = otherTable.otherKey statement
+     *
+     * @param table the table to join with
+     * @param key the key to join on
+     * @param otherTable the other table to join on
+     * @param otherKey the other key to join on
+     * @return fluent interface
+     */
+    public SelectBuilder leftJoinOnEqual(String table, String key, String otherTable, String otherKey);
+
+    /**
+     * Creates a RIGHT JOIN table ON table.key = otherTable.otherKey statement
+     *
+     * @param table the table to join with
+     * @param key the key to join on
+     * @param otherTable the other table to join on
+     * @param otherKey the other key to join on
+     * @return fluent interface
+     */
+    public SelectBuilder rightJoinOnEqual(String table, String key, String otherTable, String otherKey);
+
+    /**
+     * Creates a JOIN table ON table.key = otherTable.otherKey statement
+     *
+     * @param table the table to join with
+     * @param key the key to join on
+     * @param otherTable the other table to join on
+     * @param otherKey the other key to join on
+     * @return fluent interface
+     */
+    public SelectBuilder joinOnEqual(String table, String key, String otherTable, String otherKey);
 }

@@ -56,6 +56,15 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends
     public This between();
 
     /**
+     * Adds a "BETWEEN val1 AND val2" statement.
+     * 
+     * @param val1 the first value
+     * @param val2 the second value
+     * @return fluent interface
+     */
+    public This between(Object val1, Object val2);
+
+    /**
      * Adds ASCending keyword
      *
      * @return fluent interface
