@@ -1,9 +1,9 @@
-package de.cubeisland.cubeengine.log;
+package de.cubeisland.cubeengine.log.lookup;
 
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.BlockData;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.bukkit.Location;

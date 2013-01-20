@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.storage;
 
+import java.sql.Statement;
+
 /**
  * This exception is thrown when an error occurs during the storage-process.
  */
@@ -20,5 +22,11 @@ public class StorageException extends RuntimeException
     public StorageException(String message, Throwable cause)
     {
         super(message, cause);
+    }
+
+    public StorageException(String message, Throwable cause, Statement statement)
+    {//TODO use this exception!
+        //this allows seeing the complete sql that did produce the error
+        super(message + "\n\n" + statement.toString(), cause);
     }
 }

@@ -29,7 +29,9 @@ public class ToolListener implements Listener
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
             this.module.getLogManager().getBlockLogs(
                     loc.getWorld(),loc, null,
-                    new Integer[]{0,1,2}, new Long[]{}, new BlockData[]{}, 
+                    new Integer[]{0,1,2}, 
+                    new Long[]{}, false,
+                    new BlockData[]{}, false,
                     new Timestamp(System.currentTimeMillis()-1000*60*60*24*7), 
                     new Timestamp(System.currentTimeMillis()));
             event.setCancelled(true);

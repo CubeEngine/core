@@ -16,6 +16,15 @@ public class BlockData
         this.data = data;
     }
 
+    public static BlockData get(Integer mat, Byte data)
+    {
+        if (mat == null)
+        {
+            return null;
+        }
+        return new BlockData(Material.getMaterial(mat), data);
+    }
+
     public static BlockData get(BlockState state)
     {
         if (state == null)
@@ -49,5 +58,11 @@ public class BlockData
         state.setType(mat);
         state.setRawData(data);
         return state;
+    }
+
+    @Override
+    public String toString()
+    {
+        return mat.name() + ":" + data;
     }
 }

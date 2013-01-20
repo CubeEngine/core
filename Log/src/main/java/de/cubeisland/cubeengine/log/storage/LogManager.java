@@ -8,11 +8,11 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.Log;
-import java.sql.PreparedStatement;
+import de.cubeisland.cubeengine.log.lookup.BlockLog;
+import de.cubeisland.cubeengine.log.lookup.BlockLookup;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -174,21 +174,21 @@ public class LogManager
              Bukkit.shutdown();
              //*/
             /*//TEST FOR querybuilding:
-            this.getBlockLogs(
-                    Bukkit.getWorlds().get(0),
-                    new Location(null, -1000, 0, -1000),
-                    new Location(null, 1000, 120, 1000),
-                    new Integer[]
-                    {
-                        1, 2
-                    }, new Long[]
-                    {
-                    }, new BlockData[]
-                    {
-                    },
-                    new Timestamp(System.currentTimeMillis() - 50000),
-                    new Timestamp(System.currentTimeMillis()));
-            //*/
+             this.getBlockLogs(
+             Bukkit.getWorlds().get(0),
+             new Location(null, -1000, 0, -1000),
+             new Location(null, 1000, 120, 1000),
+             new Integer[]
+             {
+             1, 2
+             }, new Long[]
+             {
+             }, new BlockData[]
+             {
+             },
+             new Timestamp(System.currentTimeMillis() - 50000),
+             new Timestamp(System.currentTimeMillis()));
+             //*/
         }
         catch (SQLException ex)
         {
@@ -452,7 +452,11 @@ public class LogManager
     }
 
     //TODO return the results
-    public void getBlockLogs(World world, Location loc1, Location loc2, Integer[] actions, Long[] causers, BlockData[] blockdatas, Timestamp fromDate, Timestamp toDate)
+    public BlockLookup getBlockLogs(World world, Location loc1, Location loc2,
+            Integer[] actions,
+            Long[] causers, boolean exludeCausers,
+            BlockData[] blockdatas, boolean exludeDatas,
+            Timestamp fromDate, Timestamp toDate)
     {
         for (int action : actions) // Check actions
         {
@@ -470,7 +474,6 @@ public class LogManager
         SelectBuilder sbuilder = builder.select().wildcard()
                 .from("log_logs")
                 .joinOnEqual("log_blocklogs", "key", "log_logs", "key").where();
-        Boolean range = null;
         if (world != null)
         {
             sbuilder.field("world_id").isEqual().value(this.module.getCore().getWorldManager().getWorldId(world));
@@ -478,14 +481,12 @@ public class LogManager
             {
                 if (loc2 == null) // single location
                 {
-                    range = false;
                     sbuilder.and().field("x").isEqual().value(loc1.getBlockX())
                             .and().field("y").isEqual().value(loc1.getBlockY())
                             .and().field("z").isEqual().value(loc1.getBlockZ());
                 }
                 else // range of locations
                 {
-                    range = true;
                     sbuilder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX())
                             .and().field("y").between(loc1.getBlockY(), loc2.getBlockY())
                             .and().field("z").between(loc1.getBlockZ(), loc2.getBlockZ());
@@ -500,11 +501,20 @@ public class LogManager
         }
         if (causers.length > 0)
         {
-            sbuilder.beginSub().field("causer").in().valuesInBrackets(causers);
+            sbuilder.beginSub();
+            if (exludeCausers)
+            {
+                sbuilder.not();
+            }
+            sbuilder.field("causer").in().valuesInBrackets(causers);
             sbuilder.endSub().and();
         }
         if (blockdatas.length > 0)
         {
+            if (exludeDatas)
+            {
+                sbuilder.not();
+            }
             sbuilder.beginSub();
             if (blockdatas[0].data == null)
             {
@@ -555,27 +565,29 @@ public class LogManager
         try
         {
             ResultSet result = this.database.query(sql);
+            BlockLookup lookup = new BlockLookup();
             while (result.next())
             {
-                int b = 1;
-                System.out.println(result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++)+";"+
-                        result.getObject(b++));
+                Long key = result.getLong("key");
+                Timestamp date = result.getTimestamp("date");
+                //Long world_id = result.getLong("world_id");
+                Integer x = result.getInt("x");
+                Integer y = result.getInt("y");
+                Integer z = result.getInt("z");
+                Long causer = result.getLong("causer");
+                Integer oldBlock = result.getInt("oldBlock");
+                Byte oldBlockData = result.getByte("oldBlockData");
+                Integer newBlock = result.getInt("newBlock");
+                Byte newBlockData = result.getByte("newBlockData");
 
+                Location loc = new Location(world, x, y, z); // world is already known in params
+                //TODO if world == null
 
+                lookup.addEntry(new BlockLog(key, date, loc, causer,
+                        BlockData.get(oldBlock, oldBlockData),
+                        BlockData.get(newBlock, newBlockData)));
             }
-
-            //TODO read resultSet
+            return lookup;
         }
         catch (SQLException ex)
         {
