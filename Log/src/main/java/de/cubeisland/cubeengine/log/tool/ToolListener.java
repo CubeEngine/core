@@ -32,9 +32,16 @@ public class ToolListener implements Listener
                     new Integer[]{0,1,2}, 
                     new Long[]{}, false,
                     new BlockData[]{}, false,
-                    new Timestamp(System.currentTimeMillis()-1000*60*60*24*7), 
+                    new Timestamp(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 7),
                     new Timestamp(System.currentTimeMillis()));
             event.setCancelled(true);
+            
+            this.module.getLogManager().getSignLogs(
+                    loc.getWorld(), loc, null, 
+                    new Long[]{}, false, 
+                    null, false,
+                    new Timestamp(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 7),
+                    new Timestamp(System.currentTimeMillis()));
         }
     }
 }

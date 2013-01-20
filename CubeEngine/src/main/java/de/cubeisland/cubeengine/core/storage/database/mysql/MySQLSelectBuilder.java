@@ -67,7 +67,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     @Override
     public SelectBuilder into(String table)
     {
-        this.query.append(" INTO ").append(this.database.prepareTableName(table));
+        this.query.append(" \nINTO ").append(this.database.prepareTableName(table));
         return this;
     }
 
@@ -88,7 +88,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
 
     private void onEqual(String table, String key, String otherTable, String otherKey)
     {
-        this.query.append(" ON ").append(this.database.prepareFieldName(table + "." + key))
+        this.query.append(" \nON ").append(this.database.prepareFieldName(table + "." + key))
                 .append(" = ").append(this.database.prepareFieldName(otherTable + "." + otherKey));
     }
 
@@ -103,7 +103,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     @Override
     public SelectBuilder joinOnEqual(String table, String key, String otherTable, String otherKey)
     {
-        this.query.append(" JOIN ").append(this.database.prepareTableName(table));
+        this.query.append(" \nJOIN ").append(this.database.prepareTableName(table));
         this.onEqual(table, key, otherTable, otherKey);
         return this;
     }

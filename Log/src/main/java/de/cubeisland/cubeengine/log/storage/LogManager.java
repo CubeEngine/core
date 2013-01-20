@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
 import de.cubeisland.cubeengine.log.lookup.BlockLookup;
+import de.cubeisland.cubeengine.log.lookup.SignLookup;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -451,6 +452,86 @@ public class LogManager
         this.storeChestLog(logID, itemData, amount, containerType);
     }
 
+    private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
+    {
+        if (world != null)
+        {
+            builder.field("world_id").isEqual().value(this.module.getCore().getWorldManager().getWorldId(world));
+            if (loc1 != null)
+            {
+                if (loc2 == null) // single location
+                {
+                    builder.and().field("x").isEqual().value(loc1.getBlockX())
+                            .and().field("y").isEqual().value(loc1.getBlockY())
+                            .and().field("z").isEqual().value(loc1.getBlockZ());
+                }
+                else // range of locations
+                {
+                    builder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX())
+                            .and().field("y").between(loc1.getBlockY(), loc2.getBlockY())
+                            .and().field("z").between(loc1.getBlockZ(), loc2.getBlockZ());
+                }
+            }
+            builder.and();
+        }
+    }
+
+    private void buildDates(SelectBuilder builder, Timestamp fromDate, Timestamp toDate)
+    {
+        builder.beginSub().field("date").between(fromDate, toDate).endSub();
+    }
+
+    public SignLookup getSignLogs(World world, Location loc1, Location loc2,
+            Long[] causers, boolean exludeCausers,
+            String text, boolean excludeText,
+            Timestamp fromDate, Timestamp toDate)
+    {
+        QueryBuilder builder = this.database.getQueryBuilder();
+        SelectBuilder sbuilder = builder.select().wildcard()
+                .from("log_logs")
+                .joinOnEqual("log_signlogs", "key", "log_logs", "key").where();
+        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
+        sbuilder.field("action").isEqual().value(BLOCK_SIGN).and();
+        if (causers.length > 0)
+        {
+            sbuilder.beginSub();
+            if (exludeCausers)
+            {
+                sbuilder.not();
+            }
+            sbuilder.field("causer").in().valuesInBrackets(causers);
+            sbuilder.endSub().and();
+        }
+        if (text != null)
+        {
+            if (excludeText)
+            {
+                sbuilder.not();
+            }
+            sbuilder.beginSub()
+                    .field("oldLine1").like().value("%" + text + "%").or()
+                    .field("oldLine2").like().value("%" + text + "%").or()
+                    .field("oldLine3").like().value("%" + text + "%").or()
+                    .field("oldLine4").like().value("%" + text + "%").or()
+                    .field("newLine1").like().value("%" + text + "%").or()
+                    .field("newLine2").like().value("%" + text + "%").or()
+                    .field("newLine3").like().value("%" + text + "%").or()
+                    .field("newLine4").like().value("%" + text + "%").endSub();
+        }
+        sbuilder.and();
+        this.buildDates(sbuilder, fromDate, toDate);
+        String sql = sbuilder.end().end();
+        System.out.println("\n\n" + sql); //<---TODO remove this
+        try
+        {
+            ResultSet result = this.database.query(sql);
+        }
+        catch (SQLException e)
+        {
+        }
+        return null;//TODO
+    }
+
     public BlockLookup getBlockLogs(World world, Location loc1, Location loc2,
             Integer[] actions,
             Long[] causers, boolean exludeCausers,
@@ -473,26 +554,7 @@ public class LogManager
         SelectBuilder sbuilder = builder.select().wildcard()
                 .from("log_logs")
                 .joinOnEqual("log_blocklogs", "key", "log_logs", "key").where();
-        if (world != null)
-        {
-            sbuilder.field("world_id").isEqual().value(this.module.getCore().getWorldManager().getWorldId(world));
-            if (loc1 != null)
-            {
-                if (loc2 == null) // single location
-                {
-                    sbuilder.and().field("x").isEqual().value(loc1.getBlockX())
-                            .and().field("y").isEqual().value(loc1.getBlockY())
-                            .and().field("z").isEqual().value(loc1.getBlockZ());
-                }
-                else // range of locations
-                {
-                    sbuilder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX())
-                            .and().field("y").between(loc1.getBlockY(), loc2.getBlockY())
-                            .and().field("z").between(loc1.getBlockZ(), loc2.getBlockZ());
-                }
-            }
-            sbuilder.and();
-        }
+        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
         if (actions.length > 0)
         {
             sbuilder.beginSub().field("action").in().valuesInBrackets(actions);
@@ -557,7 +619,8 @@ public class LogManager
             }
             sbuilder.endSub().and();
         }
-        sbuilder.beginSub().field("date").between(fromDate, toDate).endSub();
+        this.buildDates(sbuilder, fromDate, toDate);
+
         String sql = sbuilder.end().end();
 
         System.out.println("\n\n" + sql); //<---TODO remove this

@@ -177,7 +177,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @SuppressWarnings("unchecked")
     public This or()
     {
-        this.query.append(" OR");
+        this.query.append(" OR ");
         return (This) this;
     }
 
@@ -185,7 +185,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @SuppressWarnings("unchecked")
     public This beginSub()
     {
-        this.query.append('(');
+        this.query.append("\n(");
         ++this.subDepth;
         return (This) this;
     }
@@ -196,7 +196,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     {
         if (this.subDepth > 0)
         {
-            this.query.append(')');
+            this.query.append(")");
             --this.subDepth;
         }
         return (This) this;
@@ -222,7 +222,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @SuppressWarnings("unchecked")
     public This like()
     {
-        this.query.append(" LIKE");
+        this.query.append(" LIKE ");
         return (This) this;
     }
 
