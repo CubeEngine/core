@@ -8,13 +8,16 @@ import de.cubeisland.cubeengine.log.SubLogConfig;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Diode;
+import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
+import org.bukkit.material.Openable;
 
 public class InteractionLogger extends Logger<InteractionLogger.InteractionConfig>
 {
@@ -41,14 +44,28 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                 //toggle 0x4
 
                 case WOODEN_DOOR:
+                    if (!(block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor))
+                    {
+                        return;
+
+                    }
+                    if (((Door) blockData).isTopHalf())
+                    {
+                        block = block.getRelative(BlockFace.DOWN);
+                        blockData = block.getState().getData();
+                    }
+                    //this is not working correctly for top half doors
+                    ((Openable) blockData).setOpen(!((Openable) blockData).isOpen());
+                    newData = blockData.getData();
+                    break;
                 case TRAP_DOOR:
                 case FENCE_GATE:
-                    if (!((block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor) || (block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
-                            || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate)))
+                    if (!(block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
+                            || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate))
                     {
                         return;
                     }
-                    newData = (byte) (block.getData() ^ 0x4);
+                    System.out.println(block.getData());
                     break;
                 case LEVER:
                     if (!this.config.logLever)

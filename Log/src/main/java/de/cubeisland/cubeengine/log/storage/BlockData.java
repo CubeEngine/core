@@ -63,6 +63,7 @@ public class BlockData
     @Override
     public String toString()
     {
+        //TODO get name with reverse matcher
         return mat.name() + ":" + data;
     }
 }

@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.log.lookup;
 
 import java.util.Collection;
-import java.util.PriorityQueue;
 import java.util.TreeSet;
 
 public class BlockLookup
@@ -12,10 +11,8 @@ public class BlockLookup
     {
         if (this.entries.add(logentry))
         {
-            System.out.println(entries.size() + ": " + logentry.date + " : " + logentry.getCauser() + " : "
-                    + logentry.loc.getWorld().getName() + "("
-                    + logentry.loc.getBlockX() + "," + logentry.loc.getBlockY() + "," + logentry.loc.getBlockZ() + ")"
-                    + logentry.oldBlock + "-->" + logentry.newBlock);
+            
+            System.out.println(entries.size() + ": " + logentry.format(null, true));
         }
     }
 }

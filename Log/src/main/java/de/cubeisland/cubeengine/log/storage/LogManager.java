@@ -451,7 +451,6 @@ public class LogManager
         this.storeChestLog(logID, itemData, amount, containerType);
     }
 
-    //TODO return the results
     public BlockLookup getBlockLogs(World world, Location loc1, Location loc2,
             Integer[] actions,
             Long[] causers, boolean exludeCausers,
@@ -571,6 +570,7 @@ public class LogManager
                 Long key = result.getLong("key");
                 Timestamp date = result.getTimestamp("date");
                 //Long world_id = result.getLong("world_id");
+                Integer action = result.getInt("action");
                 Integer x = result.getInt("x");
                 Integer y = result.getInt("y");
                 Integer z = result.getInt("z");
@@ -583,7 +583,7 @@ public class LogManager
                 Location loc = new Location(world, x, y, z); // world is already known in params
                 //TODO if world == null
 
-                lookup.addEntry(new BlockLog(key, date, loc, causer,
+                lookup.addEntry(new BlockLog(key, action, date, loc, causer,
                         BlockData.get(oldBlock, oldBlockData),
                         BlockData.get(newBlock, newBlockData)));
             }
