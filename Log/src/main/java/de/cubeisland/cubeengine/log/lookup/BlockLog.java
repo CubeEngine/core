@@ -2,8 +2,6 @@ package de.cubeisland.cubeengine.log.lookup;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import java.sql.Timestamp;
@@ -20,6 +18,8 @@ public class BlockLog implements Comparable<BlockLog>
     public final Long causer;
     public final BlockData oldBlock;
     public final BlockData newBlock;
+    public final String[] oldLines;
+    public final String[] newLines;
 
     public BlockLog(long key, int action, Timestamp date, Location loc, Long causer, BlockData oldBlock, BlockData newBlock)
     {
@@ -30,6 +30,21 @@ public class BlockLog implements Comparable<BlockLog>
         this.causer = causer;
         this.oldBlock = oldBlock;
         this.newBlock = newBlock;
+        this.oldLines = null;
+        this.newLines = null;
+    }
+
+    public BlockLog(long key, int action, Timestamp date, Location loc, Long causer, String[] oldLines, String[] newLines)
+    {
+        this.key = key;
+        this.action = action;
+        this.date = date;
+        this.loc = loc;
+        this.causer = causer;
+        this.oldBlock = null;
+        this.newBlock = null;
+        this.oldLines = oldLines;
+        this.newLines = newLines;
     }
 
     @Override
@@ -76,7 +91,7 @@ public class BlockLog implements Comparable<BlockLog>
         throw new IllegalStateException("Illegal Blocklog type!");
     }
 
-    public String format(User user, boolean showLoc)
+    public void sendToUser(User user, boolean showLoc)
     {
         ArrayList<Object> list = new ArrayList<Object>();
         String message = "%s &2%s ";
@@ -147,6 +162,14 @@ public class BlockLog implements Comparable<BlockLog>
                     break;
             }
         }
+        else if (action == LogManager.BLOCK_SIGN)
+        {
+            message += "&ewrote &f%s&e|&f%s&e|&f%s&e|&f%s";
+            list.add(this.newLines[0]);
+            list.add(this.newLines[1]);
+            list.add(this.newLines[2]);
+            list.add(this.newLines[3]);
+        }
         if (showLoc)
         {
             message += " &eat &f(&6%d,%d,%d&f) &ein &6%s";
@@ -155,6 +178,6 @@ public class BlockLog implements Comparable<BlockLog>
             list.add(this.loc.getBlockZ());
             list.add(this.loc.getWorld().getName());
         }
-        return ChatFormat.parseFormats(String.format(message, list.toArray())); //TODO translate and parse color too
+        user.sendMessage("log", message, list.toArray());
     }
 }

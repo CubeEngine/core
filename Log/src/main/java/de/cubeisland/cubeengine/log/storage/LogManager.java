@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
 import de.cubeisland.cubeengine.log.lookup.BlockLookup;
-import de.cubeisland.cubeengine.log.lookup.SignLookup;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -481,61 +480,11 @@ public class LogManager
         builder.beginSub().field("date").between(fromDate, toDate).endSub();
     }
 
-    public SignLookup getSignLogs(World world, Location loc1, Location loc2,
-            Long[] causers, boolean exludeCausers,
-            String text, boolean excludeText,
-            Timestamp fromDate, Timestamp toDate)
-    {
-        QueryBuilder builder = this.database.getQueryBuilder();
-        SelectBuilder sbuilder = builder.select().wildcard()
-                .from("log_logs")
-                .joinOnEqual("log_signlogs", "key", "log_logs", "key").where();
-        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
-        sbuilder.field("action").isEqual().value(BLOCK_SIGN).and();
-        if (causers.length > 0)
-        {
-            sbuilder.beginSub();
-            if (exludeCausers)
-            {
-                sbuilder.not();
-            }
-            sbuilder.field("causer").in().valuesInBrackets(causers);
-            sbuilder.endSub().and();
-        }
-        if (text != null)
-        {
-            if (excludeText)
-            {
-                sbuilder.not();
-            }
-            sbuilder.beginSub()
-                    .field("oldLine1").like().value("%" + text + "%").or()
-                    .field("oldLine2").like().value("%" + text + "%").or()
-                    .field("oldLine3").like().value("%" + text + "%").or()
-                    .field("oldLine4").like().value("%" + text + "%").or()
-                    .field("newLine1").like().value("%" + text + "%").or()
-                    .field("newLine2").like().value("%" + text + "%").or()
-                    .field("newLine3").like().value("%" + text + "%").or()
-                    .field("newLine4").like().value("%" + text + "%").endSub();
-        }
-        sbuilder.and();
-        this.buildDates(sbuilder, fromDate, toDate);
-        String sql = sbuilder.end().end();
-        System.out.println("\n\n" + sql); //<---TODO remove this
-        try
-        {
-            ResultSet result = this.database.query(sql);
-        }
-        catch (SQLException e)
-        {
-        }
-        return null;//TODO
-    }
-
     public BlockLookup getBlockLogs(World world, Location loc1, Location loc2,
-            Integer[] actions,
+            Integer[] actions,//blocks only
             Long[] causers, boolean exludeCausers,
             BlockData[] blockdatas, boolean exludeDatas,
+            String text, boolean excludeText, //signs only            
             Timestamp fromDate, Timestamp toDate)
     {
         for (int action : actions) // Check actions
@@ -624,10 +573,11 @@ public class LogManager
         String sql = sbuilder.end().end();
 
         System.out.println("\n\n" + sql); //<---TODO remove this
+        BlockLookup lookup = new BlockLookup();
         try
         {
             ResultSet result = this.database.query(sql);
-            BlockLookup lookup = new BlockLookup();
+
             while (result.next())
             {
                 Long key = result.getLong("key");
@@ -644,18 +594,89 @@ public class LogManager
                 Byte newBlockData = result.getByte("newBlockData");
 
                 Location loc = new Location(world, x, y, z); // world is already known in params
-                //TODO if world == null
+                //TODO if world == null or xyz null no location
 
                 lookup.addEntry(new BlockLog(key, action, date, loc, causer,
                         BlockData.get(oldBlock, oldBlockData),
                         BlockData.get(newBlock, newBlockData)));
             }
-            return lookup;
         }
         catch (SQLException ex)
         {
             throw new StorageException("Could not execute query for block-logs!", ex);
         }
+        // SIGN QUERY:
+        sbuilder = builder.select().wildcard()
+                .from("log_logs")
+                .joinOnEqual("log_signlogs", "key", "log_logs", "key").where();
+        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
+        sbuilder.field("action").isEqual().value(BLOCK_SIGN).and();
+        if (causers.length > 0)
+        {
+            sbuilder.beginSub();
+            if (exludeCausers)
+            {
+                sbuilder.not();
+            }
+            sbuilder.field("causer").in().valuesInBrackets(causers);
+            sbuilder.endSub().and();
+        }
+        if (text != null)
+        {
+            if (excludeText)
+            {
+                sbuilder.not();
+            }
+            sbuilder.beginSub()
+                    .field("oldLine1").like().value("%" + text + "%").or()
+                    .field("oldLine2").like().value("%" + text + "%").or()
+                    .field("oldLine3").like().value("%" + text + "%").or()
+                    .field("oldLine4").like().value("%" + text + "%").or()
+                    .field("newLine1").like().value("%" + text + "%").or()
+                    .field("newLine2").like().value("%" + text + "%").or()
+                    .field("newLine3").like().value("%" + text + "%").or()
+                    .field("newLine4").like().value("%" + text + "%").endSub();
+        }
+        this.buildDates(sbuilder, fromDate, toDate);
+        sql = sbuilder.end().end();
+        System.out.println("\n\n" + sql); //<---TODO remove this
+        try
+        {
+            ResultSet result = this.database.query(sql);
+            while (result.next())
+            {
+                Long key = result.getLong("key");
+                Timestamp date = result.getTimestamp("date");
+                //Long world_id = result.getLong("world_id");
+                Integer action = result.getInt("action");
+                Integer x = result.getInt("x");
+                Integer y = result.getInt("y");
+                Integer z = result.getInt("z");
+                Long causer = result.getLong("causer");
+                String[] oldLines = new String[4];
+                String[] newLines = new String[4];
+                oldLines[0] = result.getString("oldLine1");
+                oldLines[1] = result.getString("oldLine2");
+                oldLines[2] = result.getString("oldLine3");
+                oldLines[3] = result.getString("oldLine4");
+
+                newLines[0] = result.getString("newLine1");
+                newLines[1] = result.getString("newLine2");
+                newLines[2] = result.getString("newLine3");
+                newLines[3] = result.getString("newLine4");
+
+                Location loc = new Location(world, x, y, z); // world is already known in params
+                //TODO if world == null or xyz null no location
+
+                lookup.addEntry(new BlockLog(key, action, date, loc, causer,
+                        oldLines, newLines));
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not execute query for sign-logs!", ex);
+        }
+        return lookup;
 
     }
 }
