@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
  * This class represents an instance of a lookup. (The lookup gets bound to the
  * user executing the lookup)
  */
-public class Lookup
+public class Lookup_old
 {
     boolean showCoords;
 
@@ -27,52 +27,52 @@ public class Lookup
     //TODO sort by timestamp (or other)
     }
 
-    public Lookup filterSelection()//TODO the selection as param / & / how to get the selection?
+    public Lookup_old filterSelection()//TODO the selection as param / & / how to get the selection?
     {
         return this;
     }
 
-    public Lookup filterWorld(World world)
+    public Lookup_old filterWorld(World world)
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    public Lookup filterItemType(ItemStack[] blocks)//or item
+    public Lookup_old filterItemType(ItemStack[] blocks)//or item
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    public Lookup filterUsers(User[] names)
+    public Lookup_old filterUsers(User[] names)
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    public Lookup filterBlockBreak()
+    public Lookup_old filterBlockBreak()
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    public Lookup filterBlockPlace()
+    public Lookup_old filterBlockPlace()
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    public Lookup filterTimeSince(Date date)
+    public Lookup_old filterTimeSince(Date date)
     {
         return this.filterTimeFrame(date, new Date(System.currentTimeMillis()));
     }
 
-    public Lookup filterTimeOlder(Date date)
+    public Lookup_old filterTimeOlder(Date date)
     {
         return this.filterTimeFrame(new Date(0), date);
     }
 
-    public Lookup filterTimeFrame(Date date1, Date date2)
+    public Lookup_old filterTimeFrame(Date date1, Date date2)
     {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    public static Lookup getBlocklogs()
+    public static Lookup_old getBlocklogs()
     {
         Location loc1;
         Location loc2;

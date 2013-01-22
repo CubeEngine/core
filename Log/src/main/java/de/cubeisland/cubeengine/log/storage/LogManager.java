@@ -8,8 +8,11 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.logger.KillLogger;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
 import de.cubeisland.cubeengine.log.lookup.BlockLookup;
+import de.cubeisland.cubeengine.log.lookup.KillLog;
+import de.cubeisland.cubeengine.log.lookup.KillLookup;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -67,7 +70,7 @@ public class LogManager
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeLog", sql);
             //Block logging:
-            sql = builder.createTable("log_blockLogs", true).beginFields()
+            sql = builder.createTable("log_block", true).beginFields()
                     .field("key", AttrType.INT, true)
                     .field("oldBlock", AttrType.INT, false, false)
                     .field("oldBlockData", AttrType.TINYINT, false, false)
@@ -78,12 +81,12 @@ public class LogManager
                     .engine("innoDB").defaultcharset("utf8")
                     .end().end();
             this.database.execute(sql);
-            sql = builder.insert().into("log_blockLogs")
+            sql = builder.insert().into("log_block")
                     .cols("key", "oldBlock", "oldBlockData", "newBlock", "newBlockData")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeBlockLog", sql);
             //Sign logging:
-            sql = builder.createTable("log_signLogs", true).beginFields()
+            sql = builder.createTable("log_sign", true).beginFields()
                     .field("key", AttrType.INT, true)
                     .field("oldLine1", AttrType.VARCHAR, 16)
                     .field("oldLine2", AttrType.VARCHAR, 16)
@@ -98,13 +101,13 @@ public class LogManager
                     .engine("innoDB").defaultcharset("utf8")
                     .end().end();
             this.database.execute(sql);
-            sql = builder.insert().into("log_signLogs")
+            sql = builder.insert().into("log_sign")
                     .cols("key", "oldLine1", "oldLine2", "oldLine3",
                     "oldLine4", "newLine1", "newLine2", "newLine3", "newLine4")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeSignLog", sql);
             //Kill logging:
-            sql = builder.createTable("log_killLogs", true).beginFields()
+            sql = builder.createTable("log_kill", true).beginFields()
                     .field("key", AttrType.INT, true)
                     .field("killed", AttrType.BIGINT)
                     .foreignKey("key").references("log_logs", "key").onDelete("CASCADE")
@@ -112,12 +115,12 @@ public class LogManager
                     .engine("innoDB").defaultcharset("utf8")
                     .end().end();
             this.database.execute(sql);
-            sql = builder.insert().into("log_killLogs")
+            sql = builder.insert().into("log_kill")
                     .cols("key", "killed")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeKillLog", sql);
             //Message (Chat/Command) logging:
-            sql = builder.createTable("log_messageLogs", true).beginFields()
+            sql = builder.createTable("log_message", true).beginFields()
                     .field("key", AttrType.INT, true)
                     .field("message", AttrType.VARCHAR, 100)
                     .foreignKey("key").references("log_logs", "key").onDelete("CASCADE")
@@ -125,12 +128,12 @@ public class LogManager
                     .engine("innoDB").defaultcharset("utf8")
                     .end().end();
             this.database.execute(sql);
-            sql = builder.insert().into("log_messageLogs")
+            sql = builder.insert().into("log_message")
                     .cols("key", "message")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeMessageLogs", sql);
             //Chest logging:
-            sql = builder.createTable("log_chestLogs", true).beginFields()
+            sql = builder.createTable("log_chest", true).beginFields()
                     .field("key", AttrType.INT, true)
                     .field("item", AttrType.VARCHAR, 16)
                     .field("name", AttrType.VARCHAR, 50)
@@ -141,7 +144,7 @@ public class LogManager
                     .engine("innoDB").defaultcharset("utf8")
                     .end().end();
             this.database.execute(sql);
-            sql = builder.insert().into("log_chestLogs")
+            sql = builder.insert().into("log_chest")
                     .cols("key", "item", "name", "amount", "containerType")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeChestLogs", sql);
@@ -582,7 +585,7 @@ public class LogManager
             {
                 Long key = result.getLong("key");
                 Timestamp date = result.getTimestamp("date");
-                //Long world_id = result.getLong("world_id");
+                Long world_id = result.getLong("world_id");
                 Integer action = result.getInt("action");
                 Integer x = result.getInt("x");
                 Integer y = result.getInt("y");
@@ -593,8 +596,8 @@ public class LogManager
                 Integer newBlock = result.getInt("newBlock");
                 Byte newBlockData = result.getByte("newBlockData");
 
-                Location loc = new Location(world, x, y, z); // world is already known in params
-                //TODO if world == null or xyz null no location
+                World readWorld = this.module.getCore().getWorldManager().getWorld(world_id);
+                Location loc = new Location(readWorld, x, y, z);
 
                 lookup.addEntry(new BlockLog(key, action, date, loc, causer,
                         BlockData.get(oldBlock, oldBlockData),
@@ -647,7 +650,7 @@ public class LogManager
             {
                 Long key = result.getLong("key");
                 Timestamp date = result.getTimestamp("date");
-                //Long world_id = result.getLong("world_id");
+                Long world_id = result.getLong("world_id");
                 Integer action = result.getInt("action");
                 Integer x = result.getInt("x");
                 Integer y = result.getInt("y");
@@ -665,9 +668,8 @@ public class LogManager
                 newLines[2] = result.getString("newLine3");
                 newLines[3] = result.getString("newLine4");
 
-                Location loc = new Location(world, x, y, z); // world is already known in params
-                //TODO if world == null or xyz null no location
-
+                World readWorld = this.module.getCore().getWorldManager().getWorld(world_id);
+                Location loc = new Location(readWorld, x, y, z);
                 lookup.addEntry(new BlockLog(key, action, date, loc, causer,
                         oldLines, newLines));
             }
@@ -677,6 +679,90 @@ public class LogManager
             throw new StorageException("Could not execute query for sign-logs!", ex);
         }
         return lookup;
+    }
 
+    public KillLookup getKillLogs(World world, Location loc1, Location loc2,
+            Integer[] actions,//blocks only
+            Long[] causers, boolean exludeCausers,
+            Long[] killed, boolean exludeKilled,
+            Timestamp fromDate, Timestamp toDate)
+    {
+        for (int action : actions) // Check actions
+        {
+            switch (action)
+            {
+                case KILL_PVP:
+                case KILL_PVE:
+                case KILL_EVE:
+                case KILL_EVP:
+                    break;
+                default:
+                    throw new IllegalStateException("Not a Kill-Log!");
+            }
+        }
+        QueryBuilder builder = this.database.getQueryBuilder();
+        SelectBuilder sbuilder = builder.select().wildcard()
+                .from("log_logs")
+                .joinOnEqual("log_kill", "key", "log_logs", "key").where();
+        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
+        if (actions.length > 0)
+        {
+            sbuilder.beginSub().field("action").in().valuesInBrackets(actions);
+            sbuilder.endSub().and();
+        }
+        if (causers.length > 0)
+        {
+            sbuilder.beginSub();
+            if (exludeCausers)
+            {
+                sbuilder.not();
+            }
+            sbuilder.field("causer").in().valuesInBrackets(causers);
+            sbuilder.endSub().and();
+        }
+        if (killed.length > 0)
+        {
+            sbuilder.beginSub();
+            if (exludeKilled)
+            {
+                sbuilder.not();
+            }
+            sbuilder.field("killed").in().valuesInBrackets(causers);
+            sbuilder.endSub().and();
+        }
+        this.buildDates(sbuilder, fromDate, toDate);
+
+        String sql = sbuilder.end().end();
+
+        System.out.println("\n\n" + sql); //<---TODO remove this
+        KillLookup lookup = new KillLookup();
+        try
+        {
+            ResultSet result = this.database.query(sql);
+
+            while (result.next())
+            {
+                Long key = result.getLong("key");
+                Timestamp date = result.getTimestamp("date");
+                Long world_id = result.getLong("world_id");
+                Integer action = result.getInt("action");
+                Integer x = result.getInt("x");
+                Integer y = result.getInt("y");
+                Integer z = result.getInt("z");
+                Long causer = result.getLong("causer");
+                Long readKilled = result.getLong("killed");
+
+                World readWorld = this.module.getCore().getWorldManager().getWorld(world_id);
+                Location loc = new Location(readWorld, x, y, z);
+
+                lookup.addEntry(new KillLog(key, action, date, loc, causer, readKilled));
+
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not execute query for block-logs!", ex);
+        }
+        return lookup;
     }
 }
