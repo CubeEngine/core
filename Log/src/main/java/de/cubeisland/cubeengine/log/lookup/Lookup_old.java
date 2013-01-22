@@ -18,13 +18,12 @@ public class Lookup_old
 {
     boolean showCoords;
 
-
     //private List<ChatLog> chatlogs;
     //private List<ChestLog> chestlogs;
     //TODO possibility to "give" the lookup to an other User
     public void printLookup(User user)
     {
-    //TODO sort by timestamp (or other)
+        //TODO sort by timestamp (or other)
     }
 
     public Lookup_old filterSelection()//TODO the selection as param / & / how to get the selection?
@@ -112,11 +111,10 @@ public class Lookup_old
                 where().
                 //SELECT BlockTypes
                 beginSub().
-                        field("newBlockOrLines").isEqual().value().or().
-                        field("oldBlockOrLines").isEqual().value().
+                field("newBlockOrLines").isEqual().value().or().
+                field("oldBlockOrLines").isEqual().value().
                 endSub(); //CONNECT LIST WITH OR & put () around
         return null;
 
     }
-
 }

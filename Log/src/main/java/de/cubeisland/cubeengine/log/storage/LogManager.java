@@ -5,14 +5,15 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.logger.KillLogger;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
 import de.cubeisland.cubeengine.log.lookup.BlockLookup;
+import de.cubeisland.cubeengine.log.lookup.ChestLog;
+import de.cubeisland.cubeengine.log.lookup.ChestLookup;
 import de.cubeisland.cubeengine.log.lookup.KillLog;
 import de.cubeisland.cubeengine.log.lookup.KillLookup;
+import de.cubeisland.cubeengine.log.lookup.MessageLog;
+import de.cubeisland.cubeengine.log.lookup.MessageLookup;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -135,7 +136,8 @@ public class LogManager
             //Chest logging:
             sql = builder.createTable("log_chest", true).beginFields()
                     .field("key", AttrType.INT, true)
-                    .field("item", AttrType.VARCHAR, 16)
+                    .field("item", AttrType.INT)
+                    .field("data", AttrType.INT)
                     .field("name", AttrType.VARCHAR, 50)
                     .field("amount", AttrType.INT)
                     .field("containerType", AttrType.INT)
@@ -145,7 +147,7 @@ public class LogManager
                     .end().end();
             this.database.execute(sql);
             sql = builder.insert().into("log_chest")
-                    .cols("key", "item", "name", "amount", "containerType")
+                    .cols("key", "item", "data", "name", "amount", "containerType")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeChestLogs", sql);
 
@@ -317,19 +319,13 @@ public class LogManager
         {
 
             this.database.preparedExecute(this.getClass(), "storeChestLogs",
-                    logID, Convert.toObject(itemData), (itemData.name == null ? null : itemData.name),
+                    logID, itemData.mat, itemData.data, itemData.name,
                     amount, containerType);
-
-
         }
         catch (SQLException ex)
         {
             throw new StorageException("Error while storing message Log-Entry", ex);
         }
-        catch (ConversionException ignored)
-        {
-        }
-
     }
 
     /**
@@ -682,7 +678,7 @@ public class LogManager
     }
 
     public KillLookup getKillLogs(World world, Location loc1, Location loc2,
-            Integer[] actions,//blocks only
+            Integer[] actions,
             Long[] causers, boolean exludeCausers,
             Long[] killed, boolean exludeKilled,
             Timestamp fromDate, Timestamp toDate)
@@ -756,7 +752,197 @@ public class LogManager
                 Location loc = new Location(readWorld, x, y, z);
 
                 lookup.addEntry(new KillLog(key, action, date, loc, causer, readKilled));
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not execute query for block-logs!", ex);
+        }
+        return lookup;
+    }
 
+    public MessageLookup getMessageLogs(World world, Location loc1, Location loc2,
+            Integer[] actions,
+            Long[] causers, boolean exludeCausers,
+            String message, boolean excludeMessage,
+            Timestamp fromDate, Timestamp toDate)
+    {
+        for (int action : actions) // Check actions
+        {
+            switch (action)
+            {
+                case CHAT:
+                case COMMAND:
+                    break;
+                default:
+                    throw new IllegalStateException("Not a Message-Log!");
+            }
+        }
+        QueryBuilder builder = this.database.getQueryBuilder();
+        SelectBuilder sbuilder = builder.select().wildcard()
+                .from("log_logs")
+                .joinOnEqual("log_message", "key", "log_logs", "key").where();
+        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
+        if (actions.length > 0)
+        {
+            sbuilder.beginSub().field("action").in().valuesInBrackets(actions);
+            sbuilder.endSub().and();
+        }
+        if (causers.length > 0)
+        {
+            sbuilder.beginSub();
+            if (exludeCausers)
+            {
+                sbuilder.not();
+            }
+            sbuilder.field("causer").in().valuesInBrackets(causers);
+            sbuilder.endSub().and();
+        }
+        if (message != null)
+        {
+            if (excludeMessage)
+            {
+                sbuilder.not();
+            }
+            sbuilder.beginSub()
+                    .field("message").like().value("%" + message + "%")
+                    .endSub();
+        }
+        this.buildDates(sbuilder, fromDate, toDate);
+
+        String sql = sbuilder.end().end();
+
+        System.out.println("\n\n" + sql); //<---TODO remove this
+        MessageLookup lookup = new MessageLookup();
+        try
+        {
+            ResultSet result = this.database.query(sql);
+            while (result.next())
+            {
+                Long key = result.getLong("key");
+                Timestamp date = result.getTimestamp("date");
+                Long world_id = result.getLong("world_id");
+                Integer action = result.getInt("action");
+                Integer x = result.getInt("x");
+                Integer y = result.getInt("y");
+                Integer z = result.getInt("z");
+                Long causer = result.getLong("causer");
+                String readmessage = result.getString("message");
+                Location location;
+                if (world_id == null)
+                {
+                    location = null;
+                }
+                else
+                {
+                    World readWorld = this.module.getCore().getWorldManager().getWorld(world_id);
+                    location = new Location(readWorld, x, y, z);
+                }
+                lookup.addEntry(new MessageLog(key, action, date, location, causer, readmessage));
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not execute query for block-logs!", ex);
+        }
+        return lookup;
+    }
+
+    public ChestLookup getChestLogs(World world, Location loc1, Location loc2,
+            Integer[] actions,
+            Long[] causers, boolean exludeCausers,
+            ItemData[] datas, boolean excludeData,
+            Timestamp fromDate, Timestamp toDate)
+    {
+        for (int action : actions) // Check actions
+        {
+            switch (action)
+            {
+                case CHAT:
+                case COMMAND:
+                    break;
+                default:
+                    throw new IllegalStateException("Not a Message-Log!");
+            }
+        }
+        QueryBuilder builder = this.database.getQueryBuilder();
+        SelectBuilder sbuilder = builder.select().wildcard()
+                .from("log_logs")
+                .joinOnEqual("log_message", "key", "log_logs", "key").where();
+        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
+        if (actions.length > 0)
+        {
+            sbuilder.beginSub().field("action").in().valuesInBrackets(actions);
+            sbuilder.endSub().and();
+        }
+        if (causers.length > 0)
+        {
+            sbuilder.beginSub();
+            if (exludeCausers)
+            {
+                sbuilder.not();
+            }
+            sbuilder.field("causer").in().valuesInBrackets(causers);
+            sbuilder.endSub().and();
+        }
+        if (datas.length > 0)
+        {
+            for (ItemData data : datas)
+            {
+                if (excludeData)
+                {
+                    sbuilder.not();
+                }
+                sbuilder.beginSub()
+                        .field("item").isEqual().value(data.mat);
+                if (data.data != null)
+                {
+                    sbuilder.and()
+                            .field("data").isEqual().value(data.data);
+                }
+                if (data.name != null)
+                {
+                    sbuilder.and()
+                            .field("name").like().value("%" + data.name + "%");
+                }
+                sbuilder.endSub();
+            }
+        }
+        this.buildDates(sbuilder, fromDate, toDate);
+        String sql = sbuilder.end().end();
+
+        System.out.println("\n\n" + sql); //<---TODO remove this
+        ChestLookup lookup = new ChestLookup();
+        try
+        {
+            ResultSet result = this.database.query(sql);
+            while (result.next())
+            {
+                Long key = result.getLong("key");
+                Timestamp date = result.getTimestamp("date");
+                Long world_id = result.getLong("world_id");
+                Integer action = result.getInt("action");
+                Integer x = result.getInt("x");
+                Integer y = result.getInt("y");
+                Integer z = result.getInt("z");
+                Long causer = result.getLong("causer");
+                Integer item = result.getInt("item");
+                Integer data = result.getInt("data");
+                String name = result.getString("name");
+                Integer amount = result.getInt("amount");
+                Integer containerType = result.getInt("containerType");
+                ItemData itemData = new ItemData(item, data.shortValue(), name);
+                Location location;
+                if (world_id == null)
+                {
+                    location = null;
+                }
+                else
+                {
+                    World readWorld = this.module.getCore().getWorldManager().getWorld(world_id);
+                    location = new Location(readWorld, x, y, z);
+                }
+                lookup.addEntry(new ChestLog(key, action, date, location, causer, itemData, amount, containerType));
             }
         }
         catch (SQLException ex)

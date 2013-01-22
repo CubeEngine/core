@@ -5,8 +5,8 @@ import org.bukkit.inventory.ItemStack;
 public class ItemData
 {
     public int mat;
-    public short data;
-    public String name = "";
+    public Short data;
+    public String name;
 
     public ItemData(ItemStack item)
     {
@@ -26,6 +26,14 @@ public class ItemData
     {
         this.mat = mat;
         this.data = data;
+        this.name = null;
+    }
+
+    public ItemData(int mat, Short data, String name)
+    {
+        this.mat = mat;
+        this.data = data;
+        this.name = name;
     }
 
     @Override
@@ -33,7 +41,7 @@ public class ItemData
     {
         if (obj instanceof ItemData)
         {
-            ItemData o = ((ItemData)obj);
+            ItemData o = ((ItemData) obj);
             if (this.mat == o.mat && this.data == o.data && this.name.equals(o.name))
             {
                 return true;
