@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.logger.BlockLogger;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
 import de.cubeisland.cubeengine.log.lookup.BlockLookup;
 import de.cubeisland.cubeengine.log.lookup.ChestLog;
@@ -17,6 +18,7 @@ import de.cubeisland.cubeengine.log.lookup.MessageLookup;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -27,6 +29,7 @@ public class LogManager
     public static final int BLOCK_BREAK = 0x01;
     public static final int BLOCK_CHANGE = 0x02; //changing blockdata / interactlog
     public static final int BLOCK_SIGN = 0x03; //sign change
+    public static final int BLOCK_GROW_BP = 0x04; //growth induced by a player
     public static final int KILL_PVP = 0x10; //player killed by player
     public static final int KILL_PVE = 0x11; //player killed by environement
     public static final int KILL_EVE = 0x12; //mob killed by environement
@@ -335,7 +338,7 @@ public class LogManager
      * @param newState
      * @param oldState
      */
-    public void logBlockLog(long causerId, BlockState newState, BlockState oldState)
+    public void logBlockLog(BlockLogger.BlockChangeCause cause, long causerId, BlockState newState, BlockState oldState)
     {
         Location location;
         int type;
@@ -352,6 +355,10 @@ public class LogManager
         else
         {
             throw new IllegalArgumentException("Both states cannot be null!");
+        }
+        if (cause.equals(BlockLogger.BlockChangeCause.GROW) && causerId > 0)
+        {
+            type = BLOCK_GROW_BP;
         }
         long logID = this.storeLog(location.getWorld(), location, type, causerId);
         this.storeBlockLog(logID, BlockData.get(oldState), BlockData.get(newState));
@@ -486,13 +493,17 @@ public class LogManager
             String text, boolean excludeText, //signs only            
             Timestamp fromDate, Timestamp toDate)
     {
+        boolean hasSign = false;
         for (int action : actions) // Check actions
         {
             switch (action)
             {
+                case BLOCK_SIGN:
+                    hasSign = true;
                 case BLOCK_PLACE:
                 case BLOCK_BREAK:
                 case BLOCK_CHANGE:
+                case BLOCK_GROW_BP:
                     break;
                 default:
                     throw new IllegalStateException("Not a Block-Log!");
@@ -501,7 +512,7 @@ public class LogManager
         QueryBuilder builder = this.database.getQueryBuilder();
         SelectBuilder sbuilder = builder.select().wildcard()
                 .from("log_logs")
-                .joinOnEqual("log_blocklogs", "key", "log_logs", "key").where();
+                .joinOnEqual("log_block", "key", "log_logs", "key").where();
         this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
         if (actions.length > 0)
         {
@@ -605,74 +616,77 @@ public class LogManager
             throw new StorageException("Could not execute query for block-logs!", ex);
         }
         // SIGN QUERY:
-        sbuilder = builder.select().wildcard()
-                .from("log_logs")
-                .joinOnEqual("log_signlogs", "key", "log_logs", "key").where();
-        this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
-        sbuilder.field("action").isEqual().value(BLOCK_SIGN).and();
-        if (causers.length > 0)
+        if (hasSign)
         {
-            sbuilder.beginSub();
-            if (exludeCausers)
+            sbuilder = builder.select().wildcard()
+                    .from("log_logs")
+                    .joinOnEqual("log_sign", "key", "log_logs", "key").where();
+            this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
+            sbuilder.field("action").isEqual().value(BLOCK_SIGN).and();
+            if (causers.length > 0)
             {
-                sbuilder.not();
+                sbuilder.beginSub();
+                if (exludeCausers)
+                {
+                    sbuilder.not();
+                }
+                sbuilder.field("causer").in().valuesInBrackets(causers);
+                sbuilder.endSub().and();
             }
-            sbuilder.field("causer").in().valuesInBrackets(causers);
-            sbuilder.endSub().and();
-        }
-        if (text != null)
-        {
-            if (excludeText)
+            if (text != null)
             {
-                sbuilder.not();
+                if (excludeText)
+                {
+                    sbuilder.not();
+                }
+                sbuilder.beginSub()
+                        .field("oldLine1").like().value("%" + text + "%").or()
+                        .field("oldLine2").like().value("%" + text + "%").or()
+                        .field("oldLine3").like().value("%" + text + "%").or()
+                        .field("oldLine4").like().value("%" + text + "%").or()
+                        .field("newLine1").like().value("%" + text + "%").or()
+                        .field("newLine2").like().value("%" + text + "%").or()
+                        .field("newLine3").like().value("%" + text + "%").or()
+                        .field("newLine4").like().value("%" + text + "%").endSub();
             }
-            sbuilder.beginSub()
-                    .field("oldLine1").like().value("%" + text + "%").or()
-                    .field("oldLine2").like().value("%" + text + "%").or()
-                    .field("oldLine3").like().value("%" + text + "%").or()
-                    .field("oldLine4").like().value("%" + text + "%").or()
-                    .field("newLine1").like().value("%" + text + "%").or()
-                    .field("newLine2").like().value("%" + text + "%").or()
-                    .field("newLine3").like().value("%" + text + "%").or()
-                    .field("newLine4").like().value("%" + text + "%").endSub();
-        }
-        this.buildDates(sbuilder, fromDate, toDate);
-        sql = sbuilder.end().end();
-        System.out.println("\n\n" + sql); //<---TODO remove this
-        try
-        {
-            ResultSet result = this.database.query(sql);
-            while (result.next())
+            this.buildDates(sbuilder, fromDate, toDate);
+            sql = sbuilder.end().end();
+            System.out.println("\n\n" + sql); //<---TODO remove this
+            try
             {
-                Long key = result.getLong("key");
-                Timestamp date = result.getTimestamp("date");
-                Long world_id = result.getLong("world_id");
-                Integer action = result.getInt("action");
-                Integer x = result.getInt("x");
-                Integer y = result.getInt("y");
-                Integer z = result.getInt("z");
-                Long causer = result.getLong("causer");
-                String[] oldLines = new String[4];
-                String[] newLines = new String[4];
-                oldLines[0] = result.getString("oldLine1");
-                oldLines[1] = result.getString("oldLine2");
-                oldLines[2] = result.getString("oldLine3");
-                oldLines[3] = result.getString("oldLine4");
+                ResultSet result = this.database.query(sql);
+                while (result.next())
+                {
+                    Long key = result.getLong("key");
+                    Timestamp date = result.getTimestamp("date");
+                    Long world_id = result.getLong("world_id");
+                    Integer action = result.getInt("action");
+                    Integer x = result.getInt("x");
+                    Integer y = result.getInt("y");
+                    Integer z = result.getInt("z");
+                    Long causer = result.getLong("causer");
+                    String[] oldLines = new String[4];
+                    String[] newLines = new String[4];
+                    oldLines[0] = result.getString("oldLine1");
+                    oldLines[1] = result.getString("oldLine2");
+                    oldLines[2] = result.getString("oldLine3");
+                    oldLines[3] = result.getString("oldLine4");
 
-                newLines[0] = result.getString("newLine1");
-                newLines[1] = result.getString("newLine2");
-                newLines[2] = result.getString("newLine3");
-                newLines[3] = result.getString("newLine4");
+                    newLines[0] = result.getString("newLine1");
+                    newLines[1] = result.getString("newLine2");
+                    newLines[2] = result.getString("newLine3");
+                    newLines[3] = result.getString("newLine4");
 
-                World readWorld = this.module.getCore().getWorldManager().getWorld(world_id);
-                Location loc = new Location(readWorld, x, y, z);
-                lookup.addEntry(new BlockLog(key, action, date, loc, causer,
-                        oldLines, newLines));
+                    World readWorld = this.module.getCore().getWorldManager().getWorld(world_id);
+                    Location loc = new Location(readWorld, x, y, z);
+                    lookup.addEntry(new BlockLog(key, action, date, loc, causer,
+                            oldLines, newLines));
+                }
             }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Could not execute query for sign-logs!", ex);
+            catch (SQLException ex)
+            {
+                throw new StorageException("Could not execute query for sign-logs!", ex);
+            }
         }
         return lookup;
     }
@@ -868,7 +882,7 @@ public class LogManager
         QueryBuilder builder = this.database.getQueryBuilder();
         SelectBuilder sbuilder = builder.select().wildcard()
                 .from("log_logs")
-                .joinOnEqual("log_message", "key", "log_logs", "key").where();
+                .joinOnEqual("log_chest", "key", "log_logs", "key").where();
         this.buildWorldAndLocation(sbuilder, world, loc1, loc2);
         if (actions.length > 0)
         {

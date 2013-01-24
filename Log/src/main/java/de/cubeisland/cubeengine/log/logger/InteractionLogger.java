@@ -65,7 +65,6 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     {
                         return;
                     }
-                    System.out.println(block.getData());
                     break;
                 case LEVER:
                     if (!this.config.logLever)

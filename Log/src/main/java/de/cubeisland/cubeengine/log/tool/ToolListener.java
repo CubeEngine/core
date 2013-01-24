@@ -33,7 +33,7 @@ public class ToolListener implements Listener
                     loc.getWorld(), loc, null,
                     new Integer[]
                     {
-                        0, 1, 2
+                        0, 1, 2, 3, 4
                     },
                     new Long[]
                     {

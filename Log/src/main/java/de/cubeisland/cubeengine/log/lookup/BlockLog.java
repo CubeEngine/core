@@ -50,7 +50,12 @@ public class BlockLog implements Comparable<BlockLog>
     @Override
     public int compareTo(BlockLog o)
     {
-        return (int) (this.date.getTime() - o.date.getTime());
+        int temp = (int) (this.date.getTime() - o.date.getTime());
+        if (temp != 0)
+        {
+            return temp;
+        }
+        return (int) (this.key - o.key);
     }
 
     public String getCauser()
@@ -169,6 +174,16 @@ public class BlockLog implements Comparable<BlockLog>
             list.add(this.newLines[1]);
             list.add(this.newLines[2]);
             list.add(this.newLines[3]);
+        }
+        else if (action == LogManager.BLOCK_GROW_BP)
+        {
+            message += "&elet grow &6%s";
+            list.add(this.newBlock.toString());
+            if (this.oldBlock != null && this.oldBlock.mat.getId() != 0)
+            {
+                message += " &ereplacing &6%s";
+                list.add(this.oldBlock.toString());
+            }
         }
         if (showLoc)
         {

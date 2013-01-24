@@ -33,14 +33,14 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         {
             newState = null;
         }
-        if (cause == BlockChangeCause.PLAYER)
+        if (cause == BlockChangeCause.PLAYER || player != null)
         {
             User user = this.module.getUserManager().getExactUser(player);
-            this.module.getLogManager().logBlockLog(user.getKey().intValue(), newState, oldState);
+            this.module.getLogManager().logBlockLog(cause, user.getKey().intValue(), newState, oldState); //TODO type
         }
         else
         {
-            this.module.getLogManager().logBlockLog(cause.getId(), newState, oldState);
+            this.module.getLogManager().logBlockLog(cause, cause.getId(), newState, oldState);
         }
     }
 
