@@ -47,8 +47,8 @@ public class LogManager
     private final Database database;
     private final Log module;
     private final PreparedStatement storeLog;
-    private int logBuffer = 100; //TODO config (100 in ~4sec)
-    //TODO autolog every ~5sec
+    private int logBuffer = 2000; //TODO config (100 in ~4sec)
+    private final int repeatingTaskId;
 
     public LogManager(Log module)
     {
@@ -210,6 +210,21 @@ public class LogManager
         {
             throw new StorageException("Error during initialization of log-tables", ex);
         }
+        this.repeatingTaskId = CubeEngine.getTaskManager().scheduleSyncRepeatingTask(module, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                taskQueue.addTask(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        doEmptyLogs(logBuffer);
+                    }
+                });
+            }
+        }, 20 * 5, 20 * 5);
     }
     private Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
 
@@ -231,7 +246,7 @@ public class LogManager
         log.addMainLogData(current, world_id, x, y, z, action, causer);
 
         this.queuedLogs.offer(log);
-        System.out.print("Added Log: " + this.queuedLogs.size());
+        //System.out.print("Added Log: " + this.queuedLogs.size());
 
         if (this.queuedLogs.size() % logBuffer == 0)
         {
@@ -240,23 +255,28 @@ public class LogManager
                 @Override
                 public void run()
                 {
-                    doEmptyLogs();
+                    doEmptyLogs(logBuffer);
                 }
             });
         }
     }
+    private volatile boolean running = false;
 
-    public void doEmptyLogs() //TODO always do run this before disabling the module!
+    private void doEmptyLogs(int amount)
     {
         if (queuedLogs.isEmpty())
         {
-            System.out.print("Log was empty");
             return;
         }
+        if (running)
+        {
+            System.out.print("Already running!" + queuedLogs.size());
+            return;
+        }
+        running = true;
         System.out.print("Logs queued: " + queuedLogs.size());
-        int anz = 0;
         final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
-        for (int i = 0; i < this.logBuffer; i++) // log 10 next logs...
+        for (int i = 0; i < amount; i++) // log 10 next logs...
         {
             QueuedLog toLog = this.queuedLogs.poll();
             if (toLog == null)
@@ -266,26 +286,34 @@ public class LogManager
             logs.offer(toLog);
         }
         long a = System.currentTimeMillis();
-        System.out.println("Start logging...");
+        System.out.println("Start logging... (" + logs.size() + ")");
         try
         {
             for (QueuedLog log : logs)
             {
                 log.addMainDataToBatch(this.storeLog);
             }
+            System.out.println("batch filled: " + (System.currentTimeMillis() - a) + "ms");
+            this.database.getConnection().setAutoCommit(false);
             this.storeLog.executeBatch();
+            System.out.println("batch executed: " + (System.currentTimeMillis() - a) + "ms");
             ResultSet genKeys = storeLog.getGeneratedKeys();
+            System.out.println("keys got: " + (System.currentTimeMillis() - a) + "ms");
             while (genKeys.next())
             {
                 long key = genKeys.getLong("GENERATED_KEY");
                 logs.poll().run(key);
             }
+            this.database.getConnection().commit();
+            this.database.getConnection().setAutoCommit(true);
         }
         catch (SQLException ex)
         {
             throw new StorageException("Error while storing main Log-Entry", ex);
         }
-        System.out.println("Logged in " + (System.currentTimeMillis() - a) / 1000 + "s");
+        a = System.currentTimeMillis() - a;
+        System.out.println("log finished: " + a / 1000 + "." + a % 1000 + "s");
+        running = false;
     }
 
     /**
@@ -1062,5 +1090,14 @@ public class LogManager
             throw new StorageException("Could not execute query for block-logs!", ex);
         }
         return lookup;
+    }
+
+    public void disable()
+    {
+        CubeEngine.getTaskManager().cancelTask(module, this.repeatingTaskId);
+        while (!this.queuedLogs.isEmpty())
+        {
+            this.doEmptyLogs(logBuffer * 10);
+        }
     }
 }

@@ -51,7 +51,7 @@ public class AsyncTaskQueue implements TaskQueue
         {
             throw new IllegalArgumentException("This task queue has been shut down!");
         }
-        if (this.exectorFuture.get() == null)
+        if (!this.isRunning())
         {
             this.exectorFuture.set(this.executorService.submit(this.workerTask));
         }
