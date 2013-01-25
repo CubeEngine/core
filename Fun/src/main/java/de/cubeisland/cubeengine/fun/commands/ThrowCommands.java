@@ -61,7 +61,7 @@ public class ThrowCommands
         "throw"
     }, desc = "The CommandSender throws arrow/snowballs/eggs/xp/orb/fireball/smallfireball/witherskull", max = 2, params = {
         @Param(names = {
-        "delay", "d"
+            "delay", "d"
         }, type = Integer.class)
     }, flags = {
         @Flag(longName = "unsafe", name = "u")

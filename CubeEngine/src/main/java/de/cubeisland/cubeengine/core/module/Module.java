@@ -351,7 +351,7 @@ public abstract class Module
     {
         return this.core.getTaskManager();
     }
-    
+
     public ModuleRegistry getRegistry()
     {
         if (this.registry == null)

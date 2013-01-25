@@ -229,7 +229,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             if (this.keyIsAi && !storeAsync)
             {
                 // This is never async
-                model.setKey((Key_f) this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
+                model.setKey((Key_f)this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
             }
             else
             {

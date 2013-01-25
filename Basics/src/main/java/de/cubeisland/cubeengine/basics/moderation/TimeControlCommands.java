@@ -44,40 +44,40 @@ public class TimeControlCommands
         // TODO what about a matcher + alias file?
 
         DAY(
-        6000,
-        "day",
-        "noon"),
+            6000,
+            "day",
+            "noon"),
         NIGHT(
-        18000,
-        "night",
-        "midnight"),
+            18000,
+            "night",
+            "midnight"),
         DAWN(
-        22500,
-        "dawn"),
+            22500,
+            "dawn"),
         SUNRISE(
-        0,
-        "sunrise",
-        "morning"),
+            0,
+            "sunrise",
+            "morning"),
         DUSK(
-        13000,
-        "dusk",
-        "moonrise"),
+            13000,
+            "dusk",
+            "moonrise"),
         EVEN(
-        15000,
-        "even",
-        "evening",
-        "sunset"),
+            15000,
+            "even",
+            "evening",
+            "sunset"),
         FORENOON(
-        3000,
-        "forenoon"),
+            3000,
+            "forenoon"),
         AFTERNOON(
-        9000,
-        "afternoon");
+            9000,
+            "afternoon");
         public static final int TICKS_PER_HOUR = 1000;
         public static final int TICKS_PER_DAY = 24 * TICKS_PER_HOUR;
         public static final int HALF_DAY = TICKS_PER_DAY / 2;
         public static final int LIGHT_SHIFT = HALF_DAY / 2;
-        public static final double TICKS_TO_MINUTES = (double) TICKS_PER_DAY / 1440D;
+        public static final double TICKS_TO_MINUTES = (double)TICKS_PER_DAY / 1440D;
         private static final Pattern PARSE_TIME_PATTERN = Pattern.compile("^([012]?\\d)(?::(\\d{2}))?(pm|am)?$", Pattern.CASE_INSENSITIVE);
         private static final THashMap<String, Time> times = new THashMap<String, Time>(values().length);
         private static final TLongObjectHashMap<String> timeNames = new TLongObjectHashMap<String>();
@@ -171,7 +171,7 @@ public class TimeControlCommands
                     hours = (hours - LIGHT_SHIFT + TICKS_PER_DAY) % TICKS_PER_DAY;
 
                     // calculate the ticks
-                    return hours + Math.round(TICKS_TO_MINUTES * (double) minutes);
+                    return hours + Math.round(TICKS_TO_MINUTES * (double)minutes);
                 }
 
                 long daytime = Long.parseLong(string);
@@ -187,8 +187,7 @@ public class TimeControlCommands
                 return daytime;
             }
             catch (NumberFormatException ignored)
-            {
-            }
+            {}
             return -1;
         }
 
@@ -200,8 +199,8 @@ public class TimeControlCommands
             {
                 // shift the time back to show a matching to the light
                 time = (time + LIGHT_SHIFT) % TICKS_PER_DAY;
-                int hours = (int) (time / TICKS_PER_HOUR);
-                int minutes = (int) Math.round((double) (time % TICKS_PER_HOUR) / TICKS_TO_MINUTES);
+                int hours = (int)(time / TICKS_PER_HOUR);
+                int minutes = (int)Math.round((double)(time % TICKS_PER_HOUR) / TICKS_TO_MINUTES);
 
                 formatted = StringUtils.padLeft("" + hours, '0', 2) + ":" + StringUtils.padRight("" + minutes, '0', 2);
             }
@@ -209,9 +208,7 @@ public class TimeControlCommands
         }
     }
 
-    @Command(desc = "Changes the time of a world", flags =
-    @Flag(longName = "lock", name = "l"),
-    max = -1, usage = "<time> [worlds]...")
+    @Command(desc = "Changes the time of a world", flags = @Flag(longName = "lock", name = "l"), max = -1, usage = "<time> [worlds]...")
     public void time(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -306,8 +303,7 @@ public class TimeControlCommands
         }
     }
 
-    @Command(desc = "Changes the time for a player", min = 1, max = 2, flags =
-    {
+    @Command(desc = "Changes the time for a player", min = 1, max = 2, flags = {
         @Flag(longName = "lock", name = "l")
     }, usage = "<<time>|reset> [player]")
     public void ptime(CommandContext context)

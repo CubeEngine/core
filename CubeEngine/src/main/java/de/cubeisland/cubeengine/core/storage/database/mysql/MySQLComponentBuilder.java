@@ -28,7 +28,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This function(String function)
     {
         this.query.append(' ').append(function).append("()");
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -37,7 +37,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     {
         this.query.append(' ').append(function).append('(');
         this.inFunction = true;
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -47,7 +47,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         this.deepInFunction = false;
         this.inFunction = false;
         this.query.append(')');
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -55,7 +55,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This field(String name)
     {
         this.query.append(this.database.prepareFieldName(name));
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -74,7 +74,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         {
             this.query.append(",?");
         }
-        return (This) this.endSub();
+        return (This)this.endSub();
     }
 
     @Override
@@ -86,7 +86,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
             this.query.append(",");
             this.value(values[i]);
         }
-        return (This) this.endSub();
+        return (This)this.endSub();
     }
 
     @Override
@@ -116,7 +116,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         {
             this.query.append(value.toString());
         }
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -146,7 +146,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
             default:
                 throw new IllegalStateException("Invalid operation");
         }
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -154,7 +154,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This isEqual()
     {
         this.query.append(" = ");
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -162,7 +162,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This not()
     {
         this.query.append(" NOT");
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -170,7 +170,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This and()
     {
         this.query.append(" AND ");
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -178,7 +178,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This or()
     {
         this.query.append(" OR ");
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -187,7 +187,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     {
         this.query.append("\n(");
         ++this.subDepth;
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -199,7 +199,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
             this.query.append(")");
             --this.subDepth;
         }
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -207,7 +207,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This wildcard()
     {
         this.query.append('*');
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -215,7 +215,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This value()
     {
         this.query.append('?');
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -223,7 +223,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This like()
     {
         this.query.append(" LIKE ");
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -231,7 +231,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This as(String field)
     {
         this.query.append(" AS ").append(this.database.prepareFieldName(field));
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -239,7 +239,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This in()
     {
         this.query.append(" IN ");
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -258,7 +258,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
                 this.query.append(',').append(this.database.prepareFieldName(fields[i]));
             }
         }
-        return (This) this;
+        return (This)this;
     }
 
     @Override
@@ -266,7 +266,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     public This having()
     {
         this.query.append(" HAVING");
-        return (This) this;
+        return (This)this;
     }
 
     @Override

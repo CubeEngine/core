@@ -59,7 +59,7 @@ public class Currency
     {
         return this.defaultBalance;
     }
-    
+
     private String format(String format, Long balance)
     {
         boolean neg = false;
@@ -93,7 +93,7 @@ public class Currency
 
     public String formatShort(Long balance)
     {
-         return this.format(this.formatshort, balance);
+        return this.format(this.formatshort, balance);
     }
 
     public Long parse(String amountString)
@@ -163,8 +163,7 @@ public class Currency
                 }
             }
             catch (NumberFormatException ignore)
-            {
-            }
+            {}
         }
         tempString = amountString;
         //TODO parse known patterns formatLong/short

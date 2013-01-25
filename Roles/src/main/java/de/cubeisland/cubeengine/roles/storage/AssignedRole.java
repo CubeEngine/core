@@ -8,9 +8,7 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOR
 import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
 import de.cubeisland.cubeengine.core.util.Triplet;
 
-@TripletKeyEntity(tableName = "roles", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "roleName",
-                  indices =
-{
+@TripletKeyEntity(tableName = "roles", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "roleName", indices = {
     @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
     @Index(value = FOREIGN_KEY, fields = "worldId", f_table = "worlds", f_field = "key")
 })

@@ -43,13 +43,9 @@ public class LogCommands extends ContainerCommand
         //TODO
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "block", "blocklog"
-    }, desc = "Changes regarding blocks",
-             usage = "",
-             flags =
-    {
+    }, desc = "Changes regarding blocks", usage = "", flags = {
         @Flag(longName = "selection", name = "sel"),
         @Flag(longName = "coordinates", name = "coords"),
         @Flag(longName = "detailed", name = "det")
@@ -74,21 +70,16 @@ public class LogCommands extends ContainerCommand
     //time (since before (timeframe))//<-- TODO very difficult
     public void block(CommandContext context)
     {
-        //blocklog_
-        //[<world_>[loc_|range_]]
-        //
-        
-        
-        
+    //blocklog_
+    //[<world_>[loc_|range_]]
+    //
+
     }
-    
-  
+
     //TODO remove that
-    @Command(names =
-    {
+    @Command(names = {
         "lookup"
-    }, desc = "Lookups", usage = "<params>", flags =
-    {
+    }, desc = "Lookups", usage = "<params>", flags = {
         @Flag(longName = "selection", name = "sel"), // only search in Selection
         @Flag(longName = "created", name = "c"), // only search for placed blocks (on by default)
         @Flag(longName = "destroyed", name = "d"), // only search for breaked blocks (on by default)
@@ -96,8 +87,7 @@ public class LogCommands extends ContainerCommand
         @Flag(longName = "chestaccess", name = "chest"), //only search for chestaccess (off by default)
         @Flag(longName = "coordinates", name = "coords"),//display position (off by default)
         @Flag(longName = "descending", name = "desc"), //sort in descending order (default ascending)
-    }, params =
-    {
+    }, params = {
         @Param(names =
         {
             "player", "p"

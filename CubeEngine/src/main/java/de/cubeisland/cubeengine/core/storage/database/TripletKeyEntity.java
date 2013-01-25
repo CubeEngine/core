@@ -23,6 +23,6 @@ public @interface TripletKeyEntity
     public String secondPrimaryKey();
 
     public String thirdPrimaryKey();
-    
+
     public Index[] indices() default {};
 }

@@ -94,6 +94,7 @@ public enum EntityType
         }
         return result;
     }
+
     private org.bukkit.entity.EntityType type;
     private boolean spawnEgg;
     private static final Map<EntityType, String> REVERSE_NAME_MAP = new EnumMap<EntityType, String>(EntityType.class);

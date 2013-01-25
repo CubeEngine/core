@@ -12,11 +12,9 @@ import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedEx
 
 public class FlyCommand
 {
-    @Command(
-        desc = "Lets you fly away", max = 1,
-        params = @Param(names = {"player", "p"}, type = User.class),
-        usage = "[flyspeed] [player <player>]"
-    )
+    @Command(desc = "Lets you fly away", max = 1, params = @Param(names = {
+    "player", "p"
+    }, type = User.class), usage = "[flyspeed] [player <player>]")
     public void fly(CommandContext context)
     {
         User sender = context.getSenderAsUser();

@@ -50,9 +50,7 @@ public class WorldControlCommands
         this.config = basics.getConfiguration();
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3,
-    usage = "<sun|rain|storm> [duration] [in <world>]", params =
-    @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
     public void weather(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -121,10 +119,7 @@ public class WorldControlCommands
         }
     }
 
-    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags =
-    @Flag(longName = "all", name = "a"), params =
-    @Param(names =
-    {
+    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags = @Flag(longName = "all", name = "a"), params = @Param(names = {
         "in"
     }, type = World.class), min = 1)
     public void remove(CommandContext context)
@@ -194,7 +189,7 @@ public class WorldControlCommands
                         List<Entity> remList = new ArrayList<Entity>();
                         for (Entity entity : list)
                         {
-                            if (entity.getType().equals(EntityType.DROPPED_ITEM.getBukkitType()) && ((Item) entity).getItemStack().getType().equals(itemtype))
+                            if (entity.getType().equals(EntityType.DROPPED_ITEM.getBukkitType()) && ((Item)entity).getItemStack().getType().equals(itemtype))
                             {
                                 remList.add(entity);
                             }
@@ -266,9 +261,10 @@ public class WorldControlCommands
             }
         }
     }
+
     private final Collection<String> BUTCHER_TARGETS = new HashSet<String>()
     {
-        
+
         {
             this.add("pet");
             this.add("golem");
@@ -280,12 +276,11 @@ public class WorldControlCommands
         }
     };
 
-    @Command(desc = "Gets rid of living mobs nearby you", flags =
-    {
+    @Command(desc = "Gets rid of living mobs nearby you", flags = {
         @Flag(longName = "lightning", name = "l"), // die with style
-        @Flag(longName = "all", name = "a") // infinite radius
-    }, params =
-    @Param(names = "in", type = World.class), usage = "[types...] [radius] [in world] [-l] [-all]")
+        @Flag(longName = "all", name = "a")
+    // infinite radius
+    }, params = @Param(names = "in", type = World.class), usage = "[types...] [radius] [in world] [-l] [-all]")
     public void butcher(CommandContext context)
     {
         User sender = context.getSenderAsUser();
@@ -358,16 +353,16 @@ public class WorldControlCommands
                 for (Entity entity : list)
                 {
                     if ( //TODO change perms
-                            (match.equals("pet") && entity instanceof Tameable && ((Tameable) entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
+                    (match.equals("pet") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
                             || (match.equals("golem") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
                             || (match.equals("animal") && entity instanceof Animals && !(entity instanceof Tameable) && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender()))
                             || (match.equals("npc") && entity instanceof NPC && BasicsPerm.COMMAND_BUTCHER_FLAG_NPC.isAuthorized(context.getSender()))
                             || (match.equals("other") && (entity instanceof Ambient || entity instanceof WaterMob) && BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER.isAuthorized(context.getSender()))
                             || (match.equals("boss") && (entity instanceof EnderDragon || entity instanceof Wither)) //TODO perm
-                            || (match.equals("monster") && entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast)//TODO perm
-                            || (specialmatch
+                        || (match.equals("monster") && entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast)//TODO perm
+                        || (specialmatch
                             && (entity.getType().equals(EntityMatcher.get().matchEntity(match).getBukkitType()))) //TODO perms
-                            )
+                    )
                     {
                         remList.add(entity);
                     }
@@ -414,7 +409,7 @@ public class WorldControlCommands
             if (!all)
             {
 
-                int distance = (int) (entityLocation.subtract(loc)).lengthSquared();
+                int distance = (int)(entityLocation.subtract(loc)).lengthSquared();
                 if (radiusSquared < distance)
                 {
                     continue;

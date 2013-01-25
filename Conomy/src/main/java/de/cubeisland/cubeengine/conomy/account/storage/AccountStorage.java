@@ -31,24 +31,24 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getByUserID",
                     builder.select().cols(allFields).from(this.tableName).
-                    where().field("user_id").isEqual().value().end().end());
+                        where().field("user_id").isEqual().value().end().end());
             this.database.storeStatement(modelClass, "getByAccountName",
                     builder.select().cols(allFields).from(this.tableName).
-                    where().field("name").isEqual().value().end().end());
+                        where().field("name").isEqual().value().end().end());
             this.database.storeStatement(modelClass, "getTopBalance",
                     builder.select().cols(allFields).from(this.tableName).
-                    where().field("currencyName").isEqual().value().
-                    orderBy("value").desc().limit().offset().end().end());
+                        where().field("currencyName").isEqual().value().
+                        orderBy("value").desc().limit().offset().end().end());
 
             this.database.storeStatement(modelClass, "setAllUser",
                     builder.update(this.tableName).set("value").
-                    where().field("currencyName").isEqual().value().
-                    and().not().field("user_id").isEqual().value(null).end().end());
+                        where().field("currencyName").isEqual().value().
+                        and().not().field("user_id").isEqual().value(null).end().end());
 
             this.database.storeStatement(modelClass, "transactAllUser",
                     builder.update(this.tableName).set("value").beginFunction("+").field("value").endFunction().
-                    where().field("currencyName").isEqual().value().
-                    and().not().field("user_id").isEqual().value(null).end().end());
+                        where().field("currencyName").isEqual().value().
+                        and().not().field("user_id").isEqual().value(null).end().end());
         }
         catch (SQLException e)
         {

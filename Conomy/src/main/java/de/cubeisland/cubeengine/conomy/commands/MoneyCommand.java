@@ -23,15 +23,11 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
     }
 
-    @Alias(names =
-    {
+    @Alias(names = {
         "money",//TODO this does not WORK  :( fix it @Quick_Wango
         "balance", "moneybalance"
     })
-    @Command(desc = "Shows your balance",
-             usage = "[player] [in <currency>]|[-a]", flags =
-    @Flag(longName = "all", name = "a"), params =
-    @Param(names = "in", type = String.class), max = 1)
+    @Command(desc = "Shows your balance", usage = "[player] [in <currency>]|[-a]", flags = @Flag(longName = "all", name = "a"), params = @Param(names = "in", type = String.class), max = 1)
     public void balance(CommandContext context)
     {
         User user;
@@ -77,13 +73,10 @@ public class MoneyCommand extends ContainerCommand
         }
     }
 
-    @Alias(names =
-    {
+    @Alias(names = {
         "toplist", "balancetop"
     })
-    @Command(desc = "Shows the players with the highest balance.",
-             usage = "[[fromRank]-ToRank] [in <currency>]", params =
-    @Param(names = "in", type = String.class))
+    @Command(desc = "Shows the players with the highest balance.", usage = "[[fromRank]-ToRank] [in <currency>]", params = @Param(names = "in", type = String.class))
     public void top(CommandContext context)
     {
         int fromRank = 1;
@@ -134,27 +127,18 @@ public class MoneyCommand extends ContainerCommand
         }
     }
 
-    @Alias(names =
-    {
+    @Alias(names = {
         "pay"
     })
-    @Command(names =
-    {
+    @Command(names = {
         "pay", "give"
-    },
-             desc = "Transfer the given amount to another account.",
-             usage = "<player> [as <player>] <amount> [-bank]",
-             params =
-    {
+    }, desc = "Transfer the given amount to another account.", usage = "<player> [as <player>] <amount> [-bank]", params = {
         @Param(names = "as", type = User.class),
         @Param(names = "in", type = String.class)
-    },
-             flags =
-    {
+    }, flags = {
         @Flag(longName = "bank", name = "b"),
         @Flag(longName = "force", name = "f")
-    },
-             min = 2, max = 2)
+    }, min = 2, max = 2)
     public void pay(CommandContext context)
     {
         Currency currency;

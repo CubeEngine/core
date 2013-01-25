@@ -41,7 +41,7 @@ public class ItemData
     {
         if (obj instanceof ItemData)
         {
-            ItemData o = ((ItemData) obj);
+            ItemData o = ((ItemData)obj);
             if (this.mat == o.mat && this.data == o.data && this.name.equals(o.name))
             {
                 return true;

@@ -121,7 +121,7 @@ public class ModuleLoader
             {
                 if (Configuration.class.isAssignableFrom(field.getType()) && field.getType().isAnnotationPresent(Codec.class))
                 {
-                    Class<? extends Configuration> configClass = (Class<? extends Configuration>) field.getType();
+                    Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
 
                     String filename = null;
                     if (configClass.isAnnotationPresent(DefaultConfig.class))
@@ -203,8 +203,7 @@ public class ModuleLoader
                     configStream.close();
                 }
                 catch (IOException ignored)
-                {
-                }
+                {}
             }
         }
         catch (IOException e)
@@ -220,8 +219,7 @@ public class ModuleLoader
                     jarFile.close();
                 }
                 catch (IOException ignored)
-                {
-                }
+                {}
             }
         }
         return info;
@@ -246,8 +244,7 @@ public class ModuleLoader
             clazz = this.libClassLoader.findClass(name);
         }
         catch (ClassNotFoundException ignored)
-        {
-        }
+        {}
 
         if (clazz != null)
         {
@@ -273,8 +270,7 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException ignore)
-            {
-            }
+            {}
         }
 
         for (String dep : info.getDependencies().keySet())
@@ -293,8 +289,7 @@ public class ModuleLoader
                 }
             }
             catch (ClassNotFoundException ignored)
-            {
-            }
+            {}
         }
 
         for (String module : this.classLoaders.keySet())
@@ -310,8 +305,7 @@ public class ModuleLoader
                     }
                 }
                 catch (ClassNotFoundException ignored)
-                {
-                }
+                {}
             }
         }
 

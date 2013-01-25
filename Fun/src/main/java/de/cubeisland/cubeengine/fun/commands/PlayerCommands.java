@@ -31,10 +31,10 @@ public class PlayerCommands
 
     @Command(desc = "Creates an explosion", params = {
             @Param(names = {
-            "player", "p"
+                "player", "p"
             }, type = User.class),
             @Param(names = {
-            "damage", "d"
+                "damage", "d"
             }, type = Integer.class)
     }, flags = {
             @Flag(longName = "unsafe", name = "u"),
@@ -94,16 +94,16 @@ public class PlayerCommands
     }
 
     @Command(names = {
-    "lightning", "strike"
+        "lightning", "strike"
     }, desc = "Strucks a player or the location you are looking at by lightning.", max = 0, params = {
             @Param(names = {
-            "player", "p"
+                "player", "p"
             }, type = User.class),
             @Param(names = {
-            "damage", "d"
+                "damage", "d"
             }, type = Integer.class),
             @Param(names = {
-            "fireticks", "f"
+                "fireticks", "f"
             }, type = Integer.class)
     }, flags = {
         @Flag(longName = "unsafe", name = "u")

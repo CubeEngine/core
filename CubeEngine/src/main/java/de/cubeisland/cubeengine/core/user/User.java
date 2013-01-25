@@ -54,9 +54,7 @@ import org.bukkit.util.BlockIterator;
 /**
  * A CubeEngine User (can exist offline too).
  */
-@SingleKeyEntity(tableName = "user", primaryKey = "key", autoIncrement = true,
-                 indices =
-{
+@SingleKeyEntity(tableName = "user", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = UNIQUE, fields = "player")
 })
 public class User extends UserBase implements LinkingModel<Long>
@@ -97,13 +95,13 @@ public class User extends UserBase implements LinkingModel<Long>
     @DatabaseConstructor
     public User(List<Object> args) throws ConversionException
     {
-        super(Bukkit.getOfflinePlayer((String) args.get(1)));
-        this.key = (Long) args.get(0);
+        super(Bukkit.getOfflinePlayer((String)args.get(1)));
+        this.key = (Long)args.get(0);
         this.player = this.offlinePlayer.getName();
-        this.nogc = (Boolean) args.get(2);
-        this.lastseen = (Timestamp) args.get(3);
-        this.firstseen = (Timestamp) args.get(3);
-        this.passwd = (byte[]) args.get(4);
+        this.nogc = (Boolean)args.get(2);
+        this.lastseen = (Timestamp)args.get(3);
+        this.firstseen = (Timestamp)args.get(3);
+        this.passwd = (byte[])args.get(4);
     }
 
     public User(Long key, OfflinePlayer player)
@@ -189,7 +187,7 @@ public class User extends UserBase implements LinkingModel<Long>
         {
             return null;
         }
-        return (T) this.attachments.get(modelClass);
+        return (T)this.attachments.get(modelClass);
     }
 
     /**
@@ -281,15 +279,14 @@ public class User extends UserBase implements LinkingModel<Long>
             {
                 return null;
             }
-            T value = (T) attributeMap.get(name);
+            T value = (T)attributeMap.get(name);
             if (value != null)
             {
                 return value;
             }
         }
         catch (ClassCastException ignored)
-        {
-        }
+        {}
         return def;
     }
 
@@ -498,7 +495,7 @@ public class User extends UserBase implements LinkingModel<Long>
         }
         if (attachment == null)
         {
-            attachment = player.addAttachment((Plugin) CubeEngine.getCore());
+            attachment = player.addAttachment((Plugin)CubeEngine.getCore());
             attachment.setPermission(posPerm, true);
             attachment.setPermission(negPerm, true);
         }
@@ -537,12 +534,13 @@ public class User extends UserBase implements LinkingModel<Long>
             {
                 final Location l1 = new Location(null, 0, 0, 0);
                 final Location l2 = new Location(null, 0, 0, 0);
+
                 @Override
                 public int compare(Entity o1, Entity o2)
                 {
                     o1.getLocation(l1);
                     o2.getLocation(l2);
-                    return (int) (l1.distanceSquared(playerLoc) - l2.distanceSquared(playerLoc));
+                    return (int)(l1.distanceSquared(playerLoc) - l2.distanceSquared(playerLoc));
                 }
             };
             BlockIterator iterator = new BlockIterator(

@@ -37,10 +37,10 @@ public class RulebookCommands extends ContainerCommand
     }
 
     @Alias(names = {
-    "getrules", "rules"
+        "getrules", "rules"
     })
     @Command(desc = "gets the player the rulebook in the inventory", usage = "[language] [Player <name>]", params = @Param(names = {
-    "player", "p"
+        "player", "p"
     }, type = User.class), permDefault = TRUE, max = 1)
     public void get(CommandContext context)
     {

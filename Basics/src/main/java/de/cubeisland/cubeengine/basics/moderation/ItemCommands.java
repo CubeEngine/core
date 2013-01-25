@@ -77,8 +77,7 @@ public class ItemCommands
         }
     }
 
-    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [-lore]", min = 1, flags =
-    @Flag(longName = "lore", name = "l"))
+    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [-lore]", min = 1, flags = @Flag(longName = "lore", name = "l"))
     public void rename(CommandContext context)
     {//TODO better lore
         String name = context.getStrings(0);
@@ -97,8 +96,7 @@ public class ItemCommands
         context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "headchange", "skullchange"
     }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1)
     @SuppressWarnings("deprecation")
@@ -109,8 +107,8 @@ public class ItemCommands
 
         if (sender.getItemInHand().getType().equals(Material.SKULL_ITEM))
         {
-            sender.getItemInHand().setDurability((short) 3);
-            SkullMeta meta = ((SkullMeta) sender.getItemInHand().getItemMeta());
+            sender.getItemInHand().setDurability((short)3);
+            SkullMeta meta = ((SkullMeta)sender.getItemInHand().getItemMeta());
             meta.setOwner(name);
             sender.getItemInHand().setItemMeta(meta);
             context.sendMessage("basics", "&aYou now hold &6%s's &ahead in your hands!", name);
@@ -159,8 +157,7 @@ public class ItemCommands
         }
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags =
-    {
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = {
         @Flag(longName = "unsafe", name = "u")
     }, usage = "<enchantment> [level] [-unsafe]")
     public void enchant(CommandContext context)
@@ -261,8 +258,7 @@ public class ItemCommands
         return sb.toString();
     }
 
-    @Command(desc = "Gives the specified Item to a player", flags =
-    {
+    @Command(desc = "Gives the specified Item to a player", flags = {
         @Flag(name = "b", longName = "blacklist")
     }, min = 2, max = 3, usage = "<player> <material[:data]> [amount] [-blacklist]")
     @SuppressWarnings("deprecation")
@@ -302,11 +298,9 @@ public class ItemCommands
         user.sendMessage("basics", "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "item", "i"
-    }, desc = "Gives the specified Item to you", max = 2, min = 1, flags =
-    {
+    }, desc = "Gives the specified Item to you", max = 2, min = 1, flags = {
         @Flag(longName = "blacklist", name = "b")
     }, usage = "<material[:data]> [amount] [-blacklist]")
     @SuppressWarnings("deprecation")
@@ -340,8 +334,7 @@ public class ItemCommands
         sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
     }
 
-    @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", flags =
-    {
+    @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", flags = {
         @Flag(longName = "all", name = "a")
     }, max = 1)
     public void more(CommandContext context)
@@ -368,12 +361,12 @@ public class ItemCommands
             if (context.hasIndexed(0))
             {
                 Integer amount = context.getIndexed(0, Integer.class);
-                if (amount == null || amount <=1)
+                if (amount == null || amount <= 1)
                 {
                     context.sendMessage("basics", "&cInvalid amount! (%s)", context.getString(0));
                     return;
                 }
-                for (int i = 1 ; i < amount ; ++i)
+                for (int i = 1; i < amount; ++i)
                 {
                     sender.getInventory().addItem(sender.getItemInHand());
                 }
@@ -387,8 +380,7 @@ public class ItemCommands
         }
     }
 
-    @Command(desc = "Repairs your items", flags =
-    {
+    @Command(desc = "Repairs your items", flags = {
         @Flag(longName = "all", name = "a")
     }, usage = "[-all]")
     // without item in hand
@@ -405,7 +397,7 @@ public class ItemCommands
             {
                 if (MaterialMatcher.get().isRepairable(item))
                 {
-                    item.setDurability((short) 0);
+                    item.setDurability((short)0);
                     repaired++;
                 }
             }
@@ -428,7 +420,7 @@ public class ItemCommands
                     sender.sendMessage("basics", "&eNo need to repair this!");
                     return;
                 }
-                item.setDurability((short) 0);
+                item.setDurability((short)0);
                 sender.sendMessage("basics", "&aItem repaired!");
             }
             else

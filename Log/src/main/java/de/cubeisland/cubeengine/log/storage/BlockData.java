@@ -33,7 +33,7 @@ public class BlockData
         }
         if (state.getType() == Material.NOTE_BLOCK)
         {
-            return new BlockData(state.getType(), ((NoteBlock) state).getRawNote());
+            return new BlockData(state.getType(), ((NoteBlock)state).getRawNote());
         }
         return new BlockData(state.getType(), state.getRawData());
     }

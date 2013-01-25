@@ -8,9 +8,7 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOR
 import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
 import de.cubeisland.cubeengine.core.util.Triplet;
 
-@TripletKeyEntity(tableName = "userperms", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "perm",
-                  indices =
-{
+@TripletKeyEntity(tableName = "userperms", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "perm", indices = {
     @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
     @Index(value = FOREIGN_KEY, fields = "worldId", f_table = "worlds", f_field = "key")
 })
@@ -26,8 +24,7 @@ public class UserPermission implements TripletKeyModel<Long, Long, String>
     public boolean isSet;
 
     public UserPermission()
-    {
-    }
+    {}
 
     public UserPermission(long userId, long worldId, String perm, boolean isSet)
     {

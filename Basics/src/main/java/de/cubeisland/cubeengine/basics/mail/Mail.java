@@ -9,9 +9,7 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOR
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 
-@SingleKeyEntity(tableName = "mail", primaryKey = "key", autoIncrement = true,
-                 indices =
-{
+@SingleKeyEntity(tableName = "mail", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
     @Index(value = FOREIGN_KEY, fields = "senderId", f_table = "user", f_field = "key")
 })

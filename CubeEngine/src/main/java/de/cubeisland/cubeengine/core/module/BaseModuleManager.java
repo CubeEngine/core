@@ -118,7 +118,7 @@ public abstract class BaseModuleManager implements ModuleManager
         Module module;
         ModuleInfo info;
         LOGGER.log(LogLevel.NOTICE, "Loading modules...");
-        for (File file : directory.listFiles((FileFilter) FileExtentionFilter.JAR))
+        for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
             try
             {

@@ -21,6 +21,6 @@ public @interface TwoKeyEntity
     public String firstPrimaryKey();
 
     public String secondPrimaryKey();
-    
+
     public Index[] indices() default {};
 }

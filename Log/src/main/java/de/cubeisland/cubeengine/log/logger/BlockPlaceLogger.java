@@ -26,7 +26,7 @@ public class BlockPlaceLogger extends
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event)
     {
-       
+
         if (event.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY))
         {
             this.log(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);

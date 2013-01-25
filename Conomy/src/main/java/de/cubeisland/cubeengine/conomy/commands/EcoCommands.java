@@ -21,20 +21,11 @@ public class EcoCommands extends ContainerCommand
     }
 
     //TODO give a , separated list of users for all cmds
-    @Command(names =
-    {
+    @Command(names = {
         "give", "grant"
-    },
-             desc = "Gives money to given user or all [online] users",
-             usage = "<player>|* [-o] <amount> [in <currency>]",
-             flags =
-    @Flag(longName = "online", name = "o"),
-             params =
-    @Param(names =
-    {
+    }, desc = "Gives money to given user or all [online] users", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
         "in", "c", "currency"
-    }, type = String.class),
-             min = 2, max = 2)
+    }, type = String.class), min = 2, max = 2)
     public void give(CommandContext context)
     {
         Currency currency;
@@ -48,7 +39,8 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // try to match if fail default
+        else
+        // try to match if fail default
         {
             currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
         }
@@ -97,20 +89,11 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(names =
-    {
+    @Command(names = {
         "take", "remove"
-    },
-             desc = "Takes money from given user",
-             usage = "<player>|* [-o] <amount> [in <currency>]",
-             flags =
-    @Flag(longName = "online", name = "o"),
-             params =
-    @Param(names =
-    {
+    }, desc = "Takes money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
         "in", "c", "currency"
-    }, type = String.class),
-             min = 1, max = 2)
+    }, type = String.class), min = 1, max = 2)
     public void take(CommandContext context)
     {
         Currency currency;
@@ -124,7 +107,8 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // try to match if fail default
+        else
+        // try to match if fail default
         {
             currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
         }
@@ -173,12 +157,7 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(
-             desc = "Reset the money from given user",
-             usage = "<player>|* [-o] [in <currency>]", flags =
-    @Flag(longName = "online", name = "o"), params =
-    @Param(names =
-    {
+    @Command(desc = "Reset the money from given user", usage = "<player>|* [-o] [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
         "in", "c", "currency"
     }, type = String.class), max = 1)
     public void reset(CommandContext context)
@@ -193,7 +172,8 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // default
+        else
+        // default
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
@@ -234,12 +214,7 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(
-             desc = "Sets the money from given user",
-             usage = "<player>|* [-o] <amount> [in <currency>]", flags =
-    @Flag(longName = "online", name = "o"), params =
-    @Param(names =
-    {
+    @Command(desc = "Sets the money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
         "in", "c", "currency"
     }, type = String.class), min = 1, max = 2)
     public void set(CommandContext context)
@@ -255,7 +230,8 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // try to match if fail default
+        else
+        // try to match if fail default
         {
             currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
         }
@@ -303,6 +279,5 @@ public class EcoCommands extends ContainerCommand
     }
 
     public void scale(CommandContext context)//TODO
-    {
-    }
+    {}
 }

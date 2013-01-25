@@ -18,8 +18,8 @@ public @interface Index
 {
     public IndexType value();
 
-    public String[] fields();    
-    
+    public String[] fields();
+
     /**
      * Needed for FOREIGN_KEY
      */

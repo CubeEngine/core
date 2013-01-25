@@ -49,13 +49,13 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                         return;
 
                     }
-                    if (((Door) blockData).isTopHalf())
+                    if (((Door)blockData).isTopHalf())
                     {
                         block = block.getRelative(BlockFace.DOWN);
                         blockData = block.getState().getData();
                     }
                     //this is not working correctly for top half doors
-                    ((Openable) blockData).setOpen(!((Openable) blockData).isOpen());
+                    ((Openable)blockData).setOpen(!((Openable)blockData).isOpen());
                     newData = blockData.getData();
                     break;
                 case TRAP_DOOR:
@@ -96,7 +96,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     {
                         return;
                     }
-                    newData = ((NoteBlock) block.getState()).getRawNote();
+                    newData = ((NoteBlock)block.getState()).getRawNote();
                     newData += 1;
                     if (newData == 25)
                     {
@@ -109,19 +109,19 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
                     {
                         return;
                     }
-                    int delay = ((Diode) blockData).getDelay();
+                    int delay = ((Diode)blockData).getDelay();
                     delay += 1;
                     if (delay == 5)
                     {
                         delay = 1;
                     }
-                    ((Diode) blockData).setDelay(delay);
+                    ((Diode)blockData).setDelay(delay);
                     newData = blockData.getData();
                     break;
                 default:
                     return;
-                //TODO add new blocks in 1.5
-                //TODO anvil
+                    //TODO add new blocks in 1.5
+                    //TODO anvil
             }
             this.module.getLogManager().logBlockChange(user.key, block.getState(), newData);
         }
@@ -132,7 +132,7 @@ public class InteractionLogger extends Logger<InteractionLogger.InteractionConfi
             {
                 case WOOD_PLATE:
                 case STONE_PLATE:
-                    this.module.getLogManager().logBlockChange(user.key, block.getState(), (byte) 1);
+                    this.module.getLogManager().logBlockChange(user.key, block.getState(), (byte)1);
             }
         }
     }

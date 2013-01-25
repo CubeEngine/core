@@ -115,7 +115,7 @@ public class LogManager
             this.database.execute(sql);
             sql = builder.insert().into("log_sign")
                     .cols("key", "oldLine1", "oldLine2", "oldLine3",
-                    "oldLine4", "newLine1", "newLine2", "newLine3", "newLine4")
+                        "oldLine4", "newLine1", "newLine2", "newLine3", "newLine4")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeSignLog", sql);
             //Kill logging:
@@ -172,7 +172,7 @@ public class LogManager
              {
              "neue", "Zeilen", "besser", ":)"
              };
-        
+            
              long a = System.currentTimeMillis();
              database.getConnection().setAutoCommit(false);
              for (int j = 1; j < 50; j++)
@@ -226,6 +226,7 @@ public class LogManager
             }
         }, 20 * 5, 20 * 5);
     }
+
     private Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
 
     /**
@@ -260,6 +261,7 @@ public class LogManager
             });
         }
     }
+
     private volatile boolean running = false;
 
     private void doEmptyLogs(int amount)
@@ -596,7 +598,8 @@ public class LogManager
                             .and().field("y").isEqual().value(loc1.getBlockY())
                             .and().field("z").isEqual().value(loc1.getBlockZ());
                 }
-                else // range of locations
+                else
+                // range of locations
                 {
                     builder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX())
                             .and().field("y").between(loc1.getBlockY(), loc2.getBlockY())

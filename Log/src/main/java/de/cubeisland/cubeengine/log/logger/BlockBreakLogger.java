@@ -28,7 +28,7 @@ public class BlockBreakLogger extends
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
-        
+
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
             this.log(PLAYER, event.getPlayer(), block.getState());

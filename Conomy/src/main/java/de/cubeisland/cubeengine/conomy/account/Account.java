@@ -107,7 +107,7 @@ public class Account
      */
     public long scale(double factor)
     {
-        this.model.value = (long) (factor * this.model.value);
+        this.model.value = (long)(factor * this.model.value);
         this.updateModel();
         return this.model.value;
     }

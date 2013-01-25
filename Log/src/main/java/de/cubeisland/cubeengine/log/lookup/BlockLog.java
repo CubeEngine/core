@@ -50,12 +50,12 @@ public class BlockLog implements Comparable<BlockLog>
     @Override
     public int compareTo(BlockLog o)
     {
-        int temp = (int) (this.date.getTime() - o.date.getTime());
+        int temp = (int)(this.date.getTime() - o.date.getTime());
         if (temp != 0)
         {
             return temp;
         }
-        return (int) (this.key - o.key);
+        return (int)(this.key - o.key);
     }
 
     public String getCauser()

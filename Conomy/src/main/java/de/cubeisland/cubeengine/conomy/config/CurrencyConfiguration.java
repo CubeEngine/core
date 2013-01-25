@@ -11,7 +11,7 @@ public class CurrencyConfiguration
 
     //TODO minimum money (can be less with perm)
     //TODO numberseparator (here?)
-    
+
     public CurrencyConfiguration(LinkedHashMap<String, SubCurrencyConfig> subcurrencies, String formatLong, String formatShort, long defaultBalance)
     {
         this.subcurrencies = subcurrencies;

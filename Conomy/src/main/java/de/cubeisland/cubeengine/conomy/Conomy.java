@@ -57,5 +57,5 @@ public class Conomy extends Module
     {
         return accountsStorage;
     }
-    
+
 }

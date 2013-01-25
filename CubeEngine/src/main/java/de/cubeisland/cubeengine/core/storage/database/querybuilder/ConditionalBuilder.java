@@ -18,7 +18,7 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends
      * @return fluent interface
      */
     public This limit(int n);
-    
+
     /**
      * Adds LIMIT ?
      *
@@ -33,7 +33,7 @@ public interface ConditionalBuilder<This extends ConditionalBuilder> extends
      * @return fluent interface
      */
     public This offset(int n);
-    
+
     /**
      * Adds OFFSET ?
      *

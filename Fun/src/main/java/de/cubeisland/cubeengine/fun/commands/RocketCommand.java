@@ -40,7 +40,7 @@ public class RocketCommand
 
     @Command(desc = "rockets a player", max = 1, usage = "[height] [player <name>]", params = {
         @Param(names = {
-        "player", "p"
+            "player", "p"
         }, type = User.class)
     })
     public void rocket(CommandContext context)

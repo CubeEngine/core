@@ -39,16 +39,16 @@ public class NukeCommand
         @Flag(longName = "unsafe", name = "u")
     }, usage = "[radius] [height <value>] [player <name>] [concentration <value>] [range <vaule>] [-unsafe]", params = {
             @Param(names = {
-            "player", "p"
+                "player", "p"
             }, type = User.class),
             @Param(names = {
-            "height", "h"
+                "height", "h"
             }, type = Integer.class),
             @Param(names = {
-            "concentration", "c"
+                "concentration", "c"
             }, type = String.class),
             @Param(names = {
-            "range", "r"
+                "range", "r"
             }, type = Integer.class)
     })
     public void nuke(CommandContext context)

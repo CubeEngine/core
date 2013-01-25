@@ -8,9 +8,7 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOR
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 
-@SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true,
-                 indices =
-{
+@SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key"),
     @Index(value = UNIQUE, fields = // prevent multiple accounts for a user/bank in the same currency
     {
@@ -43,8 +41,7 @@ public class AccountModel implements Model<Long>
     }
 
     public AccountModel()
-    {
-    }
+    {}
 
     public AccountModel(Long user_id, String name, String currencyName, long balance)
     {

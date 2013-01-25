@@ -25,7 +25,7 @@ public class DiscoCommand implements Runnable
 
     @Command(desc = "Changes from day to night and vice verca", max = 0, params = {
         @Param(names = {
-        "delay", "d"
+            "delay", "d"
         }, type = Integer.class)
     }, usage = "[delay <value>]")
     public void disco(CommandContext context)

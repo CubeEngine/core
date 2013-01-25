@@ -8,9 +8,7 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOR
 import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
 import de.cubeisland.cubeengine.core.util.Pair;
 
-@TwoKeyEntity(tableName = "kitsgiven", firstPrimaryKey = "userId", secondPrimaryKey = "kitName",
-              indices =
-{
+@TwoKeyEntity(tableName = "kitsgiven", firstPrimaryKey = "userId", secondPrimaryKey = "kitName", indices = {
     @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key")
 })
 public class KitsGiven implements TwoKeyModel<Long, String>

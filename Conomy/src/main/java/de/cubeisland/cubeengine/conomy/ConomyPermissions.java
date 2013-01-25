@@ -9,7 +9,7 @@ import org.bukkit.permissions.Permissible;
 public enum ConomyPermissions implements Permission
 {
     ACCOOUNT_ALLOWUNDERMIN, // Allows the user to have less money then the minimum (default 0)
-    
+
     ;
     private String permission;
     private PermDefault def;

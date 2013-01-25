@@ -12,9 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@SingleKeyEntity(tableName = "basicuser", primaryKey = "key", autoIncrement = false,
-                 indices =
-{
+@SingleKeyEntity(tableName = "basicuser", primaryKey = "key", autoIncrement = false, indices = {
     @Index(value = FOREIGN_KEY, fields = "key", f_table = "user", f_field = "key")
 })
 public class BasicUser implements Model<Long>
@@ -28,8 +26,7 @@ public class BasicUser implements Model<Long>
     public List<Mail> mailbox = new ArrayList<Mail>();
 
     public BasicUser()
-    {
-    }
+    {}
 
     public BasicUser(User user)
     {

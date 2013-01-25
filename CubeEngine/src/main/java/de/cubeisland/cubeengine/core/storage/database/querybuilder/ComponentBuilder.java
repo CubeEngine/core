@@ -64,7 +64,7 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return fluent interface
      */
     public This valuesInBrackets(int amount);
-    
+
     /**
      * Adds multiple values in brackets separated by comma
      * 
