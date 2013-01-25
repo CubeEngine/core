@@ -20,7 +20,7 @@ public class BlockGrowLogger extends
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onStructureGrow(StructureGrowEvent event)
-    {
+    {//TODO on no change
         Player player = null;
         if (event.isFromBonemeal())
         {

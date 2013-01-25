@@ -47,7 +47,7 @@ public class Chat extends Module implements Listener
             event.setMessage(ChatFormat.parseFormats(event.getMessage()));
         }
 
-        ChatFormatEvent formatEvent = new ChatFormatEvent(player, event.getMessage(), format);
+        ChatFormatEvent formatEvent = new ChatFormatEvent(player, event.getMessage(), format, event.isAsynchronous());
 
         format = format.replace("{NAME}", player.getName());
         // set the placeholder instead of the actual value to allow other plugins to change the value

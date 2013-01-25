@@ -1,10 +1,12 @@
 package de.cubeisland.cubeengine.log.storage;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
+import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.logger.BlockLogger;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
@@ -15,10 +17,13 @@ import de.cubeisland.cubeengine.log.lookup.KillLog;
 import de.cubeisland.cubeengine.log.lookup.KillLookup;
 import de.cubeisland.cubeengine.log.lookup.MessageLog;
 import de.cubeisland.cubeengine.log.lookup.MessageLookup;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -38,8 +43,12 @@ public class LogManager
     public static final int COMMAND = 0x21;
     public static final int CHEST_PUT = 0x30;
     public static final int CHEST_TAKE = 0x31;
+    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
     private final Database database;
     private final Log module;
+    private final PreparedStatement storeLog;
+    private int logBuffer = 100; //TODO config (100 in ~4sec)
+    //TODO autolog every ~5sec
 
     public LogManager(Log module)
     {
@@ -47,7 +56,6 @@ public class LogManager
         this.module = module;
         try
         {
-            //TODO add index action / causer
             // Main table:
             QueryBuilder builder = database.getQueryBuilder();
             String sql = builder.createTable("log_logs", true).beginFields()
@@ -72,7 +80,7 @@ public class LogManager
             sql = builder.insert().into("log_logs")
                     .cols("date", "world_id", "x", "y", "z", "action", "causer")
                     .end().end();
-            this.database.storeStatement(this.getClass(), "storeLog", sql);
+            this.storeLog = this.database.prepareStatement(sql);
             //Block logging:
             sql = builder.createTable("log_block", true).beginFields()
                     .field("key", AttrType.INT, true)
@@ -203,6 +211,7 @@ public class LogManager
             throw new StorageException("Error during initialization of log-tables", ex);
         }
     }
+    private Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
 
     /**
      * Main log entry
@@ -213,21 +222,70 @@ public class LogManager
      * @param causer
      * @return
      */
-    private Long storeLog(World world, Location location, int action, long causer)
+    private void storeLog(World world, Location location, int action, long causer, Timestamp current, QueuedLog log)
     {
+        Long world_id = world == null ? null : this.module.getCore().getWorldManager().getWorldId(world);
+        Integer x = location == null ? null : location.getBlockX();
+        Integer y = location == null ? null : location.getBlockY();
+        Integer z = location == null ? null : location.getBlockZ();
+        log.addMainLogData(current, world_id, x, y, z, action, causer);
+
+        this.queuedLogs.offer(log);
+        System.out.print("Added Log: " + this.queuedLogs.size());
+
+        if (this.queuedLogs.size() % logBuffer == 0)
+        {
+            this.taskQueue.addTask(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    doEmptyLogs();
+                }
+            });
+        }
+    }
+
+    public void doEmptyLogs() //TODO always do run this before disabling the module!
+    {
+        if (queuedLogs.isEmpty())
+        {
+            System.out.print("Log was empty");
+            return;
+        }
+        System.out.print("Logs queued: " + queuedLogs.size());
+        int anz = 0;
+        final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
+        for (int i = 0; i < this.logBuffer; i++) // log 10 next logs...
+        {
+            QueuedLog toLog = this.queuedLogs.poll();
+            if (toLog == null)
+            {
+                break;
+            }
+            logs.offer(toLog);
+        }
+        long a = System.currentTimeMillis();
+        System.out.println("Start logging...");
         try
         {
-            Long world_id = world == null ? null : this.module.getCore().getWorldManager().getWorldId(world);
-            Integer x = location == null ? null : location.getBlockX();
-            Integer y = location == null ? null : location.getBlockY();
-            Integer z = location == null ? null : location.getBlockZ();
-            return (Long) this.database.getLastInsertedId(this.getClass(), "storeLog",
-                    new Timestamp(System.currentTimeMillis()), world_id, x, y, z, action, causer);
+            for (QueuedLog log : logs)
+            {
+                log.addMainDataToBatch(this.storeLog);
+            }
+            this.storeLog.executeBatch();
+            ResultSet genKeys = storeLog.getGeneratedKeys();
+            while (genKeys.next())
+            {
+                long key = genKeys.getLong("GENERATED_KEY");
+                logs.poll().run(key);
+            }
         }
         catch (SQLException ex)
         {
             throw new StorageException("Error while storing main Log-Entry", ex);
         }
+        System.out.println("Logged in " + (System.currentTimeMillis() - a) / 1000 + "s");
     }
 
     /**
@@ -360,8 +418,7 @@ public class LogManager
         {
             type = BLOCK_GROW_BP;
         }
-        long logID = this.storeLog(location.getWorld(), location, type, causerId);
-        this.storeBlockLog(logID, BlockData.get(oldState), BlockData.get(newState));
+        this.logBlockLog(location, type, causerId, BlockData.get(oldState), BlockData.get(newState));
     }
 
     /**
@@ -374,8 +431,20 @@ public class LogManager
     public void logBlockChange(long causerId, BlockState state, byte newData)
     {
         Location location = state.getLocation();
-        long logID = this.storeLog(location.getWorld(), location, BLOCK_CHANGE, causerId);
-        this.storeBlockLog(logID, BlockData.get(state), BlockData.get(state, newData));
+        this.logBlockLog(location, BLOCK_CHANGE, causerId, BlockData.get(state), BlockData.get(state, newData));
+    }
+
+    private void logBlockLog(final Location location, final int type, final long causerId, final BlockData oldData, final BlockData newData)
+    {
+        final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        this.storeLog(location.getWorld(), location, type, causerId, timestamp, new QueuedLog()
+        {
+            @Override
+            public void run()
+            {
+                storeBlockLog(this.getInsertId(), oldData, newData);
+            }
+        });
     }
 
     /**
@@ -386,10 +455,17 @@ public class LogManager
      * @param oldlines
      * @param newlines
      */
-    public void logSignLog(long causerId, Location location, String[] oldlines, String[] newlines)
+    public void logSignLog(final long causerId, final Location location, final String[] oldlines, final String[] newlines)
     {
-        long logID = this.storeLog(location.getWorld(), location, BLOCK_SIGN, causerId);
-        this.storeSignLog(logID, oldlines, newlines);
+        final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        this.storeLog(location.getWorld(), location, BLOCK_SIGN, causerId, timestamp, new QueuedLog()
+        {
+            @Override
+            public void run()
+            {
+                storeSignLog(this.getInsertId(), oldlines, newlines);
+            }
+        });
     }
 
     /**
@@ -399,9 +475,9 @@ public class LogManager
      * @param location
      * @param killed
      */
-    public void logKillLog(long killer, Location location, long killed)
+    public void logKillLog(final long killer, final Location location, final long killed)
     {
-        int type;
+        final int type;
         if (killer > 0)
         {
             if (killed > 0)
@@ -424,8 +500,16 @@ public class LogManager
                 type = KILL_EVE;
             }
         }
-        long logID = this.storeLog(location.getWorld(), location, type, killer);
-        this.storeKillLog(logID, killed);
+        final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        this.storeLog(location.getWorld(), location, type, killer, timestamp, new QueuedLog()
+        {
+            @Override
+            public void run()
+            {
+                storeKillLog(this.getInsertId(), killed);
+            }
+        });
     }
 
     /**
@@ -436,10 +520,17 @@ public class LogManager
      * @param chat
      * @param isChat
      */
-    public void logChatLog(long causerId, Location location, String message, boolean isChat)
+    public void logChatLog(final long causerId, final Location location, final String message, final boolean isChat)
     {
-        long logID = this.storeLog(location == null ? null : location.getWorld(), location, isChat ? CHAT : COMMAND, causerId);
-        this.storeMessageLog(logID, message);
+        final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        this.storeLog(location == null ? null : location.getWorld(), location, isChat ? CHAT : COMMAND, causerId, timestamp, new QueuedLog()
+        {
+            @Override
+            public void run()
+            {
+                storeMessageLog(this.getInsertId(), message);
+            }
+        });
     }
 
     /**
@@ -451,10 +542,17 @@ public class LogManager
      * @param amount
      * @param containerType
      */
-    public void logChestLog(long userId, Location location, ItemData itemData, int amount, int containerType)
+    public void logChestLog(final long userId, final Location location, final ItemData itemData, final int amount, final int containerType)
     {
-        long logID = this.storeLog(location.getWorld(), location, (amount > 0 ? CHEST_PUT : CHEST_TAKE), userId);
-        this.storeChestLog(logID, itemData, amount, containerType);
+        final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        storeLog(location.getWorld(), location, (amount > 0 ? CHEST_PUT : CHEST_TAKE), userId, timestamp, new QueuedLog()
+        {
+            @Override
+            public void run()
+            {
+                storeChestLog(this.getInsertId(), itemData, amount, containerType);
+            }
+        });
     }
 
     private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)

@@ -17,9 +17,9 @@ public class ChatFormatEvent extends Event
     private final String format;
     final Map<String, String> variables;
 
-    public ChatFormatEvent(Player player, String message, String format)
+    public ChatFormatEvent(Player player, String message, String format,boolean async)
     {
-        super(true);
+        super(async);
         this.player = player;
         this.message = message;
         this.format = format;
