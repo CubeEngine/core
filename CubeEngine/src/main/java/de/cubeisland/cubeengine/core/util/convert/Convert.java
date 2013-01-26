@@ -2,24 +2,10 @@ package de.cubeisland.cubeengine.core.util.convert;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.node.*;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.convert.converter.*;
 import de.cubeisland.cubeengine.core.util.convert.converter.BooleanConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.ByteConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.CubeLevelConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.DateConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.DoubleConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.DurationConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.EnchantmentConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.FloatConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.IntegerConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.ItemStackConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.LongConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.ShortConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.StringConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.UserConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.WorldConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
@@ -36,6 +22,7 @@ import java.lang.reflect.Type;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -204,5 +191,61 @@ public class Convert
             }
         }
         throw new IllegalArgumentException("Unknown Type: " + type);
+    }
+
+    public static Node toNode(Object o) {
+        if (o == null)
+        {
+            return NullNode.INSTANCE;
+        }
+        if (o instanceof Map)
+        {
+            return new MapNode((Map)o);
+        }
+        if (o instanceof Collection)
+        {
+            return new ListNode((List)o);
+        }
+        if (o.getClass().isArray())
+        {
+            return new ListNode((Object[])o);
+        }
+        if (o instanceof String)
+        {
+            return new StringNode((String)o);
+        }
+        if (o instanceof Byte || o.getClass() == byte.class)
+        {
+            return new ByteNode((Byte)o);
+        }
+        if (o instanceof Short || o.getClass() == short.class)
+        {
+            return new ShortNode((Short)o);
+        }
+        if (o instanceof Integer || o.getClass() == int.class)
+        {
+            return new IntNode((Integer) o);
+        }
+        if (o instanceof Long || o.getClass() == long.class)
+        {
+            return new LongNode((Long) o);
+        }
+        if (o instanceof Float || o.getClass() == float.class)
+        {
+            return new FloatNode((Float) o);
+        }
+        if (o instanceof Double || o.getClass() == double.class)
+        {
+            return new DoubleNode((Double) o);
+        }
+        if (o instanceof Boolean || o.getClass() == boolean.class)
+        {
+            return new BooleanNode((Boolean) o);
+        }
+        if (o instanceof Character || o.getClass() == char.class)
+        {
+            return new CharNode((Character) o);
+        }
+        return new ObjectNode(o);
     }
 }

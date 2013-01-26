@@ -73,7 +73,6 @@ public class CollectionConverter
     }
 
     public static <V, S extends Collection<V>> S getCollectionFor(ParameterizedType ptype) {
-
         try
         {
             Class<S> collectionType = (Class)ptype.getRawType();

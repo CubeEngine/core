@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.config.codec;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
+import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
@@ -9,7 +10,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -34,7 +34,7 @@ public class YamlCodec extends ConfigurationCodec
     //TODO \n in Strings do get lost when restarting
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, Object> loadFromInputStream(InputStream is)
+    public Node loadFromInputStream(InputStream is)
     {
         Map<Object, Object> map = (Map<Object, Object>)yaml.load(is);
         if (map == null)
@@ -53,12 +53,7 @@ public class YamlCodec extends ConfigurationCodec
         {
             CubeEngine.getLogger().log(LogLevel.WARNING, "Invalid revision in a configuration!", ex);
         }
-        Map<String, Object> resultmap = new LinkedHashMap<String, Object>();
-        for (Object key : map.keySet())
-        {
-            resultmap.put(key.toString(), map.get(key));
-        }
-        return resultmap;
+        return Convert.toNode(map);
     }
 
     private boolean needsQuote(Object o)

@@ -5,8 +5,7 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MapConverter
 {
@@ -37,30 +36,22 @@ public class MapConverter
      * @param <K>     the KeyType
      * @param <V>     the ValueType
      * @param <S>     the MapType
-     * @param type   the MapTypeClass
+     * @param ptype   the MapTypeClass
      * @param object  the object to convert
      * @return the converted map
      * @throws ConversionException
      */
     @SuppressWarnings("unchecked")
-    public <K, V, S extends Map<K, V>> S fromObject(ParameterizedType type, Object object) throws ConversionException
+    public <K, V, S extends Map<K, V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
     {
         try
         {
-            if (type.getRawType() instanceof Class)
+            if (ptype.getRawType() instanceof Class)
             {
-                Class<S> mapType = (Class<S>)type.getRawType();
-                Type keyType = type.getActualTypeArguments()[0];
-                Type valType = type.getActualTypeArguments()[1];
-                S result;
-                if (mapType.isInterface() || Modifier.isAbstract(mapType.getModifiers()))
-                {
-                    result = (S)new LinkedHashMap<K, V>();
-                }
-                else
-                {
-                    result = mapType.newInstance();
-                }
+
+                Type keyType = ptype.getActualTypeArguments()[0];
+                Type valType = ptype.getActualTypeArguments()[1];
+                S result = (S)getMapFor(ptype);
                 if (object instanceof Map)
                 {
                     Map<?, ?> objectMap = (Map<?, ?>)object;
@@ -74,19 +65,34 @@ public class MapConverter
                 }
                 throw new IllegalStateException("Map-conversion failed: Cannot convert not a map to a map.");
             }
-            throw new IllegalArgumentException("Unkown Map-Type: " + type);
-        }
-        catch (IllegalAccessException ex)
-        {
-            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + type.getRawType(), ex);
-        }
-        catch (InstantiationException ex)
-        {
-            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + type.getRawType(), ex);
+            throw new IllegalArgumentException("Unkown Map-Type: " + ptype);
         }
         catch (ConversionException ex)
         {
             throw new IllegalStateException("Map-conversion failed: Error while converting the values in the map.", ex);
+        }
+    }
+
+    public static <K, V, S extends Map<K, V>> S getMapFor(ParameterizedType ptype) {
+        try
+        {
+            Class<S> mapType = (Class<S>)ptype.getRawType();
+            if (mapType.isInterface() || Modifier.isAbstract(mapType.getModifiers()))
+            {
+                return (S)new LinkedHashMap<K, V>();
+            }
+            else
+            {
+                return mapType.newInstance();
+            }
+        }
+        catch (IllegalAccessException ex)
+        {
+            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
+        }
+        catch (InstantiationException ex)
+        {
+            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
         }
     }
 }

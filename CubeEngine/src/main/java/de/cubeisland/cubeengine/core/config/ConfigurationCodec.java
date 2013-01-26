@@ -6,6 +6,8 @@ import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.config.annotations.Updater;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -21,10 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This abstract Codec can be implemented to read and write configurations.
@@ -37,7 +36,6 @@ public abstract class ConfigurationCodec
     protected String QUOTE;
     protected final String PATH_SEPARATOR = ":";
     protected Integer revision = null;
-    private CodecContainer container = null;
     protected boolean first;
 
     /**
@@ -48,7 +46,7 @@ public abstract class ConfigurationCodec
      */
     public void load(Configuration config, InputStream is) throws InstantiationException, IllegalAccessException
     {
-        container = new CodecContainer();
+        CodecContainer container = new CodecContainer();
         container.fillFromInputStream(is);
         Revision a_revision = config.getClass().getAnnotation(Revision.class);
         if (a_revision != null)
@@ -66,7 +64,6 @@ public abstract class ConfigurationCodec
             }
         }
         container.dumpIntoFields(config, container.values, config.parent);
-        container = null;
         revision = null;
     }
 
@@ -110,7 +107,7 @@ public abstract class ConfigurationCodec
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            container = new CodecContainer();
+            CodecContainer container = new CodecContainer();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
@@ -124,7 +121,6 @@ public abstract class ConfigurationCodec
         {
             throw new InvalidConfigurationException("Error while saving Configuration!", ex);
         }
-        container = null;
     }
 
     public void saveChildConfig(Configuration parentConfig, Configuration config, File file)
@@ -135,7 +131,7 @@ public abstract class ConfigurationCodec
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            container = new CodecContainer();
+            CodecContainer container = new CodecContainer();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
             {
@@ -149,7 +145,6 @@ public abstract class ConfigurationCodec
         {
             throw new InvalidConfigurationException("Error while saving Configuration!", ex);
         }
-        container = null;
     }
 
     /**
@@ -189,12 +184,12 @@ public abstract class ConfigurationCodec
     public abstract String getExtension();
 
     /**
-     * Converts the inputStream into a String->Object map
+     * Converts the inputStream into a readable Object
      *
      * @param is the InputStream
      * @return the loaded values
      */
-    public abstract Map<String, Object> loadFromInputStream(InputStream is);
+    public abstract Node loadFromInputStream(InputStream is);
 
     /**
      * Returns the last subKey of this path
@@ -210,6 +205,8 @@ public abstract class ConfigurationCodec
     /**
      * Returns the subPath of this path
      *
+     * <p>Example: first.second.third -> second.third
+     *
      * @param path the path
      * @return the subPath
      */
@@ -220,6 +217,8 @@ public abstract class ConfigurationCodec
 
     /**
      * Returns the base path of this path
+     *
+     * <p>Example: main.sub -> main
      *
      * @param path the path
      * @return the basePath
@@ -235,7 +234,7 @@ public abstract class ConfigurationCodec
      */
     public class CodecContainer
     {
-        protected Map<String, Object> values;
+        protected Node values;
         protected Map<String, String> comments;
         protected Map<String, Object> loadedKeys;
         protected Configuration config;
@@ -247,7 +246,6 @@ public abstract class ConfigurationCodec
         {
             this.comments = new THashMap<String, String>();
             this.loadedKeys = new THashMap<String, Object>();
-            this.values = new LinkedHashMap<String, Object>();
         }
 
         /**
@@ -259,7 +257,7 @@ public abstract class ConfigurationCodec
         {
             if (is == null)
             {
-                this.values = new LinkedHashMap<String, Object>(); // InputStream null -> config was not existent
+                this.values = MapNode.emptyMap(); // InputStream null -> config was not existent
             }
             else
             {
@@ -267,7 +265,7 @@ public abstract class ConfigurationCodec
             }
             if (this.values == null)
             {
-                this.values = new LinkedHashMap<String, Object>(); // loadValues null -> config exists but was empty
+                this.values = MapNode.emptyMap();; // loadValues null -> config exists but was empty
             }
             this.loadKeys(this.values);
         }
@@ -301,10 +299,10 @@ public abstract class ConfigurationCodec
                 if (valType instanceof Class)
                 {
                     Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)field.get(this.config);
-                    Map<String, Object> subValues = this.getOrCreateSubSection(path, values);
+                    Map<String, Object> subValues = this.getOrCreateObjectAt(path, values);
                     for (Object key : fieldMap.keySet())
                     {
-                        new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateSubSection(key.toString(), subValues),
+                        new CodecContainer().dumpIntoFields(fieldMap.get(key), this.getOrCreateObjectAt(key.toString(), subValues),
                                 parentConfig == null ? null : ((Map<Object, Configuration>)(field.get(this.parentConfig))).get(key));
                     }
                     return fieldMap;
@@ -317,14 +315,13 @@ public abstract class ConfigurationCodec
          * Sets the fields with the loaded values
          *
          * @param config the config
-         * @param section the section
+         * @param currentSection the section to load from
          * @throws IllegalArgumentException
          */
-        private void dumpIntoFields(Configuration config, Map<String, Object> section, Configuration parent)
+        private void dumpIntoFields(Configuration config, Object currentSection, Configuration parent)
         {
             this.config = config;
             this.parentConfig = parent;
-            this.values = section;
             for (Field field : config.getClass().getFields()) // ONLY public fields are allowed
             {
                 try
@@ -338,11 +335,11 @@ public abstract class ConfigurationCodec
                             CodecContainer subContainer = new CodecContainer();
                             if (parent == null)
                             {
-                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), null);
+                                subContainer.dumpIntoFields(subConfig, this.getOrCreateObjectAt(path, currentSection), null);
                             }
                             else
                             {
-                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), (Configuration)field.get(parent));
+                                subContainer.dumpIntoFields(subConfig, this.getOrCreateSectionAt(path, currentSection), (Configuration)field.get(parent));
                             }
                             continue;
                         }
@@ -355,13 +352,13 @@ public abstract class ConfigurationCodec
                                 Type subType1 = ptype.getActualTypeArguments()[0];
                                 if (Configuration.class.isAssignableFrom((Class)subType1))
                                 {
-                                    Collection loadedValues = this.getOrCreateSubSection(path, section).values();
+                                    Collection loadedValues = this.getOrCreateObjectAt(path, section).values();
                                     if (parent == null)
                                     {//No parent given: iterate throuh given configs & load them
 
                                         for (Configuration subConfig : (Collection<Configuration>) field.get(config))
                                         {
-                                            new CodecContainer().dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), null);
+                                            new CodecContainer().dumpIntoFields(subConfig, this.getOrCreateObjectAt(path, section), null);
                                         }
                                     }
                                     else
@@ -401,7 +398,10 @@ public abstract class ConfigurationCodec
                 }
                 catch (Exception e)
                 {
-                    throw new InvalidConfigurationException("Error while dumping loaded Config into fields! Field: " + field.getName(), e);
+                    throw new InvalidConfigurationException(
+                            "Error while dumping loaded config into fields!" +
+                            "\ncurrent config: "+config.getClass().toString()+
+                            "\ncurent field:" +field.getName(),e);
                 }
             }
         }
@@ -473,7 +473,7 @@ public abstract class ConfigurationCodec
         {
             if (path.contains(PATH_SEPARATOR))
             {
-                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
+                Map<String, Object> subsection = this.getOrCreateObjectAt(getBasePath(path), section);
                 this.set(getSubPath(path), value, subsection);
             }
             else
@@ -483,29 +483,56 @@ public abstract class ConfigurationCodec
         }
 
         /**
-         * Returns the subSection in the baseSection for given path
+         * Returns the section located in the currentSection for given path
          *
          * @param path the path
-         * @param baseSection the base section
-         * @return the requested subSection
+         * @param currentSection the section to search in
+         * @return the requested object
          */
-        private Map<String, Object> getOrCreateSubSection(String path, Map<String, Object> baseSection)
+        private Object getOrCreateSectionAt(String path, Object currentSection)
+        {
+            return this.getOrCreateObjectAt(path,currentSection,true);
+        }
+
+        /**
+         * Returns the Object located in the currentSection for given path
+         *
+         * @param path the path
+         * @param currentSection the section to search in
+         * @param createMap whether to create a map or a collection if not found
+         * @return the requested object
+         */
+        private Object getOrCreateObjectAt(String path, Object currentSection, boolean createMap)
         {
             if (path.contains(PATH_SEPARATOR))
             {
-                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), baseSection);
-                baseSection.put(getBasePath(path), subsection);
-                return this.getOrCreateSubSection(getSubPath(path), subsection);
+                return this.getOrCreateObjectAt(getSubPath(path),
+                        this.getOrCreateObjectAt(getBasePath(path), currentSection, createMap),
+                        createMap);
             }
             else
             {
-                Map<String, Object> subsection = (Map<String, Object>)baseSection.get(path);
-                if (subsection == null)
+                if (currentSection instanceof Map)
                 {
-                    subsection = new LinkedHashMap<String, Object>();
-                    baseSection.put(path, subsection);
+                    Object subsection = ((Map)currentSection).get(path);
+                    if (subsection == null)
+                    {
+                        if (createMap)
+                        {
+                            subsection = new LinkedHashMap<String, Object>();
+                        }
+                        else
+                        {
+                            subsection = new ArrayList<Object>();
+                        }
+                        ((Map)currentSection).put(path, subsection);
+                    }
+                    return subsection;
                 }
-                return subsection;
+                else
+                {
+                    throw new IllegalArgumentException("Could not resolve path ("+path+") for "+currentSection);
+                }
             }
         }
 
@@ -531,7 +558,7 @@ public abstract class ConfigurationCodec
          * @param section the section
          */
         @SuppressWarnings("unchecked")
-        private void loadKeys(Map<String, Object> section)
+        private void loadKeys(Object input)
         {
             for (Object key : section.keySet()) //need object ere because key could be an integer when in a subMap
             {
@@ -648,10 +675,10 @@ public abstract class ConfigurationCodec
                         }
                     }
                     path = path.toLowerCase(Locale.ENGLISH);
-                    Object value = this.convertFromFieldValueToObject(field, field.get(config), basePath, this.getOrCreateSubSection(path, section));
+                    Object value = this.convertFromFieldValueToObject(field, field.get(config), basePath, this.getOrCreateObjectAt(path, section));
                     if (parentConfig != null)
                     {
-                        Object parentValue = this.convertFromFieldValueToObject(field, field.get(parentConfig), basePath, this.getOrCreateSubSection(path, section));
+                        Object parentValue = this.convertFromFieldValueToObject(field, field.get(parentConfig), basePath, this.getOrCreateObjectAt(path, section));
                         if (parentValue.equals(value))
                         {
                             this.remove(path, section);
@@ -668,7 +695,7 @@ public abstract class ConfigurationCodec
         {
             if (path.contains(PATH_SEPARATOR))
             {
-                Map<String, Object> subsection = this.getOrCreateSubSection(getBasePath(path), section);
+                Map<String, Object> subsection = this.getOrCreateObjectAt(getBasePath(path), section);
                 this.remove(getSubPath(path), subsection);
                 if (subsection.isEmpty())
                 {
@@ -710,9 +737,9 @@ public abstract class ConfigurationCodec
                 }
                 if (this.parentConfig == null)
                 {
-                    return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
+                    return new CodecContainer().fillFromFields(this, null, (Configuration)fieldValue, newPath, this.getOrCreateObjectAt(basePath, section));
                 }
-                return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateSubSection(basePath, section));
+                return new CodecContainer().fillFromFields(this, (Configuration)field.get(this.parentConfig), (Configuration)fieldValue, newPath, this.getOrCreateObjectAt(basePath, section));
             }
             Converter converter = Convert.matchConverter(fieldClass);
             if (converter == null)
@@ -739,7 +766,7 @@ public abstract class ConfigurationCodec
                             Configuration parentSubConfig = parentConfig == null ? null : parentConfigs.get(key);
                             map.put(keyConverter.toObject(key).toString(), //the key should be a string or else it will fail horribly
                             new CodecContainer().fillFromFields(this, parentSubConfig,
-                                        fieldMap.get(key), newPath, this.getOrCreateSubSection(key.toString(), map)));
+                                        fieldMap.get(key), newPath, this.getOrCreateObjectAt(key.toString(), map)));
                         }
                         return map;
                     }
